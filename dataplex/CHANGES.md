@@ -1,6 +1,32 @@
 # Changes
 
 
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.1...dataplex/v1.14.2) (2024-02-06)
+
+
+### Documentation
+
+* **dataplex:** Fix typo in comment ([e60a6ba](https://github.com/googleapis/google-cloud-go/commit/e60a6ba01acf2ef2e8d12e23ed5c6e876edeb1b7))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.0...dataplex/v1.14.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dataplex:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.13.0...dataplex/v1.14.0) (2024-01-03)
+
+
+### Features
+
+* **dataplex:** Added enum value EventType.GOVERNANCE_RULE_PROCESSING ([902d842](https://github.com/googleapis/google-cloud-go/commit/902d84299b5073543ade684aa311b791bed3a999))
+
+
+### Documentation
+
+* **dataplex:** Fix the comment for `ignore_null` field to clarify its applicability on data quality rules ([cbe96af](https://github.com/googleapis/google-cloud-go/commit/cbe96af778ec9152b528714281de9e534f01c237))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.12.0...dataplex/v1.13.0) (2023-12-07)
 
 

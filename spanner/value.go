@@ -427,6 +427,86 @@ func (n NullFloat64) GormDataType() string {
 	return "FLOAT64"
 }
 
+// NullFloat32 represents a Cloud Spanner FLOAT32 that may be NULL.
+type NullFloat32 struct {
+	Float32 float32 // Float32 contains the value when it is non-NULL, and zero when NULL.
+	Valid   bool    // Valid is true if FLOAT32 is not NULL.
+}
+
+// IsNull implements NullableValue.IsNull for NullFloat32.
+func (n NullFloat32) IsNull() bool {
+	return !n.Valid
+}
+
+// String implements Stringer.String for NullFloat32
+func (n NullFloat32) String() string {
+	if !n.Valid {
+		return nullString
+	}
+	return fmt.Sprintf("%v", n.Float32)
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullFloat32.
+func (n NullFloat32) MarshalJSON() ([]byte, error) {
+	return nulljson(n.Valid, n.Float32)
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullFloat32.
+func (n *NullFloat32) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Float32 = float32(0)
+		n.Valid = false
+		return nil
+	}
+	num, err := strconv.ParseFloat(string(payload), 32)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to float32: got %v", string(payload))
+	}
+	n.Float32 = float32(num)
+	n.Valid = true
+	return nil
+}
+
+// Value implements the driver.Valuer interface.
+func (n NullFloat32) Value() (driver.Value, error) {
+	if n.IsNull() {
+		return nil, nil
+	}
+	return n.Float32, nil
+}
+
+// Scan implements the sql.Scanner interface.
+func (n *NullFloat32) Scan(value interface{}) error {
+	if value == nil {
+		n.Float32, n.Valid = 0, false
+		return nil
+	}
+	n.Valid = true
+	switch p := value.(type) {
+	default:
+		return spannerErrorf(codes.InvalidArgument, "invalid type for NullFloat32: %v", p)
+	case *float32:
+		n.Float32 = *p
+	case float32:
+		n.Float32 = p
+	case *NullFloat32:
+		n.Float32 = p.Float32
+		n.Valid = p.Valid
+	case NullFloat32:
+		n.Float32 = p.Float32
+		n.Valid = p.Valid
+	}
+	return nil
+}
+
+// GormDataType is used by gorm to determine the default data type for fields with this type.
+func (n NullFloat32) GormDataType() string {
+	return "FLOAT32"
+}
+
 // NullBool represents a Cloud Spanner BOOL that may be NULL.
 type NullBool struct {
 	Bool  bool // Bool contains the value when it is non-NULL, and false when NULL.
@@ -1032,7 +1112,7 @@ func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool
 
 // decodeValue decodes a protobuf Value into a pointer to a Go value, as
 // specified by sppb.Type.
-func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeOptions) error {
+func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeOptions) error {
 	if v == nil {
 		return errNilSrc()
 	}
@@ -1494,6 +1574,102 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...decodeO
 			return err
 		}
 		y, err := decodeFloat64Array(x)
+		if err != nil {
+			return err
+		}
+		*p = y
+	case *float32:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_FLOAT32 {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			return errDstNotForNull(ptr)
+		}
+		x, err := getFloat32Value(v)
+		if err != nil {
+			return err
+		}
+		*p = x
+	case *NullFloat32, **float32:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_FLOAT32 {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			switch sp := ptr.(type) {
+			case *NullFloat32:
+				*sp = NullFloat32{}
+			case **float32:
+				*sp = nil
+			}
+			break
+		}
+		x, err := getFloat32Value(v)
+		if err != nil {
+			return err
+		}
+		switch sp := ptr.(type) {
+		case *NullFloat32:
+			sp.Valid = true
+			sp.Float32 = x
+		case **float32:
+			*sp = &x
+		}
+	case *[]NullFloat32, *[]*float32:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if acode != sppb.TypeCode_FLOAT32 {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			switch sp := ptr.(type) {
+			case *[]NullFloat32:
+				*sp = nil
+			case *[]*float32:
+				*sp = nil
+			}
+			break
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		switch sp := ptr.(type) {
+		case *[]NullFloat32:
+			y, err := decodeNullFloat32Array(x)
+			if err != nil {
+				return err
+			}
+			*sp = y
+		case *[]*float32:
+			y, err := decodeFloat32PointerArray(x)
+			if err != nil {
+				return err
+			}
+			*sp = y
+		}
+	case *[]float32:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if acode != sppb.TypeCode_FLOAT32 {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = nil
+			break
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodeFloat32Array(x)
 		if err != nil {
 			return err
 		}
@@ -2000,6 +2176,7 @@ const (
 	spannerTypeNonNullInt64
 	spannerTypeNonNullBool
 	spannerTypeNonNullFloat64
+	spannerTypeNonNullFloat32
 	spannerTypeNonNullNumeric
 	spannerTypeNonNullTime
 	spannerTypeNonNullDate
@@ -2007,6 +2184,7 @@ const (
 	spannerTypeNullInt64
 	spannerTypeNullBool
 	spannerTypeNullFloat64
+	spannerTypeNullFloat32
 	spannerTypeNullTime
 	spannerTypeNullDate
 	spannerTypeNullNumeric
@@ -2018,6 +2196,7 @@ const (
 	spannerTypeArrayOfNonNullInt64
 	spannerTypeArrayOfNonNullBool
 	spannerTypeArrayOfNonNullFloat64
+	spannerTypeArrayOfNonNullFloat32
 	spannerTypeArrayOfNonNullNumeric
 	spannerTypeArrayOfNonNullTime
 	spannerTypeArrayOfNonNullDate
@@ -2025,6 +2204,7 @@ const (
 	spannerTypeArrayOfNullInt64
 	spannerTypeArrayOfNullBool
 	spannerTypeArrayOfNullFloat64
+	spannerTypeArrayOfNullFloat32
 	spannerTypeArrayOfNullNumeric
 	spannerTypeArrayOfNullJSON
 	spannerTypeArrayOfNullTime
@@ -2037,7 +2217,7 @@ const (
 // Spanner.
 func (d decodableSpannerType) supportsNull() bool {
 	switch d {
-	case spannerTypeNonNullString, spannerTypeNonNullInt64, spannerTypeNonNullBool, spannerTypeNonNullFloat64, spannerTypeNonNullTime, spannerTypeNonNullDate, spannerTypeNonNullNumeric:
+	case spannerTypeNonNullString, spannerTypeNonNullInt64, spannerTypeNonNullBool, spannerTypeNonNullFloat64, spannerTypeNonNullFloat32, spannerTypeNonNullTime, spannerTypeNonNullDate, spannerTypeNonNullNumeric:
 		return false
 	default:
 		return true
@@ -2058,6 +2238,7 @@ var typeOfNullString = reflect.TypeOf(NullString{})
 var typeOfNullInt64 = reflect.TypeOf(NullInt64{})
 var typeOfNullBool = reflect.TypeOf(NullBool{})
 var typeOfNullFloat64 = reflect.TypeOf(NullFloat64{})
+var typeOfNullFloat32 = reflect.TypeOf(NullFloat32{})
 var typeOfNullTime = reflect.TypeOf(NullTime{})
 var typeOfNullDate = reflect.TypeOf(NullDate{})
 var typeOfNullNumeric = reflect.TypeOf(NullNumeric{})
@@ -2088,6 +2269,8 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		return spannerTypeNonNullInt64
 	case reflect.Bool:
 		return spannerTypeNonNullBool
+	case reflect.Float32:
+		return spannerTypeNonNullFloat32
 	case reflect.Float64:
 		return spannerTypeNonNullFloat64
 	case reflect.Ptr:
@@ -2124,6 +2307,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		if t.ConvertibleTo(typeOfNullFloat64) {
 			return spannerTypeNullFloat64
 		}
+		if t.ConvertibleTo(typeOfNullFloat32) {
+			return spannerTypeNullFloat32
+		}
 		if t.ConvertibleTo(typeOfNullTime) {
 			return spannerTypeNullTime
 		}
@@ -2157,6 +2343,8 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			return spannerTypeArrayOfNonNullBool
 		case reflect.Float64:
 			return spannerTypeArrayOfNonNullFloat64
+		case reflect.Float32:
+			return spannerTypeArrayOfNonNullFloat32
 		case reflect.Ptr:
 			t := val.Type().Elem()
 			if t.ConvertibleTo(typeOfNullNumeric) {
@@ -2184,6 +2372,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			}
 			if t.ConvertibleTo(typeOfNullFloat64) {
 				return spannerTypeArrayOfNullFloat64
+			}
+			if t.ConvertibleTo(typeOfNullFloat32) {
+				return spannerTypeArrayOfNullFloat32
 			}
 			if t.ConvertibleTo(typeOfNullTime) {
 				return spannerTypeArrayOfNullTime
@@ -2320,6 +2511,23 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			result = &x
 		} else {
 			result = &NullFloat64{x, !isNull}
+		}
+	case spannerTypeNonNullFloat32, spannerTypeNullFloat32:
+		if code != sppb.TypeCode_FLOAT32 {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			result = &NullFloat32{}
+			break
+		}
+		x, err := getFloat32Value(v)
+		if err != nil {
+			return err
+		}
+		if dsc == spannerTypeNonNullFloat32 {
+			result = &x
+		} else {
+			result = &NullFloat32{x, !isNull}
 		}
 	case spannerTypeNonNullNumeric, spannerTypeNullNumeric:
 		if code != sppb.TypeCode_NUMERIC {
@@ -2474,6 +2682,23 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return err
 		}
 		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, boolType(), "BOOL")
+		if err != nil {
+			return err
+		}
+		result = y
+	case spannerTypeArrayOfNonNullFloat32, spannerTypeArrayOfNullFloat32:
+		if acode != sppb.TypeCode_FLOAT32 {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			ptr = nil
+			return nil
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, float32Type(), "FLOAT32")
 		if err != nil {
 			return err
 		}
@@ -2714,6 +2939,40 @@ func getFloat64Value(v *proto3.Value) (float64, error) {
 	return 0, errSrcVal(v, "Number")
 }
 
+// errUnexpectedFloat32Str returns error for decoder getting an unexpected
+// string for representing special float values.
+func errUnexpectedFloat32Str(s string) error {
+	return spannerErrorf(codes.FailedPrecondition, "unexpected string value %q for float32 number", s)
+}
+
+// getFloat32Value returns the float32 value encoded in proto3.Value v whose
+// kind is proto3.Value_NumberValue / proto3.Value_StringValue.
+// Cloud Spanner uses string to encode NaN, Infinity and -Infinity.
+func getFloat32Value(v *proto3.Value) (float32, error) {
+	switch x := v.GetKind().(type) {
+	case *proto3.Value_NumberValue:
+		if x == nil {
+			break
+		}
+		return float32(x.NumberValue), nil
+	case *proto3.Value_StringValue:
+		if x == nil {
+			break
+		}
+		switch x.StringValue {
+		case "NaN":
+			return float32(math.NaN()), nil
+		case "Infinity":
+			return float32(math.Inf(1)), nil
+		case "-Infinity":
+			return float32(math.Inf(-1)), nil
+		default:
+			return 0, errUnexpectedFloat32Str(x.StringValue)
+		}
+	}
+	return 0, errSrcVal(v, "Number")
+}
+
 // errNilListValue returns error for unexpected nil ListValue in decoding Cloud Spanner ARRAYs.
 func errNilListValue(sqlType string) error {
 	return spannerErrorf(codes.FailedPrecondition, "unexpected nil ListValue in decoding %v array", sqlType)
@@ -2909,6 +3168,48 @@ func decodeFloat64Array(pb *proto3.ListValue) ([]float64, error) {
 	for i, v := range pb.Values {
 		if err := decodeValue(v, floatType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "FLOAT64", err)
+		}
+	}
+	return a, nil
+}
+
+// decodeNullFloat32Array decodes proto3.ListValue pb into a NullFloat32 slice.
+func decodeNullFloat32Array(pb *proto3.ListValue) ([]NullFloat32, error) {
+	if pb == nil {
+		return nil, errNilListValue("FLOAT32")
+	}
+	a := make([]NullFloat32, len(pb.Values))
+	for i, v := range pb.Values {
+		if err := decodeValue(v, float32Type(), &a[i]); err != nil {
+			return nil, errDecodeArrayElement(i, v, "FLOAT32", err)
+		}
+	}
+	return a, nil
+}
+
+// decodeFloat32PointerArray decodes proto3.ListValue pb into a *float32 slice.
+func decodeFloat32PointerArray(pb *proto3.ListValue) ([]*float32, error) {
+	if pb == nil {
+		return nil, errNilListValue("FLOAT32")
+	}
+	a := make([]*float32, len(pb.Values))
+	for i, v := range pb.Values {
+		if err := decodeValue(v, float32Type(), &a[i]); err != nil {
+			return nil, errDecodeArrayElement(i, v, "FLOAT32", err)
+		}
+	}
+	return a, nil
+}
+
+// decodeFloat32Array decodes proto3.ListValue pb into a float32 slice.
+func decodeFloat32Array(pb *proto3.ListValue) ([]float32, error) {
+	if pb == nil {
+		return nil, errNilListValue("FLOAT32")
+	}
+	a := make([]float32, len(pb.Values))
+	for i, v := range pb.Values {
+		if err := decodeValue(v, float32Type(), &a[i]); err != nil {
+			return nil, errDecodeArrayElement(i, v, "FLOAT32", err)
 		}
 	}
 	return a, nil
@@ -3198,8 +3499,8 @@ type decodeSetting struct {
 	Lenient bool
 }
 
-// decodeOptions is the interface to change decode struct settings
-type decodeOptions interface {
+// DecodeOptions is the interface to change decode struct settings
+type DecodeOptions interface {
 	Apply(s *decodeSetting)
 }
 
@@ -3207,6 +3508,11 @@ type withLenient struct{ lenient bool }
 
 func (w withLenient) Apply(s *decodeSetting) {
 	s.Lenient = w.lenient
+}
+
+// WithLenient returns a DecodeOptions that allows decoding into a struct with missing fields in database.
+func WithLenient() DecodeOptions {
+	return withLenient{lenient: true}
 }
 
 // decodeStruct decodes proto3.ListValue pb into struct referenced by pointer
@@ -3253,7 +3559,7 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, le
 			// We don't allow duplicated field name.
 			return errDupSpannerField(f.Name, ty)
 		}
-		opts := []decodeOptions{withLenient{lenient: lenient}}
+		opts := []DecodeOptions{withLenient{lenient: lenient}}
 		// Try to decode a single field.
 		if err := decodeValue(pb.Values[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface(), opts...); err != nil {
 			return errDecodeStructField(ty, f.Name, err)
@@ -3538,6 +3844,43 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = listType(floatType())
+	case float32:
+		pb.Kind = &proto3.Value_NumberValue{NumberValue: float64(v)}
+		pt = float32Type()
+	case []float32:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(float32Type())
+	case NullFloat32:
+		if v.Valid {
+			return encodeValue(v.Float32)
+		}
+		pt = float32Type()
+	case []NullFloat32:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(float32Type())
+	case *float32:
+		if v != nil {
+			return encodeValue(*v)
+		}
+		pt = float32Type()
+	case []*float32:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(float32Type())
 	case big.Rat:
 		switch LossOfPrecisionHandling {
 		case NumericError:
@@ -3795,6 +4138,10 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(float64(0.0))))
 	case spannerTypeNullFloat64:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullFloat64{})))
+	case spannerTypeNonNullFloat32:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(float32(0.0))))
+	case spannerTypeNullFloat32:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullFloat32{})))
 	case spannerTypeNonNullTime:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(time.Time{})))
 	case spannerTypeNullTime:
@@ -3858,6 +4205,16 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 			return []NullFloat64(nil), nil
 		}
 		destination = reflect.MakeSlice(reflect.TypeOf([]NullFloat64{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNonNullFloat32:
+		if reflect.ValueOf(v).IsNil() {
+			return []float32(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]float32{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNullFloat32:
+		if reflect.ValueOf(v).IsNil() {
+			return []NullFloat32(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullFloat32{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
 	case spannerTypeArrayOfNonNullTime:
 		if reflect.ValueOf(v).IsNil() {
 			return []time.Time(nil), nil
@@ -4037,6 +4394,7 @@ func isSupportedMutationType(v interface{}) bool {
 		int, []int, int64, *int64, []int64, []*int64, NullInt64, []NullInt64,
 		bool, *bool, []bool, []*bool, NullBool, []NullBool,
 		float64, *float64, []float64, []*float64, NullFloat64, []NullFloat64,
+		float32, *float32, []float32, []*float32, NullFloat32, []NullFloat32,
 		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
 		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
 		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric,

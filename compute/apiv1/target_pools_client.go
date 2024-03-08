@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -189,7 +189,7 @@ func (c *TargetPoolsClient) AddInstance(ctx context.Context, req *computepb.AddI
 	return c.internalClient.AddInstance(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of target pools.
+// AggregatedList retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *TargetPoolsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -291,7 +291,9 @@ func NewTargetPoolsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultTargetPoolsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -478,7 +480,7 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of target pools.
+// AggregatedList retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	it := &TargetPoolsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListTargetPoolsRequest)

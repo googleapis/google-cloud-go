@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,15 +17,13 @@
 // Package generativelanguage is an auto-generated package for the
 // Generative Language API.
 //
-// The PaLM API allows developers to build generative AI applications using
-// the PaLM model. Large Language Models (LLMs) are a powerful, versatile
-// type of machine learning model that enables computers to comprehend and
-// generate natural language through a series of prompts. The PaLM API is
-// based on Google’s next generation LLM, PaLM. It excels at a variety of
-// different tasks like code generation, reasoning, and writing. You can use
-// the PaLM API to build generative AI applications for use cases like
-// content generation, dialogue agents, summarization and classification
-// systems, and more.
+// The Gemini API allows developers to build generative AI applications using
+// Gemini models. Gemini is our most capable model in the world, built from
+// the ground up to be multimodal. It can generalize and seamlessly
+// understand, operate across, and combine different types of information.
+// You can use the Gemini API for use cases like reasoning across text and
+// images, content generation, dialogue agents, summarization and
+// classification systems, and more.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

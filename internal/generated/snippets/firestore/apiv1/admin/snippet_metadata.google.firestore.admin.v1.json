@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/firestore/apiv1/admin",
-    "version": "1.14.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -609,7 +609,7 @@
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_ListFields_sync",
       "title": "firestore ListFields Sample",
-      "description": "ListFields lists the field configuration and metadata for this database.\n\nCurrently,\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nonly supports listing fields that have been explicitly overridden. To issue\nthis query, call\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nwith the filter set to `indexConfig.usesAncestorConfig: false or\n`ttlConfig: *`.",
+      "description": "ListFields lists the field configuration and metadata for this database.\n\nCurrently,\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nonly supports listing fields that have been explicitly overridden. To issue\nthis query, call\n[FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields]\nwith the filter set to `indexConfig.usesAncestorConfig: false` or\n`ttlConfig: *`.",
       "file": "FirestoreAdminClient/ListFields/main.go",
       "language": "GO",
       "clientMethod": {

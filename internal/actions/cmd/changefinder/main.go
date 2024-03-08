@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"strings"
 
 	"cloud.google.com/go/internal/actions/logg"
@@ -32,11 +33,13 @@ var (
 	ghVarName = flag.String("gh-var", "submodules", "github format's variable name to set output for, defaults to 'submodules'.")
 	base      = flag.String("base", "origin/main", "the base ref to compare to, defaults to 'origin/main'")
 	// See https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
-	filter         = flag.String("diff-filter", "", "the git diff filter to apply [A|C|D|M|R|T|U|X|B] - lowercase to exclude")
-	pathFilter     = flag.String("path-filter", "", "filter commits by changes to target path(s)")
-	contentPattern = flag.String("content-regex", "", "regular expression to execute against contents of diff")
-	commitMessage  = flag.String("commit-message", "", "message to use with the module in nested commit format")
-	commitScope    = flag.String("commit-scope", "", "scope to use in commit message - only for format=commit")
+	filter          = flag.String("diff-filter", "", "the git diff filter to apply [A|C|D|M|R|T|U|X|B] - lowercase to exclude")
+	pathFilter      = flag.String("path-filter", "", "filter commits by changes to target path(s)")
+	contentPattern  = flag.String("content-regex", "", "regular expression to execute against contents of diff")
+	commitMessage   = flag.String("commit-message", "", "message to use with the module in nested commit format")
+	commitScope     = flag.String("commit-scope", "", "scope to use in commit message - only for format=commit")
+	touch           = flag.Bool("touch", false, "touches the CHANGES.md file to elicit a submodule change - only works when used with -format=commit")
+	includeInternal = flag.Bool("internal", false, "toggles inclusion of the internal modules")
 )
 
 func main() {
@@ -44,6 +47,9 @@ func main() {
 	flag.Parse()
 	if *format == "commit" && (*commitMessage == "" || *commitScope == "") {
 		logg.Fatalf("requested format=commit and missing commit-message or commit-scope")
+	}
+	if *touch && *format != "commit" {
+		logg.Fatalf("requested modules be touched without using format=commit")
 	}
 	rootDir, err := os.Getwd()
 	if err != nil {
@@ -67,7 +73,7 @@ func main() {
 	modulesSeen := map[string]bool{}
 	updatedSubmoduleDirs := []string{}
 	for _, change := range changes {
-		if strings.HasPrefix(change, "internal") {
+		if strings.HasPrefix(change, "internal") && !*includeInternal {
 			continue
 		}
 		submodDir, ok := owner(change, submodulesDirs)
@@ -79,6 +85,11 @@ func main() {
 			logg.Printf("changes in submodule: %s", submodDir)
 			updatedSubmoduleDirs = append(updatedSubmoduleDirs, submodDir)
 			modulesSeen[submodDir] = true
+			if *touch {
+				if err := touchModule(rootDir, submodDir); err != nil {
+					logg.Printf("error touching module %q: %v", submodDir, err)
+				}
+			}
 		}
 	}
 
@@ -130,8 +141,7 @@ func modDirs(dir string) (submodulesDirs []string, err error) {
 
 	submodulesDirs = []string{}
 	for _, modPath := range list {
-		// Skip non-submodule or internal submodules.
-		if strings.Contains(modPath, "internal") {
+		if strings.Contains(modPath, "internal") && !*includeInternal {
 			continue
 		}
 		logg.Printf("found module: %s", modPath)
@@ -167,4 +177,24 @@ func gitFilesChanges(dir string) ([]string, error) {
 	b = bytes.TrimSpace(b)
 	logg.Printf("Files changed:\n%s", b)
 	return strings.Split(string(b), "\n"), nil
+}
+
+func touchModule(root, mod string) error {
+	c := exec.Command("echo")
+	logg.Printf(c.String())
+
+	f, err := os.OpenFile(path.Join(root, mod, "CHANGES.md"), os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	c.Stdout = f
+
+	err = c.Run()
+	if err != nil {
+		return err
+	}
+
+	logg.Printf("Module touched: %s", mod)
+	return nil
 }

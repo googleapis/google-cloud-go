@@ -1,5 +1,19 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.21.1...speech/v1.22.0) (2024-02-26)
+
+
+### Features
+
+* **speech:** Add API for writing BatchRecognize transcripts in SRT and VTT formats ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.21.0...speech/v1.21.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **speech:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.20.1...speech/v1.21.0) (2023-11-09)
 
 

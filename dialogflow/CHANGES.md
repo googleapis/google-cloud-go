@@ -1,5 +1,35 @@
 # Changes
 
+## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.2...dialogflow/v1.49.0) (2024-02-09)
+
+
+### Features
+
+* **dialogflow/cx:** A new field `opt_out_conformer_model_migration` is added to message `.google.cloud.dialogflow.cx.v3.InputAudioConfig` ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+* **dialogflow/cx:** Public preview the  Dialogflow LLM based agent ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
+## [1.48.2](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.1...dialogflow/v1.48.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dialogflow:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.48.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.0...dialogflow/v1.48.1) (2024-01-11)
+
+
+### Documentation
+
+* **dialogflow/cx:** Fix formatting due to unclosed backtick ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.47.0...dialogflow/v1.48.0) (2024-01-03)
+
+
+### Features
+
+* **dialogflow:** Add sections field to HumanAgentAssistantConfig.SuggestionQueryConfig ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+* **dialogflow:** Add sections field to HumanAgentAssistantConfig.SuggestionQueryConfig ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
 ## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.46.0...dialogflow/v1.47.0) (2023-12-07)
 
 

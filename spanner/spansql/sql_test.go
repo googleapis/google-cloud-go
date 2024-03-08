@@ -199,8 +199,9 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			&CreateView{
-				Name:      "SingersView",
-				OrReplace: true,
+				Name:         "SingersView",
+				OrReplace:    true,
+				SecurityType: Invoker,
 				Query: Query{
 					Select: Select{
 						List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
@@ -216,6 +217,24 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "vname",
+				OrReplace:    false,
+				SecurityType: Definer,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("cname")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "tname",
+						}},
+					},
+				},
+				Position: line(1),
+			},
+			"CREATE VIEW vname SQL SECURITY DEFINER AS SELECT cname FROM tname",
 			reparseDDL,
 		},
 		{

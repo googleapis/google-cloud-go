@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -92,7 +92,9 @@ type CertificateAuthorityCallOptions struct {
 func defaultCertificateAuthorityGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("privateca.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("privateca.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("privateca.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -1499,7 +1501,9 @@ func NewCertificateAuthorityRESTClient(ctx context.Context, opts ...option.Clien
 func defaultCertificateAuthorityRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://privateca.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://privateca.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://privateca.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

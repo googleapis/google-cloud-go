@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -81,6 +81,12 @@ type CallOptions struct {
 	GetStoredInfoType        []gax.CallOption
 	ListStoredInfoTypes      []gax.CallOption
 	DeleteStoredInfoType     []gax.CallOption
+	ListProjectDataProfiles  []gax.CallOption
+	ListTableDataProfiles    []gax.CallOption
+	ListColumnDataProfiles   []gax.CallOption
+	GetProjectDataProfile    []gax.CallOption
+	GetTableDataProfile      []gax.CallOption
+	GetColumnDataProfile     []gax.CallOption
 	HybridInspectDlpJob      []gax.CallOption
 	FinishDlpJob             []gax.CallOption
 }
@@ -88,7 +94,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dlp.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dlp.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dlp.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dlp.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -440,6 +448,84 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ListProjectDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListTableDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListColumnDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetProjectDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetTableDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetColumnDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		HybridInspectDlpJob: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
@@ -769,6 +855,78 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		ListProjectDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListTableDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListColumnDataProfiles: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetProjectDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetTableDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		GetColumnDataProfile: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		HybridInspectDlpJob: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 		},
@@ -778,7 +936,7 @@ func defaultRESTCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods available from Cloud Data Loss Prevention (DLP).
+// internalClient is an interface that defines the methods available from Sensitive Data Protection (DLP).
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -820,11 +978,17 @@ type internalClient interface {
 	GetStoredInfoType(context.Context, *dlppb.GetStoredInfoTypeRequest, ...gax.CallOption) (*dlppb.StoredInfoType, error)
 	ListStoredInfoTypes(context.Context, *dlppb.ListStoredInfoTypesRequest, ...gax.CallOption) *StoredInfoTypeIterator
 	DeleteStoredInfoType(context.Context, *dlppb.DeleteStoredInfoTypeRequest, ...gax.CallOption) error
+	ListProjectDataProfiles(context.Context, *dlppb.ListProjectDataProfilesRequest, ...gax.CallOption) *ProjectDataProfileIterator
+	ListTableDataProfiles(context.Context, *dlppb.ListTableDataProfilesRequest, ...gax.CallOption) *TableDataProfileIterator
+	ListColumnDataProfiles(context.Context, *dlppb.ListColumnDataProfilesRequest, ...gax.CallOption) *ColumnDataProfileIterator
+	GetProjectDataProfile(context.Context, *dlppb.GetProjectDataProfileRequest, ...gax.CallOption) (*dlppb.ProjectDataProfile, error)
+	GetTableDataProfile(context.Context, *dlppb.GetTableDataProfileRequest, ...gax.CallOption) (*dlppb.TableDataProfile, error)
+	GetColumnDataProfile(context.Context, *dlppb.GetColumnDataProfileRequest, ...gax.CallOption) (*dlppb.ColumnDataProfile, error)
 	HybridInspectDlpJob(context.Context, *dlppb.HybridInspectDlpJobRequest, ...gax.CallOption) (*dlppb.HybridInspectResponse, error)
 	FinishDlpJob(context.Context, *dlppb.FinishDlpJobRequest, ...gax.CallOption) error
 }
 
-// Client is a client for interacting with Cloud Data Loss Prevention (DLP).
+// Client is a client for interacting with Sensitive Data Protection (DLP).
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Cloud Data Loss Prevention (DLP) API is a service that allows clients
@@ -835,7 +999,7 @@ type internalClient interface {
 // scheduling of data scans on Google Cloud Platform based data sets.
 //
 // To learn more about concepts and find how-to guides see
-// https://cloud.google.com/dlp/docs/ (at https://cloud.google.com/dlp/docs/).
+// https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -874,16 +1038,19 @@ func (c *Client) Connection() *grpc.ClientConn {
 // system will automatically choose what detectors to run. By default this may
 // be all types, but may change over time as detectors are updated.
 //
-// For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images (at https://cloud.google.com/dlp/docs/inspecting-images)
-// and https://cloud.google.com/dlp/docs/inspecting-text (at https://cloud.google.com/dlp/docs/inspecting-text),
+// For how to guides, see
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-images (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-images)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-text (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-text),
 func (c *Client) InspectContent(ctx context.Context, req *dlppb.InspectContentRequest, opts ...gax.CallOption) (*dlppb.InspectContentResponse, error) {
 	return c.internalClient.InspectContent(ctx, req, opts...)
 }
 
 // RedactImage redacts potentially sensitive info from an image.
 // This method has limits on input size, processing time, and output size.
-// See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images (at https://cloud.google.com/dlp/docs/redacting-sensitive-data-images) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images (at https://cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images)
+// to learn more.
 //
 // When no InfoTypes or CustomInfoTypes are specified in this request, the
 // system will automatically choose what detectors to run. By default this may
@@ -894,8 +1061,9 @@ func (c *Client) RedactImage(ctx context.Context, req *dlppb.RedactImageRequest,
 
 // DeidentifyContent de-identifies potentially sensitive info from a ContentItem.
 // This method has limits on input size and output size.
-// See https://cloud.google.com/dlp/docs/deidentify-sensitive-data (at https://cloud.google.com/dlp/docs/deidentify-sensitive-data) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data (at https://cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data)
+// to learn more.
 //
 // When no InfoTypes or CustomInfoTypes are specified in this request, the
 // system will automatically choose what detectors to run. By default this may
@@ -906,95 +1074,115 @@ func (c *Client) DeidentifyContent(ctx context.Context, req *dlppb.DeidentifyCon
 
 // ReidentifyContent re-identifies content that has been de-identified.
 // See
-// https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example (at https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example)
+// https://cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example (at https://cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example)
 // to learn more.
 func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyContentRequest, opts ...gax.CallOption) (*dlppb.ReidentifyContentResponse, error) {
 	return c.internalClient.ReidentifyContent(ctx, req, opts...)
 }
 
 // ListInfoTypes returns a list of the sensitive information types that DLP API
-// supports. See https://cloud.google.com/dlp/docs/infotypes-reference (at https://cloud.google.com/dlp/docs/infotypes-reference) to
-// learn more.
+// supports. See
+// https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference (at https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference)
+// to learn more.
 func (c *Client) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequest, opts ...gax.CallOption) (*dlppb.ListInfoTypesResponse, error) {
 	return c.internalClient.ListInfoTypes(ctx, req, opts...)
 }
 
 // CreateInspectTemplate creates an InspectTemplate for reusing frequently used configuration
 // for inspecting content, images, and storage.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *Client) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	return c.internalClient.CreateInspectTemplate(ctx, req, opts...)
 }
 
 // UpdateInspectTemplate updates the InspectTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *Client) UpdateInspectTemplate(ctx context.Context, req *dlppb.UpdateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	return c.internalClient.UpdateInspectTemplate(ctx, req, opts...)
 }
 
 // GetInspectTemplate gets an InspectTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *Client) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	return c.internalClient.GetInspectTemplate(ctx, req, opts...)
 }
 
 // ListInspectTemplates lists InspectTemplates.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspectTemplatesRequest, opts ...gax.CallOption) *InspectTemplateIterator {
 	return c.internalClient.ListInspectTemplates(ctx, req, opts...)
 }
 
 // DeleteInspectTemplate deletes an InspectTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *Client) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteInspectTemplateRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteInspectTemplate(ctx, req, opts...)
 }
 
 // CreateDeidentifyTemplate creates a DeidentifyTemplate for reusing frequently used configuration
 // for de-identifying content, images, and storage.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *Client) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.CreateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	return c.internalClient.CreateDeidentifyTemplate(ctx, req, opts...)
 }
 
 // UpdateDeidentifyTemplate updates the DeidentifyTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *Client) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.UpdateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	return c.internalClient.UpdateDeidentifyTemplate(ctx, req, opts...)
 }
 
 // GetDeidentifyTemplate gets a DeidentifyTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *Client) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	return c.internalClient.GetDeidentifyTemplate(ctx, req, opts...)
 }
 
 // ListDeidentifyTemplates lists DeidentifyTemplates.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDeidentifyTemplatesRequest, opts ...gax.CallOption) *DeidentifyTemplateIterator {
 	return c.internalClient.ListDeidentifyTemplates(ctx, req, opts...)
 }
 
 // DeleteDeidentifyTemplate deletes a DeidentifyTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *Client) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.DeleteDeidentifyTemplateRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteDeidentifyTemplate(ctx, req, opts...)
 }
 
 // CreateJobTrigger creates a job trigger to run DLP actions such as scanning storage for
 // sensitive information on a set schedule.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *Client) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	return c.internalClient.CreateJobTrigger(ctx, req, opts...)
 }
 
 // UpdateJobTrigger updates a job trigger.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *Client) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	return c.internalClient.UpdateJobTrigger(ctx, req, opts...)
 }
@@ -1007,19 +1195,25 @@ func (c *Client) HybridInspectJobTrigger(ctx context.Context, req *dlppb.HybridI
 }
 
 // GetJobTrigger gets a job trigger.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *Client) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	return c.internalClient.GetJobTrigger(ctx, req, opts...)
 }
 
 // ListJobTriggers lists job triggers.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggersRequest, opts ...gax.CallOption) *JobTriggerIterator {
 	return c.internalClient.ListJobTriggers(ctx, req, opts...)
 }
 
 // DeleteJobTrigger deletes a job trigger.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *Client) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobTriggerRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteJobTrigger(ctx, req, opts...)
 }
@@ -1056,8 +1250,11 @@ func (c *Client) DeleteDiscoveryConfig(ctx context.Context, req *dlppb.DeleteDis
 }
 
 // CreateDlpJob creates a new job to inspect storage or calculate risk metrics.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 //
 // When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
 // system will automatically choose what detectors to run. By default this may
@@ -1067,15 +1264,21 @@ func (c *Client) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobReques
 }
 
 // ListDlpJobs lists DlpJobs that match the specified filter in the request.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest, opts ...gax.CallOption) *DlpJobIterator {
 	return c.internalClient.ListDlpJobs(ctx, req, opts...)
 }
 
 // GetDlpJob gets the latest state of a long-running DlpJob.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 func (c *Client) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
 	return c.internalClient.GetDlpJob(ctx, req, opts...)
 }
@@ -1083,8 +1286,11 @@ func (c *Client) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opt
 // DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is
 // no longer interested in the DlpJob result. The job will be canceled if
 // possible.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 func (c *Client) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteDlpJob(ctx, req, opts...)
 }
@@ -1092,46 +1298,84 @@ func (c *Client) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobReques
 // CancelDlpJob starts asynchronous cancellation on a long-running DlpJob. The server
 // makes a best effort to cancel the DlpJob, but success is not
 // guaranteed.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 func (c *Client) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelDlpJob(ctx, req, opts...)
 }
 
 // CreateStoredInfoType creates a pre-built stored infoType to be used for inspection.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *Client) CreateStoredInfoType(ctx context.Context, req *dlppb.CreateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	return c.internalClient.CreateStoredInfoType(ctx, req, opts...)
 }
 
 // UpdateStoredInfoType updates the stored infoType by creating a new version. The existing version
 // will continue to be used until the new version is ready.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *Client) UpdateStoredInfoType(ctx context.Context, req *dlppb.UpdateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	return c.internalClient.UpdateStoredInfoType(ctx, req, opts...)
 }
 
 // GetStoredInfoType gets a stored infoType.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *Client) GetStoredInfoType(ctx context.Context, req *dlppb.GetStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	return c.internalClient.GetStoredInfoType(ctx, req, opts...)
 }
 
 // ListStoredInfoTypes lists stored infoTypes.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *Client) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredInfoTypesRequest, opts ...gax.CallOption) *StoredInfoTypeIterator {
 	return c.internalClient.ListStoredInfoTypes(ctx, req, opts...)
 }
 
 // DeleteStoredInfoType deletes a stored infoType.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *Client) DeleteStoredInfoType(ctx context.Context, req *dlppb.DeleteStoredInfoTypeRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteStoredInfoType(ctx, req, opts...)
+}
+
+// ListProjectDataProfiles lists data profiles for an organization.
+func (c *Client) ListProjectDataProfiles(ctx context.Context, req *dlppb.ListProjectDataProfilesRequest, opts ...gax.CallOption) *ProjectDataProfileIterator {
+	return c.internalClient.ListProjectDataProfiles(ctx, req, opts...)
+}
+
+// ListTableDataProfiles lists data profiles for an organization.
+func (c *Client) ListTableDataProfiles(ctx context.Context, req *dlppb.ListTableDataProfilesRequest, opts ...gax.CallOption) *TableDataProfileIterator {
+	return c.internalClient.ListTableDataProfiles(ctx, req, opts...)
+}
+
+// ListColumnDataProfiles lists data profiles for an organization.
+func (c *Client) ListColumnDataProfiles(ctx context.Context, req *dlppb.ListColumnDataProfilesRequest, opts ...gax.CallOption) *ColumnDataProfileIterator {
+	return c.internalClient.ListColumnDataProfiles(ctx, req, opts...)
+}
+
+// GetProjectDataProfile gets a project data profile.
+func (c *Client) GetProjectDataProfile(ctx context.Context, req *dlppb.GetProjectDataProfileRequest, opts ...gax.CallOption) (*dlppb.ProjectDataProfile, error) {
+	return c.internalClient.GetProjectDataProfile(ctx, req, opts...)
+}
+
+// GetTableDataProfile gets a table data profile.
+func (c *Client) GetTableDataProfile(ctx context.Context, req *dlppb.GetTableDataProfileRequest, opts ...gax.CallOption) (*dlppb.TableDataProfile, error) {
+	return c.internalClient.GetTableDataProfile(ctx, req, opts...)
+}
+
+// GetColumnDataProfile gets a column data profile.
+func (c *Client) GetColumnDataProfile(ctx context.Context, req *dlppb.GetColumnDataProfileRequest, opts ...gax.CallOption) (*dlppb.ColumnDataProfile, error) {
+	return c.internalClient.GetColumnDataProfile(ctx, req, opts...)
 }
 
 // HybridInspectDlpJob inspect hybrid content and store findings to a job.
@@ -1147,7 +1391,7 @@ func (c *Client) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobReques
 	return c.internalClient.FinishDlpJob(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Cloud Data Loss Prevention (DLP) over gRPC transport.
+// gRPCClient is a client for interacting with Sensitive Data Protection (DLP) over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
@@ -1175,7 +1419,7 @@ type gRPCClient struct {
 // scheduling of data scans on Google Cloud Platform based data sets.
 //
 // To learn more about concepts and find how-to guides see
-// https://cloud.google.com/dlp/docs/ (at https://cloud.google.com/dlp/docs/).
+// https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -1252,7 +1496,7 @@ type restClient struct {
 // scheduling of data scans on Google Cloud Platform based data sets.
 //
 // To learn more about concepts and find how-to guides see
-// https://cloud.google.com/dlp/docs/ (at https://cloud.google.com/dlp/docs/).
+// https://cloud.google.com/sensitive-data-protection/docs/ (at https://cloud.google.com/sensitive-data-protection/docs/).
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -1274,7 +1518,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dlp.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dlp.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dlp.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dlp.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -2109,6 +2355,198 @@ func (c *gRPCClient) DeleteStoredInfoType(ctx context.Context, req *dlppb.Delete
 	return err
 }
 
+func (c *gRPCClient) ListProjectDataProfiles(ctx context.Context, req *dlppb.ListProjectDataProfilesRequest, opts ...gax.CallOption) *ProjectDataProfileIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListProjectDataProfiles[0:len((*c.CallOptions).ListProjectDataProfiles):len((*c.CallOptions).ListProjectDataProfiles)], opts...)
+	it := &ProjectDataProfileIterator{}
+	req = proto.Clone(req).(*dlppb.ListProjectDataProfilesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.ProjectDataProfile, string, error) {
+		resp := &dlppb.ListProjectDataProfilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListProjectDataProfiles(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetProjectDataProfiles(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListTableDataProfiles(ctx context.Context, req *dlppb.ListTableDataProfilesRequest, opts ...gax.CallOption) *TableDataProfileIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListTableDataProfiles[0:len((*c.CallOptions).ListTableDataProfiles):len((*c.CallOptions).ListTableDataProfiles)], opts...)
+	it := &TableDataProfileIterator{}
+	req = proto.Clone(req).(*dlppb.ListTableDataProfilesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.TableDataProfile, string, error) {
+		resp := &dlppb.ListTableDataProfilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListTableDataProfiles(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTableDataProfiles(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListColumnDataProfiles(ctx context.Context, req *dlppb.ListColumnDataProfilesRequest, opts ...gax.CallOption) *ColumnDataProfileIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListColumnDataProfiles[0:len((*c.CallOptions).ListColumnDataProfiles):len((*c.CallOptions).ListColumnDataProfiles)], opts...)
+	it := &ColumnDataProfileIterator{}
+	req = proto.Clone(req).(*dlppb.ListColumnDataProfilesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.ColumnDataProfile, string, error) {
+		resp := &dlppb.ListColumnDataProfilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListColumnDataProfiles(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetColumnDataProfiles(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetProjectDataProfile(ctx context.Context, req *dlppb.GetProjectDataProfileRequest, opts ...gax.CallOption) (*dlppb.ProjectDataProfile, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetProjectDataProfile[0:len((*c.CallOptions).GetProjectDataProfile):len((*c.CallOptions).GetProjectDataProfile)], opts...)
+	var resp *dlppb.ProjectDataProfile
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetProjectDataProfile(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetTableDataProfile(ctx context.Context, req *dlppb.GetTableDataProfileRequest, opts ...gax.CallOption) (*dlppb.TableDataProfile, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetTableDataProfile[0:len((*c.CallOptions).GetTableDataProfile):len((*c.CallOptions).GetTableDataProfile)], opts...)
+	var resp *dlppb.TableDataProfile
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetTableDataProfile(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetColumnDataProfile(ctx context.Context, req *dlppb.GetColumnDataProfileRequest, opts ...gax.CallOption) (*dlppb.ColumnDataProfile, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetColumnDataProfile[0:len((*c.CallOptions).GetColumnDataProfile):len((*c.CallOptions).GetColumnDataProfile)], opts...)
+	var resp *dlppb.ColumnDataProfile
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetColumnDataProfile(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) HybridInspectDlpJob(ctx context.Context, req *dlppb.HybridInspectDlpJobRequest, opts ...gax.CallOption) (*dlppb.HybridInspectResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2148,8 +2586,10 @@ func (c *gRPCClient) FinishDlpJob(ctx context.Context, req *dlppb.FinishDlpJobRe
 // system will automatically choose what detectors to run. By default this may
 // be all types, but may change over time as detectors are updated.
 //
-// For how to guides, see https://cloud.google.com/dlp/docs/inspecting-images (at https://cloud.google.com/dlp/docs/inspecting-images)
-// and https://cloud.google.com/dlp/docs/inspecting-text (at https://cloud.google.com/dlp/docs/inspecting-text),
+// For how to guides, see
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-images (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-images)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-text (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-text),
 func (c *restClient) InspectContent(ctx context.Context, req *dlppb.InspectContentRequest, opts ...gax.CallOption) (*dlppb.InspectContentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2217,8 +2657,9 @@ func (c *restClient) InspectContent(ctx context.Context, req *dlppb.InspectConte
 
 // RedactImage redacts potentially sensitive info from an image.
 // This method has limits on input size, processing time, and output size.
-// See https://cloud.google.com/dlp/docs/redacting-sensitive-data-images (at https://cloud.google.com/dlp/docs/redacting-sensitive-data-images) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images (at https://cloud.google.com/sensitive-data-protection/docs/redacting-sensitive-data-images)
+// to learn more.
 //
 // When no InfoTypes or CustomInfoTypes are specified in this request, the
 // system will automatically choose what detectors to run. By default this may
@@ -2290,8 +2731,9 @@ func (c *restClient) RedactImage(ctx context.Context, req *dlppb.RedactImageRequ
 
 // DeidentifyContent de-identifies potentially sensitive info from a ContentItem.
 // This method has limits on input size and output size.
-// See https://cloud.google.com/dlp/docs/deidentify-sensitive-data (at https://cloud.google.com/dlp/docs/deidentify-sensitive-data) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data (at https://cloud.google.com/sensitive-data-protection/docs/deidentify-sensitive-data)
+// to learn more.
 //
 // When no InfoTypes or CustomInfoTypes are specified in this request, the
 // system will automatically choose what detectors to run. By default this may
@@ -2363,7 +2805,7 @@ func (c *restClient) DeidentifyContent(ctx context.Context, req *dlppb.Deidentif
 
 // ReidentifyContent re-identifies content that has been de-identified.
 // See
-// https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example (at https://cloud.google.com/dlp/docs/pseudonymization#re-identification_in_free_text_code_example)
+// https://cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example (at https://cloud.google.com/sensitive-data-protection/docs/pseudonymization#re-identification_in_free_text_code_example)
 // to learn more.
 func (c *restClient) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyContentRequest, opts ...gax.CallOption) (*dlppb.ReidentifyContentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2431,8 +2873,9 @@ func (c *restClient) ReidentifyContent(ctx context.Context, req *dlppb.Reidentif
 }
 
 // ListInfoTypes returns a list of the sensitive information types that DLP API
-// supports. See https://cloud.google.com/dlp/docs/infotypes-reference (at https://cloud.google.com/dlp/docs/infotypes-reference) to
-// learn more.
+// supports. See
+// https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference (at https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference)
+// to learn more.
 func (c *restClient) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequest, opts ...gax.CallOption) (*dlppb.ListInfoTypesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2506,7 +2949,9 @@ func (c *restClient) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypes
 
 // CreateInspectTemplate creates an InspectTemplate for reusing frequently used configuration
 // for inspecting content, images, and storage.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *restClient) CreateInspectTemplate(ctx context.Context, req *dlppb.CreateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2573,7 +3018,9 @@ func (c *restClient) CreateInspectTemplate(ctx context.Context, req *dlppb.Creat
 }
 
 // UpdateInspectTemplate updates the InspectTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *restClient) UpdateInspectTemplate(ctx context.Context, req *dlppb.UpdateInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2640,7 +3087,9 @@ func (c *restClient) UpdateInspectTemplate(ctx context.Context, req *dlppb.Updat
 }
 
 // GetInspectTemplate gets an InspectTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *restClient) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspectTemplateRequest, opts ...gax.CallOption) (*dlppb.InspectTemplate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2701,7 +3150,9 @@ func (c *restClient) GetInspectTemplate(ctx context.Context, req *dlppb.GetInspe
 }
 
 // ListInspectTemplates lists InspectTemplates.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *restClient) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspectTemplatesRequest, opts ...gax.CallOption) *InspectTemplateIterator {
 	it := &InspectTemplateIterator{}
 	req = proto.Clone(req).(*dlppb.ListInspectTemplatesRequest)
@@ -2797,7 +3248,9 @@ func (c *restClient) ListInspectTemplates(ctx context.Context, req *dlppb.ListIn
 }
 
 // DeleteInspectTemplate deletes an InspectTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates (at https://cloud.google.com/dlp/docs/creating-templates) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates)
+// to learn more.
 func (c *restClient) DeleteInspectTemplate(ctx context.Context, req *dlppb.DeleteInspectTemplateRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2841,8 +3294,9 @@ func (c *restClient) DeleteInspectTemplate(ctx context.Context, req *dlppb.Delet
 
 // CreateDeidentifyTemplate creates a DeidentifyTemplate for reusing frequently used configuration
 // for de-identifying content, images, and storage.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *restClient) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.CreateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2909,8 +3363,9 @@ func (c *restClient) CreateDeidentifyTemplate(ctx context.Context, req *dlppb.Cr
 }
 
 // UpdateDeidentifyTemplate updates the DeidentifyTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *restClient) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.UpdateDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2977,8 +3432,9 @@ func (c *restClient) UpdateDeidentifyTemplate(ctx context.Context, req *dlppb.Up
 }
 
 // GetDeidentifyTemplate gets a DeidentifyTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *restClient) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDeidentifyTemplateRequest, opts ...gax.CallOption) (*dlppb.DeidentifyTemplate, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3039,8 +3495,9 @@ func (c *restClient) GetDeidentifyTemplate(ctx context.Context, req *dlppb.GetDe
 }
 
 // ListDeidentifyTemplates lists DeidentifyTemplates.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *restClient) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDeidentifyTemplatesRequest, opts ...gax.CallOption) *DeidentifyTemplateIterator {
 	it := &DeidentifyTemplateIterator{}
 	req = proto.Clone(req).(*dlppb.ListDeidentifyTemplatesRequest)
@@ -3136,8 +3593,9 @@ func (c *restClient) ListDeidentifyTemplates(ctx context.Context, req *dlppb.Lis
 }
 
 // DeleteDeidentifyTemplate deletes a DeidentifyTemplate.
-// See https://cloud.google.com/dlp/docs/creating-templates-deid (at https://cloud.google.com/dlp/docs/creating-templates-deid) to learn
-// more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid (at https://cloud.google.com/sensitive-data-protection/docs/creating-templates-deid)
+// to learn more.
 func (c *restClient) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.DeleteDeidentifyTemplateRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3181,7 +3639,9 @@ func (c *restClient) DeleteDeidentifyTemplate(ctx context.Context, req *dlppb.De
 
 // CreateJobTrigger creates a job trigger to run DLP actions such as scanning storage for
 // sensitive information on a set schedule.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *restClient) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3248,7 +3708,9 @@ func (c *restClient) CreateJobTrigger(ctx context.Context, req *dlppb.CreateJobT
 }
 
 // UpdateJobTrigger updates a job trigger.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *restClient) UpdateJobTrigger(ctx context.Context, req *dlppb.UpdateJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -3383,7 +3845,9 @@ func (c *restClient) HybridInspectJobTrigger(ctx context.Context, req *dlppb.Hyb
 }
 
 // GetJobTrigger gets a job trigger.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *restClient) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTriggerRequest, opts ...gax.CallOption) (*dlppb.JobTrigger, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3444,7 +3908,9 @@ func (c *restClient) GetJobTrigger(ctx context.Context, req *dlppb.GetJobTrigger
 }
 
 // ListJobTriggers lists job triggers.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *restClient) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggersRequest, opts ...gax.CallOption) *JobTriggerIterator {
 	it := &JobTriggerIterator{}
 	req = proto.Clone(req).(*dlppb.ListJobTriggersRequest)
@@ -3546,7 +4012,9 @@ func (c *restClient) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTrig
 }
 
 // DeleteJobTrigger deletes a job trigger.
-// See https://cloud.google.com/dlp/docs/creating-job-triggers (at https://cloud.google.com/dlp/docs/creating-job-triggers) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers (at https://cloud.google.com/sensitive-data-protection/docs/creating-job-triggers)
+// to learn more.
 func (c *restClient) DeleteJobTrigger(ctx context.Context, req *dlppb.DeleteJobTriggerRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -3982,8 +4450,11 @@ func (c *restClient) DeleteDiscoveryConfig(ctx context.Context, req *dlppb.Delet
 }
 
 // CreateDlpJob creates a new job to inspect storage or calculate risk metrics.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 //
 // When no InfoTypes or CustomInfoTypes are specified in inspect jobs, the
 // system will automatically choose what detectors to run. By default this may
@@ -4054,8 +4525,11 @@ func (c *restClient) CreateDlpJob(ctx context.Context, req *dlppb.CreateDlpJobRe
 }
 
 // ListDlpJobs lists DlpJobs that match the specified filter in the request.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 func (c *restClient) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest, opts ...gax.CallOption) *DlpJobIterator {
 	it := &DlpJobIterator{}
 	req = proto.Clone(req).(*dlppb.ListDlpJobsRequest)
@@ -4157,8 +4631,11 @@ func (c *restClient) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequ
 }
 
 // GetDlpJob gets the latest state of a long-running DlpJob.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 func (c *restClient) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest, opts ...gax.CallOption) (*dlppb.DlpJob, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4221,8 +4698,11 @@ func (c *restClient) GetDlpJob(ctx context.Context, req *dlppb.GetDlpJobRequest,
 // DeleteDlpJob deletes a long-running DlpJob. This method indicates that the client is
 // no longer interested in the DlpJob result. The job will be canceled if
 // possible.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 func (c *restClient) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4267,8 +4747,11 @@ func (c *restClient) DeleteDlpJob(ctx context.Context, req *dlppb.DeleteDlpJobRe
 // CancelDlpJob starts asynchronous cancellation on a long-running DlpJob. The server
 // makes a best effort to cancel the DlpJob, but success is not
 // guaranteed.
-// See https://cloud.google.com/dlp/docs/inspecting-storage (at https://cloud.google.com/dlp/docs/inspecting-storage) and
-// https://cloud.google.com/dlp/docs/compute-risk-analysis (at https://cloud.google.com/dlp/docs/compute-risk-analysis) to learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage (at https://cloud.google.com/sensitive-data-protection/docs/inspecting-storage)
+// and
+// https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis (at https://cloud.google.com/sensitive-data-protection/docs/compute-risk-analysis)
+// to learn more.
 func (c *restClient) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4317,8 +4800,9 @@ func (c *restClient) CancelDlpJob(ctx context.Context, req *dlppb.CancelDlpJobRe
 }
 
 // CreateStoredInfoType creates a pre-built stored infoType to be used for inspection.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *restClient) CreateStoredInfoType(ctx context.Context, req *dlppb.CreateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4386,8 +4870,9 @@ func (c *restClient) CreateStoredInfoType(ctx context.Context, req *dlppb.Create
 
 // UpdateStoredInfoType updates the stored infoType by creating a new version. The existing version
 // will continue to be used until the new version is ready.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *restClient) UpdateStoredInfoType(ctx context.Context, req *dlppb.UpdateStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -4454,8 +4939,9 @@ func (c *restClient) UpdateStoredInfoType(ctx context.Context, req *dlppb.Update
 }
 
 // GetStoredInfoType gets a stored infoType.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *restClient) GetStoredInfoType(ctx context.Context, req *dlppb.GetStoredInfoTypeRequest, opts ...gax.CallOption) (*dlppb.StoredInfoType, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4516,8 +5002,9 @@ func (c *restClient) GetStoredInfoType(ctx context.Context, req *dlppb.GetStored
 }
 
 // ListStoredInfoTypes lists stored infoTypes.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *restClient) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredInfoTypesRequest, opts ...gax.CallOption) *StoredInfoTypeIterator {
 	it := &StoredInfoTypeIterator{}
 	req = proto.Clone(req).(*dlppb.ListStoredInfoTypesRequest)
@@ -4613,8 +5100,9 @@ func (c *restClient) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListSto
 }
 
 // DeleteStoredInfoType deletes a stored infoType.
-// See https://cloud.google.com/dlp/docs/creating-stored-infotypes (at https://cloud.google.com/dlp/docs/creating-stored-infotypes) to
-// learn more.
+// See
+// https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes (at https://cloud.google.com/sensitive-data-protection/docs/creating-stored-infotypes)
+// to learn more.
 func (c *restClient) DeleteStoredInfoType(ctx context.Context, req *dlppb.DeleteStoredInfoTypeRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -4654,6 +5142,471 @@ func (c *restClient) DeleteStoredInfoType(ctx context.Context, req *dlppb.Delete
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
+}
+
+// ListProjectDataProfiles lists data profiles for an organization.
+func (c *restClient) ListProjectDataProfiles(ctx context.Context, req *dlppb.ListProjectDataProfilesRequest, opts ...gax.CallOption) *ProjectDataProfileIterator {
+	it := &ProjectDataProfileIterator{}
+	req = proto.Clone(req).(*dlppb.ListProjectDataProfilesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.ProjectDataProfile, string, error) {
+		resp := &dlppb.ListProjectDataProfilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/projectDataProfiles", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetProjectDataProfiles(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListTableDataProfiles lists data profiles for an organization.
+func (c *restClient) ListTableDataProfiles(ctx context.Context, req *dlppb.ListTableDataProfilesRequest, opts ...gax.CallOption) *TableDataProfileIterator {
+	it := &TableDataProfileIterator{}
+	req = proto.Clone(req).(*dlppb.ListTableDataProfilesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.TableDataProfile, string, error) {
+		resp := &dlppb.ListTableDataProfilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/tableDataProfiles", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTableDataProfiles(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListColumnDataProfiles lists data profiles for an organization.
+func (c *restClient) ListColumnDataProfiles(ctx context.Context, req *dlppb.ListColumnDataProfilesRequest, opts ...gax.CallOption) *ColumnDataProfileIterator {
+	it := &ColumnDataProfileIterator{}
+	req = proto.Clone(req).(*dlppb.ListColumnDataProfilesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dlppb.ColumnDataProfile, string, error) {
+		resp := &dlppb.ListColumnDataProfilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v2/%v/columnDataProfiles", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetColumnDataProfiles(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetProjectDataProfile gets a project data profile.
+func (c *restClient) GetProjectDataProfile(ctx context.Context, req *dlppb.GetProjectDataProfileRequest, opts ...gax.CallOption) (*dlppb.ProjectDataProfile, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetProjectDataProfile[0:len((*c.CallOptions).GetProjectDataProfile):len((*c.CallOptions).GetProjectDataProfile)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dlppb.ProjectDataProfile{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetTableDataProfile gets a table data profile.
+func (c *restClient) GetTableDataProfile(ctx context.Context, req *dlppb.GetTableDataProfileRequest, opts ...gax.CallOption) (*dlppb.TableDataProfile, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetTableDataProfile[0:len((*c.CallOptions).GetTableDataProfile):len((*c.CallOptions).GetTableDataProfile)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dlppb.TableDataProfile{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetColumnDataProfile gets a column data profile.
+func (c *restClient) GetColumnDataProfile(ctx context.Context, req *dlppb.GetColumnDataProfileRequest, opts ...gax.CallOption) (*dlppb.ColumnDataProfile, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetColumnDataProfile[0:len((*c.CallOptions).GetColumnDataProfile):len((*c.CallOptions).GetColumnDataProfile)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dlppb.ColumnDataProfile{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // HybridInspectDlpJob inspect hybrid content and store findings to a job.

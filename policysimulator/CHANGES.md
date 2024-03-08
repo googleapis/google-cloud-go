@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.2...policysimulator/v0.2.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **policysimulator:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.1...policysimulator/v0.2.2) (2023-11-01)
 
 

@@ -36,6 +36,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
+	"go.einride.tech/aip/filtering"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
@@ -319,6 +320,10 @@ func (s *GServer) CreateTopic(_ context.Context, t *pb.Topic) (*pb.Topic, error)
 	if err := checkTopicMessageRetention(t.MessageRetentionDuration); err != nil {
 		return nil, err
 	}
+	// Take any ingestion setting to mean the topic is active.
+	if t.IngestionDataSourceSettings != nil {
+		t.State = pb.Topic_ACTIVE
+	}
 	top := newTopic(t)
 	s.topics[t.Name] = top
 	return top.proto, nil
@@ -383,6 +388,15 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 				t.proto.SchemaSettings = &pb.SchemaSettings{}
 			}
 			t.proto.SchemaSettings.LastRevisionId = req.Topic.SchemaSettings.LastRevisionId
+		case "ingestion_data_source_settings":
+			if t.proto.IngestionDataSourceSettings == nil {
+				t.proto.IngestionDataSourceSettings = &pb.IngestionDataSourceSettings{}
+			}
+			t.proto.IngestionDataSourceSettings = req.Topic.IngestionDataSourceSettings
+			// Take any ingestion setting to mean the topic is active.
+			if t.proto.IngestionDataSourceSettings != nil {
+				t.proto.State = pb.Topic_ACTIVE
+			}
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
@@ -684,6 +698,11 @@ func (s *GServer) UpdateSubscription(_ context.Context, req *pb.UpdateSubscripti
 			sub.proto.RetryPolicy = req.Subscription.RetryPolicy
 
 		case "filter":
+			filter, err := parseFilter(req.Subscription.Filter)
+			if err != nil {
+				return nil, status.Errorf(codes.InvalidArgument, "bad filter: %v", err)
+			}
+			sub.filter = &filter
 			sub.proto.Filter = req.Subscription.Filter
 
 		case "enable_exactly_once_delivery":
@@ -853,6 +872,7 @@ type subscription struct {
 	streams         []*stream
 	done            chan struct{}
 	timeNowFunc     func() time.Time
+	filter          *filtering.Filter
 }
 
 func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, deadLetterTopic *topic, ps *pb.Subscription) *subscription {
@@ -861,7 +881,7 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 		at = 10 * time.Second
 	}
 	ps.State = pb.Subscription_ACTIVE
-	return &subscription{
+	sub := &subscription{
 		topic:           t,
 		deadLetterTopic: deadLetterTopic,
 		mu:              mu,
@@ -871,6 +891,14 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 		done:            make(chan struct{}),
 		timeNowFunc:     timeNowFunc,
 	}
+	if ps.Filter != "" {
+		filter, err := parseFilter(ps.Filter)
+		if err != nil {
+			panic(fmt.Sprintf("pstest: bad filter: %v", err))
+		}
+		sub.filter = &filter
+	}
+	return sub
 }
 
 func (s *subscription) start(wg *sync.WaitGroup) {
@@ -1068,7 +1096,8 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	now := s.timeNowFunc()
 	s.maintainMessages(now)
 	var msgs []*pb.ReceivedMessage
-	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
+	filterMsgs(s.msgs, s.filter)
+	for id, m := range orderMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}
@@ -1090,7 +1119,7 @@ func (s *subscription) pull(max int) []*pb.ReceivedMessage {
 	return msgs
 }
 
-func filterMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]*message {
+func orderMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string]*message {
 	if !enableMessageOrdering {
 		return msgs
 	}
@@ -1116,6 +1145,16 @@ func filterMsgs(msgs map[string]*message, enableMessageOrdering bool) map[string
 	return result
 }
 
+func filterMsgs(msgs map[string]*message, filter *filtering.Filter) {
+	if filter == nil {
+		return
+	}
+
+	filterByAttrs(msgs, filter, func(m *message) messageAttrs {
+		return m.proto.Message.Attributes
+	})
+}
+
 func (s *subscription) deliver() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -1124,7 +1163,8 @@ func (s *subscription) deliver() {
 	s.maintainMessages(now)
 	// Try to deliver each remaining message.
 	curIndex := 0
-	for id, m := range filterMsgs(s.msgs, s.proto.EnableMessageOrdering) {
+	filterMsgs(s.msgs, s.filter)
+	for id, m := range orderMsgs(s.msgs, s.proto.EnableMessageOrdering) {
 		if m.outstanding() {
 			continue
 		}

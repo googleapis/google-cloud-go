@@ -18,7 +18,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"math"
 	"math/big"
 	"reflect"
 	"strconv"
@@ -955,15 +954,11 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	case BooleanFieldType:
 		return strconv.ParseBool(val)
 	case TimestampFieldType:
-		f, err := strconv.ParseFloat(val, 64)
+		i, err := strconv.ParseInt(val, 10, 64)
 		if err != nil {
 			return nil, err
 		}
-		secs := math.Trunc(f)
-		// Timestamps in BigQuery have microsecond precision, so we must
-		// return a round number of microseconds.
-		micros := math.Trunc((f-secs)*1e6 + 0.5)
-		return Value(time.Unix(int64(secs), int64(micros)*1000).UTC()), nil
+		return time.UnixMicro(i).UTC(), nil
 	case DateFieldType:
 		return civil.ParseDate(val)
 	case TimeFieldType:

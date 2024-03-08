@@ -52,6 +52,7 @@ const (
 	directPathIPV4Prefix      = "34.126"
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
+	prefixOfClusterResources  = "bt-c-"
 )
 
 var (
@@ -62,6 +63,7 @@ var (
 		"j§adams":     {"gwashington", "tjefferson"},
 	}
 
+	clusterUIDSpace  = uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
 	tableNameSpace   = uid.NewSpace("cbt-test", &uid.Options{Short: true})
 	myTableName      = fmt.Sprintf("mytable-%d", time.Now().Unix())
 	myOtherTableName = fmt.Sprintf("myothertable-%d", time.Now().Unix())
@@ -81,11 +83,15 @@ func populatePresidentsGraph(table *Table) error {
 	return nil
 }
 
+func generateNewInstanceName() string {
+	return fmt.Sprintf("%v%d", prefixOfInstanceResources, time.Now().Unix())
+}
+
 var instanceToCreate string
 
 func init() {
 	if runCreateInstanceTests {
-		instanceToCreate = fmt.Sprintf("bt-it-%d", time.Now().Unix())
+		instanceToCreate = generateNewInstanceName()
 	}
 }
 
@@ -127,16 +133,27 @@ func cleanup(c IntegrationTestConfig) error {
 		return err
 	}
 
-	for _, info := range instances {
-		if strings.HasPrefix(info.Name, prefixOfInstanceResources) {
-			timestamp := info.Name[len(prefixOfInstanceResources):]
+	for _, instanceInfo := range instances {
+		if strings.HasPrefix(instanceInfo.Name, prefixOfInstanceResources) {
+			timestamp := instanceInfo.Name[len(prefixOfInstanceResources):]
 			t, err := strconv.ParseInt(timestamp, 10, 64)
 			if err != nil {
 				return err
 			}
 			uT := time.Unix(t, 0)
 			if time.Now().After(uT.Add(timeUntilResourceCleanup)) {
-				iac.DeleteInstance(ctx, info.Name)
+				iac.DeleteInstance(ctx, instanceInfo.Name)
+			}
+		} else {
+			// Delete clusters created in existing instances
+			clusters, err := iac.Clusters(ctx, instanceInfo.Name)
+			if err != nil {
+				return err
+			}
+			for _, clusterInfo := range clusters {
+				if strings.HasPrefix(clusterInfo.Name, prefixOfClusterResources) {
+					iac.DeleteCluster(ctx, instanceInfo.Name, clusterInfo.Name)
+				}
 			}
 		}
 	}
@@ -1523,7 +1540,8 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1601,7 +1619,8 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1685,7 +1704,8 @@ func TestIntegration_Admin(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1877,7 +1897,8 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1915,7 +1936,8 @@ func TestIntegration_BackupIAM(t *testing.T) {
 		t.Skip("emulator doesn't support IAM Policy creation")
 	}
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1989,7 +2011,8 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	}
 
 	timeout := 7 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2274,7 +2297,9 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 
 	// Create an instance admin client
 	timeout := 7 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
@@ -2370,7 +2395,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2378,7 +2404,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 	defer iAdminClient.Close()
 
-	clusterID := instanceToCreate + "-cluster"
+	clusterID := clusterUIDSpace.New()
 
 	// Create a development instance
 	conf := &InstanceConf{
@@ -2457,7 +2483,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 
 	// Now add a second cluster as the only change. The first cluster must also be provided so
 	// it is not removed.
-	clusterID2 := clusterID + "-2"
+	clusterID2 := clusterUIDSpace.New()
 	confWithClusters = &InstanceWithClustersConfig{
 		InstanceID: instanceToCreate,
 		Clusters: []ClusterConfig{
@@ -2540,7 +2566,8 @@ func TestIntegration_Autoscaling(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2708,7 +2735,8 @@ func TestIntegration_Granularity(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -3003,9 +3031,8 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 }
 
 func createInstance(ctx context.Context, testEnv IntegrationEnv, iAdminClient *InstanceAdminClient) (string, string, error) {
-	diffInstanceId := uid.NewSpace(prefixOfInstanceResources, &uid.Options{Short: true})
-	diffInstance := diffInstanceId.New()
-	diffCluster := testEnv.Config().Cluster + "-d"
+	diffInstance := generateNewInstanceName()
+	diffCluster := clusterUIDSpace.New()
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,
 		ClusterId:    diffCluster,
@@ -3077,8 +3104,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	destIAdminClient1 := srcIAdminClient
 
 	// Create a 2nd cluster in 1st destination project
-	clusterUID := uid.NewSpace("c-", &uid.Options{Short: true})
-	destProj1Inst1Cl2 := clusterUID.New()
+	destProj1Inst1Cl2 := clusterUIDSpace.New()
 	defer func() {
 		testutil.Retry(t, 3, 2*time.Second, func(r *testutil.R) {
 			err := destIAdminClient1.DeleteCluster(ctx, destProj1Inst1, destProj1Inst1Cl2)
@@ -3216,7 +3242,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	timeout := 15 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {

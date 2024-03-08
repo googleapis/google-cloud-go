@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.3...baremetalsolution/v1.2.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.2...baremetalsolution/v1.2.3) (2023-11-01)
 
 

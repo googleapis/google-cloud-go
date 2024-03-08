@@ -40,6 +40,7 @@ import (
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -470,6 +471,72 @@ func TestModifyColumnFamilies(t *testing.T) {
 	}
 
 	readRows(18, 6, 2)
+}
+
+func TestGC(t *testing.T) {
+	// Create server
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+
+	colFamilyID := "colFam"
+	colName := "colName"
+	rowKey := "rowKey"
+
+	// Create table with max age gc rule
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{},
+	}
+	newTbl.ColumnFamilies[colFamilyID] = &btapb.ColumnFamily{GcRule: &btapb.GcRule{Rule: &btapb.GcRule_MaxAge{MaxAge: durationpb.New(time.Millisecond)}}}
+
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Populate the table
+	for i := 0; i < 2; i++ {
+		req := &btpb.MutateRowRequest{
+			TableName: tblInfo.Name,
+			RowKey:    []byte(rowKey),
+			Mutations: []*btpb.Mutation{{
+				Mutation: &btpb.Mutation_SetCell_{
+					SetCell: &btpb.Mutation_SetCell{
+						FamilyName:      colFamilyID,
+						ColumnQualifier: []byte(colName),
+						TimestampMicros: 1000, // MaxAge is 1ms
+						Value:           []byte{},
+					}},
+			}},
+		}
+		if _, err := s.MutateRow(ctx, req); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Sleep till maxAge passes
+	time.Sleep(2 * time.Millisecond)
+
+	// Trigger gc
+	tbl := s.tables[tblInfo.Name]
+	tbl.gc()
+
+	// Verify that the row was deleted after garbage collection
+	readRowsReq := &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name,
+		Rows:      &btpb.RowSet{RowKeys: [][]byte{[]byte(rowKey)}},
+	}
+	mock := &MockReadRowsServer{}
+	if err = s.ReadRows(readRowsReq, mock); err != nil {
+		t.Errorf("ReadRows error: %v", err)
+	}
+	if got, want := len(mock.responses), 0; got != want {
+		t.Errorf("response count: got %d, want %d", got, want)
+	}
 }
 
 func TestDropRowRange(t *testing.T) {
@@ -1863,7 +1930,7 @@ func TestFilterRow(t *testing.T) {
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("moo")}}, false},
 
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(0), EndTimestampMicros: int64(1000)}}}, false},
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1000), EndTimestampMicros: int64(2000)}}}, true},
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1000), EndTimestampMicros: int64(2001)}}}, true},
 	} {
 		got, err := filterRow(test.filter, row.copy())
 		if err != nil {
@@ -1907,10 +1974,8 @@ func TestFilterRowWithErrors(t *testing.T) {
 			},
 		}}},
 
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{0.0}}},                                                                                        // 0.0 is invalid.
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{1.0}}},                                                                                        // 1.0 is invalid.
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1), EndTimestampMicros: int64(1000)}}}}, // Server only supports millisecond precision.
-		{&btpb.RowFilter{Filter: &btpb.RowFilter_TimestampRangeFilter{&btpb.TimestampRange{StartTimestampMicros: int64(1000), EndTimestampMicros: int64(1)}}}}, // Server only supports millisecond precision.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{0.0}}}, // 0.0 is invalid.
+		{&btpb.RowFilter{Filter: &btpb.RowFilter_RowSampleFilter{1.0}}}, // 1.0 is invalid.
 	} {
 		got, err := filterRow(test.badRegex, row.copy())
 		if got != false {
