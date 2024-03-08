@@ -161,7 +161,6 @@ func shouldUseS2A(clientCertSource cert.Provider, opts *Options) bool {
 	if clientCertSource != nil {
 		return false
 	}
-	log.Println(os.Getenv(googleAPIUseS2AEnv))
 	// If EXPERIMENTAL_GOOGLE_API_USE_S2A is not set to true, skip S2A.
 	if b, err := strconv.ParseBool(os.Getenv(googleAPIUseS2AEnv)); err == nil && !b {
 		return false
