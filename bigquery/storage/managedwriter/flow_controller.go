@@ -16,6 +16,7 @@ package managedwriter
 
 import (
 	"context"
+	"log"
 	"sync/atomic"
 
 	"golang.org/x/sync/semaphore"
@@ -72,11 +73,13 @@ func (fc *flowController) acquire(ctx context.Context, sizeBytes int) error {
 		if err := fc.semInsertCount.Acquire(ctx, 1); err != nil {
 			return err
 		}
+		log.Println("acquired")
 	}
 	if fc.semInsertBytes != nil {
 		if err := fc.semInsertBytes.Acquire(ctx, fc.bound(sizeBytes)); err != nil {
 			if fc.semInsertCount != nil {
 				fc.semInsertCount.Release(1)
+				log.Println("released")
 			}
 			return err
 		}
@@ -96,10 +99,12 @@ func (fc *flowController) tryAcquire(sizeBytes int) bool {
 		if !fc.semInsertCount.TryAcquire(1) {
 			return false
 		}
+		log.Println("acquired")
 	}
 	if fc.semInsertBytes != nil {
 		if !fc.semInsertBytes.TryAcquire(fc.bound(sizeBytes)) {
 			if fc.semInsertCount != nil {
+				log.Println("released")
 				fc.semInsertCount.Release(1)
 			}
 			return false
@@ -115,6 +120,7 @@ func (fc *flowController) release(sizeBytes int) {
 	atomic.AddInt64(&fc.bytesTracked, (0 - fc.bound(sizeBytes)))
 	if fc.semInsertCount != nil {
 		fc.semInsertCount.Release(1)
+		log.Println("released")
 	}
 	if fc.semInsertBytes != nil {
 		fc.semInsertBytes.Release(fc.bound(sizeBytes))

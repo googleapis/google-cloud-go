@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"io"
+	"log"
 	"runtime"
 	"sync"
 	"testing"
@@ -166,13 +167,17 @@ func TestManagedStream_RequestOptimization(t *testing.T) {
 }
 
 func TestManagedStream_FlowControllerFailure(t *testing.T) {
-
 	ctx := context.Background()
 
 	pool := &connectionPool{
-		ctx:                ctx,
-		open:               openTestArc(&testAppendRowsClient{}, nil, nil),
-		baseFlowController: newFlowController(1, 0),
+		ctx: ctx,
+		// return EOF on Send
+		open: openTestArc(&testAppendRowsClient{}, func(req *storagepb.AppendRowsRequest) error {
+			log.Print("return EOF")
+			return io.EOF
+		}, nil),
+		// Allow a max of 5 in-flight requests
+		baseFlowController: newFlowController(5, 0),
 	}
 	router := newSimpleRouter("")
 	if err := pool.activateRouter(router); err != nil {
@@ -188,10 +193,6 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 		t.Errorf("addWritre: %v", err)
 	}
 
-	// Exhaust inflight requests on the single connection.
-	router.conn.fc = newFlowController(1, 0)
-	router.conn.fc.acquire(ctx, 0)
-
 	ms.curTemplate = newVersionedTemplate().revise(reviseProtoSchema(&descriptorpb.DescriptorProto{}))
 
 	fakeData := [][]byte{
@@ -199,14 +200,9 @@ func TestManagedStream_FlowControllerFailure(t *testing.T) {
 		[]byte("bar"),
 	}
 
-	// Create a context that will expire during the append.
-	// This is expected to surface a flowcontroller error, as there's no
-	// capacity.
-	expireCtx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
-	defer cancel()
-	_, err := ms.AppendRows(expireCtx, fakeData)
-	if err == nil {
-		t.Errorf("expected AppendRows to error, but it succeeded")
+	// This will deadlock as flow control does not release when bidi stream returns an error (e.g. io.EOF)
+	for i := 1; i <= 10; i++ {
+		_, _ = ms.AppendRows(ctx, fakeData)
 	}
 }
 

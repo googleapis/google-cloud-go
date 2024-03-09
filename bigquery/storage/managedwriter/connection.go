@@ -418,6 +418,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 		// No optimizer present, send a fully populated request.
 		err = (*arc).Send(pw.constructFullRequest(true))
 	}
+	//err = io.EOF
 	if err != nil {
 		if shouldReconnect(err) {
 			metricCtx := co.ctx // start with the ctx that must be present
