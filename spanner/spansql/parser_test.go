@@ -1192,76 +1192,76 @@ func TestParseDDL(t *testing.T) {
 			},
 			&DropSequence{Name: "MySequence", Position: line(120)},
 
-			 &CreateTable{
-				 Name: "TableWithSynonym",
-				 Columns: []ColumnDef{
-					 {Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(124)},
-				 },
-				 Synonym: "AnotherName",
-				 PrimaryKey: []KeyPart{{Column: "Name"}},
-				 Position:   line(123),
-			 },
-			 &AlterTable{
-				 Name: "TableWithSynonym",
-				 Alteration: DropSynonym{
-					 Name: "AnotherName",
-				 },
-				 Position: line(128),
-			 },
-			 &AlterTable{
-				 Name: "TableWithSynonym",
-				 Alteration: AddSynonym{
-					 Name: "YetAnotherName",
-				 },
-				 Position: line(129),
-			 },
-			 &CreateTable{
-				 Name: "OldName",
-				 Columns: []ColumnDef{
-					 {Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(133)},
-				 },
-				 PrimaryKey: []KeyPart{{Column: "Name"}},
-				 Position:   line(132),
-			 },
-			 &AlterTable{
-				 Name: "OldName",
-				 Alteration: RenameTo{
-					 ToName:     "NewName",
-				 },
-				 Position: line(136),
-			 },
-			 &AlterTable{
-				 Name: "NewName",
-				 Alteration: RenameTo{
-					 ToName:     "OldName",
-					 Synonym:    "NewName",
-				 },
-				 Position: line(137),
-			 },
-			 &CreateTable{
-				 Name: "Table1",
-				 Columns: []ColumnDef{
-					 {Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(141)},
-				 },
-				 PrimaryKey: []KeyPart{{Column: "Name"}},
-				 Position:   line(140),
-			 },
-			 &CreateTable{
-				 Name: "Table2",
-				 Columns: []ColumnDef{
-					 {Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(144)},
-				 },
-				 PrimaryKey: []KeyPart{{Column: "Name"}},
-				 Position:   line(143),
-			 },
-			 &RenameTable{
-				 TableRenameOps: []TableRenameOp {
-					 {FromName: "Table1", ToName: "temp"},
-					 {FromName: "Table2", ToName: "Table1"},
-					 {FromName: "temp", ToName: "Table2"},
-				 },
-				 Position:  line(147),
-			 },
+			&CreateTable{
+				Name: "TableWithSynonym",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(124)},
+				},
+				Synonym:    "AnotherName",
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(123),
+			},
+			&AlterTable{
+				Name: "TableWithSynonym",
+				Alteration: DropSynonym{
+					Name: "AnotherName",
+				},
+				Position: line(128),
+			},
+			&AlterTable{
+				Name: "TableWithSynonym",
+				Alteration: AddSynonym{
+					Name: "YetAnotherName",
+				},
+				Position: line(129),
+			},
+			&CreateTable{
+				Name: "OldName",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(133)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(132),
+			},
+			&AlterTable{
+				Name: "OldName",
+				Alteration: RenameTo{
+					ToName: "NewName",
+				},
+				Position: line(136),
+			},
+			&AlterTable{
+				Name: "NewName",
+				Alteration: RenameTo{
+					ToName:  "OldName",
+					Synonym: "NewName",
+				},
+				Position: line(137),
+			},
+			&CreateTable{
+				Name: "Table1",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(141)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(140),
+			},
+			&CreateTable{
+				Name: "Table2",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(144)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(143),
+			},
+			&RenameTable{
+				TableRenameOps: []TableRenameOp{
+					{FromName: "Table1", ToName: "temp"},
+					{FromName: "Table2", ToName: "Table1"},
+					{FromName: "temp", ToName: "Table2"},
+				},
+				Position: line(147),
+			},
 		}, Comments: []*Comment{
 			{
 				Marker: "#", Start: line(2), End: line(2),

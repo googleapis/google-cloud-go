@@ -175,8 +175,8 @@ func TestSQL(t *testing.T) {
 					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
 				},
 				PrimaryKey: []KeyPart{{Column: "Name"}},
-				Synonym: "AnotherName",
-				Position: line(1),
+				Synonym:    "AnotherName",
+				Position:   line(1),
 			},
 			`CREATE TABLE WithSynonym (
   Name STRING(MAX) NOT NULL,
@@ -512,49 +512,49 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			&AlterTable{
-				Name:       "Ta",
+				Name: "Ta",
 				Alteration: AddSynonym{
 					Name: "Syn",
 				},
-				Position:   line(1),
+				Position: line(1),
 			},
 			"ALTER TABLE Ta ADD SYNONYM Syn",
 			reparseDDL,
 		},
 		{
 			&AlterTable{
-				Name:       "Ta",
+				Name: "Ta",
 				Alteration: DropSynonym{
 					Name: "Syn",
 				},
-				Position:   line(1),
+				Position: line(1),
 			},
 			"ALTER TABLE Ta DROP SYNONYM Syn",
 			reparseDDL,
 		},
 		{
 			&AlterTable{
-				Name:       "Ta",
+				Name: "Ta",
 				Alteration: RenameTo{
-					ToName: "Tb",
+					ToName:  "Tb",
 					Synonym: "Syn",
 				},
-				Position:   line(1),
+				Position: line(1),
 			},
 			"ALTER TABLE Ta RENAME TO Tb, ADD SYNONYM Syn",
 			reparseDDL,
 		},
 		{
-			 &RenameTable{
-				 TableRenameOps: []TableRenameOp {
-					 {FromName: "Ta", ToName: "tmp"},
-					 {FromName: "Tb", ToName: "Ta"},
-					 {FromName: "tmp", ToName: "Tb"},
-				 },
-				 Position: line(1),
-			 },
-			 "RENAME TABLE Ta TO tmp, Tb TO Ta, tmp TO Tb",
-			 reparseDDL,
+			&RenameTable{
+				TableRenameOps: []TableRenameOp{
+					{FromName: "Ta", ToName: "tmp"},
+					{FromName: "Tb", ToName: "Ta"},
+					{FromName: "tmp", ToName: "Tb"},
+				},
+				Position: line(1),
+			},
+			"RENAME TABLE Ta TO tmp, Tb TO Ta, tmp TO Tb",
+			reparseDDL,
 		},
 		{
 			&AlterDatabase{

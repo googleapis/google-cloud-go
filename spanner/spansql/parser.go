@@ -1806,7 +1806,7 @@ func (p *parser) parseRenameTable() (*RenameTable, *parseError) {
 	if err := p.expect("TABLE"); err != nil {
 		return nil, err
 	}
-	rt := &RenameTable {
+	rt := &RenameTable{
 		Position: pos,
 	}
 

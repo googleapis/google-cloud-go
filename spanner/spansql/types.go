@@ -354,24 +354,24 @@ const (
 )
 
 type (
-	RenameTo       struct {
-		ToName     ID
-		Synonym    ID // may be empty
+	RenameTo struct {
+		ToName  ID
+		Synonym ID // may be empty
 	}
-	AddSynonym     struct { Name ID }
-	DropSynonym    struct { Name ID }
+	AddSynonym  struct{ Name ID }
+	DropSynonym struct{ Name ID }
 )
 
 // RenameTable represents a RENAME TABLE statement.
 type RenameTable struct {
-	TableRenameOps  []TableRenameOp
+	TableRenameOps []TableRenameOp
 
 	Position Position // position of the "RENAME" token
 }
 
 type TableRenameOp struct {
-	FromName        ID
-	ToName          ID
+	FromName ID
+	ToName   ID
 }
 
 func (rt *RenameTable) String() string { return fmt.Sprintf("%#v", rt) }
