@@ -1773,11 +1773,11 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		}
 	case tok.caseEqual("RENAME"):
 		if p.eat("TO") {
-			new_name, err := p.parseTableOrIndexOrColumnName()
+			newName, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
 				return nil, err
 			}
-			rt := RenameTo{ToName: new_name}
+			rt := RenameTo{ToName: newName}
 			if p.eat(",", "ADD", "SYNONYM") {
 				synonym, err := p.parseTableOrIndexOrColumnName()
 				if err != nil {
@@ -1812,18 +1812,18 @@ func (p *parser) parseRenameTable() (*RenameTable, *parseError) {
 
 	var renameOps []TableRenameOp
 	for {
-		from_name, err := p.parseTableOrIndexOrColumnName()
+		fromName, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
 		if err := p.expect("TO"); err != nil {
 			return nil, err
 		}
-		to_name, err := p.parseTableOrIndexOrColumnName()
+		toName, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
-		renameOps = append(renameOps, TableRenameOp{FromName: from_name, ToName: to_name})
+		renameOps = append(renameOps, TableRenameOp{FromName: fromName, ToName: toName})
 
 		tok := p.next()
 		if tok.err != nil {
