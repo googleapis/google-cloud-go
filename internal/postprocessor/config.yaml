@@ -11,6 +11,7 @@ modules:
   - apigeeregistry
   - apikeys
   - appengine
+  - apphub
   - apps
   - area120
   - artifactregistry
@@ -343,6 +344,9 @@ service-configs:
   - input-directory: google/cloud/apigeeregistry/v1
     service-config: apigeeregistry_v1.yaml
     import-path: cloud.google.com/go/apigeeregistry/apiv1
+  - input-directory: google/cloud/apphub/v1
+    service-config: apphub_v1.yaml
+    import-path: cloud.google.com/go/apphub/apiv1
   - input-directory: google/cloud/asset/v1
     service-config: cloudasset_v1.yaml
     import-path: cloud.google.com/go/asset/apiv1
