@@ -100,6 +100,9 @@ type GenerativeModel struct {
 const defaultMaxOutputTokens = 2048
 
 // GenerativeModel creates a new instance of the named model.
+// name is a string model name like "gemini-1.0.-pro".
+// See https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versioning
+// for details on model naming and versioning.
 func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	return &GenerativeModel{
 		c:        c,
