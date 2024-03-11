@@ -66,6 +66,7 @@ deep-remove-regex:
   - /channel/apiv1/
   - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
+  - /cloudcontrolspartner/apiv1/
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
   - /cloudquotas/v1/
@@ -191,6 +192,7 @@ deep-remove-regex:
   - /internal/generated/snippets/channel/apiv1/
   - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
+  - /internal/generated/snippets/cloudcontrolspartner/apiv1/
   - /internal/generated/snippets/clouddms/apiv1/
   - /internal/generated/snippets/cloudprofiler/apiv2/
   - /internal/generated/snippets/cloudquotas/apiv1/
@@ -682,6 +684,8 @@ deep-copy-regex:
   - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/cloudbuild/v2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/cloudcontrolspartner/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/clouddms/v1/cloud.google.com/go
     dest: /
