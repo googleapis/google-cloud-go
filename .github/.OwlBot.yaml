@@ -22,6 +22,7 @@ deep-remove-regex:
   - /apigeeregistry/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
+  - /apphub/apiv1/
   - /apps/events/subscriptions/apiv1/
   - /apps/meet/apiv2/
   - /apps/meet/apiv2beta/
@@ -66,6 +67,7 @@ deep-remove-regex:
   - /channel/apiv1/
   - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
+  - /cloudcontrolspartner/apiv1/
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
   - /cloudquotas/v1/
@@ -147,6 +149,7 @@ deep-remove-regex:
   - /internal/generated/snippets/apigeeregistry/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
+  - /internal/generated/snippets/apphub/apiv1/
   - /internal/generated/snippets/apps/events/subscriptions/apiv1/
   - /internal/generated/snippets/apps/meet/apiv2/
   - /internal/generated/snippets/apps/meet/apiv2beta/
@@ -191,6 +194,7 @@ deep-remove-regex:
   - /internal/generated/snippets/channel/apiv1/
   - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
+  - /internal/generated/snippets/cloudcontrolspartner/apiv1/
   - /internal/generated/snippets/clouddms/apiv1/
   - /internal/generated/snippets/cloudprofiler/apiv2/
   - /internal/generated/snippets/cloudquotas/apiv1/
@@ -330,6 +334,7 @@ deep-remove-regex:
   - /internal/generated/snippets/securitycenter/apiv1/
   - /internal/generated/snippets/securitycenter/apiv1beta1/
   - /internal/generated/snippets/securitycenter/apiv1p1beta1/
+  - /internal/generated/snippets/securitycenter/apiv2/
   - /internal/generated/snippets/securitycenter/settings/apiv1beta1/
   - /internal/generated/snippets/securitycentermanagement/apiv1/
   - /internal/generated/snippets/securityposture/apiv1/
@@ -460,6 +465,7 @@ deep-remove-regex:
   - /securitycenter/apiv1/
   - /securitycenter/apiv1beta1/
   - /securitycenter/apiv1p1beta1/
+  - /securitycenter/apiv2/
   - /securitycenter/settings/apiv1beta1/
   - /securitycentermanagement/apiv1/
   - /securityposture/apiv1/
@@ -601,6 +607,8 @@ deep-copy-regex:
     dest: /
   - source: /google/appengine/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/apphub/v1/cloud.google.com/go
+    dest: /
   - source: /google/apps/events/subscriptions/v1/cloud.google.com/go
     dest: /
   - source: /google/apps/meet/v2/cloud.google.com/go
@@ -682,6 +690,8 @@ deep-copy-regex:
   - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/cloudbuild/v2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/cloudcontrolspartner/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/clouddms/v1/cloud.google.com/go
     dest: /
@@ -970,6 +980,8 @@ deep-copy-regex:
   - source: /google/cloud/securitycenter/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/securitycenter/v1p1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/securitycenter/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/securitycenter/settings/v1beta1/cloud.google.com/go
     dest: /
