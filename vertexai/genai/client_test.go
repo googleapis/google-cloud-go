@@ -507,3 +507,30 @@ func TestTemperature(t *testing.T) {
 		t.Errorf("got %v, want 0", g)
 	}
 }
+
+func TestIntFloatConversions(t *testing.T) {
+	for n, test := range []struct {
+		i *int32
+		f *float32
+	}{
+		{nil, nil},
+		{Ptr[int32](1), Ptr[float32](1)},
+	} {
+		t.Run(fmt.Sprintf("int-to-float-%d", n), func(t *testing.T) {
+			gotf := int32pToFloat32p(test.i)
+			if !reflect.DeepEqual(gotf, test.f) {
+				t.Errorf("got %v, want %v", gotf, test.f)
+			}
+		})
+		t.Run(fmt.Sprintf("float-to-int-%d", n), func(t *testing.T) {
+			goti := float32pToInt32p(test.f)
+			if !reflect.DeepEqual(goti, test.i) {
+				t.Errorf("got %v, want %v", goti, test.i)
+			}
+		})
+	}
+	goti := float32pToInt32p(Ptr[float32](1.5))
+	if !reflect.DeepEqual(goti, Ptr[int32](1)) {
+		t.Errorf("got %v, want *1", goti)
+	}
+}

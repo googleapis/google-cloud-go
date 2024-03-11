@@ -485,7 +485,7 @@ type GenerationConfig struct {
 	// Optional. If specified, nucleus sampling will be used.
 	TopP *float32
 	// Optional. If specified, top-k sampling will be used.
-	TopK *float32
+	TopK *int32
 	// Optional. Number of candidates to generate.
 	CandidateCount *int32
 	// Optional. The maximum number of output tokens to generate per message.
@@ -501,7 +501,7 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 	return &pb.GenerationConfig{
 		Temperature:     v.Temperature,
 		TopP:            v.TopP,
-		TopK:            v.TopK,
+		TopK:            int32pToFloat32p(v.TopK),
 		CandidateCount:  v.CandidateCount,
 		MaxOutputTokens: v.MaxOutputTokens,
 		StopSequences:   v.StopSequences,
@@ -515,7 +515,7 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 	return &GenerationConfig{
 		Temperature:     p.Temperature,
 		TopP:            p.TopP,
-		TopK:            p.TopK,
+		TopK:            float32pToInt32p(p.TopK),
 		CandidateCount:  p.CandidateCount,
 		MaxOutputTokens: p.MaxOutputTokens,
 		StopSequences:   p.StopSequences,
