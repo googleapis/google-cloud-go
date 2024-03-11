@@ -1999,6 +1999,83 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	}
 }
 
+func TestIntegration_AuthorizedViewIAM(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support IAM Policy creation")
+	}
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+
+	defer deleteTable(ctx, t, adminClient, table)
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	// Create authorized view.
+	opts := &uid.Options{Sep: '_'}
+	authorizedViewUUID := uid.NewSpace("authorizedView", opts)
+	authorizedView := authorizedViewUUID.New()
+
+	defer adminClient.DeleteAuthorizedView(ctx, table, authorizedView)
+
+	if err = adminClient.CreateAuthorizedView(ctx, &AuthorizedViewConf{
+		TableID:          table,
+		AuthorizedViewID: authorizedView,
+		AuthorizedViewTypeConf: AuthorizedViewTypeConf{
+			AuthorizedViewType: AuthorizedViewTypeSubsetView,
+			SubsetView:         &SubsetViewConf{},
+		},
+		DeletionProtection: Unprotected,
+	}); err != nil {
+		t.Fatalf("Creating authorizedView: %v", err)
+	}
+	iamHandle := adminClient.AuthorizedViewIAM(table, authorizedView)
+	// Get authorized view policy.
+	p, err := iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	// The resource is new, so the policy should be empty.
+	if got := p.Roles(); len(got) > 0 {
+		t.Errorf("got roles %v, want none", got)
+	}
+	// Set authorized view policy.
+	member := "domain:google.com"
+	// Add a member, set the policy, then check that the member is present.
+	p.Add(member, iam.Viewer)
+	if err = iamHandle.SetPolicy(ctx, p); err != nil {
+		t.Errorf("iamHandle.SetPolicy: %v", err)
+	}
+	p, err = iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	if got, want := p.Members(iam.Viewer), []string{member}; !testutil.Equal(got, want) {
+		t.Errorf("iamHandle.Policy: got %v, want %v", got, want)
+	}
+	// Test authorized view permissions.
+	permissions := []string{"bigtable.authorizedViews.get", "bigtable.authorizedViews.update"}
+	_, err = iamHandle.TestPermissions(ctx, permissions)
+	if err != nil {
+		t.Errorf("iamHandle.TestPermissions: %v", err)
+	}
+}
+
 func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")

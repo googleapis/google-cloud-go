@@ -885,6 +885,11 @@ func (ac *AdminClient) BackupIAM(cluster, backup string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, ac.instance, backup))
 }
 
+// AuthorizedViewIAM creates an IAM Handle specific to a given Table and AuthorizedView.
+func (ac *AdminClient) AuthorizedViewIAM(table, authorizedView string) *iam.Handle {
+	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.authorizedViewPath(table, authorizedView))
+}
+
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
 const mtlsInstanceAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
