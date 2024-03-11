@@ -124,6 +124,10 @@ func (ac *AdminClient) backupPath(cluster, instance, backup string) string {
 	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, instance, cluster, backup)
 }
 
+func (ac *AdminClient) authorizedViewPath(table, authorizedView string) string {
+	return fmt.Sprintf("%s/tables/%s/authorizedViews/%s", ac.instancePrefix(), table, authorizedView)
+}
+
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
 	Status        *Status
@@ -2389,7 +2393,7 @@ func (ac *AdminClient) UpdateAuthorizedView(ctx context.Context, conf UpdateAuth
 		return errors.New("both AuthorizedViewID and TableID is required")
 	}
 	av := conf.AuthorizedViewConf.proto()
-	av.Name = fmt.Sprintf("%s/tables/%s/authorizedViews/%v", ac.instancePrefix(), conf.AuthorizedViewConf.TableID, conf.AuthorizedViewConf.AuthorizedViewID)
+	av.Name = ac.authorizedViewPath(conf.AuthorizedViewConf.TableID, conf.AuthorizedViewConf.AuthorizedViewID)
 	req := &btapb.UpdateAuthorizedViewRequest{
 		AuthorizedView: av,
 		UpdateMask:     &field_mask.FieldMask{Paths: conf.UpdateMask},
@@ -2409,7 +2413,7 @@ func (ac *AdminClient) UpdateAuthorizedView(ctx context.Context, conf UpdateAuth
 func (ac *AdminClient) DeleteAuthorizedView(ctx context.Context, tableID, authorizedViewID string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	req := &btapb.DeleteAuthorizedViewRequest{
-		Name: fmt.Sprintf("%s/tables/%s/authorizedViews/%s", ac.instancePrefix(), tableID, authorizedViewID),
+		Name: ac.authorizedViewPath(tableID, authorizedViewID),
 	}
 	_, err := ac.tClient.DeleteAuthorizedView(ctx, req)
 	return err
