@@ -442,12 +442,12 @@ func inferSchemaReflectCached(t reflect.Type) (Schema, error) {
 }
 
 func inferSchemaReflect(t reflect.Type) (Schema, error) {
-	rec, err := hasRecursiveType(t, nil)
+	rec, rt, err := hasRecursiveType(t, nil)
 	if err != nil {
 		return nil, err
 	}
 	if rec {
-		return nil, fmt.Errorf("bigquery: schema inference for recursive type %s", t)
+		return nil, fmt.Errorf("bigquery: schema inference for recursive type %T", rt)
 	}
 	return inferStruct(t)
 }
@@ -603,33 +603,33 @@ func (l *typeList) has(t reflect.Type) bool {
 
 // hasRecursiveType reports whether t or any type inside t refers to itself, directly or indirectly,
 // via exported fields. (Schema inference ignores unexported fields.)
-func hasRecursiveType(t reflect.Type, seen *typeList) (bool, error) {
+func hasRecursiveType(t reflect.Type, seen *typeList) (bool, *reflect.Type, error) {
 	for t.Kind() == reflect.Ptr || t.Kind() == reflect.Slice || t.Kind() == reflect.Array {
 		t = t.Elem()
 	}
 	if t.Kind() != reflect.Struct {
-		return false, nil
+		return false, nil, nil
 	}
 	if seen.has(t) {
-		return true, nil
+		return true, &t, nil
 	}
 	fields, err := fieldCache.Fields(t)
 	if err != nil {
-		return false, err
+		return false, nil, err
 	}
 	seen = &typeList{t, seen}
 	// Because seen is a linked list, additions to it from one field's
 	// recursive call will not affect the value for subsequent fields' calls.
 	for _, field := range fields {
-		ok, err := hasRecursiveType(field.Type, seen)
+		ok, rt, err := hasRecursiveType(field.Type, seen)
 		if err != nil {
-			return false, err
+			return false, nil, err
 		}
 		if ok {
-			return true, nil
+			return true, rt, nil
 		}
 	}
-	return false, nil
+	return false, nil, nil
 }
 
 // validateKnownType ensures a type is known (or alias of a known type).

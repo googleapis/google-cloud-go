@@ -1095,6 +1095,10 @@ func TestSchemaErrors(t *testing.T) {
 	}
 }
 
+func ptr(r reflect.Type) *reflect.Type {
+	return &r
+}
+
 func TestHasRecursiveType(t *testing.T) {
 	type (
 		nonStruct int
@@ -1116,23 +1120,27 @@ func TestHasRecursiveType(t *testing.T) {
 		}
 	)
 	for _, test := range []struct {
-		in   interface{}
-		want bool
+		in       interface{}
+		want     bool
+		wantType *reflect.Type
 	}{
-		{nonStruct(0), false},
-		{nonRec{}, false},
-		{dup{}, false},
-		{rec{}, true},
-		{recUnexported{}, false},
-		{hasRec{}, true},
-		{&recSlicePointer{}, true},
+		{nonStruct(0), false, nil},
+		{nonRec{}, false, nil},
+		{dup{}, false, nil},
+		{rec{}, true, ptr(reflect.TypeOf(rec{}))},
+		{recUnexported{}, false, nil},
+		{hasRec{}, true, ptr(reflect.TypeOf(rec{}))},
+		{&recSlicePointer{}, true, ptr(reflect.TypeOf(recSlicePointer{}))},
 	} {
-		got, err := hasRecursiveType(reflect.TypeOf(test.in), nil)
+		got, rt, err := hasRecursiveType(reflect.TypeOf(test.in), nil)
 		if err != nil {
 			t.Fatal(err)
 		}
 		if got != test.want {
 			t.Errorf("%T: got %t, want %t", test.in, got, test.want)
+		}
+		if rt != nil && *rt != *test.wantType {
+			t.Errorf("%T: got %v, want %v", test.in, *rt, *test.wantType)
 		}
 	}
 }
