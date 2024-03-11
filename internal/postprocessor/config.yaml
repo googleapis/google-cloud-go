@@ -799,6 +799,9 @@ service-configs:
   - input-directory: google/cloud/securitycenter/v1p1beta1
     service-config: securitycenter_v1p1beta1.yaml
     import-path: cloud.google.com/go/securitycenter/apiv1p1beta1
+  - input-directory: google/cloud/securitycenter/v2
+    service-config: securitycenter_v2.yaml
+    import-path: cloud.google.com/go/securitycenter/apiv2
   - input-directory: google/cloud/securitycentermanagement/v1
     service-config: securitycentermanagement_v1.yaml
     import-path: cloud.google.com/go/securitycentermanagement/apiv1
