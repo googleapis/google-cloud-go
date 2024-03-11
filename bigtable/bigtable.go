@@ -140,10 +140,6 @@ func (c *Client) requestParamsHeaderValue(table string) string {
 	return fmt.Sprintf("table_name=%s&app_profile_id=%s", url.QueryEscape(c.fullTableName(table)), url.QueryEscape(c.appProfile))
 }
 
-func (c *Client) requestParamsHeaderValueForAuthorizedView(table string, authorizedView string) string {
-	return fmt.Sprintf("authorized_view_name=%s&app_profile_id=%s", url.QueryEscape(c.fullAuthorizedViewName(table, authorizedView)), url.QueryEscape(c.appProfile))
-}
-
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
 // metadata merged with the provided mds.
 func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
@@ -207,7 +203,7 @@ func (c *Client) OpenAuthorizedView(table, authorizedView string) TableApi {
 		table: table,
 		md: metadata.Join(metadata.Pairs(
 			resourcePrefixHeader, c.fullAuthorizedViewName(table, authorizedView),
-			requestParamsHeader, c.requestParamsHeaderValueForAuthorizedView(table, authorizedView),
+			requestParamsHeader, c.requestParamsHeaderValue(table),
 		), btopt.WithFeatureFlags()),
 		authorizedView: authorizedView,
 	}}
