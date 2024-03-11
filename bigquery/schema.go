@@ -447,7 +447,7 @@ func inferSchemaReflect(t reflect.Type) (Schema, error) {
 		return nil, err
 	}
 	if rec {
-		return nil, fmt.Errorf("bigquery: schema inference for recursive type %T", rt)
+		return nil, fmt.Errorf("bigquery: schema inference for recursive type %v", rt)
 	}
 	return inferStruct(t)
 }
