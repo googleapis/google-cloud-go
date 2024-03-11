@@ -1,5 +1,14 @@
 # Changes
 
+## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.21.0...bigtable/v1.21.1) (2024-03-11)
+
+
+### Bug Fixes
+
+* **bigtable/bttest:** Make table gc release memory ([#3930](https://github.com/googleapis/google-cloud-go/issues/3930)) ([7d6ff39](https://github.com/googleapis/google-cloud-go/commit/7d6ff39309de41d8847d27241ebee41a30cf5aa7))
+* **bigtable:** Allow micro seconds in filter in Bigtable emulator ([#9414](https://github.com/googleapis/google-cloud-go/issues/9414)) ([9fe6061](https://github.com/googleapis/google-cloud-go/commit/9fe60618e4b0004d23920c8c5aa25dc38c6cf68a))
+* **bigtable:** Fix deadline exceeded conformance test ([#9220](https://github.com/googleapis/google-cloud-go/issues/9220)) ([092ee0b](https://github.com/googleapis/google-cloud-go/commit/092ee0ba59267b8fb4d3f4e7727ed3ccbf81e7e7))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.20.0...bigtable/v1.21.0) (2023-12-04)
 
 
