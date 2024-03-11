@@ -329,8 +329,8 @@ func TestDatasetsUnreachable(t *testing.T) {
 		datasets:        inDatasets,
 		expectedProject: "p",
 		unreachable: map[string][]string{
-			"":  []string{"locA"},
-			"1": []string{"locB", "locC"},
+			"":  {"locA"},
+			"1": {"locB", "locC"},
 		},
 	}
 	old := listDatasets
