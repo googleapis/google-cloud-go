@@ -22,6 +22,7 @@ deep-remove-regex:
   - /apigeeregistry/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
+  - /apphub/apiv1/
   - /apps/events/subscriptions/apiv1/
   - /apps/meet/apiv2/
   - /apps/meet/apiv2beta/
@@ -148,6 +149,7 @@ deep-remove-regex:
   - /internal/generated/snippets/apigeeregistry/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
+  - /internal/generated/snippets/apphub/apiv1/
   - /internal/generated/snippets/apps/events/subscriptions/apiv1/
   - /internal/generated/snippets/apps/meet/apiv2/
   - /internal/generated/snippets/apps/meet/apiv2beta/
@@ -604,6 +606,8 @@ deep-copy-regex:
   - source: /google/api/cloudquotas/v1/cloud.google.com/go
     dest: /
   - source: /google/appengine/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/apphub/v1/cloud.google.com/go
     dest: /
   - source: /google/apps/events/subscriptions/v1/cloud.google.com/go
     dest: /
