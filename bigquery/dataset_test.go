@@ -26,6 +26,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/iterator"
 	itest "google.golang.org/api/iterator/testing"
 )
 
@@ -231,6 +232,7 @@ type listDatasetsStub struct {
 	expectedProject string
 	datasets        []*bq.DatasetListDatasets
 	hidden          map[*bq.DatasetListDatasets]bool
+	unreachable     map[string][]string // keyed by page token
 }
 
 func (s *listDatasetsStub) listDatasets(it *DatasetIterator, pageSize int, pageToken string) (*bq.DatasetList, error) {
@@ -266,10 +268,14 @@ func (s *listDatasetsStub) listDatasets(it *DatasetIterator, pageSize int, pageT
 	if i < len(s.datasets) {
 		nextPageToken = strconv.Itoa(i)
 	}
-	return &bq.DatasetList{
+	ret := &bq.DatasetList{
 		Datasets:      result,
 		NextPageToken: nextPageToken,
-	}, nil
+	}
+	if unr, ok := s.unreachable[pageToken]; ok {
+		ret.Unreachable = unr
+	}
+	return ret, nil
 }
 
 func TestDatasets(t *testing.T) {
@@ -308,6 +314,57 @@ func TestDatasets(t *testing.T) {
 	if !ok {
 		t.Fatalf("ListHidden=false: %s", msg)
 	}
+}
+
+func TestDatasetsUnreachable(t *testing.T) {
+	client := &Client{projectID: "p"}
+	inDatasets := []*bq.DatasetListDatasets{
+		{DatasetReference: &bq.DatasetReference{ProjectId: "p", DatasetId: "a"}},
+		{DatasetReference: &bq.DatasetReference{ProjectId: "p", DatasetId: "b"}},
+		{DatasetReference: &bq.DatasetReference{ProjectId: "p", DatasetId: "c"}},
+		{DatasetReference: &bq.DatasetReference{ProjectId: "p", DatasetId: "d"}},
+	}
+
+	stub := &listDatasetsStub{
+		datasets:        inDatasets,
+		expectedProject: "p",
+		unreachable: map[string][]string{
+			"":  []string{"locA"},
+			"1": []string{"locB", "locC"},
+		},
+	}
+	old := listDatasets
+	listDatasets = stub.listDatasets // cannot use t.Parallel with this test
+	defer func() { listDatasets = old }()
+
+	it := client.Datasets(context.Background())
+	it.PageInfo().MaxSize = 1 // ensure we access multiple pages
+	_, err := it.Next()
+	if err != nil {
+		t.Fatalf("first Next failed: %v", err)
+	}
+	wantUnr := []string{"locA"}
+	gotUnr := it.Unreachable()
+	less := func(a, b string) bool { return a < b } // for slice comparison
+	if diff := testutil.Diff(gotUnr, wantUnr, cmpopts.SortSlices(less)); diff != "" {
+		t.Errorf("unreachable first Next() got=-, want=+:\n%s", diff)
+	}
+
+	for {
+		_, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("iteration failed: %v", err)
+		}
+	}
+	wantUnr = []string{"locA", "locB", "locC"}
+	gotUnr = it.Unreachable()
+	if diff := testutil.Diff(gotUnr, wantUnr, cmpopts.SortSlices(less)); diff != "" {
+		t.Errorf("unreachable final got=-, want=+:\n%s", diff)
+	}
+
 }
 
 func TestDatasetToBQ(t *testing.T) {
