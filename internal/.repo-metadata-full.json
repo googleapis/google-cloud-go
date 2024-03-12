@@ -205,7 +205,7 @@
     "description": "App Hub API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/apphub/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apphub/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
@@ -675,7 +675,7 @@
     "description": "Cloud Controls Partner API",
     "language": "go",
     "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/cloudcontrolspartner/apiv1",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/cloudcontrolspartner/latest/apiv1",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
