@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -53,8 +52,8 @@ const (
 	StreamingRecognitionResult_MESSAGE_TYPE_UNSPECIFIED StreamingRecognitionResult_MessageType = 0
 	// Message contains a (possibly partial) transcript.
 	StreamingRecognitionResult_TRANSCRIPT StreamingRecognitionResult_MessageType = 1
-	// Event indicates that the server has detected the end of the user's speech
-	// utterance and expects no additional inputs.
+	// This event indicates that the server has detected the end of the user's
+	// speech utterance and expects no additional inputs.
 	// Therefore, the server will not process additional audio (although it may
 	// subsequently return additional results). The client should stop sending
 	// additional audio data, half-close the gRPC connection, and wait for any

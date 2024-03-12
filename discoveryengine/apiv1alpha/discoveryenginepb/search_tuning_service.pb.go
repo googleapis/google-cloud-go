@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -142,7 +141,7 @@ type isTrainCustomModelRequest_TrainingInput interface {
 }
 
 type TrainCustomModelRequest_GcsTrainingInput_ struct {
-	// Gcs training input.
+	// Cloud Storage training input.
 	GcsTrainingInput *TrainCustomModelRequest_GcsTrainingInput `protobuf:"bytes,2,opt,name=gcs_training_input,json=gcsTrainingInput,proto3,oneof"`
 }
 
@@ -282,36 +281,40 @@ func (x *TrainCustomModelMetadata) GetUpdateTime() *timestamppb.Timestamp {
 	return nil
 }
 
-// Gcs training data input.
+// Cloud Storage training data input.
 type TrainCustomModelRequest_GcsTrainingInput struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The gcs corpus data which could be associated in train data.
-	// The data path format is gs://<bucket_to_data>/<jsonl_file_name>.
+	// The Cloud Storage corpus data which could be associated in train data.
+	// The data path format is `gs://<bucket_to_data>/<jsonl_file_name>`.
 	// A newline delimited jsonl/ndjson file.
-	//   - For search-tuning model, each line should have the _id, title
-	//     and text. Example: {"_id": "doc1", title: "relevant doc", "text":
-	//     "relevant text"}
+	//
+	// For search-tuning model, each line should have the _id, title
+	// and text. Example: {"_id": "doc1", title: "relevant doc", "text":
+	// "relevant text"}
 	CorpusDataPath string `protobuf:"bytes,1,opt,name=corpus_data_path,json=corpusDataPath,proto3" json:"corpus_data_path,omitempty"`
 	// The gcs query data which could be associated in train data.
-	// The data path format is gs://<bucket_to_data>/<jsonl_file_name>.
+	// The data path format is `gs://<bucket_to_data>/<jsonl_file_name>`.
 	// A newline delimited jsonl/ndjson file.
-	//   - For search-tuning model, each line should have the _id
-	//     and text. Example: {"_id": "query1",  "text": "example query"}
+	//
+	// For search-tuning model, each line should have the _id
+	// and text. Example: {"_id": "query1",  "text": "example query"}
 	QueryDataPath string `protobuf:"bytes,2,opt,name=query_data_path,json=queryDataPath,proto3" json:"query_data_path,omitempty"`
-	// Gcs training data path whose format should be
-	// gs://<bucket_to_data>/<tsv_file_name>. The file should be in tsv format.
-	// Each line should have the doc_id and query_id and score (number).
-	//   - For search-tuning model, it should have the query-id corpus-id
-	//     score as tsv file header. The score should be a number in [0, inf+). The
-	//     larger the number is, the more relevant the pair is. Example:
-	//     query-id\tcorpus-id\tscore
-	//     query1\tdoc1\t1
+	// Cloud Storage training data path whose format should be
+	// `gs://<bucket_to_data>/<tsv_file_name>`. The file should be in tsv
+	// format. Each line should have the doc_id and query_id and score (number).
+	//
+	// For search-tuning model, it should have the query-id corpus-id
+	// score as tsv file header. The score should be a number in `[0, inf+)`.
+	// The larger the number is, the more relevant the pair is. Example:
+	//
+	// * `query-id\tcorpus-id\tscore`
+	// * `query1\tdoc1\t1`
 	TrainDataPath string `protobuf:"bytes,3,opt,name=train_data_path,json=trainDataPath,proto3" json:"train_data_path,omitempty"`
-	// Gcs test data. Same format as train_data_path. If not provided, a
-	// random 80/20 train/test split will be performed on train_data_path.
+	// Cloud Storage test data. Same format as train_data_path. If not provided,
+	// a random 80/20 train/test split will be performed on train_data_path.
 	TestDataPath string `protobuf:"bytes,4,opt,name=test_data_path,json=testDataPath,proto3" json:"test_data_path,omitempty"`
 }
 

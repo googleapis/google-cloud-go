@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -279,7 +278,9 @@ func (x *CreateTargetSiteMetadata) GetUpdateTime() *timestamppb.Timestamp {
 	return nil
 }
 
-// Request message for [SiteSearchEngineService.s][] method.
+// Request message for
+// [SiteSearchEngineService.BatchCreateTargetSites][google.cloud.discoveryengine.v1alpha.SiteSearchEngineService.BatchCreateTargetSites]
+// method.
 type BatchCreateTargetSitesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -799,8 +800,9 @@ func (x *ListTargetSitesResponse) GetTotalSize() int32 {
 }
 
 // Metadata related to the progress of the
-// [SiteSearchEngineService.BatchCreateTargetSite][] operation. This will be
-// returned by the google.longrunning.Operation.metadata field.
+// [SiteSearchEngineService.BatchCreateTargetSites][google.cloud.discoveryengine.v1alpha.SiteSearchEngineService.BatchCreateTargetSites]
+// operation. This will be returned by the google.longrunning.Operation.metadata
+// field.
 type BatchCreateTargetSiteMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1825,7 +1827,7 @@ func (x *RecrawlUrisResponse_FailureInfo) GetFailureReasons() []*RecrawlUrisResp
 	return nil
 }
 
-// Details about why crawling failed for a particular CorpusType, e.g.
+// Details about why crawling failed for a particular CorpusType, e.g.,
 // DESKTOP and MOBILE crawling may fail for different reasons.
 type RecrawlUrisResponse_FailureInfo_FailureReason struct {
 	state         protoimpl.MessageState

@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -54,7 +53,7 @@ type ServingConfig struct {
 	//	*ServingConfig_GenericConfig_
 	VerticalConfig isServingConfig_VerticalConfig `protobuf_oneof:"vertical_config"`
 	// Immutable. Fully qualified name
-	// `projects/{project}/locations/{location}/collections/{collection_id}/dataStores/{data_store_id}/servingConfigs/{serving_config_id}`
+	// `projects/{project}/locations/{location}/collections/{collection_id}/engines/{engine_id}/servingConfigs/{serving_config_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The human readable serving config display name. Used in Discovery
 	// UI.
@@ -101,8 +100,9 @@ type ServingConfig struct {
 	// The ranking expression controls the customized ranking on retrieval
 	// documents. To leverage this, document embedding is required. The ranking
 	// expression setting in ServingConfig applies to all search requests served
-	// by the serving config. However, if [SearchRequest.ranking_expression][] is
-	// specified, it overrides the ServingConfig ranking expression.
+	// by the serving config. However, if
+	// [SearchRequest.ranking_expression][google.cloud.discoveryengine.v1beta.SearchRequest.ranking_expression]
+	// is specified, it overrides the ServingConfig ranking expression.
 	//
 	// The ranking expression is a single function or multiple functions that are
 	// joined by "+".
