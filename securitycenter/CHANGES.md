@@ -1,5 +1,13 @@
 # Changes
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.27.0...securitycenter/v1.28.0) (2024-03-12)
+
+
+### Features
+
+* **securitycenter:** Add security_posture, external_system.case_uri, external_system.case_priority, external_system.case_sla, external_system.case_create_time, external_system.case_close_time, and external_system.ticket_info to finding's list of attributes ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+* **securitycenter:** New client(s) ([#9562](https://github.com/googleapis/google-cloud-go/issues/9562)) ([9d6b29d](https://github.com/googleapis/google-cloud-go/commit/9d6b29d136cad2dde290b4ca1383c9382eb83b34))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.26.0...securitycenter/v1.27.0) (2024-03-04)
 
 
@@ -261,4 +269,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out securitycenter as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
