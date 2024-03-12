@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/apps/v0.4.0...apps/v0.4.1) (2024-03-12)
+
+
+### Documentation
+
+* **apps/events/subscriptions:** A comment for message `Subscription` is changed ([0f56155](https://github.com/googleapis/google-cloud-go/commit/0f56155e01cb9f27f58b905dd5ff910964ad25d5))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/apps/v0.3.0...apps/v0.4.0) (2024-02-21)
 
 
