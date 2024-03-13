@@ -22,9 +22,6 @@ package dialogflowpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -36,6 +33,8 @@ import (
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -113,9 +112,9 @@ const (
 	StreamingRecognitionResult_TRANSCRIPT StreamingRecognitionResult_MessageType = 1
 	// Message contains DTMF digits.
 	StreamingRecognitionResult_DTMF_DIGITS StreamingRecognitionResult_MessageType = 3
-	// Event indicates that the server has detected the end of the user's speech
-	// utterance and expects no additional speech. Therefore, the server will
-	// not process additional audio (although it may subsequently return
+	// This event indicates that the server has detected the end of the user's
+	// speech utterance and expects no additional speech. Therefore, the server
+	// will not process additional audio (although it may subsequently return
 	// additional results). The client should stop sending additional audio
 	// data, half-close the gRPC connection, and wait for any additional results
 	// until the server closes the gRPC connection. This message is only sent if
