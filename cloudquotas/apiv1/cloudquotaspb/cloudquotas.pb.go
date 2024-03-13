@@ -22,9 +22,6 @@ package cloudquotaspb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -253,19 +252,15 @@ type ListQuotaPreferencesRequest struct {
 	// create/update time range.
 	//
 	// Example filters:
-	// `state=PENDING OR state=PENDING_PARTIALLY_GRANTED`
-	// `state=PENDING OR state=PENDING_PARTIALLY_GRANTED AND
-	//
-	//	creation_time>2022-12-03T10:30:00`
-	//
-	// If no filter is provided, returns all pending quota preferences.
+	// `reconciling=true AND request_type=CLOUD_CONSOLE`,
+	// `reconciling=true OR creation_time>2022-12-03T10:30:00`
 	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	// Optional. How to order of the results. By default, the results are ordered
 	// by create time.
 	//
 	// Example orders:
-	// `type`
-	// `state, create_time`
+	// `quota_id`,
+	// `service, create_time`
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 }
 
