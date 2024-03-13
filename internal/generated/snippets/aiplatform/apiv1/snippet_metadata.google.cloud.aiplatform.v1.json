@@ -16347,6 +16347,98 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_PipelineService_BatchCancelPipelineJobs_sync",
+      "title": "aiplatform BatchCancelPipelineJobs Sample",
+      "description": "BatchCancelPipelineJobs batch cancel PipelineJobs.\nFirstly the server will check if all the jobs are in non-terminal states,\nand skip the jobs that are already terminated.\nIf the operation failed, none of the pipeline jobs are cancelled.\nThe server will poll the states of all the pipeline jobs periodically\nto check the cancellation status.\nThis operation will return an LRO.",
+      "file": "PipelineClient/BatchCancelPipelineJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCancelPipelineJobs",
+        "fullName": "google.cloud.aiplatform.v1.PipelineClient.BatchCancelPipelineJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchCancelPipelineJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchCancelPipelineJobsOperation",
+        "client": {
+          "shortName": "PipelineClient",
+          "fullName": "google.cloud.aiplatform.v1.PipelineClient"
+        },
+        "method": {
+          "shortName": "BatchCancelPipelineJobs",
+          "fullName": "google.cloud.aiplatform.v1.PipelineService.BatchCancelPipelineJobs",
+          "service": {
+            "shortName": "PipelineService",
+            "fullName": "google.cloud.aiplatform.v1.PipelineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_PipelineService_BatchDeletePipelineJobs_sync",
+      "title": "aiplatform BatchDeletePipelineJobs Sample",
+      "description": "BatchDeletePipelineJobs batch deletes PipelineJobs\nThe Operation is atomic. If it fails, none of the PipelineJobs are deleted.\nIf it succeeds, all of the PipelineJobs are deleted.",
+      "file": "PipelineClient/BatchDeletePipelineJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeletePipelineJobs",
+        "fullName": "google.cloud.aiplatform.v1.PipelineClient.BatchDeletePipelineJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.BatchDeletePipelineJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchDeletePipelineJobsOperation",
+        "client": {
+          "shortName": "PipelineClient",
+          "fullName": "google.cloud.aiplatform.v1.PipelineClient"
+        },
+        "method": {
+          "shortName": "BatchDeletePipelineJobs",
+          "fullName": "google.cloud.aiplatform.v1.PipelineService.BatchDeletePipelineJobs",
+          "service": {
+            "shortName": "PipelineService",
+            "fullName": "google.cloud.aiplatform.v1.PipelineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_PipelineService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",

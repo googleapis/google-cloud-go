@@ -28,7 +28,7 @@ modules:
   - certificatemanager
   - channel
   - cloudbuild
-  - clouddms
+  - cloudcontrolspartner
   - clouddms
   - cloudprofiler
   - cloudquotas
