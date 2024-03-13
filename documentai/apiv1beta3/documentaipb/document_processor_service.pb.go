@@ -21,11 +21,8 @@
 package documentaipb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -3767,6 +3766,8 @@ type isImportProcessorVersionRequest_Source interface {
 type ImportProcessorVersionRequest_ProcessorVersionSource struct {
 	// The source processor version to import from. The source processor version
 	// and destination processor need to be in the same environment and region.
+	// Note that ProcessorVersions with `model_type` `MODEL_TYPE_LLM` are not
+	// supported.
 	ProcessorVersionSource string `protobuf:"bytes,2,opt,name=processor_version_source,json=processorVersionSource,proto3,oneof"`
 }
 
