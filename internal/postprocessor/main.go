@@ -204,6 +204,8 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			if err := p.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
 				return err
 			}
+			log.Printf("Adding new module %s to list of modules to process", moduleName)
+			p.modules = append(p.modules, moduleName)
 			if err := p.modEditReplaceInSnippets(modulePath, importPath); err != nil {
 				return err
 			}
