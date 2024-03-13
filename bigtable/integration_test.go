@@ -1870,7 +1870,12 @@ func TestIntegration_Admin(t *testing.T) {
 		if err != nil {
 			t.Fatalf("EncryptionInfo: %v", err)
 		}
-		if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
+		wantLen := 1
+		if testEnv.Config().Cluster2 != "" {
+			wantLen++
+		}
+
+		if got, want := len(encryptionInfo), wantLen; !cmp.Equal(got, want) {
 			t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
 		}
 
@@ -3103,28 +3108,6 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	destProj1Inst1Cl1 := srcCluster             // 1st cluster in 1st instance in 1st destination project
 	destIAdminClient1 := srcIAdminClient
 
-	// Create a 2nd cluster in 1st destination project
-	destProj1Inst1Cl2 := clusterUIDSpace.New()
-	defer func() {
-		testutil.Retry(t, 3, 2*time.Second, func(r *testutil.R) {
-			err := destIAdminClient1.DeleteCluster(ctx, destProj1Inst1, destProj1Inst1Cl2)
-			if err != nil {
-				r.Errorf("DeleteCluster: %v", err)
-			}
-		})
-	}()
-
-	err = destIAdminClient1.CreateCluster(ctx, &ClusterConfig{
-		InstanceID:  destProj1Inst1,
-		ClusterID:   destProj1Inst1Cl2,
-		Zone:        instanceToCreateZone2,
-		NumNodes:    1,
-		StorageType: SSD,
-	})
-	if err != nil {
-		t.Fatalf("CreateCluster: %v", err)
-	}
-
 	type testcase struct {
 		desc         string
 		destProject  string
@@ -3138,14 +3121,23 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 			destInstance: destProj1Inst1,
 			destCluster:  destProj1Inst1Cl1,
 		},
-		{
+	}
+
+	// testEnv.Config().Cluster2 will be non-empty if 'it.cluster2' flag is passed
+	// or 'GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER' environment variable is set
+	// Add more testcases if Cluster2 is non-empty string
+	if testEnv.Config().Cluster2 != "" {
+		testcases = append(testcases, testcase{
 			desc:         "Copy backup to same project, same instance, different cluster",
 			destProject:  destProj1,
 			destInstance: destProj1Inst1,
-			destCluster:  destProj1Inst1Cl2,
-		},
+			destCluster:  testEnv.Config().Cluster2,
+		})
 	}
 
+	// If 'it.run-create-instance-tests' flag is set while running the tests,
+	// instanceToCreate will be non-empty string.
+	// Add more testcases if instanceToCreate is non-empty string
 	if instanceToCreate != "" {
 		// Create a 2nd instance in 1st destination project
 		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, testEnv, destIAdminClient1)
@@ -3163,6 +3155,9 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 		t.Logf("WARNING: run-create-instance-tests not set, skipping tests that require instance creation")
 	}
 
+	// testEnv.Config().Project2 will be non-empty if 'it.project2' flag is passed
+	// or 'GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID' environment variable is set
+	// Add more testcases if Project2 is non-empty string
 	if testEnv.Config().Project2 != "" {
 		// Create admin client for 2nd project in test environment
 		destProj2 := testEnv.Config().Project2
