@@ -245,7 +245,7 @@ func (c *EngineClient) ListEngines(ctx context.Context, req *discoveryenginepb.L
 }
 
 // PauseEngine pauses the training of an existing engine. Only applicable if
-// solution_type is
+// SolutionType is
 // SOLUTION_TYPE_RECOMMENDATION.
 func (c *EngineClient) PauseEngine(ctx context.Context, req *discoveryenginepb.PauseEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	return c.internalClient.PauseEngine(ctx, req, opts...)
@@ -258,7 +258,8 @@ func (c *EngineClient) ResumeEngine(ctx context.Context, req *discoveryenginepb.
 	return c.internalClient.ResumeEngine(ctx, req, opts...)
 }
 
-// TuneEngine tunes an existing engine. Only applicable if solution_type is
+// TuneEngine tunes an existing engine. Only applicable if
+// SolutionType is
 // SOLUTION_TYPE_RECOMMENDATION.
 func (c *EngineClient) TuneEngine(ctx context.Context, req *discoveryenginepb.TuneEngineRequest, opts ...gax.CallOption) (*TuneEngineOperation, error) {
 	return c.internalClient.TuneEngine(ctx, req, opts...)
@@ -1064,7 +1065,7 @@ func (c *engineRESTClient) ListEngines(ctx context.Context, req *discoveryengine
 }
 
 // PauseEngine pauses the training of an existing engine. Only applicable if
-// solution_type is
+// SolutionType is
 // SOLUTION_TYPE_RECOMMENDATION.
 func (c *engineRESTClient) PauseEngine(ctx context.Context, req *discoveryenginepb.PauseEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1199,7 +1200,8 @@ func (c *engineRESTClient) ResumeEngine(ctx context.Context, req *discoveryengin
 	return resp, nil
 }
 
-// TuneEngine tunes an existing engine. Only applicable if solution_type is
+// TuneEngine tunes an existing engine. Only applicable if
+// SolutionType is
 // SOLUTION_TYPE_RECOMMENDATION.
 func (c *engineRESTClient) TuneEngine(ctx context.Context, req *discoveryenginepb.TuneEngineRequest, opts ...gax.CallOption) (*TuneEngineOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
