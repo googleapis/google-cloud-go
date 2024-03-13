@@ -956,6 +956,11 @@
                 "SetIamPolicy"
               ]
             },
+            "StreamingFetchFeatureValues": {
+              "methods": [
+                "StreamingFetchFeatureValues"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -1019,6 +1024,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamingFetchFeatureValues": {
+              "methods": [
+                "StreamingFetchFeatureValues"
               ]
             },
             "TestIamPermissions": {
