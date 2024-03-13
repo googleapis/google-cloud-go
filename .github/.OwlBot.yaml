@@ -70,7 +70,7 @@ deep-remove-regex:
   - /cloudcontrolspartner/apiv1/
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
-  - /cloudquotas/v1/
+  - /cloudquotas/apiv1/
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
