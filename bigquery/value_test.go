@@ -95,6 +95,11 @@ func TestConvertTime(t *testing.T) {
 			t.Errorf("#%d: got:\n%v\nwant:\n%v", i, g, w)
 		}
 	}
+	// Ensure that the times are returned in UTC timezone.
+	// https://github.com/googleapis/google-cloud-go/issues/9407
+	if gotTZ := got[0].(time.Time).Location(); gotTZ != time.UTC {
+		t.Errorf("expected time zone UTC: got:\n%v", gotTZ)
+	}
 }
 
 func TestConvertSmallTimes(t *testing.T) {

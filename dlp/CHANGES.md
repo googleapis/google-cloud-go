@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.2...dlp/v1.12.0) (2024-03-07)
+
+
+### Features
+
+* **dlp:** Add RPCs for getting and listing project, table, and column data profiles ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.1...dlp/v1.11.2) (2024-01-30)
 
 

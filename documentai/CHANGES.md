@@ -1,6 +1,28 @@
 # Changes
 
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.25.0...documentai/v1.26.0) (2024-02-21)
+
+
+### Features
+
+* **documentai:** A new field `schema_override` is added to message `ProcessOptions` ([#9400](https://github.com/googleapis/google-cloud-go/issues/9400)) ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+* **documentai:** A new message FoundationModelTuningOptions is added ([7e6c208](https://github.com/googleapis/google-cloud-go/commit/7e6c208c5d97d3f6e2f7fd7aca09b8ae98dc0bf2))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.24.0...documentai/v1.25.0) (2024-02-09)
+
+
+### Features
+
+* **documentai:** Expose model_type in v1 processor, so that user can see the model_type after get or list processor version ([2fcf55c](https://github.com/googleapis/google-cloud-go/commit/2fcf55ccb24749cf5387e707b0212bca722f2e96))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.8...documentai/v1.24.0) (2024-02-06)
+
+
+### Features
+
+* **documentai:** Add model_type in v1beta3 processor proto ([#9355](https://github.com/googleapis/google-cloud-go/issues/9355)) ([05e9e1f](https://github.com/googleapis/google-cloud-go/commit/05e9e1f53f2a0c8b3aaadc1811338ca3e682f245))
+
 ## [1.23.8](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.7...documentai/v1.23.8) (2024-01-30)
 
 

@@ -3462,7 +3462,8 @@ type Document_PageAnchor_PageRef struct {
 	// Deprecated: Marked as deprecated in google/cloud/documentai/v1/document.proto.
 	LayoutId string `protobuf:"bytes,3,opt,name=layout_id,json=layoutId,proto3" json:"layout_id,omitempty"`
 	// Optional. Identifies the bounding polygon of a layout element on the
-	// page.
+	// page. If `layout_type` is set, the bounding polygon must be exactly the
+	// same to the layout element it's referring to.
 	BoundingPoly *BoundingPoly `protobuf:"bytes,4,opt,name=bounding_poly,json=boundingPoly,proto3" json:"bounding_poly,omitempty"`
 	// Optional. Confidence of detected page element, if applicable. Range
 	// `[0, 1]`.

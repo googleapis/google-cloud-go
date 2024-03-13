@@ -956,6 +956,11 @@
                 "SetIamPolicy"
               ]
             },
+            "StreamingFetchFeatureValues": {
+              "methods": [
+                "StreamingFetchFeatureValues"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -1019,6 +1024,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "StreamingFetchFeatureValues": {
+              "methods": [
+                "StreamingFetchFeatureValues"
               ]
             },
             "TestIamPermissions": {
@@ -2574,11 +2584,6 @@
                 "ComputeTokens"
               ]
             },
-            "CountTokens": {
-              "methods": [
-                "CountTokens"
-              ]
-            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
@@ -2637,11 +2642,6 @@
             "ComputeTokens": {
               "methods": [
                 "ComputeTokens"
-              ]
-            },
-            "CountTokens": {
-              "methods": [
-                "CountTokens"
               ]
             },
             "DeleteOperation": {
@@ -3992,6 +3992,11 @@
         "grpc": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "BatchCancelPipelineJobs": {
+              "methods": [
+                "BatchCancelPipelineJobs"
+              ]
+            },
             "BatchDeletePipelineJobs": {
               "methods": [
                 "BatchDeletePipelineJobs"
@@ -4102,6 +4107,11 @@
         "rest": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "BatchCancelPipelineJobs": {
+              "methods": [
+                "BatchCancelPipelineJobs"
+              ]
+            },
             "BatchDeletePipelineJobs": {
               "methods": [
                 "BatchDeletePipelineJobs"

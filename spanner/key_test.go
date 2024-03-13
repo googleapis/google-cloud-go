@@ -164,6 +164,16 @@ func TestKey(t *testing.T) {
 			wantStr:   "(<null>)",
 		},
 		{
+			k:         Key{NullFloat32{3.14, true}},
+			wantProto: listValueProto(floatProto(float64(float32(3.14)))),
+			wantStr:   "(3.14)",
+		},
+		{
+			k:         Key{NullFloat32{2.0, false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   "(<null>)",
+		},
+		{
 			k:         Key{NullBool{true, true}},
 			wantProto: listValueProto(boolProto(true)),
 			wantStr:   "(true)",

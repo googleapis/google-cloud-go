@@ -38,6 +38,7 @@ import (
 var sinkIDs = uid.NewSpace("GO-CLIENT-TEST-SINK", nil)
 
 const testFilter = ""
+const testBucketTTLDays = 1
 
 var testSinkDestination string
 var testBucket string
@@ -63,14 +64,35 @@ func initSinks(ctx context.Context) func() {
 		if err := bucket.Create(ctx, testProjectID, nil); err != nil {
 			log.Fatalf("creating storage bucket %q: %v", testBucket, err)
 		}
+
+		// Set the bucket's lifecycle to autodelete after a period of time
+		bucketAttrsToUpdate := storage.BucketAttrsToUpdate{
+			Lifecycle: &storage.Lifecycle{
+				Rules: []storage.LifecycleRule{
+					{
+						Action: storage.LifecycleAction{Type: storage.DeleteAction},
+						Condition: storage.LifecycleCondition{
+							AgeInDays: testBucketTTLDays,
+						},
+					},
+				},
+			},
+		}
+		_, err = bucket.Update(ctx, bucketAttrsToUpdate)
+		if err != nil {
+			log.Fatalf("updating bucket %q lifecycle rule: %v", testBucket, err)
+		}
+
 		// Grant destination permissions to sink's writer identity.
 		err = addBucketCreator(testBucket, ltest.SharedServiceAccount)
 		if err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("successfully created bucket %s", testBucket)
-		if err := bucket.ACL().Set(ctx, "group-cloud-logs@google.com", storage.RoleOwner); err != nil {
-			log.Fatalf("setting owner role: %v", err)
+
+		err = addBucketIAMPolicy(testBucket, "group:cloud-logs@google.com", "roles/storage.admin")
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
 	// Clean up from aborted tests.
@@ -90,12 +112,16 @@ func initSinks(ctx context.Context) func() {
 	}
 	if integrationTest {
 		for _, bn := range bucketNames(ctx, storageClient) {
-			if bucketIDs.Older(bn, 24*time.Hour) {
+			if bucketIDs.Older(bn, 36*time.Hour) {
 				storageClient.Bucket(bn).Delete(ctx) // ignore error
 			}
 		}
 		return func() {
-			storageClient.Close()
+			// Cleanup the bucket we used on this test run.
+			defer storageClient.Close()
+			if err := storageClient.Bucket(testBucket).Delete(ctx); err != nil {
+				log.Printf("deleting %q: %v", testBucket, err)
+			}
 		}
 	}
 	return func() {}
@@ -121,8 +147,9 @@ loop:
 	return names
 }
 
-// addBucketCreator adds the bucket IAM member to permission role. Required for all new log sink service accounts.
-func addBucketCreator(bucketName string, identity string) error {
+// addBucketIAMPolicy adds the specified IAM policy to the bucket pointed to by the bucketHandle.
+// Required for all new log sink service accounts.
+func addBucketIAMPolicy(bucketName string, identity string, role iam.RoleName) error {
 	if integrationTest {
 		ctx := context.Background()
 		client, err := storage.NewClient(ctx, option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
@@ -140,8 +167,6 @@ func addBucketCreator(bucketName string, identity string) error {
 			return fmt.Errorf("Bucket(%q).IAM().Policy: %v", bucketName, err)
 		}
 
-		var role iam.RoleName = "roles/storage.objectCreator"
-
 		policy.Add(identity, role)
 		if err := bucket.IAM().SetPolicy(ctx, policy); err != nil {
 			return fmt.Errorf("Bucket(%q).IAM().SetPolicy: %v", bucketName, err)
@@ -149,6 +174,11 @@ func addBucketCreator(bucketName string, identity string) error {
 	}
 
 	return nil
+}
+
+// addBucketCreator adds the bucket IAM member to permission role. Required for all new log sink service accounts.
+func addBucketCreator(bucketName string, identity string) error {
+	return addBucketIAMPolicy(bucketName, identity, "roles/storage.objectCreator")
 }
 
 func TestCreateSink(t *testing.T) {
@@ -163,6 +193,7 @@ func TestCreateSink(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.DeleteSink(ctx, sink.ID)
 
 	sink.WriterIdentity = ltest.SharedServiceAccount
 	if want := sink; !testutil.Equal(got, want) {
@@ -182,6 +213,8 @@ func TestCreateSink(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.DeleteSink(ctx, sink.ID)
+
 	// Grant destination permissions to sink's writer identity.
 	err = addBucketCreator(testBucket, got.WriterIdentity)
 	if err != nil {
@@ -196,16 +229,19 @@ func TestCreateSink(t *testing.T) {
 func TestUpdateSink(t *testing.T) {
 	ctx := context.Background()
 	sink := &Sink{
-		ID:              sinkIDs.New(),
+		ID:              sinkIDs.New() + "-" + t.Name(),
 		Destination:     testSinkDestination,
 		Filter:          testFilter,
 		IncludeChildren: true,
 		WriterIdentity:  ltest.SharedServiceAccount,
 	}
 
-	if _, err := client.CreateSink(ctx, sink); err != nil {
+	_, err := client.CreateSink(ctx, sink)
+	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.DeleteSink(ctx, sink.ID)
+
 	got, err := client.UpdateSink(ctx, sink)
 	if err != nil {
 		t.Fatal(err)
@@ -247,12 +283,14 @@ func TestUpdateSinkOpt(t *testing.T) {
 		WriterIdentity:  ltest.SharedServiceAccount,
 	}
 
-	if _, err := client.CreateSink(ctx, origSink); err != nil {
+	_, err := client.CreateSink(ctx, origSink)
+	if err != nil {
 		t.Fatal(err)
 	}
+	defer client.DeleteSink(ctx, origSink.ID)
 
 	// Updating with empty options is an error.
-	_, err := client.UpdateSinkOpt(ctx, &Sink{ID: id, Destination: testSinkDestination}, SinkOptions{})
+	_, err = client.UpdateSinkOpt(ctx, &Sink{ID: id, Destination: testSinkDestination}, SinkOptions{})
 	if err == nil {
 		t.Errorf("got %v, want nil", err)
 	}
@@ -307,9 +345,11 @@ func TestListSinks(t *testing.T) {
 		want[s.ID] = s
 	}
 	for _, s := range sinks {
-		if _, err := client.CreateSink(ctx, s); err != nil {
+		_, err := client.CreateSink(ctx, s)
+		if err != nil {
 			t.Fatalf("Create(%q): %v", s.ID, err)
 		}
+		defer client.DeleteSink(ctx, s.ID)
 	}
 
 	got := map[string]*Sink{}

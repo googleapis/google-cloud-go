@@ -958,7 +958,7 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 		if err != nil {
 			return nil, err
 		}
-		return time.UnixMicro(i), nil
+		return time.UnixMicro(i).UTC(), nil
 	case DateFieldType:
 		return civil.ParseDate(val)
 	case TimeFieldType:

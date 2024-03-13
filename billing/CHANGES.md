@@ -1,5 +1,12 @@
 # Changes
 
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.2...billing/v1.18.3) (2024-02-21)
+
+
+### Documentation
+
+* **billing:** Clarify that the parent field in the CreateBillingAccountRequest must be a billing account ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
 ## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.1...billing/v1.18.2) (2024-01-30)
 
 

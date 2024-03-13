@@ -1744,6 +1744,106 @@ func (it *InstancesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// InstantSnapshotIterator manages a stream of *computepb.InstantSnapshot.
+type InstantSnapshotIterator struct {
+	items    []*computepb.InstantSnapshot
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstantSnapshot, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *InstantSnapshotIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *InstantSnapshotIterator) Next() (*computepb.InstantSnapshot, error) {
+	var item *computepb.InstantSnapshot
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *InstantSnapshotIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *InstantSnapshotIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// InstantSnapshotsScopedListPair is a holder type for string/*computepb.InstantSnapshotsScopedList map entries
+type InstantSnapshotsScopedListPair struct {
+	Key   string
+	Value *computepb.InstantSnapshotsScopedList
+}
+
+// InstantSnapshotsScopedListPairIterator manages a stream of InstantSnapshotsScopedListPair.
+type InstantSnapshotsScopedListPairIterator struct {
+	items    []InstantSnapshotsScopedListPair
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []InstantSnapshotsScopedListPair, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *InstantSnapshotsScopedListPairIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *InstantSnapshotsScopedListPairIterator) Next() (InstantSnapshotsScopedListPair, error) {
+	var item InstantSnapshotsScopedListPair
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *InstantSnapshotsScopedListPairIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *InstantSnapshotsScopedListPairIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // InterconnectAttachmentIterator manages a stream of *computepb.InterconnectAttachment.
 type InterconnectAttachmentIterator struct {
 	items    []*computepb.InterconnectAttachment
