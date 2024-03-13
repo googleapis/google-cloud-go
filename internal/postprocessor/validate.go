@@ -69,6 +69,7 @@ func validate() error {
 	}
 	log.Println("owl-bot-config set to", owlBotConfigPath)
 	log.Println("processor-config set to", processorConfigPath)
+	log.Println("googleapis-dir set to", validateGoogleapisDir)
 
 	ppc, obc, err := loadConfigs(processorConfigPath, owlBotConfigPath)
 	if err != nil {
