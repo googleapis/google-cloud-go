@@ -164,7 +164,7 @@ func (c *UrlMapsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *UrlMapsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) *UrlMapsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -296,7 +296,7 @@ func (c *urlMapsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *urlMapsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) *UrlMapsScopedListPairIterator {
 	it := &UrlMapsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListUrlMapsRequest)

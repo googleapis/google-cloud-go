@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.39.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.39.0...storage/v1.39.1) (2024-03-11)
+
+
+### Bug Fixes
+
+* **storage:** Add object validation case and test ([#9521](https://github.com/googleapis/google-cloud-go/issues/9521)) ([386bef3](https://github.com/googleapis/google-cloud-go/commit/386bef319b4678beaa926ddfe4edef190f11b68d))
+
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.38.0...storage/v1.39.0) (2024-02-29)
+
+
+### Features
+
+* **storage:** Make it possible to disable Content-Type sniffing ([#9431](https://github.com/googleapis/google-cloud-go/issues/9431)) ([0676670](https://github.com/googleapis/google-cloud-go/commit/067667058c06689b64401be11858d84441584039))
+
 ## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.37.0...storage/v1.38.0) (2024-02-12)
 
 

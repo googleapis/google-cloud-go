@@ -57,7 +57,9 @@ type RecommendRequest struct {
 	// config. For example, for Engine
 	// `projects/*/locations/global/collections/*/engines/my-engine`, you can use
 	// `projects/*/locations/global/collections/*/engines/my-engine/servingConfigs/my-engine`
-	// for your [Recommend][] requests.
+	// for your
+	// [RecommendationService.Recommend][google.cloud.discoveryengine.v1alpha.RecommendationService.Recommend]
+	// requests.
 	ServingConfig string `protobuf:"bytes,1,opt,name=serving_config,json=servingConfig,proto3" json:"serving_config,omitempty"`
 	// Required. Context about the user, what they are looking at and what action
 	// they took to trigger the Recommend request. Note that this user event
