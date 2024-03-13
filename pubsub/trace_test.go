@@ -659,3 +659,56 @@ func (i *incrementIDGenerator) NewIDs(ctx context.Context) (trace.TraceID, trace
 	sid := [8]byte{byte(id2)}
 	return tid, sid
 }
+
+func BenchmarkNoTracingEnabled(b *testing.B) {
+	ctx := context.Background()
+	t := &testing.T{}
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	e := tracetest.NewInMemoryExporter()
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
+	defer tp.Shutdown(ctx)
+	otel.SetTracerProvider(tp)
+
+	m := &Message{
+		Data: []byte("test"),
+	}
+
+	topicID := "t"
+	subID := "s"
+
+	topic, err := c.CreateTopic(ctx, topicID)
+	if err != nil {
+		b.Fatalf("failed to create topic: %v", err)
+	}
+	sub, err := c.CreateSubscription(ctx, subID, SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		b.Fatalf("failed to create subscription: %v", err)
+	}
+
+	b.ResetTimer()
+	for i := 0; i < b.N; i++ {
+		r := topic.Publish(ctx, m)
+		_, err = r.Get(ctx)
+		if err != nil {
+			b.Fatalf("failed to publish message: %v", err)
+		}
+
+		ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+		sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+			msg.Ack()
+			cancel()
+		})
+
+		got := getSpans(e)
+		if len(got) != 0 {
+			b.Fatalf("expected no spans, got %d", len(got))
+		}
+
+	}
+}
