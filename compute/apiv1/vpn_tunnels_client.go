@@ -149,7 +149,7 @@ func (c *VpnTunnelsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of VPN tunnels.
+// AggregatedList retrieves an aggregated list of VPN tunnels. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *VpnTunnelsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnTunnelsRequest, opts ...gax.CallOption) *VpnTunnelsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -231,7 +231,9 @@ func NewVpnTunnelsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultVpnTunnelsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -264,7 +266,7 @@ func (c *vpnTunnelsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of VPN tunnels.
+// AggregatedList retrieves an aggregated list of VPN tunnels. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *vpnTunnelsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnTunnelsRequest, opts ...gax.CallOption) *VpnTunnelsScopedListPairIterator {
 	it := &VpnTunnelsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListVpnTunnelsRequest)

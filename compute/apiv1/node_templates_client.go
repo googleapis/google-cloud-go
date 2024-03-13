@@ -168,7 +168,7 @@ func (c *NodeTemplatesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of node templates.
+// AggregatedList retrieves an aggregated list of node templates. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *NodeTemplatesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTemplatesRequest, opts ...gax.CallOption) *NodeTemplatesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -260,7 +260,9 @@ func NewNodeTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption
 func defaultNodeTemplatesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -293,7 +295,7 @@ func (c *nodeTemplatesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of node templates.
+// AggregatedList retrieves an aggregated list of node templates. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *nodeTemplatesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTemplatesRequest, opts ...gax.CallOption) *NodeTemplatesScopedListPairIterator {
 	it := &NodeTemplatesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNodeTemplatesRequest)

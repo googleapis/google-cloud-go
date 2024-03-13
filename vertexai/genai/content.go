@@ -133,4 +133,4 @@ func (c *GenerationConfig) SetTemperature(x float32) { c.Temperature = &x }
 func (c *GenerationConfig) SetTopP(x float32) { c.TopP = &x }
 
 // SetTopK sets the TopK field.
-func (c *GenerationConfig) SetTopK(x float32) { c.TopK = &x }
+func (c *GenerationConfig) SetTopK(x int32) { c.TopK = &x }

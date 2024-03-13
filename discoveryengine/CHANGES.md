@@ -1,6 +1,34 @@
 # Changelog
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.5.0...discoveryengine/v1.6.0) (2024-03-12)
+
+
+### Features
+
+* **discoveryengine:** Support acl-based and blended search ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+* **discoveryengine:** Support blended search ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+
+
+### Bug Fixes
+
+* **discoveryengine:** `http_uri` fix for method `ListChunks` in service `ChunkService` ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.4.1...discoveryengine/v1.5.0) (2024-02-09)
+
+
+### Features
+
+* **discoveryengine:** Add data store, engine and site search engine services ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+* **discoveryengine:** Add data store, engine, serving config and site search engine services ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.4.0...discoveryengine/v1.4.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.3.0...discoveryengine/v1.4.0) (2023-12-13)
 
 

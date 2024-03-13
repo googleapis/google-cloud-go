@@ -379,12 +379,14 @@ type FunctionDeclaration struct {
 	// Schema defining the type used for the parameter. For function with no
 	// parameters, this can be left unset. Example with 1 required and 1 optional
 	// parameter: type: OBJECT properties:
-	//  param1:
-	//    type: STRING
-	//  param2:
-	//    type: INTEGER
+	//
+	//	param1:
+	//	  type: STRING
+	//	param2:
+	//	  type: INTEGER
+	//
 	// required:
-	//  - param1
+	//   - param1
 	Parameters *Schema
 }
 
@@ -483,7 +485,7 @@ type GenerationConfig struct {
 	// Optional. If specified, nucleus sampling will be used.
 	TopP *float32
 	// Optional. If specified, top-k sampling will be used.
-	TopK *float32
+	TopK *int32
 	// Optional. Number of candidates to generate.
 	CandidateCount *int32
 	// Optional. The maximum number of output tokens to generate per message.
@@ -499,7 +501,7 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 	return &pb.GenerationConfig{
 		Temperature:     v.Temperature,
 		TopP:            v.TopP,
-		TopK:            v.TopK,
+		TopK:            int32pToFloat32p(v.TopK),
 		CandidateCount:  v.CandidateCount,
 		MaxOutputTokens: v.MaxOutputTokens,
 		StopSequences:   v.StopSequences,
@@ -513,7 +515,7 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 	return &GenerationConfig{
 		Temperature:     p.Temperature,
 		TopP:            p.TopP,
-		TopK:            p.TopK,
+		TopK:            float32pToInt32p(p.TopK),
 		CandidateCount:  p.CandidateCount,
 		MaxOutputTokens: p.MaxOutputTokens,
 		StopSequences:   p.StopSequences,
@@ -715,8 +717,9 @@ type Schema struct {
 	Type Type
 	// Optional. The format of the data.
 	// Supported formats:
-	//  for NUMBER type: float, double
-	//  for INTEGER type: int32, int64
+	//
+	//	for NUMBER type: float, double
+	//	for INTEGER type: int32, int64
 	Format string
 	// Optional. The description of the data.
 	Description string
@@ -770,7 +773,8 @@ func (Schema) fromProto(p *pb.Schema) *Schema {
 //
 // A `Tool` is a piece of code that enables the system to interact with
 // external systems to perform an action, or set of actions, outside of
-// knowledge and scope of the model.
+// knowledge and scope of the model. A Tool object should contain exactly
+// one type of Tool.
 type Tool struct {
 	// Optional. One or more function declarations to be passed to the model along
 	// with the current user query. Model may decide to call a subset of these

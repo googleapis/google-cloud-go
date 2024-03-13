@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/auth/v0.1.0...auth/v0.1.1) (2024-03-10)
+
+
+### Bug Fixes
+
+* **auth/impersonate:** Properly send default detect params ([#9529](https://github.com/googleapis/google-cloud-go/issues/9529)) ([5b6b8be](https://github.com/googleapis/google-cloud-go/commit/5b6b8bef577f82707e51f5cc5d258d5bdf90218f)), refs [#9136](https://github.com/googleapis/google-cloud-go/issues/9136)
+* **auth:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **auth:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## 0.1.0 (2023-10-18)
 
 

@@ -15,6 +15,16 @@
                 "CreateEnvironment"
               ]
             },
+            "CreateUserWorkloadsConfigMap": {
+              "methods": [
+                "CreateUserWorkloadsConfigMap"
+              ]
+            },
+            "CreateUserWorkloadsSecret": {
+              "methods": [
+                "CreateUserWorkloadsSecret"
+              ]
+            },
             "DatabaseFailover": {
               "methods": [
                 "DatabaseFailover"
@@ -28,6 +38,16 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteUserWorkloadsConfigMap": {
+              "methods": [
+                "DeleteUserWorkloadsConfigMap"
+              ]
+            },
+            "DeleteUserWorkloadsSecret": {
+              "methods": [
+                "DeleteUserWorkloadsSecret"
               ]
             },
             "ExecuteAirflowCommand": {
@@ -50,6 +70,16 @@
                 "GetOperation"
               ]
             },
+            "GetUserWorkloadsConfigMap": {
+              "methods": [
+                "GetUserWorkloadsConfigMap"
+              ]
+            },
+            "GetUserWorkloadsSecret": {
+              "methods": [
+                "GetUserWorkloadsSecret"
+              ]
+            },
             "ListEnvironments": {
               "methods": [
                 "ListEnvironments"
@@ -58,6 +88,21 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListUserWorkloadsConfigMaps": {
+              "methods": [
+                "ListUserWorkloadsConfigMaps"
+              ]
+            },
+            "ListUserWorkloadsSecrets": {
+              "methods": [
+                "ListUserWorkloadsSecrets"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
               ]
             },
             "LoadSnapshot": {
@@ -83,6 +128,16 @@
             "UpdateEnvironment": {
               "methods": [
                 "UpdateEnvironment"
+              ]
+            },
+            "UpdateUserWorkloadsConfigMap": {
+              "methods": [
+                "UpdateUserWorkloadsConfigMap"
+              ]
+            },
+            "UpdateUserWorkloadsSecret": {
+              "methods": [
+                "UpdateUserWorkloadsSecret"
               ]
             }
           }
@@ -95,6 +150,16 @@
                 "CreateEnvironment"
               ]
             },
+            "CreateUserWorkloadsConfigMap": {
+              "methods": [
+                "CreateUserWorkloadsConfigMap"
+              ]
+            },
+            "CreateUserWorkloadsSecret": {
+              "methods": [
+                "CreateUserWorkloadsSecret"
+              ]
+            },
             "DatabaseFailover": {
               "methods": [
                 "DatabaseFailover"
@@ -108,6 +173,16 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "DeleteUserWorkloadsConfigMap": {
+              "methods": [
+                "DeleteUserWorkloadsConfigMap"
+              ]
+            },
+            "DeleteUserWorkloadsSecret": {
+              "methods": [
+                "DeleteUserWorkloadsSecret"
               ]
             },
             "ExecuteAirflowCommand": {
@@ -130,6 +205,16 @@
                 "GetOperation"
               ]
             },
+            "GetUserWorkloadsConfigMap": {
+              "methods": [
+                "GetUserWorkloadsConfigMap"
+              ]
+            },
+            "GetUserWorkloadsSecret": {
+              "methods": [
+                "GetUserWorkloadsSecret"
+              ]
+            },
             "ListEnvironments": {
               "methods": [
                 "ListEnvironments"
@@ -138,6 +223,21 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListUserWorkloadsConfigMaps": {
+              "methods": [
+                "ListUserWorkloadsConfigMaps"
+              ]
+            },
+            "ListUserWorkloadsSecrets": {
+              "methods": [
+                "ListUserWorkloadsSecrets"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
               ]
             },
             "LoadSnapshot": {
@@ -163,6 +263,16 @@
             "UpdateEnvironment": {
               "methods": [
                 "UpdateEnvironment"
+              ]
+            },
+            "UpdateUserWorkloadsConfigMap": {
+              "methods": [
+                "UpdateUserWorkloadsConfigMap"
+              ]
+            },
+            "UpdateUserWorkloadsSecret": {
+              "methods": [
+                "UpdateUserWorkloadsSecret"
               ]
             }
           }

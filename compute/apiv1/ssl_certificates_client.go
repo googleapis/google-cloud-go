@@ -144,7 +144,7 @@ func (c *SslCertificatesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all SslCertificate resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all SslCertificate resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *SslCertificatesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslCertificatesRequest, opts ...gax.CallOption) *SslCertificatesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -221,7 +221,9 @@ func NewSslCertificatesRESTClient(ctx context.Context, opts ...option.ClientOpti
 func defaultSslCertificatesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -254,7 +256,7 @@ func (c *sslCertificatesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all SslCertificate resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all SslCertificate resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *sslCertificatesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSslCertificatesRequest, opts ...gax.CallOption) *SslCertificatesScopedListPairIterator {
 	it := &SslCertificatesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListSslCertificatesRequest)

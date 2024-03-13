@@ -59,6 +59,10 @@ types:
     FunctionResponse:
 
     GenerationConfig:
+      fields:
+        TopK:
+          type: '*int32'
+          convertToFrom: int32pToFloat32p, float32pToInt32p
 
     SafetyRating:
       docVerb: 'is the'
@@ -73,7 +77,8 @@ types:
       fields:
         FinishMessage:
           type: string
-
+        GroundingMetadata:
+          omit: true
 
     GenerateContentResponse:
       doc: 'is the response from a GenerateContent or GenerateContentStream call.'
@@ -89,6 +94,11 @@ types:
 
     Tool:
       docVerb: contains
+      fields:
+        Retrieval:
+          omit: true
+        GoogleSearchRetrieval:
+          omit: true
 
     Schema:
       fields:

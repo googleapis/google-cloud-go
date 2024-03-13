@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.3.5](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.4...run/v1.3.5) (2024-03-07)
+
+
+### Documentation
+
+* **run:** Clarify some defaults and required or optional values ([#9505](https://github.com/googleapis/google-cloud-go/issues/9505)) ([1cf28f6](https://github.com/googleapis/google-cloud-go/commit/1cf28f61b26d52a9e2303c52e9aba7a0cdfbe7eb))
+
+## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.3...run/v1.3.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **run:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.3.3](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.2...run/v1.3.3) (2023-11-01)
 
 

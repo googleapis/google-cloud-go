@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.4...securitycentermanagement/v0.1.5) (2024-03-04)
+
+
+### Documentation
+
+* **securitycentermanagement:** Clarify documentation for ListDescendantSecurityHealthAnalyticsCustomModules RPC and CostumConfig message ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
+## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.3...securitycentermanagement/v0.1.4) (2024-02-21)
+
+
+### Documentation
+
+* **securitycentermanagement:** Finish a sentence with a period ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
+## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.2...securitycentermanagement/v0.1.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.1...securitycentermanagement/v0.1.2) (2024-01-22)
 
 

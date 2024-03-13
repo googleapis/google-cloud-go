@@ -39,6 +39,9 @@
         "appengine": {
             "component": "appengine"
         },
+        "apphub": {
+            "component": "apphub"
+        },
         "apps": {
             "component": "apps"
         },
@@ -80,6 +83,9 @@
         },
         "cloudbuild": {
             "component": "cloudbuild"
+        },
+        "cloudcontrolspartner": {
+            "component": "cloudcontrolspartner"
         },
         "clouddms": {
             "component": "clouddms"
@@ -273,6 +279,9 @@
         "oslogin": {
             "component": "oslogin"
         },
+        "parallelstore": {
+            "component": "parallelstore"
+        },
         "phishingprotection": {
             "component": "phishingprotection"
         },
@@ -354,6 +363,9 @@
         "shopping": {
             "component": "shopping"
         },
+        "spanner/test/opentelemetry/test": {
+            "component": "spanner/test/opentelemetry/test"
+        },
         "speech": {
             "component": "speech"
         },
@@ -392,6 +404,9 @@
         },
         "vision": {
             "component": "vision"
+        },
+        "visionai": {
+            "component": "visionai"
         },
         "vmmigration": {
             "component": "vmmigration"

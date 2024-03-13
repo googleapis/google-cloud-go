@@ -154,7 +154,7 @@ func (c *AutoscalersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of autoscalers.
+// AggregatedList retrieves an aggregated list of autoscalers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *AutoscalersClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAutoscalersRequest, opts ...gax.CallOption) *AutoscalersScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -241,7 +241,9 @@ func NewAutoscalersRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultAutoscalersRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -274,7 +276,7 @@ func (c *autoscalersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of autoscalers.
+// AggregatedList retrieves an aggregated list of autoscalers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *autoscalersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAutoscalersRequest, opts ...gax.CallOption) *AutoscalersScopedListPairIterator {
 	it := &AutoscalersScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListAutoscalersRequest)

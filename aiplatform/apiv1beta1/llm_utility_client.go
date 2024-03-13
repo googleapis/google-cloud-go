@@ -45,7 +45,6 @@ var newLlmUtilityClientHook clientHook
 
 // LlmUtilityCallOptions contains the retry settings for each method of LlmUtilityClient.
 type LlmUtilityCallOptions struct {
-	CountTokens        []gax.CallOption
 	ComputeTokens      []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
@@ -62,7 +61,9 @@ type LlmUtilityCallOptions struct {
 func defaultLlmUtilityGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -73,7 +74,6 @@ func defaultLlmUtilityGRPCClientOptions() []option.ClientOption {
 
 func defaultLlmUtilityCallOptions() *LlmUtilityCallOptions {
 	return &LlmUtilityCallOptions{
-		CountTokens:        []gax.CallOption{},
 		ComputeTokens:      []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
@@ -90,7 +90,6 @@ func defaultLlmUtilityCallOptions() *LlmUtilityCallOptions {
 
 func defaultLlmUtilityRESTCallOptions() *LlmUtilityCallOptions {
 	return &LlmUtilityCallOptions{
-		CountTokens:        []gax.CallOption{},
 		ComputeTokens:      []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
@@ -110,7 +109,6 @@ type internalLlmUtilityClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	CountTokens(context.Context, *aiplatformpb.CountTokensRequest, ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error)
 	ComputeTokens(context.Context, *aiplatformpb.ComputeTokensRequest, ...gax.CallOption) (*aiplatformpb.ComputeTokensResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -157,11 +155,6 @@ func (c *LlmUtilityClient) setGoogleClientInfo(keyval ...string) {
 // return the same resource.
 func (c *LlmUtilityClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
-}
-
-// CountTokens perform a token counting.
-func (c *LlmUtilityClient) CountTokens(ctx context.Context, req *aiplatformpb.CountTokensRequest, opts ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error) {
-	return c.internalClient.CountTokens(ctx, req, opts...)
 }
 
 // ComputeTokens return a list of tokens based on the input text.
@@ -350,7 +343,9 @@ func NewLlmUtilityRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultLlmUtilityRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://aiplatform.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://aiplatform.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://aiplatform.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -379,24 +374,6 @@ func (c *llmUtilityRESTClient) Close() error {
 func (c *llmUtilityRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *llmUtilityGRPCClient) CountTokens(ctx context.Context, req *aiplatformpb.CountTokensRequest, opts ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).CountTokens[0:len((*c.CallOptions).CountTokens):len((*c.CallOptions).CountTokens)], opts...)
-	var resp *aiplatformpb.CountTokensResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.llmUtilityClient.CountTokens(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 func (c *llmUtilityGRPCClient) ComputeTokens(ctx context.Context, req *aiplatformpb.ComputeTokensRequest, opts ...gax.CallOption) (*aiplatformpb.ComputeTokensResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
 
@@ -639,67 +616,6 @@ func (c *llmUtilityGRPCClient) WaitOperation(ctx context.Context, req *longrunni
 	}, opts...)
 	if err != nil {
 		return nil, err
-	}
-	return resp, nil
-}
-
-// CountTokens perform a token counting.
-func (c *llmUtilityRESTClient) CountTokens(ctx context.Context, req *aiplatformpb.CountTokensRequest, opts ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:countTokens", req.GetEndpoint())
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).CountTokens[0:len((*c.CallOptions).CountTokens):len((*c.CallOptions).CountTokens)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &aiplatformpb.CountTokensResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
 	}
 	return resp, nil
 }

@@ -45,7 +45,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("workflowexecutions.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("workflowexecutions.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("workflowexecutions.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://workflowexecutions.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),

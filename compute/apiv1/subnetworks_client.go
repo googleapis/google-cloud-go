@@ -197,7 +197,7 @@ func (c *SubnetworksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of subnetworks.
+// AggregatedList retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *SubnetworksClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) *SubnetworksScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -309,7 +309,9 @@ func NewSubnetworksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultSubnetworksRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -342,7 +344,7 @@ func (c *subnetworksRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of subnetworks.
+// AggregatedList retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) *SubnetworksScopedListPairIterator {
 	it := &SubnetworksScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListSubnetworksRequest)

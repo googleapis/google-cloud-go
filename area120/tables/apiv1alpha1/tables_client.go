@@ -60,7 +60,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("area120tables.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("area120tables.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("area120tables.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://area120tables.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -409,7 +411,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://area120tables.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://area120tables.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://area120tables.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://area120tables.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

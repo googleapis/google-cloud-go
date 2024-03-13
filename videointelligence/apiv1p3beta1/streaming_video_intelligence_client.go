@@ -40,7 +40,9 @@ type StreamingVideoIntelligenceCallOptions struct {
 func defaultStreamingVideoIntelligenceGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("videointelligence.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("videointelligence.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("videointelligence.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://videointelligence.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),

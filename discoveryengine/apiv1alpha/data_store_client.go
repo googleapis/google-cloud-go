@@ -47,19 +47,23 @@ var newDataStoreClientHook clientHook
 
 // DataStoreCallOptions contains the retry settings for each method of DataStoreClient.
 type DataStoreCallOptions struct {
-	CreateDataStore []gax.CallOption
-	GetDataStore    []gax.CallOption
-	ListDataStores  []gax.CallOption
-	DeleteDataStore []gax.CallOption
-	UpdateDataStore []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	CreateDataStore                []gax.CallOption
+	GetDataStore                   []gax.CallOption
+	ListDataStores                 []gax.CallOption
+	DeleteDataStore                []gax.CallOption
+	UpdateDataStore                []gax.CallOption
+	GetDocumentProcessingConfig    []gax.CallOption
+	UpdateDocumentProcessingConfig []gax.CallOption
+	GetOperation                   []gax.CallOption
+	ListOperations                 []gax.CallOption
 }
 
 func defaultDataStoreGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("discoveryengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("discoveryengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("discoveryengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -70,11 +74,13 @@ func defaultDataStoreGRPCClientOptions() []option.ClientOption {
 
 func defaultDataStoreCallOptions() *DataStoreCallOptions {
 	return &DataStoreCallOptions{
-		CreateDataStore: []gax.CallOption{},
-		GetDataStore:    []gax.CallOption{},
-		ListDataStores:  []gax.CallOption{},
-		DeleteDataStore: []gax.CallOption{},
-		UpdateDataStore: []gax.CallOption{},
+		CreateDataStore:                []gax.CallOption{},
+		GetDataStore:                   []gax.CallOption{},
+		ListDataStores:                 []gax.CallOption{},
+		DeleteDataStore:                []gax.CallOption{},
+		UpdateDataStore:                []gax.CallOption{},
+		GetDocumentProcessingConfig:    []gax.CallOption{},
+		UpdateDocumentProcessingConfig: []gax.CallOption{},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -104,11 +110,13 @@ func defaultDataStoreCallOptions() *DataStoreCallOptions {
 
 func defaultDataStoreRESTCallOptions() *DataStoreCallOptions {
 	return &DataStoreCallOptions{
-		CreateDataStore: []gax.CallOption{},
-		GetDataStore:    []gax.CallOption{},
-		ListDataStores:  []gax.CallOption{},
-		DeleteDataStore: []gax.CallOption{},
-		UpdateDataStore: []gax.CallOption{},
+		CreateDataStore:                []gax.CallOption{},
+		GetDataStore:                   []gax.CallOption{},
+		ListDataStores:                 []gax.CallOption{},
+		DeleteDataStore:                []gax.CallOption{},
+		UpdateDataStore:                []gax.CallOption{},
+		GetDocumentProcessingConfig:    []gax.CallOption{},
+		UpdateDocumentProcessingConfig: []gax.CallOption{},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -146,6 +154,8 @@ type internalDataStoreClient interface {
 	DeleteDataStore(context.Context, *discoveryenginepb.DeleteDataStoreRequest, ...gax.CallOption) (*DeleteDataStoreOperation, error)
 	DeleteDataStoreOperation(name string) *DeleteDataStoreOperation
 	UpdateDataStore(context.Context, *discoveryenginepb.UpdateDataStoreRequest, ...gax.CallOption) (*discoveryenginepb.DataStore, error)
+	GetDocumentProcessingConfig(context.Context, *discoveryenginepb.GetDocumentProcessingConfigRequest, ...gax.CallOption) (*discoveryenginepb.DocumentProcessingConfig, error)
+	UpdateDocumentProcessingConfig(context.Context, *discoveryenginepb.UpdateDocumentProcessingConfigRequest, ...gax.CallOption) (*discoveryenginepb.DocumentProcessingConfig, error)
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -233,6 +243,24 @@ func (c *DataStoreClient) DeleteDataStoreOperation(name string) *DeleteDataStore
 // UpdateDataStore updates a DataStore
 func (c *DataStoreClient) UpdateDataStore(ctx context.Context, req *discoveryenginepb.UpdateDataStoreRequest, opts ...gax.CallOption) (*discoveryenginepb.DataStore, error) {
 	return c.internalClient.UpdateDataStore(ctx, req, opts...)
+}
+
+// GetDocumentProcessingConfig gets a
+// DocumentProcessingConfig.
+func (c *DataStoreClient) GetDocumentProcessingConfig(ctx context.Context, req *discoveryenginepb.GetDocumentProcessingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.DocumentProcessingConfig, error) {
+	return c.internalClient.GetDocumentProcessingConfig(ctx, req, opts...)
+}
+
+// UpdateDocumentProcessingConfig updates the
+// DocumentProcessingConfig.
+// DocumentProcessingConfig
+// is a singleon resource of
+// DataStore. It’s empty
+// when DataStore is
+// created. The first call to this method will set up
+// DocumentProcessingConfig.
+func (c *DataStoreClient) UpdateDocumentProcessingConfig(ctx context.Context, req *discoveryenginepb.UpdateDocumentProcessingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.DocumentProcessingConfig, error) {
+	return c.internalClient.UpdateDocumentProcessingConfig(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -392,7 +420,9 @@ func NewDataStoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultDataStoreRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://discoveryengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://discoveryengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://discoveryengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -535,6 +565,42 @@ func (c *dataStoreGRPCClient) UpdateDataStore(ctx context.Context, req *discover
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.dataStoreClient.UpdateDataStore(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataStoreGRPCClient) GetDocumentProcessingConfig(ctx context.Context, req *discoveryenginepb.GetDocumentProcessingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.DocumentProcessingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDocumentProcessingConfig[0:len((*c.CallOptions).GetDocumentProcessingConfig):len((*c.CallOptions).GetDocumentProcessingConfig)], opts...)
+	var resp *discoveryenginepb.DocumentProcessingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataStoreClient.GetDocumentProcessingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *dataStoreGRPCClient) UpdateDocumentProcessingConfig(ctx context.Context, req *discoveryenginepb.UpdateDocumentProcessingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.DocumentProcessingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "document_processing_config.name", url.QueryEscape(req.GetDocumentProcessingConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDocumentProcessingConfig[0:len((*c.CallOptions).UpdateDocumentProcessingConfig):len((*c.CallOptions).UpdateDocumentProcessingConfig)], opts...)
+	var resp *discoveryenginepb.DocumentProcessingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataStoreClient.UpdateDocumentProcessingConfig(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -941,6 +1007,148 @@ func (c *dataStoreRESTClient) UpdateDataStore(ctx context.Context, req *discover
 	opts = append((*c.CallOptions).UpdateDataStore[0:len((*c.CallOptions).UpdateDataStore):len((*c.CallOptions).UpdateDataStore)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &discoveryenginepb.DataStore{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetDocumentProcessingConfig gets a
+// DocumentProcessingConfig.
+func (c *dataStoreRESTClient) GetDocumentProcessingConfig(ctx context.Context, req *discoveryenginepb.GetDocumentProcessingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.DocumentProcessingConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetDocumentProcessingConfig[0:len((*c.CallOptions).GetDocumentProcessingConfig):len((*c.CallOptions).GetDocumentProcessingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.DocumentProcessingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateDocumentProcessingConfig updates the
+// DocumentProcessingConfig.
+// DocumentProcessingConfig
+// is a singleon resource of
+// DataStore. It’s empty
+// when DataStore is
+// created. The first call to this method will set up
+// DocumentProcessingConfig.
+func (c *dataStoreRESTClient) UpdateDocumentProcessingConfig(ctx context.Context, req *discoveryenginepb.UpdateDocumentProcessingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.DocumentProcessingConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDocumentProcessingConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetDocumentProcessingConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "document_processing_config.name", url.QueryEscape(req.GetDocumentProcessingConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDocumentProcessingConfig[0:len((*c.CallOptions).UpdateDocumentProcessingConfig):len((*c.CallOptions).UpdateDocumentProcessingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.DocumentProcessingConfig{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

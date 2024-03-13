@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.1...redis/v1.14.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **redis:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.0...redis/v1.14.1) (2023-11-01)
 
 

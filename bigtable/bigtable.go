@@ -285,6 +285,18 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		return err
 	}, retryOptions...)
 
+	// Convert error to grpc status error
+	if err != nil {
+		if errStatus, ok := status.FromError(err); ok {
+			return status.Error(errStatus.Code(), errStatus.Message())
+		}
+
+		ctxStatus := status.FromContextError(err)
+		if ctxStatus.Code() != codes.Unknown {
+			return status.Error(ctxStatus.Code(), ctxStatus.Message())
+		}
+	}
+
 	return err
 }
 
@@ -292,6 +304,8 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 // A missing row will return nil for both Row and error.
 func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	var r Row
+
+	opts = append([]ReadOption{LimitRows(1)}, opts...)
 	err := t.ReadRows(ctx, SingleRow(row), func(rr Row) bool {
 		r = rr
 		return true
@@ -951,6 +965,21 @@ func (m *Mutation) DeleteCellsInFamily(family string) {
 // DeleteRow deletes the entire row.
 func (m *Mutation) DeleteRow() {
 	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromRow_{DeleteFromRow: &btpb.Mutation_DeleteFromRow{}}})
+}
+
+// AddIntToCell adds an int64 value to a cell in an aggregate column family. The column family must
+// have an input type of Int64 or this mutation will fail.
+func (m *Mutation) AddIntToCell(family, column string, ts Timestamp, value int64) {
+	m.addToCell(family, column, ts, &btpb.Value{Kind: &btpb.Value_IntValue{IntValue: value}})
+}
+
+func (m *Mutation) addToCell(family, column string, ts Timestamp, value *btpb.Value) {
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_AddToCell_{AddToCell: &btpb.Mutation_AddToCell{
+		FamilyName:      family,
+		ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte(column)}},
+		Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: int64(ts.TruncateToMilliseconds())}},
+		Input:           value,
+	}}})
 }
 
 // entryErr is a container that combines an entry with the error that was returned for it.

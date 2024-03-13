@@ -57,6 +57,7 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -1317,8 +1318,6 @@ func TestIntegration_ObjectIteration(t *testing.T) {
 }
 
 func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
-	// This is a separate test from the Object Iteration test above because
-	// MatchGlob is not yet implemented for gRPC.
 	multiTransportTest(skipJSONReads(context.Background(), "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
 		// Reset testTime, 'cause object last modification time should be within 5 min
 		// from test (test iteration if -count passed) start time.
@@ -1373,6 +1372,113 @@ func TestIntegration_ObjectIterationMatchGlob(t *testing.T) {
 		sortedNames := []string{"obj1", "other/obj1"}
 		if !cmp.Equal(sortedNames, gotNames) {
 			t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		}
+	})
+}
+
+func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
+	ctx := skipGRPC("not yet implemented in gRPC")
+	multiTransportTest(skipJSONReads(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		newBucketName := prefix + uidSpace.New()
+		h := testHelper{t}
+		bkt := client.Bucket(newBucketName).Retryer(WithPolicy(RetryAlways))
+
+		// Create bucket with UBLA enabled as this is necessary for managed folders.
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			UniformBucketLevelAccess: UniformBucketLevelAccess{
+				Enabled: true,
+			},
+		})
+
+		t.Cleanup(func() {
+			if err := killBucket(ctx, client, newBucketName); err != nil {
+				log.Printf("deleting %q: %v", newBucketName, err)
+			}
+		})
+		const defaultType = "text/plain"
+
+		// Populate object names and make a map for their contents.
+		objects := []string{
+			"obj1",
+			"obj2",
+			"obj/with/slashes",
+			"obj/",
+			"other/obj1",
+		}
+		contents := make(map[string][]byte)
+
+		// Test Writer.
+		for _, obj := range objects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), defaultType, c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+			contents[obj] = c
+		}
+
+		// Create a managed folder. This requires using the Apiary client as this is not available
+		// in the veneer layer.
+		// TODO: change to use storage control client once available.
+		call := client.raw.ManagedFolders.Insert(newBucketName, &raw.ManagedFolder{Name: "mf"})
+		mf, err := call.Context(ctx).Do()
+		if err != nil {
+			t.Fatalf("creating managed folder: %v", err)
+		}
+
+		t.Cleanup(func() {
+			// TODO: add this cleanup logic to killBucket as well once gRPC support is available.
+			call := client.raw.ManagedFolders.Delete(newBucketName, mf.Name)
+			call.Context(ctx).Do()
+		})
+
+		// Test that managed folders are only included when IncludeFoldersAsPrefixes is set.
+		cases := []struct {
+			name  string
+			query *Query
+			want  []string
+		}{
+			{
+				name:  "include folders",
+				query: &Query{Delimiter: "/", IncludeFoldersAsPrefixes: true},
+				want:  []string{"mf/", "obj/", "other/"},
+			},
+			{
+				name:  "no folders",
+				query: &Query{Delimiter: "/"},
+				want:  []string{"obj/", "other/"},
+			},
+		}
+
+		for _, c := range cases {
+			t.Run(c.name, func(t *testing.T) {
+				var gotNames []string
+				var gotPrefixes []string
+				it := bkt.Objects(context.Background(), c.query)
+				for {
+					attrs, err := it.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						t.Fatalf("iterator.Next: %v", err)
+					}
+					if attrs.Name != "" {
+						gotNames = append(gotNames, attrs.Name)
+					}
+					if attrs.Prefix != "" {
+						gotPrefixes = append(gotPrefixes, attrs.Prefix)
+					}
+				}
+
+				sortedNames := []string{"obj1", "obj2"}
+				if !cmp.Equal(sortedNames, gotNames) {
+					t.Errorf("names = %v, want %v", gotNames, sortedNames)
+				}
+
+				if !cmp.Equal(c.want, gotPrefixes) {
+					t.Errorf("prefixes = %v, want %v", gotPrefixes, c.want)
+				}
+			})
 		}
 	})
 }
@@ -2023,6 +2129,22 @@ func TestIntegration_SignedURL(t *testing.T) {
 				headers: map[string][]string{"X-Goog-Foo": {"bar baz"}},
 				fail:    true,
 			},
+			{
+				desc: "Virtual hosted style with custom hostname",
+				opts: SignedURLOptions{
+					Style:    VirtualHostedStyle(),
+					Hostname: "storage.googleapis.com:443",
+				},
+				fail: false,
+			},
+			{
+				desc: "Hostname v4",
+				opts: SignedURLOptions{
+					Hostname: "storage.googleapis.com:443",
+					Scheme:   SigningSchemeV4,
+				},
+				fail: false,
+			},
 		} {
 			opts := test.opts
 			opts.GoogleAccessID = jwtConf.Email
@@ -2293,8 +2415,9 @@ func TestIntegration_WriterContentType(t *testing.T) {
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		obj := client.Bucket(bucket).Object("content")
 		testCases := []struct {
-			content           string
-			setType, wantType string
+			content               string
+			setType, wantType     string
+			forceEmptyContentType bool
 		}{
 			{
 				// Sniffed content type.
@@ -2316,9 +2439,17 @@ func TestIntegration_WriterContentType(t *testing.T) {
 				setType:  "image/jpeg",
 				wantType: "image/jpeg",
 			},
+			{
+				// Content type sniffing disabled.
+				content:               "<html><head><title>My first page</title></head></html>",
+				setType:               "",
+				wantType:              "",
+				forceEmptyContentType: true,
+			},
 		}
 		for i, tt := range testCases {
-			if err := writeObject(ctx, obj, tt.setType, []byte(tt.content)); err != nil {
+			writer := newWriter(ctx, obj, tt.setType, tt.forceEmptyContentType)
+			if err := writeContents(writer, []byte(tt.content)); err != nil {
 				t.Errorf("writing #%d: %v", i, err)
 			}
 			attrs, err := obj.Attrs(ctx)
@@ -5527,10 +5658,7 @@ func deleteObjectIfExists(o *ObjectHandle, retryOpts ...RetryOption) error {
 	return nil
 }
 
-func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
-	w.ContentType = contentType
-
+func writeContents(w *Writer, contents []byte) error {
 	if contents != nil {
 		if _, err := w.Write(contents); err != nil {
 			_ = w.Close()
@@ -5538,6 +5666,20 @@ func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, con
 		}
 	}
 	return w.Close()
+}
+
+func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
+	w := newWriter(ctx, obj, contentType, false)
+
+	return writeContents(w, contents)
+}
+
+func newWriter(ctx context.Context, obj *ObjectHandle, contentType string, forceEmptyContentType bool) *Writer {
+	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+	w.ContentType = contentType
+	w.ForceEmptyContentType = forceEmptyContentType
+
+	return w
 }
 
 func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {

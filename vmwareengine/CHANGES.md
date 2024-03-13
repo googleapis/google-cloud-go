@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.1.0...vmwareengine/v1.1.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.3...vmwareengine/v1.1.0) (2024-01-22)
 
 

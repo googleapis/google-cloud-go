@@ -133,7 +133,7 @@ func (c *MachineTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of machine types.
+// AggregatedList retrieves an aggregated list of machine types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *MachineTypesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListMachineTypesRequest, opts ...gax.CallOption) *MachineTypesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -187,7 +187,9 @@ func NewMachineTypesRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultMachineTypesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -217,7 +219,7 @@ func (c *machineTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of machine types.
+// AggregatedList retrieves an aggregated list of machine types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *machineTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListMachineTypesRequest, opts ...gax.CallOption) *MachineTypesScopedListPairIterator {
 	it := &MachineTypesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListMachineTypesRequest)

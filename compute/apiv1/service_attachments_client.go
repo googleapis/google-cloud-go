@@ -173,7 +173,7 @@ func (c *ServiceAttachmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *ServiceAttachmentsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListServiceAttachmentsRequest, opts ...gax.CallOption) *ServiceAttachmentsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -270,7 +270,9 @@ func NewServiceAttachmentsRESTClient(ctx context.Context, opts ...option.ClientO
 func defaultServiceAttachmentsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -303,7 +305,7 @@ func (c *serviceAttachmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all ServiceAttachment resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *serviceAttachmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListServiceAttachmentsRequest, opts ...gax.CallOption) *ServiceAttachmentsScopedListPairIterator {
 	it := &ServiceAttachmentsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListServiceAttachmentsRequest)

@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.4...netapp/v0.2.5) (2024-03-07)
+
+
+### Documentation
+
+* **netapp:** Mark optional fields explicitly in Storage Pool ([#9513](https://github.com/googleapis/google-cloud-go/issues/9513)) ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.3...netapp/v0.2.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **netapp:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.2...netapp/v0.2.3) (2023-11-01)
 
 
