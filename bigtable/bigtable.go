@@ -184,16 +184,19 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
 	err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
-		if !arg.valid() {
-			// Empty row set, no need to make an API call.
-			// NOTE: we must return early if arg == RowList{} because reading
-			// an empty RowList from bigtable returns all rows from that table.
-			return nil
-		}
 		req := &btpb.ReadRowsRequest{
 			TableName:    t.c.fullTableName(t.table),
 			AppProfileId: t.c.appProfile,
-			Rows:         arg.proto(),
+		}
+
+		if arg != nil {
+			if !arg.valid() {
+				// Empty row set, no need to make an API call.
+				// NOTE: we must return early if arg == RowList{} because reading
+				// an empty RowList from bigtable returns all rows from that table.
+				return nil
+			}
+			req.Rows = arg.proto()
 		}
 		settings := makeReadSettings(req)
 		for _, opt := range opts {
@@ -222,6 +225,10 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 			}
 			if err != nil {
 				// Reset arg for next Invoke call.
+				if arg == nil {
+					// Should be lowest possible key value, an empty byte array
+					arg = InfiniteRange("")
+				}
 				if req.Reversed {
 					arg = arg.retainRowsBefore(prevRowKey)
 				} else {
