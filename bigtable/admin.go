@@ -2185,7 +2185,7 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	return err
 }
 
-// Authorized View APIs
+// AuthorizedViewConf contains information about an authorized view.
 type AuthorizedViewConf struct {
 	TableID          string
 	AuthorizedViewID string
@@ -2194,16 +2194,20 @@ type AuthorizedViewConf struct {
 	DeletionProtection     DeletionProtection
 }
 
+// AuthorizedViewTypeConf contains information about the type of an authorized view.
 type AuthorizedViewTypeConf struct {
 	AuthorizedViewType AuthorizedViewType
 
 	SubsetView *SubsetViewConf
 }
 
+// AuthorizedViewType represents the type of an authorized view.
 type AuthorizedViewType int
 
 const (
+	// AuthorizedViewTypeUnspecified represents an unspecified authorized view type.
 	AuthorizedViewTypeUnspecified AuthorizedViewType = iota
+	// AuthorizedViewTypeSubsetView represents subset view type of an authorized view.
 	AuthorizedViewTypeSubsetView
 )
 
@@ -2230,14 +2234,14 @@ func (av AuthorizedViewConf) proto() *btapb.AuthorizedView {
 	return &avp
 }
 
-// Sets the AuthorizedViewType to AuthorizedViewTypeSubsetView and the subsetView pointer accordingly
+// SetSubsetView sets the AuthorizedViewType to AuthorizedViewTypeSubsetView and the subsetView pointer accordingly
 func (av *AuthorizedViewTypeConf) SetSubsetView(s SubsetViewConf) error {
 	av.AuthorizedViewType = AuthorizedViewTypeSubsetView
 	av.SubsetView = &s
 	return nil
 }
 
-// Returns an error if the type is not AuthorizedViewTypeSubsetView.
+// GetSubsetView returns an error if the type is not AuthorizedViewTypeSubsetView.
 func (av *AuthorizedViewTypeConf) GetSubsetView() (*SubsetViewConf, error) {
 	if av.AuthorizedViewType != AuthorizedViewTypeSubsetView {
 		return nil, fmt.Errorf("not a subset view: :%v", av.AuthorizedViewType)
@@ -2250,11 +2254,13 @@ type familySubset struct {
 	QualifierPrefixes [][]byte
 }
 
+// SubsetViewConf contains configuration specific to an authorized view of subset view type.
 type SubsetViewConf struct {
 	RowPrefixes   [][]byte
 	FamilySubsets map[string]familySubset
 }
 
+// AddRowPrefix adds a new row prefix to the subset view.
 func (s *SubsetViewConf) AddRowPrefix(prefix []byte) {
 	s.RowPrefixes = append(s.RowPrefixes, prefix)
 }
@@ -2301,18 +2307,21 @@ func (s *SubsetViewConf) fillConf(internal *btapb.AuthorizedView_SubsetView) {
 	}
 }
 
+// AddFamilySubsetQualifier adds an individual column qualifier to be included in a subset view.
 func (s *SubsetViewConf) AddFamilySubsetQualifier(familyName string, qualifier []byte) {
 	fs := s.getFamilySubset(familyName)
 	fs.Qualifiers = append(fs.Qualifiers, qualifier)
 	s.FamilySubsets[familyName] = fs
 }
 
+// AddFamilySubsetQualifierPrefix adds a prefix for column qualifiers to be included in a subset view.
 func (s *SubsetViewConf) AddFamilySubsetQualifierPrefix(familyName string, qualifierPrefix []byte) {
 	fs := s.getFamilySubset(familyName)
 	fs.QualifierPrefixes = append(fs.QualifierPrefixes, qualifierPrefix)
 	s.FamilySubsets[familyName] = fs
 }
 
+// CreateAuthorizedView creates a new authorized view in a table.
 func (ac *AdminClient) CreateAuthorizedView(ctx context.Context, conf *AuthorizedViewConf) error {
 	if conf.TableID == "" || conf.AuthorizedViewID == "" {
 		return errors.New("both AuthorizedViewID and TableID are required")
@@ -2331,6 +2340,7 @@ func (ac *AdminClient) CreateAuthorizedView(ctx context.Context, conf *Authorize
 	return err
 }
 
+// GetAuthorizedView retrieves information about an authorized view.
 func (ac *AdminClient) GetAuthorizedView(ctx context.Context, tableID, authorizedViewID string) (*AuthorizedViewConf, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	req := &btapb.GetAuthorizedViewRequest{
@@ -2387,11 +2397,13 @@ func (ac *AdminClient) AuthorizedViews(ctx context.Context, tableID string) ([]s
 	return names, nil
 }
 
+// UpdateAuthorizedViewConf contains all the information necessary to update or partial update an authorized view.
 type UpdateAuthorizedViewConf struct {
 	AuthorizedViewConf AuthorizedViewConf
 	UpdateMask         []string
 }
 
+// UpdateAuthorizedView updates an authorized view in a table according to the given configuration.
 func (ac *AdminClient) UpdateAuthorizedView(ctx context.Context, conf UpdateAuthorizedViewConf) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	if conf.AuthorizedViewConf.TableID == "" || conf.AuthorizedViewConf.AuthorizedViewID == "" {
@@ -2415,6 +2427,7 @@ func (ac *AdminClient) UpdateAuthorizedView(ctx context.Context, conf UpdateAuth
 	return nil
 }
 
+// DeleteAuthorizedView deletes an authorized view in a table.
 func (ac *AdminClient) DeleteAuthorizedView(ctx context.Context, tableID, authorizedViewID string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	req := &btapb.DeleteAuthorizedViewRequest{

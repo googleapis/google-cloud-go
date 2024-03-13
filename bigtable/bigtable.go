@@ -149,7 +149,8 @@ func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Cont
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
 }
 
-type TableApi interface {
+// TableAPI interface allows existing data APIs to be applied to either an authorized view or a table.
+type TableAPI interface {
 	ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error
 	ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error)
 	Apply(ctx context.Context, row string, m *Mutation, opts ...ApplyOption) error
@@ -186,7 +187,8 @@ func (c *Client) Open(table string) *Table {
 	}
 }
 
-func (c *Client) OpenTable(table string) TableApi {
+// OpenTable opens a table.
+func (c *Client) OpenTable(table string) TableAPI {
 	return &tableImpl{Table{
 		c:     c,
 		table: table,
@@ -197,7 +199,8 @@ func (c *Client) OpenTable(table string) TableApi {
 	}}
 }
 
-func (c *Client) OpenAuthorizedView(table, authorizedView string) TableApi {
+// OpenAuthorizedView opens an authorized view.
+func (c *Client) OpenAuthorizedView(table, authorizedView string) TableAPI {
 	return &tableImpl{Table{
 		c:     c,
 		table: table,
