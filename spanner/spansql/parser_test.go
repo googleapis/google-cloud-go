@@ -1431,6 +1431,21 @@ func TestParseDDL(t *testing.T) {
 				},
 			},
 		},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (JSON_QUERY(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_QUERY",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
 		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (JSON_VALUE(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
 			&AlterTable{
 				Name: "products",
@@ -1440,6 +1455,36 @@ func TestParseDDL(t *testing.T) {
 					Position: line(1),
 					Generated: Func{
 						Name: "JSON_VALUE",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (JSON_QUERY_ARRAY(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_QUERY_ARRAY",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (JSON_VALUE_ARRAY(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_VALUE_ARRAY",
 						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
 					},
 				}},
