@@ -18,6 +18,15 @@
     "ignorePaths": [
         "**/snippets/**"
     ],
+    "packageRules": [
+        {
+            "matchPackageNames": [
+                "^github.com/google/go-github/v",
+                "^github.com/apache/arrow/go/v"
+            ],
+            "enabled": false
+        }
+    ],
     "force": {
         "constraints": {
             "go": "1.20"
