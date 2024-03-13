@@ -38,7 +38,7 @@ type config struct {
 	ManualClientInfo []*ManifestEntry
 }
 
-type ServiceConfigEntry struct {
+type serviceConfigEntry struct {
 	InputDirectory       string `yaml:"input-directory"`
 	ServiceConfig        string `yaml:"service-config"`
 	ImportPath           string `yaml:"import-path"`
@@ -48,16 +48,16 @@ type ServiceConfigEntry struct {
 
 type postProcessorConfig struct {
 	Modules        []string              `yaml:"modules"`
-	ServiceConfigs []*ServiceConfigEntry `yaml:"service-configs"`
+	ServiceConfigs []*serviceConfigEntry `yaml:"service-configs"`
 	ManualClients  []*ManifestEntry      `yaml:"manual-clients"`
 }
 
-type DeepCopyConfig struct {
+type deepCopyConfig struct {
 	Source string `yaml:"source"`
 	Dest   string `yaml:"dest"`
 }
 type owlBotConfig struct {
-	DeepCopyRegex   []DeepCopyConfig `yaml:"deep-copy-regex"`
+	DeepCopyRegex   []deepCopyConfig `yaml:"deep-copy-regex"`
 	DeepRemoveRegex []string         `yaml:"deep-remove-regex"`
 }
 

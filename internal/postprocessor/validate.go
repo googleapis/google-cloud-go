@@ -38,8 +38,8 @@ var (
 		"autogen":     true, // longrunning
 		"longrunning": true,
 	}
-	moduleApiVersionRegex    = regexp.MustCompile(`\/api(v[1-9]+[a-z0-9]*)`)
-	directoryApiVersionRegex = regexp.MustCompile(`\/(v[1-9]+[a-z0-9]*)`)
+	moduleAPIVersionRegex    = regexp.MustCompile(`\/api(v[1-9]+[a-z0-9]*)`)
+	directoryAPIVersionRegex = regexp.MustCompile(`\/(v[1-9]+[a-z0-9]*)`)
 )
 
 const (
@@ -98,7 +98,7 @@ func validatePostProcessorConfig(ppc *postProcessorConfig) error {
 		mods[m] = true
 	}
 
-	serviceConfigs := make(map[string]*ServiceConfigEntry)
+	serviceConfigs := make(map[string]*serviceConfigEntry)
 	for _, s := range ppc.ServiceConfigs {
 		if strings.Contains(s.InputDirectory, "grafeas") {
 			// Skip grafeas because it's an oddity that won't change anytime soon.
@@ -119,20 +119,20 @@ func validatePostProcessorConfig(ppc *postProcessorConfig) error {
 	return nil
 }
 
-func validateServiceConfigEntry(s *ServiceConfigEntry) error {
+func validateServiceConfigEntry(s *serviceConfigEntry) error {
 	if !strings.HasPrefix(s.ImportPath, "cloud.google.com/go/") {
 		return fmt.Errorf("import-path should start with 'cloud.google.com/go/': %s", s.ImportPath)
 	}
 
 	// Verify that import-path ends with "apiv" suffix.
-	importMatches := moduleApiVersionRegex.FindAllStringSubmatch(s.ImportPath, 1)
+	importMatches := moduleAPIVersionRegex.FindAllStringSubmatch(s.ImportPath, 1)
 	last := s.ImportPath[strings.LastIndex(s.ImportPath, "/")+1:]
 	if len(importMatches) == 0 && !lastSegmentExecptions[last] {
 		return fmt.Errorf("import-path should have an api version in format 'apiv[a-b1-9]+': %s", s.ImportPath)
 	}
 
 	// Verify that input-directory ends with version suffix.
-	dirMatches := directoryApiVersionRegex.FindAllStringSubmatch(s.InputDirectory, -1)
+	dirMatches := directoryAPIVersionRegex.FindAllStringSubmatch(s.InputDirectory, -1)
 	last = s.InputDirectory[strings.LastIndex(s.InputDirectory, "/")+1:]
 	if len(dirMatches) == 0 && !lastSegmentExecptions[last] {
 		return fmt.Errorf("import-path should have an api version in format 'v[a-b1-9]+': %s", s.InputDirectory)
@@ -162,8 +162,8 @@ func validateServiceConfigEntry(s *ServiceConfigEntry) error {
 func validateOwlBotConfig(obc *owlBotConfig, ppc *postProcessorConfig) error {
 	// Collect all API directories with post processor configs to ensure each
 	// has an appropriate OwlBot config.
-	postProcessedDirectories := make(map[string]*ServiceConfigEntry, len(ppc.ServiceConfigs))
-	postProcessedImportPaths := make(map[string]*ServiceConfigEntry, len(ppc.ServiceConfigs))
+	postProcessedDirectories := make(map[string]*serviceConfigEntry, len(ppc.ServiceConfigs))
+	postProcessedImportPaths := make(map[string]*serviceConfigEntry, len(ppc.ServiceConfigs))
 	for _, s := range ppc.ServiceConfigs {
 		postProcessedDirectories[s.InputDirectory] = s
 		importPath := s.ImportPath
