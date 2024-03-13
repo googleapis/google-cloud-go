@@ -25,6 +25,11 @@ types:
       valueNames:
         SafetyRating_HARM_PROBABILITY_UNSPECIFIED: HarmProbabilityUnspecified
 
+    SafetyRating_HarmSeverity:
+      name: HarmSeverity
+      protoPrefix: SafetyRating_
+      docVerb: specifies
+
     Candidate_FinishReason:
       name: FinishReason
       protoPrefix: Candidate_
