@@ -37,6 +37,9 @@ types:
           type: float32
         CandidateCount:
           type: int32
+        TopK:
+          type: '*int32'
+          convertToFrom: int32pToFloat32p, float32pToInt32p
 
     Citation:
       docVerb: contains

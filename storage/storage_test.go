@@ -2424,6 +2424,57 @@ func TestParseProjectNumber(t *testing.T) {
 	}
 }
 
+func TestObjectValidate(t *testing.T) {
+	for _, c := range []struct {
+		name        string
+		bucket      string
+		object      string
+		wantSuccess bool
+	}{
+		{
+			name:        "valid object",
+			bucket:      "my-bucket",
+			object:      "my-object",
+			wantSuccess: true,
+		},
+		{
+			name:        "empty bucket name",
+			bucket:      "",
+			object:      "my-object",
+			wantSuccess: false,
+		},
+		{
+			name:        "empty object name",
+			bucket:      "my-bucket",
+			object:      "",
+			wantSuccess: false,
+		},
+		{
+			name:        "invalid utf-8",
+			bucket:      "my-bucket",
+			object:      "\xc3\x28",
+			wantSuccess: false,
+		},
+		{
+			name:        "object name .",
+			bucket:      "my-bucket",
+			object:      ".",
+			wantSuccess: false,
+		},
+	} {
+		t.Run(c.name, func(r *testing.T) {
+			b := &BucketHandle{name: c.bucket}
+			err := b.Object(c.object).validate()
+			if c.wantSuccess && err != nil {
+				r.Errorf("want success, got error %v", err)
+			}
+			if !c.wantSuccess && err == nil {
+				r.Errorf("want error, got nil")
+			}
+		})
+	}
+}
+
 // isZeroValue reports whether v is the zero value for its type
 // It errors if the argument is unknown
 func isZeroValue(v reflect.Value) (bool, error) {

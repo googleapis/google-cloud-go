@@ -1,5 +1,13 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.9.4...networkmanagement/v1.10.0) (2024-03-12)
+
+
+### Features
+
+* **networkmanagement:** Add new load balancer fields to public API ([0f56155](https://github.com/googleapis/google-cloud-go/commit/0f56155e01cb9f27f58b905dd5ff910964ad25d5))
+* **networkmanagement:** Add new NAT fields to Network Management API definition ([#9523](https://github.com/googleapis/google-cloud-go/issues/9523)) ([0f56155](https://github.com/googleapis/google-cloud-go/commit/0f56155e01cb9f27f58b905dd5ff910964ad25d5))
+
 ## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.9.3...networkmanagement/v1.9.4) (2024-01-30)
 
 
