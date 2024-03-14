@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package detect
+package credentials
 
 import (
 	"context"
@@ -27,7 +27,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect/internal/gdch"
+	"cloud.google.com/go/auth/credentials/internal/gdch"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/internaldetect"
 	"cloud.google.com/go/auth/internal/jwt"
@@ -112,10 +112,10 @@ func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if _, err := DefaultCredentials(&Options{CredentialsJSON: b}); err == nil {
+	if _, err := DetectDefault(&DetectOptions{CredentialsJSON: b}); err == nil {
 		t.Fatal("STSAudience should be required")
 	}
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsJSON: b,
 		STSAudience:     aud,
 	})
@@ -168,7 +168,7 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsJSON:  b,
 		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
 		UseSelfSignedJWT: true,
@@ -204,7 +204,7 @@ func TestDefaultCredentials_UserCredentialsKey(t *testing.T) {
 		}
 	}))
 
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsFile: "../internal/testdata/user.json",
 		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 		TokenURL:        ts.URL,
@@ -243,7 +243,7 @@ func TestDefaultCredentials_UserCredentialsKey_UniverseDomain(t *testing.T) {
 		}
 	}))
 
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsFile: "../internal/testdata/user_universe_domain.json",
 		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 		TokenURL:        ts.URL,
@@ -294,7 +294,7 @@ func TestDefaultCredentials_ServiceAccountKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsJSON: b,
 		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 	})
@@ -329,7 +329,7 @@ func TestDefaultCredentials_ServiceAccountKeySelfSigned(t *testing.T) {
 	defer func() { now = oldNow }()
 	wantTok := "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFiY2RlZjEyMzQ1Njc4OTAifQ.eyJpc3MiOiJnb3BoZXJAZmFrZV9wcm9qZWN0LmlhbS5nc2VydmljZWFjY291bnQuY29tIiwic2NvcGUiOiJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9hdXRoL2Nsb3VkLXBsYXRmb3JtIiwiZXhwIjo5NDk0MTE4MDAsImlhdCI6OTQ5NDA4MjAwLCJhdWQiOiIiLCJzdWIiOiJnb3BoZXJAZmFrZV9wcm9qZWN0LmlhbS5nc2VydmljZWFjY291bnQuY29tIn0.n9Hggd-1Vw4WTQiWkh7q9r5eDsz-khU5vwkZl2VmgdUF3ZxDq1ARzchCNtTifeorzbp9C0i0vCr855G7FZkVCJXPVMcnxbwfMSafUYmVsmutbQiV9eTWfWM0_Ljiwa9GEbv1bN06Lz4LrelPKEaxsDbY6tU8LJUiome_gSMLfLk"
 
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsJSON:  b,
 		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
 		UseSelfSignedJWT: true,
@@ -365,7 +365,7 @@ func TestDefaultCredentials_ServiceAccountKeySelfSigned_UniverseDomain(t *testin
 	defer func() { now = oldNow }()
 	wantTok := "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6ImFiY2RlZjEyMzQ1Njc4OTAifQ.eyJpc3MiOiJnb3BoZXJAZmFrZV9wcm9qZWN0LmlhbS5nc2VydmljZWFjY291bnQuY29tIiwic2NvcGUiOiJodHRwczovL3d3dy5nb29nbGVhcGlzLmNvbS9hdXRoL2Nsb3VkLXBsYXRmb3JtIiwiZXhwIjo5NDk0MTE4MDAsImlhdCI6OTQ5NDA4MjAwLCJhdWQiOiIiLCJzdWIiOiJnb3BoZXJAZmFrZV9wcm9qZWN0LmlhbS5nc2VydmljZWFjY291bnQuY29tIn0.n9Hggd-1Vw4WTQiWkh7q9r5eDsz-khU5vwkZl2VmgdUF3ZxDq1ARzchCNtTifeorzbp9C0i0vCr855G7FZkVCJXPVMcnxbwfMSafUYmVsmutbQiV9eTWfWM0_Ljiwa9GEbv1bN06Lz4LrelPKEaxsDbY6tU8LJUiome_gSMLfLk"
 
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsJSON:  b,
 		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
 		UseSelfSignedJWT: true,
@@ -418,7 +418,7 @@ func TestDefaultCredentials_ClientCredentials(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsJSON: b,
 		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 		TokenURL:        ts.URL,
@@ -516,7 +516,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsJSON:  b,
 		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
 		UseSelfSignedJWT: true,
@@ -577,7 +577,7 @@ func TestDefaultCredentials_ExternalAccountAuthorizedUserKey(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	creds, err := DefaultCredentials(&Options{
+	creds, err := DetectDefault(&DetectOptions{
 		CredentialsJSON:  b,
 		Scopes:           []string{"https://www.googleapis.com/auth/cloud-platform"},
 		UseSelfSignedJWT: true,
@@ -603,7 +603,7 @@ func TestDefaultCredentials_Fails(t *testing.T) {
 	t.Setenv("APPDATA", "nothingToSeeHere")
 	allowOnGCECheck = false
 	defer func() { allowOnGCECheck = true }()
-	if _, err := DefaultCredentials(&Options{
+	if _, err := DetectDefault(&DetectOptions{
 		Scopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
 	}); !strings.Contains(err.Error(), adcSetupURL) {
 		t.Fatalf("got %v, wanted to contain %v", err, adcSetupURL)
@@ -611,7 +611,7 @@ func TestDefaultCredentials_Fails(t *testing.T) {
 }
 
 func TestDefaultCredentials_BadFiletype(t *testing.T) {
-	if _, err := DefaultCredentials(&Options{
+	if _, err := DetectDefault(&DetectOptions{
 		CredentialsJSON: []byte(`{"type":"42"}`),
 		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 	}); err == nil {
@@ -622,21 +622,21 @@ func TestDefaultCredentials_BadFiletype(t *testing.T) {
 func TestDefaultCredentials_Validate(t *testing.T) {
 	tests := []struct {
 		name string
-		opts *Options
+		opts *DetectOptions
 	}{
 		{
 			name: "missing options",
 		},
 		{
 			name: "scope and audience provided",
-			opts: &Options{
+			opts: &DetectOptions{
 				Scopes:   []string{"scope"},
 				Audience: "aud",
 			},
 		},
 		{
 			name: "file and json provided",
-			opts: &Options{
+			opts: &DetectOptions{
 				Scopes:          []string{"scope"},
 				CredentialsFile: "path",
 				CredentialsJSON: []byte(`{"some":"json"}`),
@@ -645,7 +645,7 @@ func TestDefaultCredentials_Validate(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if _, err := DefaultCredentials(tt.opts); err == nil {
+			if _, err := DetectDefault(tt.opts); err == nil {
 				t.Error("got nil, want an error")
 			}
 		})

@@ -40,6 +40,8 @@ const (
 	// 3 minutes and 45 seconds before expiration. The shortest MDS cache is 4 minutes,
 	// so we give it 15 seconds to refresh it's cache before attempting to refresh a token.
 	defaultExpiryDelta = 215 * time.Second
+
+	universeDomainDefault = "googleapis.com"
 )
 
 var (
@@ -92,6 +94,72 @@ func (t *Token) isValidWithEarlyExpiry(earlyExpiry time.Duration) bool {
 		return true
 	}
 	return !t.Expiry.Round(0).Add(-earlyExpiry).Before(timeNow())
+}
+
+// Credentials holds Google credentials, including
+// [Application Default Credentials](https://developers.google.com/accounts/docs/application-default-credentials).
+type Credentials struct {
+	json           []byte
+	projectID      string
+	quotaProjectID string
+	// universeDomain is the default service domain for a given Cloud universe.
+	universeDomain string
+
+	TokenProvider
+}
+
+// JSON returns the bytes associated with the the file used to source
+// credentials if one was used.
+func (c *Credentials) JSON() []byte {
+	return c.json
+}
+
+// ProjectID returns the associated project ID from the underlying file or
+// environment.
+func (c *Credentials) ProjectID() string {
+	return c.projectID
+}
+
+// QuotaProjectID returns the associated quota project ID from the underlying
+// file or environment.
+func (c *Credentials) QuotaProjectID() string {
+	return c.quotaProjectID
+}
+
+// UniverseDomain returns the default service domain for a given Cloud universe.
+// The default value is "googleapis.com".
+func (c *Credentials) UniverseDomain() string {
+	if c.universeDomain == "" {
+		return universeDomainDefault
+	}
+	return c.universeDomain
+}
+
+// CredentialsOptions are used to configure [Credentials].
+type CredentialsOptions struct {
+	// TokenProvider is a means of sourcing a token for the credentials. Required.
+	TokenProvider TokenProvider
+	// JSON is the raw contents of the credentials file if sourced from a file.
+	JSON []byte
+	// ProjectID associated with the credentials.
+	ProjectID string
+	// QuotaProjectID associated with the credentials.
+	QuotaProjectID string
+	// UniverseDomain associated with the credentials.
+	UniverseDomain string
+}
+
+// NewCredentials returns new [Credentials] from the provided options. Most users
+// will want to build this object a function from the
+// [cloud.google.com/go/auth/credentials] package.
+func NewCredentials(opts *CredentialsOptions) *Credentials {
+	return &Credentials{
+		json:           opts.JSON,
+		projectID:      internal.GetProjectID(opts.JSON, opts.ProjectID),
+		quotaProjectID: internal.GetQuotaProject(opts.JSON, opts.QuotaProjectID),
+		universeDomain: opts.UniverseDomain,
+		TokenProvider:  opts.TokenProvider,
+	}
 }
 
 // CachedTokenProviderOptions provided options for configuring a

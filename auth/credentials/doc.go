@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package detect provides support for making OAuth2 authorized and
+// package credentials provides support for making OAuth2 authorized and
 // authenticated HTTP requests to Google APIs. It supports the Web server flow,
 // client-side credentials, service accounts, Google Compute Engine service
 // accounts, Google App Engine service accounts and workload identity federation
@@ -77,7 +77,7 @@
 // The [Credentials] type represents Google credentials, including Application
 // Default Credentials.
 //
-// Use [DefaultCredentials] to obtain Application Default Credentials.
+// Use [DetectDefault] to obtain Application Default Credentials.
 //
 // Application Default Credentials support workload identity federation to
 // access Google Cloud resources from non-Google Cloud platforms including Amazon
@@ -85,4 +85,4 @@
 // OpenID Connect (OIDC). Workload identity federation is recommended for
 // non-Google Cloud environments as it avoids the need to download, manage, and
 // store service account private keys locally.
-package detect
+package credentials

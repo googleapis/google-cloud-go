@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package detect
+package credentials
 
 import (
 	"context"
@@ -34,7 +34,7 @@ var (
 
 // configureSelfSignedJWT uses the private key in the service account to create
 // a JWT without making a network call.
-func configureSelfSignedJWT(f *internaldetect.ServiceAccountFile, opts *Options) (auth.TokenProvider, error) {
+func configureSelfSignedJWT(f *internaldetect.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	pk, err := internal.ParseKey([]byte(f.PrivateKey))
 	if err != nil {
 		return nil, fmt.Errorf("detect: could not parse key: %w", err)

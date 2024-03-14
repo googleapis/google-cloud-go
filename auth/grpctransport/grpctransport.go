@@ -21,11 +21,11 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal/transport"
 	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	grpccreds "google.golang.org/grpc/credentials"
 	grpcinsecure "google.golang.org/grpc/credentials/insecure"
 )
 
@@ -70,7 +70,7 @@ type Options struct {
 	TokenProvider auth.TokenProvider
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
-	DetectOpts *detect.Options
+	DetectOpts *credentials.DetectOptions
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.
@@ -99,7 +99,7 @@ func (o *Options) validate() error {
 	return nil
 }
 
-func (o *Options) resolveDetectOptions() *detect.Options {
+func (o *Options) resolveDetectOptions() *credentials.DetectOptions {
 	io := o.InternalOptions
 	// soft-clone these so we are not updating a ref the user holds and may reuse
 	do := transport.CloneDetectOptions(o.DetectOpts)
@@ -200,7 +200,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	// Authentication can only be sent when communicating over a secure connection.
 	if !opts.DisableAuthentication {
 		metadata := opts.Metadata
-		creds, err := detect.DefaultCredentials(opts.resolveDetectOptions())
+		creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
 		if err != nil {
 			return nil, err
 		}
@@ -253,8 +253,8 @@ func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...stri
 		return nil, err
 	}
 	if tp.secure {
-		ri, _ := credentials.RequestInfoFromContext(ctx)
-		if err = credentials.CheckSecurityLevel(ri.AuthInfo, credentials.PrivacyAndIntegrity); err != nil {
+		ri, _ := grpccreds.RequestInfoFromContext(ctx)
+		if err = grpccreds.CheckSecurityLevel(ri.AuthInfo, grpccreds.PrivacyAndIntegrity); err != nil {
 			return nil, fmt.Errorf("unable to transfer TokenProvider PerRPCCredentials: %v", err)
 		}
 	}

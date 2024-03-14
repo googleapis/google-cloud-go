@@ -22,7 +22,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"cloud.google.com/go/auth/detect/internal/stsexchange"
+	"cloud.google.com/go/auth/credentials/internal/stsexchange"
 	"cloud.google.com/go/auth/internal"
 )
 
