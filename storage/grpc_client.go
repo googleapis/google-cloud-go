@@ -905,7 +905,7 @@ func (c *grpcStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	return r, nil
 }
 
-// bytesCodec is a grpc codec which permits sending/receiving messages as either
+// bytesCodec is a grpc codec which permits receiving messages as either
 // protobuf messages, or as raw []bytes.
 type bytesCodec struct {
 	encoding.Codec
