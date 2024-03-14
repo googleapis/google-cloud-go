@@ -15,6 +15,7 @@
 package detect
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -54,9 +55,28 @@ type Credentials struct {
 	projectID      string
 	quotaProjectID string
 	// universeDomain is the default service domain for a given Cloud universe.
+	// The source may be from user configuration (Options.UniverseDomain) or
+	// from a credentials file. User configuration takes precedence. See
+	// fileCredentials. Not set from file in the case of compute (GCE),
+	// therefore udp (below) is typically used instead. Optional.
 	universeDomain string
+	// udp, if provided, can fetch a universe domain value if universeDomain
+	// (above) is blank, which is typically the case for compute (GCE)
+	// credentials. Optional.
+	udp universeDomainProvider
 
 	auth.TokenProvider
+}
+
+// universeDomainProvider fetches a universe domain value. Typically used with
+// compute (GCE) credentials. Think of it as a promise for resolving the
+// universe domain.
+type universeDomainProvider interface {
+	// UniverseDomain returns a universe domain or an error. It does not return
+	// an empty string. It may return the default value "googleapis.com".
+	// The context provided must be sent along to any requests that are made in
+	// the implementing code.
+	UniverseDomain(context.Context) (string, error)
 }
 
 func newCredentials(tokenProvider auth.TokenProvider, json []byte, projectID string, quotaProjectID string, universeDomain string) *Credentials {
@@ -94,6 +114,30 @@ func (c *Credentials) UniverseDomain() string {
 		return defaultUniverseDomain
 	}
 	return c.universeDomain
+}
+
+// ValidateUniverseDomain verifies TODO(chridsmith): doc
+func (c *Credentials) ValidateUniverseDomain(ctx context.Context, clientUniverseDomain string) error {
+	ud := defaultUniverseDomain
+	if c.universeDomain != "" {
+		ud = c.universeDomain
+	}
+	if c.udp != nil {
+		var err error
+		ud, err = c.udp.UniverseDomain(ctx)
+		if err != nil {
+			return err
+		}
+	}
+	if clientUniverseDomain != ud {
+		return fmt.Errorf(
+			"the configured universe domain (%q) does not match the universe "+
+				"domain found in the credentials (%q). If you haven't configured "+
+				"WithUniverseDomain explicitly, \"googleapis.com\" is the default",
+			clientUniverseDomain,
+			ud)
+	}
+	return nil
 }
 
 // OnGCE reports whether this process is running in Google Cloud.
@@ -139,7 +183,9 @@ func DefaultCredentials(opts *Options) (*Credentials, error) {
 
 	if OnGCE() {
 		id, _ := metadata.ProjectID()
-		return newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, "", opts.UniverseDomain), nil
+		creds := newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, "", opts.UniverseDomain)
+		creds.udp = &computeUniverseDomainProvider{}
+		return creds, nil
 	}
 
 	return nil, fmt.Errorf("detect: could not find default credentials. See %v for more information", adcSetupURL)

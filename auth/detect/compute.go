@@ -19,6 +19,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strings"
 	"time"
@@ -82,4 +83,23 @@ func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Metadata: computeTokenMetadata,
 	}, nil
 
+} // computeProvider fetches tokens from the google cloud metadata service.
+type computeUniverseDomainProvider struct {
+	// TODO(chridsmith): memoize universe domain (with mutex)
+}
+
+func (cudp computeUniverseDomainProvider) UniverseDomain(ctx context.Context) (string, error) {
+	var err error
+	c := metadata.NewClient(&http.Client{Timeout: time.Second})
+	// TODO(chridsmith): set ctx on request
+	ud, err := c.Get("universe/universe_domain")
+	if err == nil {
+		return ud, nil
+	}
+	if _, ok := err.(metadata.NotDefinedError); ok {
+		// http.StatusNotFound (404)
+		return defaultUniverseDomain, nil
+	} else {
+		return "", err
+	}
 }

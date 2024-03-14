@@ -71,6 +71,10 @@ type Options struct {
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
 	DetectOpts *detect.Options
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". This is the universe domain
+	// provided via client options.
+	UniverseDomain string
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.
@@ -219,8 +223,9 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcTokenProvider{
-				TokenProvider: tp,
+				creds: tp,
 				metadata:      metadata,
+				clientUniverseDomain: opts.UniverseDomain,
 			}),
 		)
 
@@ -239,16 +244,20 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 
 // grpcTokenProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
 type grpcTokenProvider struct {
-	auth.TokenProvider
+	creds detect.Credentials // TODO(chrisdsmith): convert usages of TokenProvider to creds
 
 	secure bool
 
 	// Additional metadata attached as headers.
-	metadata map[string]string
+	metadata             map[string]string
+	clientUniverseDomain string
 }
 
 func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	token, err := tp.Token(ctx)
+	if err := tp.creds.ValidateUniverseDomain(ctx, tp.clientUniverseDomain); err != nil {
+		return nil, err
+	}
+	token, err := tp.creds.Token(ctx)
 	if err != nil {
 		return nil, err
 	}

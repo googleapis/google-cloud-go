@@ -59,6 +59,10 @@ type Options struct {
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
 	DetectOpts *detect.Options
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". This is the universe domain
+	// provided via client options.
+	UniverseDomain string
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.

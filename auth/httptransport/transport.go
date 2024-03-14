@@ -75,7 +75,8 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 		}
 		trans = &authTransport{
 			base:     trans,
-			provider: auth.NewCachedTokenProvider(tp, nil),
+			creds: auth.NewCachedTokenProvider(tp, nil),
+			clientUniverseDomain: opts.UniverseDomain,
 		}
 	}
 	return trans, nil
@@ -159,8 +160,9 @@ func addOCTransport(trans http.RoundTripper, opts *Options) http.RoundTripper {
 }
 
 type authTransport struct {
-	provider auth.TokenProvider
-	base     http.RoundTripper
+	creds                detect.Credentials // TODO(chrisdsmith): convert usages of TokenProvider to creds
+	base                 http.RoundTripper
+	clientUniverseDomain string
 }
 
 // RoundTrip authorizes and authenticates the request with an
@@ -176,7 +178,10 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 			}
 		}()
 	}
-	token, err := t.provider.Token(req.Context())
+	if err := t.creds.ValidateUniverseDomain(req.Context(), t.clientUniverseDomain); err != nil {
+		return nil, err
+	}
+	token, err := t.creds.Token(req.Context())
 	if err != nil {
 		return nil, err
 	}
