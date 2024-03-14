@@ -110,13 +110,20 @@ type PublisherModel_LaunchStage int32
 const (
 	// The model launch stage is unspecified.
 	PublisherModel_LAUNCH_STAGE_UNSPECIFIED PublisherModel_LaunchStage = 0
-	// Used to indicate the PublisherModel is at Experimental launch stage.
+	// Used to indicate the PublisherModel is at Experimental launch stage,
+	// available to a small set of customers.
 	PublisherModel_EXPERIMENTAL PublisherModel_LaunchStage = 1
-	// Used to indicate the PublisherModel is at Private Preview launch stage.
+	// Used to indicate the PublisherModel is at Private Preview launch stage,
+	// only available to a small set of customers, although a larger set of
+	// customers than an Experimental launch. Previews are the first launch
+	// stage used to get feedback from customers.
 	PublisherModel_PRIVATE_PREVIEW PublisherModel_LaunchStage = 2
-	// Used to indicate the PublisherModel is at Public Preview launch stage.
+	// Used to indicate the PublisherModel is at Public Preview launch stage,
+	// available to all customers, although not supported for production
+	// workloads.
 	PublisherModel_PUBLIC_PREVIEW PublisherModel_LaunchStage = 3
-	// Used to indicate the PublisherModel is at GA launch stage.
+	// Used to indicate the PublisherModel is at GA launch stage, available to
+	// all customers and ready for production workload.
 	PublisherModel_GA PublisherModel_LaunchStage = 4
 )
 

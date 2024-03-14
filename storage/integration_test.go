@@ -2419,8 +2419,9 @@ func TestIntegration_WriterContentType(t *testing.T) {
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		obj := client.Bucket(bucket).Object("content")
 		testCases := []struct {
-			content           string
-			setType, wantType string
+			content               string
+			setType, wantType     string
+			forceEmptyContentType bool
 		}{
 			{
 				// Sniffed content type.
@@ -2442,9 +2443,17 @@ func TestIntegration_WriterContentType(t *testing.T) {
 				setType:  "image/jpeg",
 				wantType: "image/jpeg",
 			},
+			{
+				// Content type sniffing disabled.
+				content:               "<html><head><title>My first page</title></head></html>",
+				setType:               "",
+				wantType:              "",
+				forceEmptyContentType: true,
+			},
 		}
 		for i, tt := range testCases {
-			if err := writeObject(ctx, obj, tt.setType, []byte(tt.content)); err != nil {
+			writer := newWriter(ctx, obj, tt.setType, tt.forceEmptyContentType)
+			if err := writeContents(writer, []byte(tt.content)); err != nil {
 				t.Errorf("writing #%d: %v", i, err)
 			}
 			attrs, err := obj.Attrs(ctx)
@@ -5653,10 +5662,7 @@ func deleteObjectIfExists(o *ObjectHandle, retryOpts ...RetryOption) error {
 	return nil
 }
 
-func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
-	w.ContentType = contentType
-
+func writeContents(w *Writer, contents []byte) error {
 	if contents != nil {
 		if _, err := w.Write(contents); err != nil {
 			_ = w.Close()
@@ -5664,6 +5670,20 @@ func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, con
 		}
 	}
 	return w.Close()
+}
+
+func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
+	w := newWriter(ctx, obj, contentType, false)
+
+	return writeContents(w, contents)
+}
+
+func newWriter(ctx context.Context, obj *ObjectHandle, contentType string, forceEmptyContentType bool) *Writer {
+	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+	w.ContentType = contentType
+	w.ForceEmptyContentType = forceEmptyContentType
+
+	return w
 }
 
 func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {

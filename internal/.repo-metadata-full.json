@@ -199,6 +199,26 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/apphub/apiv1": {
+    "api_shortname": "apphub",
+    "distribution_name": "cloud.google.com/go/apphub/apiv1",
+    "description": "App Hub API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apphub/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/apps/events/subscriptions/apiv1": {
+    "api_shortname": "workspaceevents",
+    "distribution_name": "cloud.google.com/go/apps/events/subscriptions/apiv1",
+    "description": "Google Workspace Events API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/apps/latest/events/subscriptions/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/apps/meet/apiv2": {
     "api_shortname": "meet",
     "distribution_name": "cloud.google.com/go/apps/meet/apiv2",
@@ -649,6 +669,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/cloudcontrolspartner/apiv1": {
+    "api_shortname": "cloudcontrolspartner",
+    "distribution_name": "cloud.google.com/go/cloudcontrolspartner/apiv1",
+    "description": "Cloud Controls Partner API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/cloudcontrolspartner/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/clouddms/apiv1": {
     "api_shortname": "datamigration",
     "distribution_name": "cloud.google.com/go/clouddms/apiv1",
@@ -1042,7 +1072,7 @@
   "cloud.google.com/go/dlp/apiv2": {
     "api_shortname": "dlp",
     "distribution_name": "cloud.google.com/go/dlp/apiv2",
-    "description": "Cloud Data Loss Prevention (DLP)",
+    "description": "Sensitive Data Protection (DLP)",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/dlp/latest/apiv2",
@@ -2156,6 +2186,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/securitycenter/latest/apiv1p1beta1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/securitycenter/apiv2": {
+    "api_shortname": "securitycenter",
+    "distribution_name": "cloud.google.com/go/securitycenter/apiv2",
+    "description": "Security Command Center API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/securitycenter/latest/apiv2",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },

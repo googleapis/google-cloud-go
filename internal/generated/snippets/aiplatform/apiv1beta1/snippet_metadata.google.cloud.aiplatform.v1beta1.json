@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1beta1",
-    "version": "1.60.0",
+    "version": "1.62.2",
     "language": "GO",
     "apis": [
       {
@@ -4321,6 +4321,48 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_FeatureOnlineStoreService_StreamingFetchFeatureValues_sync",
+      "title": "aiplatform StreamingFetchFeatureValues Sample",
+      "description": "StreamingFetchFeatureValues bidirectional streaming RPC to fetch feature values under a FeatureView.\nRequests may not have a one-to-one mapping to responses and responses may\nbe returned out-of-order to reduce latency.\n\n\nThis method is not supported for the REST transport.",
+      "file": "FeatureOnlineStoreClient/StreamingFetchFeatureValues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingFetchFeatureValues",
+        "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreClient.StreamingFetchFeatureValues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient",
+        "client": {
+          "shortName": "FeatureOnlineStoreClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreClient"
+        },
+        "method": {
+          "shortName": "StreamingFetchFeatureValues",
+          "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService.StreamingFetchFeatureValues",
+          "service": {
+            "shortName": "FeatureOnlineStoreService",
+            "fullName": "google.cloud.aiplatform.v1beta1.FeatureOnlineStoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
           "type": "FULL"
         }
       ]

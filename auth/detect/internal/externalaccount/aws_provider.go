@@ -279,7 +279,6 @@ func (cs *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context
 	if err != nil {
 		return result, err
 	}
-	req.Header.Set("Content-Type", "application/json")
 	for name, value := range headers {
 		req.Header.Add(name, value)
 	}

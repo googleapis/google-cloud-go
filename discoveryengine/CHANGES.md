@@ -1,6 +1,19 @@
 # Changelog
 
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.5.0...discoveryengine/v1.6.0) (2024-03-12)
+
+
+### Features
+
+* **discoveryengine:** Support acl-based and blended search ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+* **discoveryengine:** Support blended search ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+
+
+### Bug Fixes
+
+* **discoveryengine:** `http_uri` fix for method `ListChunks` in service `ChunkService` ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.4.1...discoveryengine/v1.5.0) (2024-02-09)
 
 
