@@ -2249,7 +2249,8 @@ func (av *AuthorizedViewTypeConf) GetSubsetView() (*SubsetViewConf, error) {
 	return av.SubsetView, nil
 }
 
-type familySubset struct {
+// FamilySubset represents a subset of a column family.
+type FamilySubset struct {
 	Qualifiers        [][]byte
 	QualifierPrefixes [][]byte
 }
@@ -2257,7 +2258,7 @@ type familySubset struct {
 // SubsetViewConf contains configuration specific to an authorized view of subset view type.
 type SubsetViewConf struct {
 	RowPrefixes   [][]byte
-	FamilySubsets map[string]familySubset
+	FamilySubsets map[string]FamilySubset
 }
 
 // AddRowPrefix adds a new row prefix to the subset view.
@@ -2265,15 +2266,12 @@ func (s *SubsetViewConf) AddRowPrefix(prefix []byte) {
 	s.RowPrefixes = append(s.RowPrefixes, prefix)
 }
 
-func (s *SubsetViewConf) getFamilySubset(familyName string) familySubset {
+func (s *SubsetViewConf) getFamilySubset(familyName string) FamilySubset {
 	if s.FamilySubsets == nil {
-		s.FamilySubsets = make(map[string]familySubset)
+		s.FamilySubsets = make(map[string]FamilySubset)
 	}
 	if _, ok := s.FamilySubsets[familyName]; !ok {
-		s.FamilySubsets[familyName] = familySubset{
-			Qualifiers:        [][]byte{},
-			QualifierPrefixes: [][]byte{},
-		}
+		s.FamilySubsets[familyName] = FamilySubset{}
 	}
 	return s.FamilySubsets[familyName]
 }
@@ -2297,10 +2295,10 @@ func (s *SubsetViewConf) fillConf(internal *btapb.AuthorizedView_SubsetView) {
 	s.RowPrefixes = [][]byte{}
 	s.RowPrefixes = append(s.RowPrefixes, internal.RowPrefixes...)
 	if s.FamilySubsets == nil {
-		s.FamilySubsets = make(map[string]familySubset)
+		s.FamilySubsets = make(map[string]FamilySubset)
 	}
 	for k, v := range internal.FamilySubsets {
-		s.FamilySubsets[k] = familySubset{
+		s.FamilySubsets[k] = FamilySubset{
 			Qualifiers:        v.Qualifiers,
 			QualifierPrefixes: v.QualifierPrefixes,
 		}
@@ -2401,6 +2399,7 @@ func (ac *AdminClient) AuthorizedViews(ctx context.Context, tableID string) ([]s
 type UpdateAuthorizedViewConf struct {
 	AuthorizedViewConf AuthorizedViewConf
 	UpdateMask         []string
+	IgnoreWarnings     bool
 }
 
 // UpdateAuthorizedView updates an authorized view in a table according to the given configuration.
@@ -2414,6 +2413,7 @@ func (ac *AdminClient) UpdateAuthorizedView(ctx context.Context, conf UpdateAuth
 	req := &btapb.UpdateAuthorizedViewRequest{
 		AuthorizedView: av,
 		UpdateMask:     &field_mask.FieldMask{Paths: conf.UpdateMask},
+		IgnoreWarnings: conf.IgnoreWarnings,
 	}
 	lro, err := ac.tClient.UpdateAuthorizedView(ctx, req)
 	if err != nil {

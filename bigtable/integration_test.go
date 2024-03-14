@@ -3660,7 +3660,7 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 			AuthorizedViewType: AuthorizedViewTypeSubsetView,
 			SubsetView: &SubsetViewConf{
 				RowPrefixes: [][]byte{[]byte("r1")},
-				FamilySubsets: map[string]familySubset{
+				FamilySubsets: map[string]FamilySubset{
 					"fam1": {
 						QualifierPrefixes: [][]byte{[]byte("col")},
 					},
