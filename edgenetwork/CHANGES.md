@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.1...edgenetwork/v0.2.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **edgenetwork:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.0...edgenetwork/v0.2.1) (2024-01-30)
 
 
@@ -22,4 +29,3 @@
 * **edgenetwork:** New client(s) ([#8996](https://github.com/googleapis/google-cloud-go/issues/8996)) ([8e63c70](https://github.com/googleapis/google-cloud-go/commit/8e63c70b423e8c10ecd617ccf81fa0662f8f91b5))
 
 ## Changes
-

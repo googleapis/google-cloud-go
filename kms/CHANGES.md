@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.8](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.7...kms/v1.15.8) (2024-03-14)
+
+
+### Bug Fixes
+
+* **kms:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.15.7](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.6...kms/v1.15.7) (2024-02-06)
 
 
@@ -196,4 +203,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out kms as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
