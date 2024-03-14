@@ -912,14 +912,11 @@ type bytesCodec struct {
 }
 
 func (bytesCodec) Marshal(v any) ([]byte, error) {
-	switch v := v.(type) {
-	case []byte:
-		return v, nil
-	case proto.Message:
-		return proto.Marshal(v)
-	default:
-		return nil, fmt.Errorf("can not marshal type %T", v)
+	vv, ok := v.(proto.Message)
+	if !ok {
+		return nil, fmt.Errorf("failed to marshal, message is %T, want proto.Message", v)
 	}
+	return proto.Marshal(vv)
 }
 
 func (bytesCodec) Unmarshal(data []byte, v any) error {
@@ -1003,8 +1000,8 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 				return err
 			}
 
-			// Receive the message as a wire-encoded message so we can use a
-			// custom decoder to avoid an extra copy at the protobuf layer.
+			// Receive the message into databuf as a wire-encoded message so we can
+			// use a custom decoder to avoid an extra copy at the protobuf layer.
 			err := stream.RecvMsg(&databuf)
 			// These types of errors show up on the Recv call, rather than the
 			// initialization of the stream via ReadObject above.
@@ -1015,7 +1012,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 				return err
 			}
 			// Use a custom decoder that uses protobuf unmarshalling for all
-			// fields except the checksummed data content.
+			// fields except the checksummed data.
 			// Subsequent receives in Read calls will skip all protobuf
 			// unmarshalling and directly read the content from the gRPC []byte
 			// response, since only the first call will contain other fields.
@@ -1562,23 +1559,28 @@ func (r *gRPCReader) recv() ([]byte, error) {
 	return readObjectResponseContent(r.databuf)
 }
 
+// ReadObjectResponse field and subfield numbers.
+const (
+	checksummedDataField        = protowire.Number(1)
+	checksummedDataContentField = protowire.Number(1)
+	checksummedDataCRC32CField  = protowire.Number(2)
+	objectChecksumsField        = protowire.Number(2)
+	contentRangeField           = protowire.Number(3)
+	metadataField               = protowire.Number(4)
+)
+
 // readObjectResponseContent returns the checksummed_data.content field of a
 // ReadObjectResponse message, or an error if the message is invalid.
 // This can be used on recvs of objects after the first recv, since only the
 // first message will contain non-data fields.
 func readObjectResponseContent(b []byte) ([]byte, error) {
-	const (
-		readObjectResponse_checksummedData = protowire.Number(1)
-		checksummedData_content            = protowire.Number(1)
-	)
-
-	checksummedData, err := readProtoBytes(b, readObjectResponse_checksummedData)
+	checksummedData, err := readProtoBytes(b, checksummedDataField)
 	if err != nil {
-		return b, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+		return b, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData: %v", err)
 	}
-	content, err := readProtoBytes(checksummedData, checksummedData_content)
+	content, err := readProtoBytes(checksummedData, checksummedDataContentField)
 	if err != nil {
-		return content, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+		return content, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %v", err)
 	}
 
 	return content, nil
@@ -1589,32 +1591,25 @@ func readObjectResponseContent(b []byte) ([]byte, error) {
 // This is used on the first recv of an object as it may contain all fields of
 // ReadObjectResponse.
 func readFullObjectResponse(b []byte) (*storagepb.ReadObjectResponse, error) {
-	const (
-		checksummedDataField        = protowire.Number(1)
-		checksummedDataContentField = protowire.Number(1)
-		checksummedDataCRC32CField  = protowire.Number(2)
-		objectChecksumsField        = protowire.Number(2)
-		contentRangeField           = protowire.Number(3)
-		metadataField               = protowire.Number(4)
-	)
-
 	checksummedData, err := readProtoBytes(b, checksummedDataField)
 	if err != nil {
-		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+		return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData: %v", err)
 	}
 	content, err := readProtoBytes(checksummedData, checksummedDataContentField)
 	if err != nil {
-		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+		return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %v", err)
 	}
 
-	// TODO: add unmarshalling for crc32c here
-	//crc32c := readProtoBytes(checksummedData, checksummedDataCRC32CField)
+	crc32c, err := readProtoFixed32(checksummedData, checksummedDataCRC32CField)
+	if err != nil {
+		return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Crc32C: %v", err)
+	}
 
 	// Unmarshal remaining fields.
 	var checksums *storagepb.ObjectChecksums
 	bytes, err := readProtoBytes(b, objectChecksumsField)
 	if err != nil {
-		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+		return nil, fmt.Errorf("invalid ReadObjectResponse.ObjectChecksums: %v", err)
 	}
 	// If the field is not empty, unmarshal its contents
 	if len(bytes) > 0 {
@@ -1627,7 +1622,7 @@ func readFullObjectResponse(b []byte) (*storagepb.ReadObjectResponse, error) {
 	var contentRange *storagepb.ContentRange
 	bytes, err = readProtoBytes(b, contentRangeField)
 	if err != nil {
-		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", "err")
+		return nil, fmt.Errorf("invalid ReadObjectResponse.ContentRange: %v", "err")
 	}
 	if len(bytes) > 0 {
 		contentRange = &storagepb.ContentRange{}
@@ -1639,7 +1634,7 @@ func readFullObjectResponse(b []byte) (*storagepb.ReadObjectResponse, error) {
 	var metadata *storagepb.Object
 	bytes, err = readProtoBytes(b, metadataField)
 	if err != nil {
-		return nil, fmt.Errorf("invalid ReadObjectResponse: %v", err)
+		return nil, fmt.Errorf("invalid ReadObjectResponse.Metadata: %v", err)
 	}
 	if len(bytes) > 0 {
 		metadata = &storagepb.Object{}
@@ -1651,6 +1646,7 @@ func readFullObjectResponse(b []byte) (*storagepb.ReadObjectResponse, error) {
 	msg := &storagepb.ReadObjectResponse{
 		ChecksummedData: &storagepb.ChecksummedData{
 			Content: content,
+			Crc32C:  crc32c,
 		},
 		ObjectChecksums: checksums,
 		ContentRange:    contentRange,
@@ -1681,6 +1677,33 @@ func readProtoBytes(b []byte, num protowire.Number) ([]byte, error) {
 				return nil, protowire.ParseError(n)
 			}
 			return b, nil
+		}
+		n = protowire.ConsumeFieldValue(gotNum, gotTyp, b[off:])
+		if n < 0 {
+			return nil, protowire.ParseError(n)
+		}
+		off += n
+	}
+	return nil, nil
+}
+
+// readProtoFixed32 returns the contents of the protobuf field with number num
+// and type uint32 from a wire-encoded message. If the field cannot be found,
+// the returned pointer will be nil and no error will be returned.
+func readProtoFixed32(b []byte, num protowire.Number) (*uint32, error) {
+	off := 0
+	for off < len(b) {
+		gotNum, gotTyp, n := protowire.ConsumeTag(b[off:])
+		if n < 0 {
+			return nil, protowire.ParseError(n)
+		}
+		off += n
+		if gotNum == num && gotTyp == protowire.Fixed32Type {
+			v, n := protowire.ConsumeFixed32(b[off:])
+			if n < 0 {
+				return nil, protowire.ParseError(n)
+			}
+			return &v, nil
 		}
 		n = protowire.ConsumeFieldValue(gotNum, gotTyp, b[off:])
 		if n < 0 {
