@@ -1526,9 +1526,10 @@ func (r *gRPCReader) Close() error {
 	return nil
 }
 
-// recv attempts to Recv the next chunk of content on the stream. In the event
-// that a retryable error is encountered, the stream will be closed, reopened,
-// and Recv again. This will attempt to Recv until one of the following is true:
+// recv attempts to Recv the next message on the stream and extract the object
+// data that it contains. In the event that a retryable error is encountered,
+// the stream will be closed, reopened, and RecvMsg again.
+// This will attempt to Recv until one of the following is true:
 //
 // * Recv is successful
 // * A non-retryable error is encountered
