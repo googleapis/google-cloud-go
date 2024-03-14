@@ -164,7 +164,7 @@ refreshing, which uses the same context.
 # Headers
 
 Regardless of which transport is used, request headers can be set in the same
-way using [`callctx.SetHeaders“][setheaders].
+way using [`callctx.SetHeaders`][setheaders].
 
 Here is a trivial example:
 
