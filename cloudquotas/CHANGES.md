@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.1.1...cloudquotas/v0.1.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **cloudquotas:** A comment for field `filter` in message `.google.api.cloudquotas.v1.ListQuotaPreferencesRequest` is changed ([05f58cc](https://github.com/googleapis/google-cloud-go/commit/05f58ccce530d8a3ab404356929352002d5156ba))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.1.0...cloudquotas/v0.1.1) (2024-01-30)
 
 
@@ -15,4 +27,3 @@
 * **cloudquotas:** New clients ([#9222](https://github.com/googleapis/google-cloud-go/issues/9222)) ([57e2d7b](https://github.com/googleapis/google-cloud-go/commit/57e2d7bd2730b4acd18eac0e3a18e682b51c3e03))
 
 ## Changes
-

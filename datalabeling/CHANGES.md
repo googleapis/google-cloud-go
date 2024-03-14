@@ -1,5 +1,12 @@
 # Changes
 
+## [0.8.6](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.8.5...datalabeling/v0.8.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **datalabeling:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.8.5](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.8.4...datalabeling/v0.8.5) (2024-01-30)
 
 
@@ -102,4 +109,3 @@
 
 This is the first tag to carve out datalabeling as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

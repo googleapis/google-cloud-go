@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.6](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.5...rapidmigrationassessment/v1.0.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **rapidmigrationassessment:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.0.5](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.4...rapidmigrationassessment/v1.0.5) (2024-01-30)
 
 
@@ -71,4 +78,3 @@
 * **rapidmigrationassessment:** Add API summary ([ebae64d](https://github.com/googleapis/google-cloud-go/commit/ebae64d53397ec5dfe851f098754eaa1f5df7cb1))
 
 ## Changes
-
