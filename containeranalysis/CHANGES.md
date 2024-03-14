@@ -1,5 +1,12 @@
 # Changes
 
+## [0.11.5](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.4...containeranalysis/v0.11.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.11.4](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.3...containeranalysis/v0.11.4) (2024-01-30)
 
 
@@ -137,4 +144,3 @@
 
 This is the first tag to carve out containeranalysis as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
