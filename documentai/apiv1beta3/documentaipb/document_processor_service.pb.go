@@ -3767,6 +3767,8 @@ type isImportProcessorVersionRequest_Source interface {
 type ImportProcessorVersionRequest_ProcessorVersionSource struct {
 	// The source processor version to import from. The source processor version
 	// and destination processor need to be in the same environment and region.
+	// Note that ProcessorVersions with `model_type` `MODEL_TYPE_LLM` are not
+	// supported.
 	ProcessorVersionSource string `protobuf:"bytes,2,opt,name=processor_version_source,json=processorVersionSource,proto3,oneof"`
 }
 

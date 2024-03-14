@@ -3,6 +3,7 @@ module cloud.google.com/go/networkmanagement
 go 1.19
 
 require (
+	cloud.google.com/go/iam v1.1.6
 	cloud.google.com/go/longrunning v0.5.5
 	github.com/googleapis/gax-go/v2 v2.12.2
 	google.golang.org/api v0.169.0
