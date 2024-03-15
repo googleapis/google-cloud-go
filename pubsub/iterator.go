@@ -103,8 +103,10 @@ type messageIterator struct {
 	sendNewAckDeadline        bool
 
 	enableTracing bool
-	// This maps trace parent spans to ackIDs, used for otel tracing.
-	activeSpan sync.Map
+	// This maps trace ackID (string) to parent spans(trace.Span), used for otel tracing.
+	// The use of this map is in line with the keepAliveDeadlines map, such that when messages expire
+	// this map will be periodically cleaned up for all ackIDs.
+	activeSpans sync.Map
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -318,7 +320,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 				semconv.MessagingBatchMessageCount(len(msgs)),
 				semconv.CodeFunction("iterator.receive"),
 			)
-			it.activeSpan.Store(ackID, span)
+			it.activeSpans.Store(ackID, span)
 		}
 	}
 	deadline := it.ackDeadline()
@@ -504,7 +506,7 @@ func (it *messageIterator) handleKeepAlives() {
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
 			// get the parent span context for this ackID for otel tracing.
-			s, _ := it.activeSpan.LoadAndDelete(id)
+			s, _ := it.activeSpans.LoadAndDelete(id)
 			span := s.(trace.Span)
 			span.SetAttributes(attribute.String(resultAttribute, resultExpired))
 			span.End()
@@ -538,7 +540,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 			if it.enableTracing {
 				for _, ackID := range toSend {
 					// get the parent span context for this ackID for otel tracing.
-					s, _ := it.activeSpan.Load(ackID)
+					s, _ := it.activeSpans.Load(ackID)
 					parentSpan := s.(trace.Span)
 					defer parentSpan.End()
 					defer parentSpan.SetAttributes(attribute.String(resultAttribute, resultAcked))
@@ -626,7 +628,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 			for _, ackID := range toSend {
 				if it.enableTracing {
 					// get the parent span context for this ackID for otel tracing.
-					s, _ := it.activeSpan.Load(ackID)
+					s, _ := it.activeSpans.Load(ackID)
 					parentSpan := s.(trace.Span)
 					if isNack {
 						defer parentSpan.End()

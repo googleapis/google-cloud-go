@@ -1401,7 +1401,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					ctx := context.Background()
 					var ccSpan trace.Span
 					if iter.enableTracing {
-						c, _ := iter.activeSpan.Load(ackh.ackID)
+						c, _ := iter.activeSpans.Load(ackh.ackID)
 						sc := c.(trace.Span)
 						ctx = trace.ContextWithSpanContext(ctx, sc.SpanContext())
 						ctx, ccSpan = startSpan(ctx, ccSpanName, "")
