@@ -22,7 +22,6 @@ import (
 	"strings"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
 	"cloud.google.com/go/compute/metadata"
 	"google.golang.org/grpc"
 	grpcgoogle "google.golang.org/grpc/credentials/google"
@@ -91,7 +90,7 @@ func isDirectPathXdsUsed(o *Options) bool {
 // configureDirectPath returns some dial options and an endpoint to use if the
 // configuration allows the use of direct path. If it does not the provided
 // grpcOpts and endpoint are returned.
-func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *detect.Credentials) ([]grpc.DialOption, string) {
+func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *auth.Credentials) ([]grpc.DialOption, string) {
 	if isDirectPathEnabled(endpoint, opts) && metadata.OnGCE() && isTokenProviderDirectPathCompatible(creds, opts) {
 		// Overwrite all of the previously specific DialOptions, DirectPath uses its own set of credentials and certificates.
 		grpcOpts = []grpc.DialOption{

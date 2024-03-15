@@ -28,6 +28,8 @@ import (
 	"cloud.google.com/go/compute/metadata"
 )
 
+const defaultUniverseDomain = "googleapis.com"
+
 var (
 	computeTokenMetadata = map[string]interface{}{
 		"auth.google.tokenSource":    "compute-metadata",
@@ -85,20 +87,20 @@ func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 
 } // computeProvider fetches tokens from the google cloud metadata service.
 type computeUniverseDomainProvider struct {
-	// TODO(chridsmith): memoize universe domain (with sync.Once)
+	// TODO(chrisdsmith): memoize universe domain (with sync.Once)
 }
 
-func (cudp computeUniverseDomainProvider) UniverseDomain(ctx context.Context) (string, error) {
+func (cudp computeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
 	var err error
 	c := metadata.NewClient(&http.Client{Timeout: time.Second})
-	// TODO(chridsmith): set ctx on request
+	// TODO(chrisdsmith): set ctx on request
 	ud, err := c.Get("universe/universe_domain")
 	if err == nil {
 		return ud, nil
 	}
 	if _, ok := err.(metadata.NotDefinedError); ok {
 		// http.StatusNotFound (404)
-		return universeDomainDefault, nil
+		return defaultUniverseDomain, nil
 	} else {
 		return "", err
 	}

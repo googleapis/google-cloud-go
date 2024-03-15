@@ -77,10 +77,15 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 			creds.TokenProvider = opts.TokenProvider // TODO use blank Credential, discard detected creds
 		}
 		creds.TokenProvider = auth.NewCachedTokenProvider(creds.TokenProvider, nil)
+		// TODO(chrisdsmith): set this default more centrally, maybe in a getter?
+		universeDomain := opts.UniverseDomain
+		if universeDomain == "" {
+			universeDomain = "googleapis.com"
+		}
 		trans = &authTransport{
 			base:                 trans,
 			creds:                creds,
-			clientUniverseDomain: opts.UniverseDomain,
+			clientUniverseDomain: universeDomain,
 		}
 	}
 	return trans, nil
@@ -164,7 +169,7 @@ func addOCTransport(trans http.RoundTripper, opts *Options) http.RoundTripper {
 }
 
 type authTransport struct {
-	creds                *detect.Credentials // TODO(chrisdsmith): convert usages of TokenProvider to creds
+	creds                *auth.Credentials
 	base                 http.RoundTripper
 	clientUniverseDomain string
 }
@@ -195,7 +200,7 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return t.base.RoundTrip(req2)
 }
 
-// TODO(chridsmith): Refactor this func and its copy to single location.
+// TODO(chrisdsmith): Refactor this func and its copy to single location.
 // validateUniverseDomain verifies that the universe domain configured for the
 // client matches the universe domain configured for the credentials.
 func validateUniverseDomain(ctx context.Context, c *auth.Credentials, clientUniverseDomain string) error {

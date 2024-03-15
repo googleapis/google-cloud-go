@@ -144,9 +144,13 @@ func AddAuthorizationMiddleware(client *http.Client, tp auth.TokenProvider) erro
 	if base == nil {
 		base = http.DefaultTransport.(*http.Transport).Clone()
 	}
+	// TODO(chrisdsmith): investigate what Credentials to use here
+	creds := &auth.Credentials{TokenProvider: auth.NewCachedTokenProvider(tp, nil)}
 	client.Transport = &authTransport{
-		creds: auth.NewCachedTokenProvider(tp, nil),
+		creds: creds,
 		base:  base,
+		// TODO(chrisdsmith): investigate what universe domain value to use here
+		clientUniverseDomain: "googleapis.com",
 	}
 	return nil
 }

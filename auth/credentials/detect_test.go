@@ -596,7 +596,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 	if want := "googleapis.com"; got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
-	tok, err := creds.Token(context.Background())
+	tok, err := creds.Token(ctx)
 	if err != nil {
 		t.Fatalf("creds.Token() = %v", err)
 	}
@@ -722,6 +722,7 @@ func TestDefaultCredentials_Validate(t *testing.T) {
 }
 
 func TestDefaultCredentials_UniverseDomain(t *testing.T) {
+	ctx := context.Background()
 	tests := []struct {
 		name string
 		opts *DetectOptions
@@ -808,8 +809,12 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%s: %v", tt.name, err)
 			}
-			if creds.UniverseDomain() != tt.want {
-				t.Fatalf("%s: got %q, want %q", tt.name, creds.UniverseDomain(), tt.want)
+			ud, err := creds.UniverseDomain(ctx)
+			if err != nil {
+				t.Fatalf("%s: %v", tt.name, err)
+			}
+			if ud != tt.want {
+				t.Fatalf("%s: got %q, want %q", tt.name, ud, tt.want)
 			}
 		})
 	}

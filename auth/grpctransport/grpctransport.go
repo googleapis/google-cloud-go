@@ -210,7 +210,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			return nil, err
 		}
 		if opts.TokenProvider != nil {
-			creds.TokenProvider = opts.TokenProvider // TODO(chrisdsmith): Is this OK? Are creds non-nil and suitable for WithTokenProvider? Or is new Credentials needed?
+			creds = &auth.Credentials{TokenProvider: opts.TokenProvider}
 		}
 
 		qp, err := creds.QuotaProjectID(ctx)
@@ -223,12 +223,16 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			}
 			metadata[quotaProjectHeaderKey] = qp
 		}
-
+		// TODO(chrisdsmith): set this default more centrally, maybe in a getter?
+		universeDomain := opts.UniverseDomain
+		if universeDomain == "" {
+			universeDomain = "googleapis.com"
+		}
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcTokenProvider{
 				creds:                creds,
 				metadata:             metadata,
-				clientUniverseDomain: opts.UniverseDomain,
+				clientUniverseDomain: universeDomain,
 			}),
 		)
 
@@ -247,7 +251,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 
 // grpcTokenProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
 type grpcTokenProvider struct {
-	creds *detect.Credentials // TODO(chrisdsmith): convert usages of TokenProvider to creds
+	creds *auth.Credentials
 
 	secure bool
 
@@ -279,7 +283,7 @@ func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...stri
 	return metadata, nil
 }
 
-// TODO(chridsmith): Refactor this func and its copy to single location.
+// TODO(chrisdsmith): Refactor this func and its copy to single location.
 // validateUniverseDomain verifies that the universe domain configured for the
 // client matches the universe domain configured for the credentials.
 func validateUniverseDomain(ctx context.Context, c *auth.Credentials, clientUniverseDomain string) error {
