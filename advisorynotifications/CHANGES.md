@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.3.1...advisorynotifications/v1.3.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.3.1](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.3.0...advisorynotifications/v1.3.1) (2024-01-30)
 
 
