@@ -17,7 +17,7 @@ package pubsub
 import (
 	"context"
 	"fmt"
-	"slices"
+	"golang.org/x/exp/slices"
 	"sync/atomic"
 	"testing"
 	"time"
