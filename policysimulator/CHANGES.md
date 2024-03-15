@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.3...policysimulator/v0.2.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **policysimulator:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.2...policysimulator/v0.2.3) (2024-01-30)
 
 
