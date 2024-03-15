@@ -17,6 +17,7 @@ package httptransport
 import (
 	"context"
 	"crypto/tls"
+	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -70,7 +71,7 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 		}
 
 		if opts.TokenProvider != nil {
-			creds.TokenProvider = opts.TokenProvider
+			creds.TokenProvider = opts.TokenProvider // TODO use blank Credential, discard detected creds
 		}
 		creds.TokenProvider = auth.NewCachedTokenProvider(creds.TokenProvider, nil)
 		trans = &authTransport{
@@ -178,7 +179,7 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 			}
 		}()
 	}
-	if err := t.creds.ValidateUniverseDomain(req.Context(), t.clientUniverseDomain); err != nil {
+	if err := validateUniverseDomain(req.Context(), t.creds, t.clientUniverseDomain); err != nil {
 		return nil, err
 	}
 	token, err := t.creds.Token(req.Context())
@@ -189,4 +190,23 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	SetAuthHeader(token, req2)
 	reqBodyClosed = true
 	return t.base.RoundTrip(req2)
+}
+
+// TODO(chridsmith): Refactor this func and its copy to single location.
+// validateUniverseDomain verifies that the universe domain configured for the
+// client matches the universe domain configured for the credentials.
+func validateUniverseDomain(ctx context.Context, c *detect.Credentials, clientUniverseDomain string) error {
+	credentialsUniverseDomain, err := c.GetUniverseDomain(ctx)
+	if err != nil {
+		return err
+	}
+	if clientUniverseDomain != credentialsUniverseDomain {
+		return fmt.Errorf(
+			"the configured universe domain (%q) does not match the universe "+
+				"domain found in the credentials (%q). If you haven't configured "+
+				"WithUniverseDomain explicitly, \"googleapis.com\" is the default",
+			clientUniverseDomain,
+			credentialsUniverseDomain)
+	}
+	return nil
 }

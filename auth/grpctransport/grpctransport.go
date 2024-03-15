@@ -73,7 +73,8 @@ type Options struct {
 	DetectOpts *detect.Options
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	// The default value is "googleapis.com". This is the universe domain
-	// provided via client options.
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials.
 	UniverseDomain string
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
@@ -253,7 +254,7 @@ type grpcTokenProvider struct {
 }
 
 func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	if err := tp.creds.ValidateUniverseDomain(ctx, tp.clientUniverseDomain); err != nil {
+	if err := validateUniverseDomain(ctx, tp.creds, tp.clientUniverseDomain); err != nil {
 		return nil, err
 	}
 	token, err := tp.creds.Token(ctx)
@@ -273,6 +274,25 @@ func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...stri
 		metadata[k] = v
 	}
 	return metadata, nil
+}
+
+// TODO(chridsmith): Refactor this func and its copy to single location.
+// validateUniverseDomain verifies that the universe domain configured for the
+// client matches the universe domain configured for the credentials.
+func validateUniverseDomain(ctx context.Context, c *detect.Credentials, clientUniverseDomain string) error {
+	credentialsUniverseDomain, err := c.GetUniverseDomain(ctx)
+	if err != nil {
+		return err
+	}
+	if clientUniverseDomain != credentialsUniverseDomain {
+		return fmt.Errorf(
+			"the configured universe domain (%q) does not match the universe "+
+				"domain found in the credentials (%q). If you haven't configured "+
+				"WithUniverseDomain explicitly, \"googleapis.com\" is the default",
+			clientUniverseDomain,
+			credentialsUniverseDomain)
+	}
+	return nil
 }
 
 func (tp *grpcTokenProvider) RequireTransportSecurity() bool {

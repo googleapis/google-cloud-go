@@ -85,7 +85,7 @@ func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 
 } // computeProvider fetches tokens from the google cloud metadata service.
 type computeUniverseDomainProvider struct {
-	// TODO(chridsmith): memoize universe domain (with mutex)
+	// TODO(chridsmith): memoize universe domain (with sync.Once)
 }
 
 func (cudp computeUniverseDomainProvider) UniverseDomain(ctx context.Context) (string, error) {
@@ -98,7 +98,7 @@ func (cudp computeUniverseDomainProvider) UniverseDomain(ctx context.Context) (s
 	}
 	if _, ok := err.(metadata.NotDefinedError); ok {
 		// http.StatusNotFound (404)
-		return defaultUniverseDomain, nil
+		return universeDomainDefault, nil
 	} else {
 		return "", err
 	}

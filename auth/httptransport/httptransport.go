@@ -61,7 +61,8 @@ type Options struct {
 	DetectOpts *detect.Options
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	// The default value is "googleapis.com". This is the universe domain
-	// provided via client options.
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials.
 	UniverseDomain string
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
@@ -145,7 +146,7 @@ func AddAuthorizationMiddleware(client *http.Client, tp auth.TokenProvider) erro
 	}
 	client.Transport = &authTransport{
 		creds: auth.NewCachedTokenProvider(tp, nil),
-		base:     base,
+		base:  base,
 	}
 	return nil
 }
