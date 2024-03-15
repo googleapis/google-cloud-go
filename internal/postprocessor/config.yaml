@@ -979,9 +979,6 @@ service-configs:
   - input-directory: google/devtools/cloudbuild/v2
     service-config: cloudbuild_v2.yaml
     import-path: cloud.google.com/go/cloudbuild/apiv2
-  - input-directory: google/cloud/compute/v1
-    service-config: compute_v1.yaml
-    import-path: cloud.google.com/go/compute/apiv1
   - input-directory: google/cloud/confidentialcomputing/v1
     service-config: confidentialcomputing_v1.yaml
     import-path: cloud.google.com/go/confidentialcomputing/apiv1
