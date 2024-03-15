@@ -61,7 +61,10 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 		if err != nil {
 			return nil, err
 		}
-		qp := creds.QuotaProjectID()
+		qp, err := creds.QuotaProjectID(context.Background())
+		if err != nil {
+			return nil, err
+		}
 		if qp != "" {
 			if headers == nil {
 				headers = make(map[string][]string, 1)

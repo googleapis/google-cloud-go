@@ -209,7 +209,10 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			tp = opts.TokenProvider
 		}
 
-		qp := creds.QuotaProjectID()
+		qp, err := creds.QuotaProjectID(ctx)
+		if err != nil {
+			return nil, err
+		}
 		if qp != "" {
 			if metadata == nil {
 				metadata = make(map[string]string, 1)

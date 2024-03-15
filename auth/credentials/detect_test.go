@@ -40,6 +40,7 @@ type tokResp struct {
 }
 
 func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
+	ctx := context.Background()
 	aud := "http://sampele-aud.com/"
 	b, err := os.ReadFile("../internal/testdata/gdch.json")
 	if err != nil {
@@ -122,12 +123,19 @@ func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-
-	if want := "fake_project"; creds.ProjectID() != want {
-		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+	got, err := creds.ProjectID(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if want := "googleapis.com"; creds.UniverseDomain() != want {
-		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	if want := "fake_project"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+	got, err = creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "googleapis.com"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -142,6 +150,7 @@ func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
 }
 
 func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
+	ctx := context.Background()
 	b, err := os.ReadFile("../internal/testdata/imp.json")
 	if err != nil {
 		t.Fatal(err)
@@ -176,8 +185,12 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "googleapis.com"; creds.UniverseDomain() != want {
-		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	got, err := creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "googleapis.com"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -192,6 +205,7 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 }
 
 func TestDefaultCredentials_UserCredentialsKey(t *testing.T) {
+	ctx := context.Background()
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		resp := &tokResp{
@@ -212,11 +226,19 @@ func TestDefaultCredentials_UserCredentialsKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "fake_project2"; creds.QuotaProjectID() != want {
-		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+	got, err := creds.QuotaProjectID(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if want := "googleapis.com"; creds.UniverseDomain() != want {
-		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	if want := "fake_project2"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+	got, err = creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "googleapis.com"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -231,6 +253,7 @@ func TestDefaultCredentials_UserCredentialsKey(t *testing.T) {
 }
 
 func TestDefaultCredentials_UserCredentialsKey_UniverseDomain(t *testing.T) {
+	ctx := context.Background()
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		resp := &tokResp{
@@ -251,11 +274,19 @@ func TestDefaultCredentials_UserCredentialsKey_UniverseDomain(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "fake_project2"; creds.QuotaProjectID() != want {
-		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+	got, err := creds.QuotaProjectID(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if want := "googleapis.com"; creds.UniverseDomain() != want {
-		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	if want := "fake_project2"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+	got, err = creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "googleapis.com"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -270,6 +301,7 @@ func TestDefaultCredentials_UserCredentialsKey_UniverseDomain(t *testing.T) {
 }
 
 func TestDefaultCredentials_ServiceAccountKey(t *testing.T) {
+	ctx := context.Background()
 	b, err := os.ReadFile("../internal/testdata/sa.json")
 	if err != nil {
 		t.Fatal(err)
@@ -301,11 +333,19 @@ func TestDefaultCredentials_ServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "fake_project"; creds.ProjectID() != want {
-		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+	got, err := creds.ProjectID(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if want := "googleapis.com"; creds.UniverseDomain() != want {
-		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	if want := "fake_project"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+	got, err = creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "googleapis.com"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -320,6 +360,7 @@ func TestDefaultCredentials_ServiceAccountKey(t *testing.T) {
 }
 
 func TestDefaultCredentials_ServiceAccountKeySelfSigned(t *testing.T) {
+	ctx := context.Background()
 	b, err := os.ReadFile("../internal/testdata/sa.json")
 	if err != nil {
 		t.Fatal(err)
@@ -337,11 +378,20 @@ func TestDefaultCredentials_ServiceAccountKeySelfSigned(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "fake_project"; creds.ProjectID() != want {
-		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+
+	got, err := creds.ProjectID(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if want := "googleapis.com"; creds.UniverseDomain() != want {
-		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	if want := "fake_project"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+	got, err = creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "googleapis.com"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -356,6 +406,7 @@ func TestDefaultCredentials_ServiceAccountKeySelfSigned(t *testing.T) {
 }
 
 func TestDefaultCredentials_ServiceAccountKeySelfSigned_UniverseDomain(t *testing.T) {
+	ctx := context.Background()
 	b, err := os.ReadFile("../internal/testdata/sa_universe_domain.json")
 	if err != nil {
 		t.Fatal(err)
@@ -373,11 +424,19 @@ func TestDefaultCredentials_ServiceAccountKeySelfSigned_UniverseDomain(t *testin
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "fake_project"; creds.ProjectID() != want {
-		t.Fatalf("got %q, want %q", creds.ProjectID(), want)
+	got, err := creds.ProjectID(ctx)
+	if err != nil {
+		t.Fatal(err)
 	}
-	if want := "example.com"; creds.UniverseDomain() != want {
-		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	if want := "fake_project"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
+	}
+	got, err = creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "example.com"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -392,6 +451,7 @@ func TestDefaultCredentials_ServiceAccountKeySelfSigned_UniverseDomain(t *testin
 }
 
 func TestDefaultCredentials_ClientCredentials(t *testing.T) {
+	ctx := context.Background()
 	b, err := os.ReadFile("../internal/testdata/clientcreds_installed.json")
 	if err != nil {
 		t.Fatal(err)
@@ -437,8 +497,12 @@ func TestDefaultCredentials_ClientCredentials(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "googleapis.com"; creds.UniverseDomain() != want {
-		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	got, err := creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "googleapis.com"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
@@ -454,6 +518,7 @@ func TestDefaultCredentials_ClientCredentials(t *testing.T) {
 
 // Better coverage of all external account features tested in the sub-package.
 func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
+	ctx := context.Background()
 	b, err := os.ReadFile("../internal/testdata/exaccount_url.json")
 	if err != nil {
 		t.Fatal(err)
@@ -524,8 +589,12 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "googleapis.com"; creds.UniverseDomain() != want {
-		t.Fatalf("got %q, want %q", creds.UniverseDomain(), want)
+	got, err := creds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "googleapis.com"; got != want {
+		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {

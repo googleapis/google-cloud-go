@@ -23,6 +23,7 @@ import (
 	"cloud.google.com/go/auth/credentials/internal/externalaccountuser"
 	"cloud.google.com/go/auth/credentials/internal/gdch"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
+	internalauth "cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
@@ -104,10 +105,10 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
 			ExpireEarly: opts.EarlyTokenRefresh,
 		}),
-		JSON:           b,
-		ProjectID:      projectID,
-		QuotaProjectID: quotaProjectID,
-		UniverseDomain: universeDomain,
+		JSON:                   b,
+		ProjectIDProvider:      internalauth.StaticCredentialsProperty(projectID),
+		QuotaProjectIDProvider: internalauth.StaticCredentialsProperty(quotaProjectID),
+		UniverseDomainProvider: internalauth.StaticCredentialsProperty(universeDomain),
 	}), nil
 }
 

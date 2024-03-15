@@ -15,6 +15,7 @@
 package internal
 
 import (
+	"context"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
@@ -118,4 +119,17 @@ func GetProjectID(b []byte, override string) string {
 // with some overflow protection.
 func ReadAll(r io.Reader) ([]byte, error) {
 	return io.ReadAll(io.LimitReader(r, maxBodySize))
+}
+
+// StaticCredentialsProperty is a helper for creating static credentials
+// properties.
+func StaticCredentialsProperty(s string) StaticProperty {
+	return StaticProperty(s)
+}
+
+// StaticProperty always returns that value of the underlying string.
+type StaticProperty string
+
+func (p StaticProperty) GetProperty(context.Context) (string, error) {
+	return string(p), nil
 }

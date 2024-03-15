@@ -100,10 +100,10 @@ func (t *Token) isValidWithEarlyExpiry(earlyExpiry time.Duration) bool {
 // [Application Default Credentials](https://developers.google.com/accounts/docs/application-default-credentials).
 type Credentials struct {
 	json           []byte
-	projectID      string
-	quotaProjectID string
+	projectID      CredentialsPropertyProvider
+	quotaProjectID CredentialsPropertyProvider
 	// universeDomain is the default service domain for a given Cloud universe.
-	universeDomain string
+	universeDomain CredentialsPropertyProvider
 
 	TokenProvider
 }
@@ -116,23 +116,56 @@ func (c *Credentials) JSON() []byte {
 
 // ProjectID returns the associated project ID from the underlying file or
 // environment.
-func (c *Credentials) ProjectID() string {
-	return c.projectID
+func (c *Credentials) ProjectID(ctx context.Context) (string, error) {
+	if c.projectID == nil {
+		return internal.GetProjectID(c.json, ""), nil
+	}
+	v, err := c.projectID.GetProperty(ctx)
+	if err != nil {
+		return "", err
+	}
+	return internal.GetProjectID(c.json, v), nil
 }
 
 // QuotaProjectID returns the associated quota project ID from the underlying
 // file or environment.
-func (c *Credentials) QuotaProjectID() string {
-	return c.quotaProjectID
+func (c *Credentials) QuotaProjectID(ctx context.Context) (string, error) {
+	if c.quotaProjectID == nil {
+		return internal.GetQuotaProject(c.json, ""), nil
+	}
+	v, err := c.quotaProjectID.GetProperty(ctx)
+	if err != nil {
+		return "", err
+	}
+	return internal.GetQuotaProject(c.json, v), nil
 }
 
 // UniverseDomain returns the default service domain for a given Cloud universe.
 // The default value is "googleapis.com".
-func (c *Credentials) UniverseDomain() string {
-	if c.universeDomain == "" {
-		return universeDomainDefault
+func (c *Credentials) UniverseDomain(ctx context.Context) (string, error) {
+	if c.universeDomain == nil {
+		return universeDomainDefault, nil
 	}
-	return c.universeDomain
+	v, err := c.universeDomain.GetProperty(ctx)
+	if err != nil {
+		return "", err
+	}
+	if v == "" {
+		return universeDomainDefault, nil
+	}
+	return v, err
+}
+
+type CredentialsPropertyProvider interface {
+	GetProperty(context.Context) (string, error)
+}
+
+// CredentialsPropertyFunc is a type adapter to allow the use of ordinary
+// functions as a [CredentialsPropertyProvider].
+type CredentialsPropertyFunc func(context.Context) (string, error)
+
+func (p CredentialsPropertyFunc) GetProperty(ctx context.Context) (string, error) {
+	return p(ctx)
 }
 
 // CredentialsOptions are used to configure [Credentials].
@@ -141,25 +174,29 @@ type CredentialsOptions struct {
 	TokenProvider TokenProvider
 	// JSON is the raw contents of the credentials file if sourced from a file.
 	JSON []byte
-	// ProjectID associated with the credentials.
-	ProjectID string
-	// QuotaProjectID associated with the credentials.
-	QuotaProjectID string
-	// UniverseDomain associated with the credentials.
-	UniverseDomain string
+	// ProjectIDProvider resolves the project ID associated with the
+	// credentials.
+	ProjectIDProvider CredentialsPropertyProvider
+	// QuotaProjectIDProvider resolves the quota project ID associated with the
+	// credentials.
+	QuotaProjectIDProvider CredentialsPropertyProvider
+	// UniverseDomainProvider resolves the universe domain with the credentials.
+	UniverseDomainProvider CredentialsPropertyProvider
 }
 
 // NewCredentials returns new [Credentials] from the provided options. Most users
 // will want to build this object a function from the
 // [cloud.google.com/go/auth/credentials] package.
 func NewCredentials(opts *CredentialsOptions) *Credentials {
-	return &Credentials{
-		json:           opts.JSON,
-		projectID:      internal.GetProjectID(opts.JSON, opts.ProjectID),
-		quotaProjectID: internal.GetQuotaProject(opts.JSON, opts.QuotaProjectID),
-		universeDomain: opts.UniverseDomain,
+	creds := &Credentials{
 		TokenProvider:  opts.TokenProvider,
+		json:           opts.JSON,
+		projectID:      opts.ProjectIDProvider,
+		quotaProjectID: opts.QuotaProjectIDProvider,
+		universeDomain: opts.UniverseDomainProvider,
 	}
+
+	return creds
 }
 
 // CachedTokenProviderOptions provided options for configuring a

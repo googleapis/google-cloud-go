@@ -15,6 +15,7 @@
 package credentials
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -87,10 +88,11 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	}
 
 	if OnGCE() {
-		id, _ := metadata.ProjectID()
 		return auth.NewCredentials(&auth.CredentialsOptions{
 			TokenProvider: computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...),
-			ProjectID:     id,
+			ProjectIDProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
+				return metadata.ProjectID()
+			}),
 		}), nil
 	}
 
