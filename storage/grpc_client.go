@@ -400,7 +400,7 @@ func (c *grpcStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 	}, s.retry, s.idempotent)
 
 }
-func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, softDeleted bool, opts ...storageOption) *ObjectIterator {
+func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
 	it := &ObjectIterator{
 		ctx: ctx,
@@ -418,7 +418,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		IncludeTrailingDelimiter: it.query.IncludeTrailingDelimiter,
 		MatchGlob:                it.query.MatchGlob,
 		ReadMask:                 q.toFieldMask(), // a nil Query still results in a "*" FieldMask
-		SoftDeleted:              softDeleted,
+		SoftDeleted:              it.query.SoftDeleted,
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
@@ -505,8 +505,8 @@ func (c *grpcStorageClient) GetObject(ctx context.Context, params *getObjectPara
 	if params.encryptionKey != nil {
 		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(params.encryptionKey)
 	}
-	if params.getOnlyIfSoftDeleted {
-		req.SoftDeleted = &params.getOnlyIfSoftDeleted
+	if params.softDeleted {
+		req.SoftDeleted = &params.softDeleted
 	}
 
 	var attrs *ObjectAttrs

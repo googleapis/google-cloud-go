@@ -4277,7 +4277,7 @@ func TestIntegration_SoftDelete(t *testing.T) {
 
 		var gen int64
 		// List soft deleted objects.
-		it := b.SoftDeleted(true).Objects(ctx, nil)
+		it := b.Objects(ctx, &Query{SoftDeleted: true})
 		var gotNames []string
 		for {
 			attrs, err := it.Next()
@@ -4325,15 +4325,6 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
 		}
 
-		// Get soft deleted object with SoftDeleted set on the bucket handle.
-		oAttrs, err = b.SoftDeleted(true).Object(deletedObject.ObjectName()).Generation(gen).Attrs(ctx)
-		if err != nil {
-			t.Fatalf("b.SoftDeleted(true).Object(deletedObject).Attrs: %v", err)
-		}
-		if oAttrs.SoftDeleteTime.Before(testStart) {
-			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
-		}
-
 		// Restore a soft deleted object.
 		_, err = deletedObject.Generation(gen).Restore(ctx, true)
 		if err != nil {
@@ -4349,7 +4340,6 @@ func TestIntegration_SoftDelete(t *testing.T) {
 		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, time.Duration(0); got != expect {
 			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
 		}
-
 	})
 }
 

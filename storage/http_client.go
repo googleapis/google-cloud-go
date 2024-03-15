@@ -326,7 +326,7 @@ func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 		return err
 	}, s.retry, s.idempotent)
 }
-func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, softDeleted bool, opts ...storageOption) *ObjectIterator {
+func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
 	it := &ObjectIterator{
 		ctx: ctx,
@@ -336,8 +336,8 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		req := c.raw.Objects.List(bucket)
-		if softDeleted {
-			req.SoftDeleted(softDeleted)
+		if it.query.SoftDeleted {
+			req.SoftDeleted(it.query.SoftDeleted)
 		}
 		setClientHeader(req.Header())
 		projection := it.query.Projection
@@ -423,8 +423,8 @@ func (c *httpStorageClient) GetObject(ctx context.Context, params *getObjectPara
 	if err := setEncryptionHeaders(req.Header(), params.encryptionKey, false); err != nil {
 		return nil, err
 	}
-	if params.getOnlyIfSoftDeleted {
-		req.SoftDeleted(params.getOnlyIfSoftDeleted)
+	if params.softDeleted {
+		req.SoftDeleted(params.softDeleted)
 	}
 
 	var obj *raw.Object

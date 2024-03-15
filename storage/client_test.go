@@ -425,7 +425,7 @@ func TestListObjectsEmulated(t *testing.T) {
 		}
 
 		// Simple list, no query.
-		it := client.ListObjects(context.Background(), bucket, nil, false)
+		it := client.ListObjects(context.Background(), bucket, nil)
 		var o *ObjectAttrs
 		var got int
 		for i := 0; err == nil && i <= len(want); i++ {
@@ -483,7 +483,7 @@ func TestListObjectsWithPrefixEmulated(t *testing.T) {
 		}
 
 		// Query with Prefix.
-		it := client.ListObjects(context.Background(), bucket, &Query{Prefix: strconv.Itoa(prefix)}, false)
+		it := client.ListObjects(context.Background(), bucket, &Query{Prefix: strconv.Itoa(prefix)})
 		var o *ObjectAttrs
 		var got int
 		want = want[:2]

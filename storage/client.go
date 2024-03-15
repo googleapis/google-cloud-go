@@ -54,7 +54,7 @@ type storageClient interface {
 	GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
 	UpdateBucket(ctx context.Context, bucket string, uattrs *BucketAttrsToUpdate, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error)
 	LockBucketRetentionPolicy(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) error
-	ListObjects(ctx context.Context, bucket string, q *Query, softDeleted bool, opts ...storageOption) *ObjectIterator
+	ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator
 
 	// Object metadata methods.
 
@@ -296,11 +296,11 @@ type newRangeReaderParams struct {
 }
 
 type getObjectParams struct {
-	bucket, object       string
-	gen                  int64
-	encryptionKey        []byte
-	conds                *Conditions
-	getOnlyIfSoftDeleted bool
+	bucket, object string
+	gen            int64
+	encryptionKey  []byte
+	conds          *Conditions
+	softDeleted    bool
 }
 
 type updateObjectParams struct {

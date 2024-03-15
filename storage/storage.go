@@ -1068,7 +1068,7 @@ func (o *ObjectHandle) SoftDeleted() *ObjectHandle {
 	return &o2
 }
 
-// Restore will restore a soft-deleted object to full object status.
+// Restore will restore a soft-deleted object to a live object.
 // Note that you must specify a generation to use this method.
 // copySourceACL indicates whether the restored object should copy the
 // access controls of the source object.
@@ -1421,14 +1421,16 @@ type ObjectAttrs struct {
 
 	// SoftDeleteTime is the time when the object became soft-deleted.
 	// Soft-deleted objects are only accessible on an object handle returned by
-	// ObjectHandle.SoftDeleted.
+	// ObjectHandle.SoftDeleted; if ObjectHandle.SoftDeleted has not been set,
+	// ObjectHandle.Attrs will return ErrObjectNotExist if the object is soft-deleted.
 	// This field is read-only.
 	SoftDeleteTime time.Time
 
 	// HardDeleteTime is the time when the object will be permanently deleted.
 	// Only set when an object becomes soft-deleted with a soft delete policy.
 	// Soft-deleted objects are only accessible on an object handle returned by
-	// ObjectHandle.SoftDeleted.
+	// ObjectHandle.SoftDeleted; if ObjectHandle.SoftDeleted has not been set,
+	// ObjectHandle.Attrs will return ErrObjectNotExist if the object is soft-deleted.
 	// This field is read-only.
 	HardDeleteTime time.Time
 }
@@ -1682,6 +1684,10 @@ type Query struct {
 	// prefixes returned by the query. Only applicable if Delimiter is set to /.
 	// IncludeFoldersAsPrefixes is not yet implemented in the gRPC API.
 	IncludeFoldersAsPrefixes bool
+
+	// SoftDeleted indicates whether to list soft-deleted objects. If true, only
+	// objects that have been soft-deleted will be listed.
+	SoftDeleted bool
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field

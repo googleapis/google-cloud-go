@@ -49,7 +49,6 @@ type BucketHandle struct {
 	userProject           string // project for Requester Pays buckets
 	retry                 *retryConfig
 	enableObjectRetention *bool
-	softDeleted           bool
 }
 
 // Bucket returns a BucketHandle, which provides operations on the named bucket.
@@ -141,7 +140,6 @@ func (b *BucketHandle) Object(name string) *ObjectHandle {
 		gen:         -1,
 		userProject: b.userProject,
 		retry:       retry,
-		softDeleted: b.softDeleted,
 	}
 }
 
@@ -2145,15 +2143,7 @@ func toSoftDeletePolicyFromProto(p *storagepb.Bucket_SoftDeletePolicy) *SoftDele
 // Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
 func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator {
 	o := makeStorageOpts(true, b.retry, b.userProject)
-	return b.c.tc.ListObjects(ctx, b.name, q, b.softDeleted, o...)
-}
-
-// SoftDeleted returns a new BucketHandle with the option to include
-// soft-deleted items in list results.
-func (b *BucketHandle) SoftDeleted(include bool) *BucketHandle {
-	b2 := *b
-	b2.softDeleted = include
-	return &b2
+	return b.c.tc.ListObjects(ctx, b.name, q, o...)
 }
 
 // Retryer returns a bucket handle that is configured with custom retry
