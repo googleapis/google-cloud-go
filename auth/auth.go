@@ -156,6 +156,8 @@ func (c *Credentials) UniverseDomain(ctx context.Context) (string, error) {
 	return v, err
 }
 
+// CredentialsPropertyProvider provides an implementation to fetch a property
+// value for [Credentials].
 type CredentialsPropertyProvider interface {
 	GetProperty(context.Context) (string, error)
 }
@@ -164,6 +166,7 @@ type CredentialsPropertyProvider interface {
 // functions as a [CredentialsPropertyProvider].
 type CredentialsPropertyFunc func(context.Context) (string, error)
 
+// GetProperty loads the properly value provided the given context.
 func (p CredentialsPropertyFunc) GetProperty(ctx context.Context) (string, error) {
 	return p(ctx)
 }

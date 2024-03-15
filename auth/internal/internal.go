@@ -130,6 +130,7 @@ func StaticCredentialsProperty(s string) StaticProperty {
 // StaticProperty always returns that value of the underlying string.
 type StaticProperty string
 
+// GetProperty loads the properly value provided the given context.
 func (p StaticProperty) GetProperty(context.Context) (string, error) {
 	return string(p), nil
 }

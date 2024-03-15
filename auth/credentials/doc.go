@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// package credentials provides support for making OAuth2 authorized and
+// Package credentials provides support for making OAuth2 authorized and
 // authenticated HTTP requests to Google APIs. It supports the Web server flow,
 // client-side credentials, service accounts, Google Compute Engine service
 // accounts, Google App Engine service accounts and workload identity federation
