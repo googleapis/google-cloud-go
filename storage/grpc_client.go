@@ -1592,63 +1592,70 @@ func readObjectResponseContent(b []byte) ([]byte, error) {
 // This is used on the first recv of an object as it may contain all fields of
 // ReadObjectResponse.
 func readFullObjectResponse(b []byte) (*storagepb.ReadObjectResponse, error) {
-	checksummedData, err := readProtoBytes(b, checksummedDataField)
+	var checksummedData *storagepb.ChecksummedData
+
+	// Extract object content.
+	fieldContent, err := readProtoBytes(b, checksummedDataField)
 	if err != nil {
 		return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData: %v", err)
 	}
-	content, err := readProtoBytes(checksummedData, checksummedDataContentField)
-	if err != nil {
-		return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %v", err)
-	}
+	// Only fill the contents if the checksummedData field was found.
+	if fieldContent != nil {
+		content, err := readProtoBytes(fieldContent, checksummedDataContentField)
+		if err != nil {
+			return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Content: %v", err)
+		}
+		crc32c, err := readProtoFixed32(fieldContent, checksummedDataCRC32CField)
+		if err != nil {
+			return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Crc32C: %v", err)
+		}
 
-	crc32c, err := readProtoFixed32(checksummedData, checksummedDataCRC32CField)
-	if err != nil {
-		return nil, fmt.Errorf("invalid ReadObjectResponse.ChecksummedData.Crc32C: %v", err)
+		checksummedData = &storagepb.ChecksummedData{
+			Content: content,
+			Crc32C:  crc32c,
+		}
 	}
 
 	// Unmarshal remaining fields.
 	var checksums *storagepb.ObjectChecksums
-	bytes, err := readProtoBytes(b, objectChecksumsField)
+	fieldContent, err = readProtoBytes(b, objectChecksumsField)
 	if err != nil {
 		return nil, fmt.Errorf("invalid ReadObjectResponse.ObjectChecksums: %v", err)
 	}
-	// If the field is not empty, unmarshal its contents
-	if len(bytes) > 0 {
+	// Only unmarshal the contents if the field was found.
+	if fieldContent != nil {
 		checksums = &storagepb.ObjectChecksums{}
-		if err := proto.Unmarshal(bytes, checksums); err != nil {
+		if err := proto.Unmarshal(fieldContent, checksums); err != nil {
 			return nil, err
 		}
 	}
 
 	var contentRange *storagepb.ContentRange
-	bytes, err = readProtoBytes(b, contentRangeField)
+	fieldContent, err = readProtoBytes(b, contentRangeField)
 	if err != nil {
 		return nil, fmt.Errorf("invalid ReadObjectResponse.ContentRange: %v", "err")
 	}
-	if len(bytes) > 0 {
+	if fieldContent != nil {
 		contentRange = &storagepb.ContentRange{}
-		if err := proto.Unmarshal(bytes, contentRange); err != nil {
+		if err := proto.Unmarshal(fieldContent, contentRange); err != nil {
 			return nil, err
 		}
 	}
 
 	var metadata *storagepb.Object
-	bytes, err = readProtoBytes(b, metadataField)
+	fieldContent, err = readProtoBytes(b, metadataField)
 	if err != nil {
 		return nil, fmt.Errorf("invalid ReadObjectResponse.Metadata: %v", err)
 	}
-	if len(bytes) > 0 {
+	if fieldContent != nil {
 		metadata = &storagepb.Object{}
-		if err := proto.Unmarshal(bytes, metadata); err != nil {
+		if err := proto.Unmarshal(fieldContent, metadata); err != nil {
 			return nil, err
 		}
 	}
 
 	msg := &storagepb.ReadObjectResponse{
-		ChecksummedData: &storagepb.ChecksummedData{
-			Content: content,
-			Crc32C:  crc32c,
-		},
+		ChecksummedData: checksummedData,
 		ObjectChecksums: checksums,
 		ContentRange:    contentRange,
 		Metadata:        metadata,
