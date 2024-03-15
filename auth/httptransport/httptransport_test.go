@@ -22,7 +22,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
 )
@@ -104,7 +104,7 @@ func TestNewClient_FailsValidation(t *testing.T) {
 			name: "has creds with disable options, cred file",
 			opts: &Options{
 				DisableAuthentication: true,
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsFile: "abc.123",
 				},
 			},
@@ -113,7 +113,7 @@ func TestNewClient_FailsValidation(t *testing.T) {
 			name: "has creds with disable options, cred json",
 			opts: &Options{
 				DisableAuthentication: true,
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsJSON: []byte(`{"foo":"bar"}`),
 				},
 			},
@@ -133,17 +133,17 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	tests := []struct {
 		name string
 		in   *Options
-		want *detect.Options
+		want *credentials.DetectOptions
 	}{
 		{
 			name: "base",
 			in: &Options{
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Scopes:          []string{"scope"},
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:          []string{"scope"},
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -154,12 +154,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 				InternalOptions: &InternalOptions{
 					EnableJWTWithScope: true,
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Scopes:          []string{"scope"},
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:           []string{"scope"},
 				CredentialsFile:  "/path/to/a/file",
 				UseSelfSignedJWT: true,
@@ -168,12 +168,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 		{
 			name: "self-signed, with aud",
 			in: &Options{
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Audience:        "aud",
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Audience:         "aud",
 				CredentialsFile:  "/path/to/a/file",
 				UseSelfSignedJWT: true,
@@ -186,11 +186,11 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 					DefaultScopes:   []string{"default"},
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:          []string{"default"},
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -202,12 +202,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 					DefaultScopes:   []string{"default"},
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Scopes:          []string{"non-default"},
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:          []string{"non-default"},
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -219,12 +219,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 					DefaultScopes:   []string{"default"},
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Audience:        "non-default",
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Audience:         "non-default",
 				CredentialsFile:  "/path/to/a/file",
 				UseSelfSignedJWT: true,
@@ -236,11 +236,11 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 				InternalOptions: &InternalOptions{
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Audience:        "default",
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -277,7 +277,7 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 		InternalOptions: &InternalOptions{
 			DefaultEndpoint: ts.URL,
 		},
-		DetectOpts: &detect.Options{
+		DetectOpts: &credentials.DetectOptions{
 			Audience:         ts.URL,
 			CredentialsFile:  "../internal/testdata/sa.json",
 			UseSelfSignedJWT: true,

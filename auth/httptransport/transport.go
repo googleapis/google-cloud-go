@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport/cert"
 	"go.opencensus.io/plugin/ochttp"
@@ -58,11 +58,14 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 			Key:       opts.APIKey,
 		}
 	default:
-		creds, err := detect.DefaultCredentials(opts.resolveDetectOptions())
+		creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
 		if err != nil {
 			return nil, err
 		}
-		qp := creds.QuotaProjectID()
+		qp, err := creds.QuotaProjectID(context.Background())
+		if err != nil {
+			return nil, err
+		}
 		if qp != "" {
 			if headers == nil {
 				headers = make(map[string][]string, 1)
@@ -195,8 +198,8 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 // TODO(chridsmith): Refactor this func and its copy to single location.
 // validateUniverseDomain verifies that the universe domain configured for the
 // client matches the universe domain configured for the credentials.
-func validateUniverseDomain(ctx context.Context, c *detect.Credentials, clientUniverseDomain string) error {
-	credentialsUniverseDomain, err := c.GetUniverseDomain(ctx)
+func validateUniverseDomain(ctx context.Context, c *auth.Credentials, clientUniverseDomain string) error {
+	credentialsUniverseDomain, err := c.UniverseDomain(ctx)
 	if err != nil {
 		return err
 	}

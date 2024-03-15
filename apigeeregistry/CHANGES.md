@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.4](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.3...apigeeregistry/v0.8.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.2...apigeeregistry/v0.8.3) (2024-01-30)
 
 

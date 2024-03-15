@@ -18,7 +18,7 @@ import (
 	"context"
 	"fmt"
 
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/downscope"
 )
 
@@ -40,7 +40,7 @@ func ExampleNewTokenProvider() {
 
 	// This Source can be initialized in multiple ways; the following example uses
 	// Application Default Credentials.
-	baseProvider, err := detect.DefaultCredentials(&detect.Options{
+	baseProvider, err := credentials.DetectDefault(&credentials.DetectOptions{
 		Scopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
 	})
 	tp, err := downscope.NewTokenProvider(&downscope.Options{BaseProvider: baseProvider, Rules: accessBoundary})
