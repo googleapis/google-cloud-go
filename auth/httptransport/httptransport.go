@@ -144,7 +144,7 @@ func AddAuthorizationMiddleware(client *http.Client, tp auth.TokenProvider) erro
 		base = http.DefaultTransport.(*http.Transport).Clone()
 	}
 	client.Transport = &authTransport{
-		provider: auth.NewCachedTokenProvider(tp, nil),
+		creds: auth.NewCachedTokenProvider(tp, nil),
 		base:     base,
 	}
 	return nil

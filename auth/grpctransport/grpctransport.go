@@ -208,9 +208,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		if err != nil {
 			return nil, err
 		}
-		var tp auth.TokenProvider = creds
 		if opts.TokenProvider != nil {
-			tp = opts.TokenProvider
+			creds.TokenProvider = opts.TokenProvider // TODO(chrisdsmith): Is this OK? Are creds non-nil and suitable for WithTokenProvider? Or is new Credentials needed?
 		}
 
 		qp := creds.QuotaProjectID()
@@ -223,8 +222,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcTokenProvider{
-				creds: tp,
-				metadata:      metadata,
+				creds:                creds,
+				metadata:             metadata,
 				clientUniverseDomain: opts.UniverseDomain,
 			}),
 		)
@@ -244,7 +243,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 
 // grpcTokenProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
 type grpcTokenProvider struct {
-	creds detect.Credentials // TODO(chrisdsmith): convert usages of TokenProvider to creds
+	creds *detect.Credentials // TODO(chrisdsmith): convert usages of TokenProvider to creds
 
 	secure bool
 
