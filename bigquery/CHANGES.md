@@ -3,6 +3,28 @@
 
 
 
+## [1.59.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.59.0...bigquery/v1.59.1) (2024-02-12)
+
+
+### Bug Fixes
+
+* **bigquery:** Align return time.Time values to UTC ([#9411](https://github.com/googleapis/google-cloud-go/issues/9411)) ([4ac005d](https://github.com/googleapis/google-cloud-go/commit/4ac005d77f1e19981c7e1ab1cebec1302e0840ca))
+
+## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.58.0...bigquery/v1.59.0) (2024-02-06)
+
+
+### Features
+
+* **bigquery:** Add ExportDataStatstics to QueryStatistics ([#9371](https://github.com/googleapis/google-cloud-go/issues/9371)) ([261c8d9](https://github.com/googleapis/google-cloud-go/commit/261c8d944b53ac8953ea7d771c4bb50e4078d508))
+* **bigquery:** Switch all timestamp representations to int64 usec ([#9368](https://github.com/googleapis/google-cloud-go/issues/9368)) ([8c1fb7d](https://github.com/googleapis/google-cloud-go/commit/8c1fb7d4728ebc3b21cb0d601952966dca9cd1e8))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Resolve data races ([#9360](https://github.com/googleapis/google-cloud-go/issues/9360)) ([fa31ec0](https://github.com/googleapis/google-cloud-go/commit/fa31ec0c0f04302a9713a9b1d3228bda2ba135c6))
+* **bigquery:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+* **bigquery:** Support more timestamp formats for query param ([#9236](https://github.com/googleapis/google-cloud-go/issues/9236)) ([cc98509](https://github.com/googleapis/google-cloud-go/commit/cc98509fc7961e3d3619b837d13e69f9621386e8)), refs [#9221](https://github.com/googleapis/google-cloud-go/issues/9221)
+
 ## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.57.1...bigquery/v1.58.0) (2024-01-18)
 
 

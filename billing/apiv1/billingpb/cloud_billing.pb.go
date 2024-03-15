@@ -447,8 +447,6 @@ type CreateBillingAccountRequest struct {
 	BillingAccount *BillingAccount `protobuf:"bytes,1,opt,name=billing_account,json=billingAccount,proto3" json:"billing_account,omitempty"`
 	// Optional. The parent to create a billing account from.
 	// Format:
-	//   - `organizations/{organization_id}`, for example,
-	//     `organizations/12345678`
 	//   - `billingAccounts/{billing_account_id}`, for example,
 	//     `billingAccounts/012345-567890-ABCDEF`
 	Parent string `protobuf:"bytes,2,opt,name=parent,proto3" json:"parent,omitempty"`

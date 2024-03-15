@@ -1272,6 +1272,11 @@
                 "ListReferrers"
               ]
             },
+            "PerformMaintenance": {
+              "methods": [
+                "PerformMaintenance"
+              ]
+            },
             "RemoveResourcePolicies": {
               "methods": [
                 "RemoveResourcePolicies"
@@ -1415,6 +1420,60 @@
             "UpdateShieldedInstanceConfig": {
               "methods": [
                 "UpdateShieldedInstanceConfig"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "InstantSnapshots": {
+      "clients": {
+        "rest": {
+          "libraryClient": "InstantSnapshotsClient",
+          "rpcs": {
+            "AggregatedList": {
+              "methods": [
+                "AggregatedList"
+              ]
+            },
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             }
           }
@@ -2229,6 +2288,11 @@
                 "MoveInstance"
               ]
             },
+            "SetCloudArmorTier": {
+              "methods": [
+                "SetCloudArmorTier"
+              ]
+            },
             "SetCommonInstanceMetadata": {
               "methods": [
                 "SetCommonInstanceMetadata"
@@ -2845,6 +2909,55 @@
         }
       }
     },
+    "RegionInstantSnapshots": {
+      "clients": {
+        "rest": {
+          "libraryClient": "RegionInstantSnapshotsClient",
+          "rpcs": {
+            "Delete": {
+              "methods": [
+                "Delete"
+              ]
+            },
+            "Get": {
+              "methods": [
+                "Get"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "Insert": {
+              "methods": [
+                "Insert"
+              ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "SetLabels": {
+              "methods": [
+                "SetLabels"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
+    },
     "RegionNetworkEndpointGroups": {
       "clients": {
         "rest": {
@@ -3308,6 +3421,20 @@
             "Validate": {
               "methods": [
                 "Validate"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RegionZones": {
+      "clients": {
+        "rest": {
+          "libraryClient": "RegionZonesClient",
+          "rpcs": {
+            "List": {
+              "methods": [
+                "List"
               ]
             }
           }

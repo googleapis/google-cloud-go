@@ -189,7 +189,7 @@ func (c *TargetPoolsClient) AddInstance(ctx context.Context, req *computepb.AddI
 	return c.internalClient.AddInstance(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of target pools.
+// AggregatedList retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *TargetPoolsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -480,7 +480,7 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of target pools.
+// AggregatedList retrieves an aggregated list of target pools. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) *TargetPoolsScopedListPairIterator {
 	it := &TargetPoolsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListTargetPoolsRequest)

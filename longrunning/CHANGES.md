@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.6](https://github.com/googleapis/google-cloud-go/compare/longrunning/v0.5.5...longrunning/v0.5.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **longrunning:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.5.5](https://github.com/googleapis/google-cloud-go/compare/longrunning/v0.5.4...longrunning/v0.5.5) (2024-01-30)
 
 

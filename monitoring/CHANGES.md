@@ -1,5 +1,19 @@
 # Changes
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.0...monitoring/v1.18.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **monitoring:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.17.1...monitoring/v1.18.0) (2024-02-09)
+
+
+### Features
+
+* **monitoring/dashboard:** Add support for pie charts, incident lists, dropdown groups, error reporting panels, section headers, and styling options on text widgets ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.17.0...monitoring/v1.17.1) (2024-01-30)
 
 

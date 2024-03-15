@@ -203,7 +203,7 @@ func (c *NodeGroupsClient) AddNodes(ctx context.Context, req *computepb.AddNodes
 	return c.internalClient.AddNodes(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.
+// AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *NodeGroupsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeGroupsRequest, opts ...gax.CallOption) *NodeGroupsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -432,7 +432,7 @@ func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddN
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.
+// AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *nodeGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeGroupsRequest, opts ...gax.CallOption) *NodeGroupsScopedListPairIterator {
 	it := &NodeGroupsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNodeGroupsRequest)

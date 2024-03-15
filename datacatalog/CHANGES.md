@@ -1,5 +1,17 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.3...datacatalog/v1.20.0) (2024-03-14)
+
+
+### Features
+
+* **datacatalog:** Add RANGE type to Data Catalog ([#9573](https://github.com/googleapis/google-cloud-go/issues/9573)) ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+
+### Bug Fixes
+
+* **datacatalog:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.2...datacatalog/v1.19.3) (2024-01-30)
 
 

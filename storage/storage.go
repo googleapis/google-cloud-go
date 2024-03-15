@@ -219,6 +219,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 // NewGRPCClient creates a new Storage client using the gRPC transport and API.
 // Client methods which have not been implemented in gRPC will return an error.
 // In particular, methods for Cloud Pub/Sub notifications are not supported.
+// Using a non-default universe domain is also not supported with the Storage
+// gRPC client.
 //
 // The storage gRPC API is still in preview and not yet publicly available.
 // If you would like to use the API, please first contact your GCP account rep to
@@ -1093,6 +1095,10 @@ func (o *ObjectHandle) validate() error {
 	}
 	if !utf8.ValidString(o.object) {
 		return fmt.Errorf("storage: object name %q is not valid UTF-8", o.object)
+	}
+	// Names . and .. are not valid; see https://cloud.google.com/storage/docs/objects#naming
+	if o.object == "." || o.object == ".." {
+		return fmt.Errorf("storage: object name %q is not valid", o.object)
 	}
 	return nil
 }

@@ -506,6 +506,11 @@
                 "ListOperations"
               ]
             },
+            "SearchNearestEntities": {
+              "methods": [
+                "SearchNearestEntities"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -1943,6 +1948,16 @@
         "grpc": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "BatchCancelPipelineJobs": {
+              "methods": [
+                "BatchCancelPipelineJobs"
+              ]
+            },
+            "BatchDeletePipelineJobs": {
+              "methods": [
+                "BatchDeletePipelineJobs"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"

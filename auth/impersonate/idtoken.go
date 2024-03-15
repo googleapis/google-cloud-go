@@ -24,7 +24,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
 	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
 )
@@ -88,9 +87,9 @@ func NewIDTokenProvider(opts *IDTokenOptions) (auth.TokenProvider, error) {
 	if opts.Client == nil && opts.TokenProvider == nil {
 		var err error
 		client, err = httptransport.NewClient(&httptransport.Options{
-			DetectOpts: &detect.Options{
-				Audience: defaultAud,
-				Scopes:   []string{defaultScope},
+			InternalOptions: &httptransport.InternalOptions{
+				DefaultAudience: defaultAud,
+				DefaultScopes:   []string{defaultScope},
 			},
 		})
 		if err != nil {
