@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.16.0...retail/v1.16.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **retail:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.15.1...retail/v1.16.0) (2024-02-09)
 
 

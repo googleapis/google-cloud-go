@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.6](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.6.5...resourcesettings/v1.6.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **resourcesettings:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.6.5](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.6.4...resourcesettings/v1.6.5) (2024-01-30)
 
 
