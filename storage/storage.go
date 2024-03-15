@@ -1068,25 +1068,32 @@ func (o *ObjectHandle) SoftDeleted() *ObjectHandle {
 	return &o2
 }
 
+// RestoreOptions allows you to set options when restoring an object.
+type RestoreOptions struct {
+	/// CopySourceACL indicates whether the restored object should copy the
+	// access controls of the source object. Only valid for buckets with
+	// fine-grained access. If uniform bucket-level access is enabled, setting
+	// CopySourceACL will cause an error.
+	CopySourceACL bool
+}
+
 // Restore will restore a soft-deleted object to a live object.
 // Note that you must specify a generation to use this method.
-// copySourceACL indicates whether the restored object should copy the
-// access controls of the source object.
-func (o *ObjectHandle) Restore(ctx context.Context, copySourceACL bool) (*ObjectAttrs, error) {
+func (o *ObjectHandle) Restore(ctx context.Context, opts *RestoreOptions) (*ObjectAttrs, error) {
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
 	// Restore is idempotent if GenerationMatch or Generation have been passed in.
 	// The default generation is negative to get the latest version of the object.
 	isIdempotent := (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0
-	opts := makeStorageOpts(isIdempotent, o.retry, o.userProject)
+	sOpts := makeStorageOpts(isIdempotent, o.retry, o.userProject)
 	return o.c.tc.RestoreObject(ctx, &restoreObjectParams{
 		bucket:        o.bucket,
 		object:        o.object,
 		gen:           o.gen,
 		conds:         o.conds,
-		copySourceACL: copySourceACL,
-	}, opts...)
+		copySourceACL: opts.CopySourceACL,
+	}, sOpts...)
 }
 
 // NewWriter returns a storage Writer that writes to the GCS object

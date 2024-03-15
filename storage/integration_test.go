@@ -4326,7 +4326,7 @@ func TestIntegration_SoftDelete(t *testing.T) {
 		}
 
 		// Restore a soft deleted object.
-		_, err = deletedObject.Generation(gen).Restore(ctx, true)
+		_, err = deletedObject.Generation(gen).Restore(ctx, &RestoreOptions{CopySourceACL: true})
 		if err != nil {
 			t.Fatalf("Object(deletedObject).Restore: %v", err)
 		}
