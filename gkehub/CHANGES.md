@@ -1,5 +1,12 @@
 # Changes
 
+## [0.14.6](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.5...gkehub/v0.14.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **gkehub:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.14.5](https://github.com/googleapis/google-cloud-go/compare/gkehub/v0.14.4...gkehub/v0.14.5) (2024-01-30)
 
 
@@ -138,4 +145,3 @@
 
 This is the first tag to carve out gkehub as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

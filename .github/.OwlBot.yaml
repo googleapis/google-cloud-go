@@ -70,7 +70,7 @@ deep-remove-regex:
   - /cloudcontrolspartner/apiv1/
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
-  - /cloudquotas/v1/
+  - /cloudquotas/apiv1/
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
@@ -328,6 +328,7 @@ deep-remove-regex:
   - /internal/generated/snippets/scheduler/apiv1/
   - /internal/generated/snippets/scheduler/apiv1beta1/
   - /internal/generated/snippets/secretmanager/apiv1/
+  - /internal/generated/snippets/secretmanager/apiv1beta2/
   - /internal/generated/snippets/securesourcemanager/apiv1/
   - /internal/generated/snippets/security/privateca/apiv1/
   - /internal/generated/snippets/security/publicca/apiv1beta1/
@@ -459,6 +460,7 @@ deep-remove-regex:
   - /scheduler/apiv1/
   - /scheduler/apiv1beta1/
   - /secretmanager/apiv1/
+  - /secretmanager/apiv1beta2/
   - /securesourcemanager/apiv1/
   - /security/privateca/apiv1/
   - /security/publicca/apiv1beta1/
@@ -968,6 +970,8 @@ deep-copy-regex:
   - source: /google/cloud/scheduler/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/secretmanager/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/secretmanager/v1beta2/cloud.google.com/go
     dest: /
   - source: /google/cloud/securesourcemanager/v1/cloud.google.com/go
     dest: /

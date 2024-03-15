@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.4...commerce/v0.1.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **commerce:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.3...commerce/v0.1.4) (2024-01-30)
 
 
@@ -37,4 +44,3 @@
 * **commerce:** Start generating apiv1 ([#8322](https://github.com/googleapis/google-cloud-go/issues/8322)) ([db4f48b](https://github.com/googleapis/google-cloud-go/commit/db4f48bc9d5366f524f1fce82f2fea8094ea8c1e))
 
 ## Changes
-

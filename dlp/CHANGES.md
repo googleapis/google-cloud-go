@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.12.0...dlp/v1.12.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **dlp:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.2...dlp/v1.12.0) (2024-03-07)
 
 
@@ -142,4 +149,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out dlp as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

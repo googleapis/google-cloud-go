@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.5.5](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.4...workstations/v0.5.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **workstations:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.5.4](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.3...workstations/v0.5.4) (2024-01-30)
 
 
@@ -80,4 +87,3 @@
 * **workstations:** Start generating apiv1beta ([#7599](https://github.com/googleapis/google-cloud-go/issues/7599)) ([e3d6afe](https://github.com/googleapis/google-cloud-go/commit/e3d6afe79ddc4579b54934b4884891f35cc3d1a3))
 
 ## Changes
-
