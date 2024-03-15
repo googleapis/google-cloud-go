@@ -945,7 +945,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			links = append(links, trace.Link{SpanContext: bm.createSpan.SpanContext()})
 		}
 
-		topicID := strings.Split(t.name, "/")[3]
+		topicID := idFromFullyQualified(t.name)
 		var pSpan trace.Span
 		ctx, pSpan = startSpan(ctx, publishRPCSpanName, topicID, trace.WithLinks(links...))
 		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("topic.publishMessageBundle"))

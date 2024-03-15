@@ -135,7 +135,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 	cctx, cancel := context.WithCancel(context.Background())
 	cctx = withSubscriptionKey(cctx, subName)
 
-	subID := strings.Split(subName, "/")[3]
+	subID := idFromFullyQualified(subName)
 
 	it := &messageIterator{
 		ctx:                cctx,
