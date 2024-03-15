@@ -24,7 +24,8 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/idtoken"
 	"cloud.google.com/go/auth/impersonate"
 	"cloud.google.com/go/auth/internal/testutil"
@@ -96,15 +97,15 @@ func TestCredentialsTokenSourceIntegration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			var creds *detect.Credentials
+			var creds *auth.Credentials
 			if !tt.useDefaultCreds {
 				var err error
-				creds, err = detect.DefaultCredentials(&detect.Options{
+				creds, err = credentials.DetectDefault(&credentials.DetectOptions{
 					Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 					CredentialsFile: tt.baseKeyFile,
 				})
 				if err != nil {
-					t.Fatalf("detect.DefaultCredentials() = %v", err)
+					t.Fatalf("credentials.DetectDefault() = %v", err)
 				}
 			}
 
@@ -161,15 +162,15 @@ func TestIDTokenSourceIntegration(t *testing.T) {
 	for _, tt := range tests {
 		name := tt.name
 		t.Run(name, func(t *testing.T) {
-			var creds *detect.Credentials
+			var creds *auth.Credentials
 			if !tt.useDefaultCreds {
 				var err error
-				creds, err = detect.DefaultCredentials(&detect.Options{
+				creds, err = credentials.DetectDefault(&credentials.DetectOptions{
 					Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 					CredentialsFile: tt.baseKeyFile,
 				})
 				if err != nil {
-					t.Fatalf("detect.DefaultCredentials() = %v", err)
+					t.Fatalf("credentials.DetectDefault() = %v", err)
 				}
 			}
 			aud := "http://example.com/"

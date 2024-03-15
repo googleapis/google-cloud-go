@@ -20,7 +20,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 )
 
 // TestCloneDetectOptions_FieldTest is meant to fail every time a new field is
@@ -30,7 +30,7 @@ import (
 // relevant fields.
 func TestCloneDetectOptions_FieldTest(t *testing.T) {
 	const WantNumberOfFields = 11
-	o := detect.Options{}
+	o := credentials.DetectOptions{}
 	got := reflect.TypeOf(o).NumField()
 	if got != WantNumberOfFields {
 		t.Errorf("if this fails please read comment above the test: got %v, want %v", got, WantNumberOfFields)
@@ -38,7 +38,7 @@ func TestCloneDetectOptions_FieldTest(t *testing.T) {
 }
 
 func TestCloneDetectOptions(t *testing.T) {
-	oldDo := &detect.Options{
+	oldDo := &credentials.DetectOptions{
 		Audience:          "aud",
 		Subject:           "sub",
 		EarlyTokenRefresh: 42,
