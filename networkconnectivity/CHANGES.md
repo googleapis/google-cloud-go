@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.14.4...networkconnectivity/v1.14.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.14.3...networkconnectivity/v1.14.4) (2024-01-30)
 
 

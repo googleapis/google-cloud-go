@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.3...notebooks/v1.11.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **notebooks:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.2...notebooks/v1.11.3) (2024-01-30)
 
 

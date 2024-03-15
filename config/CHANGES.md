@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/config/v0.2.1...config/v0.2.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **config:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/config/v0.2.0...config/v0.2.1) (2024-01-30)
 
 

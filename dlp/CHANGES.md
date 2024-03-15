@@ -1,5 +1,19 @@
 # Changes
 
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.12.0...dlp/v1.12.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **dlp:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.2...dlp/v1.12.0) (2024-03-07)
+
+
+### Features
+
+* **dlp:** Add RPCs for getting and listing project, table, and column data profiles ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.1...dlp/v1.11.2) (2024-01-30)
 
 

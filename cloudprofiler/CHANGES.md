@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.0...cloudprofiler/v0.3.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **cloudprofiler:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.2.1...cloudprofiler/v0.3.0) (2024-02-26)
+
+
+### Features
+
+* **cloudprofiler:** Add `start_time` to Profile proto ([#9461](https://github.com/googleapis/google-cloud-go/issues/9461)) ([748f065](https://github.com/googleapis/google-cloud-go/commit/748f065cccfd6d407b9cc4df6715bf8e6d50171c))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.2.0...cloudprofiler/v0.2.1) (2024-01-30)
 
 

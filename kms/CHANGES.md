@@ -1,5 +1,19 @@
 # Changes
 
+## [1.15.8](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.7...kms/v1.15.8) (2024-03-14)
+
+
+### Bug Fixes
+
+* **kms:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.15.7](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.6...kms/v1.15.7) (2024-02-06)
+
+
+### Documentation
+
+* **kms:** Update comments ([e60a6ba](https://github.com/googleapis/google-cloud-go/commit/e60a6ba01acf2ef2e8d12e23ed5c6e876edeb1b7))
+
 ## [1.15.6](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.5...kms/v1.15.6) (2024-01-30)
 
 
