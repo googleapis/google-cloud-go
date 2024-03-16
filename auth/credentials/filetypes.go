@@ -12,21 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package detect
+package credentials
 
 import (
 	"errors"
 	"fmt"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect/internal/externalaccount"
-	"cloud.google.com/go/auth/detect/internal/externalaccountuser"
-	"cloud.google.com/go/auth/detect/internal/gdch"
-	"cloud.google.com/go/auth/detect/internal/impersonate"
+	"cloud.google.com/go/auth/credentials/internal/externalaccount"
+	"cloud.google.com/go/auth/credentials/internal/externalaccountuser"
+	"cloud.google.com/go/auth/credentials/internal/gdch"
+	"cloud.google.com/go/auth/credentials/internal/impersonate"
+	internalauth "cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
-func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
+func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	fileType, err := internaldetect.ParseFileType(b)
 	if err != nil {
 		return nil, err
@@ -100,12 +101,18 @@ func fileCredentials(b []byte, opts *Options) (*Credentials, error) {
 	default:
 		return nil, fmt.Errorf("detect: unsupported filetype %q", fileType)
 	}
-	return newCredentials(auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
-		ExpireEarly: opts.EarlyTokenRefresh,
-	}), b, projectID, quotaProjectID, universeDomain), nil
+	return auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
+			ExpireEarly: opts.EarlyTokenRefresh,
+		}),
+		JSON:                   b,
+		ProjectIDProvider:      internalauth.StaticCredentialsProperty(projectID),
+		QuotaProjectIDProvider: internalauth.StaticCredentialsProperty(quotaProjectID),
+		UniverseDomainProvider: internalauth.StaticCredentialsProperty(universeDomain),
+	}), nil
 }
 
-func handleServiceAccount(f *internaldetect.ServiceAccountFile, opts *Options) (auth.TokenProvider, error) {
+func handleServiceAccount(f *internaldetect.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	if opts.UseSelfSignedJWT {
 		return configureSelfSignedJWT(f, opts)
 	}
@@ -123,7 +130,7 @@ func handleServiceAccount(f *internaldetect.ServiceAccountFile, opts *Options) (
 	return auth.New2LOTokenProvider(opts2LO)
 }
 
-func handleUserCredential(f *internaldetect.UserCredentialsFile, opts *Options) (auth.TokenProvider, error) {
+func handleUserCredential(f *internaldetect.UserCredentialsFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	opts3LO := &auth.Options3LO{
 		ClientID:         f.ClientID,
 		ClientSecret:     f.ClientSecret,
@@ -137,7 +144,7 @@ func handleUserCredential(f *internaldetect.UserCredentialsFile, opts *Options) 
 	return auth.New3LOTokenProvider(opts3LO)
 }
 
-func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *Options) (auth.TokenProvider, error) {
+func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	externalOpts := &externalaccount.Options{
 		Audience:                       f.Audience,
 		SubjectTokenType:               f.SubjectTokenType,
@@ -156,7 +163,7 @@ func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *Options)
 	return externalaccount.NewTokenProvider(externalOpts)
 }
 
-func handleExternalAccountAuthorizedUser(f *internaldetect.ExternalAccountAuthorizedUserFile, opts *Options) (auth.TokenProvider, error) {
+func handleExternalAccountAuthorizedUser(f *internaldetect.ExternalAccountAuthorizedUserFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	externalOpts := &externalaccountuser.Options{
 		Audience:     f.Audience,
 		RefreshToken: f.RefreshToken,
@@ -170,7 +177,7 @@ func handleExternalAccountAuthorizedUser(f *internaldetect.ExternalAccountAuthor
 	return externalaccountuser.NewTokenProvider(externalOpts)
 }
 
-func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccountFile, opts *Options) (auth.TokenProvider, error) {
+func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	if f.ServiceAccountImpersonationURL == "" || f.CredSource == nil {
 		return nil, errors.New("missing 'source_credentials' field or 'service_account_impersonation_url' in credentials")
 	}
@@ -188,7 +195,7 @@ func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccou
 	})
 }
 
-func handleGDCHServiceAccount(f *internaldetect.GDCHServiceAccountFile, opts *Options) (auth.TokenProvider, error) {
+func handleGDCHServiceAccount(f *internaldetect.GDCHServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	return gdch.NewTokenProvider(f, &gdch.Options{
 		STSAudience: opts.STSAudience,
 		Client:      opts.client(),

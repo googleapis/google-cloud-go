@@ -70,6 +70,17 @@ func main() {
 	githubUsername := flag.String("gh-user", "googleapis", "GitHub username where repo lives.")
 	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
 
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "validate":
+			log.Println("Starting config validation.")
+			if err := validate(); err != nil {
+				log.Fatal(err)
+			}
+			log.Println("Validation complete.")
+			return
+		}
+	}
 	flag.Parse()
 	ctx := context.Background()
 
