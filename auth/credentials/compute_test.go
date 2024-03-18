@@ -16,10 +16,13 @@ package credentials
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"cloud.google.com/go/compute/metadata"
 )
 
 const computeMetadataEnvVar = "GCE_METADATA_HOST"
@@ -47,5 +50,59 @@ func TestComputeTokenProvider(t *testing.T) {
 	}
 	if want := "bearer"; tok.Type != want {
 		t.Errorf("got %q, want %q", tok.Value, want)
+	}
+}
+
+func TestComputeUniverseDomainProvider(t *testing.T) {
+	fatalErr := errors.New("fatal error")
+	notDefinedError := metadata.NotDefinedError("universe/universe_domain")
+	testCases := []struct {
+		name    string
+		getFunc func(ctx context.Context) (string, error)
+		want    string
+		wantErr error
+	}{
+		{
+			name: "test error",
+			getFunc: func(ctx context.Context) (string, error) {
+				return "", fatalErr
+			},
+			want:    "",
+			wantErr: fatalErr,
+		},
+		{
+			name: "test error 404",
+			getFunc: func(ctx context.Context) (string, error) {
+				return "", notDefinedError
+			},
+			want:    defaultUniverseDomain,
+			wantErr: nil,
+		},
+		{
+			name: "test valid",
+			getFunc: func(ctx context.Context) (string, error) {
+				return "example.com", nil
+			},
+			want:    "example.com",
+			wantErr: nil,
+		},
+	}
+
+	oldGet := httpGetMetadataUniverseDomain
+	defer func() {
+		httpGetMetadataUniverseDomain = oldGet
+	}()
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			httpGetMetadataUniverseDomain = tc.getFunc
+			c := computeUniverseDomainProvider{}
+			got, err := c.GetProperty(context.Background())
+			if err != tc.wantErr {
+				t.Errorf("%s: got error %v; want error %v", tc.name, err, tc.wantErr)
+			}
+			if got != tc.want {
+				t.Errorf("%s: got %v; want %v", tc.name, got, tc.want)
+			}
+		})
 	}
 }

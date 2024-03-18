@@ -22,6 +22,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -85,18 +86,37 @@ func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Metadata: computeTokenMetadata,
 	}, nil
 
-} // computeProvider fetches tokens from the google cloud metadata service.
-type computeUniverseDomainProvider struct {
-	// TODO(chrisdsmith): memoize universe domain (with sync.Once)
 }
 
-func (cudp computeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
-	var err error
-	c := metadata.NewClient(&http.Client{Timeout: time.Second})
+// computeUniverseDomainProvider fetches the credentials universe domain from
+// the google cloud metadata service.
+type computeUniverseDomainProvider struct {
+	universeDomainOnce sync.Once
+	universeDomain     string
+	universeDomainErr  error
+}
+
+func (c *computeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
+	c.universeDomainOnce.Do(func() {
+		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx)
+	})
+	if c.universeDomainErr != nil {
+		return "", c.universeDomainErr
+	}
+	return c.universeDomain, nil
+}
+
+// httpGetMetadataUniverseDomain is a package var for unit test substitution.
+var httpGetMetadataUniverseDomain = func(ctx context.Context) (string, error) {
+	client := metadata.NewClient(&http.Client{Timeout: time.Second})
 	// TODO(chrisdsmith): set ctx on request
-	ud, err := c.Get("universe/universe_domain")
+	return client.Get("universe/universe_domain")
+}
+
+func getMetadataUniverseDomain(ctx context.Context) (string, error) {
+	universeDomain, err := httpGetMetadataUniverseDomain(ctx)
 	if err == nil {
-		return ud, nil
+		return universeDomain, nil
 	}
 	if _, ok := err.(metadata.NotDefinedError); ok {
 		// http.StatusNotFound (404)
