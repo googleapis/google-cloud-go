@@ -97,7 +97,9 @@ func TestNewClient_FailsValidation(t *testing.T) {
 			name: "has creds with disable options, tp",
 			opts: &Options{
 				DisableAuthentication: true,
-				TokenProvider:         staticTP("fakeToken"),
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: staticTP("fakeToken"),
+				}),
 			},
 		},
 		{

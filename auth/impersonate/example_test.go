@@ -21,9 +21,9 @@ import (
 	"cloud.google.com/go/auth/impersonate"
 )
 
-func ExampleNewCredentialTokenProvider_serviceAccount() {
+func ExampleNewCredentials_serviceAccount() {
 	// Base credentials sourced from ADC or provided client options
-	tp, err := impersonate.NewCredentialTokenProvider(&impersonate.CredentialOptions{
+	creds, err := impersonate.NewCredentials(&impersonate.CredentialsOptions{
 		TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
 		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 		// Optionally supply delegates
@@ -36,12 +36,12 @@ func ExampleNewCredentialTokenProvider_serviceAccount() {
 	// TODO(codyoss): link to option once it exists.
 
 	// Use this TokenProvider with a client library
-	_ = tp
+	_ = creds
 }
 
-func ExampleNewCredentialTokenProvider_adminUser() {
+func ExampleNewCredentials_adminUser() {
 	// Base credentials sourced from ADC or provided client options
-	tp, err := impersonate.NewCredentialTokenProvider(&impersonate.CredentialOptions{
+	creds, err := impersonate.NewCredentials(&impersonate.CredentialsOptions{
 		TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
 		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 		// Optionally supply delegates
@@ -55,12 +55,12 @@ func ExampleNewCredentialTokenProvider_adminUser() {
 
 	// Use this TokenProvider with a client library like
 	// "google.golang.org/api/admin/directory/v1"
-	_ = tp
+	_ = creds
 }
 
-func ExampleNewIDTokenProvider() {
+func ExampleNewIDTokenCredentials() {
 	// Base credentials sourced from ADC or provided client options.
-	tp, err := impersonate.NewIDTokenProvider(&impersonate.IDTokenOptions{
+	creds, err := impersonate.NewIDTokenCredentials(&impersonate.IDTokenOptions{
 		Audience:        "http://example.com/",
 		TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
 		IncludeEmail:    true,
@@ -73,7 +73,7 @@ func ExampleNewIDTokenProvider() {
 
 	// Create an authenticated client
 	client, err := httptransport.NewClient(&httptransport.Options{
-		TokenProvider: tp,
+		Credentials: creds,
 	})
 	if err != nil {
 		log.Fatal(err)

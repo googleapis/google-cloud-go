@@ -42,7 +42,7 @@ func TestComputeTokenSource(t *testing.T) {
 	}))
 	defer ts.Close()
 	t.Setenv(metadataHostEnv, strings.TrimPrefix(ts.URL, "http://"))
-	tp, err := computeTokenProvider(&Options{
+	tp, err := computeCredentials(&Options{
 		Audience:           "aud",
 		ComputeTokenFormat: ComputeTokenFormatFullWithLicense,
 	})
@@ -76,7 +76,7 @@ func TestComputeTokenSource_Standard(t *testing.T) {
 	}))
 	defer ts.Close()
 	t.Setenv(metadataHostEnv, strings.TrimPrefix(ts.URL, "http://"))
-	tp, err := computeTokenProvider(&Options{
+	tp, err := computeCredentials(&Options{
 		Audience:           "aud",
 		ComputeTokenFormat: ComputeTokenFormatStandard,
 	})
@@ -93,7 +93,7 @@ func TestComputeTokenSource_Standard(t *testing.T) {
 }
 
 func TestComputeTokenSource_Invalid(t *testing.T) {
-	if _, err := computeTokenProvider(&Options{
+	if _, err := computeCredentials(&Options{
 		Audience:     "aud",
 		CustomClaims: map[string]interface{}{"foo": "bar"},
 	}); err == nil {

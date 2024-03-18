@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
 )
@@ -46,10 +47,10 @@ type IDTokenOptions struct {
 	// chain. Optional.
 	Delegates []string
 
-	// TokenProvider is the provider of the credentials used to fetch the ID
-	// token. If not provided, and a Client is also not provided, base
-	// credentials will try to be detected from the environment. Optional.
-	TokenProvider auth.TokenProvider
+	// Credentials used to fetch the ID token. If not provided, and a Client is
+	// also not provided, base credentials will try to be detected from the
+	// environment. Optional.
+	Credentials *auth.Credentials
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. If provided the client should provide it's own
 	// base credentials at call time. Optional.
@@ -70,34 +71,40 @@ func (o *IDTokenOptions) validate() error {
 }
 
 var (
-	defaultAud   = "https://iamcredentials.googleapis.com/"
 	defaultScope = "https://www.googleapis.com/auth/cloud-platform"
 )
 
-// NewIDTokenProvider creates an impersonated
-// [cloud.google.com/go/auth/TokenProvider] that returns ID tokens configured
+// NewIDTokenCredentials creates an impersonated
+// [cloud.google.com/go/auth/Credentials] that returns ID tokens configured
 // with the provided config and using credentials loaded from Application
 // Default Credentials as the base credentials if not provided with the opts.
 // The tokens produced are valid for one hour and are automatically refreshed.
-func NewIDTokenProvider(opts *IDTokenOptions) (auth.TokenProvider, error) {
+func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
 	var client *http.Client
-	if opts.Client == nil && opts.TokenProvider == nil {
+	var creds *auth.Credentials
+	if opts.Client == nil && opts.Credentials == nil {
 		var err error
+		// TODO: test not signed jwt more
+		creds, err = credentials.DetectDefault(&credentials.DetectOptions{
+			Scopes:           []string{defaultScope},
+			UseSelfSignedJWT: true,
+		})
+		if err != nil {
+			return nil, err
+		}
 		client, err = httptransport.NewClient(&httptransport.Options{
-			InternalOptions: &httptransport.InternalOptions{
-				DefaultAudience: defaultAud,
-				DefaultScopes:   []string{defaultScope},
-			},
+			Credentials: creds,
 		})
 		if err != nil {
 			return nil, err
 		}
 	} else if opts.Client == nil {
+		creds = opts.Credentials
 		client = internal.CloneDefaultClient()
-		if err := httptransport.AddAuthorizationMiddleware(client, opts.TokenProvider); err != nil {
+		if err := httptransport.AddAuthorizationMiddleware(client, opts.Credentials); err != nil {
 			return nil, err
 		}
 	} else {
@@ -113,7 +120,15 @@ func NewIDTokenProvider(opts *IDTokenOptions) (auth.TokenProvider, error) {
 	for _, v := range opts.Delegates {
 		itp.delegates = append(itp.delegates, formatIAMServiceAccountName(v))
 	}
-	return auth.NewCachedTokenProvider(itp, nil), nil
+
+	var udp auth.CredentialsPropertyProvider
+	if creds != nil {
+		udp = auth.CredentialsPropertyFunc(creds.QuotaProjectID)
+	}
+	return auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider:          auth.NewCachedTokenProvider(itp, nil),
+		UniverseDomainProvider: udp,
+	}), nil
 }
 
 type generateIDTokenRequest struct {

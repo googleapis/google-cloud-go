@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/internal"
 )
@@ -33,11 +34,13 @@ var (
 	oauth2Endpoint         = "https://oauth2.googleapis.com"
 )
 
-// NewCredentialTokenProvider returns an impersonated
-// [cloud.google.com/go/auth/TokenProvider] configured with the provided options
+// TODO(codyoss): plumb through base for this and idtoken
+
+// NewCredentials returns an impersonated
+// [cloud.google.com/go/auth/NewCredentials] configured with the provided options
 // and using credentials loaded from Application Default Credentials as the base
 // credentials if not provided with the opts.
-func NewCredentialTokenProvider(opts *CredentialOptions) (auth.TokenProvider, error) {
+func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
@@ -53,20 +56,26 @@ func NewCredentialTokenProvider(opts *CredentialOptions) (auth.TokenProvider, er
 	}
 
 	var client *http.Client
-	if opts.Client == nil && opts.TokenProvider == nil {
+	var creds *auth.Credentials
+	if opts.Client == nil && opts.Credentials == nil {
 		var err error
-		client, err = httptransport.NewClient(&httptransport.Options{
-			InternalOptions: &httptransport.InternalOptions{
-				DefaultAudience: defaultAud,
-				DefaultScopes:   []string{defaultScope},
-			},
+		creds, err = credentials.DetectDefault(&credentials.DetectOptions{
+			Scopes:           []string{defaultScope},
+			UseSelfSignedJWT: true,
 		})
 		if err != nil {
 			return nil, err
 		}
-	} else if opts.TokenProvider != nil {
+		client, err = httptransport.NewClient(&httptransport.Options{
+			Credentials: creds,
+		})
+		if err != nil {
+			return nil, err
+		}
+	} else if opts.Credentials != nil {
+		creds = opts.Credentials
 		client = internal.CloneDefaultClient()
-		if err := httptransport.AddAuthorizationMiddleware(client, opts.TokenProvider); err != nil {
+		if err := httptransport.AddAuthorizationMiddleware(client, opts.Credentials); err != nil {
 			return nil, err
 		}
 	} else {
@@ -76,7 +85,18 @@ func NewCredentialTokenProvider(opts *CredentialOptions) (auth.TokenProvider, er
 	// If a subject is specified a different auth-flow is initiated to
 	// impersonate as the provided subject (user).
 	if opts.Subject != "" {
-		return user(opts, client, lifetime, isStaticToken)
+		tp, err := user(opts, client, lifetime, isStaticToken)
+		if err != nil {
+			return nil, err
+		}
+		var udp auth.CredentialsPropertyProvider
+		if creds != nil {
+			udp = auth.CredentialsPropertyFunc(creds.QuotaProjectID)
+		}
+		return auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider:          tp,
+			UniverseDomainProvider: udp,
+		}), nil
 	}
 
 	its := impersonatedTokenProvider{
@@ -96,11 +116,19 @@ func NewCredentialTokenProvider(opts *CredentialOptions) (auth.TokenProvider, er
 			DisableAutoRefresh: true,
 		}
 	}
-	return auth.NewCachedTokenProvider(its, tpo), nil
+
+	var udp auth.CredentialsPropertyProvider
+	if creds != nil {
+		udp = auth.CredentialsPropertyFunc(creds.QuotaProjectID)
+	}
+	return auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider:          auth.NewCachedTokenProvider(its, tpo),
+		UniverseDomainProvider: udp,
+	}), nil
 }
 
-// CredentialOptions for generating an impersonated credential token.
-type CredentialOptions struct {
+// CredentialsOptions for generating an impersonated credential token.
+type CredentialsOptions struct {
 	// TargetPrincipal is the email address of the service account to
 	// impersonate. Required.
 	TargetPrincipal string
@@ -122,17 +150,17 @@ type CredentialOptions struct {
 	// wide delegation. Optional.
 	Subject string
 
-	// TokenProvider is the provider of the credentials used to fetch the ID
+	// Credentials is the provider of the credentials used to fetch the ID
 	// token. If not provided, and a Client is also not provided, credentials
 	// will try to be detected from the environment. Optional.
-	TokenProvider auth.TokenProvider
+	Credentials *auth.Credentials
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. If provided the client should provide it's own
 	// credentials at call time. Optional.
 	Client *http.Client
 }
 
-func (o *CredentialOptions) validate() error {
+func (o *CredentialsOptions) validate() error {
 	if o == nil {
 		return errors.New("impersonate: options must be provided")
 	}

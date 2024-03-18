@@ -73,8 +73,8 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 		}
 
 		var tp auth.TokenProvider = creds
-		if opts.TokenProvider != nil {
-			tp = opts.TokenProvider
+		if opts.Credentials != nil {
+			tp = opts.Credentials
 		}
 		trans = &authTransport{
 			base:     trans,

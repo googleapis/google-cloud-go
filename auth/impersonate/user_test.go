@@ -126,7 +126,7 @@ func TestTokenSource_user(t *testing.T) {
 					return nil
 				}),
 			}
-			ts, err := NewCredentialTokenProvider(&CredentialOptions{
+			ts, err := NewCredentials(&CredentialsOptions{
 				TargetPrincipal: tt.targetPrincipal,
 				Scopes:          tt.scopes,
 				Lifetime:        tt.lifetime,

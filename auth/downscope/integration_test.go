@@ -91,17 +91,17 @@ func TestDownscopedToken(t *testing.T) {
 	}
 }
 
-func testDownscopedToken(t *testing.T, rule downscope.AccessBoundaryRule, objectName string, tp auth.TokenProvider) error {
+func testDownscopedToken(t *testing.T, rule downscope.AccessBoundaryRule, objectName string, creds *auth.Credentials) error {
 	t.Helper()
 	ctx := context.Background()
-	tp, err := downscope.NewTokenProvider(&downscope.Options{BaseProvider: tp, Rules: []downscope.AccessBoundaryRule{rule}})
+	creds, err := downscope.NewCredentials(&downscope.Options{BaseCredentials: creds, Rules: []downscope.AccessBoundaryRule{rule}})
 	if err != nil {
 		return fmt.Errorf("downscope.NewTokenProvider() = %v", err)
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second*30)
 	defer cancel()
-	client := testgcs.NewClient(tp)
+	client := testgcs.NewClient(creds)
 	resp, err := client.DownloadObject(ctx, bucket, objectName)
 	if err != nil {
 		return err

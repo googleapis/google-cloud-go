@@ -35,7 +35,7 @@ const (
 func TestNewTokenProvider_CredentialsFile(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	ctx := context.Background()
-	ts, err := idtoken.NewTokenProvider(&idtoken.Options{
+	ts, err := idtoken.NewCredentials(&idtoken.Options{
 		Audience:        "http://example.com",
 		CredentialsFile: os.Getenv(envCredentialFile),
 	})
@@ -67,14 +67,14 @@ func TestNewTokenProvider_CredentialsJSON(t *testing.T) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	tp, err := idtoken.NewTokenProvider(&idtoken.Options{
+	creds, err := idtoken.NewCredentials(&idtoken.Options{
 		Audience:        aud,
 		CredentialsJSON: b,
 	})
 	if err != nil {
 		t.Fatalf("unable to create Client: %v", err)
 	}
-	tok, err := tp.Token(ctx)
+	tok, err := creds.Token(ctx)
 	if err != nil {
 		t.Fatalf("unable to retrieve Token: %v", err)
 	}

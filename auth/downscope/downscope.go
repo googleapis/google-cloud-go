@@ -28,12 +28,12 @@ import (
 
 var identityBindingEndpoint = "https://sts.googleapis.com/v1/token"
 
-// Options for configuring [NewTokenProvider].
+// Options for configuring [NewCredentials].
 type Options struct {
-	// BaseProvider is the [cloud.google.com/go/auth.TokenProvider] used to
+	// BaseCredentials is the [cloud.google.com/go/auth.TokenProvider] used to
 	// create the downscoped provider. The downscoped provider therefore has
-	// some subset of the accesses of the original BaseProvider. Required.
-	BaseProvider auth.TokenProvider
+	// some subset of the accesses of the original BaseCredentials. Required.
+	BaseCredentials *auth.Credentials
 	// Rules defines the accesses held by the new downscoped provider. One or
 	// more AccessBoundaryRules are required to define permissions for the new
 	// downscoped provider. Each one defines an access (or set of accesses) that
@@ -84,14 +84,14 @@ type AvailabilityCondition struct {
 	Description string `json:"description,omitempty"`
 }
 
-// NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider] that is
+// NewCredentials returns a [cloud.google.com/go/auth.Credentials] that is
 // more restrictive than [Options.BaseProvider] provided.
-func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
+func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	if opts == nil {
 		return nil, fmt.Errorf("downscope: providing opts is required")
 	}
-	if opts.BaseProvider == nil {
-		return nil, fmt.Errorf("downscope: BaseProvider cannot be nil")
+	if opts.BaseCredentials == nil {
+		return nil, fmt.Errorf("downscope: BaseCredentials cannot be nil")
 	}
 	if len(opts.Rules) == 0 {
 		return nil, fmt.Errorf("downscope: length of AccessBoundaryRules must be at least 1")
@@ -107,7 +107,12 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 			return nil, fmt.Errorf("downscope: all rules must provide at least one permission")
 		}
 	}
-	return &downscopedTokenProvider{Options: opts, Client: opts.client()}, nil
+	return auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider:     &downscopedTokenProvider{Options: opts, Client: opts.client()},
+		ProjectIDProvider: auth.CredentialsPropertyFunc(opts.BaseCredentials.ProjectID),
+		QuotaProjectIDProvider: auth.CredentialsPropertyFunc(opts.BaseCredentials.QuotaProjectID),
+		UniverseDomainProvider: auth.CredentialsPropertyFunc(opts.BaseCredentials.UniverseDomain),
+	}), nil
 }
 
 // downscopedTokenProvider is used to retrieve a downscoped tokens.
@@ -138,7 +143,7 @@ func (dts *downscopedTokenProvider) Token(ctx context.Context) (*auth.Token, err
 		},
 	}
 
-	tok, err := dts.Options.BaseProvider.Token(ctx)
+	tok, err := dts.Options.BaseCredentials.Token(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("downscope: unable to obtain root token: %w", err)
 	}

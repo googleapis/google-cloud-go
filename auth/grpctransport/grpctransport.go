@@ -65,9 +65,9 @@ type Options struct {
 	// PoolSize is specifies how many connections to balance between when making
 	// requests. If unset or less than 1, the value defaults to 1.
 	PoolSize int
-	// TokenProvider specifies the provider used to add Authorization metadata
+	// Credentials specifies the provider used to add Authorization metadata
 	// to all requests. If set DetectOpts are ignored.
-	TokenProvider auth.TokenProvider
+	Credentials *auth.Credentials
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
 	DetectOpts *credentials.DetectOptions
@@ -90,7 +90,7 @@ func (o *Options) validate() error {
 	if o == nil {
 		return errors.New("grpctransport: opts required to be non-nil")
 	}
-	hasCreds := o.TokenProvider != nil ||
+	hasCreds := o.Credentials != nil ||
 		(o.DetectOpts != nil && len(o.DetectOpts.CredentialsJSON) > 0) ||
 		(o.DetectOpts != nil && o.DetectOpts.CredentialsFile != "")
 	if o.DisableAuthentication && hasCreds {
@@ -205,8 +205,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			return nil, err
 		}
 		var tp auth.TokenProvider = creds
-		if opts.TokenProvider != nil {
-			tp = opts.TokenProvider
+		if opts.Credentials != nil {
+			tp = opts.Credentials
 		}
 
 		qp, err := creds.QuotaProjectID(ctx)

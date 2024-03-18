@@ -48,7 +48,7 @@ func TestNewTokenProvider_ServiceAccount(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tp, err := NewTokenProvider(&Options{
+	creds, err := NewCredentials(&Options{
 		Audience:        "aud",
 		CredentialsJSON: b,
 		CustomClaims: map[string]interface{}{
@@ -58,7 +58,7 @@ func TestNewTokenProvider_ServiceAccount(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tok, err := tp.Token(context.Background())
+	tok, err := creds.Token(context.Background())
 	if err != nil {
 		t.Fatalf("tp.Token() = %v", err)
 	}
@@ -85,7 +85,7 @@ func TestNewTokenProvider_ImpersonatedServiceAccount(t *testing.T) {
 			w.Write([]byte(fmt.Sprintf(`{"token": %q}`, wantTok)))
 		}),
 	}
-	tp, err := NewTokenProvider(&Options{
+	creds, err := NewCredentials(&Options{
 		Audience:        "aud",
 		CredentialsFile: "../internal/testdata/imp.json",
 		CustomClaims: map[string]interface{}{
@@ -96,7 +96,7 @@ func TestNewTokenProvider_ImpersonatedServiceAccount(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tok, err := tp.Token(context.Background())
+	tok, err := creds.Token(context.Background())
 	if err != nil {
 		t.Fatalf("tp.Token() = %v", err)
 	}

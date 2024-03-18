@@ -27,10 +27,10 @@ import (
 
 const identitySuffix = "instance/service-accounts/default/identity"
 
-// computeTokenProvider checks if this code is being run on GCE. If it is, it
+// computeCredentials checks if this code is being run on GCE. If it is, it
 // will use the metadata service to build a TokenProvider that fetches ID
 // tokens.
-func computeTokenProvider(opts *Options) (auth.TokenProvider, error) {
+func computeCredentials(opts *Options) (*auth.Credentials, error) {
 	if opts.CustomClaims != nil {
 		return nil, fmt.Errorf("idtoken: Options.CustomClaims can't be used with the metadata service, please provide a service account if you would like to use this feature")
 	}
@@ -39,8 +39,14 @@ func computeTokenProvider(opts *Options) (auth.TokenProvider, error) {
 		format:   opts.ComputeTokenFormat,
 		client:   *metadata.NewClient(opts.client()),
 	}
-	return auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
-		ExpireEarly: 5 * time.Minute,
+	return auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
+			ExpireEarly: 5 * time.Minute,
+		}),
+		ProjectIDProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
+			return metadata.ProjectID()
+		}),
+		// TODO(quartzmo): add universe domain resolver here
 	}), nil
 }
 
