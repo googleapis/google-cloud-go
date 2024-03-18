@@ -55,7 +55,7 @@ func checkDirectPathEndPoint(endpoint string) bool {
 	return true
 }
 
-func isTokenProviderDirectPathCompatible(tp auth.TokenProvider, opts *Options) bool {
+func isTokenProviderDirectPathCompatible(tp auth.TokenProvider, _ *Options) bool {
 	if tp == nil {
 		return false
 	}

@@ -59,6 +59,7 @@ type PipelineCallOptions struct {
 	DeletePipelineJob       []gax.CallOption
 	BatchDeletePipelineJobs []gax.CallOption
 	CancelPipelineJob       []gax.CallOption
+	BatchCancelPipelineJobs []gax.CallOption
 	GetLocation             []gax.CallOption
 	ListLocations           []gax.CallOption
 	GetIamPolicy            []gax.CallOption
@@ -108,6 +109,7 @@ func defaultPipelineCallOptions() *PipelineCallOptions {
 		DeletePipelineJob:       []gax.CallOption{},
 		BatchDeletePipelineJobs: []gax.CallOption{},
 		CancelPipelineJob:       []gax.CallOption{},
+		BatchCancelPipelineJobs: []gax.CallOption{},
 		GetLocation:             []gax.CallOption{},
 		ListLocations:           []gax.CallOption{},
 		GetIamPolicy:            []gax.CallOption{},
@@ -144,6 +146,7 @@ func defaultPipelineRESTCallOptions() *PipelineCallOptions {
 		DeletePipelineJob:       []gax.CallOption{},
 		BatchDeletePipelineJobs: []gax.CallOption{},
 		CancelPipelineJob:       []gax.CallOption{},
+		BatchCancelPipelineJobs: []gax.CallOption{},
 		GetLocation:             []gax.CallOption{},
 		ListLocations:           []gax.CallOption{},
 		GetIamPolicy:            []gax.CallOption{},
@@ -176,6 +179,8 @@ type internalPipelineClient interface {
 	BatchDeletePipelineJobs(context.Context, *aiplatformpb.BatchDeletePipelineJobsRequest, ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error)
 	BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation
 	CancelPipelineJob(context.Context, *aiplatformpb.CancelPipelineJobRequest, ...gax.CallOption) error
+	BatchCancelPipelineJobs(context.Context, *aiplatformpb.BatchCancelPipelineJobsRequest, ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error)
+	BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -329,6 +334,23 @@ func (c *PipelineClient) BatchDeletePipelineJobsOperation(name string) *BatchDel
 // set to CANCELLED.
 func (c *PipelineClient) CancelPipelineJob(ctx context.Context, req *aiplatformpb.CancelPipelineJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelPipelineJob(ctx, req, opts...)
+}
+
+// BatchCancelPipelineJobs batch cancel PipelineJobs.
+// Firstly the server will check if all the jobs are in non-terminal states,
+// and skip the jobs that are already terminated.
+// If the operation failed, none of the pipeline jobs are cancelled.
+// The server will poll the states of all the pipeline jobs periodically
+// to check the cancellation status.
+// This operation will return an LRO.
+func (c *PipelineClient) BatchCancelPipelineJobs(ctx context.Context, req *aiplatformpb.BatchCancelPipelineJobsRequest, opts ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error) {
+	return c.internalClient.BatchCancelPipelineJobs(ctx, req, opts...)
+}
+
+// BatchCancelPipelineJobsOperation returns a new BatchCancelPipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchCancelPipelineJobsOperation, possibly from a different process.
+func (c *PipelineClient) BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation {
+	return c.internalClient.BatchCancelPipelineJobsOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -828,6 +850,26 @@ func (c *pipelineGRPCClient) CancelPipelineJob(ctx context.Context, req *aiplatf
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *pipelineGRPCClient) BatchCancelPipelineJobs(ctx context.Context, req *aiplatformpb.BatchCancelPipelineJobsRequest, opts ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCancelPipelineJobs[0:len((*c.CallOptions).BatchCancelPipelineJobs):len((*c.CallOptions).BatchCancelPipelineJobs)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.pipelineClient.BatchCancelPipelineJobs(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCancelPipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *pipelineGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1795,6 +1837,77 @@ func (c *pipelineRESTClient) CancelPipelineJob(ctx context.Context, req *aiplatf
 	}, opts...)
 }
 
+// BatchCancelPipelineJobs batch cancel PipelineJobs.
+// Firstly the server will check if all the jobs are in non-terminal states,
+// and skip the jobs that are already terminated.
+// If the operation failed, none of the pipeline jobs are cancelled.
+// The server will poll the states of all the pipeline jobs periodically
+// to check the cancellation status.
+// This operation will return an LRO.
+func (c *pipelineRESTClient) BatchCancelPipelineJobs(ctx context.Context, req *aiplatformpb.BatchCancelPipelineJobsRequest, opts ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/pipelineJobs:batchCancel", req.GetParent())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchCancelPipelineJobsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *pipelineRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2419,6 +2532,24 @@ func (c *pipelineRESTClient) WaitOperation(ctx context.Context, req *longrunning
 		return nil, e
 	}
 	return resp, nil
+}
+
+// BatchCancelPipelineJobsOperation returns a new BatchCancelPipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchCancelPipelineJobsOperation, possibly from a different process.
+func (c *pipelineGRPCClient) BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation {
+	return &BatchCancelPipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchCancelPipelineJobsOperation returns a new BatchCancelPipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchCancelPipelineJobsOperation, possibly from a different process.
+func (c *pipelineRESTClient) BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchCancelPipelineJobsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // BatchDeletePipelineJobsOperation returns a new BatchDeletePipelineJobsOperation from a given name.

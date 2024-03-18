@@ -40,6 +40,7 @@ type CreateTable struct {
 	PrimaryKey        []KeyPart
 	Interleave        *Interleave
 	RowDeletionPolicy *RowDeletionPolicy
+	Synonym           ID // may be empty
 
 	Position Position // position of the "CREATE" token
 }
@@ -278,8 +279,9 @@ func (at *AlterTable) clearOffset() {
 }
 
 // TableAlteration is satisfied by AddColumn, DropColumn, AddConstraint,
-// DropConstraint, SetOnDelete and AlterColumn,
-// AddRowDeletionPolicy, ReplaceRowDeletionPolicy, DropRowDeletionPolicy.
+// DropConstraint, SetOnDelete, AlterColumn,
+// AddRowDeletionPolicy, ReplaceRowDeletionPolicy, DropRowDeletionPolicy,
+// RenameTo, AddSynonym, and DropSynonym.
 type TableAlteration interface {
 	isTableAlteration()
 	SQL() string
@@ -294,6 +296,9 @@ func (AlterColumn) isTableAlteration()              {}
 func (AddRowDeletionPolicy) isTableAlteration()     {}
 func (ReplaceRowDeletionPolicy) isTableAlteration() {}
 func (DropRowDeletionPolicy) isTableAlteration()    {}
+func (RenameTo) isTableAlteration()                 {}
+func (AddSynonym) isTableAlteration()               {}
+func (DropSynonym) isTableAlteration()              {}
 
 type (
 	AddColumn struct {
@@ -347,6 +352,32 @@ const (
 	NoActionOnDelete OnDelete = iota
 	CascadeOnDelete
 )
+
+type (
+	RenameTo struct {
+		ToName  ID
+		Synonym ID // may be empty
+	}
+	AddSynonym  struct{ Name ID }
+	DropSynonym struct{ Name ID }
+)
+
+// RenameTable represents a RENAME TABLE statement.
+type RenameTable struct {
+	TableRenameOps []TableRenameOp
+
+	Position Position // position of the "RENAME" token
+}
+
+type TableRenameOp struct {
+	FromName ID
+	ToName   ID
+}
+
+func (rt *RenameTable) String() string { return fmt.Sprintf("%#v", rt) }
+func (*RenameTable) isDDLStmt()        {}
+func (rt *RenameTable) Pos() Position  { return rt.Position }
+func (rt *RenameTable) clearOffset()   { rt.Position.Offset = 0 }
 
 // AlterDatabase represents an ALTER DATABASE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter-database

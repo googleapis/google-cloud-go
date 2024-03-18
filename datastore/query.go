@@ -373,6 +373,8 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 // Field names which contain spaces, quote marks, or operator characters
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
+// For "in" and "not-in" operator, use []interface{} as value. For instance
+// query.FilterField("Month", "in", []interface{}{1, 2, 3, 4})
 func (q *Query) FilterField(fieldName, operator string, value interface{}) *Query {
 	return q.FilterEntity(PropertyFilter{
 		FieldName: fieldName,

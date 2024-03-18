@@ -154,7 +154,7 @@ func (c *AddressesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of addresses.
+// AggregatedList retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *AddressesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAddressesRequest, opts ...gax.CallOption) *AddressesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -276,7 +276,7 @@ func (c *addressesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of addresses.
+// AggregatedList retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *addressesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAddressesRequest, opts ...gax.CallOption) *AddressesScopedListPairIterator {
 	it := &AddressesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListAddressesRequest)

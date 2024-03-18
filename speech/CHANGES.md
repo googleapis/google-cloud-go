@@ -1,5 +1,19 @@
 # Changes
 
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.22.0...speech/v1.22.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **speech:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.21.1...speech/v1.22.0) (2024-02-26)
+
+
+### Features
+
+* **speech:** Add API for writing BatchRecognize transcripts in SRT and VTT formats ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+
 ## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.21.0...speech/v1.21.1) (2024-01-30)
 
 

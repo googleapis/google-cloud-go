@@ -1,5 +1,19 @@
 # Changes
 
+## [1.25.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.25.0...compute/v1.25.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **compute:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.24.0...compute/v1.25.0) (2024-03-04)
+
+
+### Features
+
+* **compute:** Update Compute Engine API to revision 20240220 ([#886](https://github.com/googleapis/google-cloud-go/issues/886)) ([#9485](https://github.com/googleapis/google-cloud-go/issues/9485)) ([ae1f547](https://github.com/googleapis/google-cloud-go/commit/ae1f5472bff1b476c3fd58e590ec135185446daf))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.23.4...compute/v1.24.0) (2024-02-09)
 
 

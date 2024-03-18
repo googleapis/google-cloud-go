@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.6](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.5...channel/v1.17.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **channel:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.17.5](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.4...channel/v1.17.5) (2024-01-30)
 
 

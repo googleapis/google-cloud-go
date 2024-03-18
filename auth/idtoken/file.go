@@ -21,7 +21,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/impersonate"
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
@@ -86,7 +86,7 @@ func tokenProviderFromBytes(b []byte, opts *Options) (auth.TokenProvider, error)
 		account := filepath.Base(accountURL.ServiceAccountImpersonationURL)
 		account = strings.Split(account, ":")[0]
 
-		creds, err := detect.DefaultCredentials(&detect.Options{
+		creds, err := credentials.DetectDefault(&credentials.DetectOptions{
 			Scopes:           defaultScopes,
 			CredentialsJSON:  b,
 			Client:           opts.client(),
