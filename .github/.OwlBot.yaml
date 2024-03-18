@@ -1029,8 +1029,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/speech/v2/cloud.google.com/go
     dest: /
-  - source: /google/storage/v2/cloud.google.com/go/storage/control/apiv2
-    dest: /storage/control/apiv2
+  - source: /google/storage/control/v2/cloud.google.com/go/
+    dest: /
   - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
     dest: /storage/internal/apiv2
   - source: /google/cloud/storageinsights/v1/cloud.google.com/go
