@@ -1023,11 +1023,13 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 		{
 			desc: "ExplainOptions.Analyze is false",
 			wantRes: AggregationWithOptionsResult{
-				Plan: &Plan{
-					IndexesUsed: []*map[string]interface{}{
-						{
-							"properties":  "(T ASC, I ASC, __name__ ASC)",
-							"query_scope": "Includes Ancestors",
+				ExplainMetrics: &ExplainMetrics{
+					PlanSummary: &PlanSummary{
+						IndexesUsed: []*map[string]interface{}{
+							{
+								"properties":  "(T ASC, I ASC, __name__ ASC)",
+								"query_scope": "Includes Ancestors",
+							},
 						},
 					},
 				},
@@ -1038,19 +1040,22 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 			desc: "ExplainOptions.Analyze is true",
 			wantRes: AggregationWithOptionsResult{
 				Result: wantAggResult,
-				Plan: &Plan{
-					IndexesUsed: []*map[string]interface{}{
-						{
-							"properties":  "(T ASC, I ASC, __name__ ASC)",
-							"query_scope": "Includes Ancestors",
+				ExplainMetrics: &ExplainMetrics{
+					PlanSummary: &PlanSummary{
+						IndexesUsed: []*map[string]interface{}{
+							{
+								"properties":  "(T ASC, I ASC, __name__ ASC)",
+								"query_scope": "Includes Ancestors",
+							},
 						},
 					},
-				},
-				ExecutionStats: &ExecutionStats{
-					ResultsReturned: 1,
-					DebugStats: &map[string]interface{}{
-						"documents_scanned":     "0",
-						"index_entries_scanned": "3",
+					ExecutionStats: &ExecutionStats{
+						ReadOperations:  1,
+						ResultsReturned: 1,
+						DebugStats: &map[string]interface{}{
+							"documents_scanned":     "0",
+							"index_entries_scanned": "3",
+						},
 					},
 				},
 			},
@@ -1065,17 +1070,14 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 				r.Errorf("err: got %v, want: nil", gotErr)
 			}
 
-			if gotErr == nil && !reflect.DeepEqual(gotRes.Result, testcase.wantRes.Result) {
+			if gotErr == nil && !testutil.Equal(gotRes.Result, testcase.wantRes.Result,
+				cmpopts.IgnoreFields(ExplainMetrics{})) {
 				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes, testcase.wantRes)
 				return
 			}
 
-			if !testutil.Equal(gotRes.Plan, testcase.wantRes.Plan) {
-				t.Errorf("%v Plan: got: %+v, want: %+v", testcase.desc, gotRes.Plan, testcase.wantRes.Plan)
-			}
-
-			if err := isEqualExecutionStats(gotRes.ExecutionStats, testcase.wantRes.ExecutionStats); err != nil {
-				r.Errorf("%q: Mismatch in stats %+v", testcase.desc, err)
+			if err := cmpExplainMetrics(gotRes.ExplainMetrics, testcase.wantRes.ExplainMetrics); err != nil {
+				r.Errorf("%q: Mismatch in ExplainMetrics %+v", testcase.desc, err)
 			}
 		})
 	}
@@ -1427,8 +1429,7 @@ func createTestEntities(ctx context.Context, t *testing.T, client *Client, parti
 type runWithOptionsTestcase struct {
 	desc               string
 	wantKeys           []*Key
-	wantExecutionStats *ExecutionStats
-	wantPlan           *Plan
+	wantExplainMetrics *ExplainMetrics
 	wantEntities       []SQChild
 	opts               []RunOption
 }
@@ -1444,11 +1445,13 @@ func getRunWithOptionsTestcases(ctx context.Context, t *testing.T, client *Clien
 		{
 			desc: "ExplainOptions.Analyze is false",
 			opts: []RunOption{ExplainOptions{}},
-			wantPlan: &Plan{
-				IndexesUsed: []*map[string]interface{}{
-					{
-						"properties":  "(T ASC, I ASC, __name__ ASC)",
-						"query_scope": "Includes Ancestors",
+			wantExplainMetrics: &ExplainMetrics{
+				PlanSummary: &PlanSummary{
+					IndexesUsed: []*map[string]interface{}{
+						{
+							"properties":  "(T ASC, I ASC, __name__ ASC)",
+							"query_scope": "Includes Ancestors",
+						},
 					},
 				},
 			},
@@ -1457,18 +1460,21 @@ func getRunWithOptionsTestcases(ctx context.Context, t *testing.T, client *Clien
 			desc:     "ExplainOptions.Analyze is true",
 			opts:     []RunOption{ExplainOptions{Analyze: true}},
 			wantKeys: keys,
-			wantExecutionStats: &ExecutionStats{
-				ResultsReturned: 1,
-				DebugStats: &map[string]interface{}{
-					"documents_scanned":     "3",
-					"index_entries_scanned": "3",
+			wantExplainMetrics: &ExplainMetrics{
+				ExecutionStats: &ExecutionStats{
+					ReadOperations:  int64(count),
+					ResultsReturned: int64(count),
+					DebugStats: &map[string]interface{}{
+						"documents_scanned":     fmt.Sprint(count),
+						"index_entries_scanned": fmt.Sprint(count),
+					},
 				},
-			},
-			wantPlan: &Plan{
-				IndexesUsed: []*map[string]interface{}{
-					{
-						"properties":  "(T ASC, I ASC, __name__ ASC)",
-						"query_scope": "Includes Ancestors",
+				PlanSummary: &PlanSummary{
+					IndexesUsed: []*map[string]interface{}{
+						{
+							"properties":  "(T ASC, I ASC, __name__ ASC)",
+							"query_scope": "Includes Ancestors",
+						},
 					},
 				},
 			},
@@ -1496,10 +1502,7 @@ func TestIntegration_GetAllWithOptions(t *testing.T) {
 		if !testutil.Equal(gotRes.Keys, testcase.wantKeys) {
 			t.Errorf("%v keys: got: %+v, want: %+v", testcase.desc, gotRes.Keys, testcase.wantKeys)
 		}
-		if !testutil.Equal(gotRes.Plan, testcase.wantPlan) {
-			t.Errorf("%v Plan: got: %+v, want: %+v", testcase.desc, gotRes.Plan, testcase.wantPlan)
-		}
-		if err := isEqualExecutionStats(gotRes.ExecutionStats, testcase.wantExecutionStats); err != nil {
+		if err := cmpExplainMetrics(gotRes.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
 			t.Errorf("%v %+v", testcase.desc, err)
 		}
 	}
@@ -1529,16 +1532,30 @@ func TestIntegration_RunWithOptions(t *testing.T) {
 		if !testutil.Equal(gotSQChildsFromRun, testcase.wantEntities) {
 			t.Errorf("%v entities: got: %+v, want: %+v", testcase.desc, gotSQChildsFromRun, testcase.wantEntities)
 		}
-		if !testutil.Equal(iter.Plan, testcase.wantPlan) {
-			t.Errorf("%v Plan: got: %+v, want: %+v", testcase.desc, iter.Plan, testcase.wantPlan)
-		}
-		if err := isEqualExecutionStats(iter.ExecutionStats, testcase.wantExecutionStats); err != nil {
+
+		if err := cmpExplainMetrics(iter.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
 			t.Errorf("%v %+v", testcase.desc, err)
 		}
 	}
 }
 
-func isEqualExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
+func cmpExplainMetrics(got *ExplainMetrics, want *ExplainMetrics) error {
+	if (got != nil && want == nil) || (got == nil && want != nil) {
+		return fmt.Errorf("ExplainMetrics: got: %+v, want: %+v", got, want)
+	}
+	if got == nil {
+		return nil
+	}
+	if !testutil.Equal(got.PlanSummary, want.PlanSummary) {
+		return fmt.Errorf("Plan: got: %+v, want: %+v", got.PlanSummary, want.PlanSummary)
+	}
+	if err := cmpExecutionStats(got.ExecutionStats, want.ExecutionStats); err != nil {
+		return err
+	}
+	return nil
+}
+
+func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 	if (got != nil && want == nil) || (got == nil && want != nil) {
 		return fmt.Errorf("ExecutionStats: got: %+v, want: %+v", got, want)
 	}
@@ -1547,8 +1564,8 @@ func isEqualExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 	}
 
 	// Compare all fields except DebugStats
-	if !testutil.Equal(want, got, cmpopts.IgnoreFields(&ExecutionStats{}, "DebugStats")) {
-		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s", testutil.Diff(want, got, cmpopts.IgnoreFields(&ExecutionStats{}, "DebugStats")))
+	if !testutil.Equal(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats", "ExecutionDuration")) {
+		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s", testutil.Diff(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats")))
 	}
 
 	// Compare DebugStats

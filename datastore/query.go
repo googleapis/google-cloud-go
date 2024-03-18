@@ -673,8 +673,18 @@ func newRunQuerySettings(opts []RunOption) (*runQuerySettings, error) {
 	return s, nil
 }
 
-// Plan represents planning phase information for the query.
-type Plan struct {
+// ExplainMetrics for the query.
+type ExplainMetrics struct {
+	// Planning phase information for the query.
+	PlanSummary *PlanSummary
+
+	// Aggregated stats from the execution of the query. Only present when
+	// ExplainOptions.Analyze is set to true.
+	ExecutionStats *ExecutionStats
+}
+
+// PlanSummary represents planning phase information for the query.
+type PlanSummary struct {
 	// The indexes selected for the query. For example:
 	//
 	//	[
@@ -689,8 +699,6 @@ type ExecutionStats struct {
 	// Total number of results returned, including documents, projections,
 	// aggregation results, keys.
 	ResultsReturned int64
-	// Total number of the bytes of the results returned.
-	BytesReturned int64
 	// Total time to execute the query in the backend.
 	ExecutionDuration *time.Duration
 	// Total billable read operations.
@@ -715,13 +723,8 @@ type ExecutionStats struct {
 type GetAllWithOptionsResult struct {
 	Keys []*Key
 
-	// Planning phase information for the query.
-	// This is only present when ExplainOptions is used
-	Plan *Plan
-
-	// Aggregated stats from the execution of the query.
-	// This is only present when ExplainOptions with Analyze as true is used
-	ExecutionStats *ExecutionStats
+	// Query explain metrics. This is only present when ExplainOptions is provided.
+	ExplainMetrics *ExplainMetrics
 }
 
 // GetAll runs the provided query in the given context and returns all keys
@@ -777,8 +780,7 @@ func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{
 
 	for t := c.Run(ctx, q, opts...); ; {
 		k, e, err := t.next()
-		res.ExecutionStats = t.ExecutionStats
-		res.Plan = t.Plan
+		res.ExplainMetrics = t.ExplainMetrics
 		if err == iterator.Done {
 			break
 		}
@@ -934,7 +936,7 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 		return ar, err
 	}
 
-	if req.ExplainOptions != nil && req.ExplainOptions.Analyze {
+	if req.ExplainOptions == nil || req.ExplainOptions.Analyze {
 		ar.Result = make(AggregationResult)
 		// TODO(developer): change batch parsing logic if other aggregations are supported.
 		for _, a := range resp.Batch.AggregationResults {
@@ -943,9 +945,8 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 			}
 		}
 	}
-	ar.ExecutionStats = fromPbExecutionStats(resp.ExecutionStats)
-	ar.Plan = fromPbPlan(resp.Plan)
 
+	ar.ExplainMetrics = fromPbExplainMetrics(resp.GetExplainMetrics())
 	return ar, nil
 }
 
@@ -1012,13 +1013,8 @@ type Iterator struct {
 	// entityCursor is the compiled cursor of the next result.
 	entityCursor []byte
 
-	// Planning phase information for the query.
-	// This is only present when ExplainOptions is used
-	Plan *Plan
-
-	// Aggregated stats from the execution of the query.
-	// This is only present when ExplainOptions with Analyze as true is used
-	ExecutionStats *ExecutionStats
+	// Query explain metrics. This is only present when ExplainOptions is used.
+	ExplainMetrics *ExplainMetrics
 
 	// trans records the transaction in which the query was run
 	// Currently, this value is set but unused
@@ -1102,7 +1098,7 @@ func (t *Iterator) nextBatch() error {
 	if t.req.ExplainOptions != nil && !t.req.ExplainOptions.Analyze {
 		// No results to process
 		t.limit = 0
-		t.Plan = fromPbPlan(resp.Plan)
+		t.ExplainMetrics = fromPbExplainMetrics(resp.GetExplainMetrics())
 		return nil
 	}
 
@@ -1145,25 +1141,35 @@ func (t *Iterator) nextBatch() error {
 	t.pageCursor = resp.Batch.EndCursor
 
 	t.results = resp.Batch.EntityResults
-	t.ExecutionStats = fromPbExecutionStats(resp.ExecutionStats)
-	t.Plan = fromPbPlan(resp.Plan)
+	t.ExplainMetrics = fromPbExplainMetrics(resp.GetExplainMetrics())
 	return nil
 }
 
-func fromPbPlan(pbplan *pb.Plan) *Plan {
-	if pbplan == nil {
+func fromPbExplainMetrics(pbExplainMetrics *pb.ExplainMetrics) *ExplainMetrics {
+	if pbExplainMetrics == nil {
+		return nil
+	}
+	explainMetrics := &ExplainMetrics{
+		PlanSummary:    fromPbPlanSummary(pbExplainMetrics.PlanSummary),
+		ExecutionStats: fromPbExecutionStats(pbExplainMetrics.ExecutionStats),
+	}
+	return explainMetrics
+}
+
+func fromPbPlanSummary(pbPlanSummary *pb.PlanSummary) *PlanSummary {
+	if pbPlanSummary == nil {
 		return nil
 	}
 
-	plan := &Plan{}
+	planSummary := &PlanSummary{}
 	indexesUsed := []*map[string]interface{}{}
-	for _, pbIndexUsed := range pbplan.GetIndexesUsed() {
+	for _, pbIndexUsed := range pbPlanSummary.GetIndexesUsed() {
 		indexUsed := protostruct.DecodeToMap(pbIndexUsed)
 		indexesUsed = append(indexesUsed, &indexUsed)
 	}
 
-	plan.IndexesUsed = indexesUsed
-	return plan
+	planSummary.IndexesUsed = indexesUsed
+	return planSummary
 }
 
 func fromPbExecutionStats(pbstats *pb.ExecutionStats) *ExecutionStats {
@@ -1173,7 +1179,6 @@ func fromPbExecutionStats(pbstats *pb.ExecutionStats) *ExecutionStats {
 
 	executionStats := &ExecutionStats{
 		ResultsReturned: pbstats.GetResultsReturned(),
-		BytesReturned:   pbstats.GetBytesReturned(),
 		ReadOperations:  pbstats.GetReadOperations(),
 	}
 
@@ -1321,11 +1326,6 @@ type AggregationResult map[string]interface{}
 type AggregationWithOptionsResult struct {
 	Result AggregationResult
 
-	// Planning phase information for the query.
-	// This is only present when ExplainOptions is used
-	Plan *Plan
-
-	// Aggregated stats from the execution of the query.
-	// This is only present when ExplainOptions with Analyze as true is used
-	ExecutionStats *ExecutionStats
+	// Query explain metrics. This is only present when ExplainOptions is provided.
+	ExplainMetrics *ExplainMetrics
 }
