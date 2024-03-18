@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/downscope"
 	"cloud.google.com/go/auth/internal/testutil"
 	"cloud.google.com/go/auth/internal/testutil/testgcs"
@@ -39,7 +39,7 @@ const (
 
 func TestDownscopedToken(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
-	creds, err := detect.DefaultCredentials(&detect.Options{
+	creds, err := credentials.DetectDefault(&credentials.DetectOptions{
 		CredentialsFile: os.Getenv(envServiceAccountFile),
 		Scopes:          []string{rootTokenScope},
 	})

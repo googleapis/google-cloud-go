@@ -70,7 +70,7 @@ deep-remove-regex:
   - /cloudcontrolspartner/apiv1/
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
-  - /cloudquotas/v1/
+  - /cloudquotas/apiv1/
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
@@ -328,6 +328,7 @@ deep-remove-regex:
   - /internal/generated/snippets/scheduler/apiv1/
   - /internal/generated/snippets/scheduler/apiv1beta1/
   - /internal/generated/snippets/secretmanager/apiv1/
+  - /internal/generated/snippets/secretmanager/apiv1beta2/
   - /internal/generated/snippets/securesourcemanager/apiv1/
   - /internal/generated/snippets/security/privateca/apiv1/
   - /internal/generated/snippets/security/publicca/apiv1beta1/
@@ -353,6 +354,7 @@ deep-remove-regex:
   - /internal/generated/snippets/speech/apiv1/
   - /internal/generated/snippets/speech/apiv1p1beta1/
   - /internal/generated/snippets/speech/apiv2/
+  - /internal/generated/snippets/storage/control/apiv2/
   - /internal/generated/snippets/storageinsights/apiv1/
   - /internal/generated/snippets/storagetransfer/apiv1/
   - /internal/generated/snippets/support/apiv2/
@@ -459,6 +461,7 @@ deep-remove-regex:
   - /scheduler/apiv1/
   - /scheduler/apiv1beta1/
   - /secretmanager/apiv1/
+  - /secretmanager/apiv1beta2/
   - /securesourcemanager/apiv1/
   - /security/privateca/apiv1/
   - /security/publicca/apiv1beta1/
@@ -486,6 +489,7 @@ deep-remove-regex:
   - /speech/apiv1/
   - /speech/apiv1p1beta1/
   - /speech/apiv2/
+  - /storage/control/apiv2/
   - /storage/internal/apiv2/
   - /storageinsights/apiv1/
   - /storagetransfer/apiv1/
@@ -969,6 +973,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/secretmanager/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/secretmanager/v1beta2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/securesourcemanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/security/privateca/v1/cloud.google.com/go
@@ -1022,6 +1028,8 @@ deep-copy-regex:
   - source: /google/cloud/speech/v1p1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/speech/v2/cloud.google.com/go
+    dest: /
+  - source: /google/storage/control/v2/cloud.google.com/go/
     dest: /
   - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
     dest: /storage/internal/apiv2

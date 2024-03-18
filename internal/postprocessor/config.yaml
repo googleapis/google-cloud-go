@@ -782,6 +782,9 @@ service-configs:
   - input-directory: google/cloud/secretmanager/v1
     service-config: secretmanager_v1.yaml
     import-path: cloud.google.com/go/secretmanager/apiv1
+  - input-directory: google/cloud/secretmanager/v1beta2
+    service-config: secretmanager_v1beta2.yaml
+    import-path: cloud.google.com/go/secretmanager/apiv1beta2
   - input-directory: google/cloud/securesourcemanager/v1
     service-config: securesourcemanager_v1.yaml
     import-path: cloud.google.com/go/securesourcemanager/apiv1
@@ -979,9 +982,6 @@ service-configs:
   - input-directory: google/devtools/cloudbuild/v2
     service-config: cloudbuild_v2.yaml
     import-path: cloud.google.com/go/cloudbuild/apiv2
-  - input-directory: google/cloud/compute/v1
-    service-config: compute_v1.yaml
-    import-path: cloud.google.com/go/compute/apiv1
   - input-directory: google/cloud/confidentialcomputing/v1
     service-config: confidentialcomputing_v1.yaml
     import-path: cloud.google.com/go/confidentialcomputing/apiv1
@@ -1060,6 +1060,9 @@ service-configs:
   - input-directory: google/spanner/executor/v1
     service-config: spanner_cloud_executor.yaml
     import-path: cloud.google.com/go/spanner/executor/apiv1
+  - input-directory: google/storage/control/v2
+    service-config: storage_v2.yaml
+    import-path: cloud.google.com/go/storage/control/apiv2
   - input-directory: google/storage/v2
     service-config: storage_v2.yaml
     import-path: cloud.google.com/go/storage/internal/apiv2

@@ -21,7 +21,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	detect "cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
 )
@@ -58,7 +58,7 @@ type Options struct {
 	ClientCertProvider ClientCertProvider
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
-	DetectOpts *detect.Options
+	DetectOpts *detect.DetectOptions
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.
@@ -88,7 +88,7 @@ func (o *Options) client() *http.Client {
 	return nil
 }
 
-func (o *Options) resolveDetectOptions() *detect.Options {
+func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 	io := o.InternalOptions
 	// soft-clone these so we are not updating a ref the user holds and may reuse
 	do := transport.CloneDetectOptions(o.DetectOpts)

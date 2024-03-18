@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package detect
+package credentials
 
 import (
 	"bytes"
@@ -45,7 +45,7 @@ func TestDefaultCredentials_SelfSignedJSON(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tp, err := DefaultCredentials(&Options{
+	tp, err := DetectDefault(&DetectOptions{
 		CredentialsJSON:  jsonKey,
 		Audience:         "audience",
 		UseSelfSignedJWT: true,
@@ -107,7 +107,7 @@ func TestDefaultCredentials_SelfSignedWithScope(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tp, err := DefaultCredentials(&Options{
+	tp, err := DetectDefault(&DetectOptions{
 		CredentialsJSON:  jsonKey,
 		Scopes:           []string{"scope1", "scope2"},
 		UseSelfSignedJWT: true,
