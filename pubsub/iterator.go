@@ -505,11 +505,13 @@ func (it *messageIterator) handleKeepAlives() {
 			// statements with range clause", note 3, and stated explicitly at
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
-			// get the parent span context for this ackID for otel tracing.
-			s, _ := it.activeSpans.LoadAndDelete(id)
-			span := s.(trace.Span)
-			span.SetAttributes(attribute.String(resultAttribute, resultExpired))
-			span.End()
+			if it.enableTracing {
+				// get the parent span context for this ackID for otel tracing.
+				s, _ := it.activeSpans.LoadAndDelete(id)
+				span := s.(trace.Span)
+				span.SetAttributes(attribute.String(resultAttribute, resultExpired))
+				span.End()
+			}
 		} else {
 			// Use a success AckResult since we don't propagate ModAcks back to the user.
 			it.pendingModAcks[id] = newSuccessAckResult()

@@ -425,7 +425,9 @@ func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) 
 // This is recommended by https://opentelemetry.io/docs/instrumentation/go/manual/#record-errors
 // since RecordError doesn't set the status of a span.
 func spanRecordError(span trace.Span, err error) {
-	span.RecordError(err)
-	span.SetStatus(otelcodes.Error, err.Error())
-	span.End()
+	if span != nil {
+		span.RecordError(err)
+		span.SetStatus(otelcodes.Error, err.Error())
+		span.End()
+	}
 }

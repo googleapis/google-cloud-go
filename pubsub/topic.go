@@ -33,7 +33,6 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
-	otelcodes "go.opentelemetry.io/otel/codes"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
@@ -767,18 +766,22 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	}
 
 	var batcherSpan trace.Span
-	if t.enableTracing {
-		ctx2, fcSpan := startSpan(ctx, publishFCSpanName, "")
-		if err := t.flowController.acquire(ctx2, msgSize); err != nil {
-			t.scheduler.Pause(msg.OrderingKey)
-			ipubsub.SetPublishResult(r, "", err)
-			spanRecordError(fcSpan, err)
-			return r
-		}
-		fcSpan.End()
+	var fcSpan trace.Span
 
-		_, batcherSpan = startSpan(ctx, batcherSpanName, "")
+	if t.enableTracing {
+		ctx, fcSpan = startSpan(ctx, publishFCSpanName, "")
 	}
+	if err := t.flowController.acquire(ctx, msgSize); err != nil {
+		t.scheduler.Pause(msg.OrderingKey)
+		ipubsub.SetPublishResult(r, "", err)
+		spanRecordError(fcSpan, err)
+		return r
+	}
+	if t.enableTracing {
+		fcSpan.End()
+	}
+
+	_, batcherSpan = startSpan(ctx, batcherSpanName, "")
 
 	bmsg := &bundledMessage{
 		msg:        msg,
@@ -995,8 +998,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		t.flowController.release(ctx, bm.size)
 		if err != nil {
 			ipubsub.SetPublishResult(bm.res, "", err)
-			bm.createSpan.RecordError(err)
-			bm.createSpan.SetStatus(otelcodes.Error, err.Error())
+			spanRecordError(bm.createSpan, err)
 		} else {
 			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
 			if t.enableTracing {
