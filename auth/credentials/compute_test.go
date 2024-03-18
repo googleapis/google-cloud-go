@@ -22,6 +22,7 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/compute/metadata"
 )
 
@@ -75,7 +76,7 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 			getFunc: func(ctx context.Context) (string, error) {
 				return "", notDefinedError
 			},
-			want:    defaultUniverseDomain,
+			want:    internal.DefaultUniverseDomain,
 			wantErr: nil,
 		},
 		{

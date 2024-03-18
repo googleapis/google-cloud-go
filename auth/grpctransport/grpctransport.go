@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
 	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
@@ -124,6 +125,17 @@ func (o *Options) resolveDetectOptions() *credentials.DetectOptions {
 	return do
 }
 
+// getClientUniverseDomain returns the default service domain for a given Cloud universe.
+// The default value is "googleapis.com". This is the universe domain
+// configured for the client, which will be compared to the universe domain
+// that is separately configured for the credentials.
+func (o *Options) getClientUniverseDomain() string {
+	if o.UniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return o.UniverseDomain
+}
+
 // InternalOptions are only meant to be set by generated client code. These are
 // not meant to be set directly by consumers of this package. Configuration in
 // this type is considered EXPERIMENTAL and may be removed at any time in the
@@ -223,16 +235,11 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			}
 			metadata[quotaProjectHeaderKey] = qp
 		}
-		// TODO(chrisdsmith): set this default more centrally, maybe in a getter?
-		universeDomain := opts.UniverseDomain
-		if universeDomain == "" {
-			universeDomain = "googleapis.com"
-		}
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcTokenProvider{
 				creds:                creds,
 				metadata:             metadata,
-				clientUniverseDomain: universeDomain,
+				clientUniverseDomain: opts.getClientUniverseDomain(),
 			}),
 		)
 

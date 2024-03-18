@@ -26,10 +26,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/compute/metadata"
 )
-
-const defaultUniverseDomain = "googleapis.com"
 
 var (
 	computeTokenMetadata = map[string]interface{}{
@@ -120,7 +119,7 @@ func getMetadataUniverseDomain(ctx context.Context) (string, error) {
 	}
 	if _, ok := err.(metadata.NotDefinedError); ok {
 		// http.StatusNotFound (404)
-		return defaultUniverseDomain, nil
+		return internal.DefaultUniverseDomain, nil
 	} else {
 		return "", err
 	}

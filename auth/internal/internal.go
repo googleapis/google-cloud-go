@@ -35,6 +35,10 @@ const (
 	quotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"
 	projectEnvVar      = "GOOGLE_CLOUD_PROJECT"
 	maxBodySize        = 1 << 20
+
+	// DefaultUniverseDomain is the default value for universe domain.
+	// Universe domain is the default service domain for a given Cloud universe.
+	DefaultUniverseDomain = "googleapis.com"
 )
 
 // CloneDefaultClient returns a [http.Client] with some good defaults.

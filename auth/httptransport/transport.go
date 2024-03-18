@@ -74,18 +74,15 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 		}
 
 		if opts.TokenProvider != nil {
-			creds.TokenProvider = opts.TokenProvider // TODO use blank Credential, discard detected creds
+			creds = &auth.Credentials{
+				TokenProvider: opts.TokenProvider,
+			}
 		}
 		creds.TokenProvider = auth.NewCachedTokenProvider(creds.TokenProvider, nil)
-		// TODO(chrisdsmith): set this default more centrally, maybe in a getter?
-		universeDomain := opts.UniverseDomain
-		if universeDomain == "" {
-			universeDomain = "googleapis.com"
-		}
 		trans = &authTransport{
 			base:                 trans,
 			creds:                creds,
-			clientUniverseDomain: universeDomain,
+			clientUniverseDomain: opts.getClientUniverseDomain(),
 		}
 	}
 	return trans, nil
@@ -174,6 +171,15 @@ type authTransport struct {
 	clientUniverseDomain string
 }
 
+// getClientUniverseDomain returns the universe domain configured for the client.
+// The default value is "googleapis.com".
+func (t *authTransport) getClientUniverseDomain() string {
+	if t.clientUniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return t.clientUniverseDomain
+}
+
 // RoundTrip authorizes and authenticates the request with an
 // access token from Transport's Source. Per the RoundTripper contract we must
 // not modify the initial request, so we clone it, and we must close the body
@@ -191,7 +197,7 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err := transport.ValidateUniverseDomain(t.clientUniverseDomain, credentialsUniverseDomain); err != nil {
+	if err := transport.ValidateUniverseDomain(t.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
 		return nil, err
 	}
 	token, err := t.creds.Token(req.Context())
