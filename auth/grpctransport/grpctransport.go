@@ -261,7 +261,11 @@ type grpcTokenProvider struct {
 }
 
 func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	if err := validateUniverseDomain(ctx, tp.creds, tp.clientUniverseDomain); err != nil {
+	credentialsUniverseDomain, err := tp.creds.UniverseDomain(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := transport.ValidateUniverseDomain(tp.clientUniverseDomain, credentialsUniverseDomain); err != nil {
 		return nil, err
 	}
 	token, err := tp.creds.Token(ctx)
@@ -281,25 +285,6 @@ func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...stri
 		metadata[k] = v
 	}
 	return metadata, nil
-}
-
-// TODO(chrisdsmith): Refactor this func and its copy to single location.
-// validateUniverseDomain verifies that the universe domain configured for the
-// client matches the universe domain configured for the credentials.
-func validateUniverseDomain(ctx context.Context, c *auth.Credentials, clientUniverseDomain string) error {
-	credentialsUniverseDomain, err := c.UniverseDomain(ctx)
-	if err != nil {
-		return err
-	}
-	if clientUniverseDomain != credentialsUniverseDomain {
-		return fmt.Errorf(
-			"the configured universe domain (%q) does not match the universe "+
-				"domain found in the credentials (%q). If you haven't configured "+
-				"WithUniverseDomain explicitly, \"googleapis.com\" is the default",
-			clientUniverseDomain,
-			credentialsUniverseDomain)
-	}
-	return nil
 }
 
 func (tp *grpcTokenProvider) RequireTransportSecurity() bool {

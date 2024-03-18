@@ -16,7 +16,11 @@
 // (grpctransport and httptransport).
 package transport
 
-import "cloud.google.com/go/auth/credentials"
+import (
+	"fmt"
+
+	"cloud.google.com/go/auth/credentials"
+)
 
 // CloneDetectOptions clones a user set detect option into some new memory that
 // we can internally manipulate before sending onto the detect package.
@@ -55,4 +59,18 @@ func CloneDetectOptions(oldDo *credentials.DetectOptions) *credentials.DetectOpt
 	}
 
 	return newDo
+}
+
+// ValidateUniverseDomain verifies that the universe domain configured for the
+// client matches the universe domain configured for the credentials.
+func ValidateUniverseDomain(clientUniverseDomain, credentialsUniverseDomain string) error {
+	if clientUniverseDomain != credentialsUniverseDomain {
+		return fmt.Errorf(
+			"the configured universe domain (%q) does not match the universe "+
+				"domain found in the credentials (%q). If you haven't configured "+
+				"WithUniverseDomain explicitly, \"googleapis.com\" is the default",
+			clientUniverseDomain,
+			credentialsUniverseDomain)
+	}
+	return nil
 }

@@ -17,7 +17,6 @@ package httptransport
 import (
 	"context"
 	"crypto/tls"
-	"fmt"
 	"net"
 	"net/http"
 	"time"
@@ -25,6 +24,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/transport"
 	"cloud.google.com/go/auth/internal/transport/cert"
 	"go.opencensus.io/plugin/ochttp"
 	"golang.org/x/net/http2"
@@ -187,7 +187,11 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 			}
 		}()
 	}
-	if err := validateUniverseDomain(req.Context(), t.creds, t.clientUniverseDomain); err != nil {
+	credentialsUniverseDomain, err := t.creds.UniverseDomain(req.Context())
+	if err != nil {
+		return nil, err
+	}
+	if err := transport.ValidateUniverseDomain(t.clientUniverseDomain, credentialsUniverseDomain); err != nil {
 		return nil, err
 	}
 	token, err := t.creds.Token(req.Context())
@@ -198,23 +202,4 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	SetAuthHeader(token, req2)
 	reqBodyClosed = true
 	return t.base.RoundTrip(req2)
-}
-
-// TODO(chrisdsmith): Refactor this func and its copy to single location.
-// validateUniverseDomain verifies that the universe domain configured for the
-// client matches the universe domain configured for the credentials.
-func validateUniverseDomain(ctx context.Context, c *auth.Credentials, clientUniverseDomain string) error {
-	credentialsUniverseDomain, err := c.UniverseDomain(ctx)
-	if err != nil {
-		return err
-	}
-	if clientUniverseDomain != credentialsUniverseDomain {
-		return fmt.Errorf(
-			"the configured universe domain (%q) does not match the universe "+
-				"domain found in the credentials (%q). If you haven't configured "+
-				"WithUniverseDomain explicitly, \"googleapis.com\" is the default",
-			clientUniverseDomain,
-			credentialsUniverseDomain)
-	}
-	return nil
 }
