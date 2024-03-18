@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package detect
+package credentials
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -38,8 +39,6 @@ const (
 
 	// Help on default credentials
 	adcSetupURL = "https://cloud.google.com/docs/authentication/external/set-up-adc"
-
-	universeDomainDefault = "googleapis.com"
 )
 
 var (
@@ -47,63 +46,14 @@ var (
 	allowOnGCECheck = true
 )
 
-// Credentials holds Google credentials, including
-// [Application Default Credentials](https://developers.google.com/accounts/docs/application-default-credentials).
-type Credentials struct {
-	json           []byte
-	projectID      string
-	quotaProjectID string
-	// universeDomain is the default service domain for a given Cloud universe.
-	universeDomain string
-
-	auth.TokenProvider
-}
-
-func newCredentials(tokenProvider auth.TokenProvider, json []byte, projectID string, quotaProjectID string, universeDomain string) *Credentials {
-	return &Credentials{
-		json:           json,
-		projectID:      internal.GetProjectID(json, projectID),
-		quotaProjectID: internal.GetQuotaProject(json, quotaProjectID),
-		TokenProvider:  tokenProvider,
-		universeDomain: universeDomain,
-	}
-}
-
-// JSON returns the bytes associated with the the file used to source
-// credentials if one was used.
-func (c *Credentials) JSON() []byte {
-	return c.json
-}
-
-// ProjectID returns the associated project ID from the underlying file or
-// environment.
-func (c *Credentials) ProjectID() string {
-	return c.projectID
-}
-
-// QuotaProjectID returns the associated quota project ID from the underlying
-// file or environment.
-func (c *Credentials) QuotaProjectID() string {
-	return c.quotaProjectID
-}
-
-// UniverseDomain returns the default service domain for a given Cloud universe.
-// The default value is "googleapis.com".
-func (c *Credentials) UniverseDomain() string {
-	if c.universeDomain == "" {
-		return universeDomainDefault
-	}
-	return c.universeDomain
-}
-
 // OnGCE reports whether this process is running in Google Cloud.
 func OnGCE() bool {
 	// TODO(codyoss): once all libs use this auth lib move metadata check here
 	return allowOnGCECheck && metadata.OnGCE()
 }
 
-// DefaultCredentials searches for "Application Default Credentials" and returns
-// a credential based on the [Options] provided.
+// DetectDefault searches for "Application Default Credentials" and returns
+// a credential based on the [DetectOptions] provided.
 //
 // It looks for credentials in the following places, preferring the first
 // location found:
@@ -119,7 +69,7 @@ func OnGCE() bool {
 //   - On Google Compute Engine, Google App Engine standard second generation
 //     runtimes, and Google App Engine flexible environment, it fetches
 //     credentials from the metadata server.
-func DefaultCredentials(opts *Options) (*Credentials, error) {
+func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
@@ -138,15 +88,19 @@ func DefaultCredentials(opts *Options) (*Credentials, error) {
 	}
 
 	if OnGCE() {
-		id, _ := metadata.ProjectID()
-		return newCredentials(computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...), nil, id, "", ""), nil
+		return auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: computeTokenProvider(opts.EarlyTokenRefresh, opts.Scopes...),
+			ProjectIDProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
+				return metadata.ProjectID()
+			}),
+		}), nil
 	}
 
 	return nil, fmt.Errorf("detect: could not find default credentials. See %v for more information", adcSetupURL)
 }
 
-// Options provides configuration for [DefaultCredentials].
-type Options struct {
+// DetectOptions provides configuration for [DetectDefault].
+type DetectOptions struct {
 	// Scopes that credentials tokens should have. Example:
 	// https://www.googleapis.com/auth/cloud-platform. Required if Audience is
 	// not provided.
@@ -188,7 +142,7 @@ type Options struct {
 	Client *http.Client
 }
 
-func (o *Options) validate() error {
+func (o *DetectOptions) validate() error {
 	if o == nil {
 		return errors.New("detect: options must be provided")
 	}
@@ -201,27 +155,27 @@ func (o *Options) validate() error {
 	return nil
 }
 
-func (o *Options) tokenURL() string {
+func (o *DetectOptions) tokenURL() string {
 	if o.TokenURL != "" {
 		return o.TokenURL
 	}
 	return googleTokenURL
 }
 
-func (o *Options) scopes() []string {
+func (o *DetectOptions) scopes() []string {
 	scopes := make([]string, len(o.Scopes))
 	copy(scopes, o.Scopes)
 	return scopes
 }
 
-func (o *Options) client() *http.Client {
+func (o *DetectOptions) client() *http.Client {
 	if o.Client != nil {
 		return o.Client
 	}
 	return internal.CloneDefaultClient()
 }
 
-func readCredentialsFile(filename string, opts *Options) (*Credentials, error) {
+func readCredentialsFile(filename string, opts *DetectOptions) (*auth.Credentials, error) {
 	b, err := os.ReadFile(filename)
 	if err != nil {
 		return nil, err
@@ -229,7 +183,7 @@ func readCredentialsFile(filename string, opts *Options) (*Credentials, error) {
 	return readCredentialsFileJSON(b, opts)
 }
 
-func readCredentialsFileJSON(b []byte, opts *Options) (*Credentials, error) {
+func readCredentialsFileJSON(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	// attempt to parse jsonData as a Google Developers Console client_credentials.json.
 	config := clientCredConfigFromJSON(b, opts)
 	if config != nil {
@@ -240,12 +194,15 @@ func readCredentialsFileJSON(b []byte, opts *Options) (*Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		return newCredentials(tp, b, "", "", ""), nil
+		return auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: tp,
+			JSON:          b,
+		}), nil
 	}
 	return fileCredentials(b, opts)
 }
 
-func clientCredConfigFromJSON(b []byte, opts *Options) *auth.Options3LO {
+func clientCredConfigFromJSON(b []byte, opts *DetectOptions) *auth.Options3LO {
 	var creds internaldetect.ClientCredentialsFile
 	var c *internaldetect.Config3LO
 	if err := json.Unmarshal(b, &creds); err != nil {
