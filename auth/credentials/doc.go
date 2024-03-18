@@ -74,7 +74,7 @@
 //
 // # Credentials
 //
-// The [cloud.google.com/go/auth.Credentials] type represents Google 
+// The [cloud.google.com/go/auth.Credentials] type represents Google
 // credentials, including Application Default Credentials.
 //
 // Use [DetectDefault] to obtain Application Default Credentials.

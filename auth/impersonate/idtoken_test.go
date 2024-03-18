@@ -23,7 +23,7 @@ import (
 	"testing"
 )
 
-func TestIDTokenSource(t *testing.T) {
+func TestNewIDTokenCredentials(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		name            string

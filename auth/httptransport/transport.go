@@ -72,13 +72,12 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 			headers.Set(quotaProjectHeaderKey, qp)
 		}
 
-		var tp auth.TokenProvider = creds
 		if opts.Credentials != nil {
-			tp = opts.Credentials
+			creds = opts.Credentials
 		}
 		trans = &authTransport{
 			base:     trans,
-			provider: auth.NewCachedTokenProvider(tp, nil),
+			provider: creds,
 		}
 	}
 	return trans, nil
@@ -162,7 +161,7 @@ func addOCTransport(trans http.RoundTripper, opts *Options) http.RoundTripper {
 }
 
 type authTransport struct {
-	provider auth.TokenProvider
+	provider *auth.Credentials
 	base     http.RoundTripper
 }
 

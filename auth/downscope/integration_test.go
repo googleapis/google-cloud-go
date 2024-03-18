@@ -94,9 +94,9 @@ func TestDownscopedToken(t *testing.T) {
 func testDownscopedToken(t *testing.T, rule downscope.AccessBoundaryRule, objectName string, creds *auth.Credentials) error {
 	t.Helper()
 	ctx := context.Background()
-	creds, err := downscope.NewCredentials(&downscope.Options{BaseCredentials: creds, Rules: []downscope.AccessBoundaryRule{rule}})
+	creds, err := downscope.NewCredentials(&downscope.Options{Credentials: creds, Rules: []downscope.AccessBoundaryRule{rule}})
 	if err != nil {
-		return fmt.Errorf("downscope.NewTokenProvider() = %v", err)
+		return fmt.Errorf("downscope.NewCredentials() = %v", err)
 	}
 
 	ctx, cancel := context.WithTimeout(ctx, time.Second*30)

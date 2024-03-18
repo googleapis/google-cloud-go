@@ -43,7 +43,7 @@ func ExampleNewCredentials() {
 	baseProvider, err := credentials.DetectDefault(&credentials.DetectOptions{
 		Scopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
 	})
-	creds, err := downscope.NewCredentials(&downscope.Options{BaseCredentials: baseProvider, Rules: accessBoundary})
+	creds, err := downscope.NewCredentials(&downscope.Options{Credentials: baseProvider, Rules: accessBoundary})
 	if err != nil {
 		fmt.Printf("failed to generate downscoped token provider: %v", err)
 		return

@@ -30,10 +30,9 @@ var identityBindingEndpoint = "https://sts.googleapis.com/v1/token"
 
 // Options for configuring [NewCredentials].
 type Options struct {
-	// BaseCredentials is the [cloud.google.com/go/auth.TokenProvider] used to
-	// create the downscoped provider. The downscoped provider therefore has
-	// some subset of the accesses of the original BaseCredentials. Required.
-	BaseCredentials *auth.Credentials
+	// Credentials is the [cloud.google.com/go/auth.Credentials] used to
+	// create the downscoped provider. Required.
+	Credentials *auth.Credentials
 	// Rules defines the accesses held by the new downscoped provider. One or
 	// more AccessBoundaryRules are required to define permissions for the new
 	// downscoped provider. Each one defines an access (or set of accesses) that
@@ -90,7 +89,7 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	if opts == nil {
 		return nil, fmt.Errorf("downscope: providing opts is required")
 	}
-	if opts.BaseCredentials == nil {
+	if opts.Credentials == nil {
 		return nil, fmt.Errorf("downscope: BaseCredentials cannot be nil")
 	}
 	if len(opts.Rules) == 0 {
@@ -108,10 +107,10 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 		}
 	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
-		TokenProvider:     &downscopedTokenProvider{Options: opts, Client: opts.client()},
-		ProjectIDProvider: auth.CredentialsPropertyFunc(opts.BaseCredentials.ProjectID),
-		QuotaProjectIDProvider: auth.CredentialsPropertyFunc(opts.BaseCredentials.QuotaProjectID),
-		UniverseDomainProvider: auth.CredentialsPropertyFunc(opts.BaseCredentials.UniverseDomain),
+		TokenProvider:          &downscopedTokenProvider{Options: opts, Client: opts.client()},
+		ProjectIDProvider:      auth.CredentialsPropertyFunc(opts.Credentials.ProjectID),
+		QuotaProjectIDProvider: auth.CredentialsPropertyFunc(opts.Credentials.QuotaProjectID),
+		UniverseDomainProvider: auth.CredentialsPropertyFunc(opts.Credentials.UniverseDomain),
 	}), nil
 }
 
@@ -143,7 +142,7 @@ func (dts *downscopedTokenProvider) Token(ctx context.Context) (*auth.Token, err
 		},
 	}
 
-	tok, err := dts.Options.BaseCredentials.Token(ctx)
+	tok, err := dts.Options.Credentials.Token(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("downscope: unable to obtain root token: %w", err)
 	}

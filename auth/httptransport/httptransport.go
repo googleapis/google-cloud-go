@@ -129,10 +129,10 @@ type InternalOptions struct {
 
 // AddAuthorizationMiddleware adds a middleware to the provided client's
 // transport that sets the Authorization header with the value produced by the
-// provided [cloud.google.com/go/auth.TokenProvider]. An error is returned only
-// if client or tp is nil.
-func AddAuthorizationMiddleware(client *http.Client, tp auth.TokenProvider) error {
-	if client == nil || tp == nil {
+// provided [cloud.google.com/go/auth.Credentials]. An error is returned only
+// if client or creds is nil.
+func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) error {
+	if client == nil || creds == nil {
 		return fmt.Errorf("httptransport: client and tp must not be nil")
 	}
 	base := client.Transport
@@ -140,7 +140,7 @@ func AddAuthorizationMiddleware(client *http.Client, tp auth.TokenProvider) erro
 		base = http.DefaultTransport.(*http.Transport).Clone()
 	}
 	client.Transport = &authTransport{
-		provider: auth.NewCachedTokenProvider(tp, nil),
+		provider: creds,
 		base:     base,
 	}
 	return nil

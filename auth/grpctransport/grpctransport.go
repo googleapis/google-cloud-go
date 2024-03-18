@@ -204,9 +204,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		if err != nil {
 			return nil, err
 		}
-		var tp auth.TokenProvider = creds
 		if opts.Credentials != nil {
-			tp = opts.Credentials
+			creds = opts.Credentials
 		}
 
 		qp, err := creds.QuotaProjectID(ctx)
@@ -221,9 +220,9 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		}
 
 		grpcOpts = append(grpcOpts,
-			grpc.WithPerRPCCredentials(&grpcTokenProvider{
-				TokenProvider: tp,
-				metadata:      metadata,
+			grpc.WithPerRPCCredentials(&grpcCredentialProvider{
+				creds:    creds,
+				metadata: metadata,
 			}),
 		)
 
@@ -240,9 +239,9 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	return grpc.DialContext(ctx, endpoint, grpcOpts...)
 }
 
-// grpcTokenProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
-type grpcTokenProvider struct {
-	auth.TokenProvider
+// grpcCredentialProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
+type grpcCredentialProvider struct {
+	creds *auth.Credentials
 
 	secure bool
 
@@ -250,27 +249,27 @@ type grpcTokenProvider struct {
 	metadata map[string]string
 }
 
-func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	token, err := tp.Token(ctx)
+func (c *grpcCredentialProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	token, err := c.creds.Token(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if tp.secure {
+	if c.secure {
 		ri, _ := grpccreds.RequestInfoFromContext(ctx)
 		if err = grpccreds.CheckSecurityLevel(ri.AuthInfo, grpccreds.PrivacyAndIntegrity); err != nil {
-			return nil, fmt.Errorf("unable to transfer TokenProvider PerRPCCredentials: %v", err)
+			return nil, fmt.Errorf("unable to transfer credentials PerRPCCredentials: %v", err)
 		}
 	}
 	metadata := map[string]string{
 		"authorization": token.Type + " " + token.Value,
 	}
-	for k, v := range tp.metadata {
+	for k, v := range c.metadata {
 		metadata[k] = v
 	}
 	return metadata, nil
 }
 
-func (tp *grpcTokenProvider) RequireTransportSecurity() bool {
+func (tp *grpcCredentialProvider) RequireTransportSecurity() bool {
 	return tp.secure
 }
 

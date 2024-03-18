@@ -70,7 +70,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestCredentialsTokenSourceIntegration(t *testing.T) {
+func TestNewCredentialsIntegration(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	tests := []struct {
 		name            string
@@ -133,7 +133,7 @@ func TestCredentialsTokenSourceIntegration(t *testing.T) {
 	}
 }
 
-func TestIDTokenSourceIntegration(t *testing.T) {
+func TestNewIDTokenCredentialsIntegration(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 
 	ctx := context.Background()

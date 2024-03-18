@@ -35,7 +35,7 @@ func ExampleNewCredentials_serviceAccount() {
 
 	// TODO(codyoss): link to option once it exists.
 
-	// Use this TokenProvider with a client library
+	// Use this Credentials with a client library
 	_ = creds
 }
 
@@ -53,7 +53,7 @@ func ExampleNewCredentials_adminUser() {
 		log.Fatal(err)
 	}
 
-	// Use this TokenProvider with a client library like
+	// Use this Credentials with a client library like
 	// "google.golang.org/api/admin/directory/v1"
 	_ = creds
 }

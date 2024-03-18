@@ -28,7 +28,7 @@ import (
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
-func TestTokenSource_user(t *testing.T) {
+func TestNewCredentials_user(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		name            string

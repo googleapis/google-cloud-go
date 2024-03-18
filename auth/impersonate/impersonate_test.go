@@ -27,7 +27,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestTokenSource_serviceAccount(t *testing.T) {
+func TestNewCredentials_serviceAccount(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		name            string

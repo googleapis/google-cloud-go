@@ -32,7 +32,7 @@ const (
 	aud               = "http://example.com"
 )
 
-func TestNewTokenProvider_CredentialsFile(t *testing.T) {
+func TestNewCredentials_CredentialsFile(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	ctx := context.Background()
 	ts, err := idtoken.NewCredentials(&idtoken.Options{
@@ -40,7 +40,7 @@ func TestNewTokenProvider_CredentialsFile(t *testing.T) {
 		CredentialsFile: os.Getenv(envCredentialFile),
 	})
 	if err != nil {
-		t.Fatalf("unable to create TokenSource: %v", err)
+		t.Fatalf("unable to create credentials: %v", err)
 	}
 	tok, err := ts.Token(ctx)
 	if err != nil {
@@ -60,7 +60,7 @@ func TestNewTokenProvider_CredentialsFile(t *testing.T) {
 	}
 }
 
-func TestNewTokenProvider_CredentialsJSON(t *testing.T) {
+func TestNewCredentials_CredentialsJSON(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	ctx := context.Background()
 	b, err := os.ReadFile(os.Getenv(envCredentialFile))

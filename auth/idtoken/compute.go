@@ -28,7 +28,7 @@ import (
 const identitySuffix = "instance/service-accounts/default/identity"
 
 // computeCredentials checks if this code is being run on GCE. If it is, it
-// will use the metadata service to build a TokenProvider that fetches ID
+// will use the metadata service to build a Credentials that fetches ID
 // tokens.
 func computeCredentials(opts *Options) (*auth.Credentials, error) {
 	if opts.CustomClaims != nil {

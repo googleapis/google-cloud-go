@@ -65,7 +65,7 @@ func TestNewTokenProvider(t *testing.T) {
 	identityBindingEndpoint = ts.URL
 	t.Cleanup(func() { identityBindingEndpoint = oldEndpoint })
 	creds, err := NewCredentials(&Options{
-		BaseCredentials: staticCredentials("token_base"),
+		Credentials: staticCredentials("token_base"),
 		Rules: []AccessBoundaryRule{
 			{
 				AvailableResource:    "test1",
@@ -78,14 +78,14 @@ func TestNewTokenProvider(t *testing.T) {
 	}
 	tok, err := creds.Token(context.Background())
 	if err != nil {
-		t.Fatalf("NewDownscopedTokenSource failed with error: %v", err)
+		t.Fatalf("Token failed with error: %v", err)
 	}
 	if want := "fake_token"; tok.Value != want {
 		t.Fatalf("got %v, want %v", tok.Value, want)
 	}
 }
 
-func TestTestNewTokenProvider_Validations(t *testing.T) {
+func TestTestNewCredentials_Validations(t *testing.T) {
 	tests := []struct {
 		name string
 		opts *Options
@@ -101,27 +101,27 @@ func TestTestNewTokenProvider_Validations(t *testing.T) {
 		{
 			name: "no rules",
 			opts: &Options{
-				BaseCredentials: staticCredentials("token_base"),
+				Credentials: staticCredentials("token_base"),
 			},
 		},
 		{
 			name: "too many rules",
 			opts: &Options{
-				BaseCredentials: staticCredentials("token_base"),
-				Rules:           []AccessBoundaryRule{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}},
+				Credentials: staticCredentials("token_base"),
+				Rules:       []AccessBoundaryRule{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}},
 			},
 		},
 		{
 			name: "no resource",
 			opts: &Options{
-				BaseCredentials: staticCredentials("token_base"),
-				Rules:           []AccessBoundaryRule{{}},
+				Credentials: staticCredentials("token_base"),
+				Rules:       []AccessBoundaryRule{{}},
 			},
 		},
 		{
 			name: "no perm",
 			opts: &Options{
-				BaseCredentials: staticCredentials("token_base"),
+				Credentials: staticCredentials("token_base"),
 				Rules: []AccessBoundaryRule{{
 					AvailableResource: "resource",
 				}},
