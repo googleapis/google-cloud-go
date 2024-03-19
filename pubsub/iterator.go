@@ -318,7 +318,7 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 				attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
 				attribute.String(ackIDAttribute, ackID),
 				semconv.MessagingBatchMessageCount(len(msgs)),
-				semconv.CodeFunction("iterator.receive"),
+				semconv.CodeFunction("receive"),
 			)
 			it.activeSpans.Store(ackID, span)
 		}
@@ -559,7 +559,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 				ctx, ackSpan = startSpan(context.Background(), ackSpanName, it.subID, trace.WithLinks(links...))
 				defer ackSpan.End()
 				ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
-					semconv.CodeFunction("messageIterator.sendAck"))
+					semconv.CodeFunction("sendAck"))
 			}
 			recordStat(it.ctx, AckCount, int64(len(toSend)))
 			addAcks(toSend)
@@ -655,7 +655,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 						attribute.Bool(receiptModackAttribute, isReceipt))
 				}
 				mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
-					semconv.CodeFunction("messageIterator.sendModAck"))
+					semconv.CodeFunction("sendModAck"))
 			}
 			addModAcks(toSend, deadlineSec)
 			// Use a local context as the call's context, not it.ctx. We don't

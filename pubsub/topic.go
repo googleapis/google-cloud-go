@@ -731,7 +731,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	var createSpan trace.Span
 	if t.enableTracing {
 		ctx, createSpan = startCreateSpan(ctx, msg, t.ID())
-		createSpan.SetAttributes(semconv.CodeFunction("topic.Publish"))
+		createSpan.SetAttributes(semconv.CodeFunction("Publish"))
 	}
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
 	if err != nil {
@@ -951,7 +951,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		topicID := idFromFullyQualified(t.name)
 		var pSpan trace.Span
 		ctx, pSpan = startSpan(ctx, publishRPCSpanName, topicID, trace.WithLinks(links...))
-		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("topic.publishMessageBundle"))
+		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("publishMessageBundle"))
 		defer pSpan.End()
 	}
 

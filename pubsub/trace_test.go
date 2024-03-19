@@ -17,10 +17,11 @@ package pubsub
 import (
 	"context"
 	"fmt"
-	"golang.org/x/exp/slices"
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"golang.org/x/exp/slices"
 
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
@@ -99,7 +100,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 			Name:     fmt.Sprintf("%s %s", topicID, createSpanName),
 			SpanKind: trace.SpanKindProducer,
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("topic.Publish"),
+				semconv.CodeFunction("Publish"),
 				semconv.MessagingDestinationName(topicID),
 				attribute.String(orderingAttribute, m.OrderingKey),
 				// Hardcoded since the fake server always returns m0 first.
@@ -138,7 +139,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 		tracetest.SpanStub{
 			Name: fmt.Sprintf("%s %s", topicID, publishRPCSpanName),
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("topic.publishMessageBundle"),
+				semconv.CodeFunction("publishMessageBundle"),
 				semconv.MessagingBatchMessageCount(1),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
@@ -367,7 +368,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			Name:     fmt.Sprintf("%s %s", subID, subscribeSpanName),
 			SpanKind: trace.SpanKindConsumer,
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("iterator.receive"),
+				semconv.CodeFunction("receive"),
 				semconv.MessagingBatchMessageCount(1),
 				semconv.MessagingDestinationName(subID),
 				attribute.Bool(eosAttribute, enableEOS),
@@ -432,7 +433,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				},
 			},
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("messageIterator.sendAck"),
+				semconv.CodeFunction("sendAck"),
 				semconv.MessagingBatchMessageCount(1),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
@@ -456,7 +457,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				},
 			},
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("messageIterator.sendModAck"),
+				semconv.CodeFunction("sendModAck"),
 				attribute.Bool(receiptModackAttribute, true),
 				attribute.Int(ackDeadlineSecAttribute, 10),
 				semconv.MessagingBatchMessageCount(1),
@@ -585,7 +586,7 @@ func getPublishSpanStubsWithError(topicID string, m *Message, msgSize int, err e
 			Name:     fmt.Sprintf("%s %s", topicID, createSpanName),
 			SpanKind: trace.SpanKindProducer,
 			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("topic.Publish"),
+				semconv.CodeFunction("Publish"),
 				semconv.MessagingDestinationName(topicID),
 				semconv.MessagingMessageIDKey.String(""),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
