@@ -1060,9 +1060,6 @@ service-configs:
   - input-directory: google/spanner/executor/v1
     service-config: spanner_cloud_executor.yaml
     import-path: cloud.google.com/go/spanner/executor/apiv1
-  - input-directory: google/storage/control/v2
-    service-config: storage_v2.yaml
-    import-path: cloud.google.com/go/storage/control/apiv2
   - input-directory: google/storage/v2
     service-config: storage_v2.yaml
     import-path: cloud.google.com/go/storage/internal/apiv2
