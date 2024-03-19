@@ -27,7 +27,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestTokenSource_serviceAccount(t *testing.T) {
+func TestNewCredentials_serviceAccount(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		name            string
@@ -100,7 +100,7 @@ func TestTokenSource_serviceAccount(t *testing.T) {
 					return nil
 				}),
 			}
-			ts, err := NewCredentialTokenProvider(&CredentialOptions{
+			ts, err := NewCredentials(&CredentialsOptions{
 				TargetPrincipal: tt.targetPrincipal,
 				Scopes:          tt.scopes,
 				Lifetime:        tt.lifetime,

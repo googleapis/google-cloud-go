@@ -24,7 +24,7 @@ import (
 
 const metadataHostEnv = "GCE_METADATA_HOST"
 
-func TestComputeTokenSource(t *testing.T) {
+func TestComputeCredentials(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.URL.Path, identitySuffix) {
 			t.Errorf("got %q, want contains %q", r.URL.Path, identitySuffix)
@@ -42,12 +42,12 @@ func TestComputeTokenSource(t *testing.T) {
 	}))
 	defer ts.Close()
 	t.Setenv(metadataHostEnv, strings.TrimPrefix(ts.URL, "http://"))
-	tp, err := computeTokenProvider(&Options{
+	tp, err := computeCredentials(&Options{
 		Audience:           "aud",
 		ComputeTokenFormat: ComputeTokenFormatFullWithLicense,
 	})
 	if err != nil {
-		t.Fatalf("computeTokenProvider() = %v", err)
+		t.Fatalf("computeCredentials() = %v", err)
 	}
 	tok, err := tp.Token(context.Background())
 	if err != nil {
@@ -58,7 +58,7 @@ func TestComputeTokenSource(t *testing.T) {
 	}
 }
 
-func TestComputeTokenSource_Standard(t *testing.T) {
+func TestComputeCredentials_Standard(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if !strings.Contains(r.URL.Path, identitySuffix) {
 			t.Errorf("got %q, want contains %q", r.URL.Path, identitySuffix)
@@ -76,12 +76,12 @@ func TestComputeTokenSource_Standard(t *testing.T) {
 	}))
 	defer ts.Close()
 	t.Setenv(metadataHostEnv, strings.TrimPrefix(ts.URL, "http://"))
-	tp, err := computeTokenProvider(&Options{
+	tp, err := computeCredentials(&Options{
 		Audience:           "aud",
 		ComputeTokenFormat: ComputeTokenFormatStandard,
 	})
 	if err != nil {
-		t.Fatalf("computeTokenProvider() = %v", err)
+		t.Fatalf("computeCredentials() = %v", err)
 	}
 	tok, err := tp.Token(context.Background())
 	if err != nil {
@@ -92,11 +92,11 @@ func TestComputeTokenSource_Standard(t *testing.T) {
 	}
 }
 
-func TestComputeTokenSource_Invalid(t *testing.T) {
-	if _, err := computeTokenProvider(&Options{
+func TestComputeCredentials_Invalid(t *testing.T) {
+	if _, err := computeCredentials(&Options{
 		Audience:     "aud",
 		CustomClaims: map[string]interface{}{"foo": "bar"},
 	}); err == nil {
-		t.Fatal("computeTokenProvider() = nil, expected non-nil error", err)
+		t.Fatal("computeCredentials() = nil, expected non-nil error", err)
 	}
 }

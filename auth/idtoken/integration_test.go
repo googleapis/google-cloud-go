@@ -32,15 +32,15 @@ const (
 	aud               = "http://example.com"
 )
 
-func TestNewTokenProvider_CredentialsFile(t *testing.T) {
+func TestNewCredentials_CredentialsFile(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	ctx := context.Background()
-	ts, err := idtoken.NewTokenProvider(&idtoken.Options{
+	ts, err := idtoken.NewCredentials(&idtoken.Options{
 		Audience:        "http://example.com",
 		CredentialsFile: os.Getenv(envCredentialFile),
 	})
 	if err != nil {
-		t.Fatalf("unable to create TokenSource: %v", err)
+		t.Fatalf("unable to create credentials: %v", err)
 	}
 	tok, err := ts.Token(ctx)
 	if err != nil {
@@ -60,21 +60,21 @@ func TestNewTokenProvider_CredentialsFile(t *testing.T) {
 	}
 }
 
-func TestNewTokenProvider_CredentialsJSON(t *testing.T) {
+func TestNewCredentials_CredentialsJSON(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	ctx := context.Background()
 	b, err := os.ReadFile(os.Getenv(envCredentialFile))
 	if err != nil {
 		log.Fatal(err)
 	}
-	tp, err := idtoken.NewTokenProvider(&idtoken.Options{
+	creds, err := idtoken.NewCredentials(&idtoken.Options{
 		Audience:        aud,
 		CredentialsJSON: b,
 	})
 	if err != nil {
 		t.Fatalf("unable to create Client: %v", err)
 	}
-	tok, err := tp.Token(ctx)
+	tok, err := creds.Token(ctx)
 	if err != nil {
 		t.Fatalf("unable to retrieve Token: %v", err)
 	}
