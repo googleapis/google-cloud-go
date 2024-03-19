@@ -15,6 +15,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateBackupSchedule": {
+              "methods": [
+                "CreateBackupSchedule"
+              ]
+            },
             "CreateDatabase": {
               "methods": [
                 "CreateDatabase"
@@ -23,6 +28,16 @@
             "CreateIndex": {
               "methods": [
                 "CreateIndex"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteBackupSchedule": {
+              "methods": [
+                "DeleteBackupSchedule"
               ]
             },
             "DeleteDatabase": {
@@ -43,6 +58,16 @@
             "ExportDocuments": {
               "methods": [
                 "ExportDocuments"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupSchedule": {
+              "methods": [
+                "GetBackupSchedule"
               ]
             },
             "GetDatabase": {
@@ -70,6 +95,16 @@
                 "ImportDocuments"
               ]
             },
+            "ListBackupSchedules": {
+              "methods": [
+                "ListBackupSchedules"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListDatabases": {
               "methods": [
                 "ListDatabases"
@@ -88,6 +123,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RestoreDatabase": {
+              "methods": [
+                "RestoreDatabase"
+              ]
+            },
+            "UpdateBackupSchedule": {
+              "methods": [
+                "UpdateBackupSchedule"
               ]
             },
             "UpdateDatabase": {
@@ -110,6 +155,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateBackupSchedule": {
+              "methods": [
+                "CreateBackupSchedule"
+              ]
+            },
             "CreateDatabase": {
               "methods": [
                 "CreateDatabase"
@@ -118,6 +168,16 @@
             "CreateIndex": {
               "methods": [
                 "CreateIndex"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteBackupSchedule": {
+              "methods": [
+                "DeleteBackupSchedule"
               ]
             },
             "DeleteDatabase": {
@@ -138,6 +198,16 @@
             "ExportDocuments": {
               "methods": [
                 "ExportDocuments"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupSchedule": {
+              "methods": [
+                "GetBackupSchedule"
               ]
             },
             "GetDatabase": {
@@ -165,6 +235,16 @@
                 "ImportDocuments"
               ]
             },
+            "ListBackupSchedules": {
+              "methods": [
+                "ListBackupSchedules"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListDatabases": {
               "methods": [
                 "ListDatabases"
@@ -183,6 +263,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RestoreDatabase": {
+              "methods": [
+                "RestoreDatabase"
+              ]
+            },
+            "UpdateBackupSchedule": {
+              "methods": [
+                "UpdateBackupSchedule"
               ]
             },
             "UpdateDatabase": {
