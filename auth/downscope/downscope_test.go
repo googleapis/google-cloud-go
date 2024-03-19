@@ -29,6 +29,12 @@ var (
 	standardRespBody = `{"access_token":"fake_token","expires_in":42,"token_type":"Bearer"}`
 )
 
+func staticCredentials(tok string) *auth.Credentials {
+	return auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: staticTokenProvider(tok),
+	})
+}
+
 type staticTokenProvider string
 
 func (s staticTokenProvider) Token(context.Context) (*auth.Token, error) {
@@ -58,8 +64,8 @@ func TestNewTokenProvider(t *testing.T) {
 	oldEndpoint := identityBindingEndpoint
 	identityBindingEndpoint = ts.URL
 	t.Cleanup(func() { identityBindingEndpoint = oldEndpoint })
-	tp, err := NewTokenProvider(&Options{
-		BaseProvider: staticTokenProvider("token_base"),
+	creds, err := NewCredentials(&Options{
+		Credentials: staticCredentials("token_base"),
 		Rules: []AccessBoundaryRule{
 			{
 				AvailableResource:    "test1",
@@ -70,16 +76,16 @@ func TestNewTokenProvider(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewTokenProvider() = %v", err)
 	}
-	tok, err := tp.Token(context.Background())
+	tok, err := creds.Token(context.Background())
 	if err != nil {
-		t.Fatalf("NewDownscopedTokenSource failed with error: %v", err)
+		t.Fatalf("Token failed with error: %v", err)
 	}
 	if want := "fake_token"; tok.Value != want {
 		t.Fatalf("got %v, want %v", tok.Value, want)
 	}
 }
 
-func TestTestNewTokenProvider_Validations(t *testing.T) {
+func TestTestNewCredentials_Validations(t *testing.T) {
 	tests := []struct {
 		name string
 		opts *Options
@@ -95,27 +101,27 @@ func TestTestNewTokenProvider_Validations(t *testing.T) {
 		{
 			name: "no rules",
 			opts: &Options{
-				BaseProvider: staticTokenProvider("token_base"),
+				Credentials: staticCredentials("token_base"),
 			},
 		},
 		{
 			name: "too many rules",
 			opts: &Options{
-				BaseProvider: staticTokenProvider("token_base"),
-				Rules:        []AccessBoundaryRule{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}},
+				Credentials: staticCredentials("token_base"),
+				Rules:       []AccessBoundaryRule{{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}},
 			},
 		},
 		{
 			name: "no resource",
 			opts: &Options{
-				BaseProvider: staticTokenProvider("token_base"),
-				Rules:        []AccessBoundaryRule{{}},
+				Credentials: staticCredentials("token_base"),
+				Rules:       []AccessBoundaryRule{{}},
 			},
 		},
 		{
 			name: "no perm",
 			opts: &Options{
-				BaseProvider: staticTokenProvider("token_base"),
+				Credentials: staticCredentials("token_base"),
 				Rules: []AccessBoundaryRule{{
 					AvailableResource: "resource",
 				}},
@@ -124,7 +130,7 @@ func TestTestNewTokenProvider_Validations(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			if _, err := NewTokenProvider(test.opts); err == nil {
+			if _, err := NewCredentials(test.opts); err == nil {
 				t.Fatal("want non-nil err")
 			}
 		})
