@@ -210,6 +210,36 @@ func ExampleClient_CreateDnsAuthorization() {
 	_ = resp
 }
 
+func ExampleClient_CreateTrustConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.CreateTrustConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#CreateTrustConfigRequest.
+	}
+	op, err := c.CreateTrustConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_DeleteCertificate() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -350,6 +380,34 @@ func ExampleClient_DeleteDnsAuthorization() {
 	}
 }
 
+func ExampleClient_DeleteTrustConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.DeleteTrustConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#DeleteTrustConfigRequest.
+	}
+	op, err := c.DeleteTrustConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_GetCertificate() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -468,6 +526,31 @@ func ExampleClient_GetDnsAuthorization() {
 		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#GetDnsAuthorizationRequest.
 	}
 	resp, err := c.GetDnsAuthorization(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetTrustConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.GetTrustConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#GetTrustConfigRequest.
+	}
+	resp, err := c.GetTrustConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -630,6 +713,37 @@ func ExampleClient_ListDnsAuthorizations() {
 	}
 }
 
+func ExampleClient_ListTrustConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.ListTrustConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#ListTrustConfigsRequest.
+	}
+	it := c.ListTrustConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_UpdateCertificate() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -738,6 +852,36 @@ func ExampleClient_UpdateDnsAuthorization() {
 		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#UpdateDnsAuthorizationRequest.
 	}
 	op, err := c.UpdateDnsAuthorization(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateTrustConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := certificatemanager.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &certificatemanagerpb.UpdateTrustConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb#UpdateTrustConfigRequest.
+	}
+	op, err := c.UpdateTrustConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

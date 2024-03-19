@@ -101,6 +101,31 @@ func ExampleDataScanClient_DeleteDataScan() {
 	}
 }
 
+func ExampleDataScanClient_GenerateDataQualityRules() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataplex.NewDataScanClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataplexpb.GenerateDataQualityRulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#GenerateDataQualityRulesRequest.
+	}
+	resp, err := c.GenerateDataQualityRules(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleDataScanClient_GetDataScan() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

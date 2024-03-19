@@ -66,9 +66,9 @@ type Options struct {
 	// PoolSize is specifies how many connections to balance between when making
 	// requests. If unset or less than 1, the value defaults to 1.
 	PoolSize int
-	// TokenProvider specifies the provider used to add Authorization metadata
-	// to all requests. If set DetectOpts are ignored.
-	TokenProvider auth.TokenProvider
+	// Credentials used to add Authorization metadata to all requests. If set
+	// DetectOpts are ignored.
+	Credentials *auth.Credentials
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
 	DetectOpts *credentials.DetectOptions
@@ -96,7 +96,7 @@ func (o *Options) validate() error {
 	if o == nil {
 		return errors.New("grpctransport: opts required to be non-nil")
 	}
-	hasCreds := o.TokenProvider != nil ||
+	hasCreds := o.Credentials != nil ||
 		(o.DetectOpts != nil && len(o.DetectOpts.CredentialsJSON) > 0) ||
 		(o.DetectOpts != nil && o.DetectOpts.CredentialsFile != "")
 	if o.DisableAuthentication && hasCreds {
@@ -221,8 +221,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		if err != nil {
 			return nil, err
 		}
-		if opts.TokenProvider != nil {
-			creds = &auth.Credentials{TokenProvider: opts.TokenProvider}
+		if opts.Credentials != nil {
+			creds = opts.Credentials
 		}
 
 		qp, err := creds.QuotaProjectID(ctx)
@@ -236,9 +236,9 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			metadata[quotaProjectHeaderKey] = qp
 		}
 		grpcOpts = append(grpcOpts,
-			grpc.WithPerRPCCredentials(&grpcTokenProvider{
-				creds:                creds,
-				metadata:             metadata,
+			grpc.WithPerRPCCredentials(&grpcCredentialsProvider{
+				creds:    creds,
+				metadata: metadata,
 				clientUniverseDomain: opts.getClientUniverseDomain(),
 			}),
 		)
@@ -256,8 +256,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	return grpc.DialContext(ctx, endpoint, grpcOpts...)
 }
 
-// grpcTokenProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
-type grpcTokenProvider struct {
+// grpcCredentialsProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
+type grpcCredentialsProvider struct {
 	creds *auth.Credentials
 
 	secure bool
@@ -267,34 +267,34 @@ type grpcTokenProvider struct {
 	clientUniverseDomain string
 }
 
-func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	credentialsUniverseDomain, err := tp.creds.UniverseDomain(ctx)
+func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	credentialsUniverseDomain, err := c.creds.UniverseDomain(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if err := transport.ValidateUniverseDomain(tp.clientUniverseDomain, credentialsUniverseDomain); err != nil {
+	if err := transport.ValidateUniverseDomain(c.clientUniverseDomain, credentialsUniverseDomain); err != nil {
 		return nil, err
 	}
-	token, err := tp.creds.Token(ctx)
+	token, err := c.creds.Token(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if tp.secure {
+	if c.secure {
 		ri, _ := grpccreds.RequestInfoFromContext(ctx)
 		if err = grpccreds.CheckSecurityLevel(ri.AuthInfo, grpccreds.PrivacyAndIntegrity); err != nil {
-			return nil, fmt.Errorf("unable to transfer TokenProvider PerRPCCredentials: %v", err)
+			return nil, fmt.Errorf("unable to transfer credentials PerRPCCredentials: %v", err)
 		}
 	}
 	metadata := map[string]string{
 		"authorization": token.Type + " " + token.Value,
 	}
-	for k, v := range tp.metadata {
+	for k, v := range c.metadata {
 		metadata[k] = v
 	}
 	return metadata, nil
 }
 
-func (tp *grpcTokenProvider) RequireTransportSecurity() bool {
+func (tp *grpcCredentialsProvider) RequireTransportSecurity() bool {
 	return tp.secure
 }
 

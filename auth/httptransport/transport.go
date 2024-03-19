@@ -73,10 +73,8 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 			headers.Set(quotaProjectHeaderKey, qp)
 		}
 
-		if opts.TokenProvider != nil {
-			creds = &auth.Credentials{
-				TokenProvider: opts.TokenProvider,
-			}
+		if opts.Credentials != nil {
+			creds = opts.Credentials
 		}
 		creds.TokenProvider = auth.NewCachedTokenProvider(creds.TokenProvider, nil)
 		trans = &authTransport{

@@ -27,7 +27,7 @@ import (
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
-func TestNewTokenProvider_ServiceAccount(t *testing.T) {
+func TestNewCredentials_ServiceAccount(t *testing.T) {
 	wantTok, _ := createRS256JWT(t)
 	b, err := os.ReadFile("../internal/testdata/sa.json")
 	if err != nil {
@@ -48,7 +48,7 @@ func TestNewTokenProvider_ServiceAccount(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	tp, err := NewTokenProvider(&Options{
+	creds, err := NewCredentials(&Options{
 		Audience:        "aud",
 		CredentialsJSON: b,
 		CustomClaims: map[string]interface{}{
@@ -58,7 +58,7 @@ func TestNewTokenProvider_ServiceAccount(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tok, err := tp.Token(context.Background())
+	tok, err := creds.Token(context.Background())
 	if err != nil {
 		t.Fatalf("tp.Token() = %v", err)
 	}
@@ -77,7 +77,7 @@ func (m mockTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return rw.Result(), nil
 }
 
-func TestNewTokenProvider_ImpersonatedServiceAccount(t *testing.T) {
+func TestNewCredentials_ImpersonatedServiceAccount(t *testing.T) {
 	wantTok, _ := createRS256JWT(t)
 	client := internal.CloneDefaultClient()
 	client.Transport = mockTransport{
@@ -85,7 +85,7 @@ func TestNewTokenProvider_ImpersonatedServiceAccount(t *testing.T) {
 			w.Write([]byte(fmt.Sprintf(`{"token": %q}`, wantTok)))
 		}),
 	}
-	tp, err := NewTokenProvider(&Options{
+	creds, err := NewCredentials(&Options{
 		Audience:        "aud",
 		CredentialsFile: "../internal/testdata/imp.json",
 		CustomClaims: map[string]interface{}{
@@ -96,7 +96,7 @@ func TestNewTokenProvider_ImpersonatedServiceAccount(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	tok, err := tp.Token(context.Background())
+	tok, err := creds.Token(context.Background())
 	if err != nil {
 		t.Fatalf("tp.Token() = %v", err)
 	}

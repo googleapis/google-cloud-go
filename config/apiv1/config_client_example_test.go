@@ -404,6 +404,31 @@ func ExampleClient_GetRevision() {
 	_ = resp
 }
 
+func ExampleClient_GetTerraformVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := config.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &configpb.GetTerraformVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/config/apiv1/configpb#GetTerraformVersionRequest.
+	}
+	resp, err := c.GetTerraformVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ImportStatefile() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -540,6 +565,37 @@ func ExampleClient_ListRevisions() {
 		// See https://pkg.go.dev/cloud.google.com/go/config/apiv1/configpb#ListRevisionsRequest.
 	}
 	it := c.ListRevisions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_ListTerraformVersions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := config.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &configpb.ListTerraformVersionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/config/apiv1/configpb#ListTerraformVersionsRequest.
+	}
+	it := c.ListTerraformVersions(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
