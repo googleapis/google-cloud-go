@@ -28,7 +28,7 @@ import (
 	"cloud.google.com/go/auth/internal"
 )
 
-func user(opts *CredentialOptions, client *http.Client, lifetime time.Duration, isStaticToken bool) (auth.TokenProvider, error) {
+func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration, isStaticToken bool) (auth.TokenProvider, error) {
 	u := userTokenProvider{
 		client:          client,
 		targetPrincipal: opts.TargetPrincipal,

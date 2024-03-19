@@ -22,7 +22,7 @@ import (
 	"cloud.google.com/go/auth/downscope"
 )
 
-func ExampleNewTokenProvider() {
+func ExampleNewCredentials() {
 	// This shows how to generate a downscoped token. This code would be run on
 	// the token broker, which holds the root token used to generate the
 	// downscoped token.
@@ -43,13 +43,13 @@ func ExampleNewTokenProvider() {
 	baseProvider, err := credentials.DetectDefault(&credentials.DetectOptions{
 		Scopes: []string{"https://www.googleapis.com/auth/cloud-platform"},
 	})
-	tp, err := downscope.NewTokenProvider(&downscope.Options{BaseProvider: baseProvider, Rules: accessBoundary})
+	creds, err := downscope.NewCredentials(&downscope.Options{Credentials: baseProvider, Rules: accessBoundary})
 	if err != nil {
 		fmt.Printf("failed to generate downscoped token provider: %v", err)
 		return
 	}
 
-	tok, err := tp.Token(ctx)
+	tok, err := creds.Token(ctx)
 	if err != nil {
 		fmt.Printf("failed to generate token: %v", err)
 		return
