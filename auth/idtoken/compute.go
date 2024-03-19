@@ -46,7 +46,7 @@ func computeCredentials(opts *Options) (*auth.Credentials, error) {
 		ProjectIDProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
 			return metadata.ProjectID()
 		}),
-		// TODO(quartzmo): add universe domain resolver here
+		UniverseDomainProvider: &internal.ComputeUniverseDomainProvider{},
 	}), nil
 }
 

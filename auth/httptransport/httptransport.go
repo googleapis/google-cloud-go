@@ -158,6 +158,7 @@ func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) er
 	client.Transport = &authTransport{
 		creds: creds,
 		base:  base,
+		// TODO(quartzmo): Somehow set clientUniverseDomain from impersonate calls.
 	}
 	return nil
 }

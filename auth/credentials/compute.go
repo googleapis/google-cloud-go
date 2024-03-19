@@ -19,14 +19,11 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/http"
 	"net/url"
 	"strings"
-	"sync"
 	"time"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/compute/metadata"
 )
 
@@ -85,42 +82,4 @@ func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Metadata: computeTokenMetadata,
 	}, nil
 
-}
-
-// computeUniverseDomainProvider fetches the credentials universe domain from
-// the google cloud metadata service.
-type computeUniverseDomainProvider struct {
-	universeDomainOnce sync.Once
-	universeDomain     string
-	universeDomainErr  error
-}
-
-func (c *computeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
-	c.universeDomainOnce.Do(func() {
-		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx)
-	})
-	if c.universeDomainErr != nil {
-		return "", c.universeDomainErr
-	}
-	return c.universeDomain, nil
-}
-
-// httpGetMetadataUniverseDomain is a package var for unit test substitution.
-var httpGetMetadataUniverseDomain = func(ctx context.Context) (string, error) {
-	client := metadata.NewClient(&http.Client{Timeout: time.Second})
-	// TODO(chrisdsmith): set ctx on request
-	return client.Get("universe/universe_domain")
-}
-
-func getMetadataUniverseDomain(ctx context.Context) (string, error) {
-	universeDomain, err := httpGetMetadataUniverseDomain(ctx)
-	if err == nil {
-		return universeDomain, nil
-	}
-	if _, ok := err.(metadata.NotDefinedError); ok {
-		// http.StatusNotFound (404)
-		return internal.DefaultUniverseDomain, nil
-	} else {
-		return "", err
-	}
 }

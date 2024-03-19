@@ -23,6 +23,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
 	echo "cloud.google.com/go/auth/grpctransport/testdata"
+	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -242,6 +243,32 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	}
 }
 
+func TestOptions_GetClientUniverseDomain(t *testing.T) {
+	nonDefault := "example.com"
+	tests := []struct {
+		name    string
+		options *Options
+		want    string
+	}{
+		{
+			name:    "default",
+			options: &Options{},
+			want:    internal.DefaultUniverseDomain,
+		},
+		{
+			name:    "non-default",
+			options: &Options{UniverseDomain: nonDefault},
+			want:    nonDefault,
+		},
+	}
+	for _, tt := range tests {
+		got := tt.options.getClientUniverseDomain()
+		if got != tt.want {
+			t.Errorf("%s: got %q, want %q", tt.name, got, tt.want)
+		}
+	}
+}
+
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
@@ -284,10 +311,11 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 		},
 		DetectOpts: &credentials.DetectOptions{
 			Audience:         l.Addr().String(),
-			CredentialsFile:  "../internal/testdata/sa.json",
+			CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
 			UseSelfSignedJWT: true,
 		},
-		GRPCDialOpts: []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+		GRPCDialOpts:   []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+		UniverseDomain: "example.com", // Also configured in sa_universe_domain.json
 	})
 	if err != nil {
 		t.Fatalf("NewClient() = %v", err)

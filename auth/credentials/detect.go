@@ -93,7 +93,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
 				return metadata.ProjectID()
 			}),
-			UniverseDomainProvider: &computeUniverseDomainProvider{},
+			UniverseDomainProvider: &internal.ComputeUniverseDomainProvider{},
 		}), nil
 	}
 
