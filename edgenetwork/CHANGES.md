@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.2...edgenetwork/v0.2.3) (2024-03-19)
+
+
+### Bug Fixes
+
+* **edgenetwork:** Deprecate unimplemented Zone fields and methods ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.1...edgenetwork/v0.2.2) (2024-03-14)
 
 
