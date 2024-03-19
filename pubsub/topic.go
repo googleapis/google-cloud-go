@@ -769,7 +769,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	var fcSpan trace.Span
 
 	if t.enableTracing {
-		ctx, fcSpan = startSpan(ctx, publishFCSpanName, "")
+		_, fcSpan = startSpan(ctx, publishFCSpanName, "")
 	}
 	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)

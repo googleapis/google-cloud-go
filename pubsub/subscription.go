@@ -1398,14 +1398,15 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
-					ctx := context.Background()
+					otelCtx := context.Background()
 					var ccSpan trace.Span
 					if iter.enableTracing {
 						c, _ := iter.activeSpans.Load(ackh.ackID)
 						sc := c.(trace.Span)
-						ctx = trace.ContextWithSpanContext(ctx, sc.SpanContext())
-						ctx, ccSpan = startSpan(ctx, ccSpanName, "")
+						otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
+						otelCtx, ccSpan = startSpan(otelCtx, ccSpanName, "")
 					}
+					// Use the original user defined ctx for this operation so the acquire operation can be cancelled.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {
@@ -1428,7 +1429,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// constructor level?
 					var schedulerSpan trace.Span
 					if iter.enableTracing {
-						_, schedulerSpan = startSpan(ctx, scheduleSpanName, "")
+						_, schedulerSpan = startSpan(otelCtx, scheduleSpanName, "")
 					}
 					msgLen := len(msg.Data)
 					if err := sched.Add(key, msg, func(msg interface{}) {
@@ -1439,7 +1440,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						defer wg.Done()
 						var ps trace.Span
 						if iter.enableTracing {
-							_, ps = startSpan(ctx, processSpanName, s.ID())
+							_, ps = startSpan(otelCtx, processSpanName, s.ID())
 							old := ackh.doneFunc
 							ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
 								var eventString string
@@ -1454,7 +1455,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 								old(ackID, ack, r, receiveTime)
 							}
 						}
-						defer fc.release(ctx, msgLen)
+						defer fc.release(otelCtx, msgLen)
 						f(ctx2, m)
 					}); err != nil {
 						wg.Done()
