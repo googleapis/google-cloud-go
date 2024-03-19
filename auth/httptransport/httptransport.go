@@ -49,8 +49,8 @@ type Options struct {
 	// APIKey specifies an API key to be used as the basis for authentication.
 	// If set DetectOpts are ignored.
 	APIKey string
-	// Credentials specifies the provider used to add Authorization header to
-	// all requests. If set DetectOpts are ignored.
+	// Credentials used to add Authorization header to all requests. If set
+	// DetectOpts are ignored.
 	Credentials *auth.Credentials
 	// ClientCertProvider is a function that returns a TLS client certificate to
 	// be used when opening TLS connections. It follows the same semantics as

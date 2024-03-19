@@ -65,8 +65,8 @@ type Options struct {
 	// PoolSize is specifies how many connections to balance between when making
 	// requests. If unset or less than 1, the value defaults to 1.
 	PoolSize int
-	// Credentials specifies the provider used to add Authorization metadata
-	// to all requests. If set DetectOpts are ignored.
+	// Credentials used to add Authorization metadata to all requests. If set
+	// DetectOpts are ignored.
 	Credentials *auth.Credentials
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
@@ -220,7 +220,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		}
 
 		grpcOpts = append(grpcOpts,
-			grpc.WithPerRPCCredentials(&grpcCredentialProvider{
+			grpc.WithPerRPCCredentials(&grpcCredentialsProvider{
 				creds:    creds,
 				metadata: metadata,
 			}),
@@ -239,8 +239,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	return grpc.DialContext(ctx, endpoint, grpcOpts...)
 }
 
-// grpcCredentialProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
-type grpcCredentialProvider struct {
+// grpcCredentialsProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
+type grpcCredentialsProvider struct {
 	creds *auth.Credentials
 
 	secure bool
@@ -249,7 +249,7 @@ type grpcCredentialProvider struct {
 	metadata map[string]string
 }
 
-func (c *grpcCredentialProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	token, err := c.creds.Token(ctx)
 	if err != nil {
 		return nil, err
@@ -269,7 +269,7 @@ func (c *grpcCredentialProvider) GetRequestMetadata(ctx context.Context, uri ...
 	return metadata, nil
 }
 
-func (tp *grpcCredentialProvider) RequireTransportSecurity() bool {
+func (tp *grpcCredentialsProvider) RequireTransportSecurity() bool {
 	return tp.secure
 }
 

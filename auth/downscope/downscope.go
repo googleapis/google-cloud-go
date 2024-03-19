@@ -31,13 +31,13 @@ var identityBindingEndpoint = "https://sts.googleapis.com/v1/token"
 // Options for configuring [NewCredentials].
 type Options struct {
 	// Credentials is the [cloud.google.com/go/auth.Credentials] used to
-	// create the downscoped provider. Required.
+	// create the downscoped credentials. Required.
 	Credentials *auth.Credentials
-	// Rules defines the accesses held by the new downscoped provider. One or
+	// Rules defines the accesses held by the new downscoped credentials. One or
 	// more AccessBoundaryRules are required to define permissions for the new
-	// downscoped provider. Each one defines an access (or set of accesses) that
-	// the new provider has to a given resource. There can be a maximum of 10
-	// AccessBoundaryRules. Required.
+	// downscoped credentials. Each one defines an access (or set of accesses)
+	//that the new credentials has to a given resource. There can be a maximum
+	// of 10 AccessBoundaryRules. Required.
 	Rules []AccessBoundaryRule
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
@@ -84,13 +84,14 @@ type AvailabilityCondition struct {
 }
 
 // NewCredentials returns a [cloud.google.com/go/auth.Credentials] that is
-// more restrictive than [Options.BaseProvider] provided.
+// more restrictive than [Options.Credentials] provided. The new credentials
+// will delegate to the base credentials for all non-token activity.
 func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	if opts == nil {
 		return nil, fmt.Errorf("downscope: providing opts is required")
 	}
 	if opts.Credentials == nil {
-		return nil, fmt.Errorf("downscope: BaseCredentials cannot be nil")
+		return nil, fmt.Errorf("downscope: Credentials cannot be nil")
 	}
 	if len(opts.Rules) == 0 {
 		return nil, fmt.Errorf("downscope: length of AccessBoundaryRules must be at least 1")

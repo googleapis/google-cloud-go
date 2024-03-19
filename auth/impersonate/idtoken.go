@@ -123,7 +123,7 @@ func NewIDTokenCredentials(opts *IDTokenOptions) (*auth.Credentials, error) {
 
 	var udp auth.CredentialsPropertyProvider
 	if creds != nil {
-		udp = auth.CredentialsPropertyFunc(creds.QuotaProjectID)
+		udp = auth.CredentialsPropertyFunc(creds.UniverseDomain)
 	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider:          auth.NewCachedTokenProvider(itp, nil),
