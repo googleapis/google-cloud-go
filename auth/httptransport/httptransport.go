@@ -155,8 +155,6 @@ func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) er
 	if base == nil {
 		base = http.DefaultTransport.(*http.Transport).Clone()
 	}
-	// TODO(chrisdsmith): replace with creds param once available
-	creds := &auth.Credentials{TokenProvider: auth.NewCachedTokenProvider(tp, nil)}
 	client.Transport = &authTransport{
 		creds: creds,
 		base:  base,
