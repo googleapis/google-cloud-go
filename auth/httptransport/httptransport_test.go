@@ -260,32 +260,6 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	}
 }
 
-func TestOptions_GetClientUniverseDomain(t *testing.T) {
-	nonDefault := "example.com"
-	tests := []struct {
-		name    string
-		options *Options
-		want    string
-	}{
-		{
-			name:    "default",
-			options: &Options{},
-			want:    internal.DefaultUniverseDomain,
-		},
-		{
-			name:    "non-default",
-			options: &Options{UniverseDomain: nonDefault},
-			want:    nonDefault,
-		},
-	}
-	for _, tt := range tests {
-		got := tt.options.getClientUniverseDomain()
-		if got != tt.want {
-			t.Errorf("%s: got %q, want %q", tt.name, got, tt.want)
-		}
-	}
-}
-
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"

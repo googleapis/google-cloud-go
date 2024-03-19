@@ -125,17 +125,6 @@ func (o *Options) resolveDetectOptions() *credentials.DetectOptions {
 	return do
 }
 
-// getClientUniverseDomain returns the default service domain for a given Cloud universe.
-// The default value is "googleapis.com". This is the universe domain
-// configured for the client, which will be compared to the universe domain
-// that is separately configured for the credentials.
-func (o *Options) getClientUniverseDomain() string {
-	if o.UniverseDomain == "" {
-		return internal.DefaultUniverseDomain
-	}
-	return o.UniverseDomain
-}
-
 // InternalOptions are only meant to be set by generated client code. These are
 // not meant to be set directly by consumers of this package. Configuration in
 // this type is considered EXPERIMENTAL and may be removed at any time in the
@@ -237,9 +226,9 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		}
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcCredentialsProvider{
-				creds:    creds,
-				metadata: metadata,
-				clientUniverseDomain: opts.getClientUniverseDomain(),
+				creds:                creds,
+				metadata:             metadata,
+				clientUniverseDomain: opts.UniverseDomain,
 			}),
 		)
 
@@ -267,12 +256,23 @@ type grpcCredentialsProvider struct {
 	clientUniverseDomain string
 }
 
+// getClientUniverseDomain returns the default service domain for a given Cloud universe.
+// The default value is "googleapis.com". This is the universe domain
+// configured for the client, which will be compared to the universe domain
+// that is separately configured for the credentials.
+func (c *grpcCredentialsProvider) getClientUniverseDomain() string {
+	if c.clientUniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return c.clientUniverseDomain
+}
+
 func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
 	credentialsUniverseDomain, err := c.creds.UniverseDomain(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if err := transport.ValidateUniverseDomain(c.clientUniverseDomain, credentialsUniverseDomain); err != nil {
+	if err := transport.ValidateUniverseDomain(c.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
 		return nil, err
 	}
 	token, err := c.creds.Token(ctx)

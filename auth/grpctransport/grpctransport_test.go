@@ -243,26 +243,27 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	}
 }
 
-func TestOptions_GetClientUniverseDomain(t *testing.T) {
+func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
 	nonDefault := "example.com"
 	tests := []struct {
-		name    string
-		options *Options
-		want    string
+		name           string
+		universeDomain string
+		want           string
 	}{
 		{
-			name:    "default",
-			options: &Options{},
-			want:    internal.DefaultUniverseDomain,
+			name:           "default",
+			universeDomain: "",
+			want:           internal.DefaultUniverseDomain,
 		},
 		{
-			name:    "non-default",
-			options: &Options{UniverseDomain: nonDefault},
-			want:    nonDefault,
+			name:           "non-default",
+			universeDomain: nonDefault,
+			want:           nonDefault,
 		},
 	}
 	for _, tt := range tests {
-		got := tt.options.getClientUniverseDomain()
+		at := &grpcCredentialsProvider{clientUniverseDomain: tt.universeDomain}
+		got := at.getClientUniverseDomain()
 		if got != tt.want {
 			t.Errorf("%s: got %q, want %q", tt.name, got, tt.want)
 		}

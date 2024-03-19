@@ -113,17 +113,6 @@ func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 	return do
 }
 
-// getClientUniverseDomain returns the default service domain for a given Cloud universe.
-// The default value is "googleapis.com". This is the universe domain
-// configured for the client, which will be compared to the universe domain
-// that is separately configured for the credentials.
-func (o *Options) getClientUniverseDomain() string {
-	if o.UniverseDomain == "" {
-		return internal.DefaultUniverseDomain
-	}
-	return o.UniverseDomain
-}
-
 // InternalOptions are only meant to be set by generated client code. These are
 // not meant to be set directly by consumers of this package. Configuration in
 // this type is considered EXPERIMENTAL and may be removed at any time in the

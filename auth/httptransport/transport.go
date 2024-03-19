@@ -80,7 +80,7 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 		trans = &authTransport{
 			base:                 trans,
 			creds:                creds,
-			clientUniverseDomain: opts.getClientUniverseDomain(),
+			clientUniverseDomain: opts.UniverseDomain,
 		}
 	}
 	return trans, nil
