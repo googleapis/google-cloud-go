@@ -5,6 +5,155 @@
   "protoPackage": "google.cloud.dataplex.v1",
   "libraryPackage": "cloud.google.com/go/dataplex/apiv1",
   "services": {
+    "CatalogService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CatalogClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAspectType": {
+              "methods": [
+                "CreateAspectType"
+              ]
+            },
+            "CreateEntry": {
+              "methods": [
+                "CreateEntry"
+              ]
+            },
+            "CreateEntryGroup": {
+              "methods": [
+                "CreateEntryGroup"
+              ]
+            },
+            "CreateEntryType": {
+              "methods": [
+                "CreateEntryType"
+              ]
+            },
+            "DeleteAspectType": {
+              "methods": [
+                "DeleteAspectType"
+              ]
+            },
+            "DeleteEntry": {
+              "methods": [
+                "DeleteEntry"
+              ]
+            },
+            "DeleteEntryGroup": {
+              "methods": [
+                "DeleteEntryGroup"
+              ]
+            },
+            "DeleteEntryType": {
+              "methods": [
+                "DeleteEntryType"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAspectType": {
+              "methods": [
+                "GetAspectType"
+              ]
+            },
+            "GetEntry": {
+              "methods": [
+                "GetEntry"
+              ]
+            },
+            "GetEntryGroup": {
+              "methods": [
+                "GetEntryGroup"
+              ]
+            },
+            "GetEntryType": {
+              "methods": [
+                "GetEntryType"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAspectTypes": {
+              "methods": [
+                "ListAspectTypes"
+              ]
+            },
+            "ListEntries": {
+              "methods": [
+                "ListEntries"
+              ]
+            },
+            "ListEntryGroups": {
+              "methods": [
+                "ListEntryGroups"
+              ]
+            },
+            "ListEntryTypes": {
+              "methods": [
+                "ListEntryTypes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "LookupEntry": {
+              "methods": [
+                "LookupEntry"
+              ]
+            },
+            "SearchEntries": {
+              "methods": [
+                "SearchEntries"
+              ]
+            },
+            "UpdateAspectType": {
+              "methods": [
+                "UpdateAspectType"
+              ]
+            },
+            "UpdateEntry": {
+              "methods": [
+                "UpdateEntry"
+              ]
+            },
+            "UpdateEntryGroup": {
+              "methods": [
+                "UpdateEntryGroup"
+              ]
+            },
+            "UpdateEntryType": {
+              "methods": [
+                "UpdateEntryType"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ContentService": {
       "clients": {
         "grpc": {
@@ -107,6 +256,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "GenerateDataQualityRules": {
+              "methods": [
+                "GenerateDataQualityRules"
               ]
             },
             "GetDataScan": {

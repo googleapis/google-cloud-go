@@ -22,7 +22,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport/cert"
 	"go.opencensus.io/plugin/ochttp"
@@ -57,11 +57,14 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 			Key:       opts.APIKey,
 		}
 	default:
-		creds, err := detect.DefaultCredentials(opts.resolveDetectOptions())
+		creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
 		if err != nil {
 			return nil, err
 		}
-		qp := creds.QuotaProjectID()
+		qp, err := creds.QuotaProjectID(context.Background())
+		if err != nil {
+			return nil, err
+		}
 		if qp != "" {
 			if headers == nil {
 				headers = make(map[string][]string, 1)
@@ -69,13 +72,12 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 			headers.Set(quotaProjectHeaderKey, qp)
 		}
 
-		var tp auth.TokenProvider = creds
-		if opts.TokenProvider != nil {
-			tp = opts.TokenProvider
+		if opts.Credentials != nil {
+			creds = opts.Credentials
 		}
 		trans = &authTransport{
 			base:     trans,
-			provider: auth.NewCachedTokenProvider(tp, nil),
+			provider: creds,
 		}
 	}
 	return trans, nil
@@ -159,7 +161,7 @@ func addOCTransport(trans http.RoundTripper, opts *Options) http.RoundTripper {
 }
 
 type authTransport struct {
-	provider auth.TokenProvider
+	provider *auth.Credentials
 	base     http.RoundTripper
 }
 
