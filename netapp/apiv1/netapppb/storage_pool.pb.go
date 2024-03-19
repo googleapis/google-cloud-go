@@ -21,14 +21,13 @@
 package netapppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -532,8 +531,8 @@ type StoragePool struct {
 	KmsConfig string `protobuf:"bytes,13,opt,name=kms_config,json=kmsConfig,proto3" json:"kms_config,omitempty"`
 	// Optional. Flag indicating if the pool is NFS LDAP enabled or not.
 	LdapEnabled bool `protobuf:"varint,14,opt,name=ldap_enabled,json=ldapEnabled,proto3" json:"ldap_enabled,omitempty"`
-	// Optional. This field is currently not implemented. Currently values
-	// provided in this field will be ignored.
+	// Optional. This field is not implemented. The values provided in this field
+	// are ignored.
 	PsaRange string `protobuf:"bytes,15,opt,name=psa_range,json=psaRange,proto3" json:"psa_range,omitempty"`
 	// Output only. Specifies the current pool encryption key source.
 	EncryptionType EncryptionType `protobuf:"varint,16,opt,name=encryption_type,json=encryptionType,proto3,enum=google.cloud.netapp.v1.EncryptionType" json:"encryption_type,omitempty"`
