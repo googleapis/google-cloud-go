@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/netapp/apiv1",
-    "version": "0.2.5",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/edgenetwork/apiv1",
-    "version": "0.2.1",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -932,7 +932,7 @@
     {
       "regionTag": "edgenetwork_v1_generated_EdgeNetwork_GetZone_sync",
       "title": "edgenetwork GetZone Sample",
-      "description": "GetZone gets details of a single Zone.",
+      "description": "GetZone deprecated: not implemented.\nGets details of a single Zone.\n\n\nDeprecated: GetZone may be removed in a future version.",
       "file": "Client/GetZone/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1346,7 +1346,7 @@
     {
       "regionTag": "edgenetwork_v1_generated_EdgeNetwork_ListZones_sync",
       "title": "edgenetwork ListZones Sample",
-      "description": "ListZones lists Zones in a given project and location.",
+      "description": "ListZones deprecated: not implemented.\nLists Zones in a given project and location.\n\n\nDeprecated: ListZones may be removed in a future version.",
       "file": "Client/ListZones/main.go",
       "language": "GO",
       "clientMethod": {
