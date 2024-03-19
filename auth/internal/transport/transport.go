@@ -16,18 +16,18 @@
 // (grpctransport and httptransport).
 package transport
 
-import "cloud.google.com/go/auth/detect"
+import "cloud.google.com/go/auth/credentials"
 
 // CloneDetectOptions clones a user set detect option into some new memory that
 // we can internally manipulate before sending onto the detect package.
-func CloneDetectOptions(oldDo *detect.Options) *detect.Options {
+func CloneDetectOptions(oldDo *credentials.DetectOptions) *credentials.DetectOptions {
 	if oldDo == nil {
 		// it is valid for users not to set this, but we will need to to default
 		// some options for them in this case so return some initialized memory
 		// to work with.
-		return &detect.Options{}
+		return &credentials.DetectOptions{}
 	}
-	newDo := &detect.Options{
+	newDo := &credentials.DetectOptions{
 		// Simple types
 		Audience:          oldDo.Audience,
 		Subject:           oldDo.Subject,

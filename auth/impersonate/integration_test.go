@@ -24,7 +24,8 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/idtoken"
 	"cloud.google.com/go/auth/impersonate"
 	"cloud.google.com/go/auth/internal/testutil"
@@ -69,7 +70,7 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestCredentialsTokenSourceIntegration(t *testing.T) {
+func TestNewCredentialsIntegration(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 	tests := []struct {
 		name            string
@@ -96,31 +97,31 @@ func TestCredentialsTokenSourceIntegration(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
-			var creds *detect.Credentials
+			var baseCreds *auth.Credentials
 			if !tt.useDefaultCreds {
 				var err error
-				creds, err = detect.DefaultCredentials(&detect.Options{
+				baseCreds, err = credentials.DetectDefault(&credentials.DetectOptions{
 					Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 					CredentialsFile: tt.baseKeyFile,
 				})
 				if err != nil {
-					t.Fatalf("detect.DefaultCredentials() = %v", err)
+					t.Fatalf("credentials.DetectDefault() = %v", err)
 				}
 			}
 
-			opts := &impersonate.CredentialOptions{
+			opts := &impersonate.CredentialsOptions{
 				TargetPrincipal: writerEmail,
 				Scopes:          []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 				Delegates:       tt.delegates,
 			}
 			if !tt.useDefaultCreds {
-				opts.TokenProvider = creds
+				opts.Credentials = baseCreds
 			}
-			tp, err := impersonate.NewCredentialTokenProvider(opts)
+			creds, err := impersonate.NewCredentials(opts)
 			if err != nil {
 				t.Fatalf("failed to create ts: %v", err)
 			}
-			client := testgcs.NewClient(tp)
+			client := testgcs.NewClient(creds)
 			bucketName := fmt.Sprintf("%s-impersonate-test-%d", projectID, random.Int63())
 			if err := client.CreateBucket(ctx, projectID, bucketName); err != nil {
 				t.Fatalf("error creating bucket: %v", err)
@@ -132,7 +133,7 @@ func TestCredentialsTokenSourceIntegration(t *testing.T) {
 	}
 }
 
-func TestIDTokenSourceIntegration(t *testing.T) {
+func TestNewIDTokenCredentialsIntegration(t *testing.T) {
 	testutil.IntegrationTestCheck(t)
 
 	ctx := context.Background()
@@ -146,7 +147,6 @@ func TestIDTokenSourceIntegration(t *testing.T) {
 			name:        "SA -> SA",
 			baseKeyFile: readerKeyFile,
 		},
-
 		{
 			name:            "SA -> SA (Default)",
 			useDefaultCreds: true,
@@ -161,15 +161,15 @@ func TestIDTokenSourceIntegration(t *testing.T) {
 	for _, tt := range tests {
 		name := tt.name
 		t.Run(name, func(t *testing.T) {
-			var creds *detect.Credentials
+			var baseCreds *auth.Credentials
 			if !tt.useDefaultCreds {
 				var err error
-				creds, err = detect.DefaultCredentials(&detect.Options{
+				baseCreds, err = credentials.DetectDefault(&credentials.DetectOptions{
 					Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
 					CredentialsFile: tt.baseKeyFile,
 				})
 				if err != nil {
-					t.Fatalf("detect.DefaultCredentials() = %v", err)
+					t.Fatalf("credentials.DetectDefault() = %v", err)
 				}
 			}
 			aud := "http://example.com/"
@@ -180,13 +180,13 @@ func TestIDTokenSourceIntegration(t *testing.T) {
 				IncludeEmail:    true,
 			}
 			if !tt.useDefaultCreds {
-				opts.TokenProvider = creds
+				opts.Credentials = baseCreds
 			}
-			tp, err := impersonate.NewIDTokenProvider(opts)
+			creds, err := impersonate.NewIDTokenCredentials(opts)
 			if err != nil {
 				t.Fatalf("failed to create ts: %v", err)
 			}
-			tok, err := tp.Token(ctx)
+			tok, err := creds.Token(ctx)
 			if err != nil {
 				t.Fatalf("unable to retrieve Token: %v", err)
 			}

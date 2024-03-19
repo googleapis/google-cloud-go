@@ -21,11 +21,11 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal/transport"
 	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
+	grpccreds "google.golang.org/grpc/credentials"
 	grpcinsecure "google.golang.org/grpc/credentials/insecure"
 )
 
@@ -65,12 +65,12 @@ type Options struct {
 	// PoolSize is specifies how many connections to balance between when making
 	// requests. If unset or less than 1, the value defaults to 1.
 	PoolSize int
-	// TokenProvider specifies the provider used to add Authorization metadata
-	// to all requests. If set DetectOpts are ignored.
-	TokenProvider auth.TokenProvider
+	// Credentials used to add Authorization metadata to all requests. If set
+	// DetectOpts are ignored.
+	Credentials *auth.Credentials
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
-	DetectOpts *detect.Options
+	DetectOpts *credentials.DetectOptions
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.
@@ -90,7 +90,7 @@ func (o *Options) validate() error {
 	if o == nil {
 		return errors.New("grpctransport: opts required to be non-nil")
 	}
-	hasCreds := o.TokenProvider != nil ||
+	hasCreds := o.Credentials != nil ||
 		(o.DetectOpts != nil && len(o.DetectOpts.CredentialsJSON) > 0) ||
 		(o.DetectOpts != nil && o.DetectOpts.CredentialsFile != "")
 	if o.DisableAuthentication && hasCreds {
@@ -99,7 +99,7 @@ func (o *Options) validate() error {
 	return nil
 }
 
-func (o *Options) resolveDetectOptions() *detect.Options {
+func (o *Options) resolveDetectOptions() *credentials.DetectOptions {
 	io := o.InternalOptions
 	// soft-clone these so we are not updating a ref the user holds and may reuse
 	do := transport.CloneDetectOptions(o.DetectOpts)
@@ -200,16 +200,18 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	// Authentication can only be sent when communicating over a secure connection.
 	if !opts.DisableAuthentication {
 		metadata := opts.Metadata
-		creds, err := detect.DefaultCredentials(opts.resolveDetectOptions())
+		creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
 		if err != nil {
 			return nil, err
 		}
-		var tp auth.TokenProvider = creds
-		if opts.TokenProvider != nil {
-			tp = opts.TokenProvider
+		if opts.Credentials != nil {
+			creds = opts.Credentials
 		}
 
-		qp := creds.QuotaProjectID()
+		qp, err := creds.QuotaProjectID(ctx)
+		if err != nil {
+			return nil, err
+		}
 		if qp != "" {
 			if metadata == nil {
 				metadata = make(map[string]string, 1)
@@ -218,9 +220,9 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		}
 
 		grpcOpts = append(grpcOpts,
-			grpc.WithPerRPCCredentials(&grpcTokenProvider{
-				TokenProvider: tp,
-				metadata:      metadata,
+			grpc.WithPerRPCCredentials(&grpcCredentialsProvider{
+				creds:    creds,
+				metadata: metadata,
 			}),
 		)
 
@@ -237,9 +239,9 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	return grpc.DialContext(ctx, endpoint, grpcOpts...)
 }
 
-// grpcTokenProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
-type grpcTokenProvider struct {
-	auth.TokenProvider
+// grpcCredentialsProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
+type grpcCredentialsProvider struct {
+	creds *auth.Credentials
 
 	secure bool
 
@@ -247,27 +249,27 @@ type grpcTokenProvider struct {
 	metadata map[string]string
 }
 
-func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	token, err := tp.Token(ctx)
+func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	token, err := c.creds.Token(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if tp.secure {
-		ri, _ := credentials.RequestInfoFromContext(ctx)
-		if err = credentials.CheckSecurityLevel(ri.AuthInfo, credentials.PrivacyAndIntegrity); err != nil {
-			return nil, fmt.Errorf("unable to transfer TokenProvider PerRPCCredentials: %v", err)
+	if c.secure {
+		ri, _ := grpccreds.RequestInfoFromContext(ctx)
+		if err = grpccreds.CheckSecurityLevel(ri.AuthInfo, grpccreds.PrivacyAndIntegrity); err != nil {
+			return nil, fmt.Errorf("unable to transfer credentials PerRPCCredentials: %v", err)
 		}
 	}
 	metadata := map[string]string{
 		"authorization": token.Type + " " + token.Value,
 	}
-	for k, v := range tp.metadata {
+	for k, v := range c.metadata {
 		metadata[k] = v
 	}
 	return metadata, nil
 }
 
-func (tp *grpcTokenProvider) RequireTransportSecurity() bool {
+func (tp *grpcCredentialsProvider) RequireTransportSecurity() bool {
 	return tp.secure
 }
 
