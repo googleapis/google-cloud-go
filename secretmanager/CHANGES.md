@@ -1,5 +1,6 @@
 # Changes
 
+
 ## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.11.5...secretmanager/v1.11.6) (2024-03-14)
 
 
