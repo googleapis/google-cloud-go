@@ -37,7 +37,7 @@ var (
 func configureSelfSignedJWT(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	pk, err := internal.ParseKey([]byte(f.PrivateKey))
 	if err != nil {
-		return nil, fmt.Errorf("detect: could not parse key: %w", err)
+		return nil, fmt.Errorf("credentials: could not parse key: %w", err)
 	}
 	return &selfSignedTokenProvider{
 		email:    f.ClientEmail,
@@ -75,7 +75,7 @@ func (tp *selfSignedTokenProvider) Token(context.Context) (*auth.Token, error) {
 	}
 	msg, err := jwt.EncodeJWS(h, c, tp.pk)
 	if err != nil {
-		return nil, fmt.Errorf("detect: could not encode JWT: %w", err)
+		return nil, fmt.Errorf("credentials: could not encode JWT: %w", err)
 	}
 	return &auth.Token{Value: msg, Type: internal.TokenTypeBearer, Expiry: exp}, nil
 }

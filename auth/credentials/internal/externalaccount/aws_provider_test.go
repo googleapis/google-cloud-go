@@ -812,7 +812,7 @@ func TestAWSCredential_RequestWithBadVersion(t *testing.T) {
 	getenv = setEnvironment(map[string]string{})
 
 	_, err := newSubjectTokenProvider(opts)
-	if got, want := err.Error(), "detect: aws version '3' is not supported in the current build"; got != want {
+	if got, want := err.Error(), "credentials: aws version '3' is not supported in the current build"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -841,7 +841,7 @@ func TestAWSCredential_RequestWithNoRegionURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to determine AWS region"; got != want {
+	if got, want := err.Error(), "credentials: unable to determine AWS region"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -870,7 +870,7 @@ func TestAWSCredential_RequestWithBadRegionURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to retrieve AWS region - Not Found"; got != want {
+	if got, want := err.Error(), "credentials: unable to retrieve AWS region - Not Found"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -901,7 +901,7 @@ func TestAWSCredential_RequestWithMissingCredential(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: missing AccessKeyId credential"; got != want {
+	if got, want := err.Error(), "credentials: missing AccessKeyId credential"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -932,7 +932,7 @@ func TestAWSCredential_RequestWithIncompleteCredential(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: missing SecretAccessKey credential"; got != want {
+	if got, want := err.Error(), "credentials: missing SecretAccessKey credential"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -961,7 +961,7 @@ func TestAWSCredential_RequestWithNoCredentialURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to determine the AWS metadata server security credentials endpoint"; got != want {
+	if got, want := err.Error(), "credentials: unable to determine the AWS metadata server security credentials endpoint"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -990,7 +990,7 @@ func TestAWSCredential_RequestWithBadCredentialURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to retrieve AWS role name - Not Found"; got != want {
+	if got, want := err.Error(), "credentials: unable to retrieve AWS role name - Not Found"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }
@@ -1019,7 +1019,7 @@ func TestAWSCredential_RequestWithBadFinalCredentialURL(t *testing.T) {
 		t.Fatalf("retrieveSubjectToken() should have failed")
 	}
 
-	if got, want := err.Error(), "detect: unable to retrieve AWS security credentials - Not Found"; got != want {
+	if got, want := err.Error(), "credentials: unable to retrieve AWS security credentials - Not Found"; got != want {
 		t.Errorf("subjectToken = %q, want %q", got, want)
 	}
 }

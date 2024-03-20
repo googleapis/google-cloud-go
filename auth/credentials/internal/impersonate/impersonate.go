@@ -78,10 +78,10 @@ type Options struct {
 
 func (o *Options) validate() error {
 	if o.Tp == nil {
-		return errors.New("detect: missing required 'source_credentials' field in impersonated credentials")
+		return errors.New("credentials: missing required 'source_credentials' field in impersonated credentials")
 	}
 	if o.URL == "" {
-		return errors.New("detect: missing required 'service_account_impersonation_url' field in impersonated credentials")
+		return errors.New("credentials: missing required 'service_account_impersonation_url' field in impersonated credentials")
 	}
 	return nil
 }
@@ -99,11 +99,11 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	}
 	b, err := json.Marshal(reqBody)
 	if err != nil {
-		return nil, fmt.Errorf("detect: unable to marshal request: %w", err)
+		return nil, fmt.Errorf("credentials: unable to marshal request: %w", err)
 	}
 	req, err := http.NewRequestWithContext(ctx, "POST", o.URL, bytes.NewReader(b))
 	if err != nil {
-		return nil, fmt.Errorf("detect: unable to create impersonation request: %w", err)
+		return nil, fmt.Errorf("credentials: unable to create impersonation request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 	if err := setAuthHeader(ctx, o.Tp, req); err != nil {
@@ -111,24 +111,24 @@ func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	}
 	resp, err := o.Client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("detect: unable to generate access token: %w", err)
+		return nil, fmt.Errorf("credentials: unable to generate access token: %w", err)
 	}
 	defer resp.Body.Close()
 	body, err := internal.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("detect: unable to read body: %w", err)
+		return nil, fmt.Errorf("credentials: unable to read body: %w", err)
 	}
 	if c := resp.StatusCode; c < http.StatusOK || c >= http.StatusMultipleChoices {
-		return nil, fmt.Errorf("detect: status code %d: %s", c, body)
+		return nil, fmt.Errorf("credentials: status code %d: %s", c, body)
 	}
 
 	var accessTokenResp impersonateTokenResponse
 	if err := json.Unmarshal(body, &accessTokenResp); err != nil {
-		return nil, fmt.Errorf("detect: unable to parse response: %w", err)
+		return nil, fmt.Errorf("credentials: unable to parse response: %w", err)
 	}
 	expiry, err := time.Parse(time.RFC3339, accessTokenResp.ExpireTime)
 	if err != nil {
-		return nil, fmt.Errorf("detect: unable to parse expiry: %w", err)
+		return nil, fmt.Errorf("credentials: unable to parse expiry: %w", err)
 	}
 	return &auth.Token{
 		Value:  accessTokenResp.AccessToken,

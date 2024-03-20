@@ -99,7 +99,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		}
 		projectID = f.Project
 	default:
-		return nil, fmt.Errorf("detect: unsupported filetype %q", fileType)
+		return nil, fmt.Errorf("credentials: unsupported filetype %q", fileType)
 	}
 	if opts.UniverseDomain != "" {
 		universeDomain = opts.UniverseDomain

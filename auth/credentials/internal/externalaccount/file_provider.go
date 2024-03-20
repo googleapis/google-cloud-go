@@ -38,12 +38,12 @@ type fileSubjectProvider struct {
 func (sp *fileSubjectProvider) subjectToken(context.Context) (string, error) {
 	tokenFile, err := os.Open(sp.File)
 	if err != nil {
-		return "", fmt.Errorf("detect: failed to open credential file %q: %w", sp.File, err)
+		return "", fmt.Errorf("credentials: failed to open credential file %q: %w", sp.File, err)
 	}
 	defer tokenFile.Close()
 	tokenBytes, err := internal.ReadAll(tokenFile)
 	if err != nil {
-		return "", fmt.Errorf("detect: failed to read credential file: %w", err)
+		return "", fmt.Errorf("credentials: failed to read credential file: %w", err)
 	}
 	tokenBytes = bytes.TrimSpace(tokenBytes)
 	switch sp.Format.Type {
@@ -51,21 +51,21 @@ func (sp *fileSubjectProvider) subjectToken(context.Context) (string, error) {
 		jsonData := make(map[string]interface{})
 		err = json.Unmarshal(tokenBytes, &jsonData)
 		if err != nil {
-			return "", fmt.Errorf("detect: failed to unmarshal subject token file: %w", err)
+			return "", fmt.Errorf("credentials: failed to unmarshal subject token file: %w", err)
 		}
 		val, ok := jsonData[sp.Format.SubjectTokenFieldName]
 		if !ok {
-			return "", errors.New("detect: provided subject_token_field_name not found in credentials")
+			return "", errors.New("credentials: provided subject_token_field_name not found in credentials")
 		}
 		token, ok := val.(string)
 		if !ok {
-			return "", errors.New("detect: improperly formatted subject token")
+			return "", errors.New("credentials: improperly formatted subject token")
 		}
 		return token, nil
 	case fileTypeText, "":
 		return string(tokenBytes), nil
 	default:
-		return "", errors.New("detect: invalid credential_source file format type: " + sp.Format.Type)
+		return "", errors.New("credentials: invalid credential_source file format type: " + sp.Format.Type)
 	}
 }
 
