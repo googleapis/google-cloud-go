@@ -23,7 +23,7 @@ import (
 	"os"
 
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 const (
@@ -32,7 +32,7 @@ const (
 
 type fileSubjectProvider struct {
 	File   string
-	Format internaldetect.Format
+	Format credsfile.Format
 }
 
 func (sp *fileSubjectProvider) subjectToken(context.Context) (string, error) {

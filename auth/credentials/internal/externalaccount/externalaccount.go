@@ -24,9 +24,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/credentials/internal/stsexchange"
-	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
 const (
@@ -70,7 +70,7 @@ type Options struct {
 	ClientID string
 	// CredentialSource contains the necessary information to retrieve the token itself, as well
 	// as some environmental information.
-	CredentialSource internaldetect.CredentialSource
+	CredentialSource credsfile.CredentialSource
 	// QuotaProjectID is injected by gCloud. If the value is non-empty, the Auth libraries
 	// will set the x-goog-user-project which overrides the project associated with the credentials.
 	QuotaProjectID string
@@ -189,7 +189,7 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	return tok, nil
 }
 
-// newSubjectTokenProvider determines the type of internaldetect.CredentialSource needed to create a
+// newSubjectTokenProvider determines the type of credsfile.CredentialSource needed to create a
 // subjectTokenProvider
 func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 	if len(o.CredentialSource.EnvironmentID) > 3 && o.CredentialSource.EnvironmentID[:3] == "aws" {

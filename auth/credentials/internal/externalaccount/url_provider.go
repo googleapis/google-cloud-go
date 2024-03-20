@@ -22,7 +22,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 const (
@@ -34,7 +34,7 @@ const (
 type urlSubjectProvider struct {
 	URL     string
 	Headers map[string]string
-	Format  internaldetect.Format
+	Format  credsfile.Format
 	Client  *http.Client
 }
 

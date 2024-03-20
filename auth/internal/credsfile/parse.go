@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internaldetect
+package credsfile
 
 import (
 	"encoding/json"
@@ -28,7 +28,7 @@ func ParseServiceAccount(b []byte) (*ServiceAccountFile, error) {
 }
 
 // ParseClientCredentials parses bytes into a
-// [internaldetect.ClientCredentialsFile].
+// [credsfile.ClientCredentialsFile].
 func ParseClientCredentials(b []byte) (*ClientCredentialsFile, error) {
 	var f *ClientCredentialsFile
 	if err := json.Unmarshal(b, &f); err != nil {

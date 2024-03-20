@@ -25,7 +25,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/compute/metadata"
 )
 
@@ -76,13 +76,13 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if opts.CredentialsJSON != nil {
 		return readCredentialsFileJSON(opts.CredentialsJSON, opts)
 	}
-	if filename := internaldetect.GetFileNameFromEnv(opts.CredentialsFile); filename != "" {
+	if filename := credsfile.GetFileNameFromEnv(opts.CredentialsFile); filename != "" {
 		if creds, err := readCredentialsFile(filename, opts); err == nil {
 			return creds, err
 		}
 	}
 
-	fileName := internaldetect.GetWellKnownFileName()
+	fileName := credsfile.GetWellKnownFileName()
 	if b, err := os.ReadFile(fileName); err == nil {
 		return readCredentialsFileJSON(b, opts)
 	}
@@ -203,8 +203,8 @@ func readCredentialsFileJSON(b []byte, opts *DetectOptions) (*auth.Credentials, 
 }
 
 func clientCredConfigFromJSON(b []byte, opts *DetectOptions) *auth.Options3LO {
-	var creds internaldetect.ClientCredentialsFile
-	var c *internaldetect.Config3LO
+	var creds credsfile.ClientCredentialsFile
+	var c *credsfile.Config3LO
 	if err := json.Unmarshal(b, &creds); err != nil {
 		return nil
 	}

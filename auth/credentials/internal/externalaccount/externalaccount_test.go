@@ -25,7 +25,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 const (
@@ -50,9 +50,9 @@ var (
 		Scopes:           []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 		Client:           internal.CloneDefaultClient(),
 	}
-	testBaseCredSource = internaldetect.CredentialSource{
+	testBaseCredSource = credsfile.CredentialSource{
 		File:   textBaseCredPath,
-		Format: internaldetect.Format{Type: fileTypeText},
+		Format: credsfile.Format{Type: fileTypeText},
 	}
 	testNow = func() time.Time { return time.Unix(expiry, 0) }
 )

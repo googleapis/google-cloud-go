@@ -25,7 +25,7 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -492,8 +492,8 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 
 func noHeaderValidation(r *http.Request) {}
 
-func (server *testAwsServer) getCredentialSource(url string) internaldetect.CredentialSource {
-	return internaldetect.CredentialSource{
+func (server *testAwsServer) getCredentialSource(url string) credsfile.CredentialSource {
+	return credsfile.CredentialSource{
 		EnvironmentID:               "aws1",
 		URL:                         url + server.url,
 		RegionURL:                   url + server.regionURL,
@@ -1201,12 +1201,12 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoSecretAccessKey(t *testin
 func TestAWSCredential_Validations(t *testing.T) {
 	var metadataServerValidityTests = []struct {
 		name       string
-		credSource internaldetect.CredentialSource
+		credSource credsfile.CredentialSource
 		errText    string
 	}{
 		{
 			name: "No Metadata Server URLs",
-			credSource: internaldetect.CredentialSource{
+			credSource: credsfile.CredentialSource{
 				EnvironmentID:         "aws1",
 				RegionURL:             "",
 				URL:                   "",
@@ -1214,7 +1214,7 @@ func TestAWSCredential_Validations(t *testing.T) {
 			},
 		}, {
 			name: "IPv4 Metadata Server URLs",
-			credSource: internaldetect.CredentialSource{
+			credSource: credsfile.CredentialSource{
 				EnvironmentID:         "aws1",
 				RegionURL:             "http://169.254.169.254/latest/meta-data/placement/availability-zone",
 				URL:                   "http://169.254.169.254/latest/meta-data/iam/security-credentials",
@@ -1222,7 +1222,7 @@ func TestAWSCredential_Validations(t *testing.T) {
 			},
 		}, {
 			name: "IPv6 Metadata Server URLs",
-			credSource: internaldetect.CredentialSource{
+			credSource: credsfile.CredentialSource{
 				EnvironmentID:         "aws1",
 				RegionURL:             "http://[fd00:ec2::254]/latest/meta-data/placement/availability-zone",
 				URL:                   "http://[fd00:ec2::254]/latest/meta-data/iam/security-credentials",
