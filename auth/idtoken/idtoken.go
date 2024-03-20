@@ -46,7 +46,7 @@ const (
 )
 
 // Options for the configuration of creation of an ID token with
-// [NewTokenProvider].
+// [NewCredentials].
 type Options struct {
 	// Audience is the `aud` field for the token, such as an API endpoint the
 	// token will grant access to. Required.
@@ -87,18 +87,18 @@ func (o *Options) validate() error {
 	return nil
 }
 
-// NewTokenProvider creates a [cloud.google.com/go/auth.TokenProvider] that
+// NewCredentials creates a [cloud.google.com/go/auth.Credentials] that
 // returns ID tokens configured by the opts provided. The parameter
 // opts.Audience may not be empty.
-func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
+func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
 	if b := opts.jsonBytes(); b != nil {
-		return tokenProviderFromBytes(b, opts)
+		return credsFromBytes(b, opts)
 	}
 	if metadata.OnGCE() {
-		return computeTokenProvider(opts)
+		return computeCredentials(opts)
 	}
 	return nil, fmt.Errorf("idtoken: couldn't find any credentials")
 }

@@ -23,6 +23,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/impersonate"
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/internaldetect"
 )
 
@@ -38,7 +39,7 @@ var (
 	}
 )
 
-func tokenProviderFromBytes(b []byte, opts *Options) (auth.TokenProvider, error) {
+func credsFromBytes(b []byte, opts *Options) (*auth.Credentials, error) {
 	t, err := internaldetect.ParseFileType(b)
 	if err != nil {
 		return nil, err
@@ -74,7 +75,13 @@ func tokenProviderFromBytes(b []byte, opts *Options) (auth.TokenProvider, error)
 		if err != nil {
 			return nil, err
 		}
-		return auth.NewCachedTokenProvider(tp, nil), nil
+		tp = auth.NewCachedTokenProvider(tp, nil)
+		return auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider:          tp,
+			JSON:                   b,
+			ProjectIDProvider:      internal.StaticCredentialsProperty(f.ProjectID),
+			UniverseDomainProvider: internal.StaticCredentialsProperty(f.UniverseDomain),
+		}), nil
 	case internaldetect.ImpersonatedServiceAccountKey, internaldetect.ExternalAccountKey:
 		type url struct {
 			ServiceAccountImpersonationURL string `json:"service_account_impersonation_url"`
@@ -86,7 +93,7 @@ func tokenProviderFromBytes(b []byte, opts *Options) (auth.TokenProvider, error)
 		account := filepath.Base(accountURL.ServiceAccountImpersonationURL)
 		account = strings.Split(account, ":")[0]
 
-		creds, err := credentials.DetectDefault(&credentials.DetectOptions{
+		baseCreds, err := credentials.DetectDefault(&credentials.DetectOptions{
 			Scopes:           defaultScopes,
 			CredentialsJSON:  b,
 			Client:           opts.client(),
@@ -101,9 +108,19 @@ func tokenProviderFromBytes(b []byte, opts *Options) (auth.TokenProvider, error)
 			TargetPrincipal: account,
 			IncludeEmail:    true,
 			Client:          opts.client(),
-			TokenProvider:   creds,
+			Credentials:     baseCreds,
 		}
-		return impersonate.NewIDTokenProvider(&config)
+		creds, err := impersonate.NewIDTokenCredentials(&config)
+		if err != nil {
+			return nil, err
+		}
+		return auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider:          creds,
+			JSON:                   b,
+			ProjectIDProvider:      auth.CredentialsPropertyFunc(baseCreds.ProjectID),
+			UniverseDomainProvider: auth.CredentialsPropertyFunc(baseCreds.UniverseDomain),
+			QuotaProjectIDProvider: auth.CredentialsPropertyFunc(baseCreds.QuotaProjectID),
+		}), nil
 	default:
 		return nil, fmt.Errorf("idtoken: unsupported credentials type: %v", t)
 	}

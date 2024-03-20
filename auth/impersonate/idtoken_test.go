@@ -23,7 +23,7 @@ import (
 	"testing"
 )
 
-func TestIDTokenSource(t *testing.T) {
+func TestNewIDTokenCredentials(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
 		name            string
@@ -82,7 +82,7 @@ func TestIDTokenSource(t *testing.T) {
 					}
 				}),
 			}
-			tp, err := NewIDTokenProvider(&IDTokenOptions{
+			creds, err := NewIDTokenCredentials(&IDTokenOptions{
 				Audience:        tt.aud,
 				TargetPrincipal: tt.targetPrincipal,
 				Client:          client,
@@ -94,7 +94,7 @@ func TestIDTokenSource(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			tok, err := tp.Token(ctx)
+			tok, err := creds.Token(ctx)
 			if err != nil {
 				t.Fatal(err)
 			}

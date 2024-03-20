@@ -33,7 +33,7 @@
 // For example, a token broker can be set up on a server in a private network.
 // Various workloads (token consumers) in the same network will send
 // authenticated requests to that broker for downscoped tokens to access or
-// modify specific google cloud storage buckets. See the NewTokenProvider example
+// modify specific google cloud storage buckets. See the NewCredentials example
 // for an example of how a token broker would use this package.
 //
 // The broker will use the functionality in this package to generate a

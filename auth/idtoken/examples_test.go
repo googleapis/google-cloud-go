@@ -22,16 +22,16 @@ import (
 	"cloud.google.com/go/auth/idtoken"
 )
 
-func ExampleNewTokenProvider_setAuthorizationHeader() {
+func ExampleNewCredentials_setAuthorizationHeader() {
 	ctx := context.Background()
 	audience := "http://example.com"
-	tp, err := idtoken.NewTokenProvider(&idtoken.Options{
+	creds, err := idtoken.NewCredentials(&idtoken.Options{
 		Audience: audience,
 	})
 	if err != nil {
 		// Handle error.
 	}
-	token, err := tp.Token(ctx)
+	token, err := creds.Token(ctx)
 	if err != nil {
 		// Handle error.
 	}

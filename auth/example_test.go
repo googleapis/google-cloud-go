@@ -53,7 +53,9 @@ func ExampleNew2LOTokenProvider() {
 		log.Fatal(err)
 	}
 	client, err := httptransport.NewClient(&httptransport.Options{
-		TokenProvider: tp,
+		Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: tp,
+		}),
 	})
 	if err != nil {
 		log.Fatal(err)
