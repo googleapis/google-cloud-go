@@ -87,29 +87,29 @@ func (o *Options) validate() error {
 }
 
 // Token performs the exchange to get a temporary service account token to allow access to GCP.
-func (tp *Options) Token(ctx context.Context) (*auth.Token, error) {
+func (o *Options) Token(ctx context.Context) (*auth.Token, error) {
 	lifetime := defaultTokenLifetime
-	if tp.TokenLifetimeSeconds != 0 {
-		lifetime = fmt.Sprintf("%ds", tp.TokenLifetimeSeconds)
+	if o.TokenLifetimeSeconds != 0 {
+		lifetime = fmt.Sprintf("%ds", o.TokenLifetimeSeconds)
 	}
 	reqBody := generateAccessTokenReq{
 		Lifetime:  lifetime,
-		Scope:     tp.Scopes,
-		Delegates: tp.Delegates,
+		Scope:     o.Scopes,
+		Delegates: o.Delegates,
 	}
 	b, err := json.Marshal(reqBody)
 	if err != nil {
 		return nil, fmt.Errorf("detect: unable to marshal request: %w", err)
 	}
-	req, err := http.NewRequestWithContext(ctx, "POST", tp.URL, bytes.NewReader(b))
+	req, err := http.NewRequestWithContext(ctx, "POST", o.URL, bytes.NewReader(b))
 	if err != nil {
 		return nil, fmt.Errorf("detect: unable to create impersonation request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
-	if err := setAuthHeader(ctx, tp.Tp, req); err != nil {
+	if err := setAuthHeader(ctx, o.Tp, req); err != nil {
 		return nil, err
 	}
-	resp, err := tp.Client.Do(req)
+	resp, err := o.Client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("detect: unable to generate access token: %w", err)
 	}

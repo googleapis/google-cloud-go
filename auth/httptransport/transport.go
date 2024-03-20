@@ -24,6 +24,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/transport"
 	"cloud.google.com/go/auth/internal/transport/cert"
 	"go.opencensus.io/plugin/ochttp"
 	"golang.org/x/net/http2"
@@ -75,9 +76,11 @@ func newTransport(base http.RoundTripper, opts *Options) (http.RoundTripper, err
 		if opts.Credentials != nil {
 			creds = opts.Credentials
 		}
+		creds.TokenProvider = auth.NewCachedTokenProvider(creds.TokenProvider, nil)
 		trans = &authTransport{
-			base:     trans,
-			provider: creds,
+			base:                 trans,
+			creds:                creds,
+			clientUniverseDomain: opts.UniverseDomain,
 		}
 	}
 	return trans, nil
@@ -161,8 +164,18 @@ func addOCTransport(trans http.RoundTripper, opts *Options) http.RoundTripper {
 }
 
 type authTransport struct {
-	provider *auth.Credentials
-	base     http.RoundTripper
+	creds                *auth.Credentials
+	base                 http.RoundTripper
+	clientUniverseDomain string
+}
+
+// getClientUniverseDomain returns the universe domain configured for the client.
+// The default value is "googleapis.com".
+func (t *authTransport) getClientUniverseDomain() string {
+	if t.clientUniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return t.clientUniverseDomain
 }
 
 // RoundTrip authorizes and authenticates the request with an
@@ -178,7 +191,14 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 			}
 		}()
 	}
-	token, err := t.provider.Token(req.Context())
+	credentialsUniverseDomain, err := t.creds.UniverseDomain(req.Context())
+	if err != nil {
+		return nil, err
+	}
+	if err := transport.ValidateUniverseDomain(t.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
+		return nil, err
+	}
+	token, err := t.creds.Token(req.Context())
 	if err != nil {
 		return nil, err
 	}
