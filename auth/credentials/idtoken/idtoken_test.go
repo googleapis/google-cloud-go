@@ -24,16 +24,16 @@ import (
 	"testing"
 
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 func TestNewCredentials_ServiceAccount(t *testing.T) {
 	wantTok, _ := createRS256JWT(t)
-	b, err := os.ReadFile("../internal/testdata/sa.json")
+	b, err := os.ReadFile("../../internal/testdata/sa.json")
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseServiceAccount(b)
+	f, err := credsfile.ParseServiceAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -87,7 +87,7 @@ func TestNewCredentials_ImpersonatedServiceAccount(t *testing.T) {
 	}
 	creds, err := NewCredentials(&Options{
 		Audience:        "aud",
-		CredentialsFile: "../internal/testdata/imp.json",
+		CredentialsFile: "../../internal/testdata/imp.json",
 		CustomClaims: map[string]interface{}{
 			"foo": "bar",
 		},

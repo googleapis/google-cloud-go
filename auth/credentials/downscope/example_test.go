@@ -19,7 +19,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/auth/credentials"
-	"cloud.google.com/go/auth/downscope"
+	"cloud.google.com/go/auth/credentials/downscope"
 )
 
 func ExampleNewCredentials() {

@@ -29,7 +29,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
@@ -54,7 +54,7 @@ type Options struct {
 
 // NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider] from a
 // GDCH cred file.
-func NewTokenProvider(f *internaldetect.GDCHServiceAccountFile, o *Options) (auth.TokenProvider, error) {
+func NewTokenProvider(f *credsfile.GDCHServiceAccountFile, o *Options) (auth.TokenProvider, error) {
 	if !gdchSupportFormatVersions[f.FormatVersion] {
 		return nil, fmt.Errorf("credentials: unsupported gdch_service_account format %q", f.FormatVersion)
 	}

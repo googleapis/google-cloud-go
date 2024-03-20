@@ -23,7 +23,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
@@ -34,7 +34,7 @@ var (
 
 // configureSelfSignedJWT uses the private key in the service account to create
 // a JWT without making a network call.
-func configureSelfSignedJWT(f *internaldetect.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
+func configureSelfSignedJWT(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	pk, err := internal.ParseKey([]byte(f.PrivateKey))
 	if err != nil {
 		return nil, fmt.Errorf("credentials: could not parse key: %w", err)

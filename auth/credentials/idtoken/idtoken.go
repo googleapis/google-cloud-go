@@ -22,7 +22,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/compute/metadata"
 )
 
@@ -111,7 +111,7 @@ func (o *Options) jsonBytes() []byte {
 	if o != nil {
 		fnOverride = o.CredentialsFile
 	}
-	filename := internaldetect.GetFileNameFromEnv(fnOverride)
+	filename := credsfile.GetFileNameFromEnv(fnOverride)
 	if filename != "" {
 		b, _ := os.ReadFile(filename)
 		return b

@@ -29,7 +29,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/internal/gdch"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
@@ -46,7 +46,7 @@ func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseGDCHServiceAccount(b)
+	f, err := credsfile.ParseGDCHServiceAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,7 +155,7 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseImpersonatedServiceAccount(b)
+	f, err := credsfile.ParseImpersonatedServiceAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -306,7 +306,7 @@ func TestDefaultCredentials_ServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseServiceAccount(b)
+	f, err := credsfile.ParseServiceAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -456,7 +456,7 @@ func TestDefaultCredentials_ClientCredentials(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseClientCredentials(b)
+	f, err := credsfile.ParseClientCredentials(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -523,7 +523,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseExternalAccount(b)
+	f, err := credsfile.ParseExternalAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -612,7 +612,7 @@ func TestDefaultCredentials_ExternalAccountAuthorizedUserKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseExternalAccountAuthorizedUser(b)
+	f, err := credsfile.ParseExternalAccountAuthorizedUser(b)
 	if err != nil {
 		t.Fatal(err)
 	}

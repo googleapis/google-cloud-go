@@ -22,9 +22,9 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
-	"cloud.google.com/go/auth/impersonate"
+	"cloud.google.com/go/auth/credentials/impersonate"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 const (
@@ -40,13 +40,13 @@ var (
 )
 
 func credsFromBytes(b []byte, opts *Options) (*auth.Credentials, error) {
-	t, err := internaldetect.ParseFileType(b)
+	t, err := credsfile.ParseFileType(b)
 	if err != nil {
 		return nil, err
 	}
 	switch t {
-	case internaldetect.ServiceAccountKey:
-		f, err := internaldetect.ParseServiceAccount(b)
+	case credsfile.ServiceAccountKey:
+		f, err := credsfile.ParseServiceAccount(b)
 		if err != nil {
 			return nil, err
 		}
@@ -82,7 +82,7 @@ func credsFromBytes(b []byte, opts *Options) (*auth.Credentials, error) {
 			ProjectIDProvider:      internal.StaticCredentialsProperty(f.ProjectID),
 			UniverseDomainProvider: internal.StaticCredentialsProperty(f.UniverseDomain),
 		}), nil
-	case internaldetect.ImpersonatedServiceAccountKey, internaldetect.ExternalAccountKey:
+	case credsfile.ImpersonatedServiceAccountKey, credsfile.ExternalAccountKey:
 		type url struct {
 			ServiceAccountImpersonationURL string `json:"service_account_impersonation_url"`
 		}
