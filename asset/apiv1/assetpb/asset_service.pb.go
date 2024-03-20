@@ -21,12 +21,9 @@
 package assetpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	expr "google.golang.org/genproto/googleapis/type/expr"
@@ -40,6 +37,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2786,10 +2785,10 @@ type IamPolicyAnalysisQuery struct {
 	// folder number (such as "folders/123"), a project ID (such as
 	// "projects/my-project-id"), or a project number (such as "projects/12345").
 	//
-	// To know how to get organization id, visit [here
+	// To know how to get organization ID, visit [here
 	// ](https://cloud.google.com/resource-manager/docs/creating-managing-organization#retrieving_your_organization_id).
 	//
-	// To know how to get folder or project id, visit [here
+	// To know how to get folder or project ID, visit [here
 	// ](https://cloud.google.com/resource-manager/docs/creating-managing-folders#viewing_or_listing_folders_and_projects).
 	Scope string `protobuf:"bytes,1,opt,name=scope,proto3" json:"scope,omitempty"`
 	// Optional. Specifies a resource for analysis.
@@ -4734,10 +4733,10 @@ type BatchGetEffectiveIamPoliciesRequest struct {
 	// folder number (such as "folders/123"), a project ID (such as
 	// "projects/my-project-id"), or a project number (such as "projects/12345").
 	//
-	// To know how to get organization id, visit [here
+	// To know how to get organization ID, visit [here
 	// ](https://cloud.google.com/resource-manager/docs/creating-managing-organization#retrieving_your_organization_id).
 	//
-	// To know how to get folder or project id, visit [here
+	// To know how to get folder or project ID, visit [here
 	// ](https://cloud.google.com/resource-manager/docs/creating-managing-folders#viewing_or_listing_folders_and_projects).
 	Scope string `protobuf:"bytes,1,opt,name=scope,proto3" json:"scope,omitempty"`
 	// Required. The names refer to the [full_resource_names]
@@ -6564,14 +6563,18 @@ type AnalyzerOrgPolicy_Rule struct {
 	Condition *expr.Expr `protobuf:"bytes,7,opt,name=condition,proto3" json:"condition,omitempty"`
 	// The condition evaluation result for this rule.
 	// Only populated if it meets all the following criteria:
-	// * there is a
+	//
+	// * There is a
 	// [condition][google.cloud.asset.v1.AnalyzerOrgPolicy.Rule.condition]
-	// defined for this rule
-	//   - this rule is within a consolidated_policy
-	//   - the consolidated_policy is within
-	//     [AnalyzeOrgPolicyGovernedContainersResponse.GovernedContainer][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedContainersResponse.GovernedContainer]
+	// defined for this rule.
+	//   - This rule is within
+	//     [AnalyzeOrgPolicyGovernedContainersResponse.GovernedContainer.consolidated_policy][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedContainersResponse.GovernedContainer.consolidated_policy],
 	//     or
-	//     [AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse.GovernedResource]
+	//     [AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.consolidated_policy][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.consolidated_policy]
+	//     when the
+	//     [AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset]
+	//     has
+	//     [AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.governed_resource][google.cloud.asset.v1.AnalyzeOrgPolicyGovernedAssetsResponse.GovernedAsset.governed_resource].
 	ConditionEvaluation *ConditionEvaluation `protobuf:"bytes,8,opt,name=condition_evaluation,json=conditionEvaluation,proto3" json:"condition_evaluation,omitempty"`
 }
 
@@ -6661,8 +6664,8 @@ type isAnalyzerOrgPolicy_Rule_Kind interface {
 }
 
 type AnalyzerOrgPolicy_Rule_Values struct {
-	// List of values to be used for this PolicyRule. This field can be set
-	// only in Policies for list constraints.
+	// List of values to be used for this policy rule. This field can be set
+	// only in policies for list constraints.
 	Values *AnalyzerOrgPolicy_Rule_StringValues `protobuf:"bytes,3,opt,name=values,proto3,oneof"`
 }
 
