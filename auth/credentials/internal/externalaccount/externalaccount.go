@@ -181,11 +181,11 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		Value: stsResp.AccessToken,
 		Type:  stsResp.TokenType,
 	}
-	if stsResp.ExpiresIn < 0 {
+	// The RFC8693 doesn't define the explicit 0 of "expires_in" field behavior.
+	if stsResp.ExpiresIn <= 0 {
 		return nil, fmt.Errorf("detect: got invalid expiry from security token service")
-	} else if stsResp.ExpiresIn >= 0 {
-		tok.Expiry = now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
 	}
+	tok.Expiry = now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
 	return tok, nil
 }
 

@@ -103,13 +103,13 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	return nil, fmt.Errorf("idtoken: couldn't find any credentials")
 }
 
-func (opts *Options) jsonBytes() []byte {
-	if opts.CredentialsJSON != nil {
-		return opts.CredentialsJSON
+func (o *Options) jsonBytes() []byte {
+	if o.CredentialsJSON != nil {
+		return o.CredentialsJSON
 	}
 	var fnOverride string
-	if opts != nil {
-		fnOverride = opts.CredentialsFile
+	if o != nil {
+		fnOverride = o.CredentialsFile
 	}
 	filename := credsfile.GetFileNameFromEnv(fnOverride)
 	if filename != "" {
