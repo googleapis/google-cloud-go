@@ -234,7 +234,7 @@ func (sp *executableSubjectProvider) executableEnvironment() []string {
 func (sp *executableSubjectProvider) getTokenFromExecutableCommand(ctx context.Context) (string, error) {
 	// For security reasons, we need our consumers to set this environment variable to allow executables to be run.
 	if sp.env.getenv(allowExecutablesEnvVar) != "1" {
-		return "", errors.New("detect: executables need to be explicitly allowed (set GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES to '1') to run")
+		return "", errors.New("credentials: executables need to be explicitly allowed (set GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES to '1') to run")
 	}
 
 	ctx, cancel := context.WithDeadline(ctx, sp.env.now().Add(sp.Timeout))
@@ -248,37 +248,37 @@ func (sp *executableSubjectProvider) getTokenFromExecutableCommand(ctx context.C
 }
 
 func missingFieldError(source, field string) error {
-	return fmt.Errorf("detect: %q missing %q field", source, field)
+	return fmt.Errorf("credentials: %q missing %q field", source, field)
 }
 
 func jsonParsingError(source, data string) error {
-	return fmt.Errorf("detect: unable to parse %q: %v", source, data)
+	return fmt.Errorf("credentials: unable to parse %q: %v", source, data)
 }
 
 func malformedFailureError() error {
-	return nonCacheableError{"detect: response must include `error` and `message` fields when unsuccessful"}
+	return nonCacheableError{"credentials: response must include `error` and `message` fields when unsuccessful"}
 }
 
 func userDefinedError(code, message string) error {
-	return nonCacheableError{fmt.Sprintf("detect: response contains unsuccessful response: (%v) %v", code, message)}
+	return nonCacheableError{fmt.Sprintf("credentials: response contains unsuccessful response: (%v) %v", code, message)}
 }
 
 func unsupportedVersionError(source string, version int) error {
-	return fmt.Errorf("detect: %v contains unsupported version: %v", source, version)
+	return fmt.Errorf("credentials: %v contains unsupported version: %v", source, version)
 }
 
 func tokenExpiredError() error {
-	return nonCacheableError{"detect: the token returned by the executable is expired"}
+	return nonCacheableError{"credentials: the token returned by the executable is expired"}
 }
 
 func tokenTypeError(source string) error {
-	return fmt.Errorf("detect: %v contains unsupported token type", source)
+	return fmt.Errorf("credentials: %v contains unsupported token type", source)
 }
 
 func exitCodeError(err *exec.ExitError) error {
-	return fmt.Errorf("detect: executable command failed with exit code %v: %w", err.ExitCode(), err)
+	return fmt.Errorf("credentials: executable command failed with exit code %v: %w", err.ExitCode(), err)
 }
 
 func executableError(err error) error {
-	return fmt.Errorf("detect: executable command failed: %w", err)
+	return fmt.Errorf("credentials: executable command failed: %w", err)
 }
