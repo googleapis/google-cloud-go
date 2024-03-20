@@ -153,7 +153,7 @@ func TestNonworkforceWithWorkforcePoolUserProject(t *testing.T) {
 	if err == nil {
 		t.Fatalf("got nil, want an error")
 	}
-	if got, want := err.Error(), "detect: workforce_pool_user_project should not be set for non-workforce pool credentials"; got != want {
+	if got, want := err.Error(), "credentials: workforce_pool_user_project should not be set for non-workforce pool credentials"; got != want {
 		t.Errorf("got %v, want %v", got, want)
 	}
 }

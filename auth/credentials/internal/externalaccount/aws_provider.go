@@ -194,7 +194,7 @@ func (cs *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, e
 		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("detect: unable to retrieve AWS session token: %s", respBody)
+		return "", fmt.Errorf("credentials: unable to retrieve AWS session token: %s", respBody)
 	}
 	return string(respBody), nil
 }
@@ -208,7 +208,7 @@ func (cs *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]
 	}
 
 	if cs.RegionURL == "" {
-		return "", errors.New("detect: unable to determine AWS region")
+		return "", errors.New("credentials: unable to determine AWS region")
 	}
 
 	req, err := http.NewRequestWithContext(ctx, "GET", cs.RegionURL, nil)
@@ -232,7 +232,7 @@ func (cs *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]
 	}
 
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("detect: unable to retrieve AWS region - %s", respBody)
+		return "", fmt.Errorf("credentials: unable to retrieve AWS region - %s", respBody)
 	}
 
 	// This endpoint will return the region in format: us-east-2b.
@@ -263,10 +263,10 @@ func (cs *awsSubjectProvider) getSecurityCredentials(ctx context.Context, header
 	}
 
 	if credentials.AccessKeyID == "" {
-		return result, errors.New("detect: missing AccessKeyId credential")
+		return result, errors.New("credentials: missing AccessKeyId credential")
 	}
 	if credentials.SecretAccessKey == "" {
-		return result, errors.New("detect: missing SecretAccessKey credential")
+		return result, errors.New("credentials: missing SecretAccessKey credential")
 	}
 
 	return credentials, nil
@@ -294,7 +294,7 @@ func (cs *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context
 		return result, err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return result, fmt.Errorf("detect: unable to retrieve AWS security credentials - %s", respBody)
+		return result, fmt.Errorf("credentials: unable to retrieve AWS security credentials - %s", respBody)
 	}
 	err = json.Unmarshal(respBody, &result)
 	return result, err
@@ -302,7 +302,7 @@ func (cs *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context
 
 func (cs *awsSubjectProvider) getMetadataRoleName(ctx context.Context, headers map[string]string) (string, error) {
 	if cs.CredVerificationURL == "" {
-		return "", errors.New("detect: unable to determine the AWS metadata server security credentials endpoint")
+		return "", errors.New("credentials: unable to determine the AWS metadata server security credentials endpoint")
 	}
 	req, err := http.NewRequestWithContext(ctx, "GET", cs.CredVerificationURL, nil)
 	if err != nil {
@@ -323,7 +323,7 @@ func (cs *awsSubjectProvider) getMetadataRoleName(ctx context.Context, headers m
 		return "", err
 	}
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("detect: unable to retrieve AWS role name - %s", respBody)
+		return "", fmt.Errorf("credentials: unable to retrieve AWS role name - %s", respBody)
 	}
 	return string(respBody), nil
 }
