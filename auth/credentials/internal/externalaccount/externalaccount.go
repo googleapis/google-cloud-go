@@ -24,9 +24,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/credentials/internal/stsexchange"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 const (

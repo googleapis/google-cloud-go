@@ -17,8 +17,8 @@ package impersonate_test
 import (
 	"log"
 
-	"cloud.google.com/go/auth/httptransport"
 	"cloud.google.com/go/auth/credentials/impersonate"
+	"cloud.google.com/go/auth/httptransport"
 )
 
 func ExampleNewCredentials_serviceAccount() {
