@@ -101,6 +101,9 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	default:
 		return nil, fmt.Errorf("credentials: unsupported filetype %q", fileType)
 	}
+	if opts.UniverseDomain != "" {
+		universeDomain = opts.UniverseDomain
+	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
 			ExpireEarly: opts.EarlyTokenRefresh,

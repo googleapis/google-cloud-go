@@ -242,7 +242,7 @@ const (
 	SecurityStyle_SECURITY_STYLE_UNSPECIFIED SecurityStyle = 0
 	// SecurityStyle uses NTFS
 	SecurityStyle_NTFS SecurityStyle = 1
-	// SecurityStyle uses NTFS
+	// SecurityStyle uses UNIX
 	SecurityStyle_UNIX SecurityStyle = 2
 )
 
@@ -879,8 +879,8 @@ type Volume struct {
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Required. Share name of the volume
 	ShareName string `protobuf:"bytes,5,opt,name=share_name,json=shareName,proto3" json:"share_name,omitempty"`
-	// Output only. This field is currently not implemented. Currently values
-	// provided in this field will be ignored.
+	// Output only. This field is not implemented. The values provided in this
+	// field are ignored.
 	PsaRange string `protobuf:"bytes,6,opt,name=psa_range,json=psaRange,proto3" json:"psa_range,omitempty"`
 	// Required. StoragePool name of the volume
 	StoragePool string `protobuf:"bytes,7,opt,name=storage_pool,json=storagePool,proto3" json:"storage_pool,omitempty"`

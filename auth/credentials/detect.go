@@ -93,6 +93,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 			ProjectIDProvider: auth.CredentialsPropertyFunc(func(context.Context) (string, error) {
 				return metadata.ProjectID()
 			}),
+			UniverseDomainProvider: &internal.ComputeUniverseDomainProvider{},
 		}), nil
 	}
 
@@ -140,6 +141,9 @@ type DetectOptions struct {
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
 	Client *http.Client
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". Optional.
+	UniverseDomain string
 }
 
 func (o *DetectOptions) validate() error {
