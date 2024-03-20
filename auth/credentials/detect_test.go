@@ -785,6 +785,15 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 			want: "foo.com",
 		},
 		{
+			name: "service account json with file and options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
+				UseSelfSignedJWT: true,
+				UniverseDomain:   "bar.com",
+			},
+			want: "bar.com",
+		},
+		{
 			name: "external account json with options universe domain",
 			opts: &DetectOptions{
 				CredentialsFile:  "../internal/testdata/exaccount_user.json",

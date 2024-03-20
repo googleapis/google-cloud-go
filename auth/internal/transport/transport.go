@@ -68,7 +68,7 @@ func ValidateUniverseDomain(clientUniverseDomain, credentialsUniverseDomain stri
 		return fmt.Errorf(
 			"the configured universe domain (%q) does not match the universe "+
 				"domain found in the credentials (%q). If you haven't configured "+
-				"WithUniverseDomain explicitly, \"googleapis.com\" is the default",
+				"the universe domain explicitly, \"googleapis.com\" is the default",
 			clientUniverseDomain,
 			credentialsUniverseDomain)
 	}
