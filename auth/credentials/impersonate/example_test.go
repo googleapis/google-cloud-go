@@ -18,7 +18,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/auth/httptransport"
-	"cloud.google.com/go/auth/impersonate"
+	"cloud.google.com/go/auth/credentials/impersonate"
 )
 
 func ExampleNewCredentials_serviceAccount() {

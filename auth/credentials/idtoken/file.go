@@ -22,7 +22,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
-	"cloud.google.com/go/auth/impersonate"
+	"cloud.google.com/go/auth/credentials/impersonate"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/credsfile"
 )

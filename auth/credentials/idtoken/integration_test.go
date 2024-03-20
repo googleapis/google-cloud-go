@@ -22,8 +22,8 @@ import (
 	"strings"
 	"testing"
 
+	"cloud.google.com/go/auth/credentials/idtoken"
 	"cloud.google.com/go/auth/httptransport"
-	"cloud.google.com/go/auth/idtoken"
 	"cloud.google.com/go/auth/internal/testutil"
 )
 
