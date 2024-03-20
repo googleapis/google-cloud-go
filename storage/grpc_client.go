@@ -1872,7 +1872,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 
 	// Send a request with as many bytes as possible.
 	// Loop until all bytes are sent.
-sendBytes:
+sendBytes: // label this loop so that we can use a continue statement from a nested block
 	for {
 		bytesNotYetSent := recvd - sent
 		remainingDataFitsInSingleReq := bytesNotYetSent <= maxPerMessageWriteSize
