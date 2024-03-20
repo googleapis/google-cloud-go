@@ -45,7 +45,7 @@ const (
 )
 
 var (
-	serviceAccountImpersonationRE = regexp.MustCompile("https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/(.*@.*):generateAccessToken")
+	serviceAccountImpersonationRE = regexp.MustCompile(`https://iamcredentials..+/v1/projects/-/serviceAccounts/(.*@.*):generateAccessToken`)
 )
 
 type nonCacheableError struct {
