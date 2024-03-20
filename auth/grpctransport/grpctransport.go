@@ -294,8 +294,8 @@ func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ..
 	return metadata, nil
 }
 
-func (tp *grpcCredentialsProvider) RequireTransportSecurity() bool {
-	return tp.secure
+func (c *grpcCredentialsProvider) RequireTransportSecurity() bool {
+	return c.secure
 }
 
 func addOCStatsHandler(dialOpts []grpc.DialOption, opts *Options) []grpc.DialOption {

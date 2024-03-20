@@ -150,6 +150,8 @@ type ComputeUniverseDomainProvider struct {
 	universeDomainErr  error
 }
 
+// GetProperty fetches the credentials universe domain from the google cloud
+// metadata service.
 func (c *ComputeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
 	c.universeDomainOnce.Do(func() {
 		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx)
@@ -175,7 +177,6 @@ func getMetadataUniverseDomain(ctx context.Context) (string, error) {
 	if _, ok := err.(metadata.NotDefinedError); ok {
 		// http.StatusNotFound (404)
 		return DefaultUniverseDomain, nil
-	} else {
-		return "", err
 	}
+	return "", err
 }
