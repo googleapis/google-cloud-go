@@ -25,7 +25,10 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sync"
 	"time"
+
+	"cloud.google.com/go/compute/metadata"
 )
 
 const (
@@ -35,6 +38,10 @@ const (
 	quotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"
 	projectEnvVar      = "GOOGLE_CLOUD_PROJECT"
 	maxBodySize        = 1 << 20
+
+	// DefaultUniverseDomain is the default value for universe domain.
+	// Universe domain is the default service domain for a given Cloud universe.
+	DefaultUniverseDomain = "googleapis.com"
 )
 
 // CloneDefaultClient returns a [http.Client] with some good defaults.
@@ -133,4 +140,43 @@ type StaticProperty string
 // GetProperty loads the properly value provided the given context.
 func (p StaticProperty) GetProperty(context.Context) (string, error) {
 	return string(p), nil
+}
+
+// ComputeUniverseDomainProvider fetches the credentials universe domain from
+// the google cloud metadata service.
+type ComputeUniverseDomainProvider struct {
+	universeDomainOnce sync.Once
+	universeDomain     string
+	universeDomainErr  error
+}
+
+// GetProperty fetches the credentials universe domain from the google cloud
+// metadata service.
+func (c *ComputeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
+	c.universeDomainOnce.Do(func() {
+		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx)
+	})
+	if c.universeDomainErr != nil {
+		return "", c.universeDomainErr
+	}
+	return c.universeDomain, nil
+}
+
+// httpGetMetadataUniverseDomain is a package var for unit test substitution.
+var httpGetMetadataUniverseDomain = func(ctx context.Context) (string, error) {
+	client := metadata.NewClient(&http.Client{Timeout: time.Second})
+	// TODO(quartzmo): set ctx on request
+	return client.Get("universe/universe_domain")
+}
+
+func getMetadataUniverseDomain(ctx context.Context) (string, error) {
+	universeDomain, err := httpGetMetadataUniverseDomain(ctx)
+	if err == nil {
+		return universeDomain, nil
+	}
+	if _, ok := err.(metadata.NotDefinedError); ok {
+		// http.StatusNotFound (404)
+		return DefaultUniverseDomain, nil
+	}
+	return "", err
 }

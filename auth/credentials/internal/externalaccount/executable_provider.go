@@ -122,7 +122,7 @@ type executableResponse struct {
 	Message        string `json:"message,omitempty"`
 }
 
-func (cs *executableSubjectProvider) parseSubjectTokenFromSource(response []byte, source string, now int64) (string, error) {
+func (sp *executableSubjectProvider) parseSubjectTokenFromSource(response []byte, source string, now int64) (string, error) {
 	var result executableResponse
 	if err := json.Unmarshal(response, &result); err != nil {
 		return "", jsonParsingError(source, string(response))
@@ -143,7 +143,7 @@ func (cs *executableSubjectProvider) parseSubjectTokenFromSource(response []byte
 	if result.Version > executableSupportedMaxVersion || result.Version < 0 {
 		return "", unsupportedVersionError(source, result.Version)
 	}
-	if result.ExpirationTime == 0 && cs.OutputFile != "" {
+	if result.ExpirationTime == 0 && sp.OutputFile != "" {
 		return "", missingFieldError(source, "expiration_time")
 	}
 	if result.TokenType == "" {
@@ -169,24 +169,24 @@ func (cs *executableSubjectProvider) parseSubjectTokenFromSource(response []byte
 	}
 }
 
-func (cs *executableSubjectProvider) subjectToken(ctx context.Context) (string, error) {
-	if token, err := cs.getTokenFromOutputFile(); token != "" || err != nil {
+func (sp *executableSubjectProvider) subjectToken(ctx context.Context) (string, error) {
+	if token, err := sp.getTokenFromOutputFile(); token != "" || err != nil {
 		return token, err
 	}
-	return cs.getTokenFromExecutableCommand(ctx)
+	return sp.getTokenFromExecutableCommand(ctx)
 }
 
-func (cs *executableSubjectProvider) providerType() string {
+func (sp *executableSubjectProvider) providerType() string {
 	return executableProviderType
 }
 
-func (cs *executableSubjectProvider) getTokenFromOutputFile() (token string, err error) {
-	if cs.OutputFile == "" {
+func (sp *executableSubjectProvider) getTokenFromOutputFile() (token string, err error) {
+	if sp.OutputFile == "" {
 		// This ExecutableCredentialSource doesn't use an OutputFile.
 		return "", nil
 	}
 
-	file, err := os.Open(cs.OutputFile)
+	file, err := os.Open(sp.OutputFile)
 	if err != nil {
 		// No OutputFile found. Hasn't been created yet, so skip it.
 		return "", nil
@@ -199,7 +199,7 @@ func (cs *executableSubjectProvider) getTokenFromOutputFile() (token string, err
 		return "", nil
 	}
 
-	token, err = cs.parseSubjectTokenFromSource(data, outputFileSource, cs.env.now().Unix())
+	token, err = sp.parseSubjectTokenFromSource(data, outputFileSource, sp.env.now().Unix())
 	if err != nil {
 		if _, ok := err.(nonCacheableError); ok {
 			// If the cached token is expired we need a new token,
@@ -231,20 +231,20 @@ func (sp *executableSubjectProvider) executableEnvironment() []string {
 	return result
 }
 
-func (cs *executableSubjectProvider) getTokenFromExecutableCommand(ctx context.Context) (string, error) {
+func (sp *executableSubjectProvider) getTokenFromExecutableCommand(ctx context.Context) (string, error) {
 	// For security reasons, we need our consumers to set this environment variable to allow executables to be run.
-	if cs.env.getenv(allowExecutablesEnvVar) != "1" {
+	if sp.env.getenv(allowExecutablesEnvVar) != "1" {
 		return "", errors.New("detect: executables need to be explicitly allowed (set GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES to '1') to run")
 	}
 
-	ctx, cancel := context.WithDeadline(ctx, cs.env.now().Add(cs.Timeout))
+	ctx, cancel := context.WithDeadline(ctx, sp.env.now().Add(sp.Timeout))
 	defer cancel()
 
-	output, err := cs.env.run(ctx, cs.Command, cs.executableEnvironment())
+	output, err := sp.env.run(ctx, sp.Command, sp.executableEnvironment())
 	if err != nil {
 		return "", err
 	}
-	return cs.parseSubjectTokenFromSource(output, executableSource, cs.env.now().Unix())
+	return sp.parseSubjectTokenFromSource(output, executableSource, sp.env.now().Unix())
 }
 
 func missingFieldError(source, field string) error {
