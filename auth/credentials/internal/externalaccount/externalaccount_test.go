@@ -27,7 +27,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/internal/stsexchange"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 const (
@@ -52,9 +52,9 @@ var (
 		Scopes:           []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 		Client:           internal.CloneDefaultClient(),
 	}
-	testBaseCredSource = internaldetect.CredentialSource{
+	testBaseCredSource = credsfile.CredentialSource{
 		File:   textBaseCredPath,
-		Format: internaldetect.Format{Type: fileTypeText},
+		Format: credsfile.Format{Type: fileTypeText},
 	}
 	testNow = func() time.Time { return time.Unix(expiry, 0) }
 )
@@ -228,7 +228,7 @@ func TestNonworkforceWithWorkforcePoolUserProject(t *testing.T) {
 	if err == nil {
 		t.Fatalf("got nil, want an error")
 	}
-	if got, want := err.Error(), "detect: workforce_pool_user_project should not be set for non-workforce pool credentials"; got != want {
+	if got, want := err.Error(), "credentials: workforce_pool_user_project should not be set for non-workforce pool credentials"; got != want {
 		t.Errorf("got %v, want %v", got, want)
 	}
 }

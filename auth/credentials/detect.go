@@ -25,7 +25,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/compute/metadata"
 )
 
@@ -76,13 +76,13 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 	if opts.CredentialsJSON != nil {
 		return readCredentialsFileJSON(opts.CredentialsJSON, opts)
 	}
-	if filename := internaldetect.GetFileNameFromEnv(opts.CredentialsFile); filename != "" {
+	if filename := credsfile.GetFileNameFromEnv(opts.CredentialsFile); filename != "" {
 		if creds, err := readCredentialsFile(filename, opts); err == nil {
 			return creds, err
 		}
 	}
 
-	fileName := internaldetect.GetWellKnownFileName()
+	fileName := credsfile.GetWellKnownFileName()
 	if b, err := os.ReadFile(fileName); err == nil {
 		return readCredentialsFileJSON(b, opts)
 	}
@@ -97,7 +97,7 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 		}), nil
 	}
 
-	return nil, fmt.Errorf("detect: could not find default credentials. See %v for more information", adcSetupURL)
+	return nil, fmt.Errorf("credentials: could not find default credentials. See %v for more information", adcSetupURL)
 }
 
 // DetectOptions provides configuration for [DetectDefault].
@@ -148,13 +148,13 @@ type DetectOptions struct {
 
 func (o *DetectOptions) validate() error {
 	if o == nil {
-		return errors.New("detect: options must be provided")
+		return errors.New("credentials: options must be provided")
 	}
 	if len(o.Scopes) > 0 && o.Audience != "" {
-		return errors.New("detect: both scopes and audience were provided")
+		return errors.New("credentials: both scopes and audience were provided")
 	}
 	if len(o.CredentialsJSON) > 0 && o.CredentialsFile != "" {
-		return errors.New("detect: both credentials file and JSON were provided")
+		return errors.New("credentials: both credentials file and JSON were provided")
 	}
 	return nil
 }
@@ -192,7 +192,7 @@ func readCredentialsFileJSON(b []byte, opts *DetectOptions) (*auth.Credentials, 
 	config := clientCredConfigFromJSON(b, opts)
 	if config != nil {
 		if config.AuthHandlerOpts == nil {
-			return nil, errors.New("detect: auth handler must be specified for this credential filetype")
+			return nil, errors.New("credentials: auth handler must be specified for this credential filetype")
 		}
 		tp, err := auth.New3LOTokenProvider(config)
 		if err != nil {
@@ -207,8 +207,8 @@ func readCredentialsFileJSON(b []byte, opts *DetectOptions) (*auth.Credentials, 
 }
 
 func clientCredConfigFromJSON(b []byte, opts *DetectOptions) *auth.Options3LO {
-	var creds internaldetect.ClientCredentialsFile
-	var c *internaldetect.Config3LO
+	var creds credsfile.ClientCredentialsFile
+	var c *credsfile.Config3LO
 	if err := json.Unmarshal(b, &creds); err != nil {
 		return nil
 	}

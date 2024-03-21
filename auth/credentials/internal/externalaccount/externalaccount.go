@@ -26,7 +26,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	"cloud.google.com/go/auth/credentials/internal/stsexchange"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 const (
@@ -70,7 +70,7 @@ type Options struct {
 	ClientID string
 	// CredentialSource contains the necessary information to retrieve the token itself, as well
 	// as some environmental information.
-	CredentialSource internaldetect.CredentialSource
+	CredentialSource credsfile.CredentialSource
 	// QuotaProjectID is injected by gCloud. If the value is non-empty, the Auth libraries
 	// will set the x-goog-user-project which overrides the project associated with the credentials.
 	QuotaProjectID string
@@ -90,7 +90,7 @@ type Options struct {
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if opts.WorkforcePoolUserProject != "" {
 		if valid := validWorkforceAudiencePattern.MatchString(opts.Audience); !valid {
-			return nil, fmt.Errorf("detect: workforce_pool_user_project should not be set for non-workforce pool credentials")
+			return nil, fmt.Errorf("credentials: workforce_pool_user_project should not be set for non-workforce pool credentials")
 		}
 	}
 	stp, err := newSubjectTokenProvider(opts)
@@ -183,19 +183,19 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	}
 	// The RFC8693 doesn't define the explicit 0 of "expires_in" field behavior.
 	if stsResp.ExpiresIn <= 0 {
-		return nil, fmt.Errorf("detect: got invalid expiry from security token service")
+		return nil, fmt.Errorf("credentials: got invalid expiry from security token service")
 	}
 	tok.Expiry = now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
 	return tok, nil
 }
 
-// newSubjectTokenProvider determines the type of internaldetect.CredentialSource needed to create a
+// newSubjectTokenProvider determines the type of credsfile.CredentialSource needed to create a
 // subjectTokenProvider
 func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 	if len(o.CredentialSource.EnvironmentID) > 3 && o.CredentialSource.EnvironmentID[:3] == "aws" {
 		if awsVersion, err := strconv.Atoi(o.CredentialSource.EnvironmentID[3:]); err == nil {
 			if awsVersion != 1 {
-				return nil, fmt.Errorf("detect: aws version '%d' is not supported in the current build", awsVersion)
+				return nil, fmt.Errorf("credentials: aws version '%d' is not supported in the current build", awsVersion)
 			}
 
 			awsProvider := &awsSubjectProvider{
@@ -219,7 +219,7 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 	} else if o.CredentialSource.Executable != nil {
 		ec := o.CredentialSource.Executable
 		if ec.Command == "" {
-			return nil, errors.New("detect: missing `command` field — executable command must be provided")
+			return nil, errors.New("credentials: missing `command` field — executable command must be provided")
 		}
 
 		execProvider := &executableSubjectProvider{}
@@ -229,7 +229,7 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 		} else {
 			execProvider.Timeout = time.Duration(*ec.TimeoutMillis) * time.Millisecond
 			if execProvider.Timeout < timeoutMinimum || execProvider.Timeout > timeoutMaximum {
-				return nil, fmt.Errorf("detect: invalid `timeout_millis` field — executable timeout must be between %v and %v seconds", timeoutMinimum.Seconds(), timeoutMaximum.Seconds())
+				return nil, fmt.Errorf("credentials: invalid `timeout_millis` field — executable timeout must be between %v and %v seconds", timeoutMinimum.Seconds(), timeoutMaximum.Seconds())
 			}
 		}
 		execProvider.OutputFile = ec.OutputFile
@@ -238,7 +238,7 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 		execProvider.env = runtimeEnvironment{}
 		return execProvider, nil
 	}
-	return nil, errors.New("detect: unable to parse credential source")
+	return nil, errors.New("credentials: unable to parse credential source")
 }
 
 func getGoogHeaderValue(conf *Options, p subjectTokenProvider) string {
