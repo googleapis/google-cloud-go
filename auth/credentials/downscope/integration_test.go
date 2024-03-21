@@ -24,7 +24,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
-	"cloud.google.com/go/auth/downscope"
+	"cloud.google.com/go/auth/credentials/downscope"
 	"cloud.google.com/go/auth/internal/testutil"
 	"cloud.google.com/go/auth/internal/testutil/testgcs"
 )

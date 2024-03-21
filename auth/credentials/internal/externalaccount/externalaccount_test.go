@@ -16,6 +16,7 @@ package externalaccount
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -24,8 +25,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth"
+	"cloud.google.com/go/auth/credentials/internal/stsexchange"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 const (
@@ -50,14 +52,87 @@ var (
 		Scopes:           []string{"https://www.googleapis.com/auth/devstorage.full_control"},
 		Client:           internal.CloneDefaultClient(),
 	}
-	testBaseCredSource = internaldetect.CredentialSource{
+	testBaseCredSource = credsfile.CredentialSource{
 		File:   textBaseCredPath,
-		Format: internaldetect.Format{Type: fileTypeText},
+		Format: credsfile.Format{Type: fileTypeText},
 	}
 	testNow = func() time.Time { return time.Unix(expiry, 0) }
 )
 
 func TestToken(t *testing.T) {
+	tests := []struct {
+		name      string
+		respBody  *stsexchange.TokenResponse
+		wantError bool
+	}{
+		{
+			name: "works",
+			respBody: &stsexchange.TokenResponse{
+				AccessToken:     correctAT,
+				IssuedTokenType: "urn:ietf:params:oauth:token-type:access_token",
+				TokenType:       "Bearer",
+				ExpiresIn:       3600,
+				Scope:           "https://www.googleapis.com/auth/cloud-platform",
+			},
+		},
+		{
+			name: "no exp time on tok",
+			respBody: &stsexchange.TokenResponse{
+				AccessToken:     correctAT,
+				IssuedTokenType: "urn:ietf:params:oauth:token-type:access_token",
+				TokenType:       "Bearer",
+				Scope:           "https://www.googleapis.com/auth/cloud-platform",
+			},
+			wantError: true,
+		},
+		{
+			name: "negative exp time",
+			respBody: &stsexchange.TokenResponse{
+				AccessToken:     correctAT,
+				IssuedTokenType: "urn:ietf:params:oauth:token-type:access_token",
+				TokenType:       "Bearer",
+				ExpiresIn:       -1,
+				Scope:           "https://www.googleapis.com/auth/cloud-platform",
+			},
+			wantError: true,
+		},
+	}
+	for _, tt := range tests {
+		opts := &Options{
+			Audience:         "32555940559.apps.googleusercontent.com",
+			SubjectTokenType: idTokenType,
+			ClientSecret:     "notsosecret",
+			ClientID:         "rbrgnognrhongo3bi4gb9ghg9g",
+			CredentialSource: testBaseCredSource,
+			Scopes:           []string{"https://www.googleapis.com/auth/devstorage.full_control"},
+		}
+
+		respBody, err := json.Marshal(tt.respBody)
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		server := &testExchangeTokenServer{
+			url:           "/",
+			authorization: "Basic cmJyZ25vZ25yaG9uZ28zYmk0Z2I5Z2hnOWc6bm90c29zZWNyZXQ=",
+			contentType:   "application/x-www-form-urlencoded",
+			body:          baseCredsRequestBody,
+			response:      string(respBody),
+			metricsHeader: expectedMetricsHeader("file", false, false),
+		}
+
+		tok, err := run(t, opts, server)
+		if err != nil && !tt.wantError {
+			t.Fatal(err)
+		}
+		if tt.wantError {
+			if err == nil {
+				t.Fatal("want err, got nil")
+			}
+			continue
+		}
+		validateToken(t, tok)
+	}
 	opts := &Options{
 		Audience:         "32555940559.apps.googleusercontent.com",
 		SubjectTokenType: idTokenType,
@@ -153,7 +228,7 @@ func TestNonworkforceWithWorkforcePoolUserProject(t *testing.T) {
 	if err == nil {
 		t.Fatalf("got nil, want an error")
 	}
-	if got, want := err.Error(), "detect: workforce_pool_user_project should not be set for non-workforce pool credentials"; got != want {
+	if got, want := err.Error(), "credentials: workforce_pool_user_project should not be set for non-workforce pool credentials"; got != want {
 		t.Errorf("got %v, want %v", got, want)
 	}
 }

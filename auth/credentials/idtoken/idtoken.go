@@ -22,7 +22,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/compute/metadata"
 )
 
@@ -103,15 +103,15 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	return nil, fmt.Errorf("idtoken: couldn't find any credentials")
 }
 
-func (opts *Options) jsonBytes() []byte {
-	if opts.CredentialsJSON != nil {
-		return opts.CredentialsJSON
+func (o *Options) jsonBytes() []byte {
+	if o.CredentialsJSON != nil {
+		return o.CredentialsJSON
 	}
 	var fnOverride string
-	if opts != nil {
-		fnOverride = opts.CredentialsFile
+	if o != nil {
+		fnOverride = o.CredentialsFile
 	}
-	filename := internaldetect.GetFileNameFromEnv(fnOverride)
+	filename := credsfile.GetFileNameFromEnv(fnOverride)
 	if filename != "" {
 		b, _ := os.ReadFile(filename)
 		return b

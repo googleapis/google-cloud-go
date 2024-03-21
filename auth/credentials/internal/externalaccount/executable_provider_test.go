@@ -24,7 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -35,14 +35,14 @@ var executablesAllowed = map[string]string{
 func TestCreateExecutableCredential(t *testing.T) {
 	var tests = []struct {
 		name             string
-		executableConfig internaldetect.ExecutableConfig
+		executableConfig credsfile.ExecutableConfig
 		wantErr          error
 		wantTimeout      time.Duration
 		skipErrorEquals  bool
 	}{
 		{
 			name: "Basic Creation",
-			executableConfig: internaldetect.ExecutableConfig{
+			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
 				TimeoutMillis: Int(50000),
 			},
@@ -50,19 +50,19 @@ func TestCreateExecutableCredential(t *testing.T) {
 		},
 		{
 			name: "Without Timeout",
-			executableConfig: internaldetect.ExecutableConfig{
+			executableConfig: credsfile.ExecutableConfig{
 				Command: "blarg",
 			},
 			wantTimeout: 30000 * time.Millisecond,
 		},
 		{
 			name:             "Without Command",
-			executableConfig: internaldetect.ExecutableConfig{},
+			executableConfig: credsfile.ExecutableConfig{},
 			skipErrorEquals:  true,
 		},
 		{
 			name: "Timeout Too Low",
-			executableConfig: internaldetect.ExecutableConfig{
+			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
 				TimeoutMillis: Int(4999),
 			},
@@ -70,7 +70,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 		},
 		{
 			name: "Timeout Lower Bound",
-			executableConfig: internaldetect.ExecutableConfig{
+			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
 				TimeoutMillis: Int(5000),
 			},
@@ -78,7 +78,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 		},
 		{
 			name: "Timeout Upper Bound",
-			executableConfig: internaldetect.ExecutableConfig{
+			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
 				TimeoutMillis: Int(120000),
 			},
@@ -86,7 +86,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 		},
 		{
 			name: "Timeout Too High",
-			executableConfig: internaldetect.ExecutableConfig{
+			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
 				TimeoutMillis: Int(120001),
 			},
@@ -97,7 +97,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ecs, err := newSubjectTokenProvider(&Options{
 				Client: internal.CloneDefaultClient(),
-				CredentialSource: internaldetect.CredentialSource{
+				CredentialSource: credsfile.CredentialSource{
 					Executable: &tt.executableConfig,
 				},
 			})
@@ -143,8 +143,8 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 			opts: &Options{
 				Audience:         "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				SubjectTokenType: jwtTokenType,
-				CredentialSource: internaldetect.CredentialSource{
-					Executable: &internaldetect.ExecutableConfig{
+				CredentialSource: credsfile.CredentialSource{
+					Executable: &credsfile.ExecutableConfig{
 						Command: "blarg",
 					},
 				},
@@ -167,8 +167,8 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 				Audience:                       "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/test@project.iam.gserviceaccount.com:generateAccessToken",
 				SubjectTokenType:               jwtTokenType,
-				CredentialSource: internaldetect.CredentialSource{
-					Executable: &internaldetect.ExecutableConfig{
+				CredentialSource: credsfile.CredentialSource{
+					Executable: &credsfile.ExecutableConfig{
 						Command:    "blarg",
 						OutputFile: "/path/to/generated/cached/credentials",
 					},
@@ -194,8 +194,8 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 				Audience:                       "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				ServiceAccountImpersonationURL: "test@project.iam.gserviceaccount.com",
 				SubjectTokenType:               jwtTokenType,
-				CredentialSource: internaldetect.CredentialSource{
-					Executable: &internaldetect.ExecutableConfig{
+				CredentialSource: credsfile.CredentialSource{
+					Executable: &credsfile.ExecutableConfig{
 						Command:    "blarg",
 						OutputFile: "/path/to/generated/cached/credentials",
 					},
@@ -241,8 +241,8 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 }
 
 func TestRetrieveExecutableSubjectTokenExecutableErrors(t *testing.T) {
-	cs := internaldetect.CredentialSource{
-		Executable: &internaldetect.ExecutableConfig{
+	cs := credsfile.CredentialSource{
+		Executable: &credsfile.ExecutableConfig{
 			Command:       "blarg",
 			TimeoutMillis: Int(5000),
 		},
@@ -473,8 +473,8 @@ func TestRetrieveExecutableSubjectTokenExecutableErrors(t *testing.T) {
 }
 
 func TestRetrieveExecutableSubjectTokenSuccesses(t *testing.T) {
-	cs := internaldetect.CredentialSource{
-		Executable: &internaldetect.ExecutableConfig{
+	cs := credsfile.CredentialSource{
+		Executable: &credsfile.ExecutableConfig{
 			Command:       "blarg",
 			TimeoutMillis: Int(5000),
 		},
@@ -582,8 +582,8 @@ func TestRetrieveOutputFileSubjectTokenNotJSON(t *testing.T) {
 	}
 	defer os.Remove(outputFile.Name())
 
-	cs := internaldetect.CredentialSource{
-		Executable: &internaldetect.ExecutableConfig{
+	cs := credsfile.CredentialSource{
+		Executable: &credsfile.ExecutableConfig{
 			Command:       "blarg",
 			TimeoutMillis: Int(5000),
 			OutputFile:    outputFile.Name(),
@@ -730,8 +730,8 @@ func TestRetrieveOutputFileSubjectTokenFailureTests(t *testing.T) {
 			}
 			defer os.Remove(outputFile.Name())
 
-			cs := internaldetect.CredentialSource{
-				Executable: &internaldetect.ExecutableConfig{
+			cs := credsfile.CredentialSource{
+				Executable: &credsfile.ExecutableConfig{
 					Command:       "blarg",
 					TimeoutMillis: Int(5000),
 					OutputFile:    outputFile.Name(),
@@ -832,8 +832,8 @@ func TestRetrieveOutputFileSubjectTokenInvalidCache(t *testing.T) {
 			}
 			defer os.Remove(outputFile.Name())
 
-			cs := internaldetect.CredentialSource{
-				Executable: &internaldetect.ExecutableConfig{
+			cs := credsfile.CredentialSource{
+				Executable: &credsfile.ExecutableConfig{
 					Command:       "blarg",
 					TimeoutMillis: Int(5000),
 					OutputFile:    outputFile.Name(),
@@ -937,8 +937,8 @@ func TestRetrieveOutputFileSubjectTokenJwt(t *testing.T) {
 			}
 			defer os.Remove(outputFile.Name())
 
-			cs := internaldetect.CredentialSource{
-				Executable: &internaldetect.ExecutableConfig{
+			cs := credsfile.CredentialSource{
+				Executable: &credsfile.ExecutableConfig{
 					Command:       "blarg",
 					TimeoutMillis: Int(5000),
 					OutputFile:    outputFile.Name(),
@@ -1024,4 +1024,38 @@ func Bool(b bool) *bool {
 
 func Int(i int) *int {
 	return &i
+}
+
+func TestServiceAccountImpersonationRE(t *testing.T) {
+	tests := []struct {
+		name                           string
+		serviceAccountImpersonationURL string
+		want                           string
+	}{
+		{
+			name:                           "universe domain Google Default Universe (GDU) googleapis.com",
+			serviceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/test@project.iam.gserviceaccount.com:generateAccessToken",
+			want:                           "test@project.iam.gserviceaccount.com",
+		},
+		{
+			name:                           "email does not match",
+			serviceAccountImpersonationURL: "test@project.iam.gserviceaccount.com",
+			want:                           "",
+		},
+		{
+			name:                           "universe domain non-GDU",
+			serviceAccountImpersonationURL: "https://iamcredentials.apis-tpclp.goog/v1/projects/-/serviceAccounts/test@project.iam.gserviceaccount.com:generateAccessToken",
+			want:                           "test@project.iam.gserviceaccount.com",
+		},
+	}
+	for _, tt := range tests {
+		matches := serviceAccountImpersonationRE.FindStringSubmatch(tt.serviceAccountImpersonationURL)
+		if matches == nil {
+			if tt.want != "" {
+				t.Errorf("got nil, want %q", tt.want)
+			}
+		} else if matches[1] != tt.want {
+			t.Errorf("got %q, want %q", matches[1], tt.want)
+		}
+	}
 }
