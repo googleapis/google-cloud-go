@@ -112,8 +112,9 @@ type Config struct {
 	// see Deployment.target at
 	// https://github.com/googleapis/googleapis/blob/master/google/devtools/cloudprofiler/v2/profiler.proto
 	// for restrictions. If the parameter is not set, the agent will probe
-	// GAE_SERVICE environment variable which is present in Google App Engine
-	// environment.
+	// the GAE_SERVICE environment variable (present in Google App Engine
+	// environment) and K_SERVICE environment variable (present in a
+	// Knative environment, such as Google Cloud Run)..
 	// NOTE: The string should be the same across different replicas of
 	// your service so that the globally constant profiling rate is
 	// maintained. Do not put things like PID or unique pod ID in the name.
@@ -122,8 +123,11 @@ type Config struct {
 	// ServiceVersion is an optional field specifying the version of the
 	// service. It can be an arbitrary string. Profiler profiles
 	// once per minute for each version of each service in each zone.
-	// ServiceVersion defaults to GAE_VERSION environment variable if that is
-	// set, or to empty string otherwise.
+	// If the parameter is not set, the agent will probe the GAE_VERSION
+	// environment variable (present in Google App Engine environment) and
+	// K_REVISION environment variable (present in a Knative environment,
+	// such as Google Cloud Run). If neither is set, ServiceVersion
+	// defaults to the empty string.
 	ServiceVersion string
 
 	// DebugLogging enables detailed debug logging from profiler. It
