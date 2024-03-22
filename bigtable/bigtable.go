@@ -248,17 +248,13 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
 	err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
-		var req *btpb.ReadRowsRequest
+		req := &btpb.ReadRowsRequest{
+			AppProfileId: t.c.appProfile,
+		}
 		if t.authorizedView == "" {
-			req = &btpb.ReadRowsRequest{
-				TableName:    t.c.fullTableName(t.table),
-				AppProfileId: t.c.appProfile,
-			}
+			req.TableName = t.c.fullTableName(t.table)
 		} else {
-			req = &btpb.ReadRowsRequest{
-				AuthorizedViewName: t.c.fullAuthorizedViewName(t.table, t.authorizedView),
-				AppProfileId:       t.c.appProfile,
-			}
+			req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
 		}
 
 		if arg != nil {
@@ -893,21 +889,15 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 
 	var callOptions []gax.CallOption
 	if m.cond == nil {
-		var req *btpb.MutateRowRequest
+		req := &btpb.MutateRowRequest{
+			AppProfileId: t.c.appProfile,
+			RowKey:       []byte(row),
+			Mutations:    m.ops,
+		}
 		if t.authorizedView == "" {
-			req = &btpb.MutateRowRequest{
-				TableName:    t.c.fullTableName(t.table),
-				AppProfileId: t.c.appProfile,
-				RowKey:       []byte(row),
-				Mutations:    m.ops,
-			}
+			req.TableName = t.c.fullTableName(t.table)
 		} else {
-			req = &btpb.MutateRowRequest{
-				AuthorizedViewName: t.c.fullAuthorizedViewName(t.table, t.authorizedView),
-				AppProfileId:       t.c.appProfile,
-				RowKey:             []byte(row),
-				Mutations:          m.ops,
-			}
+			req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
 		}
 		if mutationsAreRetryable(m.ops) {
 			callOptions = retryOptions
@@ -924,21 +914,15 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		return err
 	}
 
-	var req *btpb.CheckAndMutateRowRequest
+	req := &btpb.CheckAndMutateRowRequest{
+		AppProfileId:    t.c.appProfile,
+		RowKey:          []byte(row),
+		PredicateFilter: m.cond.proto(),
+	}
 	if t.authorizedView == "" {
-		req = &btpb.CheckAndMutateRowRequest{
-			TableName:       t.c.fullTableName(t.table),
-			AppProfileId:    t.c.appProfile,
-			RowKey:          []byte(row),
-			PredicateFilter: m.cond.proto(),
-		}
+		req.TableName = t.c.fullTableName(t.table)
 	} else {
-		req = &btpb.CheckAndMutateRowRequest{
-			AuthorizedViewName: t.c.fullAuthorizedViewName(t.table, t.authorizedView),
-			AppProfileId:       t.c.appProfile,
-			RowKey:             []byte(row),
-			PredicateFilter:    m.cond.proto(),
-		}
+		req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
 	}
 	if m.mtrue != nil {
 		if m.mtrue.cond != nil {
@@ -1172,19 +1156,14 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, opts ...
 	for i, entryErr := range entryErrs {
 		entries[i] = entryErr.Entry
 	}
-	var req *btpb.MutateRowsRequest
+	req := &btpb.MutateRowsRequest{
+		AppProfileId: t.c.appProfile,
+		Entries:      entries,
+	}
 	if t.authorizedView == "" {
-		req = &btpb.MutateRowsRequest{
-			TableName:    t.c.fullTableName(t.table),
-			AppProfileId: t.c.appProfile,
-			Entries:      entries,
-		}
+		req.TableName = t.c.fullTableName(t.table)
 	} else {
-		req = &btpb.MutateRowsRequest{
-			AuthorizedViewName: t.c.fullAuthorizedViewName(t.table, t.authorizedView),
-			AppProfileId:       t.c.appProfile,
-			Entries:            entries,
-		}
+		req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
 	}
 	stream, err := t.c.client.MutateRows(ctx, req)
 	if err != nil {
@@ -1267,21 +1246,15 @@ func (ts Timestamp) TruncateToMilliseconds() Timestamp {
 // It returns the newly written cells.
 func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
-	var req *btpb.ReadModifyWriteRowRequest
+	req := &btpb.ReadModifyWriteRowRequest{
+		AppProfileId: t.c.appProfile,
+		RowKey:       []byte(row),
+		Rules:        m.ops,
+	}
 	if t.authorizedView == "" {
-		req = &btpb.ReadModifyWriteRowRequest{
-			TableName:    t.c.fullTableName(t.table),
-			AppProfileId: t.c.appProfile,
-			RowKey:       []byte(row),
-			Rules:        m.ops,
-		}
+		req.TableName = t.c.fullTableName(t.table)
 	} else {
-		req = &btpb.ReadModifyWriteRowRequest{
-			AuthorizedViewName: t.c.fullAuthorizedViewName(t.table, t.authorizedView),
-			AppProfileId:       t.c.appProfile,
-			RowKey:             []byte(row),
-			Rules:              m.ops,
-		}
+		req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
 	}
 	res, err := t.c.client.ReadModifyWriteRow(ctx, req)
 	if err != nil {
@@ -1341,17 +1314,13 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 	var sampledRowKeys []string
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		sampledRowKeys = nil
-		var req *btpb.SampleRowKeysRequest
+		req := &btpb.SampleRowKeysRequest{
+			AppProfileId: t.c.appProfile,
+		}
 		if t.authorizedView == "" {
-			req = &btpb.SampleRowKeysRequest{
-				TableName:    t.c.fullTableName(t.table),
-				AppProfileId: t.c.appProfile,
-			}
+			req.TableName = t.c.fullTableName(t.table)
 		} else {
-			req = &btpb.SampleRowKeysRequest{
-				AuthorizedViewName: t.c.fullAuthorizedViewName(t.table, t.authorizedView),
-				AppProfileId:       t.c.appProfile,
-			}
+			req.AuthorizedViewName = t.c.fullAuthorizedViewName(t.table, t.authorizedView)
 		}
 		ctx, cancel := context.WithCancel(ctx) // for aborting the stream
 		defer cancel()

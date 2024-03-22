@@ -317,12 +317,9 @@ func TestTableAdmin_CreateAuthorizedView_DeletionProtection_Protected(t *testing
 
 	deletionProtection := Protected
 	err = c.CreateAuthorizedView(context.Background(), &AuthorizedViewConf{
-		TableID:          "my-cool-table",
-		AuthorizedViewID: "my-cool-authorized-view",
-		AuthorizedViewTypeConf: AuthorizedViewTypeConf{
-			AuthorizedViewType: AuthorizedViewTypeSubsetView,
-			SubsetView:         &SubsetViewConf{},
-		},
+		TableID:            "my-cool-table",
+		AuthorizedViewID:   "my-cool-authorized-view",
+		AuthorizedView:     &SubsetViewConf{},
 		DeletionProtection: deletionProtection,
 	})
 	if err != nil {
@@ -346,12 +343,9 @@ func TestTableAdmin_CreateAuthorizedView_DeletionProtection_Unprotected(t *testi
 
 	deletionProtection := Unprotected
 	err := c.CreateAuthorizedView(context.Background(), &AuthorizedViewConf{
-		TableID:          "my-cool-table",
-		AuthorizedViewID: "my-cool-authorized-view",
-		AuthorizedViewTypeConf: AuthorizedViewTypeConf{
-			AuthorizedViewType: AuthorizedViewTypeSubsetView,
-			SubsetView:         &SubsetViewConf{},
-		},
+		TableID:            "my-cool-table",
+		AuthorizedViewID:   "my-cool-authorized-view",
+		AuthorizedView:     &SubsetViewConf{},
 		DeletionProtection: deletionProtection,
 	})
 	if err != nil {
@@ -381,7 +375,6 @@ func TestTableAdmin_UpdateAuthorizedViewWithDeletionProtection(t *testing.T) {
 			AuthorizedViewID:   "my-cool-authorized-view",
 			DeletionProtection: deletionProtection,
 		},
-		UpdateMask: []string{"deletion_protection"},
 	})
 	if err != nil {
 		t.Fatalf("UpdateAuthorizedView failed: %v", err)
@@ -398,6 +391,32 @@ func TestTableAdmin_UpdateAuthorizedViewWithDeletionProtection(t *testing.T) {
 	}
 	if !cmp.Equal(updateAuthorizedViewReq.UpdateMask.Paths[0], "deletion_protection") {
 		t.Errorf("UpdateAuthorizedViewRequest does not match: updateAuthorizedViewReq.UpdateMask.Paths[0]: %v, expected: %v", updateAuthorizedViewReq.UpdateMask.Paths[0], "deletion_protection")
+	}
+}
+
+func TestTableAdmin_UpdateAuthorizedViewWithSubsetView(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateAuthorizedView(context.Background(), UpdateAuthorizedViewConf{
+		AuthorizedViewConf: AuthorizedViewConf{
+			TableID:          "my-cool-table",
+			AuthorizedViewID: "my-cool-authorized-view",
+			AuthorizedView:   &SubsetViewConf{},
+		},
+	})
+	if err != nil {
+		t.Fatalf("UpdateAuthorizedView failed: %v", err)
+	}
+	updateAuthorizedViewReq := mock.updateAuthorizedViewReq
+	if !cmp.Equal(updateAuthorizedViewReq.AuthorizedView.Name, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table/authorizedViews/my-cool-authorized-view") {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: AuthorizedViewName: %v, expected %v", updateAuthorizedViewReq.AuthorizedView.Name, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table/authorizedViews/my-cool-authorized-view")
+	}
+	if !cmp.Equal(len(updateAuthorizedViewReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: UpdateMask has length of %d, expected %v", len(updateAuthorizedViewReq.UpdateMask.Paths), 1)
+	}
+	if !cmp.Equal(updateAuthorizedViewReq.UpdateMask.Paths[0], "subset_view") {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: updateAuthorizedViewReq.UpdateMask.Paths[0]: %v, expected: %v", updateAuthorizedViewReq.UpdateMask.Paths[0], "subset_view")
 	}
 }
 

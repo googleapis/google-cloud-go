@@ -2034,12 +2034,9 @@ func TestIntegration_AuthorizedViewIAM(t *testing.T) {
 	defer adminClient.DeleteAuthorizedView(ctx, table, authorizedView)
 
 	if err = adminClient.CreateAuthorizedView(ctx, &AuthorizedViewConf{
-		TableID:          table,
-		AuthorizedViewID: authorizedView,
-		AuthorizedViewTypeConf: AuthorizedViewTypeConf{
-			AuthorizedViewType: AuthorizedViewTypeSubsetView,
-			SubsetView:         &SubsetViewConf{},
-		},
+		TableID:            table,
+		AuthorizedViewID:   authorizedView,
+		AuthorizedView:     &SubsetViewConf{},
 		DeletionProtection: Unprotected,
 	}); err != nil {
 		t.Fatalf("Creating authorizedView: %v", err)
@@ -3541,11 +3538,8 @@ func TestIntegration_AdminAuthorizedView(t *testing.T) {
 	authorizedViewConf := AuthorizedViewConf{
 		TableID:          tblConf.TableID,
 		AuthorizedViewID: authorizedView,
-		AuthorizedViewTypeConf: AuthorizedViewTypeConf{
-			AuthorizedViewType: AuthorizedViewTypeSubsetView,
-			SubsetView: &SubsetViewConf{
-				RowPrefixes: [][]byte{[]byte("r1")},
-			},
+		AuthorizedView: &SubsetViewConf{
+			RowPrefixes: [][]byte{[]byte("r1")},
 		},
 		DeletionProtection: Protected,
 	}
@@ -3561,7 +3555,7 @@ func TestIntegration_AdminAuthorizedView(t *testing.T) {
 	if got, want := len(authorizedViews), 1; got != want {
 		t.Fatalf("Listing authorized views count: %d, want: != %d", got, want)
 	}
-	if got, want := authorizedViews[0], fmt.Sprintf("%s/tables/%s/authorizedViews/%s", adminClient.instancePrefix(), tblConf.TableID, authorizedView); got != want {
+	if got, want := authorizedViews[0], authorizedView; got != want {
 		t.Errorf("AuthorizedView Name: %s, want: %s", got, want)
 	}
 
@@ -3570,8 +3564,8 @@ func TestIntegration_AdminAuthorizedView(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Getting authorized view: %v", err)
 	}
-	if got, want := *av, authorizedViewConf; cmp.Equal(got, want) {
-		t.Errorf("AuthorizedViewConf: %v, want: %v", got, want)
+	if got, want := av.GetSubsetView(), authorizedViewConf.GetSubsetView(); cmp.Equal(got, want) {
+		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
 	}
 
 	// Cannot delete the authorized view because it is deletion protected
@@ -3580,10 +3574,13 @@ func TestIntegration_AdminAuthorizedView(t *testing.T) {
 	}
 
 	// Update authorized view
-	authorizedViewConf.DeletionProtection = Unprotected
+	newAuthorizedViewConf := AuthorizedViewConf{
+		TableID:            tblConf.TableID,
+		AuthorizedViewID:   authorizedView,
+		DeletionProtection: Unprotected,
+	}
 	err = adminClient.UpdateAuthorizedView(ctx, UpdateAuthorizedViewConf{
-		AuthorizedViewConf: authorizedViewConf,
-		UpdateMask:         []string{"deletion_protection"},
+		AuthorizedViewConf: newAuthorizedViewConf,
 	})
 	if err != nil {
 		t.Fatalf("UpdateAuthorizedView failed: %v", err)
@@ -3596,6 +3593,10 @@ func TestIntegration_AdminAuthorizedView(t *testing.T) {
 	}
 	if got, want := av.DeletionProtection, Unprotected; got != want {
 		t.Errorf("AuthorizedView deletion protection: %v, want: %v", got, want)
+	}
+	// Check that the subset_view field doesn't change
+	if got, want := av.GetSubsetView(), authorizedViewConf.GetSubsetView(); cmp.Equal(got, want) {
+		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
 	}
 
 	// Delete authorized view
@@ -3656,17 +3657,14 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	authorizedViewConf := AuthorizedViewConf{
 		TableID:          tblConf.TableID,
 		AuthorizedViewID: authorizedView,
-		AuthorizedViewTypeConf: AuthorizedViewTypeConf{
-			AuthorizedViewType: AuthorizedViewTypeSubsetView,
-			SubsetView: &SubsetViewConf{
-				RowPrefixes: [][]byte{[]byte("r1")},
-				FamilySubsets: map[string]FamilySubset{
-					"fam1": {
-						QualifierPrefixes: [][]byte{[]byte("col")},
-					},
-					"fam2": {
-						Qualifiers: [][]byte{[]byte("col")},
-					},
+		AuthorizedView: &SubsetViewConf{
+			RowPrefixes: [][]byte{[]byte("r1")},
+			FamilySubsets: map[string]FamilySubset{
+				"fam1": {
+					QualifierPrefixes: [][]byte{[]byte("col")},
+				},
+				"fam2": {
+					Qualifiers: [][]byte{[]byte("col")},
 				},
 			},
 		},
@@ -3807,11 +3805,8 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	if err = adminClient.CreateAuthorizedView(ctx, &AuthorizedViewConf{
 		TableID:          presplitTable,
 		AuthorizedViewID: authorizedView,
-		AuthorizedViewTypeConf: AuthorizedViewTypeConf{
-			AuthorizedViewType: AuthorizedViewTypeSubsetView,
-			SubsetView: &SubsetViewConf{
-				RowPrefixes: [][]byte{[]byte("r1")},
-			},
+		AuthorizedView: &SubsetViewConf{
+			RowPrefixes: [][]byte{[]byte("r1")},
 		},
 		DeletionProtection: Unprotected,
 	}); err != nil {
