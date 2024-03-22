@@ -21,14 +21,13 @@
 package networkmanagementpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -556,9 +555,6 @@ type Endpoint struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The IP address of the endpoint, which can be an external or internal IP.
-	// An IPv6 address is only allowed when the test's destination is a
-	// [global load balancer
-	// VIP](https://cloud.google.com/load-balancing/docs/load-balancing-overview).
 	IpAddress string `protobuf:"bytes,1,opt,name=ip_address,json=ipAddress,proto3" json:"ip_address,omitempty"`
 	// The IP protocol port of the endpoint.
 	// Only applicable when protocol is TCP or UDP.
