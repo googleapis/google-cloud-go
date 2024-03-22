@@ -20,13 +20,17 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
 )
 
-var identityBindingEndpoint = "https://sts.googleapis.com/v1/token"
+const (
+	universeDomainPlaceholder       = "UNIVERSE_DOMAIN"
+	identityBindingEndpointTemplate = "https://sts.UNIVERSE_DOMAIN/v1/token"
+)
 
 // Options for configuring [NewCredentials].
 type Options struct {
@@ -42,13 +46,25 @@ type Options struct {
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
 	Client *http.Client
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". Optional.
+	UniverseDomain string
 }
 
-func (c Options) client() *http.Client {
-	if c.Client != nil {
-		return c.Client
+func (o *Options) client() *http.Client {
+	if o.Client != nil {
+		return o.Client
 	}
 	return internal.CloneDefaultClient()
+}
+
+// identityBindingEndpoint returns the identity binding endpoint with the
+// configured universe domain.
+func (o *Options) identityBindingEndpoint() string {
+	if o.UniverseDomain == "" {
+		return strings.Replace(identityBindingEndpointTemplate, universeDomainPlaceholder, internal.DefaultUniverseDomain, 1)
+	}
+	return strings.Replace(identityBindingEndpointTemplate, universeDomainPlaceholder, o.UniverseDomain, 1)
 }
 
 // An AccessBoundaryRule Sets the permissions (and optionally conditions) that
@@ -108,10 +124,14 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 		}
 	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
-		TokenProvider:          &downscopedTokenProvider{Options: opts, Client: opts.client()},
+		TokenProvider: &downscopedTokenProvider{
+			Options:                 opts,
+			Client:                  opts.client(),
+			identityBindingEndpoint: opts.identityBindingEndpoint(),
+		},
 		ProjectIDProvider:      auth.CredentialsPropertyFunc(opts.Credentials.ProjectID),
 		QuotaProjectIDProvider: auth.CredentialsPropertyFunc(opts.Credentials.QuotaProjectID),
-		UniverseDomainProvider: auth.CredentialsPropertyFunc(opts.Credentials.UniverseDomain),
+		UniverseDomainProvider: internal.StaticCredentialsProperty(opts.UniverseDomain),
 	}), nil
 }
 
@@ -119,6 +139,9 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 type downscopedTokenProvider struct {
 	Options *Options
 	Client  *http.Client
+	// identityBindingEndpoint is the identity binding endpoint with the
+	// configured universe domain.
+	identityBindingEndpoint string
 }
 
 type downscopedOptions struct {
@@ -159,7 +182,7 @@ func (dts *downscopedTokenProvider) Token(ctx context.Context) (*auth.Token, err
 	form.Add("subject_token", tok.Value)
 	form.Add("options", string(b))
 
-	resp, err := dts.Client.PostForm(identityBindingEndpoint, form)
+	resp, err := dts.Client.PostForm(dts.identityBindingEndpoint, form)
 	if err != nil {
 		return nil, err
 	}
