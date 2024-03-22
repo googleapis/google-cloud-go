@@ -424,6 +424,52 @@
       ]
     },
     {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GenerateOfflineCredential_sync",
+      "title": "edgecontainer GenerateOfflineCredential Sample",
+      "description": "GenerateOfflineCredential generates an offline credential for a Cluster.",
+      "file": "Client/GenerateOfflineCredential/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateOfflineCredential",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GenerateOfflineCredential",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.GenerateOfflineCredentialRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*edgecontainerpb.GenerateOfflineCredentialResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GenerateOfflineCredential",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GenerateOfflineCredential",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetCluster_sync",
       "title": "edgecontainer GetCluster Sample",
       "description": "GetCluster gets details of a single Cluster.",
@@ -641,6 +687,52 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_GetServerConfig_sync",
+      "title": "edgecontainer GetServerConfig Sample",
+      "description": "GetServerConfig gets the server config.",
+      "file": "Client/GetServerConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetServerConfig",
+        "fullName": "google.cloud.edgecontainer.v1.Client.GetServerConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.GetServerConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*edgecontainerpb.ServerConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "GetServerConfig",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.GetServerConfig",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
           }
         }
       },
@@ -1052,6 +1144,52 @@
         "method": {
           "shortName": "UpdateNodePool",
           "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.UpdateNodePool",
+          "service": {
+            "shortName": "EdgeContainer",
+            "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "edgecontainer_v1_generated_EdgeContainer_UpgradeCluster_sync",
+      "title": "edgecontainer UpgradeCluster Sample",
+      "description": "UpgradeCluster upgrades a single cluster.",
+      "file": "Client/UpgradeCluster/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpgradeCluster",
+        "fullName": "google.cloud.edgecontainer.v1.Client.UpgradeCluster",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "edgecontainerpb.UpgradeClusterRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpgradeClusterOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.edgecontainer.v1.Client"
+        },
+        "method": {
+          "shortName": "UpgradeCluster",
+          "fullName": "google.cloud.edgecontainer.v1.EdgeContainer.UpgradeCluster",
           "service": {
             "shortName": "EdgeContainer",
             "fullName": "google.cloud.edgecontainer.v1.EdgeContainer"
