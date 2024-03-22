@@ -51,20 +51,20 @@ type Options struct {
 	UniverseDomain string
 }
 
-func (c Options) client() *http.Client {
-	if c.Client != nil {
-		return c.Client
+func (o *Options) client() *http.Client {
+	if o.Client != nil {
+		return o.Client
 	}
 	return internal.CloneDefaultClient()
 }
 
 // identityBindingEndpoint returns the identity binding endpoint with the
 // configured universe domain.
-func (c Options) identityBindingEndpoint() string {
-	if c.UniverseDomain == "" {
+func (o *Options) identityBindingEndpoint() string {
+	if o.UniverseDomain == "" {
 		return strings.Replace(identityBindingEndpointTemplate, universeDomainPlaceholder, internal.DefaultUniverseDomain, 1)
 	}
-	return strings.Replace(identityBindingEndpointTemplate, universeDomainPlaceholder, c.UniverseDomain, 1)
+	return strings.Replace(identityBindingEndpointTemplate, universeDomainPlaceholder, o.UniverseDomain, 1)
 }
 
 // An AccessBoundaryRule Sets the permissions (and optionally conditions) that
