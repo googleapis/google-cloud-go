@@ -18,35 +18,35 @@ import (
 	"context"
 	"testing"
 
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 func TestRetrieveFileSubjectToken(t *testing.T) {
 	var tests = []struct {
 		name string
-		cs   internaldetect.CredentialSource
+		cs   credsfile.CredentialSource
 		want string
 	}{
 		{
 			name: "untyped file format",
-			cs: internaldetect.CredentialSource{
+			cs: credsfile.CredentialSource{
 				File: textBaseCredPath,
 			},
 			want: "street123",
 		},
 		{
 			name: "text file format",
-			cs: internaldetect.CredentialSource{
+			cs: credsfile.CredentialSource{
 				File:   textBaseCredPath,
-				Format: internaldetect.Format{Type: fileTypeText},
+				Format: credsfile.Format{Type: fileTypeText},
 			},
 			want: "street123",
 		},
 		{
 			name: "JSON file format",
-			cs: internaldetect.CredentialSource{
+			cs: credsfile.CredentialSource{
 				File:   jsonBaseCredPath,
-				Format: internaldetect.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
+				Format: credsfile.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
 			},
 			want: "321road",
 		},

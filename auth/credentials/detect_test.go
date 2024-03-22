@@ -29,7 +29,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials/internal/gdch"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
@@ -46,7 +46,7 @@ func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseGDCHServiceAccount(b)
+	f, err := credsfile.ParseGDCHServiceAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -155,7 +155,7 @@ func TestDefaultCredentials_ImpersonatedServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseImpersonatedServiceAccount(b)
+	f, err := credsfile.ParseImpersonatedServiceAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -306,7 +306,7 @@ func TestDefaultCredentials_ServiceAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseServiceAccount(b)
+	f, err := credsfile.ParseServiceAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -456,7 +456,7 @@ func TestDefaultCredentials_ClientCredentials(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseClientCredentials(b)
+	f, err := credsfile.ParseClientCredentials(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -523,7 +523,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseExternalAccount(b)
+	f, err := credsfile.ParseExternalAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -596,7 +596,7 @@ func TestDefaultCredentials_ExternalAccountKey(t *testing.T) {
 	if want := "googleapis.com"; got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
-	tok, err := creds.Token(context.Background())
+	tok, err := creds.Token(ctx)
 	if err != nil {
 		t.Fatalf("creds.Token() = %v", err)
 	}
@@ -612,7 +612,7 @@ func TestDefaultCredentials_ExternalAccountAuthorizedUserKey(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseExternalAccountAuthorizedUser(b)
+	f, err := credsfile.ParseExternalAccountAuthorizedUser(b)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -716,6 +716,114 @@ func TestDefaultCredentials_Validate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if _, err := DetectDefault(tt.opts); err == nil {
 				t.Error("got nil, want an error")
+			}
+		})
+	}
+}
+
+func TestDefaultCredentials_UniverseDomain(t *testing.T) {
+	ctx := context.Background()
+	tests := []struct {
+		name string
+		opts *DetectOptions
+		want string
+	}{
+		{
+			name: "user json",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/user.json",
+				TokenURL:        "example.com",
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "user json with file universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/user_universe_domain.json",
+				TokenURL:        "example.com",
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "service account token URL json",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/sa.json",
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "external account json",
+			opts: &DetectOptions{
+				CredentialsFile:  "../internal/testdata/exaccount_user.json",
+				UseSelfSignedJWT: true,
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "service account impersonation json",
+			opts: &DetectOptions{
+				CredentialsFile:  "../internal/testdata/imp.json",
+				UseSelfSignedJWT: true,
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "service account json with file universe domain",
+			opts: &DetectOptions{
+				CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
+				UseSelfSignedJWT: true,
+			},
+			want: "example.com",
+		},
+		{
+			name: "service account json with options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile:  "../internal/testdata/sa.json",
+				UseSelfSignedJWT: true,
+				UniverseDomain:   "foo.com",
+			},
+			want: "foo.com",
+		},
+		{
+			name: "service account json with file and options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
+				UseSelfSignedJWT: true,
+				UniverseDomain:   "bar.com",
+			},
+			want: "bar.com",
+		},
+		{
+			name: "external account json with options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile:  "../internal/testdata/exaccount_user.json",
+				UseSelfSignedJWT: true,
+				UniverseDomain:   "foo.com",
+			},
+			want: "foo.com",
+		},
+		{
+			name: "impersonated service account json with options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile:  "../internal/testdata/imp.json",
+				UseSelfSignedJWT: true,
+				UniverseDomain:   "foo.com",
+			},
+			want: "foo.com",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			creds, err := DetectDefault(tt.opts)
+			if err != nil {
+				t.Fatalf("%s: %v", tt.name, err)
+			}
+			ud, err := creds.UniverseDomain(ctx)
+			if err != nil {
+				t.Fatalf("%s: %v", tt.name, err)
+			}
+			if ud != tt.want {
+				t.Fatalf("%s: got %q, want %q", tt.name, ud, tt.want)
 			}
 		})
 	}

@@ -59,6 +59,11 @@ type Options struct {
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
 	DetectOpts *detect.DetectOptions
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". This is the universe domain
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials.
+	UniverseDomain string
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.
@@ -140,8 +145,9 @@ func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) er
 		base = http.DefaultTransport.(*http.Transport).Clone()
 	}
 	client.Transport = &authTransport{
-		provider: creds,
-		base:     base,
+		creds: creds,
+		base:  base,
+		// TODO(quartzmo): Somehow set clientUniverseDomain from impersonate calls.
 	}
 	return nil
 }
