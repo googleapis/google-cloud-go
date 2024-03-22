@@ -8,6 +8,7 @@ require (
 	cloud.google.com/go v0.112.1
 	cloud.google.com/go/compute/metadata v0.2.3
 	cloud.google.com/go/iam v1.1.6
+	cloud.google.com/go/longrunning v0.5.5
 	github.com/golang/protobuf v1.5.3
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
