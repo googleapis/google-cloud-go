@@ -38,7 +38,7 @@ func TestRetrieveURLSubjectToken_Text(t *testing.T) {
 	opts := cloneTestOpts()
 	opts.CredentialSource = credsfile.CredentialSource{
 		URL:    ts.URL,
-		Format: credsfile.Format{Type: fileTypeText},
+		Format: &credsfile.Format{Type: fileTypeText},
 		Headers: map[string]string{
 			"Metadata": "True",
 		},
@@ -101,7 +101,7 @@ func TestRetrieveURLSubjectToken_JSON(t *testing.T) {
 	opts := cloneTestOpts()
 	opts.CredentialSource = credsfile.CredentialSource{
 		URL:    ts.URL,
-		Format: credsfile.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
+		Format: &credsfile.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
 	}
 
 	base, err := newSubjectTokenProvider(opts)

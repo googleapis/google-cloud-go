@@ -54,7 +54,7 @@ var (
 	}
 	testBaseCredSource = credsfile.CredentialSource{
 		File:   textBaseCredPath,
-		Format: credsfile.Format{Type: fileTypeText},
+		Format: &credsfile.Format{Type: fileTypeText},
 	}
 	testNow = func() time.Time { return time.Unix(expiry, 0) }
 )

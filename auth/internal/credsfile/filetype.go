@@ -100,7 +100,7 @@ type CredentialSource struct {
 	RegionalCredVerificationURL string            `json:"regional_cred_verification_url"`
 	CredVerificationURL         string            `json:"cred_verification_url"`
 	IMDSv2SessionTokenURL       string            `json:"imdsv2_session_token_url"`
-	Format                      Format            `json:"format"`
+	Format                      *Format           `json:"format"`
 }
 
 // Format describes the format of a [CredentialSource].

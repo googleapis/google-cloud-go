@@ -81,6 +81,10 @@ type Options struct {
 	// serviceusage.services.use IAM permission to use the project for
 	// billing/quota. Optional.
 	WorkforcePoolUserProject string
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// This value will be used in the default STS token URL. The default value
+	// is "googleapis.com". It will not be used if TokenURL is set. Optional.
+	UniverseDomain string
 	// Client for token request.
 	Client *http.Client
 }

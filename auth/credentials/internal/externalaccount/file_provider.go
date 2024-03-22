@@ -32,7 +32,7 @@ const (
 
 type fileSubjectProvider struct {
 	File   string
-	Format credsfile.Format
+	Format *credsfile.Format
 }
 
 func (sp *fileSubjectProvider) subjectToken(context.Context) (string, error) {

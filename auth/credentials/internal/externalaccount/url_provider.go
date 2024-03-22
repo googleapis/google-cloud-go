@@ -34,7 +34,7 @@ const (
 type urlSubjectProvider struct {
 	URL     string
 	Headers map[string]string
-	Format  credsfile.Format
+	Format  *credsfile.Format
 	Client  *http.Client
 }
 

@@ -38,7 +38,7 @@ func TestRetrieveFileSubjectToken(t *testing.T) {
 			name: "text file format",
 			cs: credsfile.CredentialSource{
 				File:   textBaseCredPath,
-				Format: credsfile.Format{Type: fileTypeText},
+				Format: &credsfile.Format{Type: fileTypeText},
 			},
 			want: "street123",
 		},
@@ -46,7 +46,7 @@ func TestRetrieveFileSubjectToken(t *testing.T) {
 			name: "JSON file format",
 			cs: credsfile.CredentialSource{
 				File:   jsonBaseCredPath,
-				Format: credsfile.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
+				Format: &credsfile.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
 			},
 			want: "321road",
 		},

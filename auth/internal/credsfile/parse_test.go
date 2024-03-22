@@ -216,7 +216,7 @@ func TestParseExternalAccount_URL(t *testing.T) {
 		TokenURL:                       "https://sts.googleapis.com/v1/token",
 		CredentialSource: CredentialSource{
 			URL: "http://localhost:5000/token",
-			Format: Format{
+			Format: &Format{
 				Type:                  "json",
 				SubjectTokenFieldName: "id_token",
 			},
