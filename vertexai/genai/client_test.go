@@ -63,7 +63,7 @@ func TestLive(t *testing.T) {
 	t.Run("streaming", func(t *testing.T) {
 		iter := model.GenerateContentStream(ctx, Text("Are you hungry?"))
 		got := responsesString(t, iter)
-		checkMatch(t, got, `(don't|do\s+not) (have|possess) .*(a .* body|the ability)`)
+		checkMatch(t, got, `(capable.+experienc.+hunger)|((don't|do\s+not) (have|possess) .*(a .* body|the ability))`)
 	})
 
 	t.Run("chat", func(t *testing.T) {
@@ -505,5 +505,32 @@ func TestTemperature(t *testing.T) {
 	}
 	if g := *got; g != 0 {
 		t.Errorf("got %v, want 0", g)
+	}
+}
+
+func TestIntFloatConversions(t *testing.T) {
+	for n, test := range []struct {
+		i *int32
+		f *float32
+	}{
+		{nil, nil},
+		{Ptr[int32](1), Ptr[float32](1)},
+	} {
+		t.Run(fmt.Sprintf("int-to-float-%d", n), func(t *testing.T) {
+			gotf := int32pToFloat32p(test.i)
+			if !reflect.DeepEqual(gotf, test.f) {
+				t.Errorf("got %v, want %v", gotf, test.f)
+			}
+		})
+		t.Run(fmt.Sprintf("float-to-int-%d", n), func(t *testing.T) {
+			goti := float32pToInt32p(test.f)
+			if !reflect.DeepEqual(goti, test.i) {
+				t.Errorf("got %v, want %v", goti, test.i)
+			}
+		})
+	}
+	goti := float32pToInt32p(Ptr[float32](1.5))
+	if !reflect.DeepEqual(goti, Ptr[int32](1)) {
+		t.Errorf("got %v, want *1", goti)
 	}
 }

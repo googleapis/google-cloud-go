@@ -283,12 +283,12 @@ type ScheduleOptions struct {
 	// Specifies time to start scheduling transfer runs. The first run will be
 	// scheduled at or after the start time according to a recurrence pattern
 	// defined in the schedule string. The start time can be changed at any
-	// moment. The time when a data transfer can be trigerred manually is not
+	// moment. The time when a data transfer can be triggered manually is not
 	// limited by this option.
 	StartTime *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
 	// Defines time to stop scheduling transfer runs. A transfer run cannot be
 	// scheduled at or after the end time. The end time can be changed at any
-	// moment. The time when a data transfer can be trigerred manually is not
+	// moment. The time when a data transfer can be triggered manually is not
 	// limited by this option.
 	EndTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
 }
@@ -433,8 +433,7 @@ type TransferConfig struct {
 	Params *structpb.Struct `protobuf:"bytes,9,opt,name=params,proto3" json:"params,omitempty"`
 	// Data transfer schedule.
 	// If the data source does not support a custom schedule, this should be
-	// empty. If it is empty, the default value for the data source will be
-	// used.
+	// empty. If it is empty, the default value for the data source will be used.
 	// The specified times are in UTC.
 	// Examples of valid format:
 	// `1st,3rd monday of month 15:30`,
@@ -452,11 +451,11 @@ type TransferConfig struct {
 	// For example, if `data_refresh_window_days = 10`, then every day
 	// BigQuery reingests data for [today-10, today-1], rather than ingesting data
 	// for just [today-1].
-	// Only valid if the data source supports the feature. Set the value to  0
+	// Only valid if the data source supports the feature. Set the value to 0
 	// to use the default value.
 	DataRefreshWindowDays int32 `protobuf:"varint,12,opt,name=data_refresh_window_days,json=dataRefreshWindowDays,proto3" json:"data_refresh_window_days,omitempty"`
-	// Is this config disabled. When set to true, no runs are scheduled
-	// for a given transfer.
+	// Is this config disabled. When set to true, no runs will be scheduled for
+	// this transfer config.
 	Disabled bool `protobuf:"varint,13,opt,name=disabled,proto3" json:"disabled,omitempty"`
 	// Output only. Data transfer modification time. Ignored by server on input.
 	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
@@ -472,7 +471,7 @@ type TransferConfig struct {
 	// associated with this transfer config finish.
 	//
 	// The format for specifying a pubsub topic is:
-	// `projects/{project}/topics/{topic}`
+	// `projects/{project_id}/topics/{topic_id}`
 	NotificationPubsubTopic string `protobuf:"bytes,15,opt,name=notification_pubsub_topic,json=notificationPubsubTopic,proto3" json:"notification_pubsub_topic,omitempty"`
 	// Email notifications will be sent according to these preferences
 	// to the email address of the user who owns this transfer config.
@@ -768,7 +767,7 @@ type TransferRun struct {
 	// transfer run finishes.
 	//
 	// The format for specifying a pubsub topic is:
-	// `projects/{project}/topics/{topic}`
+	// `projects/{project_id}/topics/{topic_id}`
 	NotificationPubsubTopic string `protobuf:"bytes,23,opt,name=notification_pubsub_topic,json=notificationPubsubTopic,proto3" json:"notification_pubsub_topic,omitempty"`
 	// Output only. Email notifications will be sent according to these
 	// preferences to the email address of the user who owns the transfer config

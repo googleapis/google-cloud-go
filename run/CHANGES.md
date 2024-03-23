@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.3.6](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.5...run/v1.3.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **run:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.3.5](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.4...run/v1.3.5) (2024-03-07)
+
+
+### Documentation
+
+* **run:** Clarify some defaults and required or optional values ([#9505](https://github.com/googleapis/google-cloud-go/issues/9505)) ([1cf28f6](https://github.com/googleapis/google-cloud-go/commit/1cf28f61b26d52a9e2303c52e9aba7a0cdfbe7eb))
+
 ## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.3...run/v1.3.4) (2024-01-30)
 
 

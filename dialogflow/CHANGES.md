@@ -1,5 +1,19 @@
 # Changes
 
+## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.50.0...dialogflow/v1.51.0) (2024-03-14)
+
+
+### Features
+
+* **dialogflow:** Added text sections to the submitted summary ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.49.0...dialogflow/v1.50.0) (2024-03-12)
+
+
+### Features
+
+* **dialogflow:** Added text sections to the submitted summary ([#9538](https://github.com/googleapis/google-cloud-go/issues/9538)) ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+
 ## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.2...dialogflow/v1.49.0) (2024-02-09)
 
 

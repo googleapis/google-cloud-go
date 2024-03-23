@@ -220,6 +220,9 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 	// Use the converters map to give every field a converter.
 	for _, ti := range toWrite {
 		for _, f := range ti.fields {
+			if f.converter != nil {
+				continue
+			}
 			f.converter, err = makeConverter(f.af.Type, f.protoType, converters)
 			if err != nil {
 				return nil, fmt.Errorf("%s.%s: %w", ti.protoName, f.protoName, err)
@@ -482,6 +485,13 @@ func processField(af *ast.Field, tc *typeConfig, typeInfos map[string]*typeInfo)
 				}
 				af.Type = expr
 			}
+			if fc.ConvertToFrom != "" {
+				c, err := parseCustomConverter(id.Name, fc.ConvertToFrom)
+				if err != nil {
+					return nil, err
+				}
+				fi.converter = c
+			}
 		}
 	}
 	af.Type = veneerType(af.Type, typeInfos)
@@ -541,7 +551,7 @@ func processEnumValues(d *ast.GenDecl, tc *typeConfig) []string {
 		if tc != nil {
 			vs.Type.(*ast.Ident).Name = tc.Name
 		}
-		modifyCommentGroup(vs.Doc, protoName, veneerName, "means", "")
+		modifyCommentGroup(vs.Doc, protoName, veneerName, "means", "", false)
 	}
 	return valueNames
 }
@@ -568,9 +578,11 @@ func veneerValueName(protoValueName string, tc *typeConfig) string {
 func processDoc(gd *ast.GenDecl, protoName string, tc *typeConfig) {
 	doc := ""
 	verb := ""
+	remOther := false
 	if tc != nil {
 		doc = tc.Doc
 		verb = tc.DocVerb
+		remOther = tc.RemoveOtherDoc
 	}
 
 	spec := gd.Specs[0]
@@ -586,10 +598,10 @@ func processDoc(gd *ast.GenDecl, protoName string, tc *typeConfig) {
 	if tc != nil && name != tc.Name {
 		panic(fmt.Errorf("GenDecl name is %q, config name is %q", name, tc.Name))
 	}
-	modifyCommentGroup(gd.Doc, protoName, name, verb, doc)
+	modifyCommentGroup(gd.Doc, protoName, name, verb, doc, remOther)
 }
 
-func modifyCommentGroup(cg *ast.CommentGroup, protoName, veneerName, verb, doc string) {
+func modifyCommentGroup(cg *ast.CommentGroup, protoName, veneerName, verb, doc string, removeOther bool) {
 	if cg == nil {
 		return
 	}
@@ -598,6 +610,9 @@ func modifyCommentGroup(cg *ast.CommentGroup, protoName, veneerName, verb, doc s
 	}
 	c := cg.List[0]
 	c.Text = "// " + adjustDoc(strings.TrimPrefix(c.Text, "// "), protoName, veneerName, verb, doc)
+	if removeOther {
+		cg.List = cg.List[:1]
+	}
 }
 
 // adjustDoc takes a doc string with initial comment characters and whitespace removed, and returns

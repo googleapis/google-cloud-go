@@ -45,18 +45,19 @@ var newFeatureOnlineStoreClientHook clientHook
 
 // FeatureOnlineStoreCallOptions contains the retry settings for each method of FeatureOnlineStoreClient.
 type FeatureOnlineStoreCallOptions struct {
-	FetchFeatureValues    []gax.CallOption
-	SearchNearestEntities []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
-	GetIamPolicy          []gax.CallOption
-	SetIamPolicy          []gax.CallOption
-	TestIamPermissions    []gax.CallOption
-	CancelOperation       []gax.CallOption
-	DeleteOperation       []gax.CallOption
-	GetOperation          []gax.CallOption
-	ListOperations        []gax.CallOption
-	WaitOperation         []gax.CallOption
+	FetchFeatureValues          []gax.CallOption
+	StreamingFetchFeatureValues []gax.CallOption
+	SearchNearestEntities       []gax.CallOption
+	GetLocation                 []gax.CallOption
+	ListLocations               []gax.CallOption
+	GetIamPolicy                []gax.CallOption
+	SetIamPolicy                []gax.CallOption
+	TestIamPermissions          []gax.CallOption
+	CancelOperation             []gax.CallOption
+	DeleteOperation             []gax.CallOption
+	GetOperation                []gax.CallOption
+	ListOperations              []gax.CallOption
+	WaitOperation               []gax.CallOption
 }
 
 func defaultFeatureOnlineStoreGRPCClientOptions() []option.ClientOption {
@@ -75,35 +76,37 @@ func defaultFeatureOnlineStoreGRPCClientOptions() []option.ClientOption {
 
 func defaultFeatureOnlineStoreCallOptions() *FeatureOnlineStoreCallOptions {
 	return &FeatureOnlineStoreCallOptions{
-		FetchFeatureValues:    []gax.CallOption{},
-		SearchNearestEntities: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
-		WaitOperation:         []gax.CallOption{},
+		FetchFeatureValues:          []gax.CallOption{},
+		StreamingFetchFeatureValues: []gax.CallOption{},
+		SearchNearestEntities:       []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
+		GetIamPolicy:                []gax.CallOption{},
+		SetIamPolicy:                []gax.CallOption{},
+		TestIamPermissions:          []gax.CallOption{},
+		CancelOperation:             []gax.CallOption{},
+		DeleteOperation:             []gax.CallOption{},
+		GetOperation:                []gax.CallOption{},
+		ListOperations:              []gax.CallOption{},
+		WaitOperation:               []gax.CallOption{},
 	}
 }
 
 func defaultFeatureOnlineStoreRESTCallOptions() *FeatureOnlineStoreCallOptions {
 	return &FeatureOnlineStoreCallOptions{
-		FetchFeatureValues:    []gax.CallOption{},
-		SearchNearestEntities: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
-		WaitOperation:         []gax.CallOption{},
+		FetchFeatureValues:          []gax.CallOption{},
+		StreamingFetchFeatureValues: []gax.CallOption{},
+		SearchNearestEntities:       []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
+		GetIamPolicy:                []gax.CallOption{},
+		SetIamPolicy:                []gax.CallOption{},
+		TestIamPermissions:          []gax.CallOption{},
+		CancelOperation:             []gax.CallOption{},
+		DeleteOperation:             []gax.CallOption{},
+		GetOperation:                []gax.CallOption{},
+		ListOperations:              []gax.CallOption{},
+		WaitOperation:               []gax.CallOption{},
 	}
 }
 
@@ -113,6 +116,7 @@ type internalFeatureOnlineStoreClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	FetchFeatureValues(context.Context, *aiplatformpb.FetchFeatureValuesRequest, ...gax.CallOption) (*aiplatformpb.FetchFeatureValuesResponse, error)
+	StreamingFetchFeatureValues(context.Context, ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error)
 	SearchNearestEntities(context.Context, *aiplatformpb.SearchNearestEntitiesRequest, ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -164,6 +168,15 @@ func (c *FeatureOnlineStoreClient) Connection() *grpc.ClientConn {
 // FetchFeatureValues fetch feature values under a FeatureView.
 func (c *FeatureOnlineStoreClient) FetchFeatureValues(ctx context.Context, req *aiplatformpb.FetchFeatureValuesRequest, opts ...gax.CallOption) (*aiplatformpb.FetchFeatureValuesResponse, error) {
 	return c.internalClient.FetchFeatureValues(ctx, req, opts...)
+}
+
+// StreamingFetchFeatureValues bidirectional streaming RPC to fetch feature values under a FeatureView.
+// Requests may not have a one-to-one mapping to responses and responses may
+// be returned out-of-order to reduce latency.
+//
+// This method is not supported for the REST transport.
+func (c *FeatureOnlineStoreClient) StreamingFetchFeatureValues(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error) {
+	return c.internalClient.StreamingFetchFeatureValues(ctx, opts...)
 }
 
 // SearchNearestEntities search the nearest entities under a FeatureView.
@@ -395,6 +408,21 @@ func (c *featureOnlineStoreGRPCClient) FetchFeatureValues(ctx context.Context, r
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.featureOnlineStoreClient.FetchFeatureValues(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureOnlineStoreGRPCClient) StreamingFetchFeatureValues(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient
+	opts = append((*c.CallOptions).StreamingFetchFeatureValues[0:len((*c.CallOptions).StreamingFetchFeatureValues):len((*c.CallOptions).StreamingFetchFeatureValues)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureOnlineStoreClient.StreamingFetchFeatureValues(ctx, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -708,6 +736,15 @@ func (c *featureOnlineStoreRESTClient) FetchFeatureValues(ctx context.Context, r
 		return nil, e
 	}
 	return resp, nil
+}
+
+// StreamingFetchFeatureValues bidirectional streaming RPC to fetch feature values under a FeatureView.
+// Requests may not have a one-to-one mapping to responses and responses may
+// be returned out-of-order to reduce latency.
+//
+// This method is not supported for the REST transport.
+func (c *featureOnlineStoreRESTClient) StreamingFetchFeatureValues(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error) {
+	return nil, fmt.Errorf("StreamingFetchFeatureValues not yet supported for REST clients")
 }
 
 // SearchNearestEntities search the nearest entities under a FeatureView.
