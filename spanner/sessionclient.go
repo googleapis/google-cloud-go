@@ -328,9 +328,15 @@ func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 // session. Using the same channel for all gRPC calls for a session ensures the
 // optimal usage of server side caches.
 func (sc *sessionClient) nextClient() (*vkit.Client, error) {
-	// This call should never return an error as we are passing in an existing
-	// connection, so we can safely ignore it.
-	client, err := vkit.NewClient(context.Background(), option.WithGRPCConn(sc.connPool.Conn()))
+	var clientOpt option.ClientOption
+	if _, ok := sc.connPool.(*gmeWrapper); ok {
+		// Pass GCPMultiEndpoint as a pool.
+		clientOpt = gtransport.WithConnPool(sc.connPool)
+	} else {
+		// Pick a grpc.ClientConn from a regular pool.
+		clientOpt = option.WithGRPCConn(sc.connPool.Conn())
+	}
+	client, err := vkit.NewClient(context.Background(), clientOpt)
 	if err != nil {
 		return nil, err
 	}

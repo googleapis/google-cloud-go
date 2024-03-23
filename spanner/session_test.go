@@ -1845,6 +1845,10 @@ func TestMaintenanceWindow_CycleAndUpdateMaxCheckedOut(t *testing.T) {
 }
 
 func TestSessionCreationIsDistributedOverChannels(t *testing.T) {
+	if useGRPCgcp {
+		// Session distribution with GCPMultiEndpoint is tested in sessionclient_test.go/TestBatchCreateAndCloseSession.
+		t.Skip("GCPMultiEndpoint hides behind a single grpc.ClientConn")
+	}
 	t.Parallel()
 	numChannels := 4
 	spc := SessionPoolConfig{
