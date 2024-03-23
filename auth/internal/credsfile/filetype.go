@@ -27,8 +27,9 @@ type Config3LO struct {
 
 // ClientCredentialsFile representation.
 type ClientCredentialsFile struct {
-	Web       *Config3LO `json:"web"`
-	Installed *Config3LO `json:"installed"`
+	Web            *Config3LO `json:"web"`
+	Installed      *Config3LO `json:"installed"`
+	UniverseDomain string     `json:"universe_domain"`
 }
 
 // ServiceAccountFile representation.
@@ -51,6 +52,7 @@ type UserCredentialsFile struct {
 	ClientSecret   string `json:"client_secret"`
 	QuotaProjectID string `json:"quota_project_id"`
 	RefreshToken   string `json:"refresh_token"`
+	UniverseDomain string `json:"universe_domain"`
 }
 
 // ExternalAccountFile representation.
@@ -81,6 +83,7 @@ type ExternalAccountAuthorizedUserFile struct {
 	TokenInfoURL   string `json:"token_info_url"`
 	RevokeURL      string `json:"revoke_url"`
 	QuotaProjectID string `json:"quota_project_id"`
+	UniverseDomain string `json:"universe_domain"`
 }
 
 // CredentialSource stores the information necessary to retrieve the credentials for the STS exchange.
@@ -132,12 +135,13 @@ type ImpersonatedServiceAccountFile struct {
 
 // GDCHServiceAccountFile represents the Google Distributed Cloud Hosted (GDCH) service identity file.
 type GDCHServiceAccountFile struct {
-	Type          string `json:"type"`
-	FormatVersion string `json:"format_version"`
-	Project       string `json:"project"`
-	Name          string `json:"name"`
-	CertPath      string `json:"ca_cert_path"`
-	PrivateKeyID  string `json:"private_key_id"`
-	PrivateKey    string `json:"private_key"`
-	TokenURL      string `json:"token_uri"`
+	Type           string `json:"type"`
+	FormatVersion  string `json:"format_version"`
+	Project        string `json:"project"`
+	Name           string `json:"name"`
+	CertPath       string `json:"ca_cert_path"`
+	PrivateKeyID   string `json:"private_key_id"`
+	PrivateKey     string `json:"private_key"`
+	TokenURL       string `json:"token_uri"`
+	UniverseDomain string `json:"universe_domain"`
 }

@@ -41,7 +41,7 @@ type tokResp struct {
 
 func TestDefaultCredentials_GdchServiceAccountKey(t *testing.T) {
 	ctx := context.Background()
-	aud := "http://sampele-aud.com/"
+	aud := "http://sample-aud.com/"
 	b, err := os.ReadFile("../internal/testdata/gdch.json")
 	if err != nil {
 		t.Fatal(err)
@@ -285,7 +285,7 @@ func TestDefaultCredentials_UserCredentialsKey_UniverseDomain(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if want := "googleapis.com"; got != want {
+	if want := "example.com"; got != want {
 		t.Fatalf("got %q, want %q", got, want)
 	}
 	tok, err := creds.Token(context.Background())
@@ -729,41 +729,9 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 		want string
 	}{
 		{
-			name: "user json",
-			opts: &DetectOptions{
-				CredentialsFile: "../internal/testdata/user.json",
-				TokenURL:        "example.com",
-			},
-			want: "googleapis.com",
-		},
-		{
-			name: "user json with file universe domain",
-			opts: &DetectOptions{
-				CredentialsFile: "../internal/testdata/user_universe_domain.json",
-				TokenURL:        "example.com",
-			},
-			want: "googleapis.com",
-		},
-		{
-			name: "service account token URL json",
+			name: "service account json",
 			opts: &DetectOptions{
 				CredentialsFile: "../internal/testdata/sa.json",
-			},
-			want: "googleapis.com",
-		},
-		{
-			name: "external account json",
-			opts: &DetectOptions{
-				CredentialsFile:  "../internal/testdata/exaccount_user.json",
-				UseSelfSignedJWT: true,
-			},
-			want: "googleapis.com",
-		},
-		{
-			name: "service account impersonation json",
-			opts: &DetectOptions{
-				CredentialsFile:  "../internal/testdata/imp.json",
-				UseSelfSignedJWT: true,
 			},
 			want: "googleapis.com",
 		},
@@ -789,18 +757,116 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 			opts: &DetectOptions{
 				CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
 				UseSelfSignedJWT: true,
-				UniverseDomain:   "bar.com",
+				UniverseDomain:   "foo.com",
 			},
-			want: "bar.com",
+			want: "foo.com",
+		},
+		{
+			name: "user json",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/user.json",
+				TokenURL:        "example.com",
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "user json with options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/user.json",
+				UniverseDomain:  "foo.com",
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "user json with file universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/user_universe_domain.json",
+				TokenURL:        "example.com",
+			},
+			want: "example.com",
+		},
+		{
+			name: "user json with file and options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/user_universe_domain.json",
+				UniverseDomain:  "foo.com",
+			},
+			want: "example.com",
+		},
+		{
+			name: "external account json",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/exaccount_url.json",
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "external account json with file universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/exaccount_url_universe_domain.json",
+			},
+			want: "example.com",
 		},
 		{
 			name: "external account json with options universe domain",
 			opts: &DetectOptions{
-				CredentialsFile:  "../internal/testdata/exaccount_user.json",
-				UseSelfSignedJWT: true,
-				UniverseDomain:   "foo.com",
+				CredentialsFile: "../internal/testdata/exaccount_url.json",
+				UniverseDomain:  "foo.com",
 			},
 			want: "foo.com",
+		},
+		{
+			name: "external account json with file and options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/exaccount_url_universe_domain.json",
+				UniverseDomain:  "foo.com",
+			},
+			want: "foo.com",
+		},
+		{
+			name: "external account user json",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/exaccount_user.json",
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "external account user json with file universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/exaccount_user_universe_domain.json",
+			},
+			want: "example.com",
+		},
+		{
+			name: "external account user json with options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/exaccount_user.json",
+				UniverseDomain:  "foo.com",
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "external account user json with file and options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/exaccount_user_universe_domain.json",
+				UniverseDomain:  "foo.com",
+			},
+			want: "example.com",
+		},
+		{
+			name: "impersonated service account json",
+			opts: &DetectOptions{
+				CredentialsFile:  "../internal/testdata/imp.json",
+				UseSelfSignedJWT: true,
+			},
+			want: "googleapis.com",
+		},
+		{
+			name: "impersonated service account json with file universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/imp_universe_domain.json",
+			},
+			want: "example.com",
 		},
 		{
 			name: "impersonated service account json with options universe domain",
@@ -808,6 +874,14 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 				CredentialsFile:  "../internal/testdata/imp.json",
 				UseSelfSignedJWT: true,
 				UniverseDomain:   "foo.com",
+			},
+			want: "foo.com",
+		},
+		{
+			name: "impersonated service account json with file and options universe domain",
+			opts: &DetectOptions{
+				CredentialsFile: "../internal/testdata/imp_universe_domain.json",
+				UniverseDomain:  "foo.com",
 			},
 			want: "foo.com",
 		},
