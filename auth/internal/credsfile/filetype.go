@@ -14,7 +14,9 @@
 
 package credsfile
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Config3LO is the internals of a client creds file.
 type Config3LO struct {
@@ -57,19 +59,19 @@ type UserCredentialsFile struct {
 
 // ExternalAccountFile representation.
 type ExternalAccountFile struct {
-	Type                           string                          `json:"type"`
-	ClientID                       string                          `json:"client_id"`
-	ClientSecret                   string                          `json:"client_secret"`
-	Audience                       string                          `json:"audience"`
-	SubjectTokenType               string                          `json:"subject_token_type"`
-	ServiceAccountImpersonationURL string                          `json:"service_account_impersonation_url"`
-	TokenURL                       string                          `json:"token_url"`
-	CredentialSource               CredentialSource                `json:"credential_source"`
-	TokenInfoURL                   string                          `json:"token_info_url"`
-	ServiceAccountImpersonation    ServiceAccountImpersonationInfo `json:"service_account_impersonation"`
-	QuotaProjectID                 string                          `json:"quota_project_id"`
-	WorkforcePoolUserProject       string                          `json:"workforce_pool_user_project"`
-	UniverseDomain                 string                          `json:"universe_domain"`
+	Type                           string                           `json:"type"`
+	ClientID                       string                           `json:"client_id"`
+	ClientSecret                   string                           `json:"client_secret"`
+	Audience                       string                           `json:"audience"`
+	SubjectTokenType               string                           `json:"subject_token_type"`
+	ServiceAccountImpersonationURL string                           `json:"service_account_impersonation_url"`
+	TokenURL                       string                           `json:"token_url"`
+	CredentialSource               *CredentialSource                `json:"credential_source,omitempty"`
+	TokenInfoURL                   string                           `json:"token_info_url"`
+	ServiceAccountImpersonation    *ServiceAccountImpersonationInfo `json:"service_account_impersonation,omitempty"`
+	QuotaProjectID                 string                           `json:"quota_project_id"`
+	WorkforcePoolUserProject       string                           `json:"workforce_pool_user_project"`
+	UniverseDomain                 string                           `json:"universe_domain"`
 }
 
 // ExternalAccountAuthorizedUserFile representation.
@@ -94,13 +96,13 @@ type CredentialSource struct {
 	File                        string            `json:"file"`
 	URL                         string            `json:"url"`
 	Headers                     map[string]string `json:"headers"`
-	Executable                  *ExecutableConfig `json:"executable"`
+	Executable                  *ExecutableConfig `json:"executable,omitempty"`
 	EnvironmentID               string            `json:"environment_id"`
 	RegionURL                   string            `json:"region_url"`
 	RegionalCredVerificationURL string            `json:"regional_cred_verification_url"`
 	CredVerificationURL         string            `json:"cred_verification_url"`
 	IMDSv2SessionTokenURL       string            `json:"imdsv2_session_token_url"`
-	Format                      Format            `json:"format"`
+	Format                      *Format           `json:"format,omitempty"`
 }
 
 // Format describes the format of a [CredentialSource].
@@ -115,7 +117,7 @@ type Format struct {
 // [CredentialSource].
 type ExecutableConfig struct {
 	Command       string `json:"command"`
-	TimeoutMillis *int   `json:"timeout_millis"`
+	TimeoutMillis int    `json:"timeout_millis"`
 	OutputFile    string `json:"output_file"`
 }
 
