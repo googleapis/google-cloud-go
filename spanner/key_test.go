@@ -55,6 +55,11 @@ func TestKey(t *testing.T) {
 		wantStr   string
 	}{
 		{
+			k:         Key{uint(4611686018427387904)},
+			wantProto: listValueProto(stringProto("4611686018427387904")),
+			wantStr:   "(4611686018427387904)",
+		},
+		{
 			k:         Key{int(1)},
 			wantProto: listValueProto(stringProto("1")),
 			wantStr:   "(1)",
