@@ -118,7 +118,7 @@ func NewClient(ctx context.Context, projectID string, cfg Config, opts ...option
 		for _, req := range reqs {
 			_, err = client.apiClient.ReportErrorEvent(ctx, req)
 			if err != nil {
-				client.onError(err)
+				client.onError(fmt.Errorf("report error event: %w", err))
 			}
 		}
 	})
