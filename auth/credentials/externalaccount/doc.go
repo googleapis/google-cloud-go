@@ -16,6 +16,51 @@
 // federation and workforce identity federation token sources that can be used
 // to access Google Cloud resources from external identity providers.
 //
+// # Workload Identity Federation
+//
+// Using workload identity federation, your application can access Google Cloud
+// resources from Amazon Web Services (AWS), Microsoft Azure or any identity
+// provider that supports OpenID Connect (OIDC) or SAML 2.0.
+// Traditionally, applications running outside Google Cloud have used service
+// account keys to access Google Cloud resources. Using identity federation,
+// you can allow your workload to impersonate a service account.
+// This lets you access Google Cloud resources directly, eliminating the
+// maintenance and security burden associated with service account keys.
+//
+// Follow the detailed instructions on how to configure Workload Identity
+// Federation in various platforms:
+//
+// - Amazon Web Services (AWS): https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds#aws
+// - Microsoft Azure: https://cloud.google.com/iam/docs/workload-identity-federation-with-other-clouds#azure
+// - OIDC identity provider: https://cloud.google.com/iam/docs/workload-identity-federation-with-other-providers#oidc
+// - SAML 2.0 identity provider: https://cloud.google.com/iam/docs/workload-identity-federation-with-other-providers#saml
+//
+// For OIDC and SAML providers, the library can retrieve tokens in fours ways:
+// from a local file location (file-sourced credentials), from a server
+// (URL-sourced credentials), from a local executable (executable-sourced
+// credentials), or from a user defined function that returns an OIDC or SAML token.
+// For file-sourced credentials, a background process needs to be continuously
+// refreshing the file location with a new OIDC/SAML token prior to expiration.
+// For tokens with one hour lifetimes, the token needs to be updated in the file
+// every hour. The token can be stored directly as plain text or in JSON format.
+// For URL-sourced credentials, a local server needs to host a GET endpoint to
+// return the OIDC/SAML token. The response can be in plain text or JSON.
+// Additional required request headers can also be specified.
+// For executable-sourced credentials, an application needs to be available to
+// output the OIDC/SAML token and other information in a JSON format.
+// For more information on how these work (and how to implement
+// executable-sourced credentials), please check out:
+// https://cloud.google.com/iam/docs/workload-identity-federation-with-other-providers#create_a_credential_configuration
+//
+// To use a custom function to supply the token, define a struct that implements
+// the [SubjectTokenProvider] interface for OIDC/SAML providers, or one that
+// implements [AwsSecurityCredentialsProvider] for AWS providers. This can then
+// be used when building a [Options].The [cloud.google.com/go/auth.Credentials]
+// created from the options using [NewCredentials] can then be used to access
+// Google Cloud resources. For instance, you can create a new client from the
+// [cloud.google.com/go/storage] package and pass in
+// option.WithTokenProvider(yourTokenProvider))
+//
 // # Workforce Identity Federation
 //
 // Workforce identity federation lets you use an external identity provider
