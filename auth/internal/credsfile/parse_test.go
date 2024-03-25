@@ -273,8 +273,7 @@ func TestParseExternalAccount_Cmd(t *testing.T) {
 			},
 		},
 	}
-	timeout := 5000
-	want.CredentialSource.Executable.TimeoutMillis = &timeout
+	want.CredentialSource.Executable.TimeoutMillis = 5000
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("(-want +got):\n%s", diff)
 	}

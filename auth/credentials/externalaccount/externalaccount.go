@@ -135,7 +135,7 @@ type ExecutableConfig struct {
 	// This can include arguments. Must be an absolute path for the program. Required.
 	Command string
 	// TimeoutMillis is the timeout duration, in milliseconds. Defaults to 30000 milliseconds when not provided. Optional.
-	TimeoutMillis *int
+	TimeoutMillis int
 	// OutputFile is the absolute path to the output file where the executable will cache the response.
 	// If specified the auth libraries will first check this location before running the executable. Optional.
 	OutputFile string

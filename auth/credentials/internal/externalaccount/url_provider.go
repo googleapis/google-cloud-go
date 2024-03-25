@@ -61,6 +61,9 @@ func (sp *urlSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 		return "", fmt.Errorf("credentials: status code %d: %s", c, respBody)
 	}
 
+	if sp.Format == nil {
+		return string(respBody), nil
+	}
 	switch sp.Format.Type {
 	case "json":
 		jsonData := make(map[string]interface{})
@@ -77,7 +80,7 @@ func (sp *urlSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 			return "", errors.New("credentials: improperly formatted subject token")
 		}
 		return token, nil
-	case fileTypeText, "":
+	case fileTypeText:
 		return string(respBody), nil
 	default:
 		return "", errors.New("credentials: invalid credential_source file format type: " + sp.Format.Type)

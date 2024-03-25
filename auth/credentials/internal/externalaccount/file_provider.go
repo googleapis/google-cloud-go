@@ -46,6 +46,10 @@ func (sp *fileSubjectProvider) subjectToken(context.Context) (string, error) {
 		return "", fmt.Errorf("credentials: failed to read credential file: %w", err)
 	}
 	tokenBytes = bytes.TrimSpace(tokenBytes)
+
+	if sp.Format == nil {
+		return string(tokenBytes), nil
+	}
 	switch sp.Format.Type {
 	case fileTypeJSON:
 		jsonData := make(map[string]interface{})
@@ -62,7 +66,7 @@ func (sp *fileSubjectProvider) subjectToken(context.Context) (string, error) {
 			return "", errors.New("credentials: improperly formatted subject token")
 		}
 		return token, nil
-	case fileTypeText, "":
+	case fileTypeText:
 		return string(tokenBytes), nil
 	default:
 		return "", errors.New("credentials: invalid credential_source file format type: " + sp.Format.Type)

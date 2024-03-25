@@ -44,7 +44,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 			name: "Basic Creation",
 			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
-				TimeoutMillis: Int(50000),
+				TimeoutMillis: 50000,
 			},
 			wantTimeout: 50000 * time.Millisecond,
 		},
@@ -64,7 +64,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 			name: "Timeout Too Low",
 			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
-				TimeoutMillis: Int(4999),
+				TimeoutMillis: 4999,
 			},
 			skipErrorEquals: true,
 		},
@@ -72,7 +72,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 			name: "Timeout Lower Bound",
 			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
-				TimeoutMillis: Int(5000),
+				TimeoutMillis: 5000,
 			},
 			wantTimeout: 5000 * time.Millisecond,
 		},
@@ -80,7 +80,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 			name: "Timeout Upper Bound",
 			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
-				TimeoutMillis: Int(120000),
+				TimeoutMillis: 120000,
 			},
 			wantTimeout: 120000 * time.Millisecond,
 		},
@@ -88,7 +88,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 			name: "Timeout Too High",
 			executableConfig: credsfile.ExecutableConfig{
 				Command:       "blarg",
-				TimeoutMillis: Int(120001),
+				TimeoutMillis: 120001,
 			},
 			skipErrorEquals: true,
 		},
@@ -244,7 +244,7 @@ func TestRetrieveExecutableSubjectTokenExecutableErrors(t *testing.T) {
 	cs := credsfile.CredentialSource{
 		Executable: &credsfile.ExecutableConfig{
 			Command:       "blarg",
-			TimeoutMillis: Int(5000),
+			TimeoutMillis: 5000,
 		},
 	}
 
@@ -476,7 +476,7 @@ func TestRetrieveExecutableSubjectTokenSuccesses(t *testing.T) {
 	cs := credsfile.CredentialSource{
 		Executable: &credsfile.ExecutableConfig{
 			Command:       "blarg",
-			TimeoutMillis: Int(5000),
+			TimeoutMillis: 5000,
 		},
 	}
 
@@ -585,7 +585,7 @@ func TestRetrieveOutputFileSubjectTokenNotJSON(t *testing.T) {
 	cs := credsfile.CredentialSource{
 		Executable: &credsfile.ExecutableConfig{
 			Command:       "blarg",
-			TimeoutMillis: Int(5000),
+			TimeoutMillis: 5000,
 			OutputFile:    outputFile.Name(),
 		},
 	}
@@ -733,7 +733,7 @@ func TestRetrieveOutputFileSubjectTokenFailureTests(t *testing.T) {
 			cs := credsfile.CredentialSource{
 				Executable: &credsfile.ExecutableConfig{
 					Command:       "blarg",
-					TimeoutMillis: Int(5000),
+					TimeoutMillis: 5000,
 					OutputFile:    outputFile.Name(),
 				},
 			}
@@ -835,7 +835,7 @@ func TestRetrieveOutputFileSubjectTokenInvalidCache(t *testing.T) {
 			cs := credsfile.CredentialSource{
 				Executable: &credsfile.ExecutableConfig{
 					Command:       "blarg",
-					TimeoutMillis: Int(5000),
+					TimeoutMillis: 5000,
 					OutputFile:    outputFile.Name(),
 				},
 			}
@@ -940,7 +940,7 @@ func TestRetrieveOutputFileSubjectTokenJwt(t *testing.T) {
 			cs := credsfile.CredentialSource{
 				Executable: &credsfile.ExecutableConfig{
 					Command:       "blarg",
-					TimeoutMillis: Int(5000),
+					TimeoutMillis: 5000,
 					OutputFile:    outputFile.Name(),
 				},
 			}
@@ -1020,10 +1020,6 @@ func (t *testEnvironment) now() time.Time {
 
 func Bool(b bool) *bool {
 	return &b
-}
-
-func Int(i int) *int {
-	return &i
 }
 
 func TestServiceAccountImpersonationRE(t *testing.T) {

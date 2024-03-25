@@ -115,7 +115,7 @@ type Format struct {
 // [CredentialSource].
 type ExecutableConfig struct {
 	Command       string `json:"command"`
-	TimeoutMillis *int   `json:"timeout_millis"`
+	TimeoutMillis int   `json:"timeout_millis"`
 	OutputFile    string `json:"output_file"`
 }
 

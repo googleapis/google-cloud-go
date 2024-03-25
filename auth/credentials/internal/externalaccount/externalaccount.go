@@ -228,10 +228,10 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 
 		execProvider := &executableSubjectProvider{}
 		execProvider.Command = ec.Command
-		if ec.TimeoutMillis == nil {
+		if ec.TimeoutMillis == 0 {
 			execProvider.Timeout = executableDefaultTimeout
 		} else {
-			execProvider.Timeout = time.Duration(*ec.TimeoutMillis) * time.Millisecond
+			execProvider.Timeout = time.Duration(ec.TimeoutMillis) * time.Millisecond
 			if execProvider.Timeout < timeoutMinimum || execProvider.Timeout > timeoutMaximum {
 				return nil, fmt.Errorf("credentials: invalid `timeout_millis` field — executable timeout must be between %v and %v seconds", timeoutMinimum.Seconds(), timeoutMaximum.Seconds())
 			}
