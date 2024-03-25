@@ -121,9 +121,9 @@ func TestImpersonation(t *testing.T) {
 				t.Fatalf("Failed to create TokenSource: %v", err)
 			}
 
-			oldNow := now
-			defer func() { now = oldNow }()
-			now = testNow
+			oldNow := Now
+			defer func() { Now = oldNow }()
+			Now = testNow
 
 			tok, err := tp.Token(context.Background())
 			if err != nil {

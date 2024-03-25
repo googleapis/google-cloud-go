@@ -308,9 +308,9 @@ func run(t *testing.T, opts *Options, tets *testExchangeTokenServer) (*auth.Toke
 	defer server.Close()
 	opts.TokenURL = server.URL
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = testNow
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = testNow
 
 	stp, err := newSubjectTokenProvider(opts)
 	if err != nil {

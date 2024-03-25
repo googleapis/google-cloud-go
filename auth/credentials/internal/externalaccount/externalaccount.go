@@ -35,8 +35,8 @@ const (
 )
 
 var (
-	// now aliases time.Now for testing
-	now = func() time.Time {
+	// Now aliases time.Now for testing
+	Now = func() time.Time {
 		return time.Now().UTC()
 	}
 	validWorkforceAudiencePattern *regexp.Regexp = regexp.MustCompile(`//iam\.googleapis\.com/locations/[^/]+/workforcePools/`)
@@ -274,7 +274,7 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	if stsResp.ExpiresIn <= 0 {
 		return nil, fmt.Errorf("credentials: got invalid expiry from security token service")
 	}
-	tok.Expiry = now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
+	tok.Expiry = Now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
 	return tok, nil
 }
 

@@ -60,7 +60,7 @@ const (
 	// The AWS authorization header name for the auto-generated date.
 	awsDateHeader = "x-amz-date"
 
-	defaultRegionalCredentialVerificationUrl = "https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15"
+	defaultRegionalCredentialVerificationURL = "https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15"
 
 	// Supported AWS configuration environment variables.
 	awsAccessKeyIDEnvVar     = "AWS_ACCESS_KEY_ID"
@@ -92,7 +92,7 @@ type awsSubjectProvider struct {
 func (sp *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) {
 	// Set Defaults
 	if sp.RegionalCredVerificationURL == "" {
-		sp.RegionalCredVerificationURL = defaultRegionalCredentialVerificationUrl
+		sp.RegionalCredVerificationURL = defaultRegionalCredentialVerificationURL
 	}
 	if sp.requestSigner == nil {
 		headers := make(map[string]string)
@@ -356,7 +356,7 @@ type awsRequestSigner struct {
 func (rs *awsRequestSigner) signRequest(req *http.Request) error {
 	// req is assumed non-nil
 	signedRequest := cloneRequest(req)
-	timestamp := now()
+	timestamp := Now()
 	signedRequest.Header.Set("host", requestHost(req))
 	if rs.AwsSecurityCredentials.SessionToken != "" {
 		signedRequest.Header.Set(awsSecurityTokenHeader, rs.AwsSecurityCredentials.SessionToken)
