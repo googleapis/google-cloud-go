@@ -85,13 +85,13 @@ type Options struct {
 	// This value will be used in the default STS token URL. The default value
 	// is "googleapis.com". It will not be used if TokenURL is set. Optional.
 	UniverseDomain string
-	// SubjectTokenProvider is an optional token supplier for OIDC/SAML
-	// credentials. One of SubjectTokenProvider, AWSSecurityCredentialSupplier
+	// SubjectTokenProvider is an optional token provider for OIDC/SAML
+	// credentials. One of SubjectTokenProvider, AWSSecurityCredentialProvider
 	// or CredentialSource must be provided. Optional.
 	SubjectTokenProvider SubjectTokenProvider
-	// AwsSecurityCredentialsProvider is an AWS Security Credential supplier
-	// for AWS credentials. One of SubjectTokenSupplier,
-	// AWSSecurityCredentialSupplier or CredentialSource must be provided. Optional.
+	// AwsSecurityCredentialsProvider is an AWS Security Credential provider
+	// for AWS credentials. One of SubjectTokenProvider,
+	// AWSSecurityCredentialProvider or CredentialSource must be provided. Optional.
 	AwsSecurityCredentialsProvider AwsSecurityCredentialsProvider
 	// Client for token request.
 	Client *http.Client
@@ -102,7 +102,7 @@ type Options struct {
 type SubjectTokenProvider interface {
 	// SubjectToken should return a valid subject token or an error.
 	// The external account token source does not cache the returned subject
-	// token, so caching logic should be implemented in the supplier to prevent
+	// token, so caching logic should be implemented in the provider to prevent
 	// multiple requests for the same subject token.
 	SubjectToken(ctx context.Context, opts *RequestOptions) (string, error)
 }
@@ -129,7 +129,7 @@ type AwsSecurityCredentialsProvider interface {
 	// GetAwsSecurityCredentials should return a valid set of
 	// AwsSecurityCredentials or an error. The external account token source
 	// does not cache the returned security credentials, so caching logic should
-	// be implemented in the supplier to prevent multiple requests for the
+	// be implemented in the provider to prevent multiple requests for the
 	// same security credentials.
 	AwsSecurityCredentials(ctx context.Context, opts *RequestOptions) (*AwsSecurityCredentials, error)
 }
@@ -168,10 +168,10 @@ func (o *Options) validate() error {
 		count++
 	}
 	if count == 0 {
-		return fmt.Errorf("externalaccount: one of CredentialSource, SubjectTokenSupplier, or AwsSecurityCredentialsSupplier must be set")
+		return fmt.Errorf("externalaccount: one of CredentialSource, SubjectTokenProvider, or AwsSecurityCredentialsProvider must be set")
 	}
 	if count > 1 {
-		return fmt.Errorf("externalaccount: only one of CredentialSource, SubjectTokenSupplier, or AwsSecurityCredentialsSupplier must be set")
+		return fmt.Errorf("externalaccount: only one of CredentialSource, SubjectTokenProvider, or AwsSecurityCredentialsProvider must be set")
 	}
 	return nil
 }
@@ -281,16 +281,16 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 // newSubjectTokenProvider determines the type of credsfile.CredentialSource needed to create a
 // subjectTokenProvider
 func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
-	supplierOpts := &RequestOptions{Audience: o.Audience, SubjectTokenType: o.SubjectTokenType}
+	reqOpts := &RequestOptions{Audience: o.Audience, SubjectTokenType: o.SubjectTokenType}
 
 	if o.AwsSecurityCredentialsProvider != nil {
 		return &awsSubjectProvider{
 			securityCredentialsProvider: o.AwsSecurityCredentialsProvider,
 			TargetResource:              o.Audience,
-			reqOpts:                     supplierOpts,
+			reqOpts:                     reqOpts,
 		}, nil
 	} else if o.SubjectTokenProvider != nil {
-		return &programmaticProvider{stp: o.SubjectTokenProvider, opts: supplierOpts}, nil
+		return &programmaticProvider{stp: o.SubjectTokenProvider, opts: reqOpts}, nil
 	} else if len(o.CredentialSource.EnvironmentID) > 3 && o.CredentialSource.EnvironmentID[:3] == "aws" {
 		if awsVersion, err := strconv.Atoi(o.CredentialSource.EnvironmentID[3:]); err == nil {
 			if awsVersion != 1 {

@@ -82,13 +82,13 @@ type Options struct {
 	// This value will be used in the default STS token URL. The default value
 	// is "googleapis.com". It will not be used if TokenURL is set. Optional.
 	UniverseDomain string
-	// SubjectTokenProvider is an optional token supplier for OIDC/SAML
-	// credentials. One of SubjectTokenProvider, AWSSecurityCredentialSupplier
+	// SubjectTokenProvider is an optional token provider for OIDC/SAML
+	// credentials. One of SubjectTokenProvider, AWSSecurityCredentialProvider
 	// or CredentialSource must be provided. Optional.
 	SubjectTokenProvider SubjectTokenProvider
-	// AwsSecurityCredentialsProvider is an AWS Security Credential supplier
-	// for AWS credentials. One of SubjectTokenSupplier,
-	// AWSSecurityCredentialSupplier or CredentialSource must be provided. Optional.
+	// AwsSecurityCredentialsProvider is an AWS Security Credential provider
+	// for AWS credentials. One of SubjectTokenProvider,
+	// AWSSecurityCredentialProvider or CredentialSource must be provided. Optional.
 	AwsSecurityCredentialsProvider AwsSecurityCredentialsProvider
 
 	// Client configures the underlying client used to make network requests
@@ -163,7 +163,7 @@ type ExecutableConfig struct {
 type SubjectTokenProvider interface {
 	// SubjectToken should return a valid subject token or an error.
 	// The external account token source does not cache the returned subject
-	// token, so caching logic should be implemented in the supplier to prevent
+	// token, so caching logic should be implemented in the provider to prevent
 	// multiple requests for the same subject token.
 	SubjectToken(ctx context.Context, opts *RequestOptions) (string, error)
 }
@@ -190,7 +190,7 @@ type AwsSecurityCredentialsProvider interface {
 	// GetAwsSecurityCredentials should return a valid set of
 	// AwsSecurityCredentials or an error. The external account token source
 	// does not cache the returned security credentials, so caching logic should
-	// be implemented in the supplier to prevent multiple requests for the
+	// be implemented in the provider to prevent multiple requests for the
 	// same security credentials.
 	AwsSecurityCredentials(ctx context.Context, opts *RequestOptions) (*AwsSecurityCredentials, error)
 }
