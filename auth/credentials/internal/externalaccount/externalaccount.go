@@ -85,14 +85,14 @@ type Options struct {
 	// This value will be used in the default STS token URL. The default value
 	// is "googleapis.com". It will not be used if TokenURL is set. Optional.
 	UniverseDomain string
-	// SubjectTokenSupplier is an optional token supplier for OIDC/SAML
-	// credentials. One of SubjectTokenSupplier, AWSSecurityCredentialSupplier
+	// SubjectTokenProvider is an optional token supplier for OIDC/SAML
+	// credentials. One of SubjectTokenProvider, AWSSecurityCredentialSupplier
 	// or CredentialSource must be provided. Optional.
-	SubjectTokenSupplier SubjectTokenProvider
-	// AwsSecurityCredentialsSupplier is an AWS Security Credential supplier
+	SubjectTokenProvider SubjectTokenProvider
+	// AwsSecurityCredentialsProvider is an AWS Security Credential supplier
 	// for AWS credentials. One of SubjectTokenSupplier,
 	// AWSSecurityCredentialSupplier or CredentialSource must be provided. Optional.
-	AwsSecurityCredentialsSupplier AwsSecurityCredentialsProvider
+	AwsSecurityCredentialsProvider AwsSecurityCredentialsProvider
 	// Client for token request.
 	Client *http.Client
 }
@@ -104,12 +104,12 @@ type SubjectTokenProvider interface {
 	// The external account token source does not cache the returned subject
 	// token, so caching logic should be implemented in the supplier to prevent
 	// multiple requests for the same subject token.
-	SubjectToken(ctx context.Context, options *SupplierOptions) (string, error)
+	SubjectToken(ctx context.Context, opts *RequestOptions) (string, error)
 }
 
-// SupplierOptions contains information about the requested subject token or AWS
+// RequestOptions contains information about the requested subject token or AWS
 // security credentials from the Google external account credential.
-type SupplierOptions struct {
+type RequestOptions struct {
 	// Audience is the requested audience for the external account credential.
 	Audience string
 	// Subject token type is the requested subject token type for the external
@@ -125,13 +125,13 @@ type SupplierOptions struct {
 // and an AWS Region to exchange for a GCP access token.
 type AwsSecurityCredentialsProvider interface {
 	// AwsRegion should return the AWS region or an error.
-	AwsRegion(ctx context.Context, options SupplierOptions) (string, error)
+	AwsRegion(ctx context.Context, opts *RequestOptions) (string, error)
 	// GetAwsSecurityCredentials should return a valid set of
 	// AwsSecurityCredentials or an error. The external account token source
 	// does not cache the returned security credentials, so caching logic should
 	// be implemented in the supplier to prevent multiple requests for the
 	// same security credentials.
-	AwsSecurityCredentials(ctx context.Context, options SupplierOptions) (*AwsSecurityCredentials, error)
+	AwsSecurityCredentials(ctx context.Context, opts *RequestOptions) (*AwsSecurityCredentials, error)
 }
 
 // AwsSecurityCredentials models AWS security credentials.
@@ -161,12 +161,12 @@ func (o *Options) validate() error {
 	if o.CredentialSource != nil {
 		count++
 	}
-	// if o.SubjectTokenSupplier != nil {
-	// 	count++
-	// }
-	// if o.AwsSecurityCredentialsSupplier != nil {
-	// 	count++
-	// }
+	if o.SubjectTokenProvider != nil {
+		count++
+	}
+	if o.AwsSecurityCredentialsProvider != nil {
+		count++
+	}
 	if count == 0 {
 		return fmt.Errorf("externalaccount: one of CredentialSource, SubjectTokenSupplier, or AwsSecurityCredentialsSupplier must be set")
 	}
@@ -281,7 +281,17 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 // newSubjectTokenProvider determines the type of credsfile.CredentialSource needed to create a
 // subjectTokenProvider
 func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
-	if len(o.CredentialSource.EnvironmentID) > 3 && o.CredentialSource.EnvironmentID[:3] == "aws" {
+	supplierOpts := &RequestOptions{Audience: o.Audience, SubjectTokenType: o.SubjectTokenType}
+
+	if o.AwsSecurityCredentialsProvider != nil {
+		return &awsSubjectProvider{
+			securityCredentialsProvider: o.AwsSecurityCredentialsProvider,
+			TargetResource:              o.Audience,
+			reqOpts:                     supplierOpts,
+		}, nil
+	} else if o.SubjectTokenProvider != nil {
+		return &programmaticProvider{stp: o.SubjectTokenProvider, opts: supplierOpts}, nil
+	} else if len(o.CredentialSource.EnvironmentID) > 3 && o.CredentialSource.EnvironmentID[:3] == "aws" {
 		if awsVersion, err := strconv.Atoi(o.CredentialSource.EnvironmentID[3:]); err == nil {
 			if awsVersion != 1 {
 				return nil, fmt.Errorf("credentials: aws version '%d' is not supported in the current build", awsVersion)

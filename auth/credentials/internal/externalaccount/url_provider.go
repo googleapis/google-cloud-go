@@ -26,9 +26,10 @@ import (
 )
 
 const (
-	fileTypeText    = "text"
-	fileTypeJSON    = "json"
-	urlProviderType = "url"
+	fileTypeText             = "text"
+	fileTypeJSON             = "json"
+	urlProviderType          = "url"
+	programmaticProviderType = "programmatic"
 )
 
 type urlSubjectProvider struct {
