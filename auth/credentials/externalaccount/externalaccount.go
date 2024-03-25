@@ -15,6 +15,8 @@
 package externalaccount
 
 import (
+	"context"
+	"fmt"
 	"net/http"
 
 	"cloud.google.com/go/auth"
@@ -80,13 +82,14 @@ type Options struct {
 	// This value will be used in the default STS token URL. The default value
 	// is "googleapis.com". It will not be used if TokenURL is set. Optional.
 	UniverseDomain string
-	// TODO(codyoss)
-	// SubjectTokenSupplier is an optional token supplier for OIDC/SAML credentials.
-	// One of SubjectTokenSupplier, AWSSecurityCredentialSupplier or CredentialSource must be provided. Optional.
-	//SubjectTokenSupplier SubjectTokenSupplier
-	// AwsSecurityCredentialsSupplier is an AWS Security Credential supplier for AWS credentials.
-	// One of SubjectTokenSupplier, AWSSecurityCredentialSupplier or CredentialSource must be provided. Optional.
-	//AwsSecurityCredentialsSupplier AwsSecurityCredentialsSupplier
+	// SubjectTokenSupplier is an optional token supplier for OIDC/SAML
+	// credentials. One of SubjectTokenSupplier, AWSSecurityCredentialSupplier
+	// or CredentialSource must be provided. Optional.
+	SubjectTokenSupplier SubjectTokenProvider
+	// AwsSecurityCredentialsSupplier is an AWS Security Credential supplier
+	// for AWS credentials. One of SubjectTokenSupplier,
+	// AWSSecurityCredentialSupplier or CredentialSource must be provided. Optional.
+	AwsSecurityCredentialsSupplier AwsSecurityCredentialsProvider
 
 	// Client configures the underlying client used to make network requests
 	// when fetching tokens. Optional.
@@ -155,7 +158,58 @@ type ExecutableConfig struct {
 	OutputFile string
 }
 
+// SubjectTokenProvider can be used to supply a subject token to exchange for a
+// GCP access token.
+type SubjectTokenProvider interface {
+	// SubjectToken should return a valid subject token or an error.
+	// The external account token source does not cache the returned subject
+	// token, so caching logic should be implemented in the supplier to prevent
+	// multiple requests for the same subject token.
+	SubjectToken(ctx context.Context, options *SupplierOptions) (string, error)
+}
+
+// SupplierOptions contains information about the requested subject token or AWS
+// security credentials from the Google external account credential.
+type SupplierOptions struct {
+	// Audience is the requested audience for the external account credential.
+	Audience string
+	// Subject token type is the requested subject token type for the external
+	// account credential. Expected values include:
+	// “urn:ietf:params:oauth:token-type:jwt”
+	// “urn:ietf:params:oauth:token-type:id-token”
+	// “urn:ietf:params:oauth:token-type:saml2”
+	// “urn:ietf:params:aws:token-type:aws4_request”
+	SubjectTokenType string
+}
+
+// AwsSecurityCredentialsProvider can be used to supply AwsSecurityCredentials
+// and an AWS Region to exchange for a GCP access token.
+type AwsSecurityCredentialsProvider interface {
+	// AwsRegion should return the AWS region or an error.
+	AwsRegion(ctx context.Context, options SupplierOptions) (string, error)
+	// GetAwsSecurityCredentials should return a valid set of
+	// AwsSecurityCredentials or an error. The external account token source
+	// does not cache the returned security credentials, so caching logic should
+	// be implemented in the supplier to prevent multiple requests for the
+	// same security credentials.
+	AwsSecurityCredentials(ctx context.Context, options SupplierOptions) (*AwsSecurityCredentials, error)
+}
+
+// AwsSecurityCredentials models AWS security credentials.
+type AwsSecurityCredentials struct {
+	// AccessKeyId is the AWS Access Key ID - Required.
+	AccessKeyID string `json:"AccessKeyID"`
+	// SecretAccessKey is the AWS Secret Access Key - Required.
+	SecretAccessKey string `json:"SecretAccessKey"`
+	// SessionToken is the AWS Session token. This should be provided for
+	// temporary AWS security credentials - Optional.
+	SessionToken string `json:"Token"`
+}
+
 func (o *Options) validate() error {
+	if o == nil {
+		return fmt.Errorf("externalaccount: options must be provided")
+	}
 	return nil
 }
 
@@ -187,7 +241,7 @@ func (o *Options) toInternalOpts() *iexacc.Options {
 	}
 	if o.CredentialSource != nil {
 		cs := o.CredentialSource
-		iOpts.CredentialSource = credsfile.CredentialSource{
+		iOpts.CredentialSource = &credsfile.CredentialSource{
 			File:                        cs.File,
 			URL:                         cs.URL,
 			Headers:                     cs.Headers,

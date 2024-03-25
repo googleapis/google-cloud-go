@@ -97,7 +97,7 @@ func TestCreateExecutableCredential(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			ecs, err := newSubjectTokenProvider(&Options{
 				Client: internal.CloneDefaultClient(),
-				CredentialSource: credsfile.CredentialSource{
+				CredentialSource: &credsfile.CredentialSource{
 					Executable: &tt.executableConfig,
 				},
 			})
@@ -143,7 +143,7 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 			opts: &Options{
 				Audience:         "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				SubjectTokenType: jwtTokenType,
-				CredentialSource: credsfile.CredentialSource{
+				CredentialSource: &credsfile.CredentialSource{
 					Executable: &credsfile.ExecutableConfig{
 						Command: "blarg",
 					},
@@ -167,7 +167,7 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 				Audience:                       "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/test@project.iam.gserviceaccount.com:generateAccessToken",
 				SubjectTokenType:               jwtTokenType,
-				CredentialSource: credsfile.CredentialSource{
+				CredentialSource: &credsfile.CredentialSource{
 					Executable: &credsfile.ExecutableConfig{
 						Command:    "blarg",
 						OutputFile: "/path/to/generated/cached/credentials",
@@ -194,7 +194,7 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 				Audience:                       "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/oidc",
 				ServiceAccountImpersonationURL: "test@project.iam.gserviceaccount.com",
 				SubjectTokenType:               jwtTokenType,
-				CredentialSource: credsfile.CredentialSource{
+				CredentialSource: &credsfile.CredentialSource{
 					Executable: &credsfile.ExecutableConfig{
 						Command:    "blarg",
 						OutputFile: "/path/to/generated/cached/credentials",
@@ -241,7 +241,7 @@ func TestExecutableCredentialGetEnvironment(t *testing.T) {
 }
 
 func TestRetrieveExecutableSubjectTokenExecutableErrors(t *testing.T) {
-	cs := credsfile.CredentialSource{
+	cs := &credsfile.CredentialSource{
 		Executable: &credsfile.ExecutableConfig{
 			Command:       "blarg",
 			TimeoutMillis: 5000,
@@ -473,7 +473,7 @@ func TestRetrieveExecutableSubjectTokenExecutableErrors(t *testing.T) {
 }
 
 func TestRetrieveExecutableSubjectTokenSuccesses(t *testing.T) {
-	cs := credsfile.CredentialSource{
+	cs := &credsfile.CredentialSource{
 		Executable: &credsfile.ExecutableConfig{
 			Command:       "blarg",
 			TimeoutMillis: 5000,
@@ -582,7 +582,7 @@ func TestRetrieveOutputFileSubjectTokenNotJSON(t *testing.T) {
 	}
 	defer os.Remove(outputFile.Name())
 
-	cs := credsfile.CredentialSource{
+	cs := &credsfile.CredentialSource{
 		Executable: &credsfile.ExecutableConfig{
 			Command:       "blarg",
 			TimeoutMillis: 5000,
@@ -730,7 +730,7 @@ func TestRetrieveOutputFileSubjectTokenFailureTests(t *testing.T) {
 			}
 			defer os.Remove(outputFile.Name())
 
-			cs := credsfile.CredentialSource{
+			cs := &credsfile.CredentialSource{
 				Executable: &credsfile.ExecutableConfig{
 					Command:       "blarg",
 					TimeoutMillis: 5000,
@@ -832,7 +832,7 @@ func TestRetrieveOutputFileSubjectTokenInvalidCache(t *testing.T) {
 			}
 			defer os.Remove(outputFile.Name())
 
-			cs := credsfile.CredentialSource{
+			cs := &credsfile.CredentialSource{
 				Executable: &credsfile.ExecutableConfig{
 					Command:       "blarg",
 					TimeoutMillis: 5000,
@@ -937,7 +937,7 @@ func TestRetrieveOutputFileSubjectTokenJwt(t *testing.T) {
 			}
 			defer os.Remove(outputFile.Name())
 
-			cs := credsfile.CredentialSource{
+			cs := &credsfile.CredentialSource{
 				Executable: &credsfile.ExecutableConfig{
 					Command:       "blarg",
 					TimeoutMillis: 5000,

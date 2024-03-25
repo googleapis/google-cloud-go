@@ -186,7 +186,7 @@ func TestParseExternalAccount_AWS(t *testing.T) {
 		SubjectTokenType:               "urn:ietf:params:aws:token-type:aws4_request",
 		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$EMAIL:generateAccessToken",
 		TokenURL:                       "https://sts.googleapis.com/v1/token",
-		CredentialSource: CredentialSource{
+		CredentialSource: &CredentialSource{
 			URL:                         "http://169.254.169.254/latest/meta-data/iam/security-credentials",
 			EnvironmentID:               "aws1",
 			RegionURL:                   "http://169.254.169.254/latest/meta-data/placement/availability-zone",
@@ -214,7 +214,7 @@ func TestParseExternalAccount_URL(t *testing.T) {
 		SubjectTokenType:               "urn:ietf:params:oauth:token-type:jwt",
 		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$EMAIL:generateAccessToken",
 		TokenURL:                       "https://sts.googleapis.com/v1/token",
-		CredentialSource: CredentialSource{
+		CredentialSource: &CredentialSource{
 			URL: "http://localhost:5000/token",
 			Format: &Format{
 				Type:                  "json",
@@ -242,7 +242,7 @@ func TestParseExternalAccount_File(t *testing.T) {
 		SubjectTokenType:               "urn:ietf:params:oauth:token-type:saml2",
 		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$EMAIL:generateAccessToken",
 		TokenURL:                       "https://sts.googleapis.com/v1/token",
-		CredentialSource: CredentialSource{
+		CredentialSource: &CredentialSource{
 			File: "/var/run/saml/assertion/token",
 		},
 	}
@@ -266,7 +266,7 @@ func TestParseExternalAccount_Cmd(t *testing.T) {
 		SubjectTokenType:               "urn:ietf:params:oauth:token-type:saml2",
 		ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/$EMAIL@project.iam.gserviceaccount.com:generateAccessToken",
 		TokenURL:                       "https://sts.googleapis.com/v1/token",
-		CredentialSource: CredentialSource{
+		CredentialSource: &CredentialSource{
 			Executable: &ExecutableConfig{
 				Command:    "/path/to/executable --arg1=value1 --arg2=value2",
 				OutputFile: "/path/to/cached/credentials",

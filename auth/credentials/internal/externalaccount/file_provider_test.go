@@ -24,19 +24,19 @@ import (
 func TestRetrieveFileSubjectToken(t *testing.T) {
 	var tests = []struct {
 		name string
-		cs   credsfile.CredentialSource
+		cs   *credsfile.CredentialSource
 		want string
 	}{
 		{
 			name: "untyped file format",
-			cs: credsfile.CredentialSource{
+			cs: &credsfile.CredentialSource{
 				File: textBaseCredPath,
 			},
 			want: "street123",
 		},
 		{
 			name: "text file format",
-			cs: credsfile.CredentialSource{
+			cs: &credsfile.CredentialSource{
 				File:   textBaseCredPath,
 				Format: &credsfile.Format{Type: fileTypeText},
 			},
@@ -44,7 +44,7 @@ func TestRetrieveFileSubjectToken(t *testing.T) {
 		},
 		{
 			name: "JSON file format",
-			cs: credsfile.CredentialSource{
+			cs: &credsfile.CredentialSource{
 				File:   jsonBaseCredPath,
 				Format: &credsfile.Format{Type: fileTypeJSON, SubjectTokenFieldName: "SubjToken"},
 			},

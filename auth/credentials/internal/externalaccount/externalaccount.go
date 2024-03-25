@@ -70,7 +70,7 @@ type Options struct {
 	ClientID string
 	// CredentialSource contains the necessary information to retrieve the token itself, as well
 	// as some environmental information.
-	CredentialSource credsfile.CredentialSource
+	CredentialSource *credsfile.CredentialSource
 	// QuotaProjectID is injected by gCloud. If the value is non-empty, the Auth libraries
 	// will set the x-goog-user-project which overrides the project associated with the credentials.
 	QuotaProjectID string
@@ -85,17 +85,102 @@ type Options struct {
 	// This value will be used in the default STS token URL. The default value
 	// is "googleapis.com". It will not be used if TokenURL is set. Optional.
 	UniverseDomain string
+	// SubjectTokenSupplier is an optional token supplier for OIDC/SAML
+	// credentials. One of SubjectTokenSupplier, AWSSecurityCredentialSupplier
+	// or CredentialSource must be provided. Optional.
+	SubjectTokenSupplier SubjectTokenProvider
+	// AwsSecurityCredentialsSupplier is an AWS Security Credential supplier
+	// for AWS credentials. One of SubjectTokenSupplier,
+	// AWSSecurityCredentialSupplier or CredentialSource must be provided. Optional.
+	AwsSecurityCredentialsSupplier AwsSecurityCredentialsProvider
 	// Client for token request.
 	Client *http.Client
+}
+
+// SubjectTokenProvider can be used to supply a subject token to exchange for a
+// GCP access token.
+type SubjectTokenProvider interface {
+	// SubjectToken should return a valid subject token or an error.
+	// The external account token source does not cache the returned subject
+	// token, so caching logic should be implemented in the supplier to prevent
+	// multiple requests for the same subject token.
+	SubjectToken(ctx context.Context, options *SupplierOptions) (string, error)
+}
+
+// SupplierOptions contains information about the requested subject token or AWS
+// security credentials from the Google external account credential.
+type SupplierOptions struct {
+	// Audience is the requested audience for the external account credential.
+	Audience string
+	// Subject token type is the requested subject token type for the external
+	// account credential. Expected values include:
+	// “urn:ietf:params:oauth:token-type:jwt”
+	// “urn:ietf:params:oauth:token-type:id-token”
+	// “urn:ietf:params:oauth:token-type:saml2”
+	// “urn:ietf:params:aws:token-type:aws4_request”
+	SubjectTokenType string
+}
+
+// AwsSecurityCredentialsProvider can be used to supply AwsSecurityCredentials
+// and an AWS Region to exchange for a GCP access token.
+type AwsSecurityCredentialsProvider interface {
+	// AwsRegion should return the AWS region or an error.
+	AwsRegion(ctx context.Context, options SupplierOptions) (string, error)
+	// GetAwsSecurityCredentials should return a valid set of
+	// AwsSecurityCredentials or an error. The external account token source
+	// does not cache the returned security credentials, so caching logic should
+	// be implemented in the supplier to prevent multiple requests for the
+	// same security credentials.
+	AwsSecurityCredentials(ctx context.Context, options SupplierOptions) (*AwsSecurityCredentials, error)
+}
+
+// AwsSecurityCredentials models AWS security credentials.
+type AwsSecurityCredentials struct {
+	// AccessKeyId is the AWS Access Key ID - Required.
+	AccessKeyID string `json:"AccessKeyID"`
+	// SecretAccessKey is the AWS Secret Access Key - Required.
+	SecretAccessKey string `json:"SecretAccessKey"`
+	// SessionToken is the AWS Session token. This should be provided for
+	// temporary AWS security credentials - Optional.
+	SessionToken string `json:"Token"`
+}
+
+func (o *Options) validate() error {
+	if o.Audience == "" {
+		return fmt.Errorf("externalaccount: Audience must be set")
+	}
+	if o.SubjectTokenType == "" {
+		return fmt.Errorf("externalaccount: Subject token type must be set")
+	}
+	if o.WorkforcePoolUserProject != "" {
+		if valid := validWorkforceAudiencePattern.MatchString(o.Audience); !valid {
+			return fmt.Errorf("externalaccount: workforce_pool_user_project should not be set for non-workforce pool credentials")
+		}
+	}
+	count := 0
+	if o.CredentialSource != nil {
+		count++
+	}
+	// if o.SubjectTokenSupplier != nil {
+	// 	count++
+	// }
+	// if o.AwsSecurityCredentialsSupplier != nil {
+	// 	count++
+	// }
+	if count == 0 {
+		return fmt.Errorf("externalaccount: one of CredentialSource, SubjectTokenSupplier, or AwsSecurityCredentialsSupplier must be set")
+	}
+	if count > 1 {
+		return fmt.Errorf("externalaccount: only one of CredentialSource, SubjectTokenSupplier, or AwsSecurityCredentialsSupplier must be set")
+	}
+	return nil
 }
 
 // NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider]
 // configured with the provided options.
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
-	if opts.WorkforcePoolUserProject != "" {
-		if valid := validWorkforceAudiencePattern.MatchString(opts.Audience); !valid {
-			return nil, fmt.Errorf("credentials: workforce_pool_user_project should not be set for non-workforce pool credentials")
-		}
+	if err := opts.validate(); err != nil {
+		return nil, err
 	}
 	stp, err := newSubjectTokenProvider(opts)
 	if err != nil {
