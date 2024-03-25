@@ -164,7 +164,7 @@ type ExecutableConfig struct {
 // GCP access token.
 type SubjectTokenProvider interface {
 	// SubjectToken should return a valid subject token or an error.
-	// The external account token source does not cache the returned subject
+	// The external account token provider does not cache the returned subject
 	// token, so caching logic should be implemented in the provider to prevent
 	// multiple requests for the same subject token.
 	SubjectToken(ctx context.Context, opts *RequestOptions) (string, error)
@@ -190,7 +190,7 @@ type AwsSecurityCredentialsProvider interface {
 	// AwsRegion should return the AWS region or an error.
 	AwsRegion(ctx context.Context, opts *RequestOptions) (string, error)
 	// GetAwsSecurityCredentials should return a valid set of
-	// AwsSecurityCredentials or an error. The external account token source
+	// AwsSecurityCredentials or an error. The external account token provider
 	// does not cache the returned security credentials, so caching logic should
 	// be implemented in the provider to prevent multiple requests for the
 	// same security credentials.

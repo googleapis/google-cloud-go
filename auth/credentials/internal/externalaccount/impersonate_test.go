@@ -118,7 +118,7 @@ func TestImpersonation(t *testing.T) {
 
 			tp, err := NewTokenProvider(testImpersonateOpts)
 			if err != nil {
-				t.Fatalf("Failed to create TokenSource: %v", err)
+				t.Fatalf("Failed to create Provider: %v", err)
 			}
 
 			oldNow := Now

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 // Package externalaccount provides support for creating workload identity
-// federation and workforce identity federation token sources that can be used
+// federation and workforce identity federation token providers that can be used
 // to access Google Cloud resources from external identity providers.
 //
 // # Workload Identity Federation
