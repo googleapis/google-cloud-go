@@ -60,6 +60,8 @@ const (
 	// The AWS authorization header name for the auto-generated date.
 	awsDateHeader = "x-amz-date"
 
+	defaultRegionalCredentialVerificationUrl = "https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15"
+
 	// Supported AWS configuration environment variables.
 	awsAccessKeyIDEnvVar     = "AWS_ACCESS_KEY_ID"
 	awsDefaultRegionEnvVar   = "AWS_DEFAULT_REGION"
@@ -88,6 +90,10 @@ type awsSubjectProvider struct {
 }
 
 func (sp *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) {
+	// Set Defaults
+	if sp.RegionalCredVerificationURL == "" {
+		sp.RegionalCredVerificationURL = defaultRegionalCredentialVerificationUrl
+	}
 	if sp.requestSigner == nil {
 		headers := make(map[string]string)
 		if sp.shouldUseMetadataServer() {

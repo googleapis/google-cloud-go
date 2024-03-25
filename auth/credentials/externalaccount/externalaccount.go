@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/auth/internal/credsfile"
 )
 
+// Options for creating a [cloud.google.com/go/auth.Credentials].
 type Options struct {
 	// Audience is the Secure Token Service (STS) audience which contains the
 	// resource name for the workload identity pool or the workforce pool and
@@ -96,6 +97,7 @@ type Options struct {
 	Client *http.Client
 }
 
+// CredentialSource stores the information necessary to retrieve the credentials for the STS exchange.
 type CredentialSource struct {
 	// File is the location for file sourced credentials.
 	// One field amongst File, URL, Executable, or EnvironmentID should be
@@ -231,13 +233,15 @@ func (o *Options) toInternalOpts() *iexacc.Options {
 		TokenInfoURL:                   o.TokenInfoURL,
 		ServiceAccountImpersonationURL: o.ServiceAccountImpersonationURL,
 		ServiceAccountImpersonationLifetimeSeconds: o.ServiceAccountImpersonationLifetimeSeconds,
-		ClientSecret:             o.ClientSecret,
-		ClientID:                 o.ClientID,
-		QuotaProjectID:           o.QuotaProjectID,
-		Scopes:                   o.Scopes,
-		WorkforcePoolUserProject: o.WorkforcePoolUserProject,
-		UniverseDomain:           o.UniverseDomain,
-		Client:                   o.client(),
+		ClientSecret:                   o.ClientSecret,
+		ClientID:                       o.ClientID,
+		QuotaProjectID:                 o.QuotaProjectID,
+		Scopes:                         o.Scopes,
+		WorkforcePoolUserProject:       o.WorkforcePoolUserProject,
+		UniverseDomain:                 o.UniverseDomain,
+		SubjectTokenProvider:           toInternalSubjectTokenProvider(o.SubjectTokenProvider),
+		AwsSecurityCredentialsProvider: toInternalAwsSecurityCredentialsProvider(o.AwsSecurityCredentialsProvider),
+		Client:                         o.client(),
 	}
 	if o.CredentialSource != nil {
 		cs := o.CredentialSource
@@ -270,6 +274,8 @@ func (o *Options) toInternalOpts() *iexacc.Options {
 	return iOpts
 }
 
+// NewCredentials returns a [cloud.google.com/go/auth.Credentials] configured
+// with the provided options.
 func NewCredentials(opts *Options) (*auth.Credentials, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
@@ -292,4 +298,67 @@ func NewCredentials(opts *Options) (*auth.Credentials, error) {
 		UniverseDomainProvider: udp,
 		QuotaProjectIDProvider: qpp,
 	}), nil
+}
+
+func toInternalSubjectTokenProvider(stp SubjectTokenProvider) iexacc.SubjectTokenProvider {
+	if stp == nil {
+		return nil
+	}
+	return &subjectTokenProviderAdapter{stp: stp}
+}
+
+func toInternalAwsSecurityCredentialsProvider(scp AwsSecurityCredentialsProvider) iexacc.AwsSecurityCredentialsProvider {
+	if scp == nil {
+		return nil
+	}
+	return &awsSecurityCredentialsAdapter{scp: scp}
+}
+
+func toInternalAwsSecurityCredentials(sc *AwsSecurityCredentials) *iexacc.AwsSecurityCredentials {
+	if sc == nil {
+		return nil
+	}
+	return &iexacc.AwsSecurityCredentials{
+		AccessKeyID:     sc.AccessKeyID,
+		SecretAccessKey: sc.SecretAccessKey,
+		SessionToken:    sc.SessionToken,
+	}
+}
+
+func toRequestOptions(opts *iexacc.RequestOptions) *RequestOptions {
+	if opts == nil {
+		return nil
+	}
+	return &RequestOptions{
+		Audience:         opts.Audience,
+		SubjectTokenType: opts.SubjectTokenType,
+	}
+}
+
+// subjectTokenProviderAdapter is an adapter to convert the user supplied
+// interface to its internal counterpart.
+type subjectTokenProviderAdapter struct {
+	stp SubjectTokenProvider
+}
+
+func (tp *subjectTokenProviderAdapter) SubjectToken(ctx context.Context, opts *iexacc.RequestOptions) (string, error) {
+	return tp.stp.SubjectToken(ctx, toRequestOptions(opts))
+}
+
+// awsSecurityCredentialsAdapter is an adapter to convert the user supplied
+// interface to its internal counterpart.
+type awsSecurityCredentialsAdapter struct {
+	scp AwsSecurityCredentialsProvider
+}
+
+func (sc *awsSecurityCredentialsAdapter) AwsRegion(ctx context.Context, opts *iexacc.RequestOptions) (string, error) {
+	return sc.scp.AwsRegion(ctx, toRequestOptions(opts))
+}
+
+func (sc *awsSecurityCredentialsAdapter) AwsSecurityCredentials(ctx context.Context, opts *iexacc.RequestOptions) (*iexacc.AwsSecurityCredentials, error) {
+	resp, err := sc.scp.AwsSecurityCredentials(ctx, toRequestOptions(opts))
+	if err != nil {
+		return nil, err
+	}
+	return toInternalAwsSecurityCredentials(resp), nil
 }

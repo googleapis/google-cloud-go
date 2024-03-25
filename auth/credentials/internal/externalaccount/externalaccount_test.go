@@ -354,3 +354,111 @@ func cloneTestOpts() *Options {
 func expectedMetricsHeader(source string, saImpersonation bool, configLifetime bool) string {
 	return fmt.Sprintf("gl-go/%s auth/unknown google-byoid-sdk source/%s sa-impersonation/%t config-lifetime/%t", goVersion(), source, saImpersonation, configLifetime)
 }
+
+func TestOptionsValidate(t *testing.T) {
+	tests := []struct {
+		name    string
+		o       *Options
+		wantErr bool
+	}{
+		{
+			name: "works",
+			o: &Options{
+				Audience:                       "32555940559.apps.googleusercontent.com",
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         internal.CloneDefaultClient(),
+				CredentialSource:               testBaseCredSource,
+			},
+		},
+		{
+			name: "missing aud",
+			o: &Options{
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         internal.CloneDefaultClient(),
+				CredentialSource:               testBaseCredSource,
+			},
+			wantErr: true,
+		},
+		{
+			name: "missing subjectTokenType",
+			o: &Options{
+				Audience:                       "32555940559.apps.googleusercontent.com",
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         internal.CloneDefaultClient(),
+				CredentialSource:               testBaseCredSource,
+			},
+			wantErr: true,
+		},
+		{
+			name: "invalid workforcepool",
+			o: &Options{
+				WorkforcePoolUserProject:       "blah",
+				Audience:                       "32555940559.apps.googleusercontent.com",
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         internal.CloneDefaultClient(),
+				CredentialSource:               testBaseCredSource,
+			},
+			wantErr: true,
+		},
+		{
+			name: "no creds",
+			o: &Options{
+				Audience:                       "32555940559.apps.googleusercontent.com",
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         internal.CloneDefaultClient(),
+			},
+			wantErr: true,
+		},
+		{
+			name: "too many creds",
+			o: &Options{
+				Audience:                       "32555940559.apps.googleusercontent.com",
+				SubjectTokenType:               jwtTokenType,
+				TokenURL:                       "http://localhost:8080/v1/token",
+				TokenInfoURL:                   "http://localhost:8080/v1/tokeninfo",
+				ServiceAccountImpersonationURL: "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/service-gcs-admin@$PROJECT_ID.iam.gserviceaccount.com:generateAccessToken",
+				ClientSecret:                   "notsosecret",
+				ClientID:                       "rbrgnognrhongo3bi4gb9ghg9g",
+				Client:                         internal.CloneDefaultClient(),
+				CredentialSource:               testBaseCredSource,
+				SubjectTokenProvider:           fakeSubjectTokenProvider{},
+			},
+			wantErr: true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			err := tc.o.validate()
+			if err == nil && tc.wantErr {
+				t.Fatalf("o.validate() = nil, want error")
+			}
+			if err != nil && !tc.wantErr {
+				t.Fatalf("o.validate() = non-nil error, want error")
+			}
+		})
+	}
+}

@@ -17,6 +17,7 @@ package externalaccount
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -1256,6 +1257,156 @@ func TestAWSCredential_Validations(t *testing.T) {
 	}
 }
 
+func TestAWSCredential_ProgrammaticAuth(t *testing.T) {
+	opts := cloneTestOpts()
+	opts.AwsSecurityCredentialsProvider = &fakeAwsCredsProvider{
+		awsRegion: "us-east-2",
+		creds: &AwsSecurityCredentials{
+			AccessKeyID:     accessKeyID,
+			SecretAccessKey: secretAccessKey,
+			SessionToken:    sessionToken,
+		},
+	}
+
+	oldNow := now
+	defer func() {
+		now = oldNow
+	}()
+	now = setTime(defaultTime)
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	got, err := base.subjectToken(context.Background())
+	if err != nil {
+		t.Fatalf("subjectToken() = %v", err)
+	}
+
+	want := getExpectedSubjectToken(
+		"https://sts.us-east-2.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15",
+		"us-east-2",
+		accessKeyID,
+		secretAccessKey,
+		sessionToken,
+	)
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestAWSCredential_ProgrammaticAuthNoSessionToken(t *testing.T) {
+	opts := cloneTestOpts()
+	opts.AwsSecurityCredentialsProvider = fakeAwsCredsProvider{
+		awsRegion: "us-east-2",
+		creds: &AwsSecurityCredentials{
+			AccessKeyID:     accessKeyID,
+			SecretAccessKey: secretAccessKey,
+		},
+	}
+
+	oldNow := now
+	defer func() {
+		now = oldNow
+	}()
+	now = setTime(defaultTime)
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	got, err := base.subjectToken(context.Background())
+	if err != nil {
+		t.Fatalf("subjectToken() = %v", err)
+	}
+
+	want := getExpectedSubjectToken(
+		"https://sts.us-east-2.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15",
+		"us-east-2",
+		accessKeyID,
+		secretAccessKey,
+		"",
+	)
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestAWSCredential_ProgrammaticAuthError(t *testing.T) {
+	opts := cloneTestOpts()
+	testErr := errors.New("test error")
+	opts.AwsSecurityCredentialsProvider = fakeAwsCredsProvider{
+		awsRegion: "us-east-2",
+		credsErr:  testErr,
+	}
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	_, gotErr := base.subjectToken(context.Background())
+	if gotErr == nil {
+		t.Fatalf("subjectToken() = nil, want error")
+	}
+	if gotErr != testErr {
+		t.Errorf("got = %v, want %v", err, testErr)
+	}
+}
+
+func TestAWSCredential_ProgrammaticAuthRegionError(t *testing.T) {
+	opts := cloneTestOpts()
+	testErr := errors.New("test error")
+	opts.AwsSecurityCredentialsProvider = fakeAwsCredsProvider{
+		regionErr: testErr,
+		creds: &AwsSecurityCredentials{
+			AccessKeyID:     accessKeyID,
+			SecretAccessKey: secretAccessKey,
+		},
+	}
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	_, gotErr := base.subjectToken(context.Background())
+	if gotErr == nil {
+		t.Fatalf("subjectToken() = nil, want error")
+	}
+	if gotErr != testErr {
+		t.Errorf("got = %v, want %v", err, testErr)
+	}
+}
+
+func TestAWSCredential_ProgrammaticAuthOptions(t *testing.T) {
+	opts := cloneTestOpts()
+	wantOpts := &RequestOptions{Audience: opts.Audience, SubjectTokenType: opts.SubjectTokenType}
+
+	opts.AwsSecurityCredentialsProvider = fakeAwsCredsProvider{
+		awsRegion: "us-east-2",
+		creds: &AwsSecurityCredentials{
+			AccessKeyID:     accessKeyID,
+			SecretAccessKey: secretAccessKey,
+		},
+		reqOpts: wantOpts,
+	}
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	_, err = base.subjectToken(context.Background())
+	if err != nil {
+		t.Fatalf("subjectToken() = %v", err)
+	}
+}
+
 func setTime(testTime time.Time) func() time.Time {
 	return func() time.Time {
 		return testTime
@@ -1301,4 +1452,42 @@ func testRequestSigner(t *testing.T, rs *awsRequestSigner, input, wantOutput *ht
 			t.Errorf("header[%q] = %q, want %q", header, got, want)
 		}
 	}
+}
+
+type fakeAwsCredsProvider struct {
+	credsErr  error
+	regionErr error
+	awsRegion string
+	creds     *AwsSecurityCredentials
+	reqOpts   *RequestOptions
+}
+
+func (acp fakeAwsCredsProvider) AwsRegion(ctx context.Context, opts *RequestOptions) (string, error) {
+	if acp.regionErr != nil {
+		return "", acp.regionErr
+	}
+	if acp.reqOpts != nil {
+		if acp.reqOpts.Audience != opts.Audience {
+			return "", errors.New("audience does not match")
+		}
+		if acp.reqOpts.SubjectTokenType != opts.SubjectTokenType {
+			return "", errors.New("audience does not match")
+		}
+	}
+	return acp.awsRegion, nil
+}
+
+func (acp fakeAwsCredsProvider) AwsSecurityCredentials(ctx context.Context, opts *RequestOptions) (*AwsSecurityCredentials, error) {
+	if acp.credsErr != nil {
+		return nil, acp.credsErr
+	}
+	if acp.reqOpts != nil {
+		if acp.reqOpts.Audience != opts.Audience {
+			return nil, errors.New("Audience does not match")
+		}
+		if acp.reqOpts.SubjectTokenType != opts.SubjectTokenType {
+			return nil, errors.New("Audience does not match")
+		}
+	}
+	return acp.creds, nil
 }
