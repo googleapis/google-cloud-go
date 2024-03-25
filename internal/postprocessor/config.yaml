@@ -458,6 +458,9 @@ service-configs:
   - input-directory: google/cloud/cloudcontrolspartner/v1
     service-config: cloudcontrolspartner_v1.yaml
     import-path: cloud.google.com/go/cloudcontrolspartner/apiv1
+  - input-directory: google/cloud/cloudcontrolspartner/v1beta
+    service-config: cloudcontrolspartner_v1beta.yaml
+    import-path: cloud.google.com/go/cloudcontrolspartner/apiv1beta
   - input-directory: google/cloud/clouddms/v1
     service-config: datamigration_v1.yaml
     import-path: cloud.google.com/go/clouddms/apiv1
