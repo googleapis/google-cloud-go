@@ -19,6 +19,7 @@ package spannertest
 import (
 	"fmt"
 	"math"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -165,6 +166,23 @@ var functions = map[string]function{
 				return nil, spansql.Type{}, status.Error(codes.OutOfRange, "Division by zero")
 			}
 			return x % y, spansql.Type{Base: spansql.Int64}, nil
+		},
+	},
+	"REGEXP_CONTAINS": {
+		Eval: func(values []interface{}, types []spansql.Type) (interface{}, spansql.Type, error) {
+			if len(values) != 2 {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function REGEXP_CONTAINS for the given argument types")
+			}
+			val, okArg1 := values[0].(string)
+			exp, okArg2 := values[1].(string)
+			if !(okArg1 && okArg2) {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function REGEXP_CONTAINS for the given argument types")
+			}
+			re, err := regexp.Compile(exp)
+			if err != nil {
+				return nil, spansql.Type{}, status.Errorf(codes.InvalidArgument, "Invalid regular expression provided to REGEXP_CONTAINS: %v", err)
+			}
+			return re.MatchString(val), spansql.Type{Base: spansql.Bool}, nil
 		},
 	},
 }

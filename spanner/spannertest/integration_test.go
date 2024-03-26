@@ -1324,12 +1324,11 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
-			`SELECT Cool, MIN(Tenure), MAX(Tenure), MIN(Height), MAX(Height), MIN(Name), MAX(Name), COUNT(*) FROM Staff GROUP BY Cool ORDER BY Cool`,
+			`SELECT Name FROM Staff WHERE REGEXP_CONTAINS(Name, r'^[DG]+')`,
 			nil,
 			[][]interface{}{
-				{nil, int64(6), int64(10), 1.73, 1.85, "George", "Jack", int64(2)},
-				{false, int64(9), int64(11), 1.75, 1.83, "Daniel", "Sam", int64(2)},
-				{true, int64(8), int64(8), 1.91, 1.91, "Teal'c", "Teal'c", int64(1)},
+				{"Daniel"},
+				{"George"},
 			},
 		},
 	}
