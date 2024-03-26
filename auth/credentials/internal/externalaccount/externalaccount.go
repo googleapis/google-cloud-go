@@ -35,8 +35,8 @@ const (
 )
 
 var (
-	// now aliases time.Now for testing
-	now = func() time.Time {
+	// Now aliases time.Now for testing
+	Now = func() time.Time {
 		return time.Now().UTC()
 	}
 	validWorkforceAudiencePattern *regexp.Regexp = regexp.MustCompile(`//iam\.googleapis\.com/locations/[^/]+/workforcePools/`)
@@ -70,7 +70,7 @@ type Options struct {
 	ClientID string
 	// CredentialSource contains the necessary information to retrieve the token itself, as well
 	// as some environmental information.
-	CredentialSource credsfile.CredentialSource
+	CredentialSource *credsfile.CredentialSource
 	// QuotaProjectID is injected by gCloud. If the value is non-empty, the Auth libraries
 	// will set the x-goog-user-project which overrides the project associated with the credentials.
 	QuotaProjectID string
@@ -81,17 +81,106 @@ type Options struct {
 	// serviceusage.services.use IAM permission to use the project for
 	// billing/quota. Optional.
 	WorkforcePoolUserProject string
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// This value will be used in the default STS token URL. The default value
+	// is "googleapis.com". It will not be used if TokenURL is set. Optional.
+	UniverseDomain string
+	// SubjectTokenProvider is an optional token provider for OIDC/SAML
+	// credentials. One of SubjectTokenProvider, AWSSecurityCredentialProvider
+	// or CredentialSource must be provided. Optional.
+	SubjectTokenProvider SubjectTokenProvider
+	// AwsSecurityCredentialsProvider is an AWS Security Credential provider
+	// for AWS credentials. One of SubjectTokenProvider,
+	// AWSSecurityCredentialProvider or CredentialSource must be provided. Optional.
+	AwsSecurityCredentialsProvider AwsSecurityCredentialsProvider
 	// Client for token request.
 	Client *http.Client
+}
+
+// SubjectTokenProvider can be used to supply a subject token to exchange for a
+// GCP access token.
+type SubjectTokenProvider interface {
+	// SubjectToken should return a valid subject token or an error.
+	// The external account token provider does not cache the returned subject
+	// token, so caching logic should be implemented in the provider to prevent
+	// multiple requests for the same subject token.
+	SubjectToken(ctx context.Context, opts *RequestOptions) (string, error)
+}
+
+// RequestOptions contains information about the requested subject token or AWS
+// security credentials from the Google external account credential.
+type RequestOptions struct {
+	// Audience is the requested audience for the external account credential.
+	Audience string
+	// Subject token type is the requested subject token type for the external
+	// account credential. Expected values include:
+	// “urn:ietf:params:oauth:token-type:jwt”
+	// “urn:ietf:params:oauth:token-type:id-token”
+	// “urn:ietf:params:oauth:token-type:saml2”
+	// “urn:ietf:params:aws:token-type:aws4_request”
+	SubjectTokenType string
+}
+
+// AwsSecurityCredentialsProvider can be used to supply AwsSecurityCredentials
+// and an AWS Region to exchange for a GCP access token.
+type AwsSecurityCredentialsProvider interface {
+	// AwsRegion should return the AWS region or an error.
+	AwsRegion(ctx context.Context, opts *RequestOptions) (string, error)
+	// GetAwsSecurityCredentials should return a valid set of
+	// AwsSecurityCredentials or an error. The external account token provider
+	// does not cache the returned security credentials, so caching logic should
+	// be implemented in the provider to prevent multiple requests for the
+	// same security credentials.
+	AwsSecurityCredentials(ctx context.Context, opts *RequestOptions) (*AwsSecurityCredentials, error)
+}
+
+// AwsSecurityCredentials models AWS security credentials.
+type AwsSecurityCredentials struct {
+	// AccessKeyId is the AWS Access Key ID - Required.
+	AccessKeyID string `json:"AccessKeyID"`
+	// SecretAccessKey is the AWS Secret Access Key - Required.
+	SecretAccessKey string `json:"SecretAccessKey"`
+	// SessionToken is the AWS Session token. This should be provided for
+	// temporary AWS security credentials - Optional.
+	SessionToken string `json:"Token"`
+}
+
+func (o *Options) validate() error {
+	if o.Audience == "" {
+		return fmt.Errorf("externalaccount: Audience must be set")
+	}
+	if o.SubjectTokenType == "" {
+		return fmt.Errorf("externalaccount: Subject token type must be set")
+	}
+	if o.WorkforcePoolUserProject != "" {
+		if valid := validWorkforceAudiencePattern.MatchString(o.Audience); !valid {
+			return fmt.Errorf("externalaccount: workforce_pool_user_project should not be set for non-workforce pool credentials")
+		}
+	}
+	count := 0
+	if o.CredentialSource != nil {
+		count++
+	}
+	if o.SubjectTokenProvider != nil {
+		count++
+	}
+	if o.AwsSecurityCredentialsProvider != nil {
+		count++
+	}
+	if count == 0 {
+		return fmt.Errorf("externalaccount: one of CredentialSource, SubjectTokenProvider, or AwsSecurityCredentialsProvider must be set")
+	}
+	if count > 1 {
+		return fmt.Errorf("externalaccount: only one of CredentialSource, SubjectTokenProvider, or AwsSecurityCredentialsProvider must be set")
+	}
+	return nil
 }
 
 // NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider]
 // configured with the provided options.
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
-	if opts.WorkforcePoolUserProject != "" {
-		if valid := validWorkforceAudiencePattern.MatchString(opts.Audience); !valid {
-			return nil, fmt.Errorf("credentials: workforce_pool_user_project should not be set for non-workforce pool credentials")
-		}
+	if err := opts.validate(); err != nil {
+		return nil, err
 	}
 	stp, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -185,14 +274,24 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	if stsResp.ExpiresIn <= 0 {
 		return nil, fmt.Errorf("credentials: got invalid expiry from security token service")
 	}
-	tok.Expiry = now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
+	tok.Expiry = Now().Add(time.Duration(stsResp.ExpiresIn) * time.Second)
 	return tok, nil
 }
 
 // newSubjectTokenProvider determines the type of credsfile.CredentialSource needed to create a
 // subjectTokenProvider
 func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
-	if len(o.CredentialSource.EnvironmentID) > 3 && o.CredentialSource.EnvironmentID[:3] == "aws" {
+	reqOpts := &RequestOptions{Audience: o.Audience, SubjectTokenType: o.SubjectTokenType}
+
+	if o.AwsSecurityCredentialsProvider != nil {
+		return &awsSubjectProvider{
+			securityCredentialsProvider: o.AwsSecurityCredentialsProvider,
+			TargetResource:              o.Audience,
+			reqOpts:                     reqOpts,
+		}, nil
+	} else if o.SubjectTokenProvider != nil {
+		return &programmaticProvider{stp: o.SubjectTokenProvider, opts: reqOpts}, nil
+	} else if len(o.CredentialSource.EnvironmentID) > 3 && o.CredentialSource.EnvironmentID[:3] == "aws" {
 		if awsVersion, err := strconv.Atoi(o.CredentialSource.EnvironmentID[3:]); err == nil {
 			if awsVersion != 1 {
 				return nil, fmt.Errorf("credentials: aws version '%d' is not supported in the current build", awsVersion)
@@ -224,10 +323,10 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 
 		execProvider := &executableSubjectProvider{}
 		execProvider.Command = ec.Command
-		if ec.TimeoutMillis == nil {
+		if ec.TimeoutMillis == 0 {
 			execProvider.Timeout = executableDefaultTimeout
 		} else {
-			execProvider.Timeout = time.Duration(*ec.TimeoutMillis) * time.Millisecond
+			execProvider.Timeout = time.Duration(ec.TimeoutMillis) * time.Millisecond
 			if execProvider.Timeout < timeoutMinimum || execProvider.Timeout > timeoutMaximum {
 				return nil, fmt.Errorf("credentials: invalid `timeout_millis` field — executable timeout must be between %v and %v seconds", timeoutMinimum.Seconds(), timeoutMaximum.Seconds())
 			}
