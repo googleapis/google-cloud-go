@@ -142,7 +142,8 @@ type DetectOptions struct {
 	// when fetching tokens. Optional.
 	Client *http.Client
 	// UniverseDomain is the default service domain for a given Cloud universe.
-	// The default value is "googleapis.com". Optional.
+	// The default value is "googleapis.com". This option is ignored for
+	// authentication flows that do not support universe domain. Optional.
 	UniverseDomain string
 }
 

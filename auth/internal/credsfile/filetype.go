@@ -14,7 +14,9 @@
 
 package credsfile
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Config3LO is the internals of a client creds file.
 type Config3LO struct {
@@ -27,8 +29,9 @@ type Config3LO struct {
 
 // ClientCredentialsFile representation.
 type ClientCredentialsFile struct {
-	Web       *Config3LO `json:"web"`
-	Installed *Config3LO `json:"installed"`
+	Web            *Config3LO `json:"web"`
+	Installed      *Config3LO `json:"installed"`
+	UniverseDomain string     `json:"universe_domain"`
 }
 
 // ServiceAccountFile representation.
@@ -51,23 +54,24 @@ type UserCredentialsFile struct {
 	ClientSecret   string `json:"client_secret"`
 	QuotaProjectID string `json:"quota_project_id"`
 	RefreshToken   string `json:"refresh_token"`
+	UniverseDomain string `json:"universe_domain"`
 }
 
 // ExternalAccountFile representation.
 type ExternalAccountFile struct {
-	Type                           string                          `json:"type"`
-	ClientID                       string                          `json:"client_id"`
-	ClientSecret                   string                          `json:"client_secret"`
-	Audience                       string                          `json:"audience"`
-	SubjectTokenType               string                          `json:"subject_token_type"`
-	ServiceAccountImpersonationURL string                          `json:"service_account_impersonation_url"`
-	TokenURL                       string                          `json:"token_url"`
-	CredentialSource               CredentialSource                `json:"credential_source"`
-	TokenInfoURL                   string                          `json:"token_info_url"`
-	ServiceAccountImpersonation    ServiceAccountImpersonationInfo `json:"service_account_impersonation"`
-	QuotaProjectID                 string                          `json:"quota_project_id"`
-	WorkforcePoolUserProject       string                          `json:"workforce_pool_user_project"`
-	UniverseDomain                 string                          `json:"universe_domain"`
+	Type                           string                           `json:"type"`
+	ClientID                       string                           `json:"client_id"`
+	ClientSecret                   string                           `json:"client_secret"`
+	Audience                       string                           `json:"audience"`
+	SubjectTokenType               string                           `json:"subject_token_type"`
+	ServiceAccountImpersonationURL string                           `json:"service_account_impersonation_url"`
+	TokenURL                       string                           `json:"token_url"`
+	CredentialSource               *CredentialSource                `json:"credential_source,omitempty"`
+	TokenInfoURL                   string                           `json:"token_info_url"`
+	ServiceAccountImpersonation    *ServiceAccountImpersonationInfo `json:"service_account_impersonation,omitempty"`
+	QuotaProjectID                 string                           `json:"quota_project_id"`
+	WorkforcePoolUserProject       string                           `json:"workforce_pool_user_project"`
+	UniverseDomain                 string                           `json:"universe_domain"`
 }
 
 // ExternalAccountAuthorizedUserFile representation.
@@ -81,6 +85,7 @@ type ExternalAccountAuthorizedUserFile struct {
 	TokenInfoURL   string `json:"token_info_url"`
 	RevokeURL      string `json:"revoke_url"`
 	QuotaProjectID string `json:"quota_project_id"`
+	UniverseDomain string `json:"universe_domain"`
 }
 
 // CredentialSource stores the information necessary to retrieve the credentials for the STS exchange.
@@ -91,13 +96,13 @@ type CredentialSource struct {
 	File                        string            `json:"file"`
 	URL                         string            `json:"url"`
 	Headers                     map[string]string `json:"headers"`
-	Executable                  *ExecutableConfig `json:"executable"`
+	Executable                  *ExecutableConfig `json:"executable,omitempty"`
 	EnvironmentID               string            `json:"environment_id"`
 	RegionURL                   string            `json:"region_url"`
 	RegionalCredVerificationURL string            `json:"regional_cred_verification_url"`
 	CredVerificationURL         string            `json:"cred_verification_url"`
 	IMDSv2SessionTokenURL       string            `json:"imdsv2_session_token_url"`
-	Format                      Format            `json:"format"`
+	Format                      *Format           `json:"format,omitempty"`
 }
 
 // Format describes the format of a [CredentialSource].
@@ -112,7 +117,7 @@ type Format struct {
 // [CredentialSource].
 type ExecutableConfig struct {
 	Command       string `json:"command"`
-	TimeoutMillis *int   `json:"timeout_millis"`
+	TimeoutMillis int    `json:"timeout_millis"`
 	OutputFile    string `json:"output_file"`
 }
 
@@ -132,12 +137,13 @@ type ImpersonatedServiceAccountFile struct {
 
 // GDCHServiceAccountFile represents the Google Distributed Cloud Hosted (GDCH) service identity file.
 type GDCHServiceAccountFile struct {
-	Type          string `json:"type"`
-	FormatVersion string `json:"format_version"`
-	Project       string `json:"project"`
-	Name          string `json:"name"`
-	CertPath      string `json:"ca_cert_path"`
-	PrivateKeyID  string `json:"private_key_id"`
-	PrivateKey    string `json:"private_key"`
-	TokenURL      string `json:"token_uri"`
+	Type           string `json:"type"`
+	FormatVersion  string `json:"format_version"`
+	Project        string `json:"project"`
+	Name           string `json:"name"`
+	CertPath       string `json:"ca_cert_path"`
+	PrivateKeyID   string `json:"private_key_id"`
+	PrivateKey     string `json:"private_key"`
+	TokenURL       string `json:"token_uri"`
+	UniverseDomain string `json:"universe_domain"`
 }

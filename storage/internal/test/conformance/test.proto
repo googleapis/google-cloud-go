@@ -51,6 +51,10 @@ message SigningV4Test {
   string bucketBoundHostname = 13;
   string expectedCanonicalRequest = 14;
   string expectedStringToSign = 15;
+  string hostname = 16;
+  string clientEndpoint = 17;
+  string emulatorHostname = 18;
+  string universeDomain = 19;
 }
 
 message ConditionalMatches {

@@ -17,6 +17,7 @@ package externalaccount
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 	"net/http/httptest"
@@ -34,7 +35,7 @@ type validateHeaders func(r *http.Request)
 const (
 	accessKeyID     = "ASIARD4OQDT6A77FR3CL"
 	secretAccessKey = "Y8AfSaucF37G4PpvfguKZ3/l7Id4uocLXxX0+VTx"
-	securityToken   = "IQoJb3JpZ2luX2VjEIz//////////wEaCXVzLWVhc3QtMiJGMEQCIH7MHX/Oy/OB8OlLQa9GrqU1B914+iMikqWQW7vPCKlgAiA/Lsv8Jcafn14owfxXn95FURZNKaaphj0ykpmS+Ki+CSq0AwhlEAAaDDA3NzA3MTM5MTk5NiIMx9sAeP1ovlMTMKLjKpEDwuJQg41/QUKx0laTZYjPlQvjwSqS3OB9P1KAXPWSLkliVMMqaHqelvMF/WO/glv3KwuTfQsavRNs3v5pcSEm4SPO3l7mCs7KrQUHwGP0neZhIKxEXy+Ls//1C/Bqt53NL+LSbaGv6RPHaX82laz2qElphg95aVLdYgIFY6JWV5fzyjgnhz0DQmy62/Vi8pNcM2/VnxeCQ8CC8dRDSt52ry2v+nc77vstuI9xV5k8mPtnaPoJDRANh0bjwY5Sdwkbp+mGRUJBAQRlNgHUJusefXQgVKBCiyJY4w3Csd8Bgj9IyDV+Azuy1jQqfFZWgP68LSz5bURyIjlWDQunO82stZ0BgplKKAa/KJHBPCp8Qi6i99uy7qh76FQAqgVTsnDuU6fGpHDcsDSGoCls2HgZjZFPeOj8mmRhFk1Xqvkbjuz8V1cJk54d3gIJvQt8gD2D6yJQZecnuGWd5K2e2HohvCc8Fc9kBl1300nUJPV+k4tr/A5R/0QfEKOZL1/k5lf1g9CREnrM8LVkGxCgdYMxLQow1uTL+QU67AHRRSp5PhhGX4Rek+01vdYSnJCMaPhSEgcLqDlQkhk6MPsyT91QMXcWmyO+cAZwUPwnRamFepuP4K8k2KVXs/LIJHLELwAZ0ekyaS7CptgOqS7uaSTFG3U+vzFZLEnGvWQ7y9IPNQZ+Dffgh4p3vF4J68y9049sI6Sr5d5wbKkcbm8hdCDHZcv4lnqohquPirLiFQ3q7B17V9krMPu3mz1cg4Ekgcrn/E09NTsxAqD8NcZ7C7ECom9r+X3zkDOxaajW6hu3Az8hGlyylDaMiFfRbBJpTIlxp7jfa7CxikNgNtEKLH9iCzvuSg2vhA=="
+	sessionToken    = "IQoJb3JpZ2luX2VjEIz//////////wEaCXVzLWVhc3QtMiJGMEQCIH7MHX/Oy/OB8OlLQa9GrqU1B914+iMikqWQW7vPCKlgAiA/Lsv8Jcafn14owfxXn95FURZNKaaphj0ykpmS+Ki+CSq0AwhlEAAaDDA3NzA3MTM5MTk5NiIMx9sAeP1ovlMTMKLjKpEDwuJQg41/QUKx0laTZYjPlQvjwSqS3OB9P1KAXPWSLkliVMMqaHqelvMF/WO/glv3KwuTfQsavRNs3v5pcSEm4SPO3l7mCs7KrQUHwGP0neZhIKxEXy+Ls//1C/Bqt53NL+LSbaGv6RPHaX82laz2qElphg95aVLdYgIFY6JWV5fzyjgnhz0DQmy62/Vi8pNcM2/VnxeCQ8CC8dRDSt52ry2v+nc77vstuI9xV5k8mPtnaPoJDRANh0bjwY5Sdwkbp+mGRUJBAQRlNgHUJusefXQgVKBCiyJY4w3Csd8Bgj9IyDV+Azuy1jQqfFZWgP68LSz5bURyIjlWDQunO82stZ0BgplKKAa/KJHBPCp8Qi6i99uy7qh76FQAqgVTsnDuU6fGpHDcsDSGoCls2HgZjZFPeOj8mmRhFk1Xqvkbjuz8V1cJk54d3gIJvQt8gD2D6yJQZecnuGWd5K2e2HohvCc8Fc9kBl1300nUJPV+k4tr/A5R/0QfEKOZL1/k5lf1g9CREnrM8LVkGxCgdYMxLQow1uTL+QU67AHRRSp5PhhGX4Rek+01vdYSnJCMaPhSEgcLqDlQkhk6MPsyT91QMXcWmyO+cAZwUPwnRamFepuP4K8k2KVXs/LIJHLELwAZ0ekyaS7CptgOqS7uaSTFG3U+vzFZLEnGvWQ7y9IPNQZ+Dffgh4p3vF4J68y9049sI6Sr5d5wbKkcbm8hdCDHZcv4lnqohquPirLiFQ3q7B17V9krMPu3mz1cg4Ekgcrn/E09NTsxAqD8NcZ7C7ECom9r+X3zkDOxaajW6hu3Az8hGlyylDaMiFfRbBJpTIlxp7jfa7CxikNgNtEKLH9iCzvuSg2vhA=="
 )
 
 var (
@@ -42,10 +43,10 @@ var (
 	secondDefaultTime      = time.Date(2020, 8, 11, 6, 55, 22, 0, time.UTC)
 	requestSignerWithToken = &awsRequestSigner{
 		RegionName: "us-east-2",
-		AwsSecurityCredentials: awsSecurityCredentials{
+		AwsSecurityCredentials: &AwsSecurityCredentials{
 			AccessKeyID:     accessKeyID,
 			SecretAccessKey: secretAccessKey,
-			SecurityToken:   securityToken,
+			SessionToken:    sessionToken,
 		},
 	}
 )
@@ -61,9 +62,9 @@ func TestAWSv4Signature_GetRequest(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=date;host, Signature=b27ccfbfa7df52a200ff74193ca6e32d4b48b8856fab7ebf1c595d0670a7e470"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -79,9 +80,9 @@ func TestAWSv4Signature_GetRequestWithRelativePath(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=date;host, Signature=b27ccfbfa7df52a200ff74193ca6e32d4b48b8856fab7ebf1c595d0670a7e470"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -97,9 +98,9 @@ func TestAWSv4Signature_GetRequestWithDotPath(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=date;host, Signature=b27ccfbfa7df52a200ff74193ca6e32d4b48b8856fab7ebf1c595d0670a7e470"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -115,9 +116,9 @@ func TestAWSv4Signature_GetRequestWithPointlessDotPath(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=date;host, Signature=910e4d6c9abafaf87898e1eb4c929135782ea25bb0279703146455745391e63a"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -133,9 +134,9 @@ func TestAWSv4Signature_GetRequestWithUtf8Path(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=date;host, Signature=8d6634c189aa8c75c2e51e106b6b5121bed103fdb351f7d7d4381c738823af74"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -151,9 +152,9 @@ func TestAWSv4Signature_GetRequestWithDuplicateQuery(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=date;host, Signature=be7148d34ebccdc6423b19085378aa0bee970bdc61d144bd1a8c48c33079ab09"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -169,9 +170,9 @@ func TestAWSv4Signature_GetRequestWithMisorderedQuery(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=date;host, Signature=feb926e49e382bec75c9d7dcb2a1b6dc8aa50ca43c25d2bc51143768c0875acc"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -187,9 +188,9 @@ func TestAWSv4Signature_GetRequestWithUtf8Query(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=date;host, Signature=6fb359e9a05394cc7074e0feb42573a2601abc0c869a953e8c5c12e4e01f1a8c"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -207,9 +208,9 @@ func TestAWSv4Signature_PostRequest(t *testing.T) {
 		"Zoo":           []string{"zoobar"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -227,9 +228,9 @@ func TestAWSv4Signature_PostRequestWithCapitalizedHeaderValue(t *testing.T) {
 		"Zoo":           []string{"ZOOBAR"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -247,9 +248,9 @@ func TestAWSv4Signature_PostRequestPhfft(t *testing.T) {
 		"P":             []string{"phfft"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -267,9 +268,9 @@ func TestAWSv4Signature_PostRequestWithBody(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=content-type;date;host, Signature=5a15b22cf462f047318703b92e6f4f38884e4a7ab7b1d6426ca46a8bd1c26cbc"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -285,9 +286,9 @@ func TestAWSv4Signature_PostRequestWithQueryString(t *testing.T) {
 		"Authorization": []string{"AWS4-HMAC-SHA256 Credential=AKIDEXAMPLE/20110909/us-east-1/host/aws4_request, SignedHeaders=date;host, Signature=b6e3b79003ce0743a491606ba1035a804593b0efb1e20a11cba83f8c25a57a92"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(defaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(defaultTime)
 
 	testRequestSigner(t, defaultRequestSigner, input, output)
 }
@@ -300,12 +301,12 @@ func TestAWSv4Signature_GetRequestWithSecurityToken(t *testing.T) {
 		"Host":                 []string{"ec2.us-east-2.amazonaws.com"},
 		"Authorization":        []string{"AWS4-HMAC-SHA256 Credential=" + accessKeyID + "/20200811/us-east-2/ec2/aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=631ea80cddfaa545fdadb120dc92c9f18166e38a5c47b50fab9fce476e022855"},
 		"X-Amz-Date":           []string{"20200811T065522Z"},
-		"X-Amz-Security-Token": []string{securityToken},
+		"X-Amz-Security-Token": []string{sessionToken},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(secondDefaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(secondDefaultTime)
 
 	testRequestSigner(t, requestSignerWithToken, input, output)
 }
@@ -318,12 +319,12 @@ func TestAWSv4Signature_PostRequestWithSecurityToken(t *testing.T) {
 		"Authorization":        []string{"AWS4-HMAC-SHA256 Credential=" + accessKeyID + "/20200811/us-east-2/sts/aws4_request, SignedHeaders=host;x-amz-date;x-amz-security-token, Signature=73452984e4a880ffdc5c392355733ec3f5ba310d5e0609a89244440cadfe7a7a"},
 		"Host":                 []string{"sts.us-east-2.amazonaws.com"},
 		"X-Amz-Date":           []string{"20200811T065522Z"},
-		"X-Amz-Security-Token": []string{securityToken},
+		"X-Amz-Security-Token": []string{sessionToken},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(secondDefaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(secondDefaultTime)
 
 	testRequestSigner(t, requestSignerWithToken, input, output)
 }
@@ -341,12 +342,12 @@ func TestAWSv4Signature_PostRequestWithSecurityTokenAndAdditionalHeaders(t *test
 		"X-Amz-Date":           []string{"20200811T065522Z"},
 		"Content-Type":         []string{"application/x-amz-json-1.0"},
 		"X-Amz-Target":         []string{"DynamoDB_20120810.CreateTable"},
-		"X-Amz-Security-Token": []string{securityToken},
+		"X-Amz-Security-Token": []string{sessionToken},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(secondDefaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(secondDefaultTime)
 
 	testRequestSigner(t, requestSignerWithToken, input, output)
 }
@@ -354,7 +355,7 @@ func TestAWSv4Signature_PostRequestWithSecurityTokenAndAdditionalHeaders(t *test
 func TestAWSv4Signature_PostRequestWithAmzDateButNoSecurityToken(t *testing.T) {
 	var requestSigner = &awsRequestSigner{
 		RegionName: "us-east-2",
-		AwsSecurityCredentials: awsSecurityCredentials{
+		AwsSecurityCredentials: &AwsSecurityCredentials{
 			AccessKeyID:     accessKeyID,
 			SecretAccessKey: secretAccessKey,
 		},
@@ -369,9 +370,9 @@ func TestAWSv4Signature_PostRequestWithAmzDateButNoSecurityToken(t *testing.T) {
 		"X-Amz-Date":    []string{"20200811T065522Z"},
 	}
 
-	oldNow := now
-	defer func() { now = oldNow }()
-	now = setTime(secondDefaultTime)
+	oldNow := Now
+	defer func() { Now = oldNow }()
+	Now = setTime(secondDefaultTime)
 
 	testRequestSigner(t, requestSigner, input, output)
 }
@@ -433,7 +434,7 @@ func createDefaultAwsTestServer() *testAwsServer {
 		map[string]string{
 			"SecretAccessKey": secretAccessKey,
 			"AccessKeyId":     accessKeyID,
-			"Token":           securityToken,
+			"Token":           sessionToken,
 		},
 		"",
 		noHeaderValidation,
@@ -465,7 +466,7 @@ func createDefaultAwsTestServerWithImdsv2(t *testing.T) *testAwsServer {
 		map[string]string{
 			"SecretAccessKey": secretAccessKey,
 			"AccessKeyId":     accessKeyID,
-			"Token":           securityToken,
+			"Token":           sessionToken,
 		},
 		"sessiontoken",
 		validateSessionTokenHeaders,
@@ -492,8 +493,8 @@ func notFound(w http.ResponseWriter, r *http.Request) {
 
 func noHeaderValidation(r *http.Request) {}
 
-func (server *testAwsServer) getCredentialSource(url string) credsfile.CredentialSource {
-	return credsfile.CredentialSource{
+func (server *testAwsServer) getCredentialSource(url string) *credsfile.CredentialSource {
+	return &credsfile.CredentialSource{
 		EnvironmentID:               "aws1",
 		URL:                         url + server.url,
 		RegionURL:                   url + server.regionURL,
@@ -502,15 +503,15 @@ func (server *testAwsServer) getCredentialSource(url string) credsfile.Credentia
 	}
 }
 
-func getExpectedSubjectToken(url, region, accessKeyID, secretAccessKey, securityToken string) string {
+func getExpectedSubjectToken(url, region, accessKeyID, secretAccessKey, sessionToken string) string {
 	req, _ := http.NewRequest("POST", url, nil)
 	req.Header.Set("x-goog-cloud-target-resource", cloneTestOpts().Audience)
 	signer := &awsRequestSigner{
 		RegionName: region,
-		AwsSecurityCredentials: awsSecurityCredentials{
+		AwsSecurityCredentials: &AwsSecurityCredentials{
 			AccessKeyID:     accessKeyID,
 			SecretAccessKey: secretAccessKey,
-			SecurityToken:   securityToken,
+			SessionToken:    sessionToken,
 		},
 	}
 	signer.signRequest(req)
@@ -532,10 +533,10 @@ func getExpectedSubjectToken(url, region, accessKeyID, secretAccessKey, security
 		},
 	}
 
-	if securityToken != "" {
+	if sessionToken != "" {
 		result.Headers = append(result.Headers, awsRequestHeader{
 			Key:   "X-Amz-Security-Token",
-			Value: securityToken,
+			Value: sessionToken,
 		})
 	}
 
@@ -556,13 +557,13 @@ func TestAWSCredential_BasicRequest(t *testing.T) {
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -583,7 +584,7 @@ func TestAWSCredential_BasicRequest(t *testing.T) {
 		"us-east-2",
 		accessKeyID,
 		secretAccessKey,
-		securityToken,
+		sessionToken,
 	)
 
 	if got != want {
@@ -599,13 +600,13 @@ func TestAWSCredential_IMDSv2(t *testing.T) {
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -622,7 +623,7 @@ func TestAWSCredential_IMDSv2(t *testing.T) {
 		"us-east-2",
 		accessKeyID,
 		secretAccessKey,
-		securityToken,
+		sessionToken,
 	)
 
 	if got != want {
@@ -639,13 +640,13 @@ func TestAWSCredential_BasicRequestWithoutSecurityToken(t *testing.T) {
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -678,17 +679,17 @@ func TestAWSCredential_BasicRequestWithEnv(t *testing.T) {
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{
 		"AWS_ACCESS_KEY_ID":     "AKIDEXAMPLE",
 		"AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
 		"AWS_REGION":            "us-west-1",
 	})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -721,17 +722,17 @@ func TestAWSCredential_BasicRequestWithDefaultEnv(t *testing.T) {
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{
 		"AWS_ACCESS_KEY_ID":     "AKIDEXAMPLE",
 		"AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
 		"AWS_REGION":            "us-west-1",
 	})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -762,10 +763,10 @@ func TestAWSCredential_BasicRequestWithTwoRegions(t *testing.T) {
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{
 		"AWS_ACCESS_KEY_ID":     "AKIDEXAMPLE",
@@ -773,7 +774,7 @@ func TestAWSCredential_BasicRequestWithTwoRegions(t *testing.T) {
 		"AWS_REGION":            "us-west-1",
 		"AWS_DEFAULT_REGION":    "us-east-1",
 	})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -1037,17 +1038,17 @@ func TestAWSCredential_ShouldNotCallMetadataEndpointWhenCredsAreInEnv(t *testing
 	opts.CredentialSource.IMDSv2SessionTokenURL = metadataTs.URL
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{
 		"AWS_ACCESS_KEY_ID":     "AKIDEXAMPLE",
 		"AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
 		"AWS_REGION":            "us-west-1",
 	})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -1080,16 +1081,16 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoRegion(t *testing.T) {
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{
 		"AWS_ACCESS_KEY_ID":     accessKeyID,
 		"AWS_SECRET_ACCESS_KEY": secretAccessKey,
 	})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -1122,16 +1123,16 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoAccessKey(t *testing.T) {
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{
 		"AWS_SECRET_ACCESS_KEY": "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
 		"AWS_REGION":            "us-west-1",
 	})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -1148,7 +1149,7 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoAccessKey(t *testing.T) {
 		"us-west-1",
 		accessKeyID,
 		secretAccessKey,
-		securityToken,
+		sessionToken,
 	)
 
 	if got != want {
@@ -1164,16 +1165,16 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoSecretAccessKey(t *testin
 	opts.CredentialSource = server.getCredentialSource(ts.URL)
 
 	oldGetenv := getenv
-	oldNow := now
+	oldNow := Now
 	defer func() {
 		getenv = oldGetenv
-		now = oldNow
+		Now = oldNow
 	}()
 	getenv = setEnvironment(map[string]string{
 		"AWS_ACCESS_KEY_ID": "AKIDEXAMPLE",
 		"AWS_REGION":        "us-west-1",
 	})
-	now = setTime(defaultTime)
+	Now = setTime(defaultTime)
 
 	base, err := newSubjectTokenProvider(opts)
 	if err != nil {
@@ -1190,7 +1191,7 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoSecretAccessKey(t *testin
 		"us-west-1",
 		accessKeyID,
 		secretAccessKey,
-		securityToken,
+		sessionToken,
 	)
 
 	if got != want {
@@ -1201,12 +1202,12 @@ func TestAWSCredential_ShouldCallMetadataEndpointWhenNoSecretAccessKey(t *testin
 func TestAWSCredential_Validations(t *testing.T) {
 	var metadataServerValidityTests = []struct {
 		name       string
-		credSource credsfile.CredentialSource
+		credSource *credsfile.CredentialSource
 		errText    string
 	}{
 		{
 			name: "No Metadata Server URLs",
-			credSource: credsfile.CredentialSource{
+			credSource: &credsfile.CredentialSource{
 				EnvironmentID:         "aws1",
 				RegionURL:             "",
 				URL:                   "",
@@ -1214,7 +1215,7 @@ func TestAWSCredential_Validations(t *testing.T) {
 			},
 		}, {
 			name: "IPv4 Metadata Server URLs",
-			credSource: credsfile.CredentialSource{
+			credSource: &credsfile.CredentialSource{
 				EnvironmentID:         "aws1",
 				RegionURL:             "http://169.254.169.254/latest/meta-data/placement/availability-zone",
 				URL:                   "http://169.254.169.254/latest/meta-data/iam/security-credentials",
@@ -1222,7 +1223,7 @@ func TestAWSCredential_Validations(t *testing.T) {
 			},
 		}, {
 			name: "IPv6 Metadata Server URLs",
-			credSource: credsfile.CredentialSource{
+			credSource: &credsfile.CredentialSource{
 				EnvironmentID:         "aws1",
 				RegionURL:             "http://[fd00:ec2::254]/latest/meta-data/placement/availability-zone",
 				URL:                   "http://[fd00:ec2::254]/latest/meta-data/iam/security-credentials",
@@ -1256,6 +1257,156 @@ func TestAWSCredential_Validations(t *testing.T) {
 	}
 }
 
+func TestAWSCredential_ProgrammaticAuth(t *testing.T) {
+	opts := cloneTestOpts()
+	opts.AwsSecurityCredentialsProvider = &fakeAwsCredsProvider{
+		awsRegion: "us-east-2",
+		creds: &AwsSecurityCredentials{
+			AccessKeyID:     accessKeyID,
+			SecretAccessKey: secretAccessKey,
+			SessionToken:    sessionToken,
+		},
+	}
+
+	oldNow := Now
+	defer func() {
+		Now = oldNow
+	}()
+	Now = setTime(defaultTime)
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	got, err := base.subjectToken(context.Background())
+	if err != nil {
+		t.Fatalf("subjectToken() = %v", err)
+	}
+
+	want := getExpectedSubjectToken(
+		"https://sts.us-east-2.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15",
+		"us-east-2",
+		accessKeyID,
+		secretAccessKey,
+		sessionToken,
+	)
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestAWSCredential_ProgrammaticAuthNoSessionToken(t *testing.T) {
+	opts := cloneTestOpts()
+	opts.AwsSecurityCredentialsProvider = fakeAwsCredsProvider{
+		awsRegion: "us-east-2",
+		creds: &AwsSecurityCredentials{
+			AccessKeyID:     accessKeyID,
+			SecretAccessKey: secretAccessKey,
+		},
+	}
+
+	oldNow := Now
+	defer func() {
+		Now = oldNow
+	}()
+	Now = setTime(defaultTime)
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	got, err := base.subjectToken(context.Background())
+	if err != nil {
+		t.Fatalf("subjectToken() = %v", err)
+	}
+
+	want := getExpectedSubjectToken(
+		"https://sts.us-east-2.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15",
+		"us-east-2",
+		accessKeyID,
+		secretAccessKey,
+		"",
+	)
+
+	if got != want {
+		t.Errorf("got %q, want %q", got, want)
+	}
+}
+
+func TestAWSCredential_ProgrammaticAuthError(t *testing.T) {
+	opts := cloneTestOpts()
+	testErr := errors.New("test error")
+	opts.AwsSecurityCredentialsProvider = fakeAwsCredsProvider{
+		awsRegion: "us-east-2",
+		credsErr:  testErr,
+	}
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	_, gotErr := base.subjectToken(context.Background())
+	if gotErr == nil {
+		t.Fatalf("subjectToken() = nil, want error")
+	}
+	if gotErr != testErr {
+		t.Errorf("got = %v, want %v", err, testErr)
+	}
+}
+
+func TestAWSCredential_ProgrammaticAuthRegionError(t *testing.T) {
+	opts := cloneTestOpts()
+	testErr := errors.New("test error")
+	opts.AwsSecurityCredentialsProvider = fakeAwsCredsProvider{
+		regionErr: testErr,
+		creds: &AwsSecurityCredentials{
+			AccessKeyID:     accessKeyID,
+			SecretAccessKey: secretAccessKey,
+		},
+	}
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	_, gotErr := base.subjectToken(context.Background())
+	if gotErr == nil {
+		t.Fatalf("subjectToken() = nil, want error")
+	}
+	if gotErr != testErr {
+		t.Errorf("got = %v, want %v", err, testErr)
+	}
+}
+
+func TestAWSCredential_ProgrammaticAuthOptions(t *testing.T) {
+	opts := cloneTestOpts()
+	wantOpts := &RequestOptions{Audience: opts.Audience, SubjectTokenType: opts.SubjectTokenType}
+
+	opts.AwsSecurityCredentialsProvider = fakeAwsCredsProvider{
+		awsRegion: "us-east-2",
+		creds: &AwsSecurityCredentials{
+			AccessKeyID:     accessKeyID,
+			SecretAccessKey: secretAccessKey,
+		},
+		reqOpts: wantOpts,
+	}
+
+	base, err := newSubjectTokenProvider(opts)
+	if err != nil {
+		t.Fatalf("newSubjectTokenProvider() = %v", err)
+	}
+
+	_, err = base.subjectToken(context.Background())
+	if err != nil {
+		t.Fatalf("subjectToken() = %v", err)
+	}
+}
+
 func setTime(testTime time.Time) func() time.Time {
 	return func() time.Time {
 		return testTime
@@ -1270,7 +1421,7 @@ func setEnvironment(env map[string]string) func(string) string {
 
 var defaultRequestSigner = &awsRequestSigner{
 	RegionName: "us-east-1",
-	AwsSecurityCredentials: awsSecurityCredentials{
+	AwsSecurityCredentials: &AwsSecurityCredentials{
 		AccessKeyID:     "AKIDEXAMPLE",
 		SecretAccessKey: "wJalrXUtnFEMI/K7MDENG+bPxRfiCYEXAMPLEKEY",
 	},
@@ -1301,4 +1452,42 @@ func testRequestSigner(t *testing.T, rs *awsRequestSigner, input, wantOutput *ht
 			t.Errorf("header[%q] = %q, want %q", header, got, want)
 		}
 	}
+}
+
+type fakeAwsCredsProvider struct {
+	credsErr  error
+	regionErr error
+	awsRegion string
+	creds     *AwsSecurityCredentials
+	reqOpts   *RequestOptions
+}
+
+func (acp fakeAwsCredsProvider) AwsRegion(ctx context.Context, opts *RequestOptions) (string, error) {
+	if acp.regionErr != nil {
+		return "", acp.regionErr
+	}
+	if acp.reqOpts != nil {
+		if acp.reqOpts.Audience != opts.Audience {
+			return "", errors.New("audience does not match")
+		}
+		if acp.reqOpts.SubjectTokenType != opts.SubjectTokenType {
+			return "", errors.New("audience does not match")
+		}
+	}
+	return acp.awsRegion, nil
+}
+
+func (acp fakeAwsCredsProvider) AwsSecurityCredentials(ctx context.Context, opts *RequestOptions) (*AwsSecurityCredentials, error) {
+	if acp.credsErr != nil {
+		return nil, acp.credsErr
+	}
+	if acp.reqOpts != nil {
+		if acp.reqOpts.Audience != opts.Audience {
+			return nil, errors.New("Audience does not match")
+		}
+		if acp.reqOpts.SubjectTokenType != opts.SubjectTokenType {
+			return nil, errors.New("Audience does not match")
+		}
+	}
+	return acp.creds, nil
 }
