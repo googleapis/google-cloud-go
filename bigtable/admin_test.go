@@ -41,6 +41,8 @@ type mockTableAdminClock struct {
 
 	copyBackupReq   *btapb.CopyBackupRequest
 	copyBackupError error
+
+	modColumnReq		*btapb.ModifyColumnFamiliesRequest
 }
 
 func (c *mockTableAdminClock) CreateTable(
@@ -68,6 +70,12 @@ func (c *mockTableAdminClock) CopyBackup(
 	c.copyBackupReq = in
 	c.copyBackupError = fmt.Errorf("Mock error from client API")
 	return nil, c.copyBackupError
+}
+
+func (c *mockTableAdminClock) ModifyColumnFamilies(
+	ctx context.Context, in *btapb.ModifyColumnFamiliesRequest, opts ...grpc.CallOption) (*btapb.Table, error) {
+	c.modColumnReq = in
+	return nil, nil
 }
 
 func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminClient {
@@ -274,6 +282,36 @@ func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config") {
 		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_SetGcPolicy(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.SetGCPolicy(context.Background(), "My-table", "cf1", NoGcPolicy())
+	if err != nil {
+		t.Fatalf("Failed to set GC Policy: %v", err)
+	}
+
+	modColumnReq := mock.modColumnReq
+	if modColumnReq.IgnoreWarnings {
+		t.Errorf("IgnoreWarnings should be set to false")
+	}
+}
+
+func TestTableAdmin_SetGcPolicyIgnoreWarnings(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.SetGCPolicyIgnoreWarnings(context.Background(), "My-table", "cf1", NoGcPolicy())
+	if err != nil {
+		t.Fatalf("Failed to set GC Policy: %v", err)
+	}
+
+	modColumnReq := mock.modColumnReq
+	if !modColumnReq.IgnoreWarnings {
+		t.Errorf("IgnoreWarnings should be set to true")
 	}
 }
 
