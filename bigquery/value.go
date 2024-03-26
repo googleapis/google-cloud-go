@@ -82,6 +82,9 @@ func loadMap(m map[string]Value, vals []Value, s Schema) {
 			}
 			v = vs
 		}
+		if f.Repeated && (v == nil || reflect.ValueOf(v).IsNil()) {
+			v = []Value{}
+		}
 
 		m[f.Name] = v
 	}
