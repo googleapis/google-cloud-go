@@ -1398,13 +1398,15 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
+					// otelCtx is used to relate the main subscribe span to the other subspans in the subscribe side.
+					// We don't want to override the ctx passed into Receive, which is necessary for user-initiated cancellations.
 					otelCtx := context.Background()
 					var ccSpan trace.Span
 					if iter.enableTracing {
 						c, _ := iter.activeSpans.Load(ackh.ackID)
 						sc := c.(trace.Span)
 						otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
-						otelCtx, ccSpan = startSpan(otelCtx, ccSpanName, "")
+						_, ccSpan = startSpan(otelCtx, ccSpanName, "")
 					}
 					// Use the original user defined ctx for this operation so the acquire operation can be cancelled.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
