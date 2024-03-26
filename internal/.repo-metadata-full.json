@@ -679,6 +679,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/cloudcontrolspartner/apiv1beta": {
+    "api_shortname": "cloudcontrolspartner",
+    "distribution_name": "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+    "description": "Cloud Controls Partner API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/cloudcontrolspartner/latest/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/clouddms/apiv1": {
     "api_shortname": "datamigration",
     "distribution_name": "cloud.google.com/go/clouddms/apiv1",
@@ -2129,6 +2139,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/secretmanager/apiv1beta2": {
+    "api_shortname": "secretmanager",
+    "distribution_name": "cloud.google.com/go/secretmanager/apiv1beta2",
+    "description": "Secret Manager API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/secretmanager/latest/apiv1beta2",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/securesourcemanager/apiv1": {
     "api_shortname": "securesourcemanager",
     "distribution_name": "cloud.google.com/go/securesourcemanager/apiv1",
@@ -2408,6 +2428,16 @@
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest",
     "release_level": "stable",
     "library_type": "GAPIC_MANUAL"
+  },
+  "cloud.google.com/go/storage/control/apiv2": {
+    "api_shortname": "storage",
+    "distribution_name": "cloud.google.com/go/storage/control/apiv2",
+    "description": "Cloud Storage API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest/control/apiv2",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/storage/internal/apiv2": {
     "api_shortname": "storage",

@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
 	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
@@ -65,12 +66,17 @@ type Options struct {
 	// PoolSize is specifies how many connections to balance between when making
 	// requests. If unset or less than 1, the value defaults to 1.
 	PoolSize int
-	// TokenProvider specifies the provider used to add Authorization metadata
-	// to all requests. If set DetectOpts are ignored.
-	TokenProvider auth.TokenProvider
+	// Credentials used to add Authorization metadata to all requests. If set
+	// DetectOpts are ignored.
+	Credentials *auth.Credentials
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
 	DetectOpts *credentials.DetectOptions
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". This is the universe domain
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials.
+	UniverseDomain string
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.
@@ -90,7 +96,7 @@ func (o *Options) validate() error {
 	if o == nil {
 		return errors.New("grpctransport: opts required to be non-nil")
 	}
-	hasCreds := o.TokenProvider != nil ||
+	hasCreds := o.Credentials != nil ||
 		(o.DetectOpts != nil && len(o.DetectOpts.CredentialsJSON) > 0) ||
 		(o.DetectOpts != nil && o.DetectOpts.CredentialsFile != "")
 	if o.DisableAuthentication && hasCreds {
@@ -204,9 +210,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		if err != nil {
 			return nil, err
 		}
-		var tp auth.TokenProvider = creds
-		if opts.TokenProvider != nil {
-			tp = opts.TokenProvider
+		if opts.Credentials != nil {
+			creds = opts.Credentials
 		}
 
 		qp, err := creds.QuotaProjectID(ctx)
@@ -219,11 +224,11 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			}
 			metadata[quotaProjectHeaderKey] = qp
 		}
-
 		grpcOpts = append(grpcOpts,
-			grpc.WithPerRPCCredentials(&grpcTokenProvider{
-				TokenProvider: tp,
-				metadata:      metadata,
+			grpc.WithPerRPCCredentials(&grpcCredentialsProvider{
+				creds:                creds,
+				metadata:             metadata,
+				clientUniverseDomain: opts.UniverseDomain,
 			}),
 		)
 
@@ -240,38 +245,57 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	return grpc.DialContext(ctx, endpoint, grpcOpts...)
 }
 
-// grpcTokenProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
-type grpcTokenProvider struct {
-	auth.TokenProvider
+// grpcCredentialsProvider satisfies https://pkg.go.dev/google.golang.org/grpc/credentials#PerRPCCredentials.
+type grpcCredentialsProvider struct {
+	creds *auth.Credentials
 
 	secure bool
 
 	// Additional metadata attached as headers.
-	metadata map[string]string
+	metadata             map[string]string
+	clientUniverseDomain string
 }
 
-func (tp *grpcTokenProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
-	token, err := tp.Token(ctx)
+// getClientUniverseDomain returns the default service domain for a given Cloud universe.
+// The default value is "googleapis.com". This is the universe domain
+// configured for the client, which will be compared to the universe domain
+// that is separately configured for the credentials.
+func (c *grpcCredentialsProvider) getClientUniverseDomain() string {
+	if c.clientUniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return c.clientUniverseDomain
+}
+
+func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	credentialsUniverseDomain, err := c.creds.UniverseDomain(ctx)
 	if err != nil {
 		return nil, err
 	}
-	if tp.secure {
+	if err := transport.ValidateUniverseDomain(c.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
+		return nil, err
+	}
+	token, err := c.creds.Token(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if c.secure {
 		ri, _ := grpccreds.RequestInfoFromContext(ctx)
 		if err = grpccreds.CheckSecurityLevel(ri.AuthInfo, grpccreds.PrivacyAndIntegrity); err != nil {
-			return nil, fmt.Errorf("unable to transfer TokenProvider PerRPCCredentials: %v", err)
+			return nil, fmt.Errorf("unable to transfer credentials PerRPCCredentials: %v", err)
 		}
 	}
 	metadata := map[string]string{
 		"authorization": token.Type + " " + token.Value,
 	}
-	for k, v := range tp.metadata {
+	for k, v := range c.metadata {
 		metadata[k] = v
 	}
 	return metadata, nil
 }
 
-func (tp *grpcTokenProvider) RequireTransportSecurity() bool {
-	return tp.secure
+func (c *grpcCredentialsProvider) RequireTransportSecurity() bool {
+	return c.secure
 }
 
 func addOCStatsHandler(dialOpts []grpc.DialOption, opts *Options) []grpc.DialOption {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.4](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.3...ai/v0.3.4) (2024-03-19)
+
+
+### Bug Fixes
+
+* **ai/generativelanguage:** Make learning rate a one-of ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+
 ## [0.3.3](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.2...ai/v0.3.3) (2024-03-14)
 
 
