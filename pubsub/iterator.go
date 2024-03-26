@@ -263,12 +263,8 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 
 	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
 
-	it.eoMu.RLock()
-	enableExactlyOnceDelivery := it.enableExactlyOnceDelivery
-	it.eoMu.RUnlock()
-
 	now := time.Now()
-	msgs, err := convertMessages(rmsgs, now, it.done, it.subName, enableExactlyOnceDelivery)
+	msgs, err := convertMessages(rmsgs, now, it.done)
 	if err != nil {
 		return nil, it.fail(err)
 	}
