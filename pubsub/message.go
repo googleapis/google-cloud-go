@@ -93,6 +93,7 @@ func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDon
 	msg.PublishTime = pubTime
 	msg.DeliveryAttempt = deliveryAttempt
 	msg.OrderingKey = resp.Message.OrderingKey
+
 	ackh.receiveTime = receiveTime
 	ackh.doneFunc = doneFunc
 	ackh.ackResult = ipubsub.NewAckResult()
@@ -189,4 +190,8 @@ func newSuccessAckResult() *AckResult {
 	ar := ipubsub.NewAckResult()
 	ipubsub.SetAckResult(ar, AcknowledgeStatusSuccess, nil)
 	return ar
+}
+
+func setAckResult(ar *AckResult, s AcknowledgeStatus, err error) {
+	ipubsub.SetAckResult(ar, s, err)
 }

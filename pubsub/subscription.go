@@ -25,9 +25,12 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
+	ipubsub "cloud.google.com/go/internal/pubsub"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
+	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -52,6 +55,11 @@ type Subscription struct {
 	receiveActive bool
 
 	enableOrdering bool
+
+	// enableTracing enable OTel tracing of Pub/Sub messages on this subscription.
+	// This is configured at client instantiation, and allows
+	// dsabling of tracing even when a tracer provider is detectd.
+	enableTracing bool
 }
 
 // Subscription creates a reference to a subscription.
@@ -61,9 +69,15 @@ func (c *Client) Subscription(id string) *Subscription {
 
 // SubscriptionInProject creates a reference to a subscription in a given project.
 func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
+	return newSubscription(c, fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id))
+}
+
+func newSubscription(c *Client, name string) *Subscription {
 	return &Subscription{
-		c:    c,
-		name: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id),
+		c:               c,
+		name:            name,
+		ReceiveSettings: DefaultReceiveSettings,
+		enableTracing:   c.enableTracing,
 	}
 }
 
@@ -113,7 +127,7 @@ func (subs *SubscriptionIterator) Next() (*Subscription, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Subscription{c: subs.c, name: subName}, nil
+	return newSubscription(subs.c, subName), nil
 }
 
 // NextConfig returns the next subscription config. If there are no more subscriptions,
@@ -1315,6 +1329,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// canceling that context would immediately stop the iterator without
 		// waiting for unacked messages.
 		iter := newMessageIterator(s.c.subc, s.name, po)
+		iter.enableTracing = s.enableTracing
 
 		// We cannot use errgroup from Receive here. Receive might already be
 		// calling group.Wait, and group.Wait cannot be called concurrently with
@@ -1359,6 +1374,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					return nil
 				default:
 				}
+
 				msgs, err := iter.receive(maxToPull)
 				if err == io.EOF {
 					return nil
@@ -1376,9 +1392,23 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					return nil
 				default:
 				}
+
 				for i, msg := range msgs {
 					msg := msg
-					// TODO(jba): call acquire closer to when the message is allocated.
+					iter.eoMu.RLock()
+					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
+					iter.eoMu.RUnlock()
+					// otelCtx is used to relate the main subscribe span to the other subspans in the subscribe side.
+					// We don't want to override the ctx passed into Receive, which is necessary for user-initiated cancellations.
+					otelCtx := context.Background()
+					var ccSpan trace.Span
+					if iter.enableTracing {
+						c, _ := iter.activeSpans.Load(ackh.ackID)
+						sc := c.(trace.Span)
+						otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
+						_, ccSpan = startSpan(otelCtx, ccSpanName, "")
+					}
+					// Use the original user defined ctx for this operation so the acquire operation can be cancelled.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {
@@ -1387,9 +1417,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					iter.eoMu.RLock()
-					msgAckHandler(msg, iter.enableExactlyOnceDelivery)
-					iter.eoMu.RUnlock()
+					if iter.enableTracing {
+						ccSpan.End()
+					}
 
 					wg.Add(1)
 					// Make sure the subscription has ordering enabled before adding to scheduler.
@@ -1397,13 +1427,42 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					if s.enableOrdering {
 						key = msg.OrderingKey
 					}
+					// TODO(deklerk): Can we have a generic handler at the
+					// constructor level?
+					var schedulerSpan trace.Span
+					if iter.enableTracing {
+						_, schedulerSpan = startSpan(otelCtx, scheduleSpanName, "")
+					}
 					msgLen := len(msg.Data)
 					if err := sched.Add(key, msg, func(msg interface{}) {
+						m := msg.(*Message)
+						if iter.enableTracing {
+							schedulerSpan.End()
+						}
 						defer wg.Done()
-						defer fc.release(ctx, msgLen)
-						f(ctx2, msg.(*Message))
+						var ps trace.Span
+						if iter.enableTracing {
+							_, ps = startSpan(otelCtx, processSpanName, s.ID())
+							old := ackh.doneFunc
+							ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
+								var eventString string
+								if ack {
+									eventString = eventAckCalled
+								} else {
+									eventString = eventNackCalled
+								}
+								ps.AddEvent(eventString)
+								ps.SetAttributes(semconv.MessagingOperationProcess)
+								ps.End()
+								old(ackID, ack, r, receiveTime)
+							}
+						}
+						defer fc.release(otelCtx, msgLen)
+						f(ctx2, m)
 					}); err != nil {
 						wg.Done()
+						// TODO(hongalex): propagate these errors to an otel span.
+
 						// If there are any errors with scheduling messages,
 						// nack them so they can be redelivered.
 						msg.Nack()

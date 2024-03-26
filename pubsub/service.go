@@ -130,3 +130,8 @@ func newExactlyOnceBackoff() gax.Backoff {
 		Multiplier: 2,
 	}
 }
+
+func idFromFullyQualified(fqn string) string {
+	s := strings.Split(fqn, "/")
+	return s[len(s)-1]
+}

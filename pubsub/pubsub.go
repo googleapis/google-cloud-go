@@ -48,15 +48,21 @@ const (
 // Clients should be reused rather than being created as needed.
 // A Client may be shared by multiple goroutines.
 type Client struct {
-	projectID string
-	pubc      *vkit.PublisherClient
-	subc      *vkit.SubscriberClient
+	projectID     string
+	pubc          *vkit.PublisherClient
+	subc          *vkit.SubscriberClient
+	enableTracing bool
 }
 
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
 	PublisherCallOptions  *vkit.PublisherCallOptions
 	SubscriberCallOptions *vkit.SubscriberCallOptions
+
+	// EnableOpenTelemetryTracing enables span creation for this client.
+	// This option allows selectively disabling Pub/Sub traces.
+	// This defaults to false.
+	EnableOpenTelemetryTracing bool
 }
 
 // mergePublisherCallOptions merges two PublisherCallOptions into one and the first argument has
@@ -135,7 +141,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 }
 
 // NewClientWithConfig creates a new PubSub client.
-func NewClientWithConfig(ctx context.Context, projectID string, config *ClientConfig, opts ...option.ClientOption) (c *Client, err error) {
+func NewClientWithConfig(ctx context.Context, projectID string, config *ClientConfig, opts ...option.ClientOption) (*Client, error) {
 	if projectID == "" {
 		return nil, ErrEmptyProjectID
 	}
@@ -184,11 +190,15 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 		return nil, err
 	}
 
-	return &Client{
+	c := &Client{
 		projectID: projectID,
 		pubc:      pubc,
 		subc:      subc,
-	}, nil
+	}
+	if config != nil {
+		c.enableTracing = config.EnableOpenTelemetryTracing
+	}
+	return c, nil
 }
 
 // Project returns the project ID or number for this instance of the client, which may have

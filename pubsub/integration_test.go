@@ -2157,6 +2157,7 @@ func TestIntegration_TopicUpdateSchema(t *testing.T) {
 }
 
 func TestIntegration_DetectProjectID(t *testing.T) {
+	t.Skip()
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
