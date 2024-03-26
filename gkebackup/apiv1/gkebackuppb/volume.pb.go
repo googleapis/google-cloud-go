@@ -21,13 +21,12 @@
 package gkebackuppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -279,7 +278,6 @@ func (VolumeRestore_State) EnumDescriptor() ([]byte, []int) {
 // Represents the backup of a specific persistent volume as a component of a
 // Backup - both the record of the operation and a pointer to the underlying
 // storage-specific artifacts.
-// Next id: 14
 type VolumeBackup struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -454,7 +452,6 @@ func (x *VolumeBackup) GetEtag() string {
 }
 
 // Represents the operation of restoring a volume from a VolumeBackup.
-// Next id: 13
 type VolumeRestore struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
