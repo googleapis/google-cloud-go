@@ -1013,6 +1013,19 @@ func (se SequenceExpr) addSQL(sb *strings.Builder) {
 	sb.WriteString(se.Name.SQL())
 }
 
+func (le LambdaExpr) SQL() string { return buildSQL(le) }
+func (le LambdaExpr) addSQL(sb *strings.Builder) {
+	if len(le.Args) == 1 {
+		le.Args[0].addSQL(sb)
+	} else {
+		sb.WriteString("(")
+		addIDList(sb, le.Args, ", ")
+		sb.WriteString(")")
+	}
+	sb.WriteString(" -> ")
+	le.Body.addSQL(sb)
+}
+
 func idList(l []ID, join string) string {
 	var ss []string
 	for _, s := range l {
