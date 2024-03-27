@@ -15,6 +15,7 @@
 package managedwriter
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"testing"
@@ -60,6 +61,10 @@ func TestManagedStream_AppendErrorRetries(t *testing.T) {
 			err:  status.Error(codes.ResourceExhausted, "Exceeds 'AppendRows throughput' quota for some reason"),
 			want: true,
 		},
+		{
+			err:  context.Canceled,
+			want: false,
+		},
 	}
 
 	retry := newStatelessRetryer()
@@ -86,11 +91,23 @@ func TestManagedStream_ShouldReconnect(t *testing.T) {
 			want: true,
 		},
 		{
-			err:  status.Error(codes.Unavailable, "nope"),
+			err:  status.Error(codes.Unavailable, "the connection is draining"),
+			want: true,
+		},
+		{
+			err:  status.Error(codes.ResourceExhausted, "oof"), // may just be pushback
 			want: false,
 		},
 		{
-			err:  status.Error(codes.Unavailable, "the connection is draining"),
+			err:  status.Error(codes.Canceled, "blah"),
+			want: true,
+		},
+		{
+			err:  status.Error(codes.Aborted, "connection has been idle too long"),
+			want: true,
+		},
+		{
+			err:  status.Error(codes.DeadlineExceeded, "blah"), // possibly bad backend, reconnect to speed recovery.
 			want: true,
 		},
 		{
