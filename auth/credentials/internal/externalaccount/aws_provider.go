@@ -60,6 +60,8 @@ const (
 	// The AWS authorization header name for the auto-generated date.
 	awsDateHeader = "x-amz-date"
 
+	defaultRegionalCredentialVerificationURL = "https://sts.{region}.amazonaws.com?Action=GetCallerIdentity&Version=2011-06-15"
+
 	// Supported AWS configuration environment variables.
 	awsAccessKeyIDEnvVar     = "AWS_ACCESS_KEY_ID"
 	awsDefaultRegionEnvVar   = "AWS_DEFAULT_REGION"
@@ -81,14 +83,20 @@ type awsSubjectProvider struct {
 	TargetResource              string
 	requestSigner               *awsRequestSigner
 	region                      string
+	securityCredentialsProvider AwsSecurityCredentialsProvider
+	reqOpts                     *RequestOptions
 
 	Client *http.Client
 }
 
 func (sp *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) {
+	// Set Defaults
+	if sp.RegionalCredVerificationURL == "" {
+		sp.RegionalCredVerificationURL = defaultRegionalCredentialVerificationURL
+	}
 	if sp.requestSigner == nil {
 		headers := make(map[string]string)
-		if shouldUseMetadataServer() {
+		if sp.shouldUseMetadataServer() {
 			awsSessionToken, err := sp.getAWSSessionToken(ctx)
 			if err != nil {
 				return "", err
@@ -170,6 +178,9 @@ func (sp *awsSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 }
 
 func (sp *awsSubjectProvider) providerType() string {
+	if sp.securityCredentialsProvider != nil {
+		return programmaticProviderType
+	}
 	return awsProviderType
 }
 
@@ -200,6 +211,9 @@ func (sp *awsSubjectProvider) getAWSSessionToken(ctx context.Context) (string, e
 }
 
 func (sp *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]string) (string, error) {
+	if sp.securityCredentialsProvider != nil {
+		return sp.securityCredentialsProvider.AwsRegion(ctx, sp.reqOpts)
+	}
 	if canRetrieveRegionFromEnvironment() {
 		if envAwsRegion := getenv(awsRegionEnvVar); envAwsRegion != "" {
 			return envAwsRegion, nil
@@ -244,12 +258,15 @@ func (sp *awsSubjectProvider) getRegion(ctx context.Context, headers map[string]
 	return string(respBody[:bodyLen-1]), nil
 }
 
-func (sp *awsSubjectProvider) getSecurityCredentials(ctx context.Context, headers map[string]string) (result awsSecurityCredentials, err error) {
+func (sp *awsSubjectProvider) getSecurityCredentials(ctx context.Context, headers map[string]string) (result *AwsSecurityCredentials, err error) {
+	if sp.securityCredentialsProvider != nil {
+		return sp.securityCredentialsProvider.AwsSecurityCredentials(ctx, sp.reqOpts)
+	}
 	if canRetrieveSecurityCredentialFromEnvironment() {
-		return awsSecurityCredentials{
+		return &AwsSecurityCredentials{
 			AccessKeyID:     getenv(awsAccessKeyIDEnvVar),
 			SecretAccessKey: getenv(awsSecretAccessKeyEnvVar),
-			SecurityToken:   getenv(awsSessionTokenEnvVar),
+			SessionToken:    getenv(awsSessionTokenEnvVar),
 		}, nil
 	}
 
@@ -272,8 +289,8 @@ func (sp *awsSubjectProvider) getSecurityCredentials(ctx context.Context, header
 	return credentials, nil
 }
 
-func (sp *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context, roleName string, headers map[string]string) (awsSecurityCredentials, error) {
-	var result awsSecurityCredentials
+func (sp *awsSubjectProvider) getMetadataSecurityCredentials(ctx context.Context, roleName string, headers map[string]string) (*AwsSecurityCredentials, error) {
+	var result *AwsSecurityCredentials
 
 	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("%s/%s", sp.CredVerificationURL, roleName), nil)
 	if err != nil {
@@ -328,16 +345,10 @@ func (sp *awsSubjectProvider) getMetadataRoleName(ctx context.Context, headers m
 	return string(respBody), nil
 }
 
-type awsSecurityCredentials struct {
-	AccessKeyID     string `json:"AccessKeyID"`
-	SecretAccessKey string `json:"SecretAccessKey"`
-	SecurityToken   string `json:"Token"`
-}
-
 // awsRequestSigner is a utility class to sign http requests using a AWS V4 signature.
 type awsRequestSigner struct {
 	RegionName             string
-	AwsSecurityCredentials awsSecurityCredentials
+	AwsSecurityCredentials *AwsSecurityCredentials
 }
 
 // signRequest adds the appropriate headers to an http.Request
@@ -345,10 +356,10 @@ type awsRequestSigner struct {
 func (rs *awsRequestSigner) signRequest(req *http.Request) error {
 	// req is assumed non-nil
 	signedRequest := cloneRequest(req)
-	timestamp := now()
+	timestamp := Now()
 	signedRequest.Header.Set("host", requestHost(req))
-	if rs.AwsSecurityCredentials.SecurityToken != "" {
-		signedRequest.Header.Set(awsSecurityTokenHeader, rs.AwsSecurityCredentials.SecurityToken)
+	if rs.AwsSecurityCredentials.SessionToken != "" {
+		signedRequest.Header.Set(awsSecurityTokenHeader, rs.AwsSecurityCredentials.SessionToken)
 	}
 	if signedRequest.Header.Get("date") == "" {
 		signedRequest.Header.Set(awsDateHeader, timestamp.Format(awsTimeFormatLong))
@@ -531,6 +542,6 @@ func canRetrieveSecurityCredentialFromEnvironment() bool {
 	return getenv(awsAccessKeyIDEnvVar) != "" && getenv(awsSecretAccessKeyEnvVar) != ""
 }
 
-func shouldUseMetadataServer() bool {
-	return !canRetrieveRegionFromEnvironment() || !canRetrieveSecurityCredentialFromEnvironment()
+func (sp *awsSubjectProvider) shouldUseMetadataServer() bool {
+	return sp.securityCredentialsProvider == nil && (!canRetrieveRegionFromEnvironment() || !canRetrieveSecurityCredentialFromEnvironment())
 }

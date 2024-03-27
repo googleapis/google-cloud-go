@@ -96,7 +96,8 @@ func (x *ReasoningEngineSpec) GetClassMethods() []*structpb.Struct {
 	return nil
 }
 
-// ReasoningEngine provides customized orchestration over extensions and tools.
+// ReasoningEngine provides a customizable runtime for models to determine
+// which actions to take and in which order.
 type ReasoningEngine struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

@@ -46,7 +46,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		projectID = f.ProjectID
-		universeDomain = f.UniverseDomain
+		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	case credsfile.UserCredentialsKey:
 		f, err := credsfile.ParseUserCredentials(b)
 		if err != nil {
@@ -57,6 +57,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		quotaProjectID = f.QuotaProjectID
+		universeDomain = f.UniverseDomain
 	case credsfile.ExternalAccountKey:
 		f, err := credsfile.ParseExternalAccount(b)
 		if err != nil {
@@ -67,7 +68,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		quotaProjectID = f.QuotaProjectID
-		universeDomain = f.UniverseDomain
+		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	case credsfile.ExternalAccountAuthorizedUserKey:
 		f, err := credsfile.ParseExternalAccountAuthorizedUser(b)
 		if err != nil {
@@ -78,6 +79,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		quotaProjectID = f.QuotaProjectID
+		universeDomain = f.UniverseDomain
 	case credsfile.ImpersonatedServiceAccountKey:
 		f, err := credsfile.ParseImpersonatedServiceAccount(b)
 		if err != nil {
@@ -87,7 +89,7 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		universeDomain = f.UniverseDomain
+		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	case credsfile.GDCHServiceAccountKey:
 		f, err := credsfile.ParseGDCHServiceAccount(b)
 		if err != nil {
@@ -98,11 +100,9 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		projectID = f.Project
+		universeDomain = f.UniverseDomain
 	default:
 		return nil, fmt.Errorf("credentials: unsupported filetype %q", fileType)
-	}
-	if opts.UniverseDomain != "" {
-		universeDomain = opts.UniverseDomain
 	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
@@ -113,6 +113,17 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		QuotaProjectIDProvider: internalauth.StaticCredentialsProperty(quotaProjectID),
 		UniverseDomainProvider: internalauth.StaticCredentialsProperty(universeDomain),
 	}), nil
+}
+
+// resolveUniverseDomain returns optsUniverseDomain if non-empty, in order to
+// support configuring universe-specific credentials in code. Auth flows
+// unsupported for universe domain should not use this func, but should instead
+// simply set the file universe domain on the credentials.
+func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string {
+	if optsUniverseDomain != "" {
+		return optsUniverseDomain
+	}
+	return fileUniverseDomain
 }
 
 func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
@@ -154,14 +165,16 @@ func handleExternalAccount(f *credsfile.ExternalAccountFile, opts *DetectOptions
 		TokenURL:                       f.TokenURL,
 		TokenInfoURL:                   f.TokenInfoURL,
 		ServiceAccountImpersonationURL: f.ServiceAccountImpersonationURL,
-		ServiceAccountImpersonationLifetimeSeconds: f.ServiceAccountImpersonation.TokenLifetimeSeconds,
-		ClientSecret:             f.ClientSecret,
-		ClientID:                 f.ClientID,
-		CredentialSource:         f.CredentialSource,
-		QuotaProjectID:           f.QuotaProjectID,
-		Scopes:                   opts.scopes(),
-		WorkforcePoolUserProject: f.WorkforcePoolUserProject,
-		Client:                   opts.client(),
+		ClientSecret:                   f.ClientSecret,
+		ClientID:                       f.ClientID,
+		CredentialSource:               f.CredentialSource,
+		QuotaProjectID:                 f.QuotaProjectID,
+		Scopes:                         opts.scopes(),
+		WorkforcePoolUserProject:       f.WorkforcePoolUserProject,
+		Client:                         opts.client(),
+	}
+	if f.ServiceAccountImpersonation != nil {
+		externalOpts.ServiceAccountImpersonationLifetimeSeconds = f.ServiceAccountImpersonation.TokenLifetimeSeconds
 	}
 	return externalaccount.NewTokenProvider(externalOpts)
 }

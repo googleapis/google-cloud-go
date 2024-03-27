@@ -61,9 +61,6 @@ func TestNewTokenProvider(t *testing.T) {
 
 	}))
 	defer ts.Close()
-	oldEndpoint := identityBindingEndpoint
-	identityBindingEndpoint = ts.URL
-	t.Cleanup(func() { identityBindingEndpoint = oldEndpoint })
 	creds, err := NewCredentials(&Options{
 		Credentials: staticCredentials("token_base"),
 		Rules: []AccessBoundaryRule{
@@ -76,6 +73,9 @@ func TestNewTokenProvider(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewTokenProvider() = %v", err)
 	}
+	// Replace the default STS endpoint on the TokenProvider with the test server URL.
+	creds.TokenProvider.(*downscopedTokenProvider).identityBindingEndpoint = ts.URL
+
 	tok, err := creds.Token(context.Background())
 	if err != nil {
 		t.Fatalf("Token failed with error: %v", err)
@@ -85,7 +85,7 @@ func TestNewTokenProvider(t *testing.T) {
 	}
 }
 
-func TestTestNewCredentials_Validations(t *testing.T) {
+func TestNewCredentials_Validations(t *testing.T) {
 	tests := []struct {
 		name string
 		opts *Options
@@ -134,5 +134,24 @@ func TestTestNewCredentials_Validations(t *testing.T) {
 				t.Fatal("want non-nil err")
 			}
 		})
+	}
+}
+
+func TestOptions_UniverseDomain(t *testing.T) {
+	tests := []struct {
+		universeDomain string
+		want           string
+	}{
+		{"", "https://sts.googleapis.com/v1/token"},
+		{"googleapis.com", "https://sts.googleapis.com/v1/token"},
+		{"example.com", "https://sts.example.com/v1/token"},
+	}
+	for _, tt := range tests {
+		c := Options{
+			UniverseDomain: tt.universeDomain,
+		}
+		if got := c.identityBindingEndpoint(); got != tt.want {
+			t.Errorf("got %q, want %q", got, tt.want)
+		}
 	}
 }
