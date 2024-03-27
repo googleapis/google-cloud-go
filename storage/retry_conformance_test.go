@@ -404,7 +404,9 @@ var methods = map[string][]retryFunc{
 			}
 			return nil
 		},
-		// Single-shot upload that spans several message sends.
+		// Single-shot upload that spans several GRPC message sends (we send
+		// storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES=2MiB per msg).
+		// This is needed to cover all error code paths.
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			obj := c.Bucket(fs.bucket.Name).Object("new-object.txt")
 
