@@ -86,6 +86,17 @@ func (d Date) AddDays(n int) Date {
 	return DateOf(d.In(time.UTC).AddDate(0, 0, n))
 }
 
+// AddDate returns the time corresponding to adding the given number of years,
+// months, and days to t. For example, AddDate(-1, 2, 3) applied to January 1,
+// 2011 returns March 4, 2010.
+//
+// AddDate normalizes its result in the same way that Date does, so, for
+// example, adding one month to October 31 yields December 1, the normalized
+// form for November 31.
+func (d Date) AddDate(years, months, days int) Date {
+	return DateOf(d.In(time.UTC).AddDate(years, months, days))
+}
+
 // DaysSince returns the signed number of days between the date and s, not including the end day.
 // This is the inverse operation to AddDays.
 func (d Date) DaysSince(s Date) (days int) {
@@ -114,6 +125,24 @@ func (d Date) After(d2 Date) bool {
 // IsZero reports whether date fields are set to their default value.
 func (d Date) IsZero() bool {
 	return (d.Year == 0) && (int(d.Month) == 0) && (d.Day == 0)
+}
+
+// ISOWeek returns the ISO 8601 year and week number in which t occurs. Week
+// ranges from 1 to 53. Jan 01 to Jan 03 of year n might belong to week 52 or 53
+// of year n-1, and Dec 29 to Dec 31 might belong to week 1 of year n+1.
+func (d Date) ISOWeek() (year, week int) {
+	return d.In(time.UTC).ISOWeek()
+}
+
+// Weekday returns the day of the week specified by d.
+func (d Date) Weekday() time.Weekday {
+	return d.In(time.UTC).Weekday()
+}
+
+// YearDay returns the day of the year specified by d, in the range [1,365] for
+// non-leap years, and [1,366] in leap years.
+func (d Date) YearDay() int {
+	return d.In(time.UTC).YearDay()
 }
 
 // MarshalText implements the encoding.TextMarshaler interface.
