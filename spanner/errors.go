@@ -73,6 +73,22 @@ func (*TransactionOutcomeUnknownError) Error() string { return transactionOutcom
 // Unwrap returns the wrapped error (if any).
 func (e *TransactionOutcomeUnknownError) Unwrap() error { return e.err }
 
+// InlineBeginTransactionFailedError is wrapped in a Spanner error when the error
+// occurred during an inline begin transaction.
+type InlineBeginTransactionFailedError struct {
+	// err is the wrapped error that caused this InlineBeginTransactionFailedError
+	// error. The wrapped error can be read with the Unwrap method.
+	err error
+}
+
+const inlineBeginTransactionFailedMsg = "failed inline begin transaction"
+
+// Error implements error.Error.
+func (*InlineBeginTransactionFailedError) Error() string { return inlineBeginTransactionFailedMsg }
+
+// Unwrap returns the wrapped error (if any).
+func (e *InlineBeginTransactionFailedError) Unwrap() error { return e.err }
+
 // Error implements error.Error.
 func (e *Error) Error() string {
 	if e == nil {
@@ -178,6 +194,30 @@ func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
 		}
 		return &Error{code, toAPIError(wrapped), desc, ""}
+	}
+}
+
+// toSpannerErrorDuringInlineBegin general Go error to *spanner.Error with additional information
+// if the error occurred during an inline begin transaction.
+//
+// If err is already a *spanner.Error, err is returned unmodified.
+func toSpannerErrorDuringInlineBegin(err error) error {
+	if err == nil {
+		return nil
+	}
+	var se *Error
+	if errorAs(err, &se) {
+		return se
+	}
+	statusErr := status.Convert(err)
+	code, desc := statusErr.Code(), statusErr.Message()
+	desc = fmt.Sprintf("%s, %s", desc, inlineBeginTransactionFailedMsg)
+	wrapped := &InlineBeginTransactionFailedError{err: err}
+	return &Error{
+		code,
+		toAPIError(wrapped),
+		desc,
+		"",
 	}
 }
 
