@@ -419,6 +419,8 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 		err = (*arc).Send(pw.constructFullRequest(true))
 	}
 	if err != nil {
+		// Refund the flow controller immediately, as there's nothing to refund on the receiver.
+		co.fc.release(pw.reqSize)
 		if shouldReconnect(err) {
 			metricCtx := co.ctx // start with the ctx that must be present
 			if pw.writer != nil {
