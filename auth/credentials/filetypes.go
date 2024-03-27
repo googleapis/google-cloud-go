@@ -165,14 +165,16 @@ func handleExternalAccount(f *credsfile.ExternalAccountFile, opts *DetectOptions
 		TokenURL:                       f.TokenURL,
 		TokenInfoURL:                   f.TokenInfoURL,
 		ServiceAccountImpersonationURL: f.ServiceAccountImpersonationURL,
-		ServiceAccountImpersonationLifetimeSeconds: f.ServiceAccountImpersonation.TokenLifetimeSeconds,
-		ClientSecret:             f.ClientSecret,
-		ClientID:                 f.ClientID,
-		CredentialSource:         f.CredentialSource,
-		QuotaProjectID:           f.QuotaProjectID,
-		Scopes:                   opts.scopes(),
-		WorkforcePoolUserProject: f.WorkforcePoolUserProject,
-		Client:                   opts.client(),
+		ClientSecret:                   f.ClientSecret,
+		ClientID:                       f.ClientID,
+		CredentialSource:               f.CredentialSource,
+		QuotaProjectID:                 f.QuotaProjectID,
+		Scopes:                         opts.scopes(),
+		WorkforcePoolUserProject:       f.WorkforcePoolUserProject,
+		Client:                         opts.client(),
+	}
+	if f.ServiceAccountImpersonation != nil {
+		externalOpts.ServiceAccountImpersonationLifetimeSeconds = f.ServiceAccountImpersonation.TokenLifetimeSeconds
 	}
 	return externalaccount.NewTokenProvider(externalOpts)
 }
