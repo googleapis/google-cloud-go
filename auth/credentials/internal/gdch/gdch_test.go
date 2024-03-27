@@ -26,7 +26,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
@@ -36,7 +36,7 @@ func TestTokenProvider(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	f, err := internaldetect.ParseGDCHServiceAccount(b)
+	f, err := credsfile.ParseGDCHServiceAccount(b)
 	if err != nil {
 		t.Fatal(err)
 	}

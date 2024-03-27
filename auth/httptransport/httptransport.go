@@ -49,9 +49,9 @@ type Options struct {
 	// APIKey specifies an API key to be used as the basis for authentication.
 	// If set DetectOpts are ignored.
 	APIKey string
-	// TokenProvider specifies the provider used to add Authorization header to
-	// all requests. If set DetectOpts are ignored.
-	TokenProvider auth.TokenProvider
+	// Credentials used to add Authorization header to all requests. If set
+	// DetectOpts are ignored.
+	Credentials *auth.Credentials
 	// ClientCertProvider is a function that returns a TLS client certificate to
 	// be used when opening TLS connections. It follows the same semantics as
 	// crypto/tls.Config.GetClientCertificate.
@@ -59,6 +59,11 @@ type Options struct {
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
 	DetectOpts *detect.DetectOptions
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". This is the universe domain
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials.
+	UniverseDomain string
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.
@@ -70,7 +75,7 @@ func (o *Options) validate() error {
 		return errors.New("httptransport: opts required to be non-nil")
 	}
 	hasCreds := o.APIKey != "" ||
-		o.TokenProvider != nil ||
+		o.Credentials != nil ||
 		(o.DetectOpts != nil && len(o.DetectOpts.CredentialsJSON) > 0) ||
 		(o.DetectOpts != nil && o.DetectOpts.CredentialsFile != "")
 	if o.DisableAuthentication && hasCreds {
@@ -129,10 +134,10 @@ type InternalOptions struct {
 
 // AddAuthorizationMiddleware adds a middleware to the provided client's
 // transport that sets the Authorization header with the value produced by the
-// provided [cloud.google.com/go/auth.TokenProvider]. An error is returned only
-// if client or tp is nil.
-func AddAuthorizationMiddleware(client *http.Client, tp auth.TokenProvider) error {
-	if client == nil || tp == nil {
+// provided [cloud.google.com/go/auth.Credentials]. An error is returned only
+// if client or creds is nil.
+func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) error {
+	if client == nil || creds == nil {
 		return fmt.Errorf("httptransport: client and tp must not be nil")
 	}
 	base := client.Transport
@@ -140,8 +145,9 @@ func AddAuthorizationMiddleware(client *http.Client, tp auth.TokenProvider) erro
 		base = http.DefaultTransport.(*http.Transport).Clone()
 	}
 	client.Transport = &authTransport{
-		provider: auth.NewCachedTokenProvider(tp, nil),
-		base:     base,
+		creds: creds,
+		base:  base,
+		// TODO(quartzmo): Somehow set clientUniverseDomain from impersonate calls.
 	}
 	return nil
 }

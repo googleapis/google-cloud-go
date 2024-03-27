@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/config/v0.2.2...config/v0.3.0) (2024-03-19)
+
+
+### Features
+
+* **config:** Infrastructure Manager supports the deployment of infrastructure from Terraform configurations in a private Git repository ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/config/v0.2.1...config/v0.2.2) (2024-03-14)
 
 

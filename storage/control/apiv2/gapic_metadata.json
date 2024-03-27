@@ -1,0 +1,48 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.storage.control.v2",
+  "libraryPackage": "cloud.google.com/go/storage/control/apiv2",
+  "services": {
+    "StorageControl": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "StorageControlClient",
+          "rpcs": {
+            "CreateFolder": {
+              "methods": [
+                "CreateFolder"
+              ]
+            },
+            "DeleteFolder": {
+              "methods": [
+                "DeleteFolder"
+              ]
+            },
+            "GetFolder": {
+              "methods": [
+                "GetFolder"
+              ]
+            },
+            "GetStorageLayout": {
+              "methods": [
+                "GetStorageLayout"
+              ]
+            },
+            "ListFolders": {
+              "methods": [
+                "ListFolders"
+              ]
+            },
+            "RenameFolder": {
+              "methods": [
+                "RenameFolder"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
