@@ -3560,11 +3560,11 @@ func TestIntegration_AdminAuthorizedView(t *testing.T) {
 	}
 
 	// Get authorized view
-	av, err := adminClient.GetAuthorizedView(ctx, tblConf.TableID, authorizedView)
+	avInfo, err := adminClient.AuthorizedViewInfo(ctx, tblConf.TableID, authorizedView)
 	if err != nil {
 		t.Fatalf("Getting authorized view: %v", err)
 	}
-	if got, want := av.GetSubsetView(), authorizedViewConf.GetSubsetView(); cmp.Equal(got, want) {
+	if got, want := avInfo.GetSubsetView(), authorizedViewConf.GetSubsetView(); cmp.Equal(got, want) {
 		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
 	}
 
@@ -3587,15 +3587,15 @@ func TestIntegration_AdminAuthorizedView(t *testing.T) {
 	}
 
 	// Check that updated authorized view has the correct deletion protection
-	av, err = adminClient.GetAuthorizedView(ctx, tblConf.TableID, authorizedView)
+	avInfo, err = adminClient.AuthorizedViewInfo(ctx, tblConf.TableID, authorizedView)
 	if err != nil {
 		t.Fatalf("Getting authorized view: %v", err)
 	}
-	if got, want := av.DeletionProtection, Unprotected; got != want {
+	if got, want := avInfo.DeletionProtection, Unprotected; got != want {
 		t.Errorf("AuthorizedView deletion protection: %v, want: %v", got, want)
 	}
 	// Check that the subset_view field doesn't change
-	if got, want := av.GetSubsetView(), authorizedViewConf.GetSubsetView(); cmp.Equal(got, want) {
+	if got, want := avInfo.GetSubsetView(), authorizedViewConf.GetSubsetView(); cmp.Equal(got, want) {
 		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
 	}
 

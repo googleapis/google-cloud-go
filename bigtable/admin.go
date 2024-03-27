@@ -2202,14 +2202,6 @@ type isAuthorizedView interface {
 	isAuthorizedView()
 }
 
-func (*SubsetViewConf) isAuthorizedView() {}
-
-// SubsetViewConf contains configuration specific to an authorized view of subset view type.
-type SubsetViewConf struct {
-	RowPrefixes   [][]byte
-	FamilySubsets map[string]FamilySubset
-}
-
 func (av AuthorizedViewConf) proto() *btapb.AuthorizedView {
 	var avp btapb.AuthorizedView
 
@@ -2240,6 +2232,14 @@ func (av *AuthorizedViewConf) GetSubsetView() *SubsetViewConf {
 	}
 	return nil
 }
+
+// SubsetViewConf contains configuration specific to an authorized view of subset view type.
+type SubsetViewConf struct {
+	RowPrefixes   [][]byte
+	FamilySubsets map[string]FamilySubset
+}
+
+func (*SubsetViewConf) isAuthorizedView() {}
 
 // FamilySubset represents a subset of a column family.
 type FamilySubset struct {
@@ -2277,20 +2277,6 @@ func (s SubsetViewConf) proto() *btapb.AuthorizedView_SubsetView {
 	return &p
 }
 
-func (s *SubsetViewConf) fillConf(internal *btapb.AuthorizedView_SubsetView) {
-	s.RowPrefixes = [][]byte{}
-	s.RowPrefixes = append(s.RowPrefixes, internal.RowPrefixes...)
-	if s.FamilySubsets == nil {
-		s.FamilySubsets = make(map[string]FamilySubset)
-	}
-	for k, v := range internal.FamilySubsets {
-		s.FamilySubsets[k] = FamilySubset{
-			Qualifiers:        v.Qualifiers,
-			QualifierPrefixes: v.QualifierPrefixes,
-		}
-	}
-}
-
 // AddFamilySubsetQualifier adds an individual column qualifier to be included in a subset view.
 func (s *SubsetViewConf) AddFamilySubsetQualifier(familyName string, qualifier []byte) {
 	fs := s.getFamilySubset(familyName)
@@ -2324,8 +2310,51 @@ func (ac *AdminClient) CreateAuthorizedView(ctx context.Context, conf *Authorize
 	return err
 }
 
-// GetAuthorizedView retrieves information about an authorized view.
-func (ac *AdminClient) GetAuthorizedView(ctx context.Context, tableID, authorizedViewID string) (*AuthorizedViewConf, error) {
+// AuthorizedViewInfo contains authorized view metadata. This struct is read-only.
+type AuthorizedViewInfo struct {
+	TableID          string
+	AuthorizedViewID string
+
+	AuthorizedView     isAuthorizedViewInfo
+	DeletionProtection DeletionProtection
+}
+
+type isAuthorizedViewInfo interface {
+	isAuthorizedViewInfo()
+}
+
+// GetSubsetView returns nil if the type of the AuthorizedView is not SubsetViewInfo, otherwise it returns the pointer to the SubsetViewInfo instance.
+func (av *AuthorizedViewInfo) GetSubsetView() *SubsetViewInfo {
+	if sv, ok := av.AuthorizedView.(*SubsetViewInfo); ok {
+		return sv
+	}
+	return nil
+}
+
+// SubsetViewInfo contains read-only SubsetView metadata.
+type SubsetViewInfo struct {
+	RowPrefixes   [][]byte
+	FamilySubsets map[string]FamilySubset
+}
+
+func (*SubsetViewInfo) isAuthorizedViewInfo() {}
+
+func (s *SubsetViewInfo) fillInfo(internal *btapb.AuthorizedView_SubsetView) {
+	s.RowPrefixes = [][]byte{}
+	s.RowPrefixes = append(s.RowPrefixes, internal.RowPrefixes...)
+	if s.FamilySubsets == nil {
+		s.FamilySubsets = make(map[string]FamilySubset)
+	}
+	for k, v := range internal.FamilySubsets {
+		s.FamilySubsets[k] = FamilySubset{
+			Qualifiers:        v.Qualifiers,
+			QualifierPrefixes: v.QualifierPrefixes,
+		}
+	}
+}
+
+// AuthorizedViewInfo retrieves information about an authorized view.
+func (ac *AdminClient) AuthorizedViewInfo(ctx context.Context, tableID, authorizedViewID string) (*AuthorizedViewInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	req := &btapb.GetAuthorizedViewRequest{
 		Name: fmt.Sprintf("%s/tables/%s/authorizedViews/%s", ac.instancePrefix(), tableID, authorizedViewID),
@@ -2342,15 +2371,15 @@ func (ac *AdminClient) GetAuthorizedView(ctx context.Context, tableID, authorize
 		return nil, err
 	}
 
-	av := &AuthorizedViewConf{TableID: tableID, AuthorizedViewID: authorizedViewID}
+	av := &AuthorizedViewInfo{TableID: tableID, AuthorizedViewID: authorizedViewID}
 	if res.DeletionProtection {
 		av.DeletionProtection = Protected
 	} else {
 		av.DeletionProtection = Unprotected
 	}
 	if res.GetSubsetView() != nil {
-		s := SubsetViewConf{}
-		s.fillConf(res.GetSubsetView())
+		s := SubsetViewInfo{}
+		s.fillInfo(res.GetSubsetView())
 		av.AuthorizedView = &s
 	}
 	return av, nil
