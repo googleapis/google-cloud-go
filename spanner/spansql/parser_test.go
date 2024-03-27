@@ -781,6 +781,7 @@ func TestParseDDL(t *testing.T) {
 							Columns:    []ID{"System"},
 							RefTable:   "FooBar",
 							RefColumns: []ID{"System"},
+							OnDelete:   OnDeleteUnspecified,
 							Position:   line(13),
 						},
 						Position: line(13),
@@ -790,6 +791,7 @@ func TestParseDDL(t *testing.T) {
 							Columns:    []ID{"System", "RepoPath"},
 							RefTable:   "Stranger",
 							RefColumns: []ID{"Sys", "RPath"},
+							OnDelete:   OnDeleteUnspecified,
 							Position:   line(15),
 						},
 						Position: line(15),
@@ -839,6 +841,7 @@ func TestParseDDL(t *testing.T) {
 						Columns:    []ID{"RepoPath"},
 						RefTable:   "Repos",
 						RefColumns: []ID{"RPath"},
+						OnDelete:   OnDeleteUnspecified,
 						Position:   line(25),
 					},
 					Position: line(25),
@@ -1753,7 +1756,9 @@ func TestParseDDL(t *testing.T) {
 			`CREATE TABLE tname1 (col1 INT64, col2 INT64, CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE CASCADE) PRIMARY KEY (col1);
 			CREATE TABLE tname1 (col1 INT64, col2 INT64, CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE NO ACTION) PRIMARY KEY (col1);
 			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE CASCADE;
-			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE NO ACTION;`,
+			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE NO ACTION;
+			CREATE TABLE tname1 (col1 INT64, col2 INT64, CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3)) PRIMARY KEY (col1);
+			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3);`,
 			&DDL{
 				Filename: "filename",
 				List: []DDLStmt{
@@ -1798,6 +1803,27 @@ func TestParseDDL(t *testing.T) {
 							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(4)}, Position: line(4)},
 						},
 						Position: line(4),
+					},
+					&CreateTable{
+						Name: "tname1",
+						Columns: []ColumnDef{
+							{Name: "col1", Type: Type{Base: Int64}, Position: line(5)},
+							{Name: "col2", Type: Type{Base: Int64}, Position: line(5)},
+						},
+						Constraints: []TableConstraint{
+							{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: OnDeleteUnspecified, Position: line(5)}, Position: line(5)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "col1"},
+						},
+						Position: line(5),
+					},
+					&AlterTable{
+						Name: "tname1",
+						Alteration: AddConstraint{
+							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: OnDeleteUnspecified, Position: line(6)}, Position: line(6)},
+						},
+						Position: line(6),
 					},
 				},
 			},
