@@ -20,7 +20,7 @@ jobs:
         fetch-depth: 2
     - uses: actions/setup-go@v5
       with:
-        go-version: 1.21.x
+        go-version: 1.22.x
     - name: Find new version files
       id: versions
       # Ignore changes to the internal and root directories.
