@@ -22,26 +22,27 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 const (
-	fileTypeText    = "text"
-	fileTypeJSON    = "json"
-	urlProviderType = "url"
+	fileTypeText             = "text"
+	fileTypeJSON             = "json"
+	urlProviderType          = "url"
+	programmaticProviderType = "programmatic"
 )
 
 type urlSubjectProvider struct {
 	URL     string
 	Headers map[string]string
-	Format  internaldetect.Format
+	Format  *credsfile.Format
 	Client  *http.Client
 }
 
 func (sp *urlSubjectProvider) subjectToken(ctx context.Context) (string, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", sp.URL, nil)
 	if err != nil {
-		return "", fmt.Errorf("detect: HTTP request for URL-sourced credential failed: %w", err)
+		return "", fmt.Errorf("credentials: HTTP request for URL-sourced credential failed: %w", err)
 	}
 
 	for key, val := range sp.Headers {
@@ -49,38 +50,41 @@ func (sp *urlSubjectProvider) subjectToken(ctx context.Context) (string, error) 
 	}
 	resp, err := sp.Client.Do(req)
 	if err != nil {
-		return "", fmt.Errorf("detect: invalid response when retrieving subject token: %w", err)
+		return "", fmt.Errorf("credentials: invalid response when retrieving subject token: %w", err)
 	}
 	defer resp.Body.Close()
 
 	respBody, err := internal.ReadAll(resp.Body)
 	if err != nil {
-		return "", fmt.Errorf("detect: invalid body in subject token URL query: %w", err)
+		return "", fmt.Errorf("credentials: invalid body in subject token URL query: %w", err)
 	}
 	if c := resp.StatusCode; c < http.StatusOK || c >= http.StatusMultipleChoices {
-		return "", fmt.Errorf("detect: status code %d: %s", c, respBody)
+		return "", fmt.Errorf("credentials: status code %d: %s", c, respBody)
 	}
 
+	if sp.Format == nil {
+		return string(respBody), nil
+	}
 	switch sp.Format.Type {
 	case "json":
 		jsonData := make(map[string]interface{})
 		err = json.Unmarshal(respBody, &jsonData)
 		if err != nil {
-			return "", fmt.Errorf("detect: failed to unmarshal subject token file: %w", err)
+			return "", fmt.Errorf("credentials: failed to unmarshal subject token file: %w", err)
 		}
 		val, ok := jsonData[sp.Format.SubjectTokenFieldName]
 		if !ok {
-			return "", errors.New("detect: provided subject_token_field_name not found in credentials")
+			return "", errors.New("credentials: provided subject_token_field_name not found in credentials")
 		}
 		token, ok := val.(string)
 		if !ok {
-			return "", errors.New("detect: improperly formatted subject token")
+			return "", errors.New("credentials: improperly formatted subject token")
 		}
 		return token, nil
-	case fileTypeText, "":
+	case fileTypeText:
 		return string(respBody), nil
 	default:
-		return "", errors.New("detect: invalid credential_source file format type: " + sp.Format.Type)
+		return "", errors.New("credentials: invalid credential_source file format type: " + sp.Format.Type)
 	}
 }
 

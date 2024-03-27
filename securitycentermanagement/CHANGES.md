@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.6...securitycentermanagement/v0.1.7) (2024-03-25)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Annotate EffectiveSecurityHealthAnalyticsCustomModule.name as IDENTIFIER ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+
 ## [0.1.6](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.5...securitycentermanagement/v0.1.6) (2024-03-14)
 
 

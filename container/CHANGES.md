@@ -1,5 +1,12 @@
 # Changes
 
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.33.1...container/v1.34.0) (2024-03-25)
+
+
+### Features
+
+* **container:** Add optional secondary_boot_disk_update_strategy field to NodePool API ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+
 ## [1.33.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.33.0...container/v1.33.1) (2024-03-14)
 
 

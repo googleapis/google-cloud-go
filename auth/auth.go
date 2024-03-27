@@ -284,18 +284,18 @@ type Error struct {
 	uri string
 }
 
-func (r *Error) Error() string {
-	if r.code != "" {
-		s := fmt.Sprintf("auth: %q", r.code)
-		if r.description != "" {
-			s += fmt.Sprintf(" %q", r.description)
+func (e *Error) Error() string {
+	if e.code != "" {
+		s := fmt.Sprintf("auth: %q", e.code)
+		if e.description != "" {
+			s += fmt.Sprintf(" %q", e.description)
 		}
-		if r.uri != "" {
-			s += fmt.Sprintf(" %q", r.uri)
+		if e.uri != "" {
+			s += fmt.Sprintf(" %q", e.uri)
 		}
 		return s
 	}
-	return fmt.Sprintf("auth: cannot fetch token: %v\nResponse: %s", r.Response.StatusCode, r.Body)
+	return fmt.Sprintf("auth: cannot fetch token: %v\nResponse: %s", e.Response.StatusCode, e.Body)
 }
 
 // Temporary returns true if the error is considered temporary and may be able
