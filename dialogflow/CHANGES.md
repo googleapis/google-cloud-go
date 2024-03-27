@@ -1,5 +1,12 @@
 # Changes
 
+## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.51.0...dialogflow/v1.52.0) (2024-03-27)
+
+
+### Features
+
+* **dialogflow/cx:** Added support for DataStoreConnection, DataStoreConnectionSettings ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
 ## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.50.0...dialogflow/v1.51.0) (2024-03-14)
 
 
