@@ -33,7 +33,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v58/github"
+	"github.com/google/go-github/v60/github"
 )
 
 const (
