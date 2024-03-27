@@ -654,6 +654,52 @@
       ]
     },
     {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_ReorderFirewallPolicies_sync",
+      "title": "recaptchaenterprise ReorderFirewallPolicies Sample",
+      "description": "ReorderFirewallPolicies reorders all firewall policies.",
+      "file": "Client/ReorderFirewallPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReorderFirewallPolicies",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.ReorderFirewallPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.ReorderFirewallPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.ReorderFirewallPoliciesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "ReorderFirewallPolicies",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ReorderFirewallPolicies",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_RetrieveLegacySecretKey_sync",
       "title": "recaptchaenterprise RetrieveLegacySecretKey Sample",
       "description": "RetrieveLegacySecretKey returns the secret key related to the specified public key.\nYou must use the legacy secret key only in a 3rd party integration with\nlegacy reCAPTCHA.",

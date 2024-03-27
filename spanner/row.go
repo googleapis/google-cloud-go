@@ -19,6 +19,7 @@ package spanner
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
@@ -56,6 +57,8 @@ import (
 //	*[]int64, *[]NullInt64 - INT64 ARRAY
 //	*bool(not NULL), *NullBool - BOOL
 //	*[]bool, *[]NullBool - BOOL ARRAY
+//	*float32(not NULL), *NullFloat32 - FLOAT32
+//	*[]float32, *[]NullFloat32 - FLOAT32 ARRAY
 //	*float64(not NULL), *NullFloat64 - FLOAT64
 //	*[]float64, *[]NullFloat64 - FLOAT64 ARRAY
 //	*big.Rat(not NULL), *NullNumeric - NUMERIC
@@ -518,7 +521,7 @@ func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, leni
 		}
 
 		var fieldVal reflect.Value
-		if v, ok := fieldTag[colName.GetName()]; ok {
+		if v, ok := fieldTag[strings.ToLower(colName.GetName())]; ok {
 			fieldVal = v
 		} else {
 			if !lenient {
@@ -567,6 +570,6 @@ func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value
 		if name == "" {
 			name = fieldType.Name
 		}
-		(*fieldTagMap)[name] = sliceItem.Field(i)
+		(*fieldTagMap)[strings.ToLower(name)] = sliceItem.Field(i)
 	}
 }

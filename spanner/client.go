@@ -23,11 +23,14 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -104,12 +107,18 @@ type Client struct {
 	ct                   *commonTags
 	disableRouteToLeader bool
 	dro                  *sppb.DirectedReadOptions
+	otConfig             *openTelemetryConfig
 }
 
 // DatabaseName returns the full name of a database, e.g.,
 // "projects/spanner-cloud-test/instances/foo/databases/foodb".
 func (c *Client) DatabaseName() string {
 	return c.sc.database
+}
+
+// ClientID returns the id of the Client. This is not recommended for customer applications and used internally for testing.
+func (c *Client) ClientID() string {
+	return c.sc.id
 }
 
 // ClientConfig has configurations for the client.
@@ -192,6 +201,23 @@ type ClientConfig struct {
 	// and ExecuteSqlRequests for the Client which indicate which replicas or regions
 	// should be used for non-transactional reads or queries.
 	DirectedReadOptions *sppb.DirectedReadOptions
+
+	OpenTelemetryMeterProvider metric.MeterProvider
+}
+
+type openTelemetryConfig struct {
+	meterProvider           metric.MeterProvider
+	attributeMap            []attribute.KeyValue
+	otMetricRegistration    metric.Registration
+	openSessionCount        metric.Int64ObservableGauge
+	maxAllowedSessionsCount metric.Int64ObservableGauge
+	sessionsCount           metric.Int64ObservableGauge
+	maxInUseSessionsCount   metric.Int64ObservableGauge
+	getSessionTimeoutsCount metric.Int64Counter
+	acquiredSessionsCount   metric.Int64Counter
+	releasedSessionsCount   metric.Int64Counter
+	gfeLatency              metric.Int64Histogram
+	gfeHeaderMissingCount   metric.Int64Counter
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -245,6 +271,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if err != nil {
 		return nil, err
 	}
+
 	if hasNumChannelsConfig && pool.Num() != config.NumChannels {
 		pool.Close()
 		return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
@@ -276,8 +303,20 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
+
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+
+	// Create a OpenTelemetry configuration
+	otConfig, err := createOpenTelemetryConfig(config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)
+	if err != nil {
+		// The error returned here will be due to database name parsing
+		return nil, err
+	}
+	// To prevent data race in unit tests (ex: TestClient_SessionNotFound)
+	sc.mu.Lock()
+	sc.otConfig = otConfig
+	sc.mu.Unlock()
 
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
@@ -286,6 +325,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		sc.close()
 		return nil, err
 	}
+
 	c = &Client{
 		sc:                   sc,
 		idleSessions:         sp,
@@ -298,6 +338,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		ct:                   getCommonTags(sc),
 		disableRouteToLeader: config.DisableRouteToLeader,
 		dro:                  config.DirectedReadOptions,
+		otConfig:             otConfig,
 	}
 	return c, nil
 }
@@ -312,6 +353,9 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.EnableDirectPath(true),
 		internaloption.AllowNonDefaultServiceAccount(true),
+	}
+	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPathXds())
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -384,6 +428,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t
 }
 
@@ -409,6 +454,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t
 }
 
@@ -479,6 +525,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t, nil
 }
 
@@ -512,6 +559,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t
 }
 
@@ -616,6 +664,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.wb = []*Mutation{}
 		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
+		t.otConfig = c.otConfig
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionSelector": t.getTransactionSelector().String()},
 			"Starting transaction attempt")
@@ -876,6 +925,9 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 			if metricErr := createContextAndCaptureGFELatencyMetrics(ct, c.ct, md, "BatchWrite"); metricErr != nil {
 				trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 			}
+		}
+		if metricErr := recordGFELatencyMetricsOT(ct, md, "BatchWrite", c.otConfig); metricErr != nil {
+			trace.TracePrintf(ct, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", err)
 		}
 		return stream, rpcErr
 	}

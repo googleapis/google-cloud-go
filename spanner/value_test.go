@@ -264,6 +264,8 @@ func TestEncodeValue(t *testing.T) {
 	var bNilPtr *bool
 	fValue := 3.14
 	var fNilPtr *float64
+	f32Value := float32(3.14)
+	var f32NilPtr *float32
 	tValue := t1
 	var tNilPtr *time.Time
 	dValue := d1
@@ -279,6 +281,7 @@ func TestEncodeValue(t *testing.T) {
 		tInt       = intType()
 		tBool      = boolType()
 		tFloat     = floatType()
+		tFloat32   = float32Type()
 		tBytes     = bytesType()
 		tTime      = timeType()
 		tDate      = dateType()
@@ -341,6 +344,17 @@ func TestEncodeValue(t *testing.T) {
 		{[]float64{3.141, 0.618, math.Inf(-1)}, listProto(floatProto(3.141), floatProto(0.618), floatProto(math.Inf(-1))), listType(tFloat), "[]float64"},
 		{[]NullFloat64{{3.141, true}, {0.618, false}}, listProto(floatProto(3.141), nullProto()), listType(tFloat), "[]NullFloat64"},
 		{[]*float64{&fValue, fNilPtr}, listProto(floatProto(3.14), nullProto()), listType(tFloat), "[]NullFloat64"},
+		// FLOAT32 / FLOAT32 ARRAY
+		{float32(3.14), float32Proto(3.14), tFloat32, "float32"},
+		{NullFloat32{3.14, true}, float32Proto(3.14), tFloat32, "NullFloat32 with value"},
+		{NullFloat32{float32(math.Inf(1)), true}, float32Proto(float32(math.Inf(1))), tFloat32, "NullFloat32 with infinity"},
+		{NullFloat32{3.14, false}, nullProto(), tFloat32, "NullFloat32 with null"},
+		{&f32Value, float32Proto(3.14), tFloat32, "*float32 with value"},
+		{f32NilPtr, nullProto(), tFloat32, "*float32 with null"},
+		{[]float32(nil), nullProto(), listType(tFloat32), "null []float32"},
+		{[]float32{3.14, 0.618, float32(math.Inf(-1))}, listProto(float32Proto(3.14), float32Proto(0.618), float32Proto(float32(math.Inf(-1)))), listType(tFloat32), "[]float32"},
+		{[]NullFloat32{{3.14, true}, {0.618, false}}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat"},
+		{[]*float32{&f32Value, f32NilPtr}, listProto(float32Proto(3.14), nullProto()), listType(tFloat32), "[]NullFloat32"},
 		// NUMERIC / NUMERIC ARRAY
 		{*numValuePtr, numericProto(numValuePtr), tNumeric, "big.Rat"},
 		{numValuePtr, numericProto(numValuePtr), tNumeric, "*big.Rat"},
@@ -925,6 +939,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	type CustomInt64 int64
 	type CustomBool bool
 	type CustomFloat64 float64
+	type CustomFloat32 float32
 	type CustomTime time.Time
 	type CustomDate civil.Date
 
@@ -932,6 +947,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	type CustomNullInt64 NullInt64
 	type CustomNullBool NullBool
 	type CustomNullFloat64 NullFloat64
+	type CustomNullFloat32 NullFloat32
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 
@@ -939,6 +955,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 	iValue := int64(300)
 	bValue := false
 	fValue := 3.45
+	f32Value := float32(3.14)
 	tValue := t1
 	dValue := d1
 
@@ -947,6 +964,7 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		mkField("Intf", intType()),
 		mkField("Boolf", boolType()),
 		mkField("Floatf", floatType()),
+		mkField("Float32f", float32Type()),
 		mkField("Bytef", bytesType()),
 		mkField("Timef", timeType()),
 		mkField("Datef", dateType()))
@@ -955,19 +973,21 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Basic types.",
 			struct {
-				Stringf string
-				Intf    int
-				Boolf   bool
-				Floatf  float64
-				Bytef   []byte
-				Timef   time.Time
-				Datef   civil.Date
-			}{"abc", 300, false, 3.45, []byte("foo"), t1, d1},
+				Stringf  string
+				Intf     int
+				Boolf    bool
+				Floatf   float64
+				Float32f float32
+				Bytef    []byte
+				Timef    time.Time
+				Datef    civil.Date
+			}{"abc", 300, false, 3.45, float32(3.14), []byte("foo"), t1, d1},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
 				boolProto(false),
 				floatProto(3.45),
+				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
 				dateProto(d1)),
@@ -976,19 +996,21 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Pointers to basic types.",
 			struct {
-				Stringf *string
-				Intf    *int64
-				Boolf   *bool
-				Floatf  *float64
-				Bytef   []byte
-				Timef   *time.Time
-				Datef   *civil.Date
-			}{&sValue, &iValue, &bValue, &fValue, []byte("foo"), &tValue, &dValue},
+				Stringf  *string
+				Intf     *int64
+				Boolf    *bool
+				Floatf   *float64
+				Float32f *float32
+				Bytef    []byte
+				Timef    *time.Time
+				Datef    *civil.Date
+			}{&sValue, &iValue, &bValue, &fValue, &f32Value, []byte("foo"), &tValue, &dValue},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
 				boolProto(false),
 				floatProto(3.45),
+				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
 				dateProto(d1)),
@@ -997,15 +1019,17 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Pointers to basic types with null values.",
 			struct {
-				Stringf *string
-				Intf    *int64
-				Boolf   *bool
-				Floatf  *float64
-				Bytef   []byte
-				Timef   *time.Time
-				Datef   *civil.Date
-			}{nil, nil, nil, nil, nil, nil, nil},
+				Stringf  *string
+				Intf     *int64
+				Boolf    *bool
+				Floatf   *float64
+				Float32f *float32
+				Bytef    []byte
+				Timef    *time.Time
+				Datef    *civil.Date
+			}{nil, nil, nil, nil, nil, nil, nil, nil},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1018,19 +1042,21 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Basic custom types.",
 			struct {
-				Stringf CustomString
-				Intf    CustomInt64
-				Boolf   CustomBool
-				Floatf  CustomFloat64
-				Bytef   CustomBytes
-				Timef   CustomTime
-				Datef   CustomDate
-			}{"abc", 300, false, 3.45, []byte("foo"), CustomTime(t1), CustomDate(d1)},
+				Stringf  CustomString
+				Intf     CustomInt64
+				Boolf    CustomBool
+				Floatf   CustomFloat64
+				Float32f CustomFloat32
+				Bytef    CustomBytes
+				Timef    CustomTime
+				Datef    CustomDate
+			}{"abc", 300, false, 3.45, CustomFloat32(3.14), []byte("foo"), CustomTime(t1), CustomDate(d1)},
 			listProto(
 				stringProto("abc"),
 				intProto(300),
 				boolProto(false),
 				floatProto(3.45),
+				float32Proto(3.14),
 				bytesProto([]byte("foo")),
 				timeProto(t1),
 				dateProto(d1)),
@@ -1039,23 +1065,26 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Basic types null values.",
 			struct {
-				Stringf NullString
-				Intf    NullInt64
-				Boolf   NullBool
-				Floatf  NullFloat64
-				Bytef   []byte
-				Timef   NullTime
-				Datef   NullDate
+				Stringf  NullString
+				Intf     NullInt64
+				Boolf    NullBool
+				Floatf   NullFloat64
+				Float32f NullFloat32
+				Bytef    []byte
+				Timef    NullTime
+				Datef    NullDate
 			}{
 				NullString{"abc", false},
 				NullInt64{4, false},
 				NullBool{false, false},
 				NullFloat64{5.6, false},
+				NullFloat32{3.14, false},
 				nil,
 				NullTime{t1, false},
 				NullDate{d1, false},
 			},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1068,23 +1097,26 @@ func TestEncodeStructValueBasicFields(t *testing.T) {
 		{
 			"Basic custom types null values.",
 			struct {
-				Stringf CustomNullString
-				Intf    CustomNullInt64
-				Boolf   CustomNullBool
-				Floatf  CustomNullFloat64
-				Bytef   CustomBytes
-				Timef   CustomNullTime
-				Datef   CustomNullDate
+				Stringf  CustomNullString
+				Intf     CustomNullInt64
+				Boolf    CustomNullBool
+				Floatf   CustomNullFloat64
+				Float32f CustomNullFloat32
+				Bytef    CustomBytes
+				Timef    CustomNullTime
+				Datef    CustomNullDate
 			}{
 				CustomNullString{"abc", false},
 				CustomNullInt64{4, false},
 				CustomNullBool{false, false},
 				CustomNullFloat64{5.6, false},
+				CustomNullFloat32{3.14, false},
 				nil,
 				CustomNullTime{t1, false},
 				CustomNullDate{d1, false},
 			},
 			listProto(
+				nullProto(),
 				nullProto(),
 				nullProto(),
 				nullProto(),
@@ -1421,6 +1453,10 @@ func TestDecodeValue(t *testing.T) {
 	var fNilPtr *float64
 	f2Value := 6.626
 
+	f32Value := float32(3.14)
+	var f32NilPtr *float32
+	f32Value2 := float32(6.626)
+
 	numValuePtr := big.NewRat(12345, 1e3)
 	var numNilPtr *big.Rat
 	num2ValuePtr := big.NewRat(12345, 1e4)
@@ -1506,6 +1542,21 @@ func TestDecodeValue(t *testing.T) {
 		// FLOAT64 ARRAY with []*float64
 		{desc: "decode ARRAY<FLOAT64> to []*float64", proto: listProto(floatProto(fValue), nullProto(), floatProto(f2Value)), protoType: listType(floatType()), want: []*float64{&fValue, nil, &f2Value}},
 		{desc: "decode NULL to []*float64", proto: nullProto(), protoType: listType(floatType()), want: []*float64(nil)},
+		// FLOAT32
+		{desc: "decode FLOAT32 to float32", proto: float32Proto(3.14), protoType: float32Type(), want: float32(3.14)},
+		{desc: "decode NULL to float32", proto: nullProto(), protoType: float32Type(), want: 0.00, wantErr: true},
+		{desc: "decode FLOAT32 to *float32", proto: float32Proto(3.14), protoType: float32Type(), want: &f32Value},
+		{desc: "decode NULL to *float32", proto: nullProto(), protoType: float32Type(), want: f32NilPtr},
+		{desc: "decode FLOAT32 to NullFloat32", proto: float32Proto(3.14), protoType: float32Type(), want: NullFloat32{3.14, true}},
+		{desc: "decode NULL to NullFloat32", proto: nullProto(), protoType: float32Type(), want: NullFloat32{}},
+		// FLOAT64 ARRAY with []NullFloat32
+		{desc: "decode ARRAY<FLOAT32> to []NullFloat32", proto: listProto(float32Proto(float32(math.Inf(1))), float32Proto(float32(math.Inf(-1))), nullProto(), float32Proto(3.1)), protoType: listType(float32Type()), want: []NullFloat32{{float32(math.Inf(1)), true}, {float32(math.Inf(-1)), true}, {}, {3.1, true}}},
+		{desc: "decode NULL to []NullFloat32", proto: nullProto(), protoType: listType(float32Type()), want: []NullFloat32(nil)},
+		// FLOAT32 ARRAY with []float32
+		{desc: "decode ARRAY<FLOAT32> to []float32", proto: listProto(float32Proto(float32(math.Inf(1))), float32Proto(float32(math.Inf(-1))), float32Proto(3.1)), protoType: listType(float32Type()), want: []float32{float32(math.Inf(1)), float32(math.Inf(-1)), 3.1}},
+		// FLOAT64 ARRAY with []*float32
+		{desc: "decode ARRAY<FLOAT32> to []*float32", proto: listProto(float32Proto(f32Value), nullProto(), float32Proto(f32Value2)), protoType: listType(float32Type()), want: []*float32{&f32Value, nil, &f32Value2}},
+		{desc: "decode NULL to []*float32", proto: nullProto(), protoType: listType(float32Type()), want: []*float32(nil)},
 		// NUMERIC
 		{desc: "decode NUMERIC to big.Rat", proto: numericProto(numValuePtr), protoType: numericType(), want: *numValuePtr},
 		{desc: "decode NUMERIC to NullNumeric", proto: numericProto(numValuePtr), protoType: numericType(), want: NullNumeric{*numValuePtr, true}},
@@ -1909,6 +1960,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomInt64 int64
 	type CustomBool bool
 	type CustomFloat64 float64
+	type CustomFloat32 float32
 	type CustomTime time.Time
 	type CustomDate civil.Date
 	type CustomNumeric big.Rat
@@ -1917,6 +1969,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomNullInt64 NullInt64
 	type CustomNullBool NullBool
 	type CustomNullFloat64 NullFloat64
+	type CustomNullFloat32 NullFloat32
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
@@ -1938,12 +1991,14 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{int64(123), spannerTypeNonNullInt64},
 		{true, spannerTypeNonNullBool},
 		{3.14, spannerTypeNonNullFloat64},
+		{float32(3.14), spannerTypeNonNullFloat32},
 		{time.Now(), spannerTypeNonNullTime},
 		{civil.DateOf(time.Now()), spannerTypeNonNullDate},
 		{NullString{}, spannerTypeNullString},
 		{NullInt64{}, spannerTypeNullInt64},
 		{NullBool{}, spannerTypeNullBool},
 		{NullFloat64{}, spannerTypeNullFloat64},
+		{NullFloat32{}, spannerTypeNullFloat32},
 		{NullTime{}, spannerTypeNullTime},
 		{NullDate{}, spannerTypeNullDate},
 		{*big.NewRat(1234, 1000), spannerTypeNonNullNumeric},
@@ -1956,12 +2011,14 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]int64{int64(123)}, spannerTypeArrayOfNonNullInt64},
 		{[]bool{true}, spannerTypeArrayOfNonNullBool},
 		{[]float64{3.14}, spannerTypeArrayOfNonNullFloat64},
+		{[]float32{3.14}, spannerTypeArrayOfNonNullFloat32},
 		{[]time.Time{time.Now()}, spannerTypeArrayOfNonNullTime},
 		{[]civil.Date{civil.DateOf(time.Now())}, spannerTypeArrayOfNonNullDate},
 		{[]NullString{}, spannerTypeArrayOfNullString},
 		{[]NullInt64{}, spannerTypeArrayOfNullInt64},
 		{[]NullBool{}, spannerTypeArrayOfNullBool},
 		{[]NullFloat64{}, spannerTypeArrayOfNullFloat64},
+		{[]NullFloat32{}, spannerTypeArrayOfNullFloat32},
 		{[]NullTime{}, spannerTypeArrayOfNullTime},
 		{[]NullDate{}, spannerTypeArrayOfNullDate},
 		{[]big.Rat{}, spannerTypeArrayOfNonNullNumeric},
@@ -1972,6 +2029,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomInt64(-100), spannerTypeNonNullInt64},
 		{CustomBool(true), spannerTypeNonNullBool},
 		{CustomFloat64(3.141592), spannerTypeNonNullFloat64},
+		{CustomFloat32(3.141592), spannerTypeNonNullFloat32},
 		{CustomTime(time.Now()), spannerTypeNonNullTime},
 		{CustomDate(civil.DateOf(time.Now())), spannerTypeNonNullDate},
 		{CustomNumeric(*big.NewRat(1234, 1000)), spannerTypeNonNullNumeric},
@@ -1980,6 +2038,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomInt64{}, spannerTypeArrayOfNonNullInt64},
 		{[]CustomBool{}, spannerTypeArrayOfNonNullBool},
 		{[]CustomFloat64{}, spannerTypeArrayOfNonNullFloat64},
+		{[]CustomFloat32{}, spannerTypeArrayOfNonNullFloat32},
 		{[]CustomTime{}, spannerTypeArrayOfNonNullTime},
 		{[]CustomDate{}, spannerTypeArrayOfNonNullDate},
 		{[]CustomNumeric{}, spannerTypeArrayOfNonNullNumeric},
@@ -1988,6 +2047,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomNullInt64{}, spannerTypeNullInt64},
 		{CustomNullBool{}, spannerTypeNullBool},
 		{CustomNullFloat64{}, spannerTypeNullFloat64},
+		{CustomNullFloat32{}, spannerTypeNullFloat32},
 		{CustomNullTime{}, spannerTypeNullTime},
 		{CustomNullDate{}, spannerTypeNullDate},
 		{CustomNullNumeric{}, spannerTypeNullNumeric},
@@ -1996,6 +2056,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomNullInt64{}, spannerTypeArrayOfNullInt64},
 		{[]CustomNullBool{}, spannerTypeArrayOfNullBool},
 		{[]CustomNullFloat64{}, spannerTypeArrayOfNullFloat64},
+		{[]CustomNullFloat32{}, spannerTypeArrayOfNullFloat32},
 		{[]CustomNullTime{}, spannerTypeArrayOfNullTime},
 		{[]CustomNullDate{}, spannerTypeArrayOfNullDate},
 		{[]CustomNullNumeric{}, spannerTypeArrayOfNullNumeric},
@@ -2052,6 +2113,52 @@ func TestNaN(t *testing.T) {
 	}
 	// From NullFloat64
 	v, _, err = encodeValue(NullFloat64{math.NaN(), true})
+	if err != nil {
+		t.Errorf("encodeValue returns %q for NaN, want nil", err)
+	}
+	x, ok = v.GetKind().(*proto3.Value_NumberValue)
+	if !ok {
+		t.Errorf("incorrect type for v.GetKind(): %T, want *proto3.Value_NumberValue", v.GetKind())
+	}
+	if !math.IsNaN(x.NumberValue) {
+		t.Errorf("x.NumberValue = %v, want %v", x.NumberValue, math.NaN())
+	}
+}
+
+// Test Float32 NaN encoding/decoding.
+func TestFloat32NaN(t *testing.T) {
+	// Decode NaN value.
+	f := float32(0.0)
+	nf := NullFloat32{}
+	// To float32
+	if err := decodeValue(float32Proto(float32(math.NaN())), float32Type(), &f); err != nil {
+		t.Errorf("decodeValue returns %q for %v, want nil", err, float32Proto(float32(math.NaN())))
+	}
+	if !math.IsNaN(float64(f)) {
+		t.Errorf("f = %v, want %v", f, math.NaN())
+	}
+	// To NullFloat32
+	if err := decodeValue(float32Proto(float32(math.NaN())), float32Type(), &nf); err != nil {
+		t.Errorf("decodeValue returns %q for %v, want nil", err, float32Proto(float32(math.NaN())))
+	}
+	if !math.IsNaN(float64(nf.Float32)) || !nf.Valid {
+		t.Errorf("f = %v, want %v", f, NullFloat32{float32(math.NaN()), true})
+	}
+	// Encode NaN value
+	// From float32
+	v, _, err := encodeValue(float32(math.NaN()))
+	if err != nil {
+		t.Errorf("encodeValue returns %q for NaN, want nil", err)
+	}
+	x, ok := v.GetKind().(*proto3.Value_NumberValue)
+	if !ok {
+		t.Errorf("incorrect type for v.GetKind(): %T, want *proto3.Value_NumberValue", v.GetKind())
+	}
+	if !math.IsNaN(x.NumberValue) {
+		t.Errorf("x.NumberValue = %v, want %v", x.NumberValue, math.NaN())
+	}
+	// From NullFloat32
+	v, _, err = encodeValue(NullFloat32{float32(math.NaN()), true})
 	if err != nil {
 		t.Errorf("encodeValue returns %q for NaN, want nil", err)
 	}
@@ -2721,6 +2828,15 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 			},
 		},
 		{
+			"NullFloat32",
+			[]testcase{
+				{input: NullFloat32{float32(3.14), true}, expect: "3.14"},
+				{input: &NullFloat32{float32(123.123), true}, expect: "123.123"},
+				{input: &NullFloat32{float32(123.123), false}, expect: "null"},
+				{input: NullFloat32{}, expect: "null"},
+			},
+		},
+		{
 			"NullBool",
 			[]testcase{
 				{input: NullBool{true, true}, expect: "true"},
@@ -2837,6 +2953,16 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 			},
 		},
 		{
+			"NullFloat32",
+			[]testcase{
+				{input: []byte("3.14"), got: NullFloat32{}, isNull: false, expect: "3.14", expectError: false},
+				{input: []byte("null"), got: NullFloat32{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullFloat32{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullFloat32{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullFloat32{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
 			"NullBool",
 			[]testcase{
 				{input: []byte("true"), got: NullBool{}, isNull: false, expect: "true", expectError: false},
@@ -2908,6 +3034,9 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullFloat64:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullFloat32:
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case NullBool:

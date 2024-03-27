@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "ReachabilityClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateConnectivityTest": {
               "methods": [
                 "CreateConnectivityTest"
@@ -20,9 +25,29 @@
                 "DeleteConnectivityTest"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetConnectivityTest": {
               "methods": [
                 "GetConnectivityTest"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListConnectivityTests": {
@@ -30,9 +55,29 @@
                 "ListConnectivityTests"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "RerunConnectivityTest": {
               "methods": [
                 "RerunConnectivityTest"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateConnectivityTest": {
@@ -45,6 +90,11 @@
         "rest": {
           "libraryClient": "ReachabilityClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateConnectivityTest": {
               "methods": [
                 "CreateConnectivityTest"
@@ -55,9 +105,29 @@
                 "DeleteConnectivityTest"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetConnectivityTest": {
               "methods": [
                 "GetConnectivityTest"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListConnectivityTests": {
@@ -65,9 +135,29 @@
                 "ListConnectivityTests"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "RerunConnectivityTest": {
               "methods": [
                 "RerunConnectivityTest"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateConnectivityTest": {

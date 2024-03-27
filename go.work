@@ -1,4 +1,4 @@
-go 1.20
+go 1.21
 
 use (
 	.
@@ -14,6 +14,7 @@ use (
 	./apigeeregistry
 	./apikeys
 	./appengine
+	./apphub
 	./apps
 	./area120
 	./artifactregistry
@@ -32,6 +33,7 @@ use (
 	./certificatemanager
 	./channel
 	./cloudbuild
+	./cloudcontrolspartner
 	./clouddms
 	./cloudprofiler
 	./cloudquotas
@@ -111,6 +113,7 @@ use (
 	./orgpolicy
 	./osconfig
 	./oslogin
+	./parallelstore
 	./phishingprotection
 	./policysimulator
 	./policytroubleshooter
@@ -142,9 +145,9 @@ use (
 	./shell
 	./shopping
 	./spanner
+	./spanner/test/opentelemetry/test
 	./speech
 	./storage
-	./storage/internal/benchmarks
 	./storageinsights
 	./storagetransfer
 	./support

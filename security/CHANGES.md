@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.6](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.5...security/v1.15.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **security:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.15.5](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.4...security/v1.15.5) (2024-01-30)
 
 

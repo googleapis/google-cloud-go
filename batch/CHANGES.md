@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.8.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.2...batch/v1.8.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* **batch:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.1...batch/v1.8.2) (2024-03-04)
+
+
+### Documentation
+
+* **batch:** Update description of Job uid field ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.0...batch/v1.8.1) (2024-02-21)
+
+
+### Documentation
+
+* **batch:** Refine proto comment for run_as_non_root ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.7.0...batch/v1.8.0) (2024-01-30)
 
 

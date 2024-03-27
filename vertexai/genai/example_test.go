@@ -30,7 +30,7 @@ const projectID = "your-project"
 // A GCP location like "us-central1"
 const location = "some-gcp-location"
 
-// A model name like "gemini-pro"
+// A model name like "gemini-1.0-pro"
 const model = "some-model"
 
 func ExampleGenerativeModel_GenerateContent() {

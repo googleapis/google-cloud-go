@@ -2,7 +2,8 @@
     "extends": [
         "config:base",
         "schedule:weekly",
-        ":disableDependencyDashboard"
+        ":disableDependencyDashboard",
+        "docker:disable"
     ],
     "semanticCommits": false,
     "postUpdateOptions": [
@@ -16,6 +17,15 @@
     ],
     "ignorePaths": [
         "**/snippets/**"
+    ],
+    "packageRules": [
+        {
+            "matchPackageNames": [
+                "^github.com/google/go-github/v",
+                "^github.com/apache/arrow/go/v"
+            ],
+            "enabled": false
+        }
     ],
     "force": {
         "constraints": {

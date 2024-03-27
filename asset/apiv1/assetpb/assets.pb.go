@@ -116,7 +116,7 @@ const (
 	ConditionEvaluation_FALSE ConditionEvaluation_EvaluationValue = 2
 	// The evaluation result is `conditional` when the condition expression
 	// contains variables that are either missing input values or have not been
-	// supported by Analyzer yet.
+	// supported by Policy Analyzer yet.
 	ConditionEvaluation_CONDITIONAL ConditionEvaluation_EvaluationValue = 3
 )
 
@@ -921,7 +921,7 @@ func (x *RelatedAsset) GetRelationshipType() string {
 }
 
 // The key and value for a
-// [tag](https://cloud.google.com/resource-manager/docs/tags/tags-overview),
+// [tag](https://cloud.google.com/resource-manager/docs/tags/tags-overview).
 type Tag struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2090,7 +2090,7 @@ func (x *IamPolicyAnalysisState) GetCause() string {
 	return ""
 }
 
-// The Condition evaluation.
+// The condition evaluation.
 type ConditionEvaluation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
