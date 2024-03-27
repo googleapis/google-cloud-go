@@ -21,7 +21,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -200,8 +199,20 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
-			wr, err := io.Copy(ioutil.Discard, r)
+			wr, err := r.WriteTo(io.Discard)
 			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return err
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			// Use ReadAll because it calls Read implicitly, not WriteTo.
+			b, err := io.ReadAll(r)
+			if got, want := len(b), len(randomBytesToWrite); got != want {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return err
@@ -222,7 +233,7 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
-			wr, err := io.Copy(ioutil.Discard, r)
+			wr, err := io.Copy(io.Discard, r)
 			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
@@ -242,7 +253,7 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 			defer r.Close()
-			data, err := ioutil.ReadAll(r)
+			data, err := io.ReadAll(r)
 			if err != nil {
 				return fmt.Errorf("failed to ReadAll, err: %v", err)
 			}
@@ -250,6 +261,32 @@ var methods = map[string][]retryFunc{
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			if got, want := data, randomBytes9MB; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return nil
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Test download via Reader.WriteTo.
+			// Before running the test method, populate a large test object of 9 MiB.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
+				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
+			}
+			// Download the large test object for the S8 download method group.
+			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+			var data bytes.Buffer
+			_, err = r.WriteTo(&data)
+			if err != nil {
+				return fmt.Errorf("failed to ReadAll, err: %v", err)
+			}
+			if got, want := data.Len(), size9MB; got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := data.Bytes(), randomBytes9MB; !bytes.Equal(got, want) {
 				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return nil
@@ -278,7 +315,7 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 			defer r.Close()
-			data, err := ioutil.ReadAll(r)
+			data, err := io.ReadAll(r)
 			if err != nil {
 				return fmt.Errorf("failed to ReadAll, err: %v", err)
 			}
