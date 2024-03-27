@@ -605,7 +605,8 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, params *updateObje
 		// updated even on an empty update.
 		// gRPC will fail if the fieldmask is empty, so instead we add an
 		// output-only field to the update mask. Output-only fields are (and must
-		// be - see AIP 161) ignored, but allow us to send an empty update.
+		// be - see AIP 161) ignored, but allow us to send an empty update because
+		// any mask that is valid for read (as this one is) must be valid for write.
 		fieldMask.Paths = append(fieldMask.Paths, "create_time")
 	}
 

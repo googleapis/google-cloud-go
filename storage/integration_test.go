@@ -3898,6 +3898,15 @@ func TestIntegration_CustomTime(t *testing.T) {
 		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
 			t.Fatalf("backdating CustomTime: expected error, got none")
 		}
+
+		// Zero value for CustomTime should be ignored. Set TemporaryHold so that
+		// we don't send an empty update request, which is invalid for gRPC.
+		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{TemporaryHold: false}); err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if err := checkCustomTime(laterTime); err != nil {
+			t.Fatalf("after sending zero value: %v", err)
+		}
 	})
 }
 
