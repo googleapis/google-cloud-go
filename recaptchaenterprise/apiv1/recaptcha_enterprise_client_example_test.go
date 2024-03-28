@@ -290,6 +290,12 @@ func ExampleClient_ListFirewallPolicies() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*recaptchaenterprisepb.ListFirewallPoliciesResponse)
 	}
 }
 
@@ -321,6 +327,12 @@ func ExampleClient_ListKeys() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*recaptchaenterprisepb.ListKeysResponse)
 	}
 }
 
@@ -352,6 +364,12 @@ func ExampleClient_ListRelatedAccountGroupMemberships() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*recaptchaenterprisepb.ListRelatedAccountGroupMembershipsResponse)
 	}
 }
 
@@ -383,6 +401,12 @@ func ExampleClient_ListRelatedAccountGroups() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*recaptchaenterprisepb.ListRelatedAccountGroupsResponse)
 	}
 }
 
@@ -489,6 +513,12 @@ func ExampleClient_SearchRelatedAccountGroupMemberships() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsResponse)
 	}
 }
 
