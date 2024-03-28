@@ -21,15 +21,14 @@
 package adminpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	dayofweek "google.golang.org/genproto/googleapis/type/dayofweek"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -163,12 +162,12 @@ type isBackupSchedule_Recurrence interface {
 }
 
 type BackupSchedule_DailyRecurrence struct {
-	// For a schedule that runs daily at a specified time.
+	// For a schedule that runs daily.
 	DailyRecurrence *DailyRecurrence `protobuf:"bytes,7,opt,name=daily_recurrence,json=dailyRecurrence,proto3,oneof"`
 }
 
 type BackupSchedule_WeeklyRecurrence struct {
-	// For a schedule that runs weekly on a specific day and time.
+	// For a schedule that runs weekly on a specific day.
 	WeeklyRecurrence *WeeklyRecurrence `protobuf:"bytes,8,opt,name=weekly_recurrence,json=weeklyRecurrence,proto3,oneof"`
 }
 
@@ -176,7 +175,7 @@ func (*BackupSchedule_DailyRecurrence) isBackupSchedule_Recurrence() {}
 
 func (*BackupSchedule_WeeklyRecurrence) isBackupSchedule_Recurrence() {}
 
-// Represent a recurring schedule that runs at a specific time every day.
+// Represents a recurring schedule that runs at a specific time every day.
 //
 // The time zone is UTC.
 type DailyRecurrence struct {
