@@ -37,6 +37,7 @@ import (
 	"cloud.google.com/go/spanner"
 	dbadmin "cloud.google.com/go/spanner/admin/database/apiv1"
 	v1 "cloud.google.com/go/spanner/apiv1"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -480,6 +481,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			Name STRING(MAX),
 			Cool BOOL,
 			Height FLOAT64,
+			Other JSON,
 		) PRIMARY KEY (Name, ID)`)
 	if err != nil {
 		t.Fatal(err)
@@ -487,8 +489,10 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 
 	// Insert a subset of columns.
 	_, err = client.Apply(ctx, []*spanner.Mutation{
-		spanner.Insert("Staff", []string{"ID", "Name", "Tenure", "Height"}, []interface{}{1, "Jack", 10, 1.85}),
-		spanner.Insert("Staff", []string{"ID", "Name", "Tenure", "Height"}, []interface{}{2, "Daniel", 11, 1.83}),
+		spanner.Insert("Staff", []string{"ID", "Name", "Tenure", "Height", "Other"}, []interface{}{1, "Jack", 10, 1.85,
+			spanner.NullJSON{Value: map[string]any{"S": "goodbye"}, Valid: true}}),
+		spanner.Insert("Staff", []string{"ID", "Name", "Tenure", "Height", "Other"}, []interface{}{2, "Daniel", 11, 1.83,
+			spanner.NullJSON{Value: map[string]any{"S": "hello"}, Valid: true}}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting data: %v", err)
@@ -960,7 +964,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				// These are returned in table column order, based on the appearance in the DDL.
 				// Our internal implementation sorts the primary key columns first,
 				// but that should not become visible via SELECT *.
-				{int64(9), int64(3), "Sam", false, 1.75, nil, nil, nil},
+				{int64(9), int64(3), "Sam", false, 1.75, nil, nil, nil, nil},
 			},
 		},
 		{
@@ -968,7 +972,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			`SELECT * FROM Staff WHERE Name LIKE "S%" ORDER BY Name`,
 			nil,
 			[][]interface{}{
-				{int64(9), int64(3), "Sam", false, 1.75, nil, nil, nil},
+				{int64(9), int64(3), "Sam", false, 1.75, nil, nil, nil, nil},
 			},
 		},
 		{
@@ -1326,9 +1330,16 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		{
 			`SELECT Name FROM Staff WHERE REGEXP_CONTAINS(Name, r'^[DG]+')`,
 			nil,
-			[][]interface{}{
+			[][]any{
 				{"Daniel"},
 				{"George"},
+			},
+		},
+		{
+			`SELECT Name, Other FROM Staff WHERE JSON_VALUE(Other, '$.S') = 'goodbye'`,
+			nil,
+			[][]any{
+				{"Jack", spanner.NullJSON{Valid: true, Value: map[string]any{"S": "goodbye"}}},
 			},
 		},
 	}
@@ -1345,8 +1356,8 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			failures++
 			continue
 		}
-		if !reflect.DeepEqual(all, test.want) {
-			t.Errorf("Results from Query(%q, %v) are wrong.\n got %v\nwant %v", test.q, test.params, all, test.want)
+		if diff := cmp.Diff(all, test.want); diff != "" {
+			t.Errorf("Results from Query(%q, %v) are wrong (-got,+want):\n%s", test.q, test.params, diff)
 			failures++
 		}
 	}
@@ -1387,9 +1398,11 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 			CreatedAT TIMESTAMP,
 			CreatedDate DATE,
 			EstimatedSales INT64 NOT NULL,
+			Other JSON,
 			CanonicalName STRING(50) AS (LOWER(Name)) STORED,
 			GeneratedCreatedDate DATE AS (EXTRACT(DATE FROM CreatedAT AT TIME ZONE "CET")) STORED,
 			GeneratedCreatedDay INT64 AS (EXTRACT(DAY FROM CreatedDate)) STORED,
+			GeneratedOther STRING(MAX) AS (JSON_VALUE(Other, '$.Field')) STORED,
 		) PRIMARY KEY (Name)`)
 	if err != nil {
 		t.Fatalf("Setting up fresh table: %v", err)
@@ -1405,11 +1418,11 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		spanner.Insert(tableName,
-			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
-			[]interface{}{"Average Writer", 10, 10, t1, d1}),
+			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate", "Other"},
+			[]interface{}{"Average Writer", 10, 10, t1, d1, spanner.NullJSON{Valid: true, Value: map[string]any{"Field": "average"}}}),
 		spanner.Insert(tableName,
-			[]string{"Name", "EstimatedSales", "CreatedAT", "CreatedDate"},
-			[]interface{}{"Great Writer", 100, t1, d1}),
+			[]string{"Name", "EstimatedSales", "CreatedAT", "CreatedDate", "Other"},
+			[]interface{}{"Great Writer", 100, t1, d1, spanner.NullJSON{Valid: true, Value: map[string]any{"Field": "great"}}}),
 		spanner.Insert(tableName,
 			[]string{"Name", "EstimatedSales", "NumSongs", "CreatedAT", "CreatedDate"},
 			[]interface{}{"Poor Writer", 1, 50, t1, d1}),
@@ -1425,7 +1438,7 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 
 	ri := client.Single().Query(ctx, spanner.NewStatement(
-		`SELECT CanonicalName, TotalSales, GeneratedCreatedDate, GeneratedCreatedDay FROM `+tableName+` ORDER BY Name`,
+		`SELECT CanonicalName, TotalSales, GeneratedCreatedDate, GeneratedCreatedDay, GeneratedOther FROM `+tableName+` ORDER BY Name`,
 	))
 	all, err := slurpRows(t, ri)
 	if err != nil {
@@ -1434,9 +1447,9 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 
 	// Great writer has nil because NumSongs is nil
 	want := [][]interface{}{
-		{"average writer", int64(100), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
-		{"great writer", nil, civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
-		{"poor writer", int64(50), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15)},
+		{"average writer", int64(100), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15), "average"},
+		{"great writer", nil, civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15), "great"},
+		{"poor writer", int64(50), civil.Date{Year: 2016, Month: 11, Day: 15}, int64(15), nil},
 	}
 	if !reflect.DeepEqual(all, want) {
 		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
@@ -1445,11 +1458,11 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	// Test modifying the generated values and nulling one
 	_, err = client.Apply(ctx, []*spanner.Mutation{
 		spanner.Update(tableName,
-			[]string{"Name", "NumSongs"},
-			[]interface{}{"Average Writer", 50}),
+			[]string{"Name", "NumSongs", "Other"},
+			[]interface{}{"Average Writer", 50, spanner.NullJSON{Valid: true, Value: map[string]any{"Field": "different"}}}),
 		spanner.Update(tableName,
-			[]string{"Name", "NumSongs"},
-			[]interface{}{"Great Writer", 10}),
+			[]string{"Name", "NumSongs", "Other"},
+			[]interface{}{"Great Writer", 10, spanner.NullJSON{Valid: true, Value: map[string]any{"NewField": "great"}}}),
 		spanner.Update(tableName,
 			[]string{"Name", "NumSongs"},
 			[]interface{}{"Poor Writer", nil}),
@@ -1459,7 +1472,7 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 	}
 
 	ri = client.Single().Query(ctx, spanner.NewStatement(
-		`SELECT CanonicalName, TotalSales FROM `+tableName+` ORDER BY Name`,
+		`SELECT CanonicalName, TotalSales, GeneratedOther FROM `+tableName+` ORDER BY Name`,
 	))
 	all, err = slurpRows(t, ri)
 	if err != nil {
@@ -1468,9 +1481,9 @@ func TestIntegration_GeneratedColumns(t *testing.T) {
 
 	// poor writer has nil because NumSongs is nil
 	want = [][]interface{}{
-		{"average writer", int64(500)},
-		{"great writer", int64(1000)},
-		{"poor writer", nil},
+		{"average writer", int64(500), "different"},
+		{"great writer", int64(1000), nil},
+		{"poor writer", nil, nil},
 	}
 	if !reflect.DeepEqual(all, want) {
 		t.Errorf("Expected values are wrong.\n got %v\nwant %v", all, want)
@@ -1654,6 +1667,8 @@ func genericValue(t *testing.T, gcv spanner.GenericColumnValue) interface{} {
 		dst = new(string)
 	case spannerpb.TypeCode_BYTES:
 		dst = new([]byte)
+	case spannerpb.TypeCode_JSON:
+		dst = new(spanner.NullJSON)
 	}
 	if dst == nil {
 		t.Fatalf("Can't decode Spanner generic column value: %v", gcv.Type)

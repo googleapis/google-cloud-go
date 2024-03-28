@@ -17,9 +17,8 @@ See [INTERNALS.md](INTERNALS.md) for an explanation of the implementation.
 Here's a list of features that are missing or incomplete. It is roughly ordered
 by ascending esotericism:
 
-- expression functions
+- expression functions (with some exceptions)
 - NUMERIC
-- JSON
 - more aggregation functions
 - SELECT HAVING
 - more literal types

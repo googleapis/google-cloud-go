@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go v0.112.2
 	cloud.google.com/go/iam v1.1.7
 	cloud.google.com/go/longrunning v0.5.6
+	github.com/PaesslerAG/jsonpath v0.1.1
 	github.com/golang/protobuf v1.5.4
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.12.3
@@ -27,6 +28,7 @@ require (
 require (
 	cloud.google.com/go/compute v1.24.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.3 // indirect
+	github.com/PaesslerAG/gval v1.0.0 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.4.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/cncf/udpa/go v0.0.0-20220112060539-c52dc94e7fbe // indirect

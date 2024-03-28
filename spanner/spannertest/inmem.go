@@ -950,6 +950,8 @@ func spannerTypeFromType(typ spansql.Type) (*spannerpb.Type, error) {
 		code = spannerpb.TypeCode_DATE
 	case spansql.Timestamp:
 		code = spannerpb.TypeCode_TIMESTAMP
+	case spansql.JSON:
+		code = spannerpb.TypeCode_JSON
 	}
 	st := &spannerpb.Type{Code: code}
 	if typ.Array {
@@ -977,6 +979,8 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}, nil
 	case []byte:
 		return &structpb.Value{Kind: &structpb.Value_StringValue{base64.StdEncoding.EncodeToString(x)}}, nil
+	case jsonValue:
+		return &structpb.Value{Kind: &structpb.Value_StringValue{string(x)}}, nil
 	case civil.Date:
 		// RFC 3339 date format.
 		return &structpb.Value{Kind: &structpb.Value_StringValue{x.String()}}, nil

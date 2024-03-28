@@ -17,6 +17,7 @@ limitations under the License.
 package spannertest
 
 import (
+	"encoding/json"
 	"fmt"
 	"math"
 	"regexp"
@@ -26,6 +27,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
+	"github.com/PaesslerAG/jsonpath"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -97,15 +99,46 @@ var functions = map[string]function{
 			if values[0] == nil || values[1] == nil {
 				return nil, spansql.Type{Base: spansql.String}, nil
 			}
-			_, okArg1 := values[0].(string)
-			_, okArg2 := values[1].(string)
-			if !(okArg1 && okArg2) {
+			var s string
+			switch v := values[0].(type) {
+			case jsonValue:
+				s = string(v)
+			case string:
+				s = v
+			default:
 				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function JSON_VALUE for the given argument types")
 			}
-			// This function currently has no implementation and always returns
-			// an empty string, as it would otherwise require an XPath query
-			// engine.
-			return "", spansql.Type{Base: spansql.String}, nil
+			if s == "" {
+				return nil, types[0], nil
+			}
+			var value any
+			if err := json.Unmarshal([]byte(s), &value); err != nil {
+				return nil, spansql.Type{}, status.Errorf(codes.InvalidArgument, "Argument passed to JSON_VALUE is not valid JSON: %v", err)
+			}
+			path, okPath := values[1].(string)
+			if !okPath {
+				return nil, spansql.Type{}, status.Error(codes.InvalidArgument, "No matching signature for function JSON_VALUE for the given argument types")
+			}
+			got, err := jsonpath.Get(path, value)
+			if err != nil {
+				return nil, types[0], nil
+			}
+			var typ spansql.TypeBase
+			switch got.(type) {
+			case nil:
+				return nil, types[0], nil
+			case []any:
+				return nil, types[0], nil
+			case bool:
+				typ = spansql.Bool
+			case string:
+				typ = spansql.String
+			case int64:
+				typ = spansql.Int64
+			default:
+				return nil, spansql.Type{}, status.Errorf(codes.InvalidArgument, "Unexpected value type in JSON_VALUE: %T", got)
+			}
+			return got, spansql.Type{Base: typ}, nil
 		},
 	},
 	"EXTRACT": {
