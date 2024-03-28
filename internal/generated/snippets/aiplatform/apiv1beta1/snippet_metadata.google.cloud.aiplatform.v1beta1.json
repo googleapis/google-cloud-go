@@ -3316,6 +3316,1244 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionExecutionClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionExecutionClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_ExecuteExtension_sync",
+      "title": "aiplatform ExecuteExtension Sample",
+      "description": "ExecuteExtension executes the request against a given extension.",
+      "file": "ExtensionExecutionClient/ExecuteExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExecuteExtension",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.ExecuteExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ExecuteExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.ExecuteExtensionResponse",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "ExecuteExtension",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionService.ExecuteExtension",
+          "service": {
+            "shortName": "ExtensionExecutionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ExtensionExecutionClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ExtensionExecutionClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionExecutionClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ExtensionExecutionClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionExecutionClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_QueryExtension_sync",
+      "title": "aiplatform QueryExtension Sample",
+      "description": "QueryExtension queries an extension with a default controller.",
+      "file": "ExtensionExecutionClient/QueryExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryExtension",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.QueryExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.QueryExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.QueryExtensionResponse",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "QueryExtension",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionService.QueryExtension",
+          "service": {
+            "shortName": "ExtensionExecutionService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "ExtensionExecutionClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "ExtensionExecutionClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionExecutionService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionExecutionClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ExtensionExecutionClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionExecutionClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionRegistryClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_DeleteExtension_sync",
+      "title": "aiplatform DeleteExtension Sample",
+      "description": "DeleteExtension deletes an Extension.",
+      "file": "ExtensionRegistryClient/DeleteExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExtension",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.DeleteExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteExtensionOperation",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteExtension",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService.DeleteExtension",
+          "service": {
+            "shortName": "ExtensionRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionRegistryClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_GetExtension_sync",
+      "title": "aiplatform GetExtension Sample",
+      "description": "GetExtension gets an Extension.",
+      "file": "ExtensionRegistryClient/GetExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExtension",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.GetExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.Extension",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "GetExtension",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService.GetExtension",
+          "service": {
+            "shortName": "ExtensionRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ExtensionRegistryClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ExtensionRegistryClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionRegistryClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_ImportExtension_sync",
+      "title": "aiplatform ImportExtension Sample",
+      "description": "ImportExtension imports an Extension.",
+      "file": "ExtensionRegistryClient/ImportExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportExtension",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.ImportExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ImportExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportExtensionOperation",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "ImportExtension",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService.ImportExtension",
+          "service": {
+            "shortName": "ExtensionRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_ListExtensions_sync",
+      "title": "aiplatform ListExtensions Sample",
+      "description": "ListExtensions lists Extensions in a location.",
+      "file": "ExtensionRegistryClient/ListExtensions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExtensions",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.ListExtensions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListExtensionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExtensionIterator",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "ListExtensions",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService.ListExtensions",
+          "service": {
+            "shortName": "ExtensionRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ExtensionRegistryClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionRegistryClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 60,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "ExtensionRegistryClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "ExtensionRegistryClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_UpdateExtension_sync",
+      "title": "aiplatform UpdateExtension Sample",
+      "description": "UpdateExtension updates an Extension.",
+      "file": "ExtensionRegistryClient/UpdateExtension/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateExtension",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.UpdateExtension",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateExtensionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.Extension",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "UpdateExtension",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService.UpdateExtension",
+          "service": {
+            "shortName": "ExtensionRegistryService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ExtensionRegistryService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "ExtensionRegistryClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ExtensionRegistryClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ExtensionRegistryClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_FeatureOnlineStoreAdminService_CancelOperation_sync",
       "title": "aiplatform CancelOperation Sample",
       "description": "CancelOperation is a utility method from google.longrunning.Operations.",

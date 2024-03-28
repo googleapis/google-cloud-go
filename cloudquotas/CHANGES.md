@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.1.2...cloudquotas/v0.1.3) (2024-03-27)
+
+
+### Documentation
+
+* **cloudquotas:** Update comment of `contact_email` to make it optional as opposed to required ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
 ## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.1.1...cloudquotas/v0.1.2) (2024-03-14)
 
 
