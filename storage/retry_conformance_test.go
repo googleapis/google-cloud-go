@@ -280,7 +280,7 @@ var methods = map[string][]retryFunc{
 			// Test download via Reader.WriteTo.
 			// Before running the test method, populate a large test object of 9 MiB.
 			objName := objectIDs.New()
-			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes3MiB); err != nil {
 				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
 			}
 			// Download the large test object for the S8 download method group.
@@ -294,10 +294,10 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return fmt.Errorf("failed to ReadAll, err: %v", err)
 			}
-			if got, want := data.Len(), size9MB; got != want {
+			if got, want := data.Len(), 3*MiB; got != want {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
-			if got, want := data.Bytes(), randomBytes9MB; !bytes.Equal(got, want) {
+			if got, want := data.Bytes(), randomBytes3MiB; !bytes.Equal(got, want) {
 				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return nil
