@@ -1,5 +1,18 @@
 # Changes
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.9.0...logging/v1.10.0) (2024-03-28)
+
+
+### Features
+
+* **logging/logadmin:** Allow logging PageSize to override ([#9409](https://github.com/googleapis/google-cloud-go/issues/9409)) ([5ca0271](https://github.com/googleapis/google-cloud-go/commit/5ca0271f4354d51a968cf5819322d1c093944d1c))
+
+
+### Bug Fixes
+
+* **logging:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+* **logging:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.8.1...logging/v1.9.0) (2023-12-12)
 
 
@@ -153,5 +166,3 @@
 
 This is the first tag to carve out logging as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
-
