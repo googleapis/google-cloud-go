@@ -224,9 +224,26 @@ func (t *Transaction) beginLaterTransaction() (err error) {
 		return err
 	}
 
-	t.id = txnID
-	t.state = transactionStateInProgress
+	t.startProgress(txnID)
 	return nil
+}
+
+// Acquire state lock if transaction has not started
+func (t *Transaction) acquireLock() func() {
+	if t.state == transactionStateNotStarted {
+		t.stateLock.Lock()
+		// Check whether state changed while waiting to acquire lock
+		if t.state == transactionStateNotStarted {
+			return func() { t.stateLock.Unlock() }
+		}
+		t.stateLock.Unlock()
+	}
+	return func() {}
+}
+
+func (t *Transaction) startProgress(id []byte) {
+	t.id = id
+	t.state = transactionStateInProgress
 }
 
 func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
@@ -245,8 +262,7 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 		if err != nil {
 			return nil, err
 		}
-		t.id = txnID
-		t.state = transactionStateInProgress
+		t.startProgress(txnID)
 	}
 
 	return t, nil
@@ -399,14 +415,8 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 	t.ctx = trace.StartSpan(t.ctx, spanName)
 	defer func() { trace.EndSpan(t.ctx, err) }()
 
-	if t.state == transactionStateNotStarted {
-		t.stateLock.Lock()
-		// Check whether state changed while waiting to acquire lock
-		if t.state == transactionStateNotStarted {
-			defer t.stateLock.Unlock()
-		} else {
-			t.stateLock.Unlock()
-		}
+	if t != nil {
+		defer t.acquireLock()()
 	}
 
 	opts, err := t.parseReadOptions()
@@ -414,11 +424,10 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 		return err
 	}
 
-	tid, err := t.client.get(t.ctx, keys, dst, opts)
+	txnID, err := t.client.get(t.ctx, keys, dst, opts)
 
-	if tid != nil && err == nil {
-		t.id = tid
-		t.state = transactionStateInProgress
+	if txnID != nil && err == nil {
+		t.startProgress(txnID)
 	}
 	return err
 }
