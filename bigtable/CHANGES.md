@@ -1,5 +1,13 @@
 # Changes
 
+## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.22.0...bigtable/v1.22.1) (2024-03-28)
+
+
+### Bug Fixes
+
+* **bigtable:** Accept nil RowSet to read all rows ([#9327](https://github.com/googleapis/google-cloud-go/issues/9327)) ([cd36506](https://github.com/googleapis/google-cloud-go/commit/cd36506d377d2d5199402a58360c23ba4ce9a3d4))
+* **bigtable:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.21.0...bigtable/v1.22.0) (2024-03-11)
 
 
@@ -261,4 +269,3 @@
 
 This is the first tag to carve out bigtable as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
