@@ -1,5 +1,20 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.15.0...firestore/v1.16.0) (2024-03-28)
+
+
+### Features
+
+* **firestore/apiv1:** A new message `Backup` is added ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+* **firestore/apiv1:** Add Vector Index API ([f8ff971](https://github.com/googleapis/google-cloud-go/commit/f8ff971366999aefb5eb5189c6c9e2bd76a05d9e))
+* **firestore:** Add new types ExplainOptions, ExplainMetrics, PlanSummary, ExecutionStats ([05f58cc](https://github.com/googleapis/google-cloud-go/commit/05f58ccce530d8a3ab404356929352002d5156ba))
+* **firestore:** Add VectorSearch API ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+
+
+### Bug Fixes
+
+* **firestore:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.14.0...firestore/v1.15.0) (2024-03-05)
 
 
@@ -192,4 +207,3 @@
 
 This is the first tag to carve out firestore as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
