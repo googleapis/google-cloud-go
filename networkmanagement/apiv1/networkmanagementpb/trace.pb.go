@@ -2571,7 +2571,7 @@ type FirewallInfo struct {
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Possible values: INGRESS, EGRESS
 	Direction string `protobuf:"bytes,3,opt,name=direction,proto3" json:"direction,omitempty"`
-	// Possible values: ALLOW, DENY
+	// Possible values: ALLOW, DENY, APPLY_SECURITY_PROFILE_GROUP
 	Action string `protobuf:"bytes,4,opt,name=action,proto3" json:"action,omitempty"`
 	// The priority of the firewall rule.
 	Priority int32 `protobuf:"varint,5,opt,name=priority,proto3" json:"priority,omitempty"`
