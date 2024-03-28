@@ -259,8 +259,8 @@ func TestParamType(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !testutil.Equal(got, test.wantType) {
-			t.Errorf("%v (%T): got %v, want %v", test.val, test.val, got, test.wantType)
+		if d := testutil.Diff(got, test.wantType); d != "" {
+			t.Errorf("%v (%T): \n%s", test.val, test.val, d)
 		}
 	}
 	for _, test := range []struct {
@@ -277,14 +277,14 @@ func TestParamType(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !testutil.Equal(got, test.want) {
-			t.Errorf("%v (%T): got %v, want %v", test.val, test.val, got, test.want)
+		if d := testutil.Diff(got, test.want); d != "" {
+			t.Errorf("%v (%T): \n%s", test.val, test.val, d)
 		}
 	}
 }
 func TestParamTypeErrors(t *testing.T) {
 	for _, val := range []interface{}{
-		nil, uint(0), new([]int), make(chan int), map[string]interface{}{},
+		nil, uint(0), new([]int), make(chan int), map[int]interface{}{},
 	} {
 		_, err := paramType(reflect.TypeOf(val), reflect.ValueOf(val))
 		if err == nil {

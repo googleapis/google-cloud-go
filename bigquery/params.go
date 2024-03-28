@@ -40,7 +40,10 @@ var (
 	validFieldName = regexp.MustCompile("^[a-zA-Z_][a-zA-Z0-9_]{0,127}$")
 )
 
-const nullableTagOption = "nullable"
+const (
+	nullableTagOption = "nullable"
+	jsonTagOption     = "json"
+)
 
 func bqTagParser(t reflect.StructTag) (name string, keep bool, other interface{}, err error) {
 	name, keep, opts, err := fields.ParseStandardTag("bigquery", t)
@@ -51,10 +54,10 @@ func bqTagParser(t reflect.StructTag) (name string, keep bool, other interface{}
 		return "", false, nil, invalidFieldNameError(name)
 	}
 	for _, opt := range opts {
-		if opt != nullableTagOption {
+		if opt != nullableTagOption && opt != jsonTagOption {
 			return "", false, nil, fmt.Errorf(
-				"bigquery: invalid tag option %q. The only valid option is %q",
-				opt, nullableTagOption)
+				"bigquery: invalid tag option %q. The only valid options are %q and %q",
+				opt, nullableTagOption, jsonTagOption)
 		}
 	}
 	return name, keep, opts, nil
