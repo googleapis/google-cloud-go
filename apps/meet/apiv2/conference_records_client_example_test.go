@@ -236,6 +236,12 @@ func ExampleConferenceRecordsClient_ListConferenceRecords() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*meetpb.ListConferenceRecordsResponse)
 	}
 }
 
@@ -267,6 +273,12 @@ func ExampleConferenceRecordsClient_ListParticipantSessions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*meetpb.ListParticipantSessionsResponse)
 	}
 }
 
@@ -298,6 +310,12 @@ func ExampleConferenceRecordsClient_ListParticipants() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*meetpb.ListParticipantsResponse)
 	}
 }
 
@@ -329,6 +347,12 @@ func ExampleConferenceRecordsClient_ListRecordings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*meetpb.ListRecordingsResponse)
 	}
 }
 
@@ -360,6 +384,12 @@ func ExampleConferenceRecordsClient_ListTranscriptEntries() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*meetpb.ListTranscriptEntriesResponse)
 	}
 }
 
@@ -391,5 +421,11 @@ func ExampleConferenceRecordsClient_ListTranscripts() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*meetpb.ListTranscriptsResponse)
 	}
 }
