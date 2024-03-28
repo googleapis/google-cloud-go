@@ -27,8 +27,9 @@ import (
 )
 
 var (
-	host = flag.String("host", "localhost", "the address to bind to on the local machine")
-	port = flag.Int("port", 9000, "the port number to bind to on the local machine")
+	host                = flag.String("host", "localhost", "the address to bind to on the local machine")
+	port                = flag.Int("port", 9000, "the port number to bind to on the local machine")
+	emulatorInterceptor bttest.EmulatorInterceptor
 )
 
 const (
@@ -37,11 +38,18 @@ const (
 
 func main() {
 	grpc.EnableTracing = false
+	flag.Var(&emulatorInterceptor.LatencyTargets, "inject-latency", "Introduce gRPC latency for testing like \"ReadRows:p99.9:100ms\"")
+	flag.Var(&emulatorInterceptor.GrpcErrorCodeTargets, "inject-errors", "Introduce gRPC error codes for testing like \"ReadRows:12%:14\"")
 	flag.Parse()
 	opts := []grpc.ServerOption{
 		grpc.MaxRecvMsgSize(maxMsgSize),
 		grpc.MaxSendMsgSize(maxMsgSize),
 	}
+
+	if len(emulatorInterceptor.LatencyTargets) > 0 || len(emulatorInterceptor.GrpcErrorCodeTargets) > 0 {
+		opts = append(opts, emulatorInterceptor.StreamInterceptor())
+	}
+
 	srv, err := bttest.NewServer(fmt.Sprintf("%s:%d", *host, *port), opts...)
 	if err != nil {
 		log.Fatalf("failed to start emulator: %v", err)
