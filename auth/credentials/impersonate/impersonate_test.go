@@ -25,38 +25,54 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
 )
 
 func TestNewCredentials_serviceAccount(t *testing.T) {
 	ctx := context.Background()
 	tests := []struct {
-		name            string
-		targetPrincipal string
-		scopes          []string
-		lifetime        time.Duration
-		wantErr         bool
+		name    string
+		config  CredentialsOptions
+		opts    option.ClientOption
+		wantErr error
 	}{
 		{
 			name:    "missing targetPrincipal",
-			wantErr: true,
+			wantErr: errMissingTargetPrincipal,
 		},
 		{
-			name:            "missing scopes",
-			targetPrincipal: "foo@project-id.iam.gserviceaccount.com",
-			wantErr:         true,
+			name: "missing scopes",
+			config: CredentialsOptions{
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+			},
+			wantErr: errMissingScopes,
 		},
 		{
-			name:            "lifetime over max",
-			targetPrincipal: "foo@project-id.iam.gserviceaccount.com",
-			scopes:          []string{"scope"},
-			lifetime:        13 * time.Hour,
-			wantErr:         true,
+			name: "lifetime over max",
+			config: CredentialsOptions{
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+				Scopes:          []string{"scope"},
+				Lifetime:        13 * time.Hour,
+			},
+			wantErr: errLifetimeOverMax,
 		},
 		{
-			name:            "works",
-			targetPrincipal: "foo@project-id.iam.gserviceaccount.com",
-			scopes:          []string{"scope"},
-			wantErr:         false,
+			name: "works",
+			config: CredentialsOptions{
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+				Scopes:          []string{"scope"},
+			},
+			wantErr: nil,
+		},
+		{
+			name: "universe domain",
+			config: CredentialsOptions{
+				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
+				Scopes:          []string{"scope"},
+				Subject:         "admin@example.com",
+			},
+			opts:    option.WithUniverseDomain("example.com"),
+			wantErr: errUniverseNotSupportedDomainWideDelegation,
 		},
 	}
 
@@ -76,11 +92,11 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 						if err := json.Unmarshal(b, &r); err != nil {
 							t.Error(err)
 						}
-						if !cmp.Equal(r.Scope, tt.scopes) {
-							t.Errorf("got %v, want %v", r.Scope, tt.scopes)
+						if !cmp.Equal(r.Scope, tt.config.Scopes) {
+							t.Errorf("got %v, want %v", r.Scope, tt.config.Scopes)
 						}
-						if !strings.Contains(req.URL.Path, tt.targetPrincipal) {
-							t.Errorf("got %q, want %q", req.URL.Path, tt.targetPrincipal)
+						if !strings.Contains(req.URL.Path, tt.config.TargetPrincipal) {
+							t.Errorf("got %q, want %q", req.URL.Path, tt.config.TargetPrincipal)
 						}
 
 						resp := generateAccessTokenResponse{
@@ -100,24 +116,20 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 					return nil
 				}),
 			}
-			ts, err := NewCredentials(&CredentialsOptions{
-				TargetPrincipal: tt.targetPrincipal,
-				Scopes:          tt.scopes,
-				Lifetime:        tt.lifetime,
-				Client:          client,
-			})
-			if tt.wantErr && err != nil {
-				return
-			}
+			tt.config.Client = client
+			ts, err := NewCredentials(&tt.config)
 			if err != nil {
-				t.Fatal(err)
-			}
-			tok, err := ts.Token(ctx)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if tok.Value != saTok {
-				t.Fatalf("got %q, want %q", tok.Value, saTok)
+				if err != tt.wantErr {
+					t.Fatalf("%s: err: %v", tt.name, err)
+				}
+			} else {
+				tok, err := ts.Token(ctx)
+				if err != nil {
+					t.Fatal(err)
+				}
+				if tok.Value != saTok {
+					t.Fatalf("got %q, want %q", tok.Value, saTok)
+				}
 			}
 		})
 	}

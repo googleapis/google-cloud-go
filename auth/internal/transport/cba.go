@@ -17,6 +17,7 @@ package transport
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"net"
 	"net/http"
 	"net/url"
@@ -24,6 +25,7 @@ import (
 	"strconv"
 	"strings"
 
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport/cert"
 	"github.com/google/s2a-go"
 	"github.com/google/s2a-go/fallback"
@@ -40,21 +42,64 @@ const (
 	googleAPIUseCertSource = "GOOGLE_API_USE_CLIENT_CERTIFICATE"
 	googleAPIUseMTLS       = "GOOGLE_API_USE_MTLS_ENDPOINT"
 	googleAPIUseMTLSOld    = "GOOGLE_API_USE_MTLS"
+
+	universeDomainPlaceholder = "UNIVERSE_DOMAIN"
 )
 
 var (
-	mdsMTLSAutoConfigSource mtlsConfigSource
+	mdsMTLSAutoConfigSource     mtlsConfigSource
+	errUniverseNotSupportedMTLS = errors.New("mTLS is not supported in any universe other than googleapis.com")
 )
 
 // Options is a struct that is duplicated information from the individual
 // transport packages in order to avoid cyclic deps. It correlates 1:1 with
 // fields on httptransport.Options and grpctransport.Options.
 type Options struct {
-	Endpoint            string
-	DefaultEndpoint     string
-	DefaultMTLSEndpoint string
-	ClientCertProvider  cert.Provider
-	Client              *http.Client
+	Endpoint                string
+	DefaultEndpoint         string
+	DefaultMTLSEndpoint     string
+	DefaultEndpointTemplate string
+	ClientCertProvider      cert.Provider
+	Client                  *http.Client
+	UniverseDomain          string
+	DefaultUniverseDomain   string
+}
+
+// getDefaultUniverseDomain returns the default service domain for a given Cloud
+// universe, as configured with internaloption.WithDefaultUniverseDomain.
+// The default value is "googleapis.com".
+func (o *Options) getDefaultUniverseDomain() string {
+	if o.DefaultUniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return o.DefaultUniverseDomain
+}
+
+// getUniverseDomain returns the default service domain for a given Cloud
+// universe, as configured with option.WithUniverseDomain.
+// The default value is the value of getDefaultUniverseDomain, as configured
+// with internaloption.WithDefaultUniverseDomain.
+func (o *Options) getUniverseDomain() string {
+	if o.UniverseDomain == "" {
+		return o.getDefaultUniverseDomain()
+	}
+	return o.UniverseDomain
+}
+
+// isUniverseDomainGDU returns true if the universe domain is the default Google
+// universe.
+func (o *Options) isUniverseDomainGDU() bool {
+	return o.getUniverseDomain() == o.getDefaultUniverseDomain()
+}
+
+// resolveDefaultEndpoint returns the DefaultEndpointTemplate merged with the
+// Universe Domain if the DefaultEndpointTemplate is set, otherwise returns the
+// deprecated DefaultEndpoint value, which may be empty.
+func (o *Options) resolveDefaultEndpoint() string {
+	if o.DefaultEndpointTemplate == "" {
+		return o.DefaultEndpoint
+	}
+	return strings.Replace(o.DefaultEndpointTemplate, universeDomainPlaceholder, o.getUniverseDomain(), 1)
 }
 
 // GetGRPCTransportCredsAndEndpoint returns an instance of
@@ -127,11 +172,11 @@ func GetHTTPTransportConfig(opts *Options) (cert.Provider, func(context.Context,
 func getTransportConfig(opts *Options) (*transportConfig, error) {
 	clientCertSource, err := getClientCertificateSource(opts)
 	if err != nil {
-		return &transportConfig{}, err
+		return nil, err
 	}
 	endpoint, err := getEndpoint(opts, clientCertSource)
 	if err != nil {
-		return &transportConfig{}, err
+		return nil, err
 	}
 	defaultTransportConfig := transportConfig{
 		clientCertSource: clientCertSource,
@@ -140,6 +185,9 @@ func getTransportConfig(opts *Options) (*transportConfig, error) {
 
 	if !shouldUseS2A(clientCertSource, opts) {
 		return &defaultTransportConfig, nil
+	}
+	if !opts.isUniverseDomainGDU() {
+		return nil, errUniverseNotSupportedMTLS
 	}
 
 	s2aMTLSEndpoint := opts.DefaultMTLSEndpoint
@@ -209,27 +257,32 @@ type transportConfig struct {
 // If the endpoint override is an address (host:port) rather than full base
 // URL (ex. https://...), then the user-provided address will be merged into
 // the default endpoint. For example, WithEndpoint("myhost:8000") and
-// WithDefaultEndpoint("https://foo.com/bar/baz") will return "https://myhost:8080/bar/baz"
+// DefaultEndpointTemplate("https://UNIVERSE_DOMAIN/bar/baz") will return "https://myhost:8080/bar/baz"
 func getEndpoint(opts *Options, clientCertSource cert.Provider) (string, error) {
+	defaultEndpoint := opts.resolveDefaultEndpoint()
 	if opts.Endpoint == "" {
 		mtlsMode := getMTLSMode()
 		if mtlsMode == mTLSModeAlways || (clientCertSource != nil && mtlsMode == mTLSModeAuto) {
+			if !opts.isUniverseDomainGDU() {
+				return "", errUniverseNotSupportedMTLS
+			}
 			return opts.DefaultMTLSEndpoint, nil
 		}
-		return opts.DefaultEndpoint, nil
+		return defaultEndpoint, nil
 	}
 	if strings.Contains(opts.Endpoint, "://") {
 		// User passed in a full URL path, use it verbatim.
 		return opts.Endpoint, nil
 	}
-	if opts.DefaultEndpoint == "" {
-		// If DefaultEndpoint is not configured, use the user provided endpoint verbatim.
-		// This allows a naked "host[:port]" URL to be used with GRPC Direct Path.
+	if defaultEndpoint == "" {
+		// If DefaultEndpoint and DefaultEndpointTemplate are not configured,
+		// use the user provided endpoint verbatim. This allows a naked
+		// "host[:port]" URL to be used with GRPC Direct Path.
 		return opts.Endpoint, nil
 	}
 
 	// Assume user-provided endpoint is host[:port], merge it with the default endpoint.
-	return mergeEndpoints(opts.DefaultEndpoint, opts.Endpoint)
+	return mergeEndpoints(defaultEndpoint, opts.Endpoint)
 }
 
 func getMTLSMode() string {
@@ -244,6 +297,9 @@ func getMTLSMode() string {
 }
 
 func mergeEndpoints(baseURL, newHost string) (string, error) {
+	if strings.Contains(baseURL, universeDomainPlaceholder) {
+		return strings.Replace(baseURL, universeDomainPlaceholder, newHost, 1), nil
+	}
 	u, err := url.Parse(fixScheme(baseURL))
 	if err != nil {
 		return "", err

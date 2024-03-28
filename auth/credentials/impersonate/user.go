@@ -28,6 +28,8 @@ import (
 	"cloud.google.com/go/auth/internal"
 )
 
+// user provides an auth flow for domain-wide delegation, setting
+// CredentialsConfig.Subject to be the impersonated user.
 func user(opts *CredentialsOptions, client *http.Client, lifetime time.Duration, isStaticToken bool) (auth.TokenProvider, error) {
 	u := userTokenProvider{
 		client:          client,
