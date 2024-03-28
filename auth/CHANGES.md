@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.1.1...auth/v0.2.0) (2024-03-28)
+
+
+### Features
+
+* **auth:** Add downscope.Options.UniverseDomain ([#9634](https://github.com/googleapis/google-cloud-go/issues/9634)) ([52cf7d7](https://github.com/googleapis/google-cloud-go/commit/52cf7d780853594291c4e34302d618299d1f5a1d))
+* **auth:** Add UniverseDomain to DetectOptions ([#9536](https://github.com/googleapis/google-cloud-go/issues/9536)) ([3618d3f](https://github.com/googleapis/google-cloud-go/commit/3618d3f7061615c0e189f376c75abc201203b501))
+* **auth:** Make package externalaccount public ([#9633](https://github.com/googleapis/google-cloud-go/issues/9633)) ([a0978d8](https://github.com/googleapis/google-cloud-go/commit/a0978d8e96968399940ebd7d092539772bf9caac))
+* **auth:** Move credentials to base auth package ([#9590](https://github.com/googleapis/google-cloud-go/issues/9590)) ([1a04baf](https://github.com/googleapis/google-cloud-go/commit/1a04bafa83c27342b9308d785645e1e5423ea10d))
+* **auth:** Refactor public sigs to use Credentials ([#9603](https://github.com/googleapis/google-cloud-go/issues/9603)) ([69cb240](https://github.com/googleapis/google-cloud-go/commit/69cb240c530b1f7173a9af2555c19e9a1beb56c5))
+
+
+### Bug Fixes
+
+* **auth/oauth2adapt:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+* **auth:** Port sts expires fix ([#9618](https://github.com/googleapis/google-cloud-go/issues/9618)) ([7bec97b](https://github.com/googleapis/google-cloud-go/commit/7bec97b2f51ed3ac4f9b88bf100d301da3f5d1bd))
+* **auth:** Read universe_domain from all credentials files ([#9632](https://github.com/googleapis/google-cloud-go/issues/9632)) ([16efbb5](https://github.com/googleapis/google-cloud-go/commit/16efbb52e39ea4a319e5ee1e95c0e0305b6d9824))
+* **auth:** Remove content-type header from idms get requests ([#9508](https://github.com/googleapis/google-cloud-go/issues/9508)) ([8589f41](https://github.com/googleapis/google-cloud-go/commit/8589f41599d265d7c3d46a3d86c9fab2329cbdd9))
+* **auth:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/auth/v0.1.0...auth/v0.1.1) (2024-03-10)
 
 
@@ -31,4 +51,3 @@
 
 * **auth/oauth2adapt:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
 * **auth:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
-
