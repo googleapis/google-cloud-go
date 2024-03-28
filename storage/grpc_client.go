@@ -1486,10 +1486,8 @@ func (r *gRPCReader) updateCRC(b []byte) {
 
 // Checks whether the CRC matches at the conclusion of a read, if CRC checking was enabled.
 func (r *gRPCReader) runCRCCheck() error {
-	if r.checkCRC {
-		if r.gotCRC != r.wantCRC {
-			return fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
-		}
+	if r.checkCRC && r.gotCRC != r.wantCRC {
+		return fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
 	}
 	return nil
 }
@@ -1510,7 +1508,7 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	// using the same reader. One encounters an error and the stream is closed
 	// and then reopened while the other routine attempts to read from it.
 	if r.stream == nil {
-		return 0, fmt.Errorf("reader has been closed")
+		return 0, fmt.Errorf("storage: reader has been closed")
 	}
 
 	var n int
@@ -1567,7 +1565,7 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	// using the same reader. One encounters an error and the stream is closed
 	// and then reopened while the other routine attempts to read from it.
 	if r.stream == nil {
-		return 0, fmt.Errorf("reader has been closed")
+		return 0, fmt.Errorf("storage: reader has been closed")
 	}
 
 	// Track bytes written during before call.

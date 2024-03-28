@@ -1237,7 +1237,7 @@ func (r *httpReader) Read(p []byte) (int, error) {
 			r.gotCRC = crc32.Update(r.gotCRC, crc32cTable, p[:n])
 		}
 		if err == nil {
-			return n, err
+			return n, nil
 		}
 		if err == io.EOF {
 			// Check CRC here. It would be natural to check it in Close, but

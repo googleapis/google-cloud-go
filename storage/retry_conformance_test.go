@@ -217,6 +217,7 @@ var methods = map[string][]retryFunc{
 			return err
 		},
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// This tests downloads by calling Reader.Read rather than Reader.WriteTo.
 			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
 			if err != nil {
 				return err
