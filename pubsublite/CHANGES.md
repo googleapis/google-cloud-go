@@ -1,5 +1,17 @@
 # Changes
 
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.8.1...pubsublite/v1.8.2) (2024-03-28)
+
+
+### Bug Fixes
+
+* **pubsublite:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+* **pubsublite:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+* **pubsublite:** Fix regional endpoints ([#9362](https://github.com/googleapis/google-cloud-go/issues/9362)) ([14ce978](https://github.com/googleapis/google-cloud-go/commit/14ce9787f2a53ebdb25abea978367d7f8ae00188))
+* **pubsublite:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **pubsublite:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+* **pubsublite:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/pubsublite/v1.8.0...pubsublite/v1.8.1) (2023-05-11)
 
 
@@ -327,5 +339,3 @@ pubsublite/internal/wire implementation:
 
 This is the first tag to carve out pubsublite as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
-
