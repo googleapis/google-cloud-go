@@ -49,26 +49,20 @@ var (
 )
 
 func createOpenTelemetryConfig(mp metric.MeterProvider, logger *log.Logger, sessionClientID string, db string) (*openTelemetryConfig, error) {
-	config := &openTelemetryConfig{
-		attributeMap: []attribute.KeyValue{},
-	}
-	if !IsOpenTelemetryMetricsEnabled() {
-		return config, nil
-	}
 	_, instance, database, err := parseDatabaseName(db)
 	if err != nil {
 		return nil, err
 	}
 
 	// Construct attributes for Metrics
-	attributeMap := []attribute.KeyValue{
-		attributeKeyClientID.String(sessionClientID),
-		attributeKeyDatabase.String(database),
-		attributeKeyInstance.String(instance),
-		attributeKeyLibVersion.String(internal.Version),
+	config := &openTelemetryConfig{
+		attributeMap: []attribute.KeyValue{
+			attributeKeyClientID.String(sessionClientID),
+			attributeKeyDatabase.String(database),
+			attributeKeyInstance.String(instance),
+			attributeKeyLibVersion.String(internal.Version),
+		},
 	}
-	config.attributeMap = append(config.attributeMap, attributeMap...)
-
 	setOpenTelemetryMetricProvider(config, mp, logger)
 	return config, nil
 }
@@ -83,9 +77,6 @@ func setOpenTelemetryMetricProvider(config *openTelemetryConfig, mp metric.Meter
 }
 
 func initializeMetricInstruments(config *openTelemetryConfig, logger *log.Logger) {
-	if !IsOpenTelemetryMetricsEnabled() {
-		return
-	}
 	meter := config.meterProvider.Meter(OtInstrumentationScope, metric.WithInstrumentationVersion(internal.Version))
 
 	openSessionCountInstrument, err := meter.Int64ObservableGauge(
