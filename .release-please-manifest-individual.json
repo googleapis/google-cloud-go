@@ -4,7 +4,7 @@
   "bigquery": "1.60.0",
   "bigtable": "1.22.0",
   "datastore": "1.15.0",
-  "errorreporting": "0.3.0",
+  "errorreporting": "0.3.1",
   "firestore": "1.15.0",
   "logging": "1.9.0",
   "profiler": "0.4.0",
