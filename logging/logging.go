@@ -84,7 +84,7 @@ const (
 	// DefaultEntryByteThreshold is the default value for the EntryByteThreshold LoggerOption.
 	DefaultEntryByteThreshold = 1 << 23 // 8MiB
 
-	// DefaultBundleByteThreshold is the default value for the BundleByteLimit LoggerOption.
+	// DefaultBundleByteLimit is the default value for the BundleByteLimit LoggerOption.
 	DefaultBundleByteLimit = 9437184 // 9.5 MiB
 
 	// DefaultBufferedByteLimit is the default value for the BufferedByteLimit LoggerOption.
