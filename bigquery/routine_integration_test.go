@@ -53,6 +53,44 @@ func TestIntegration_RoutineScalarUDF(t *testing.T) {
 	}
 }
 
+func TestIntegration_RoutineRangeType(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	err := routine.Create(ctx, &RoutineMetadata{
+		Type:     "SCALAR_FUNCTION",
+		Language: "SQL",
+		Body:     "RANGE_CONTAINS(r1,r2)",
+		Arguments: []*RoutineArgument{
+			{
+				Name: "r1",
+				DataType: &StandardSQLDataType{
+					TypeKind: "RANGE",
+					RangeElementType: &StandardSQLDataType{
+						TypeKind: "TIMESTAMP",
+					},
+				},
+			},
+			{
+				Name: "r2",
+				DataType: &StandardSQLDataType{
+					TypeKind: "RANGE",
+					RangeElementType: &StandardSQLDataType{
+						TypeKind: "TIMESTAMP",
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+}
+
 func TestIntegration_RoutineDataGovernance(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
