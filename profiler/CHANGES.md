@@ -1,5 +1,20 @@
 # Changes
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/profiler/v0.4.0...profiler/v0.4.1) (2024-03-28)
+
+
+### Bug Fixes
+
+* **profiler:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+* **profiler:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **profiler:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+* **profiler:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **profiler:** Update README.md ([#9025](https://github.com/googleapis/google-cloud-go/issues/9025)) ([2d1acea](https://github.com/googleapis/google-cloud-go/commit/2d1acea7268919f4fea6b90f67993f86fd665ef0))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/profiler/v0.3.1...profiler/v0.4.0) (2023-10-18)
 
 
@@ -61,4 +76,3 @@
 
 This is the first tag to carve out profiler as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
