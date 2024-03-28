@@ -85,6 +85,10 @@ func pgNumericType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_NUMERIC, TypeAnnotation: sppb.TypeAnnotationCode_PG_NUMERIC}
 }
 
+func pgOidType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_INT64, TypeAnnotation: sppb.TypeAnnotationCode_PG_OID}
+}
+
 func jsonType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_JSON}
 }
