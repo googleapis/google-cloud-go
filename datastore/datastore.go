@@ -34,9 +34,10 @@ import (
 )
 
 const (
-	prodAddr     = "datastore.googleapis.com:443"
-	prodMtlsAddr = "datastore.mtls.googleapis.com:443"
-	userAgent    = "gcloud-golang-datastore/20160401"
+	prodEndpointTemplate = "datastore.UNIVERSE_DOMAIN:443"
+	prodUniverseDomain   = "googleapis.com"
+	prodMtlsAddr         = "datastore.mtls.googleapis.com:443"
+	userAgent            = "gcloud-golang-datastore/20160401"
 )
 
 // ScopeDatastore grants permissions to view and/or manage datastore entities
@@ -104,7 +105,8 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 	// If the emulator is available, dial it without passing any credentials.
 	if addr := os.Getenv("DATASTORE_EMULATOR_HOST"); addr != "" {
 		o = []option.ClientOption{
-			option.WithEndpoint(addr),
+			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
+			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
 			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
@@ -117,7 +119,8 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 		}
 	} else {
 		o = []option.ClientOption{
-			option.WithEndpoint(prodAddr),
+			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
+			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
 			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
 			option.WithScopes(ScopeDatastore),
 			option.WithUserAgent(userAgent),
