@@ -1,5 +1,28 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.15.0...datastore/v1.16.0) (2024-03-28)
+
+
+### Features
+
+* **datastore:** Adding BeginLater and transaction state ([#8984](https://github.com/googleapis/google-cloud-go/issues/8984)) ([5f8e21f](https://github.com/googleapis/google-cloud-go/commit/5f8e21f84f0febd54e7ee6092ae6b88b269b0fc8))
+* **datastore:** Adding reserve IDs support ([#9027](https://github.com/googleapis/google-cloud-go/issues/9027)) ([2d66de0](https://github.com/googleapis/google-cloud-go/commit/2d66de0c3004ca09d643c373d40e9e0f9e0f1aa5))
+
+
+### Bug Fixes
+
+* **datastore:** Add explicit sleep before read time use ([#9080](https://github.com/googleapis/google-cloud-go/issues/9080)) ([0538be4](https://github.com/googleapis/google-cloud-go/commit/0538be457518f7b86ffcabcbad35496f053f38cc))
+* **datastore:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+* **datastore:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+* **datastore:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **datastore:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+* **datastore:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **datastore:** Replace deprecated func in docs ([#8989](https://github.com/googleapis/google-cloud-go/issues/8989)) ([19414ae](https://github.com/googleapis/google-cloud-go/commit/19414ae4326104872dfe780ca9fccc4312e4e089))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.14.0...datastore/v1.15.0) (2023-10-06)
 
 
@@ -181,5 +204,3 @@
 
 This is the first tag to carve out datastore as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
-
