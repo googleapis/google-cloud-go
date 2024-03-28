@@ -259,9 +259,11 @@ func TestOTMetrics_GFELatency(t *testing.T) {
 	t.Cleanup(func() {
 		te.Unregister(ctx)
 	})
-	spanner.EnableOpenTelemetryMetrics()
 	server, client, teardown := setupMockedTestServerWithConfig(t, spanner.ClientConfig{OpenTelemetryMeterProvider: te.mp})
 	defer teardown()
+
+	// enabling OpenTelemetry metrics after spanner client initialization
+	spanner.EnableOpenTelemetryMetrics()
 
 	if err := server.TestSpanner.PutStatementResult("SELECT email FROM Users", &stestutil.StatementResult{
 		Type: stestutil.StatementResultResultSet,
