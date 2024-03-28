@@ -1552,12 +1552,12 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 // io.WriterTo.
 func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 	// The entire object has been read by this reader, check the checksum if
-	// necessary and return EOF.
+	// necessary and return nil.
 	if r.size == r.seen || r.zeroRange {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
-		return 0, io.EOF
+		return 0, nil
 	}
 
 	// No stream to read from, either never initialized or Close was called.
