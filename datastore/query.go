@@ -716,7 +716,15 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 }
 
 // Run runs the given query in the given context.
-func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
+func (c *Client) Run(ctx context.Context, q *Query) (it *Iterator) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+	defer func() { trace.EndSpan(ctx, it.err) }()
+	it = c.run(ctx, q)
+	return it
+}
+
+// run runs the given query in the given context.
+func (c *Client) run(ctx context.Context, q *Query) *Iterator {
 	if q.err != nil {
 		return &Iterator{err: q.err}
 	}
