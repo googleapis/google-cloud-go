@@ -30,7 +30,6 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"math/rand"
@@ -1664,9 +1663,9 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 				t.Fatalf("new reader: %v", err)
 			}
 
-			slurp, err := ioutil.ReadAll(r)
+			slurp, err := io.ReadAll(r)
 			if err != nil {
-				t.Fatalf("ioutil.ReadAll: %v", err)
+				t.Fatalf("io.ReadAll: %v", err)
 			}
 			defer r.Close()
 			if !bytes.Equal(slurp, wantContents) {
@@ -1877,7 +1876,7 @@ func TestIntegration_Encoding(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewReader(gzip-test): %v", err)
 		}
-		n, err := io.Copy(ioutil.Discard, r)
+		n, err := io.Copy(io.Discard, r)
 		if err != nil {
 			t.Errorf("io.Copy, download: %v", err)
 		}
@@ -3598,7 +3597,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			if got, want := r.checkCRC, test.wantCheck; got != want {
 				t.Errorf("%s, checkCRC: got %t, want %t", test.desc, got, want)
 			}
-			_, err = ioutil.ReadAll(r)
+			_, err = io.ReadAll(r)
 			_ = r.Close()
 			if err != nil {
 				t.Fatalf("%s: %v", test.desc, err)
@@ -4450,6 +4449,18 @@ func TestIntegration_ServiceAccount(t *testing.T) {
 
 func TestIntegration_Reader(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		// We test both Read and WriteTo, as they have different code paths.
+		readFuncs := []func(io.Reader) ([]byte, error){
+			// To invoke Read():
+			io.ReadAll,
+			// To invoke WriteTo():
+			func(r io.Reader) ([]byte, error) {
+				s := bytes.Buffer{}
+				_, err := io.Copy(&s, r)
+				return s.Bytes(), err
+			},
+		}
+
 		b := client.Bucket(bucket)
 		const defaultType = "text/plain"
 
@@ -4475,33 +4486,36 @@ func TestIntegration_Reader(t *testing.T) {
 		// Test Reader. Cache control and last-modified are tested separately, as
 		// the JSON and XML APIs return different values for these.
 		for _, obj := range objects {
-			rc, err := b.Object(obj).NewReader(ctx)
-			if err != nil {
-				t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
-				continue
-			}
-			if !rc.checkCRC {
-				t.Errorf("%v: not checking CRC", obj)
-			}
+			for _, readFunc := range readFuncs {
+				rc, err := b.Object(obj).NewReader(ctx)
+				if err != nil {
+					t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
+					continue
+				}
+				if !rc.checkCRC {
+					t.Errorf("%v: not checking CRC", obj)
+				}
 
-			slurp, err := ioutil.ReadAll(rc)
-			if err != nil {
-				t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
+				slurp, err := readFunc(rc)
+				if err != nil {
+					t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
+				}
+				if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
+					t.Errorf("Contents (%q) = %q; want %q", obj, got, want)
+				}
+				if got, want := rc.Size(), len(contents[obj]); got != int64(want) {
+					t.Errorf("Size (%q) = %d; want %d", obj, got, want)
+				}
+				if got, want := rc.ContentType(), "text/plain"; got != want {
+					t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
+				}
+				rc.Close()
+
 			}
-			if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
-				t.Errorf("Contents (%q) = %q; want %q", obj, got, want)
-			}
-			if got, want := rc.Size(), len(contents[obj]); got != int64(want) {
-				t.Errorf("Size (%q) = %d; want %d", obj, got, want)
-			}
-			if got, want := rc.ContentType(), "text/plain"; got != want {
-				t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
-			}
-			rc.Close()
 
 			// Check early close.
 			buf := make([]byte, 1)
-			rc, err = b.Object(obj).NewReader(ctx)
+			rc, err := b.Object(obj).NewReader(ctx)
 			if err != nil {
 				t.Fatalf("%v: %v", obj, err)
 			}
@@ -4536,40 +4550,42 @@ func TestIntegration_Reader(t *testing.T) {
 			{"-object length offset", -objlen, -1, objlen},
 			{"-half of object length offset", -(objlen / 2), -1, objlen / 2},
 		} {
-			rc, err := b.Object(obj).NewRangeReader(ctx, r.offset, r.length)
-			if err != nil {
-				t.Errorf("%+v: Can't create a range reader for %v, errored with %v", r.desc, obj, err)
-				continue
-			}
-			if rc.Size() != objlen {
-				t.Errorf("%+v: Reader has a content-size of %d, want %d", r.desc, rc.Size(), objlen)
-			}
-			if rc.Remain() != r.want {
-				t.Errorf("%+v: Reader's available bytes reported as %d, want %d", r.desc, rc.Remain(), r.want)
-			}
-			slurp, err := ioutil.ReadAll(rc)
-			if err != nil {
-				t.Errorf("%+v: can't ReadAll object %v, errored with %v", r, obj, err)
-				continue
-			}
-			if len(slurp) != int(r.want) {
-				t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", r.desc, r.offset, r.length, len(slurp), r.want)
-				continue
-			}
-
-			switch {
-			case r.offset < 0: // The case of reading the last N bytes.
-				start := objlen + r.offset
-				if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
-					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+			for _, readFunc := range readFuncs {
+				rc, err := b.Object(obj).NewRangeReader(ctx, r.offset, r.length)
+				if err != nil {
+					t.Errorf("%+v: Can't create a range reader for %v, errored with %v", r.desc, obj, err)
+					continue
+				}
+				if rc.Size() != objlen {
+					t.Errorf("%+v: Reader has a content-size of %d, want %d", r.desc, rc.Size(), objlen)
+				}
+				if rc.Remain() != r.want {
+					t.Errorf("%+v: Reader's available bytes reported as %d, want %d", r.desc, rc.Remain(), r.want)
+				}
+				slurp, err := readFunc(rc)
+				if err != nil {
+					t.Errorf("%+v: can't ReadAll object %v, errored with %v", r, obj, err)
+					continue
+				}
+				if len(slurp) != int(r.want) {
+					t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", r.desc, r.offset, r.length, len(slurp), r.want)
+					continue
 				}
 
-			default:
-				if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
-					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+				switch {
+				case r.offset < 0: // The case of reading the last N bytes.
+					start := objlen + r.offset
+					if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
+						t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+					}
+
+				default:
+					if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
+						t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+					}
 				}
+				rc.Close()
 			}
-			rc.Close()
 		}
 
 		objName := objects[0]
@@ -4906,7 +4922,8 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to create wholesome reader: %v", err)
 		}
-		blobWhole, err := ioutil.ReadAll(rWhole)
+
+		blobWhole, err := io.ReadAll(rWhole)
 		rWhole.Close()
 		if err != nil {
 			t.Fatalf("Failed to read the whole body: %v", err)
@@ -4921,7 +4938,7 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Failed to create range reader: %v", err)
 		}
-		blob2kBTo3kB, err := ioutil.ReadAll(r2kBTo3kB)
+		blob2kBTo3kB, err := io.ReadAll(r2kBTo3kB)
 		r2kBTo3kB.Close()
 		if err != nil {
 			t.Fatalf("Failed to read with the 2kB to 3kB range request: %v", err)
@@ -5508,7 +5525,7 @@ func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte,
 				blob, _ := httputil.DumpResponse(res, true)
 				return fmt.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
 			}
-			io.Copy(ioutil.Discard, res.Body)
+			io.Copy(io.Discard, res.Body)
 
 			// Verify that the file was properly uploaded
 			// by reading back its attributes and content
@@ -5528,7 +5545,7 @@ func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte,
 			if err != nil {
 				return fmt.Errorf("Failed to create a reader: %v", err)
 			}
-			gotBody, err := ioutil.ReadAll(rd)
+			gotBody, err := io.ReadAll(rd)
 			if err != nil {
 				return fmt.Errorf("Failed to read the body: %v", err)
 			}
@@ -5692,7 +5709,7 @@ func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
 		return nil, err
 	}
 	defer r.Close()
-	return ioutil.ReadAll(r)
+	return io.ReadAll(r)
 }
 
 // cleanupBuckets deletes the bucket used for testing, as well as old
@@ -5804,7 +5821,7 @@ func getURL(url string, headers map[string][]string) ([]byte, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
-	bytes, err := ioutil.ReadAll(res.Body)
+	bytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -5826,7 +5843,7 @@ func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte,
 		return nil, err
 	}
 	defer res.Body.Close()
-	bytes, err := ioutil.ReadAll(res.Body)
+	bytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -5837,7 +5854,7 @@ func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte,
 }
 
 func keyFileEmail(filename string) (string, error) {
-	bytes, err := ioutil.ReadFile(filename)
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}
