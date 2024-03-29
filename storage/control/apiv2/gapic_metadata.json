@@ -15,14 +15,29 @@
                 "CreateFolder"
               ]
             },
+            "CreateManagedFolder": {
+              "methods": [
+                "CreateManagedFolder"
+              ]
+            },
             "DeleteFolder": {
               "methods": [
                 "DeleteFolder"
               ]
             },
+            "DeleteManagedFolder": {
+              "methods": [
+                "DeleteManagedFolder"
+              ]
+            },
             "GetFolder": {
               "methods": [
                 "GetFolder"
+              ]
+            },
+            "GetManagedFolder": {
+              "methods": [
+                "GetManagedFolder"
               ]
             },
             "GetStorageLayout": {
@@ -33,6 +48,11 @@
             "ListFolders": {
               "methods": [
                 "ListFolders"
+              ]
+            },
+            "ListManagedFolders": {
+              "methods": [
+                "ListManagedFolders"
               ]
             },
             "RenameFolder": {
