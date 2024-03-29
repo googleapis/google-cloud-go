@@ -18,9 +18,12 @@ cbtemulator launches the in-memory Cloud Bigtable server on the given address.
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
+	"os"
+	"os/signal"
 
 	"cloud.google.com/go/bigtable/bttest"
 	"google.golang.org/grpc"
@@ -51,11 +54,18 @@ func main() {
 		laddr = fmt.Sprintf("%s:%d", *host, *port)
 	}
 
+	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
+	defer stop()
+
 	srv, err := bttest.NewServer(laddr, opts...)
 	if err != nil {
 		log.Fatalf("failed to start emulator: %v", err)
 	}
 
 	fmt.Printf("Cloud Bigtable emulator running on %s\n", srv.Addr)
-	select {}
+	select {
+	case <-ctx.Done():
+		srv.Close()
+		stop()
+	}
 }

@@ -148,6 +148,11 @@ func (s *Server) Close() {
 
 	s.srv.Stop()
 	s.l.Close()
+
+	// clean up unix socket
+	if strings.Contains(s.Addr, "/") {
+		_ = os.Remove(s.Addr)
+	}
 }
 
 func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest) (*btapb.Table, error) {
