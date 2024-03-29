@@ -27,8 +27,9 @@ import (
 )
 
 var (
-	host = flag.String("host", "localhost", "the address to bind to on the local machine")
-	port = flag.Int("port", 9000, "the port number to bind to on the local machine")
+	host    = flag.String("host", "localhost", "the address to bind to on the local machine")
+	port    = flag.Int("port", 9000, "the port number to bind to on the local machine")
+	address = flag.String("address", "", "address:port number or unix socket path to listen on. Has priority over host/port")
 )
 
 const (
@@ -42,7 +43,15 @@ func main() {
 		grpc.MaxRecvMsgSize(maxMsgSize),
 		grpc.MaxSendMsgSize(maxMsgSize),
 	}
-	srv, err := bttest.NewServer(fmt.Sprintf("%s:%d", *host, *port), opts...)
+
+	var laddr string
+	if *address != "" {
+		laddr = *address
+	} else {
+		laddr = fmt.Sprintf("%s:%d", *host, *port)
+	}
+
+	srv, err := bttest.NewServer(laddr, opts...)
 	if err != nil {
 		log.Fatalf("failed to start emulator: %v", err)
 	}
