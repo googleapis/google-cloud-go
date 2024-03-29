@@ -396,13 +396,13 @@ func setupTest(t *testing.T) func() {
 func TestGetTransportConfig_UniverseDomain(t *testing.T) {
 	testCases := []struct {
 		name         string
-		ds           *Options
+		opts         *Options
 		wantEndpoint string
 		wantErr      error
 	}{
 		{
 			name: "google default universe (GDU), no client cert",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -411,7 +411,7 @@ func TestGetTransportConfig_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "google default universe (GDU), client cert",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -421,7 +421,7 @@ func TestGetTransportConfig_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "UniverseDomain, no client cert",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -431,7 +431,7 @@ func TestGetTransportConfig_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "UniverseDomain, client cert",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -444,12 +444,12 @@ func TestGetTransportConfig_UniverseDomain(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if tc.ds.ClientCertProvider != nil {
+		if tc.opts.ClientCertProvider != nil {
 			os.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
 		} else {
 			os.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 		}
-		config, err := getTransportConfig(tc.ds)
+		config, err := getTransportConfig(tc.opts)
 		if err != nil {
 			if err != tc.wantErr {
 				t.Fatalf("%s: err: %v", tc.name, err)
@@ -465,13 +465,13 @@ func TestGetTransportConfig_UniverseDomain(t *testing.T) {
 func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 	testCases := []struct {
 		name         string
-		ds           *Options
+		opts         *Options
 		wantEndpoint string
 		wantErr      error
 	}{
 		{
 			name: "google default universe (GDU), no client cert",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -480,7 +480,7 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "google default universe (GDU), no client cert, endpoint",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -490,7 +490,7 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "google default universe (GDU), client cert",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -500,7 +500,7 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "google default universe (GDU), client cert, endpoint",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -511,7 +511,7 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "UniverseDomain, no client cert",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -522,7 +522,7 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "UniverseDomain, no client cert, endpoint",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -533,7 +533,7 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "UniverseDomain, client cert",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -544,7 +544,7 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 		},
 		{
 			name: "UniverseDomain, client cert, endpoint",
-			ds: &Options{
+			opts: &Options{
 				DefaultEndpoint:         testRegularEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
@@ -557,12 +557,12 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if tc.ds.ClientCertProvider != nil {
+		if tc.opts.ClientCertProvider != nil {
 			os.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
 		} else {
 			os.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 		}
-		_, endpoint, err := GetGRPCTransportCredsAndEndpoint(tc.ds)
+		_, endpoint, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
 		if err != nil {
 			if err != tc.wantErr {
 				t.Fatalf("%s: err: %v", tc.name, err)
