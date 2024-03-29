@@ -54,7 +54,7 @@ const (
 	PriceLevel_PRICE_LEVEL_MODERATE PriceLevel = 3
 	// Place provides expensive services.
 	PriceLevel_PRICE_LEVEL_EXPENSIVE PriceLevel = 4
-	// Place provides very expensive service s.
+	// Place provides very expensive services.
 	PriceLevel_PRICE_LEVEL_VERY_EXPENSIVE PriceLevel = 5
 )
 
@@ -327,7 +327,8 @@ type Place struct {
 	// will usually be the website for the individual store, not the overall
 	// chain.
 	WebsiteUri string `protobuf:"bytes,16,opt,name=website_uri,json=websiteUri,proto3" json:"website_uri,omitempty"`
-	// List of reviews about this place, sorted by relevance.
+	// List of reviews about this place, sorted by relevance. A maximum of 5
+	// reviews can be returned.
 	Reviews []*Review `protobuf:"bytes,53,rep,name=reviews,proto3" json:"reviews,omitempty"`
 	// The regular hours of operation.
 	RegularOpeningHours *Place_OpeningHours `protobuf:"bytes,21,opt,name=regular_opening_hours,json=regularOpeningHours,proto3" json:"regular_opening_hours,omitempty"`
@@ -335,7 +336,8 @@ type Place struct {
 	// This is expressed in minutes to support timezones that are offset by
 	// fractions of an hour, e.g. X hours and 15 minutes.
 	UtcOffsetMinutes *int32 `protobuf:"varint,22,opt,name=utc_offset_minutes,json=utcOffsetMinutes,proto3,oneof" json:"utc_offset_minutes,omitempty"`
-	// Information (including references) about photos of this place.
+	// Information (including references) about photos of this place. A maximum of
+	// 10 photos can be returned.
 	Photos []*Photo `protobuf:"bytes,54,rep,name=photos,proto3" json:"photos,omitempty"`
 	// The place's address in adr microformat: http://microformats.org/wiki/adr.
 	AdrFormatAddress string `protobuf:"bytes,24,opt,name=adr_format_address,json=adrFormatAddress,proto3" json:"adr_format_address,omitempty"`
