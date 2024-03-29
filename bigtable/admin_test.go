@@ -166,6 +166,98 @@ func TestTableAdmin_CreateTableFromConf_ChangeStream_Valid(t *testing.T) {
 	}
 }
 
+func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	retentionPeriod, err := time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	frequency, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	automatedBackupPolicy := AutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+
+	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupPolicy: &automatedBackupPolicy})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
+		t.Errorf("Unexpected table automated backup policy frequency: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, automatedBackupPolicy.Frequency.(time.Duration))
+	}
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
+		t.Errorf("Unexpected table automated backup policy retention period: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, automatedBackupPolicy.Frequency.(time.Duration))
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_DefaultAbp_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupPolicy: &DefaultAutomatedBackupPolicy})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(DefaultAutomatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
+		t.Errorf("Unexpected table automated backup policy frequency: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, DefaultAutomatedBackupPolicy.Frequency.(time.Duration))
+	}
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(DefaultAutomatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
+		t.Errorf("Unexpected table automated backup policy retention period: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, DefaultAutomatedBackupPolicy.Frequency.(time.Duration))
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_JustFrequency_Invalid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	frequency, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	automatedBackupPolicy := AutomatedBackupPolicy{Frequency: frequency}
+
+	expectedErrorMessage := "both Frequency and RetentionPeriod must be specified when creating a table with an AutomatedBackupPolicy"
+
+	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupPolicy: &automatedBackupPolicy})
+
+	if err == nil {
+		t.Fatalf("Expected CreateTableFromConf to fail")
+	} else if err.Error() != expectedErrorMessage {
+		t.Fatalf("Expected CreateTableFromConf to fail with error message '%v', but got '%v'", expectedErrorMessage, err.Error())
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_JustRetentionPeriod_Invalid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	retentionPeriod, err := time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	automatedBackupPolicy := AutomatedBackupPolicy{RetentionPeriod: retentionPeriod}
+
+	expectedErrorMessage := "both Frequency and RetentionPeriod must be specified when creating a table with an AutomatedBackupPolicy"
+
+	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupPolicy: &automatedBackupPolicy})
+
+	if err == nil {
+		t.Fatalf("Expected CreateTableFromConf to fail")
+	} else if err.Error() != expectedErrorMessage {
+		t.Fatalf("Expected CreateTableFromConf to fail with error message '%v', but got '%v'", expectedErrorMessage, err.Error())
+	}
+}
+
 func TestTableAdmin_CopyBackup_ErrorFromClient(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
@@ -203,6 +295,27 @@ func TestTableAdmin_CreateTableFromConf_ChangeStream_Disable(t *testing.T) {
 	}
 	if createTableReq.Table.ChangeStreamConfig != nil {
 		t.Errorf("Unexpected table change stream retention: %v should be empty", createTableReq.Table.ChangeStreamConfig)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Disable(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	automatedBackupPolicy := ZeroAutomatedBackupPolicy
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupPolicy: &automatedBackupPolicy})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if createTableReq.Table.AutomatedBackupConfig != nil {
+		t.Errorf("Unexpected table automated backup policy %v should be empty", createTableReq.Table.AutomatedBackupConfig)
+	}
+	if createTableReq.Table.GetAutomatedBackupPolicy() != nil {
+		t.Errorf("Unexpected table automated backup policy %v should be empty", createTableReq.Table.GetAutomatedBackupPolicy())
 	}
 }
 
@@ -417,6 +530,175 @@ func TestTableAdmin_UpdateAuthorizedViewWithSubsetView(t *testing.T) {
 	}
 	if !cmp.Equal(updateAuthorizedViewReq.UpdateMask.Paths[0], "subset_view") {
 		t.Errorf("UpdateAuthorizedViewRequest does not match: updateAuthorizedViewReq.UpdateMask.Paths[0]: %v, expected: %v", updateAuthorizedViewReq.UpdateMask.Paths[0], "subset_view")
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	retentionPeriod, err := time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	frequency, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	automatedBackupPolicy := AutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+
+	err = c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.RetentionPeriod: %v", updateTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod)
+	}
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.Frequency: %v", updateTableReq.Table.GetAutomatedBackupPolicy().Frequency)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_JustFrequency_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	frequency, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	automatedBackupPolicy := AutomatedBackupPolicy{Frequency: frequency}
+
+	err = c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.Frequency: %v", updateTableReq.Table.GetAutomatedBackupPolicy().Frequency)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy.frequency") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_JustRetentionPeriod_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	retentionPeriod, err := time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	automatedBackupPolicy := AutomatedBackupPolicy{RetentionPeriod: retentionPeriod}
+
+	err = c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.RetentionPeriod: %v", updateTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy.retention_period") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableDisableAutomatedBackupPolicy(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableDisableAutomatedBackupPolicy(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("UpdateTableDisableAutomatedBackupPolicy failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if updateTableReq.Table.AutomatedBackupConfig != nil {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupConfig: %v should be empty", updateTableReq.Table.AutomatedBackupConfig)
+	}
+	if updateTableReq.Table.GetAutomatedBackupPolicy() != nil {
+		t.Errorf("UpdateTableRequest does not match, GetAutomatedBackupPolicy: %v should be empty", updateTableReq.Table.GetAutomatedBackupPolicy())
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableWithConf_ZeroAutomatedBackupPolicy_DisableAbp(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.updateTableWithConf(context.Background(), &UpdateTableConf{"My-table", None, nil, &ZeroAutomatedBackupPolicy})
+	if err != nil {
+		t.Fatalf("UpdateTableDisableAutomatedBackupPolicy failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if updateTableReq.Table.AutomatedBackupConfig != nil {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupConfig: %v should be empty", updateTableReq.Table.AutomatedBackupConfig)
+	}
+	if updateTableReq.Table.GetAutomatedBackupPolicy() != nil {
+		t.Errorf("UpdateTableRequest does not match, GetAutomatedBackupPolicy: %v should be empty", updateTableReq.Table.GetAutomatedBackupPolicy())
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableWithConf_NilAutomatedBackupPolicy_NotModified(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.updateTableWithConf(context.Background(), &UpdateTableConf{"My-table", None, nil, nil})
+	if err != nil {
+		t.Fatalf("UpdateTableDisableAutomatedBackupPolicy failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if updateTableReq.Table.AutomatedBackupConfig != nil {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupConfig: %v should be empty", updateTableReq.Table.AutomatedBackupConfig)
+	}
+	if updateTableReq.Table.GetAutomatedBackupPolicy() != nil {
+		t.Errorf("UpdateTableRequest does not match, GetAutomatedBackupPolicy: %v should be empty", updateTableReq.Table.GetAutomatedBackupPolicy())
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 0) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
 	}
 }
 
