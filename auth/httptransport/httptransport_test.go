@@ -279,7 +279,7 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	client, err := NewClient(&Options{
 		Headers: http.Header{"Foo": []string{wantHeader}},
 		InternalOptions: &InternalOptions{
-			DefaultEndpoint: ts.URL,
+			DefaultEndpointTemplate: ts.URL,
 		},
 		DetectOpts: &credentials.DetectOptions{
 			Audience:         ts.URL,

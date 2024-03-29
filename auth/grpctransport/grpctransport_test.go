@@ -308,7 +308,7 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	pool, err := Dial(context.Background(), false, &Options{
 		Metadata: map[string]string{"Foo": wantHeader},
 		InternalOptions: &InternalOptions{
-			DefaultEndpoint: l.Addr().String(),
+			DefaultEndpointTemplate: l.Addr().String(),
 		},
 		DetectOpts: &credentials.DetectOptions{
 			Audience:         l.Addr().String(),

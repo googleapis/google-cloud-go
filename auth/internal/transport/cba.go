@@ -56,7 +56,6 @@ var (
 // fields on httptransport.Options and grpctransport.Options.
 type Options struct {
 	Endpoint                string
-	DefaultEndpoint         string
 	DefaultMTLSEndpoint     string
 	DefaultEndpointTemplate string
 	ClientCertProvider      cert.Provider
@@ -92,14 +91,41 @@ func (o *Options) isUniverseDomainGDU() bool {
 	return o.getUniverseDomain() == o.getDefaultUniverseDomain()
 }
 
-// resolveDefaultEndpoint returns the DefaultEndpointTemplate merged with the
-// Universe Domain if the DefaultEndpointTemplate is set, otherwise returns the
-// deprecated DefaultEndpoint value, which may be empty.
-func (o *Options) resolveDefaultEndpoint() string {
+// defaultEndpoint returns the DefaultEndpointTemplate merged with the
+// Universe Domain if the DefaultEndpointTemplate is set, otherwise returns an
+// empty string.
+func (o *Options) defaultEndpoint() string {
 	if o.DefaultEndpointTemplate == "" {
-		return o.DefaultEndpoint
+		return ""
 	}
 	return strings.Replace(o.DefaultEndpointTemplate, universeDomainPlaceholder, o.getUniverseDomain(), 1)
+}
+
+// mergedEndpoint merges a user-provided Endpoint of format host[:port] with the
+// default endpoint.
+func (o *Options) mergedEndpoint() (string, error) {
+	defaultEndpoint := o.defaultEndpoint()
+	if defaultEndpoint == "" {
+		return "", errors.New("transport.Options.DefaultEndpointTemplate must not be empty")
+	}
+	if o.Endpoint == "" {
+		return "", errors.New("transport.Options.Endpoint must not be empty")
+	}
+	if strings.Contains(o.Endpoint, "://") {
+		return "", errors.New("transport.Options.Endpoint must be of format host[:port]")
+	}
+	u, err := url.Parse(fixScheme(defaultEndpoint))
+	if err != nil {
+		return "", err
+	}
+	return strings.Replace(defaultEndpoint, u.Host, o.Endpoint, 1), nil
+}
+
+func fixScheme(baseURL string) string {
+	if !strings.Contains(baseURL, "://") {
+		baseURL = "https://" + baseURL
+	}
+	return baseURL
 }
 
 // GetGRPCTransportCredsAndEndpoint returns an instance of
@@ -259,7 +285,6 @@ type transportConfig struct {
 // the default endpoint. For example, WithEndpoint("myhost:8000") and
 // DefaultEndpointTemplate("https://UNIVERSE_DOMAIN/bar/baz") will return "https://myhost:8080/bar/baz"
 func getEndpoint(opts *Options, clientCertSource cert.Provider) (string, error) {
-	defaultEndpoint := opts.resolveDefaultEndpoint()
 	if opts.Endpoint == "" {
 		mtlsMode := getMTLSMode()
 		if mtlsMode == mTLSModeAlways || (clientCertSource != nil && mtlsMode == mTLSModeAuto) {
@@ -268,21 +293,21 @@ func getEndpoint(opts *Options, clientCertSource cert.Provider) (string, error) 
 			}
 			return opts.DefaultMTLSEndpoint, nil
 		}
-		return defaultEndpoint, nil
+		return opts.defaultEndpoint(), nil
 	}
 	if strings.Contains(opts.Endpoint, "://") {
 		// User passed in a full URL path, use it verbatim.
 		return opts.Endpoint, nil
 	}
-	if defaultEndpoint == "" {
-		// If DefaultEndpoint and DefaultEndpointTemplate are not configured,
+	if opts.defaultEndpoint() == "" {
+		// If DefaultEndpointTemplate is not configured,
 		// use the user provided endpoint verbatim. This allows a naked
 		// "host[:port]" URL to be used with GRPC Direct Path.
 		return opts.Endpoint, nil
 	}
 
 	// Assume user-provided endpoint is host[:port], merge it with the default endpoint.
-	return mergeEndpoints(defaultEndpoint, opts.Endpoint)
+	return opts.mergedEndpoint()
 }
 
 func getMTLSMode() string {
@@ -294,22 +319,4 @@ func getMTLSMode() string {
 		return mTLSModeAuto
 	}
 	return strings.ToLower(mode)
-}
-
-func mergeEndpoints(baseURL, newHost string) (string, error) {
-	if strings.Contains(baseURL, universeDomainPlaceholder) {
-		return strings.Replace(baseURL, universeDomainPlaceholder, newHost, 1), nil
-	}
-	u, err := url.Parse(fixScheme(baseURL))
-	if err != nil {
-		return "", err
-	}
-	return strings.Replace(baseURL, u.Host, newHost, 1), nil
-}
-
-func fixScheme(baseURL string) string {
-	if !strings.Contains(baseURL, "://") {
-		baseURL = "https://" + baseURL
-	}
-	return baseURL
 }
