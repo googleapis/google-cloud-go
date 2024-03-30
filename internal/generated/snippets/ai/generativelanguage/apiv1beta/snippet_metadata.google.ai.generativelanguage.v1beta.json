@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
-    "version": "0.3.4",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -99,6 +99,189 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_FileService_CreateFile_sync",
+      "title": "generativelanguage CreateFile Sample",
+      "description": "CreateFile creates a `File`.",
+      "file": "FileClient/CreateFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFile",
+        "fullName": "google.ai.generativelanguage.v1beta.FileClient.CreateFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CreateFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CreateFileResponse",
+        "client": {
+          "shortName": "FileClient",
+          "fullName": "google.ai.generativelanguage.v1beta.FileClient"
+        },
+        "method": {
+          "shortName": "CreateFile",
+          "fullName": "google.ai.generativelanguage.v1beta.FileService.CreateFile",
+          "service": {
+            "shortName": "FileService",
+            "fullName": "google.ai.generativelanguage.v1beta.FileService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_FileService_DeleteFile_sync",
+      "title": "generativelanguage DeleteFile Sample",
+      "description": "DeleteFile deletes the `File`.",
+      "file": "FileClient/DeleteFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFile",
+        "fullName": "google.ai.generativelanguage.v1beta.FileClient.DeleteFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.DeleteFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "FileClient",
+          "fullName": "google.ai.generativelanguage.v1beta.FileClient"
+        },
+        "method": {
+          "shortName": "DeleteFile",
+          "fullName": "google.ai.generativelanguage.v1beta.FileService.DeleteFile",
+          "service": {
+            "shortName": "FileService",
+            "fullName": "google.ai.generativelanguage.v1beta.FileService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_FileService_GetFile_sync",
+      "title": "generativelanguage GetFile Sample",
+      "description": "GetFile gets the metadata for the given `File`.",
+      "file": "FileClient/GetFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFile",
+        "fullName": "google.ai.generativelanguage.v1beta.FileClient.GetFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.File",
+        "client": {
+          "shortName": "FileClient",
+          "fullName": "google.ai.generativelanguage.v1beta.FileClient"
+        },
+        "method": {
+          "shortName": "GetFile",
+          "fullName": "google.ai.generativelanguage.v1beta.FileService.GetFile",
+          "service": {
+            "shortName": "FileService",
+            "fullName": "google.ai.generativelanguage.v1beta.FileService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_FileService_ListFiles_sync",
+      "title": "generativelanguage ListFiles Sample",
+      "description": "ListFiles lists the metadata for `File`s owned by the requesting project.",
+      "file": "FileClient/ListFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFiles",
+        "fullName": "google.ai.generativelanguage.v1beta.FileClient.ListFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FileIterator",
+        "client": {
+          "shortName": "FileClient",
+          "fullName": "google.ai.generativelanguage.v1beta.FileClient"
+        },
+        "method": {
+          "shortName": "ListFiles",
+          "fullName": "google.ai.generativelanguage.v1beta.FileService.ListFiles",
+          "service": {
+            "shortName": "FileService",
+            "fullName": "google.ai.generativelanguage.v1beta.FileService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
