@@ -1943,6 +1943,115 @@
         }
       }
     },
+    "NotebookService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "NotebookClient",
+          "rpcs": {
+            "AssignNotebookRuntime": {
+              "methods": [
+                "AssignNotebookRuntime"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNotebookRuntimeTemplate": {
+              "methods": [
+                "CreateNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteNotebookRuntime": {
+              "methods": [
+                "DeleteNotebookRuntime"
+              ]
+            },
+            "DeleteNotebookRuntimeTemplate": {
+              "methods": [
+                "DeleteNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetNotebookRuntime": {
+              "methods": [
+                "GetNotebookRuntime"
+              ]
+            },
+            "GetNotebookRuntimeTemplate": {
+              "methods": [
+                "GetNotebookRuntimeTemplate"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListNotebookRuntimeTemplates": {
+              "methods": [
+                "ListNotebookRuntimeTemplates"
+              ]
+            },
+            "ListNotebookRuntimes": {
+              "methods": [
+                "ListNotebookRuntimes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StartNotebookRuntime": {
+              "methods": [
+                "StartNotebookRuntime"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpgradeNotebookRuntime": {
+              "methods": [
+                "UpgradeNotebookRuntime"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "PipelineService": {
       "clients": {
         "grpc": {
