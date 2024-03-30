@@ -21,11 +21,8 @@
 package aiplatformpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -241,9 +240,8 @@ type ListEndpointsRequest struct {
 	// names both snake_case and camelCase are supported.
 	//
 	//   - `endpoint` supports `=` and `!=`. `endpoint` represents the Endpoint
-	//     ID,
-	//     i.e. the last segment of the Endpoint's [resource
-	//     name][google.cloud.aiplatform.v1.Endpoint.name].
+	//     ID, i.e. the last segment of the Endpoint's
+	//     [resource name][google.cloud.aiplatform.v1.Endpoint.name].
 	//   - `display_name` supports `=` and `!=`.
 	//   - `labels` supports general map functions that is:
 	//   - `labels.key=value` - key:value equality
