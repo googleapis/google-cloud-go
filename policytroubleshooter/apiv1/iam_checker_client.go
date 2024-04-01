@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,7 +47,9 @@ type IamCheckerCallOptions struct {
 func defaultIamCheckerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("policytroubleshooter.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("policytroubleshooter.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("policytroubleshooter.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://policytroubleshooter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -239,7 +241,9 @@ func NewIamCheckerRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultIamCheckerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://policytroubleshooter.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://policytroubleshooter.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://policytroubleshooter.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://policytroubleshooter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

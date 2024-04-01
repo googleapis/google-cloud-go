@@ -566,13 +566,6 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	rowPbs := rrq.Rows
 	rs := rowSetFromProto(rowPbs)
 
-	// Bigtable client doesn't have a Table.GetAll() function--RowSet must be
-	// provided for ReadRows. Use InfiniteRange() to get the full table.
-	if rs == nil {
-		// Should be lowest possible key value, an empty byte array
-		rs = bigtable.InfiniteRange("")
-	}
-
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
@@ -889,7 +882,8 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 
 	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
 	if err != nil {
-		return nil, err
+		res.Status = statusFromError(err)
+		return res, nil
 	}
 
 	rp, err := rowToProto(r)

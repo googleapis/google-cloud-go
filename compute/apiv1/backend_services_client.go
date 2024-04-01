@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -222,7 +222,7 @@ func (c *BackendServicesClient) AddSignedUrlKey(ctx context.Context, req *comput
 	return c.internalClient.AddSignedUrlKey(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *BackendServicesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -349,7 +349,9 @@ func NewBackendServicesRESTClient(ctx context.Context, opts ...option.ClientOpti
 func defaultBackendServicesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -458,7 +460,7 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	return op, nil
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	it := &BackendServicesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListBackendServicesRequest)

@@ -1,5 +1,31 @@
 # Changes
 
+## [0.23.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.0...analytics/v0.23.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **analytics:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.23.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.22.0...analytics/v0.23.0) (2024-01-30)
+
+
+### Features
+
+* **analytics/admin:** Add `GetCalculatedMetric`, `CreateCalculatedMetric`, `ListCalculatedMetrics`, `UpdateCalculatedMetric`, `DeleteCalculatedMetric` methods to the Admin API v1alpha ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **analytics:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.6...analytics/v0.22.0) (2024-01-03)
+
+
+### Features
+
+* **analytics/admin:** Add `GetSubpropertyEventFilter`, `ListSubpropertyEventFilters` methods to the Admin API v1 alpha ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
 ## [0.21.6](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.5...analytics/v0.21.6) (2023-11-01)
 
 
@@ -231,3 +257,4 @@
 
 This is the first tag to carve out analytics as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

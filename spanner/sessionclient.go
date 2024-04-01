@@ -99,6 +99,7 @@ type sessionClient struct {
 	batchTimeout  time.Duration
 	logger        *log.Logger
 	callOptions   *vkit.CallOptions
+	otConfig      *openTelemetryConfig
 }
 
 // newSessionClient creates a session client to use for a database.
@@ -163,6 +164,9 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
 		}
+	}
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "createSession", sc.otConfig); metricErr != nil {
+		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
 	if err != nil {
 		return nil, ToSpannerError(err)
@@ -284,6 +288,9 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 			if err != nil {
 				trace.TracePrintf(ctx, nil, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", err)
 			}
+		}
+		if metricErr := recordGFELatencyMetricsOT(ctx, mdForGFELatency, "executeBatchCreateSessions", sc.otConfig); metricErr != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 		}
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)

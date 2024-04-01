@@ -17,7 +17,9 @@ limitations under the License.
 package bigtable
 
 import (
+	"bytes"
 	"context"
+	"encoding/binary"
 	"reflect"
 	"testing"
 	"time"
@@ -746,5 +748,66 @@ func TestHeaderPopulatedWithAppProfile(t *testing.T) {
 	}
 	if got, want := requestParamsHeaderValue[0], "table_name=projects%2Fmy-project%2Finstances%2Fmy-instance%2Ftables%2Fmy-table&app_profile_id=my-app-profile"; got != want {
 		t.Errorf("Incorrect value in resourcePrefixHeader. Got %s, want %s", got, want)
+	}
+}
+
+func TestMutateRowsWithAggregates(t *testing.T) {
+	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
+	if err != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", err)
+	}
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
+	)
+	if err != nil {
+		t.Fatalf("grpc.Dial failed: %v", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	adminClient, err := NewAdminClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer adminClient.Close()
+
+	tableConf := &TableConf{
+		TableID: testEnv.config.Table,
+		ColumnFamilies: map[string]Family{
+			"f": {
+				ValueType: AggregateType{
+					Input:      Int64Type{},
+					Aggregator: SumAggregator{},
+				},
+			},
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, tableConf); err != nil {
+		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
+	}
+
+	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer client.Close()
+	table := client.Open(testEnv.config.Table)
+
+	m := NewMutation()
+	m.AddIntToCell("f", "q", 0, 1000)
+	err = table.Apply(ctx, "row1", m)
+	if err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	m = NewMutation()
+	m.AddIntToCell("f", "q", 0, 2000)
+	err = table.Apply(ctx, "row1", m)
+	if err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	row, err := table.ReadRow(ctx, "row1")
+	if !bytes.Equal(row["f"][0].Value, binary.BigEndian.AppendUint64([]byte{}, 3000)) {
+		t.Error()
 	}
 }

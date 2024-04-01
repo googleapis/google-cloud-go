@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.7.0...vertexai/v0.7.1) (2024-02-08)
+
+
+### Bug Fixes
+
+* **vertexai:** Fix dependency on aiplatform ([#9394](https://github.com/googleapis/google-cloud-go/issues/9394)) ([8bd57a1](https://github.com/googleapis/google-cloud-go/commit/8bd57a1abf3d65651f25aba9c582ff273a678dfa))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.6.0...vertexai/v0.7.0) (2024-02-08)
+
+
+### Features
+
+* **vertexai:** Add WithREST option to vertexai client ([#9389](https://github.com/googleapis/google-cloud-go/issues/9389)) ([f5d56eb](https://github.com/googleapis/google-cloud-go/commit/f5d56eb03558fce093a5b9947ae041fba4d844b2))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.5.2...vertexai/v0.6.0) (2023-12-17)
 
 
@@ -86,3 +100,4 @@
 ### Features
 
 * **vertexai:** Vertex AI for go ([#9095](https://github.com/googleapis/google-cloud-go/issues/9095)) ([b3b293a](https://github.com/googleapis/google-cloud-go/commit/b3b293aee06690ed734bb19c404eb6c8af893fa1))
+

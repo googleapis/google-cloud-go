@@ -36,18 +36,21 @@ import (
 // Query values are immutable. Each Query method creates
 // a new Query; it does not modify the old.
 type Query struct {
-	c                      *Client
-	path                   string // path to query (collection)
-	parentPath             string // path of the collection's parent (document)
-	collectionID           string
-	selection              []*pb.StructuredQuery_FieldReference
-	filters                []*pb.StructuredQuery_Filter
-	orders                 []order
-	offset                 int32
-	limit                  *wrappers.Int32Value
-	limitToLast            bool
-	startVals, endVals     []interface{}
-	startDoc, endDoc       *DocumentSnapshot
+	c                  *Client
+	path               string // path to query (collection)
+	parentPath         string // path of the collection's parent (document)
+	collectionID       string
+	selection          []*pb.StructuredQuery_FieldReference
+	filters            []*pb.StructuredQuery_Filter
+	orders             []order
+	offset             int32
+	limit              *wrappers.Int32Value
+	limitToLast        bool
+	startVals, endVals []interface{}
+	startDoc, endDoc   *DocumentSnapshot
+
+	// Set startBefore to true when doc in startVals needs to be included in result
+	// Set endBefore to false when doc in endVals needs to be included in result
 	startBefore, endBefore bool
 	err                    error
 
@@ -293,7 +296,11 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 
 func (q *Query) processLimitToLast() {
 	if q.limitToLast {
-		// Flip order statements before posting a request.
+		// Firestore service does not provide limit to last behaviour out of the box. This is a client-side concept
+		// So, flip order statements and cursors before posting a request. The response is flipped by other methods before returning to user
+		// E.g.
+		// If id of documents is 1, 2, 3, 4, 5, 6, 7 and query is (OrderBy(id, ASC), StartAt(2), EndAt(6), LimitToLast(3))
+		// request sent to server is  (OrderBy(id, DESC), StartAt(6), EndAt(2), Limit(3))
 		for i := range q.orders {
 			if q.orders[i].dir == Asc {
 				q.orders[i].dir = Desc
@@ -301,15 +308,25 @@ func (q *Query) processLimitToLast() {
 				q.orders[i].dir = Asc
 			}
 		}
+
+		if q.startBefore == q.endBefore && q.startCursorSpecified() && q.endCursorSpecified() {
+			// E.g. query.StartAt(2).EndBefore(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, 6)
+			// E.g. query.StartAfter(2).EndAt(6).LimitToLast(3).OrderBy(Asc)  i.e. cursors are (2, 6]
+			q.startBefore, q.endBefore = !q.startBefore, !q.endBefore
+		} else if !q.startCursorSpecified() && q.endCursorSpecified() {
+			// E.g. query.EndAt(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are (-inf, 6]
+			q.startBefore = !q.endBefore
+			q.endBefore = false
+		} else if q.startCursorSpecified() && !q.endCursorSpecified() {
+			// E.g. query.StartAt(2).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, inf)
+			q.endBefore = !q.startBefore
+			q.startBefore = false
+		}
+
 		// Swap cursors.
 		q.startVals, q.endVals = q.endVals, q.startVals
 		q.startDoc, q.endDoc = q.endDoc, q.startDoc
-		if q.endBefore {
-			q.endBefore = false
-			q.startBefore = false
-		} else {
-			q.startBefore, q.endBefore = q.endBefore, q.startBefore
-		}
+
 		q.limitToLast = false
 	}
 }
@@ -463,6 +480,14 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	return q, q.err
 }
 
+func (q Query) startCursorSpecified() bool {
+	return len(q.startVals) != 0 || q.startDoc != nil
+}
+
+func (q Query) endCursorSpecified() bool {
+	return len(q.endVals) != 0 || q.endDoc != nil
+}
+
 func (q Query) toProto() (*pb.StructuredQuery, error) {
 	if q.err != nil {
 		return nil, q.err
@@ -471,12 +496,12 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		return nil, errors.New("firestore: query created without CollectionRef")
 	}
 	if q.startBefore {
-		if len(q.startVals) == 0 && q.startDoc == nil {
+		if !q.startCursorSpecified() {
 			return nil, errors.New("firestore: StartAt/StartAfter must be called with at least one value")
 		}
 	}
 	if q.endBefore {
-		if len(q.endVals) == 0 && q.endDoc == nil {
+		if !q.endCursorSpecified() {
 			return nil, errors.New("firestore: EndAt/EndBefore must be called with at least one value")
 		}
 	}

@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.2.0...telcoautomation/v0.2.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **telcoautomation:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.1.2...telcoautomation/v0.2.0) (2024-02-06)
+
+
+### Features
+
+* **telcoautomation:** Support for the STATUS_NOT_APPLICABLE entity status ([e60a6ba](https://github.com/googleapis/google-cloud-go/commit/e60a6ba01acf2ef2e8d12e23ed5c6e876edeb1b7))
+
+## [0.1.2](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.1.1...telcoautomation/v0.1.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **telcoautomation:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.1.0...telcoautomation/v0.1.1) (2023-11-27)
 
 
@@ -20,3 +41,4 @@
 * **telcoautomation:** Add telcoautomation API description ([#9019](https://github.com/googleapis/google-cloud-go/issues/9019)) ([03f9190](https://github.com/googleapis/google-cloud-go/commit/03f9190c36f69458e332d4f1b2e5edfd095899ad))
 
 ## Changes
+

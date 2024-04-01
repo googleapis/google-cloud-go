@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -92,7 +92,9 @@ type CertificateAuthorityCallOptions struct {
 func defaultCertificateAuthorityGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("privateca.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("privateca.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("privateca.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -1208,9 +1210,8 @@ func (c *CertificateAuthorityClient) DeleteCaPoolOperation(name string) *DeleteC
 
 // FetchCaCerts fetchCaCerts returns the current trust anchor for the
 // CaPool. This will include CA
-// certificate chains for all ACTIVE
-// CertificateAuthority
-// resources in the CaPool.
+// certificate chains for all Certificate Authorities in the ENABLED,
+// DISABLED, or STAGED states.
 func (c *CertificateAuthorityClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	return c.internalClient.FetchCaCerts(ctx, req, opts...)
 }
@@ -1499,7 +1500,9 @@ func NewCertificateAuthorityRESTClient(ctx context.Context, opts ...option.Clien
 func defaultCertificateAuthorityRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://privateca.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://privateca.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://privateca.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -3948,9 +3951,8 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 
 // FetchCaCerts fetchCaCerts returns the current trust anchor for the
 // CaPool. This will include CA
-// certificate chains for all ACTIVE
-// CertificateAuthority
-// resources in the CaPool.
+// certificate chains for all Certificate Authorities in the ENABLED,
+// DISABLED, or STAGED states.
 func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

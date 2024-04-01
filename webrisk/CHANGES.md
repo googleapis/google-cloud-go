@@ -1,5 +1,19 @@
 # Changes
 
+## [1.9.6](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.9.5...webrisk/v1.9.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **webrisk:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.9.5](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.9.4...webrisk/v1.9.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **webrisk:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/webrisk/v1.9.3...webrisk/v1.9.4) (2023-11-01)
 
 
@@ -108,3 +122,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out webrisk as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

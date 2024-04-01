@@ -1082,14 +1082,14 @@ func TestUpdateFilter(t *testing.T) {
 		AckDeadlineSeconds: minAckDeadlineSecs,
 		Name:               "projects/P/subscriptions/S",
 		Topic:              top.Name,
-		Filter:             "some-filter",
+		Filter:             "NOT attributes:foo",
 	})
 
 	update := &pb.Subscription{
 		AckDeadlineSeconds: sub.AckDeadlineSeconds,
 		Name:               sub.Name,
 		Topic:              top.Name,
-		Filter:             "new-filter",
+		Filter:             "NOT attributes:bar",
 	}
 
 	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{

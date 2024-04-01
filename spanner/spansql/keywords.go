@@ -277,7 +277,10 @@ var funcNames = []string{
 	"PENDING_COMMIT_TIMESTAMP",
 
 	// JSON functions.
+	"JSON_QUERY",
 	"JSON_VALUE",
+	"JSON_QUERY_ARRAY",
+	"JSON_VALUE_ARRAY",
 
 	// Bit functions.
 	"BIT_COUNT",

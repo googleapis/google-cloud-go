@@ -29,6 +29,7 @@ import (
 
 const statsPrefix = "cloud.google.com/go/spanner/"
 
+// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry for capturing metrics.
 var (
 	tagKeyClientID   = tag.MustNewKey("client_id")
 	tagKeyDatabase   = tag.MustNewKey("database")
@@ -59,6 +60,8 @@ func recordStat(ctx context.Context, m *stats.Int64Measure, n int64) {
 var (
 	// OpenSessionCount is a measure of the number of sessions currently opened.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get open_session_count metrics.
 	OpenSessionCount = stats.Int64(
 		statsPrefix+"open_session_count",
 		"Number of sessions currently opened",
@@ -67,6 +70,8 @@ var (
 
 	// OpenSessionCountView is a view of the last value of OpenSessionCount.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get open_session_count metrics.
 	OpenSessionCountView = &view.View{
 		Measure:     OpenSessionCount,
 		Aggregation: view.LastValue(),
@@ -75,6 +80,8 @@ var (
 
 	// MaxAllowedSessionsCount is a measure of the maximum number of sessions
 	// allowed. Configurable by the user.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get max_allowed_sessions metrics.
 	MaxAllowedSessionsCount = stats.Int64(
 		statsPrefix+"max_allowed_sessions",
 		"The maximum number of sessions allowed. Configurable by the user.",
@@ -83,6 +90,8 @@ var (
 
 	// MaxAllowedSessionsCountView is a view of the last value of
 	// MaxAllowedSessionsCount.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get max_allowed_sessions metrics.
 	MaxAllowedSessionsCountView = &view.View{
 		Measure:     MaxAllowedSessionsCount,
 		Aggregation: view.LastValue(),
@@ -91,6 +100,8 @@ var (
 
 	// SessionsCount is a measure of the number of sessions in the pool
 	// including both in-use, idle, and being prepared.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get num_sessions_in_pool metrics.
 	SessionsCount = stats.Int64(
 		statsPrefix+"num_sessions_in_pool",
 		"The number of sessions currently in use.",
@@ -98,6 +109,8 @@ var (
 	)
 
 	// SessionsCountView is a view of the last value of SessionsCount.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get num_sessions_in_pool metrics.
 	SessionsCountView = &view.View{
 		Measure:     SessionsCount,
 		Aggregation: view.LastValue(),
@@ -106,6 +119,8 @@ var (
 
 	// MaxInUseSessionsCount is a measure of the maximum number of sessions
 	// in use during the last 10 minute interval.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get max_in_use_sessions metrics.
 	MaxInUseSessionsCount = stats.Int64(
 		statsPrefix+"max_in_use_sessions",
 		"The maximum number of sessions in use during the last 10 minute interval.",
@@ -114,6 +129,8 @@ var (
 
 	// MaxInUseSessionsCountView is a view of the last value of
 	// MaxInUseSessionsCount.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get max_in_use_sessions metrics.
 	MaxInUseSessionsCountView = &view.View{
 		Measure:     MaxInUseSessionsCount,
 		Aggregation: view.LastValue(),
@@ -122,6 +139,8 @@ var (
 
 	// GetSessionTimeoutsCount is a measure of the number of get sessions
 	// timeouts due to pool exhaustion.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get get_session_timeouts metrics.
 	GetSessionTimeoutsCount = stats.Int64(
 		statsPrefix+"get_session_timeouts",
 		"The number of get sessions timeouts due to pool exhaustion.",
@@ -130,6 +149,8 @@ var (
 
 	// GetSessionTimeoutsCountView is a view of the last value of
 	// GetSessionTimeoutsCount.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get get_session_timeouts metrics.
 	GetSessionTimeoutsCountView = &view.View{
 		Measure:     GetSessionTimeoutsCount,
 		Aggregation: view.Count(),
@@ -138,6 +159,8 @@ var (
 
 	// AcquiredSessionsCount is the number of sessions acquired from
 	// the session pool.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get num_acquired_sessions metrics.
 	AcquiredSessionsCount = stats.Int64(
 		statsPrefix+"num_acquired_sessions",
 		"The number of sessions acquired from the session pool.",
@@ -146,6 +169,8 @@ var (
 
 	// AcquiredSessionsCountView is a view of the last value of
 	// AcquiredSessionsCount.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get num_acquired_sessions metrics.
 	AcquiredSessionsCountView = &view.View{
 		Measure:     AcquiredSessionsCount,
 		Aggregation: view.Count(),
@@ -154,6 +179,8 @@ var (
 
 	// ReleasedSessionsCount is the number of sessions released by the user
 	// and pool maintainer.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get num_released_sessions metrics.
 	ReleasedSessionsCount = stats.Int64(
 		statsPrefix+"num_released_sessions",
 		"The number of sessions released by the user and pool maintainer.",
@@ -162,6 +189,8 @@ var (
 
 	// ReleasedSessionsCountView is a view of the last value of
 	// ReleasedSessionsCount.
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get num_released_sessions metrics.
 	ReleasedSessionsCountView = &view.View{
 		Measure:     ReleasedSessionsCount,
 		Aggregation: view.Count(),
@@ -169,6 +198,8 @@ var (
 	}
 
 	// GFELatency is the latency between Google's network receiving an RPC and reading back the first byte of the response
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get gfe_latency metrics.
 	GFELatency = stats.Int64(
 		statsPrefix+"gfe_latency",
 		"Latency between Google's network receiving an RPC and reading back the first byte of the response",
@@ -176,6 +207,8 @@ var (
 	)
 
 	// GFELatencyView is the view of distribution of GFELatency values
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get gfe_latency metrics.
 	GFELatencyView = &view.View{
 		Name:        "cloud.google.com/go/spanner/gfe_latency",
 		Measure:     GFELatency,
@@ -188,6 +221,8 @@ var (
 	}
 
 	// GFEHeaderMissingCount is the number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get gfe_header_missing_count metrics.
 	GFEHeaderMissingCount = stats.Int64(
 		statsPrefix+"gfe_header_missing_count",
 		"Number of RPC responses received without the server-timing header, most likely means that the RPC never reached Google's network",
@@ -195,6 +230,8 @@ var (
 	)
 
 	// GFEHeaderMissingCountView is the view of number of GFEHeaderMissingCount
+	//
+	// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry to get gfe_header_missing_count metrics.
 	GFEHeaderMissingCountView = &view.View{
 		Name:        "cloud.google.com/go/spanner/gfe_header_missing_count",
 		Measure:     GFEHeaderMissingCount,
@@ -205,6 +242,9 @@ var (
 )
 
 // EnableStatViews enables all views of metrics relate to session management.
+//
+// Deprecated: OpenCensus project is deprecated.
+// Use EnableOpenTelemetryMetrics to get Session metrics through OpenTelemetry instrumentation.
 func EnableStatViews() error {
 	return view.Register(
 		OpenSessionCountView,
@@ -218,18 +258,27 @@ func EnableStatViews() error {
 }
 
 // EnableGfeLatencyView enables GFELatency metric
+//
+// Deprecated: OpenCensus project is deprecated.
+// Use EnableOpenTelemetryMetrics to get GfeLatency metrics through OpenTelemetry instrumentation.
 func EnableGfeLatencyView() error {
 	setGFELatencyMetricsFlag(true)
 	return view.Register(GFELatencyView)
 }
 
 // EnableGfeHeaderMissingCountView enables GFEHeaderMissingCount metric
+//
+// Deprecated: OpenCensus project is deprecated.
+// Use EnableOpenTelemetryMetrics to get GfeHeaderMissingCount metrics through OpenTelemetry instrumentation.
 func EnableGfeHeaderMissingCountView() error {
 	setGFELatencyMetricsFlag(true)
 	return view.Register(GFEHeaderMissingCountView)
 }
 
 // EnableGfeLatencyAndHeaderMissingCountViews enables GFEHeaderMissingCount and GFELatency metric
+//
+// Deprecated: OpenCensus project is deprecated.
+// Use EnableOpenTelemetryMetrics to get GfeLatency and GfeHeaderMissingCount metrics through OpenTelemetry instrumentation.
 func EnableGfeLatencyAndHeaderMissingCountViews() error {
 	setGFELatencyMetricsFlag(true)
 	return view.Register(
@@ -238,12 +287,14 @@ func EnableGfeLatencyAndHeaderMissingCountViews() error {
 	)
 }
 
+// Deprecated: OpenCensus project is deprecated.
 func getGFELatencyMetricsFlag() bool {
 	statsMu.RLock()
 	defer statsMu.RUnlock()
 	return gfeLatencyMetricsEnabled
 }
 
+// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry for capturing metrics.
 func setGFELatencyMetricsFlag(enable bool) {
 	statsMu.Lock()
 	gfeLatencyMetricsEnabled = enable
@@ -251,6 +302,8 @@ func setGFELatencyMetricsFlag(enable bool) {
 }
 
 // DisableGfeLatencyAndHeaderMissingCountViews disables GFEHeaderMissingCount and GFELatency metric
+//
+// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry for capturing metrics.
 func DisableGfeLatencyAndHeaderMissingCountViews() {
 	setGFELatencyMetricsFlag(false)
 	view.Unregister(
@@ -259,6 +312,7 @@ func DisableGfeLatencyAndHeaderMissingCountViews() {
 	)
 }
 
+// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry for capturing metrics.
 func captureGFELatencyStats(ctx context.Context, md metadata.MD, keyMethod string) error {
 	if len(md.Get("server-timing")) == 0 {
 		recordStat(ctx, GFEHeaderMissingCount, 1)
@@ -279,6 +333,7 @@ func captureGFELatencyStats(ctx context.Context, md metadata.MD, keyMethod strin
 	return nil
 }
 
+// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry for capturing metrics.
 func createContextAndCaptureGFELatencyMetrics(ctx context.Context, ct *commonTags, md metadata.MD, keyMethod string) error {
 	var ctxGFE, err = tag.New(ctx,
 		tag.Upsert(tagKeyClientID, ct.clientID),
@@ -292,6 +347,7 @@ func createContextAndCaptureGFELatencyMetrics(ctx context.Context, ct *commonTag
 	return captureGFELatencyStats(ctxGFE, md, keyMethod)
 }
 
+// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry for capturing metrics.
 func getCommonTags(sc *sessionClient) *commonTags {
 	_, instance, database, err := parseDatabaseName(sc.database)
 	if err != nil {
@@ -306,6 +362,7 @@ func getCommonTags(sc *sessionClient) *commonTags {
 }
 
 // commonTags are common key-value pairs of data associated with the GFELatency measure
+// Deprecated: OpenCensus project is deprecated. Use OpenTelemetry for capturing metrics.
 type commonTags struct {
 	// Client ID
 	clientID string

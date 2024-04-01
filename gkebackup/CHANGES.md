@@ -2,6 +2,27 @@
 
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.6...gkebackup/v1.4.0) (2024-03-27)
+
+
+### Features
+
+* **gkebackup:** Add smart scheduling ([#9644](https://github.com/googleapis/google-cloud-go/issues/9644)) ([f8ff971](https://github.com/googleapis/google-cloud-go/commit/f8ff971366999aefb5eb5189c6c9e2bd76a05d9e))
+
+## [1.3.6](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.5...gkebackup/v1.3.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **gkebackup:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.3.5](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.4...gkebackup/v1.3.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **gkebackup:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.3.4](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.3...gkebackup/v1.3.4) (2023-11-01)
 
 
@@ -104,3 +125,4 @@
 ### Features
 
 * **gkebackup:** start generating apiv1 ([#6031](https://github.com/googleapis/google-cloud-go/issues/6031)) ([4816e84](https://github.com/googleapis/google-cloud-go/commit/4816e84076d62c0952eec0a7de80a230dc9074fe))
+

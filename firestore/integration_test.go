@@ -1020,13 +1020,22 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 	})
 }
 
+func reverseSlice(s []map[string]interface{}) []map[string]interface{} {
+	reversed := make([]map[string]interface{}, len(s))
+	for i, j := 0, len(s)-1; i <= j; i, j = i+1, j-1 {
+		reversed[i] = s[j]
+		reversed[j] = s[i]
+	}
+	return reversed
+}
+
 func TestIntegration_QueryDocuments(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
 	var wants []map[string]interface{}
 	var createdDocRefs []*DocumentRef
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 8; i++ {
 		doc := coll.NewDoc()
 		createdDocRefs = append(createdDocRefs, doc)
 
@@ -1037,45 +1046,68 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	}
 	q := coll.Select("q")
 	for i, test := range []struct {
-		q       Query
-		want    []map[string]interface{}
-		orderBy bool // Some query types do not allow ordering.
+		desc       string
+		q          Query
+		want       []map[string]interface{}
+		orderBy    bool // Some query types do not allow ordering.
+		orderByDir Direction
 	}{
-		{q, wants, true},
-		{q.Where("q", ">", 1), wants[2:], true},
-		{q.Where("q", "<", 1), wants[:1], true},
-		{q.Where("q", "==", 1), wants[1:2], false},
-		{q.Where("q", "!=", 0), wants[1:], true},
-		{q.Where("q", ">=", 1), wants[1:], true},
-		{q.Where("q", "<=", 1), wants[:2], true},
-		{q.Where("q", "in", []int{0}), wants[:1], false},
-		{q.Where("q", "not-in", []int{0, 1}), wants[2:], true},
-		{q.WherePath([]string{"q"}, ">", 1), wants[2:], true},
-		{q.Offset(1).Limit(1), wants[1:2], true},
-		{q.StartAt(1), wants[1:], true},
-		{q.StartAfter(1), wants[2:], true},
-		{q.EndAt(1), wants[:2], true},
-		{q.EndBefore(1), wants[:1], true},
-		{q.LimitToLast(2), wants[1:], true},
-		{q.EndBefore(2).LimitToLast(2), wants[:2], true},
-		{q.StartAt(1).EndBefore(2).LimitToLast(3), wants[1:2], true},
+		{"Without filters", q, wants, true, 0},
+		{"> filter", q.Where("q", ">", 1), wants[2:], true, Asc},
+		{"< filter", q.Where("q", "<", 1), wants[:1], true, Asc},
+		{"== filter", q.Where("q", "==", 1), wants[1:2], false, 0},
+		{"!= filter", q.Where("q", "!=", 0), wants[1:], true, Asc},
+		{">= filter", q.Where("q", ">=", 1), wants[1:], true, Asc},
+		{"<= filter", q.Where("q", "<=", 1), wants[:2], true, Asc},
+		{"in filter", q.Where("q", "in", []int{0}), wants[:1], false, 0},
+		{"not-in filter", q.Where("q", "not-in", []int{0, 1}), wants[2:], true, Asc},
+		{"WherePath", q.WherePath([]string{"q"}, ">", 1), wants[2:], true, Asc},
+		{"Offset with Limit", q.Offset(1).Limit(1), wants[1:2], true, Asc},
+		{"StartAt", q.StartAt(1), wants[1:], true, Asc},
+		{"StartAfter", q.StartAfter(1), wants[2:], true, Asc},
+		{"EndAt", q.EndAt(1), wants[:2], true, Asc},
+		{"EndBefore", q.EndBefore(1), wants[:1], true, Asc},
+		{"Open range with DESC order", q.StartAfter(6).EndBefore(2), reverseSlice(wants[3:6]), true, Desc},
+		{"LimitToLast", q.LimitToLast(2), wants[len(wants)-2:], true, Asc},
+		{"StartAfter with LimitToLast", q.StartAfter(2).LimitToLast(2), wants[len(wants)-2:], true, Asc},
+		{"StartAt with LimitToLast", q.StartAt(2).LimitToLast(2), wants[len(wants)-2:], true, Asc},
+		{"EndBefore with LimitToLast", q.EndBefore(7).LimitToLast(2), wants[5:7], true, Asc},
+		{"EndAt with LimitToLast", q.EndAt(7).LimitToLast(2), wants[6:8], true, Asc},
+		{"LimitToLast greater than no. of results", q.StartAt(1).EndBefore(2).LimitToLast(3), wants[1:2], true, Asc},
+		{"Closed range with LimitToLast ASC order", q.StartAt(2).EndAt(6).LimitToLast(2), wants[5:7], true, Asc},
+		{"Left closed right open range with LimitToLast ASC order", q.StartAt(2).EndBefore(6).LimitToLast(2), wants[4:6], true, Asc},
+		{"Left open right closed with LimitToLast ASC order", q.StartAfter(2).EndAt(6).LimitToLast(2), wants[5:7], true, Asc},
+		{"Open range with LimitToLast ASC order", q.StartAfter(2).EndBefore(6).LimitToLast(2), wants[4:6], true, Asc},
+		{"Closed range with LimitToLast DESC order", q.StartAt(6).EndAt(2).LimitToLast(2), reverseSlice(wants[2:4]), true, Desc},
+		{"Left closed right open range with LimitToLast DESC order", q.StartAt(6).EndBefore(2).LimitToLast(2), reverseSlice(wants[3:5]), true, Desc},
+		{"Left open right closed with LimitToLast DESC order", q.StartAfter(6).EndAt(2).LimitToLast(2), reverseSlice(wants[2:4]), true, Desc},
+		{"Open range with LimitToLast DESC order", q.StartAfter(6).EndBefore(2).LimitToLast(2), reverseSlice(wants[3:5]), true, Desc},
 	} {
 		if test.orderBy {
-			test.q = test.q.OrderBy("q", Asc)
+			test.q = test.q.OrderBy("q", test.orderByDir)
 		}
 		gotDocs, err := test.q.Documents(ctx).GetAll()
 		if err != nil {
-			t.Errorf("#%d: %+v: %v", i, test.q, err)
+			t.Errorf("#%d %v: %+v: %v", i, test.desc, test.q, err)
 			continue
 		}
 		if len(gotDocs) != len(test.want) {
-			t.Errorf("#%d: %+v: got %d docs, want %d", i, test.q, len(gotDocs), len(test.want))
+			t.Errorf("#%d %v: %+v: got %d docs, want %d", i, test.desc, test.q, len(gotDocs), len(test.want))
 			continue
 		}
+
+		fmt.Printf("test.want: %+v\n", test.want)
+
+		docsEqual := true
+		docsNotEqualErr := ""
 		for j, g := range gotDocs {
 			if got, want := g.Data(), test.want[j]; !testEqual(got, want) {
-				t.Errorf("#%d: %+v, #%d: got\n%+v\nwant\n%+v", i, test.q, j, got, want)
+				docsNotEqualErr += fmt.Sprintf("\n\t#%d: got %+v want %+v", j, got, want)
+				docsEqual = false
 			}
+		}
+		if !docsEqual {
+			t.Errorf("#%d %v: %+v %v", i, test.desc, test.q, docsNotEqualErr)
 		}
 	}
 	_, err := coll.Select("q").Where("x", "==", 1).OrderBy("q", Asc).Documents(ctx).GetAll()
@@ -2316,6 +2348,54 @@ func TestIntegration_BulkWriter_Set(t *testing.T) {
 	})
 }
 
+func TestIntegration_BulkWriter_Create(t *testing.T) {
+	c := integrationClient(t)
+	ctx := context.Background()
+
+	type BWDoc struct {
+		A int
+	}
+
+	docRef := iColl.Doc(fmt.Sprintf("bw_create_1_%d", time.Now().Unix()))
+	_, err := docRef.Create(ctx, BWDoc{A: 6})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	doc := BWDoc{A: 5}
+	testcases := []struct {
+		desc           string
+		ref            *DocumentRef
+		wantStatusCode codes.Code
+	}{
+		{
+			desc:           "Successful",
+			ref:            iColl.Doc(fmt.Sprintf("bw_create_2_%d", time.Now().Unix())),
+			wantStatusCode: codes.OK,
+		},
+		{
+			desc:           "Already exists error",
+			ref:            docRef,
+			wantStatusCode: codes.AlreadyExists,
+		},
+	}
+	for _, testcase := range testcases {
+		bw := c.BulkWriter(ctx)
+
+		bwJob, err := bw.Create(testcase.ref, doc)
+		if err != nil {
+			t.Errorf("%v Create %v", testcase.desc, err)
+			continue
+		}
+		bw.Flush()
+
+		_, gotErr := bwJob.Results()
+		if status.Code(gotErr) != testcase.wantStatusCode {
+			t.Errorf("%q: Mismatch in error got: %v, want: %q", testcase.desc, status.Code(gotErr), testcase.wantStatusCode)
+		}
+	}
+}
+
 func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 	docRefs := []*DocumentRef{doc}
@@ -2672,7 +2752,7 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		}
 	}
 
-	tm := time.Now()
+	tm := time.Now().Add(-time.Minute)
 	c.WithReadOptions(ReadTime(tm))
 
 	ds, err := c.GetAll(ctx, docs)
@@ -2680,10 +2760,9 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
-	t.SkipNow()
+	wantReadTime := tm.Truncate(time.Second)
 	for _, d := range ds {
-		if !tm.Equal(d.ReadTime) {
+		if !wantReadTime.Equal(d.ReadTime) {
 			t.Errorf("wanted read time: %v; got: %v",
 				tm.UnixNano(), d.ReadTime.UnixNano())
 		}

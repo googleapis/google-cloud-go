@@ -1,5 +1,19 @@
 # Changes
 
+## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.11.5...videointelligence/v1.11.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **videointelligence:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.11.4...videointelligence/v1.11.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **videointelligence:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/videointelligence/v1.11.3...videointelligence/v1.11.4) (2023-11-01)
 
 

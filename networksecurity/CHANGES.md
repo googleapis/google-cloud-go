@@ -1,5 +1,19 @@
 # Changes
 
+## [0.9.6](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.9.5...networksecurity/v0.9.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **networksecurity:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.9.5](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.9.4...networksecurity/v0.9.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **networksecurity:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.9.4](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.9.3...networksecurity/v0.9.4) (2023-11-01)
 
 
@@ -101,3 +115,4 @@
 ## v0.1.0
 
 - feat(networksecurity): start generating clients
+

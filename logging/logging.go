@@ -84,6 +84,9 @@ const (
 	// DefaultEntryByteThreshold is the default value for the EntryByteThreshold LoggerOption.
 	DefaultEntryByteThreshold = 1 << 23 // 8MiB
 
+	// DefaultBundleByteLimit is the default value for the BundleByteLimit LoggerOption.
+	DefaultBundleByteLimit = 9437184 // 9.5 MiB
+
 	// DefaultBufferedByteLimit is the default value for the BufferedByteLimit LoggerOption.
 	DefaultBufferedByteLimit = 1 << 30 // 1GiB
 
@@ -340,6 +343,7 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	l.bundler.DelayThreshold = DefaultDelayThreshold
 	l.bundler.BundleCountThreshold = DefaultEntryCountThreshold
 	l.bundler.BundleByteThreshold = DefaultEntryByteThreshold
+	l.bundler.BundleByteLimit = DefaultBundleByteLimit
 	l.bundler.BufferedByteLimit = DefaultBufferedByteLimit
 	for _, opt := range opts {
 		opt.set(l)
