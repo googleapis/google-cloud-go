@@ -35,7 +35,9 @@ const (
 	// TokenTypeBearer is the auth header prefix for bearer tokens.
 	TokenTypeBearer = "Bearer"
 
-	quotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"
+	// QuotaProjectEnvVar is the environment variable for setting the quota
+	// project.
+	QuotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"
 	projectEnvVar      = "GOOGLE_CLOUD_PROJECT"
 	maxBodySize        = 1 << 20
 
@@ -82,7 +84,7 @@ func GetQuotaProject(b []byte, override string) string {
 	if override != "" {
 		return override
 	}
-	if env := os.Getenv(quotaProjectEnvVar); env != "" {
+	if env := os.Getenv(QuotaProjectEnvVar); env != "" {
 		return env
 	}
 	if b == nil {

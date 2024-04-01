@@ -667,7 +667,7 @@ func TestDefaultCredentials_ExternalAccountAuthorizedUserKey(t *testing.T) {
 }
 
 func TestDefaultCredentials_Fails(t *testing.T) {
-	t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "nothingToSeeHere")
+	t.Setenv(credsfile.GoogleAppCredsEnvVar, "nothingToSeeHere")
 	t.Setenv("HOME", "nothingToSeeHere")
 	t.Setenv("APPDATA", "nothingToSeeHere")
 	allowOnGCECheck = false

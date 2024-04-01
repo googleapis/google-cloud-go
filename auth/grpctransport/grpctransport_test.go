@@ -275,7 +275,7 @@ func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatal(err)

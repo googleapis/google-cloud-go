@@ -263,7 +263,7 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got := r.Header.Get("Authorization"); got == "" {
 			t.Errorf(`got "", want an auth token`)
@@ -303,7 +303,7 @@ func TestNewClient_APIKey(t *testing.T) {
 	testQuota := "testquota"
 	apiKey := "thereisnospoon"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got := r.URL.Query().Get("key")
 		if got != apiKey {

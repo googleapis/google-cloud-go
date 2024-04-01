@@ -314,9 +314,9 @@ func TestGetGRPCTransportConfigAndEndpoint(t *testing.T) {
 			httpGetMetadataMTLSConfig = tc.s2ARespFn
 			mtlsEndpointEnabledForS2A = tc.mtlsEnabledFn
 			if tc.opts.ClientCertProvider != nil {
-				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
+				t.Setenv(googleAPIUseCertSource, "true")
 			} else {
-				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+				t.Setenv(googleAPIUseCertSource, "false")
 			}
 			_, endpoint, _ := GetGRPCTransportCredsAndEndpoint(tc.opts)
 			if tc.want != endpoint {
@@ -432,9 +432,9 @@ func TestGetHTTPTransportConfig_S2a(t *testing.T) {
 			httpGetMetadataMTLSConfig = tc.s2aFn
 			mtlsEndpointEnabledForS2A = tc.mtlsEnabledFn
 			if tc.opts.ClientCertProvider != nil {
-				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
+				t.Setenv(googleAPIUseCertSource, "true")
 			} else {
-				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+				t.Setenv(googleAPIUseCertSource, "false")
 			}
 			_, dialFunc, err := GetHTTPTransportConfig(tc.opts)
 			if err != nil {
@@ -521,9 +521,9 @@ func TestGetTransportConfig_UniverseDomain(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.opts.ClientCertProvider != nil {
-				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
+				t.Setenv(googleAPIUseCertSource, "true")
 			} else {
-				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+				t.Setenv(googleAPIUseCertSource, "false")
 			}
 			config, err := getTransportConfig(tc.opts)
 			if err != nil {
@@ -627,9 +627,9 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			if tc.opts.ClientCertProvider != nil {
-				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
+				t.Setenv(googleAPIUseCertSource, "true")
 			} else {
-				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
+				t.Setenv(googleAPIUseCertSource, "false")
 			}
 			_, endpoint, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
 			if err != nil {
