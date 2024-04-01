@@ -61,26 +61,13 @@ type Options struct {
 	ClientCertProvider      cert.Provider
 	Client                  *http.Client
 	UniverseDomain          string
-	DefaultUniverseDomain   string
-}
-
-// getDefaultUniverseDomain returns the default service domain for a given Cloud
-// universe, as configured with internaloption.WithDefaultUniverseDomain.
-// The default value is "googleapis.com".
-func (o *Options) getDefaultUniverseDomain() string {
-	if o.DefaultUniverseDomain == "" {
-		return internal.DefaultUniverseDomain
-	}
-	return o.DefaultUniverseDomain
 }
 
 // getUniverseDomain returns the default service domain for a given Cloud
-// universe, as configured with option.WithUniverseDomain.
-// The default value is the value of getDefaultUniverseDomain, as configured
-// with internaloption.WithDefaultUniverseDomain.
+// universe.
 func (o *Options) getUniverseDomain() string {
 	if o.UniverseDomain == "" {
-		return o.getDefaultUniverseDomain()
+		return internal.DefaultUniverseDomain
 	}
 	return o.UniverseDomain
 }
@@ -88,11 +75,11 @@ func (o *Options) getUniverseDomain() string {
 // isUniverseDomainGDU returns true if the universe domain is the default Google
 // universe.
 func (o *Options) isUniverseDomainGDU() bool {
-	return o.getUniverseDomain() == o.getDefaultUniverseDomain()
+	return o.getUniverseDomain() == internal.DefaultUniverseDomain
 }
 
 // defaultEndpoint returns the DefaultEndpointTemplate merged with the
-// Universe Domain if the DefaultEndpointTemplate is set, otherwise returns an
+// universe domain if the DefaultEndpointTemplate is set, otherwise returns an
 // empty string.
 func (o *Options) defaultEndpoint() string {
 	if o.DefaultEndpointTemplate == "" {

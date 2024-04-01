@@ -123,17 +123,14 @@ type InternalOptions struct {
 	// DefaultAudience specifies a default audience to be used as the audience
 	// field ("aud") for the JWT token authentication.
 	DefaultAudience string
-	// DefaultEndpointTemplate combined with DefaultUniverseDomain specifies
-	// the default endpoint.
+	// DefaultEndpointTemplate combined with UniverseDomain specifies the
+	// default endpoint.
 	DefaultEndpointTemplate string
 	// DefaultMTLSEndpoint specifies the default mTLS endpoint.
 	DefaultMTLSEndpoint string
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
 	DefaultScopes []string
-	// DefaultUniverseDomain is the default value for universe domain.
-	// Universe domain is the default service domain for a given Cloud universe.
-	DefaultUniverseDomain string
 }
 
 // AddAuthorizationMiddleware adds a middleware to the provided client's
@@ -168,6 +165,7 @@ func NewClient(opts *Options) (*http.Client, error) {
 		Endpoint:           opts.Endpoint,
 		ClientCertProvider: opts.ClientCertProvider,
 		Client:             opts.client(),
+		UniverseDomain:     opts.UniverseDomain,
 	}
 	if io := opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate

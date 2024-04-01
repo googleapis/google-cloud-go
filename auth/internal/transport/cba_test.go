@@ -22,8 +22,6 @@ import (
 	"os"
 	"testing"
 	"time"
-
-	"cloud.google.com/go/auth/internal"
 )
 
 const (
@@ -66,66 +64,55 @@ var (
 
 func TestOptions_UniverseDomain(t *testing.T) {
 	testCases := []struct {
-		name                      string
-		opts                      *Options
-		wantDefaultUniverseDomain string
-		wantUniverseDomain        string
-		wantDefaultEndpoint       string
-		wantIsGDU                 bool
-		wantMergedEndpoint        string
+		name                string
+		opts                *Options
+		wantUniverseDomain  string
+		wantDefaultEndpoint string
+		wantIsGDU           bool
+		wantMergedEndpoint  string
 	}{
 		{
-			name:                      "empty",
-			opts:                      &Options{},
-			wantDefaultUniverseDomain: "googleapis.com",
-			wantUniverseDomain:        "googleapis.com",
-			wantDefaultEndpoint:       "",
-			wantIsGDU:                 true,
-			wantMergedEndpoint:        "",
+			name:                "empty",
+			opts:                &Options{},
+			wantUniverseDomain:  "googleapis.com",
+			wantDefaultEndpoint: "",
+			wantIsGDU:           true,
+			wantMergedEndpoint:  "",
 		},
 		{
 			name: "defaults",
 			opts: &Options{
 				DefaultEndpointTemplate: "https://test.UNIVERSE_DOMAIN/",
-				DefaultUniverseDomain:   "googleapis.com",
 			},
-			wantDefaultUniverseDomain: "googleapis.com",
-			wantUniverseDomain:        "googleapis.com",
-			wantDefaultEndpoint:       "https://test.googleapis.com/",
-			wantIsGDU:                 true,
-			wantMergedEndpoint:        "",
+			wantUniverseDomain:  "googleapis.com",
+			wantDefaultEndpoint: "https://test.googleapis.com/",
+			wantIsGDU:           true,
+			wantMergedEndpoint:  "",
 		},
 		{
 			name: "non-GDU",
 			opts: &Options{
 				DefaultEndpointTemplate: "https://test.UNIVERSE_DOMAIN/",
-				DefaultUniverseDomain:   "googleapis.com",
 				UniverseDomain:          "example.com",
 			},
-			wantDefaultUniverseDomain: "googleapis.com",
-			wantUniverseDomain:        "example.com",
-			wantDefaultEndpoint:       "https://test.example.com/",
-			wantIsGDU:                 false,
-			wantMergedEndpoint:        "",
+			wantUniverseDomain:  "example.com",
+			wantDefaultEndpoint: "https://test.example.com/",
+			wantIsGDU:           false,
+			wantMergedEndpoint:  "",
 		},
 		{
 			name: "merged endpoint",
 			opts: &Options{
 				DefaultEndpointTemplate: "https://test.UNIVERSE_DOMAIN/bar/baz",
-				DefaultUniverseDomain:   "googleapis.com",
 				Endpoint:                "myhost:8000",
 			},
-			wantDefaultUniverseDomain: "googleapis.com",
-			wantUniverseDomain:        "googleapis.com",
-			wantDefaultEndpoint:       "https://test.googleapis.com/bar/baz",
-			wantIsGDU:                 true,
-			wantMergedEndpoint:        "https://myhost:8000/bar/baz",
+			wantUniverseDomain:  "googleapis.com",
+			wantDefaultEndpoint: "https://test.googleapis.com/bar/baz",
+			wantIsGDU:           true,
+			wantMergedEndpoint:  "https://myhost:8000/bar/baz",
 		},
 	}
 	for _, tc := range testCases {
-		if got := tc.opts.getDefaultUniverseDomain(); got != tc.wantDefaultUniverseDomain {
-			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantDefaultUniverseDomain)
-		}
 		if got := tc.opts.getUniverseDomain(); got != tc.wantUniverseDomain {
 			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantUniverseDomain)
 		}
@@ -597,7 +584,6 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 			opts: &Options{
 				DefaultEndpointTemplate: testEndpointTemplate,
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
-				DefaultUniverseDomain:   internal.DefaultUniverseDomain,
 				UniverseDomain:          testUniverseDomain,
 			},
 			wantEndpoint: testUniverseDomainEndpoint,

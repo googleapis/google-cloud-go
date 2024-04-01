@@ -143,7 +143,7 @@ type InternalOptions struct {
 	// DefaultAudience specifies a default audience to be used as the audience
 	// field ("aud") for the JWT token authentication.
 	DefaultAudience string
-	// DefaultEndpointTemplate combined with DefaultUniverseDomain specifies
+	// DefaultEndpointTemplate combined with UniverseDomain specifies
 	// the default endpoint.
 	DefaultEndpointTemplate string
 	// DefaultMTLSEndpoint specifies the default mTLS endpoint.
@@ -151,9 +151,6 @@ type InternalOptions struct {
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
 	DefaultScopes []string
-	// DefaultUniverseDomain is the default value for universe domain.
-	// Universe domain is the default service domain for a given Cloud universe.
-	DefaultUniverseDomain string
 }
 
 // Dial returns a GRPCClientConnPool that can be used to communicate with a
@@ -186,8 +183,9 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 // return a GRPCClientConnPool if pool == 1 or else a pool of of them if >1
 func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, error) {
 	tOpts := &transport.Options{
-		Endpoint: opts.Endpoint,
-		Client:   opts.client(),
+		Endpoint:       opts.Endpoint,
+		Client:         opts.client(),
+		UniverseDomain: opts.UniverseDomain,
 	}
 	if io := opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
