@@ -587,6 +587,12 @@ func ExampleClient_ListInstances() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*baremetalsolutionpb.ListInstancesResponse)
 	}
 }
 
@@ -618,6 +624,12 @@ func ExampleClient_ListLuns() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*baremetalsolutionpb.ListLunsResponse)
 	}
 }
 
@@ -674,6 +686,12 @@ func ExampleClient_ListNetworks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*baremetalsolutionpb.ListNetworksResponse)
 	}
 }
 
@@ -705,6 +723,12 @@ func ExampleClient_ListNfsShares() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*baremetalsolutionpb.ListNfsSharesResponse)
 	}
 }
 
@@ -736,6 +760,12 @@ func ExampleClient_ListOSImages() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*baremetalsolutionpb.ListOSImagesResponse)
 	}
 }
 
@@ -767,6 +797,12 @@ func ExampleClient_ListProvisioningQuotas() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*baremetalsolutionpb.ListProvisioningQuotasResponse)
 	}
 }
 
@@ -798,6 +834,12 @@ func ExampleClient_ListSSHKeys() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*baremetalsolutionpb.ListSSHKeysResponse)
 	}
 }
 
@@ -829,6 +871,12 @@ func ExampleClient_ListVolumeSnapshots() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*baremetalsolutionpb.ListVolumeSnapshotsResponse)
 	}
 }
 
@@ -860,6 +908,12 @@ func ExampleClient_ListVolumes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*baremetalsolutionpb.ListVolumesResponse)
 	}
 }
 
@@ -1336,5 +1390,11 @@ func ExampleClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.1.6...edgecontainer/v1.2.0) (2024-03-25)
+
+
+### Features
+
+* **edgecontainer:** Add GetServerConfig rpc and message ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+
 ## [1.1.6](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.1.5...edgecontainer/v1.1.6) (2024-03-14)
 
 
@@ -93,3 +100,4 @@
 * **edgecontainer:** Start generating apiv1 ([#6694](https://github.com/googleapis/google-cloud-go/issues/6694)) ([6bc9b69](https://github.com/googleapis/google-cloud-go/commit/6bc9b69ca4dd910a9801f07bbc2b8abfdabe8628))
 
 ## Changes
+

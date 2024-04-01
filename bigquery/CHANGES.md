@@ -3,6 +3,28 @@
 
 
 
+## [1.60.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.59.1...bigquery/v1.60.0) (2024-03-27)
+
+
+### Features
+
+* **bigquery/analyticshub:** Support selective sharing on data clean room Listings ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+* **bigquery/datatransfer:** Add UnenrollDataSources API which gives users a programmatic way to unenroll data sources ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+* **bigquery/storage:** Add the RANGE type to the google.cloud.bigquery.storage.v1.TableFieldSchema ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Fix flowcontrol refund on error ([#9649](https://github.com/googleapis/google-cloud-go/issues/9649)) ([a07bf1d](https://github.com/googleapis/google-cloud-go/commit/a07bf1d463416d8a4bbfbbd7e720653962fb27d5))
+* **bigquery/storage/managedwriter:** Retry improvements ([#9642](https://github.com/googleapis/google-cloud-go/issues/9642)) ([48a9258](https://github.com/googleapis/google-cloud-go/commit/48a9258954b9be40d74656dc12fe46f2bbc19bda))
+* **bigquery:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **bigquery/datatransfer:** Update unenrollDataSources API documentation ([#9449](https://github.com/googleapis/google-cloud-go/issues/9449)) ([da644cc](https://github.com/googleapis/google-cloud-go/commit/da644ccc6f154d41b8bedf21f4c4cc8aa9ce41bf))
+* **bigquery/storage:** Mark BigQueryWrite v1beta2 as deprecated ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
 ## [1.59.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.59.0...bigquery/v1.59.1) (2024-02-12)
 
 

@@ -19,6 +19,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"net/url"
 	"os"
@@ -1042,6 +1043,16 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	// This is the size of the entire object, even if only a range was requested.
 	size := obj.GetSize()
 
+	// Only support checksums when reading an entire object, not a range.
+	var (
+		wantCRC  uint32
+		checkCRC bool
+	)
+	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil && params.offset == 0 && params.length < 0 {
+		wantCRC = checksums.GetCrc32C()
+		checkCRC = true
+	}
+
 	r = &Reader{
 		Attrs: ReaderObjectAttrs{
 			Size:            size,
@@ -1063,7 +1074,10 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			settings:  s,
 			zeroRange: params.length == 0,
 			databuf:   databuf,
+			wantCRC:   wantCRC,
+			checkCRC:  checkCRC,
 		},
+		checkCRC: checkCRC,
 	}
 
 	cr := msg.GetContentRange()
@@ -1079,12 +1093,6 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	if params.length == 0 {
 		r.remain = 0
 		r.reader.Close()
-	}
-
-	// Only support checksums when reading an entire object, not a range.
-	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil && params.offset == 0 && params.length < 0 {
-		r.wantCRC = checksums.GetCrc32C()
-		r.checkCRC = true
 	}
 
 	return r, nil
@@ -1464,12 +1472,34 @@ type gRPCReader struct {
 	databuf    []byte
 	cancel     context.CancelFunc
 	settings   *settings
+	checkCRC   bool   // should we check the CRC?
+	wantCRC    uint32 // the CRC32c value the server sent in the header
+	gotCRC     uint32 // running crc
+}
+
+// Update the running CRC with the data in the slice, if CRC checking was enabled.
+func (r *gRPCReader) updateCRC(b []byte) {
+	if r.checkCRC {
+		r.gotCRC = crc32.Update(r.gotCRC, crc32cTable, b)
+	}
+}
+
+// Checks whether the CRC matches at the conclusion of a read, if CRC checking was enabled.
+func (r *gRPCReader) runCRCCheck() error {
+	if r.checkCRC && r.gotCRC != r.wantCRC {
+		return fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
+	}
+	return nil
 }
 
 // Read reads bytes into the user's buffer from an open gRPC stream.
 func (r *gRPCReader) Read(p []byte) (int, error) {
-	// The entire object has been read by this reader, return EOF.
+	// The entire object has been read by this reader, check the checksum if
+	// necessary and return EOF.
 	if r.size == r.seen || r.zeroRange {
+		if err := r.runCRCCheck(); err != nil {
+			return 0, err
+		}
 		return 0, io.EOF
 	}
 
@@ -1478,7 +1508,7 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	// using the same reader. One encounters an error and the stream is closed
 	// and then reopened while the other routine attempts to read from it.
 	if r.stream == nil {
-		return 0, fmt.Errorf("reader has been closed")
+		return 0, fmt.Errorf("storage: reader has been closed")
 	}
 
 	var n int
@@ -1487,6 +1517,7 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 	if len(r.leftovers) > 0 {
 		n = copy(p, r.leftovers)
 		r.seen += int64(n)
+		r.updateCRC(p[:n])
 		r.leftovers = r.leftovers[n:]
 		return n, nil
 	}
@@ -1512,8 +1543,76 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 		r.leftovers = content[n:]
 	}
 	r.seen += int64(n)
+	r.updateCRC(p[:n])
 
 	return n, nil
+}
+
+// WriteTo writes all the data requested by the Reader into w, implementing
+// io.WriterTo.
+func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
+	// The entire object has been read by this reader, check the checksum if
+	// necessary and return nil.
+	if r.size == r.seen || r.zeroRange {
+		if err := r.runCRCCheck(); err != nil {
+			return 0, err
+		}
+		return 0, nil
+	}
+
+	// No stream to read from, either never initialized or Close was called.
+	// Note: There is a potential concurrency issue if multiple routines are
+	// using the same reader. One encounters an error and the stream is closed
+	// and then reopened while the other routine attempts to read from it.
+	if r.stream == nil {
+		return 0, fmt.Errorf("storage: reader has been closed")
+	}
+
+	// Track bytes written during before call.
+	var alreadySeen = r.seen
+
+	// Write any leftovers to the stream. There will be some leftovers from the
+	// original NewRangeReader call.
+	if len(r.leftovers) > 0 {
+		// Write() will write the entire leftovers slice unless there is an error.
+		written, err := w.Write(r.leftovers)
+		r.seen += int64(written)
+		r.updateCRC(r.leftovers)
+		r.leftovers = nil
+		if err != nil {
+			return r.seen - alreadySeen, err
+		}
+	}
+
+	// Loop and receive additional messages until the entire data is written.
+	for {
+		// Attempt to receive the next message on the stream.
+		// Will terminate with io.EOF once data has all come through.
+		// recv() handles stream reopening and retry logic so no need for retries here.
+		msg, err := r.recv()
+		if err != nil {
+			if err == io.EOF {
+				// We are done; check the checksum if necessary and return.
+				err = r.runCRCCheck()
+			}
+			return r.seen - alreadySeen, err
+		}
+
+		// TODO: Determine if we need to capture incremental CRC32C for this
+		// chunk. The Object CRC32C checksum is captured when directed to read
+		// the entire Object. If directed to read a range, we may need to
+		// calculate the range's checksum for verification if the checksum is
+		// present in the response here.
+		// TODO: Figure out if we need to support decompressive transcoding
+		// https://cloud.google.com/storage/docs/transcoding.
+		written, err := w.Write(msg)
+		r.seen += int64(written)
+		r.updateCRC(msg)
+		if err != nil {
+			return r.seen - alreadySeen, err
+		}
+	}
+
 }
 
 // Close cancels the read stream's context in order for it to be closed and
@@ -1872,6 +1971,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 
 	// Send a request with as many bytes as possible.
 	// Loop until all bytes are sent.
+sendBytes: // label this loop so that we can use a continue statement from a nested block
 	for {
 		bytesNotYetSent := recvd - sent
 		remainingDataFitsInSingleReq := bytesNotYetSent <= maxPerMessageWriteSize
@@ -1949,10 +2049,6 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			// we retry.
 			w.stream = nil
 
-			// Drop the stream reference as a new one will need to be created if
-			// we can retry the upload
-			w.stream = nil
-
 			// Retriable errors mean we should start over and attempt to
 			// resend the entire buffer via a new stream.
 			// If not retriable, falling through will return the error received.
@@ -1966,7 +2062,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 
 				// Continue sending requests, opening a new stream and resending
 				// any bytes not yet persisted as per QueryWriteStatus
-				continue
+				continue sendBytes
 			}
 		}
 		if err != nil {
@@ -1981,7 +2077,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 		// Not done sending data, do not attempt to commit it yet, loop around
 		// and send more data.
 		if recvd-sent > 0 {
-			continue
+			continue sendBytes
 		}
 
 		// The buffer has been uploaded and there is still more data to be
@@ -2012,7 +2108,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 				// Drop the stream reference as a new one will need to be created.
 				w.stream = nil
 
-				continue
+				continue sendBytes
 			}
 			if err != nil {
 				return nil, 0, err
@@ -2022,7 +2118,7 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 				// Retry if not all bytes were persisted.
 				writeOffset = resp.GetPersistedSize()
 				sent = int(writeOffset) - int(start)
-				continue
+				continue sendBytes
 			}
 		} else {
 			// If the object is done uploading, close the send stream to signal
@@ -2042,6 +2138,15 @@ func (w *gRPCWriter) uploadBuffer(recvd int, start int64, doneReading bool) (*st
 			var obj *storagepb.Object
 			for obj == nil {
 				resp, err := w.stream.Recv()
+				if shouldRetry(err) {
+					writeOffset, err = w.determineOffset(start)
+					if err != nil {
+						return nil, 0, err
+					}
+					sent = int(writeOffset) - int(start)
+					w.stream = nil
+					continue sendBytes
+				}
 				if err != nil {
 					return nil, 0, err
 				}

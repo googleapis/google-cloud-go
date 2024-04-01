@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.3.2...shopping/v0.4.0) (2024-03-27)
+
+
+### Features
+
+* **shopping:** Add DEMAND_GEN_ADS and DEMAND_GEN_ADS_DISCOVER_SURFACE in ReportingContextEnum ([#9648](https://github.com/googleapis/google-cloud-go/issues/9648)) ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
 ## [0.3.2](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.3.1...shopping/v0.3.2) (2024-03-14)
 
 
@@ -58,3 +65,4 @@
 * **shopping:** New clients ([#8699](https://github.com/googleapis/google-cloud-go/issues/8699)) ([0e43b40](https://github.com/googleapis/google-cloud-go/commit/0e43b40184bacac8d355ea2cfd00ebe58bd9e30b))
 
 ## Changes
+
