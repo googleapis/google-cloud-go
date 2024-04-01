@@ -25,7 +25,6 @@ import (
 	"time"
 
 	"github.com/google/go-cmp/cmp"
-	"google.golang.org/api/option"
 )
 
 func TestNewCredentials_serviceAccount(t *testing.T) {
@@ -33,7 +32,6 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 	tests := []struct {
 		name    string
 		config  CredentialsOptions
-		opts    option.ClientOption
 		wantErr error
 	}{
 		{
@@ -70,8 +68,8 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 				TargetPrincipal: "foo@project-id.iam.gserviceaccount.com",
 				Scopes:          []string{"scope"},
 				Subject:         "admin@example.com",
+				UniverseDomain:  "example.com",
 			},
-			opts:    option.WithUniverseDomain("example.com"),
 			wantErr: errUniverseNotSupportedDomainWideDelegation,
 		},
 	}
