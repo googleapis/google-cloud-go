@@ -92,15 +92,6 @@ func (o *Options) defaultEndpoint() string {
 // default endpoint.
 func (o *Options) mergedEndpoint() (string, error) {
 	defaultEndpoint := o.defaultEndpoint()
-	if defaultEndpoint == "" {
-		return "", errors.New("transport.Options.DefaultEndpointTemplate must not be empty")
-	}
-	if o.Endpoint == "" {
-		return "", errors.New("transport.Options.Endpoint must not be empty")
-	}
-	if strings.Contains(o.Endpoint, "://") {
-		return "", errors.New("transport.Options.Endpoint must be of format host[:port]")
-	}
 	u, err := url.Parse(fixScheme(defaultEndpoint))
 	if err != nil {
 		return "", err
