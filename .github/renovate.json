@@ -25,11 +25,17 @@
                 "^github.com/apache/arrow/go/v"
             ],
             "enabled": false
+        },
+        {
+            "matchFileNames": [
+                "storage/internal/benchmarks/**"
+            ],
+            "constraints":{
+                "go": "1.21"
+            }
         }
     ],
-    "force": {
-        "constraints": {
-            "go": "1.20"
-        }
+    "constraints": {
+        "go": "1.20"
     }
 }
