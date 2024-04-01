@@ -138,3 +138,43 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 type RoundTripFn func(req *http.Request) *http.Response
 
 func (f RoundTripFn) RoundTrip(req *http.Request) (*http.Response, error) { return f(req), nil }
+
+func TestCredentialsOptions_UniverseDomain(t *testing.T) {
+	testCases := []struct {
+		name               string
+		opts               *CredentialsOptions
+		wantUniverseDomain string
+		wantIsGDU          bool
+	}{
+		{
+			name:               "empty",
+			opts:               &CredentialsOptions{},
+			wantUniverseDomain: "googleapis.com",
+			wantIsGDU:          true,
+		},
+		{
+			name: "defaults",
+			opts: &CredentialsOptions{
+				UniverseDomain: "googleapis.com",
+			},
+			wantUniverseDomain: "googleapis.com",
+			wantIsGDU:          true,
+		},
+		{
+			name: "non-GDU",
+			opts: &CredentialsOptions{
+				UniverseDomain: "example.com",
+			},
+			wantUniverseDomain: "example.com",
+			wantIsGDU:          false,
+		},
+	}
+	for _, tc := range testCases {
+		if got := tc.opts.getUniverseDomain(); got != tc.wantUniverseDomain {
+			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantUniverseDomain)
+		}
+		if got := tc.opts.isUniverseDomainGDU(); got != tc.wantIsGDU {
+			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantIsGDU)
+		}
+	}
+}

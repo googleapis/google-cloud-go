@@ -64,6 +64,89 @@ var (
 	fakeClientCertSource = func(info *tls.CertificateRequestInfo) (*tls.Certificate, error) { return nil, nil }
 )
 
+func TestOptions_UniverseDomain(t *testing.T) {
+	testCases := []struct {
+		name                      string
+		opts                      *Options
+		wantDefaultUniverseDomain string
+		wantUniverseDomain        string
+		wantDefaultEndpoint       string
+		wantIsGDU                 bool
+		wantMergedEndpoint        string
+	}{
+		{
+			name:                      "empty",
+			opts:                      &Options{},
+			wantDefaultUniverseDomain: "googleapis.com",
+			wantUniverseDomain:        "googleapis.com",
+			wantDefaultEndpoint:       "",
+			wantIsGDU:                 true,
+			wantMergedEndpoint:        "",
+		},
+		{
+			name: "defaults",
+			opts: &Options{
+				DefaultEndpointTemplate: "https://test.UNIVERSE_DOMAIN/",
+				DefaultUniverseDomain:   "googleapis.com",
+			},
+			wantDefaultUniverseDomain: "googleapis.com",
+			wantUniverseDomain:        "googleapis.com",
+			wantDefaultEndpoint:       "https://test.googleapis.com/",
+			wantIsGDU:                 true,
+			wantMergedEndpoint:        "",
+		},
+		{
+			name: "non-GDU",
+			opts: &Options{
+				DefaultEndpointTemplate: "https://test.UNIVERSE_DOMAIN/",
+				DefaultUniverseDomain:   "googleapis.com",
+				UniverseDomain:          "example.com",
+			},
+			wantDefaultUniverseDomain: "googleapis.com",
+			wantUniverseDomain:        "example.com",
+			wantDefaultEndpoint:       "https://test.example.com/",
+			wantIsGDU:                 false,
+			wantMergedEndpoint:        "",
+		},
+		{
+			name: "merged endpoint",
+			opts: &Options{
+				DefaultEndpointTemplate: "https://test.UNIVERSE_DOMAIN/bar/baz",
+				DefaultUniverseDomain:   "googleapis.com",
+				Endpoint:                "myhost:8000",
+			},
+			wantDefaultUniverseDomain: "googleapis.com",
+			wantUniverseDomain:        "googleapis.com",
+			wantDefaultEndpoint:       "https://test.googleapis.com/bar/baz",
+			wantIsGDU:                 true,
+			wantMergedEndpoint:        "https://myhost:8000/bar/baz",
+		},
+	}
+	for _, tc := range testCases {
+		if got := tc.opts.getDefaultUniverseDomain(); got != tc.wantDefaultUniverseDomain {
+			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantDefaultUniverseDomain)
+		}
+		if got := tc.opts.getUniverseDomain(); got != tc.wantUniverseDomain {
+			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantUniverseDomain)
+		}
+		if got := tc.opts.isUniverseDomainGDU(); got != tc.wantIsGDU {
+			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantIsGDU)
+		}
+		if got := tc.opts.defaultEndpoint(); got != tc.wantDefaultEndpoint {
+			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantDefaultEndpoint)
+		}
+		if tc.opts.Endpoint != "" {
+			got, err := tc.opts.mergedEndpoint()
+			if err != nil {
+				t.Fatalf("%s: %v", tc.name, err)
+			}
+			if got != tc.wantMergedEndpoint {
+				t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantMergedEndpoint)
+			}
+		}
+	}
+}
+
 func TestGetEndpoint(t *testing.T) {
 	testCases := []struct {
 		endpoint                string
