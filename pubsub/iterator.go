@@ -97,9 +97,10 @@ type messageIterator struct {
 	enableExactlyOnceDelivery bool
 	sendNewAckDeadline        bool
 
-	// These determine if messages with an ordering key should be handled in order.
-	// This is populated by the response in StreamingPull and can change mid Receive.
-	orderingMu     sync.RWMutex
+	orderingMu sync.RWMutex
+	// enableOrdering determines if messages should be processed in order. This is populated
+	// by the response in StreamingPull and can change mid Receive. Must be accessed
+	// with the lock held.
 	enableOrdering bool
 }
 
@@ -370,15 +371,14 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 		it.eoMu.Unlock()
 	}
 
-	// Same thing with message ordering.
+	// Also update the subscriber's ordering setting if stale.
 	it.orderingMu.RLock()
 	enableOrdering := it.enableOrdering
 	it.orderingMu.RUnlock()
 
 	if got := res.GetSubscriptionProperties().GetMessageOrderingEnabled(); got != enableOrdering {
 		it.orderingMu.Lock()
-		it.sendNewAckDeadline = true
-		it.enableExactlyOnceDelivery = got
+		it.enableOrdering = got
 		it.orderingMu.Unlock()
 	}
 	return res.ReceivedMessages, nil
