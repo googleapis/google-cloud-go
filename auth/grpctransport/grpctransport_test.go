@@ -262,11 +262,13 @@ func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		at := &grpcCredentialsProvider{clientUniverseDomain: tt.universeDomain}
-		got := at.getClientUniverseDomain()
-		if got != tt.want {
-			t.Errorf("%s: got %q, want %q", tt.name, got, tt.want)
-		}
+		t.Run(tt.name, func(t *testing.T) {
+			at := &grpcCredentialsProvider{clientUniverseDomain: tt.universeDomain}
+			got := at.getClientUniverseDomain()
+			if got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
+		})
 	}
 }
 

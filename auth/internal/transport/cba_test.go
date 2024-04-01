@@ -19,7 +19,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 )
@@ -113,24 +112,26 @@ func TestOptions_UniverseDomain(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		if got := tc.opts.getUniverseDomain(); got != tc.wantUniverseDomain {
-			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantUniverseDomain)
-		}
-		if got := tc.opts.isUniverseDomainGDU(); got != tc.wantIsGDU {
-			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantIsGDU)
-		}
-		if got := tc.opts.defaultEndpoint(); got != tc.wantDefaultEndpoint {
-			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantDefaultEndpoint)
-		}
-		if tc.opts.Endpoint != "" {
-			got, err := tc.opts.mergedEndpoint()
-			if err != nil {
-				t.Fatalf("%s: %v", tc.name, err)
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tc.opts.getUniverseDomain(); got != tc.wantUniverseDomain {
+				t.Errorf("got %v, want %v", got, tc.wantUniverseDomain)
 			}
-			if got != tc.wantMergedEndpoint {
-				t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantMergedEndpoint)
+			if got := tc.opts.isUniverseDomainGDU(); got != tc.wantIsGDU {
+				t.Errorf("got %v, want %v", got, tc.wantIsGDU)
 			}
-		}
+			if got := tc.opts.defaultEndpoint(); got != tc.wantDefaultEndpoint {
+				t.Errorf("got %v, want %v", got, tc.wantDefaultEndpoint)
+			}
+			if tc.opts.Endpoint != "" {
+				got, err := tc.opts.mergedEndpoint()
+				if err != nil {
+					t.Fatalf("%v", err)
+				}
+				if got != tc.wantMergedEndpoint {
+					t.Errorf("got %v, want %v", got, tc.wantMergedEndpoint)
+				}
+			}
+		})
 	}
 }
 
@@ -319,7 +320,7 @@ func TestGetGRPCTransportConfigAndEndpoint(t *testing.T) {
 			}
 			_, endpoint, _ := GetGRPCTransportCredsAndEndpoint(tc.opts)
 			if tc.want != endpoint {
-				t.Fatalf("%s: want endpoint: [%s], got [%s]", tc.name, tc.want, endpoint)
+				t.Fatalf("want endpoint: %s, got %s", tc.want, endpoint)
 			}
 			// Let the cached MTLS config expire at the end of each test case.
 			time.Sleep(2 * time.Millisecond)
@@ -437,10 +438,10 @@ func TestGetHTTPTransportConfig_S2a(t *testing.T) {
 			}
 			_, dialFunc, err := GetHTTPTransportConfig(tc.opts)
 			if err != nil {
-				t.Fatalf("%s: err: %v", tc.name, err)
+				t.Fatalf("err: %v", err)
 			}
 			if want, got := tc.isDialFnNil, dialFunc == nil; want != got {
-				t.Errorf("%s: expecting returned dialFunc is nil: [%v], got [%v]", tc.name, tc.isDialFnNil, got)
+				t.Errorf("expecting returned dialFunc is nil: [%v], got [%v]", tc.isDialFnNil, got)
 			}
 			// Let MTLS config expire at end of each test case.
 			time.Sleep(2 * time.Millisecond)
@@ -518,21 +519,23 @@ func TestGetTransportConfig_UniverseDomain(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if tc.opts.ClientCertProvider != nil {
-			os.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
-		} else {
-			os.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
-		}
-		config, err := getTransportConfig(tc.opts)
-		if err != nil {
-			if err != tc.wantErr {
-				t.Fatalf("%s: err: %v", tc.name, err)
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.opts.ClientCertProvider != nil {
+				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
+			} else {
+				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 			}
-		} else {
-			if tc.wantEndpoint != config.endpoint {
-				t.Errorf("%s: want endpoint: [%s], got [%s]", tc.name, tc.wantEndpoint, config.endpoint)
+			config, err := getTransportConfig(tc.opts)
+			if err != nil {
+				if err != tc.wantErr {
+					t.Fatalf("err: %v", err)
+				}
+			} else {
+				if tc.wantEndpoint != config.endpoint {
+					t.Errorf("want endpoint: %s, got %s", tc.wantEndpoint, config.endpoint)
+				}
 			}
-		}
+		})
 	}
 }
 
@@ -622,20 +625,22 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if tc.opts.ClientCertProvider != nil {
-			os.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
-		} else {
-			os.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
-		}
-		_, endpoint, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
-		if err != nil {
-			if err != tc.wantErr {
-				t.Fatalf("%s: err: %v", tc.name, err)
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.opts.ClientCertProvider != nil {
+				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "true")
+			} else {
+				t.Setenv("GOOGLE_API_USE_CLIENT_CERTIFICATE", "false")
 			}
-		} else {
-			if tc.wantEndpoint != endpoint {
-				t.Errorf("%s: want endpoint: [%s], got [%s]", tc.name, tc.wantEndpoint, endpoint)
+			_, endpoint, err := GetGRPCTransportCredsAndEndpoint(tc.opts)
+			if err != nil {
+				if err != tc.wantErr {
+					t.Fatalf("err: %v", err)
+				}
+			} else {
+				if tc.wantEndpoint != endpoint {
+					t.Errorf("want endpoint: %s, got %s", tc.wantEndpoint, endpoint)
+				}
 			}
-		}
+		})
 	}
 }

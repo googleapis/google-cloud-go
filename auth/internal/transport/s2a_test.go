@@ -15,7 +15,6 @@
 package transport
 
 import (
-	"os"
 	"testing"
 	"time"
 )
@@ -63,7 +62,7 @@ func TestGetS2AAddress(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			httpGetMetadataMTLSConfig = tc.respFn
 			if want, got := tc.want, GetS2AAddress(); got != want {
-				t.Errorf("%s: want address [%s], got address [%s]", tc.name, want, got)
+				t.Errorf("want address [%s], got address [%s]", want, got)
 			}
 			// Let the MTLS config expire at the end of each test case.
 			time.Sleep(2 * time.Millisecond)
@@ -119,12 +118,14 @@ func TestIsGoogleS2AEnabled(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		if tc.useS2AEnv != "" {
-			os.Setenv(googleAPIUseS2AEnv, tc.useS2AEnv)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.useS2AEnv != "" {
+				t.Setenv(googleAPIUseS2AEnv, tc.useS2AEnv)
+			}
 
-		if got := isGoogleS2AEnabled(); got != tc.want {
-			t.Errorf("%s: got %t, want %t", tc.name, got, tc.want)
-		}
+			if got := isGoogleS2AEnabled(); got != tc.want {
+				t.Errorf("got %t, want %t", got, tc.want)
+			}
+		})
 	}
 }

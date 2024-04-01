@@ -118,7 +118,7 @@ func TestNewCredentials_serviceAccount(t *testing.T) {
 			ts, err := NewCredentials(&tt.config)
 			if err != nil {
 				if err != tt.wantErr {
-					t.Fatalf("%s: err: %v", tt.name, err)
+					t.Fatalf("err: %v", err)
 				}
 			} else {
 				tok, err := ts.Token(ctx)
@@ -168,11 +168,13 @@ func TestCredentialsOptions_UniverseDomain(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		if got := tc.opts.getUniverseDomain(); got != tc.wantUniverseDomain {
-			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantUniverseDomain)
-		}
-		if got := tc.opts.isUniverseDomainGDU(); got != tc.wantIsGDU {
-			t.Errorf("%s: got %v, want %v", tc.name, got, tc.wantIsGDU)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tc.opts.getUniverseDomain(); got != tc.wantUniverseDomain {
+				t.Errorf("got %v, want %v", got, tc.wantUniverseDomain)
+			}
+			if got := tc.opts.isUniverseDomainGDU(); got != tc.wantIsGDU {
+				t.Errorf("got %v, want %v", got, tc.wantIsGDU)
+			}
+		})
 	}
 }
