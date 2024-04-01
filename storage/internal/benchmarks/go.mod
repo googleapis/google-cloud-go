@@ -3,9 +3,9 @@ module main
 go 1.20
 
 require (
-	cloud.google.com/go/storage v1.39.1
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.21.0
-	github.com/cloudprober/cloudprober v0.13.2
+	cloud.google.com/go/storage v1.40.0
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.22.0
+	github.com/cloudprober/cloudprober v0.13.3
 	github.com/google/uuid v1.6.0
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.24.0
@@ -15,7 +15,7 @@ require (
 	go.opentelemetry.io/otel/trace v1.24.0
 	golang.org/x/net v0.22.0
 	golang.org/x/sync v0.6.0
-	google.golang.org/api v0.170.0
+	google.golang.org/api v0.172.0
 	google.golang.org/grpc v1.62.1
 	google.golang.org/protobuf v1.33.0
 )
