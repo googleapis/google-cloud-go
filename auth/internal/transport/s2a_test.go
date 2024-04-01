@@ -15,6 +15,7 @@
 package transport
 
 import (
+	"os"
 	"testing"
 	"time"
 )
@@ -92,4 +93,38 @@ func TestMTLSConfigExpiry(t *testing.T) {
 	}
 	// Let the MTLS config expire before running other tests.
 	time.Sleep(1 * time.Second)
+}
+
+func TestIsGoogleS2AEnabled(t *testing.T) {
+	testCases := []struct {
+		name      string
+		useS2AEnv string
+		want      bool
+	}{
+		{
+			name:      "true",
+			useS2AEnv: "true",
+			want:      true,
+		},
+		{
+			name:      "false",
+			useS2AEnv: "false",
+			want:      false,
+		},
+		{
+			name:      "empty",
+			useS2AEnv: "",
+			want:      false,
+		},
+	}
+
+	for _, tc := range testCases {
+		if tc.useS2AEnv != "" {
+			os.Setenv(googleAPIUseS2AEnv, tc.useS2AEnv)
+		}
+
+		if got := isGoogleS2AEnabled(); got != tc.want {
+			t.Errorf("%s: got %t, want %t", tc.name, got, tc.want)
+		}
+	}
 }

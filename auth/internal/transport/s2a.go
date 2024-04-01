@@ -18,7 +18,7 @@ import (
 	"encoding/json"
 	"log"
 	"os"
-	"strings"
+	"strconv"
 	"sync"
 	"time"
 
@@ -181,5 +181,9 @@ func shouldUseS2A(clientCertSource cert.Provider, opts *Options) bool {
 }
 
 func isGoogleS2AEnabled() bool {
-	return strings.ToLower(os.Getenv(googleAPIUseS2AEnv)) == "true"
+	b, err := strconv.ParseBool(os.Getenv(googleAPIUseS2AEnv))
+	if err != nil {
+		return false
+	}
+	return b
 }
