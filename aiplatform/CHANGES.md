@@ -1,6 +1,56 @@
 # Changes
 
 
+## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.65.0...aiplatform/v1.66.0) (2024-03-27)
+
+
+### Features
+
+* **aiplatform:** Add Vertex AI extension registry and execution related API and services to v1beta1 client ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+* **aiplatform:** Evaluation Service aiplatform v1beta1 initial release ([f8ff971](https://github.com/googleapis/google-cloud-go/commit/f8ff971366999aefb5eb5189c6c9e2bd76a05d9e))
+
+## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.64.0...aiplatform/v1.65.0) (2024-03-25)
+
+
+### Features
+
+* **aiplatform:** Add function_calling_config to ToolConfig ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+* **aiplatform:** Add Optimized feature store proto ([#9635](https://github.com/googleapis/google-cloud-go/issues/9635)) ([94f9463](https://github.com/googleapis/google-cloud-go/commit/94f9463f890ed886622ee65edfbc4b5ecdfa97f8))
+* **aiplatform:** Reasoning Engine v1beta1 GAPIC release ([1ef5b19](https://github.com/googleapis/google-cloud-go/commit/1ef5b1917bb9a1271c3fb152413ec0e74163164d))
+
+
+### Documentation
+
+* **aiplatform:** Update the description for reasoning engine ([1ef5b19](https://github.com/googleapis/google-cloud-go/commit/1ef5b1917bb9a1271c3fb152413ec0e74163164d))
+
+## [1.64.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.63.0...aiplatform/v1.64.0) (2024-03-14)
+
+
+### Features
+
+* **aiplatform:** Add v1beta1 StreamingFetchFeatureValues API ([#9568](https://github.com/googleapis/google-cloud-go/issues/9568)) ([05f58cc](https://github.com/googleapis/google-cloud-go/commit/05f58ccce530d8a3ab404356929352002d5156ba))
+
+## [1.63.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.62.2...aiplatform/v1.63.0) (2024-03-12)
+
+
+### Features
+
+* **aiplatform:** A new value `NVIDIA_H100_80GB` is added to enum `AcceleratorType` ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+
+## [1.62.2](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.62.1...aiplatform/v1.62.2) (2024-03-07)
+
+
+### Bug Fixes
+
+* **aiplatform:** An existing field `preflight_validations` is removed from message `.google.cloud.aiplatform.v1beta1.CreatePipelineJobRequest` ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
+## [1.62.1](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.62.0...aiplatform/v1.62.1) (2024-03-04)
+
+
+### Documentation
+
+* **aiplatform:** Update docs for FeatureView Service Agents ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
 ## [1.62.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.61.0...aiplatform/v1.62.0) (2024-02-26)
 
 
@@ -658,3 +708,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out aiplatform as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

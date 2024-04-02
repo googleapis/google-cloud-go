@@ -269,6 +269,12 @@ func ExampleOsConfigZonalClient_ListInstanceOSPoliciesCompliances() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListInstanceOSPoliciesCompliancesResponse)
 	}
 }
 
@@ -300,6 +306,12 @@ func ExampleOsConfigZonalClient_ListInventories() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListInventoriesResponse)
 	}
 }
 
@@ -331,6 +343,12 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignmentReports() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListOSPolicyAssignmentReportsResponse)
 	}
 }
 
@@ -362,6 +380,12 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListOSPolicyAssignmentRevisionsResponse)
 	}
 }
 
@@ -393,6 +417,12 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListOSPolicyAssignmentsResponse)
 	}
 }
 
@@ -424,6 +454,12 @@ func ExampleOsConfigZonalClient_ListVulnerabilityReports() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListVulnerabilityReportsResponse)
 	}
 }
 

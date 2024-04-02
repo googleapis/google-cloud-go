@@ -79,7 +79,7 @@ func (f *fakeTranslationServer) TranslateText(ctx context.Context, req *translat
 ```
 
 All of the generated protobuf code found in [google.golang.org/genproto](https://pkg.go.dev/google.golang.org/genproto)
-contains a similar `package.UnimplmentedFooServer` type that is useful for
+contains a similar `package.UnimplementedFooServer` type that is useful for
 creating fakes. By embedding the unimplemented server in the
 `fakeTranslationServer`, the fake will “inherit” all of the RPCs the server
 exposes. Then, by providing our own `fakeTranslationServer.TranslateText`

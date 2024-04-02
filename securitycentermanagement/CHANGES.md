@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.1.7](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.6...securitycentermanagement/v0.1.7) (2024-03-25)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Annotate EffectiveSecurityHealthAnalyticsCustomModule.name as IDENTIFIER ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+
+## [0.1.6](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.5...securitycentermanagement/v0.1.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.4...securitycentermanagement/v0.1.5) (2024-03-04)
+
+
+### Documentation
+
+* **securitycentermanagement:** Clarify documentation for ListDescendantSecurityHealthAnalyticsCustomModules RPC and CostumConfig message ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.3...securitycentermanagement/v0.1.4) (2024-02-21)
 
 
@@ -37,3 +58,4 @@
 * **securitycentermanagement:** Security Center Management API ([#9068](https://github.com/googleapis/google-cloud-go/issues/9068)) ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
 
 ## Changes
+

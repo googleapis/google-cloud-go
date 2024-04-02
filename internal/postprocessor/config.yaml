@@ -11,6 +11,7 @@ modules:
   - apigeeregistry
   - apikeys
   - appengine
+  - apphub
   - apps
   - area120
   - artifactregistry
@@ -27,6 +28,7 @@ modules:
   - certificatemanager
   - channel
   - cloudbuild
+  - cloudcontrolspartner
   - clouddms
   - cloudprofiler
   - cloudquotas
@@ -342,6 +344,9 @@ service-configs:
   - input-directory: google/cloud/apigeeregistry/v1
     service-config: apigeeregistry_v1.yaml
     import-path: cloud.google.com/go/apigeeregistry/apiv1
+  - input-directory: google/cloud/apphub/v1
+    service-config: apphub_v1.yaml
+    import-path: cloud.google.com/go/apphub/apiv1
   - input-directory: google/cloud/asset/v1
     service-config: cloudasset_v1.yaml
     import-path: cloud.google.com/go/asset/apiv1
@@ -450,6 +455,12 @@ service-configs:
   - input-directory: google/cloud/channel/v1
     service-config: cloudchannel_v1.yaml
     import-path: cloud.google.com/go/channel/apiv1
+  - input-directory: google/cloud/cloudcontrolspartner/v1
+    service-config: cloudcontrolspartner_v1.yaml
+    import-path: cloud.google.com/go/cloudcontrolspartner/apiv1
+  - input-directory: google/cloud/cloudcontrolspartner/v1beta
+    service-config: cloudcontrolspartner_v1beta.yaml
+    import-path: cloud.google.com/go/cloudcontrolspartner/apiv1beta
   - input-directory: google/cloud/clouddms/v1
     service-config: datamigration_v1.yaml
     import-path: cloud.google.com/go/clouddms/apiv1
@@ -774,6 +785,9 @@ service-configs:
   - input-directory: google/cloud/secretmanager/v1
     service-config: secretmanager_v1.yaml
     import-path: cloud.google.com/go/secretmanager/apiv1
+  - input-directory: google/cloud/secretmanager/v1beta2
+    service-config: secretmanager_v1beta2.yaml
+    import-path: cloud.google.com/go/secretmanager/apiv1beta2
   - input-directory: google/cloud/securesourcemanager/v1
     service-config: securesourcemanager_v1.yaml
     import-path: cloud.google.com/go/securesourcemanager/apiv1
@@ -795,6 +809,9 @@ service-configs:
   - input-directory: google/cloud/securitycenter/v1p1beta1
     service-config: securitycenter_v1p1beta1.yaml
     import-path: cloud.google.com/go/securitycenter/apiv1p1beta1
+  - input-directory: google/cloud/securitycenter/v2
+    service-config: securitycenter_v2.yaml
+    import-path: cloud.google.com/go/securitycenter/apiv2
   - input-directory: google/cloud/securitycentermanagement/v1
     service-config: securitycentermanagement_v1.yaml
     import-path: cloud.google.com/go/securitycentermanagement/apiv1
@@ -968,9 +985,6 @@ service-configs:
   - input-directory: google/devtools/cloudbuild/v2
     service-config: cloudbuild_v2.yaml
     import-path: cloud.google.com/go/cloudbuild/apiv2
-  - input-directory: google/cloud/compute/v1
-    service-config: compute_v1.yaml
-    import-path: cloud.google.com/go/compute/apiv1
   - input-directory: google/cloud/confidentialcomputing/v1
     service-config: confidentialcomputing_v1.yaml
     import-path: cloud.google.com/go/confidentialcomputing/apiv1
@@ -1049,6 +1063,9 @@ service-configs:
   - input-directory: google/spanner/executor/v1
     service-config: spanner_cloud_executor.yaml
     import-path: cloud.google.com/go/spanner/executor/apiv1
+  - input-directory: google/storage/control/v2
+    service-config: storage_v2.yaml
+    import-path: cloud.google.com/go/storage/control/apiv2
   - input-directory: google/storage/v2
     service-config: storage_v2.yaml
     import-path: cloud.google.com/go/storage/internal/apiv2

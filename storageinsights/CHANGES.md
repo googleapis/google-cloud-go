@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.6](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.0.5...storageinsights/v1.0.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **storageinsights:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.0.5](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.0.4...storageinsights/v1.0.5) (2024-01-30)
 
 
@@ -72,3 +79,4 @@
 * **storageinsights:** Start generating apiv1 ([#7862](https://github.com/googleapis/google-cloud-go/issues/7862)) ([07a5ac1](https://github.com/googleapis/google-cloud-go/commit/07a5ac1965154b471d5a45e0c566803ea9edb15f))
 
 ## Changes
+

@@ -1,6 +1,18 @@
 # Changes
 
 
+## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.26.0...documentai/v1.26.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **documentai:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **documentai:** A comment for field `processor_version_source` in message `.google.cloud.documentai.v1beta3.ImportProcessorVersionRequest` is changed ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.25.0...documentai/v1.26.0) (2024-02-21)
 
 
@@ -413,3 +425,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out documentai as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

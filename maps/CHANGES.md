@@ -2,6 +2,13 @@
 
 
 
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.0...maps/v1.7.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **maps:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.4...maps/v1.7.0) (2024-02-21)
 
 
@@ -206,3 +213,4 @@
 
 * **maps/addressvalidation:** Start generating apiv1 ([#7012](https://github.com/googleapis/google-cloud-go/issues/7012)) ([3e88250](https://github.com/googleapis/google-cloud-go/commit/3e882501ea196ff4f122989e5726bfd4c72e5133))
 * **maps/routing:** Start generating apiv2 ([#7056](https://github.com/googleapis/google-cloud-go/issues/7056)) ([1b7993d](https://github.com/googleapis/google-cloud-go/commit/1b7993d6931cf33bab07124da4180eeb3faffe7e))
+
