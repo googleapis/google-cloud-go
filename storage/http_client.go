@@ -556,8 +556,9 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, params *updateObje
 
 func (c *httpStorageClient) RestoreObject(ctx context.Context, params *restoreObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
-	req := c.raw.Objects.Restore(params.bucket, params.object, nil).Context(ctx)
-	if err := applyConds("RestoreObject", params.gen, params.conds, req); err != nil {
+	req := c.raw.Objects.Restore(params.bucket, params.object, params.gen).Context(ctx)
+	// Do not set the generation here since it's not an optional condition; it gets set above.
+	if err := applyConds("RestoreObject", defaultGen, params.conds, req); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
