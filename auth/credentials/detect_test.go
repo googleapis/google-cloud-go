@@ -667,7 +667,7 @@ func TestDefaultCredentials_ExternalAccountAuthorizedUserKey(t *testing.T) {
 }
 
 func TestDefaultCredentials_Fails(t *testing.T) {
-	t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "nothingToSeeHere")
+	t.Setenv(credsfile.GoogleAppCredsEnvVar, "nothingToSeeHere")
 	t.Setenv("HOME", "nothingToSeeHere")
 	t.Setenv("APPDATA", "nothingToSeeHere")
 	allowOnGCECheck = false
@@ -890,14 +890,14 @@ func TestDefaultCredentials_UniverseDomain(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			creds, err := DetectDefault(tt.opts)
 			if err != nil {
-				t.Fatalf("%s: %v", tt.name, err)
+				t.Fatalf("%v", err)
 			}
 			ud, err := creds.UniverseDomain(ctx)
 			if err != nil {
-				t.Fatalf("%s: %v", tt.name, err)
+				t.Fatal(err)
 			}
 			if ud != tt.want {
-				t.Fatalf("%s: got %q, want %q", tt.name, ud, tt.want)
+				t.Fatalf("got %q, want %q", ud, tt.want)
 			}
 		})
 	}
