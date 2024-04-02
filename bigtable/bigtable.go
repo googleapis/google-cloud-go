@@ -111,20 +111,27 @@ func (c *Client) Close() error {
 var (
 	idempotentRetryCodes  = []codes.Code{codes.DeadlineExceeded, codes.Unavailable, codes.Aborted}
 	isIdempotentRetryCode = make(map[codes.Code]bool)
-	retryOptions          = []gax.CallOption{
-		gax.WithRetry(func() gax.Retryer {
-			return gax.OnCodes(idempotentRetryCodes, gax.Backoff{
-				Initial:    100 * time.Millisecond,
-				Max:        2 * time.Second,
-				Multiplier: 1.2,
-			})
-		}),
-	}
+	retryOptions          = newRetryOptions(idempotentRetryCodes)
+
+	condMutRetryCodes   = []codes.Code{codes.DeadlineExceeded, codes.Aborted}
+	condMutRetryOptions = newRetryOptions(condMutRetryCodes)
 )
 
 func init() {
 	for _, code := range idempotentRetryCodes {
 		isIdempotentRetryCode[code] = true
+	}
+}
+
+func newRetryOptions(retryCodes []codes.Code) []gax.CallOption {
+	return []gax.CallOption{
+		gax.WithRetry(func() gax.Retryer {
+			return gax.OnCodes(retryCodes, gax.Backoff{
+				Initial:    100 * time.Millisecond,
+				Max:        2 * time.Second,
+				Multiplier: 1.2,
+			})
+		}),
 	}
 }
 
@@ -824,7 +831,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	}
 
 	var callOptions []gax.CallOption
-	if m.cond == nil {
+	if !m.isConditional {
 		req := &btpb.MutateRowRequest{
 			TableName:    t.c.fullTableName(t.table),
 			AppProfileId: t.c.appProfile,
@@ -847,10 +854,12 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	}
 
 	req := &btpb.CheckAndMutateRowRequest{
-		TableName:       t.c.fullTableName(t.table),
-		AppProfileId:    t.c.appProfile,
-		RowKey:          []byte(row),
-		PredicateFilter: m.cond.proto(),
+		TableName:    t.c.fullTableName(t.table),
+		AppProfileId: t.c.appProfile,
+		RowKey:       []byte(row),
+	}
+	if m.cond != nil {
+		req.PredicateFilter = m.cond.proto()
 	}
 	if m.mtrue != nil {
 		if m.mtrue.cond != nil {
@@ -865,7 +874,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		req.FalseMutations = m.mfalse.ops
 	}
 	if mutationsAreRetryable(req.TrueMutations) && mutationsAreRetryable(req.FalseMutations) {
-		callOptions = retryOptions
+		callOptions = condMutRetryOptions
 	}
 	var cmRes *btpb.CheckAndMutateRowResponse
 	err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
@@ -905,6 +914,7 @@ type Mutation struct {
 	// for conditional mutations
 	cond          Filter
 	mtrue, mfalse *Mutation
+	isConditional bool
 }
 
 // NewMutation returns a new mutation.
@@ -921,7 +931,7 @@ func NewMutation() *Mutation {
 // The application of a ReadModifyWrite is atomic; concurrent ReadModifyWrites will
 // be executed serially by the server.
 func NewCondMutation(cond Filter, mtrue, mfalse *Mutation) *Mutation {
-	return &Mutation{cond: cond, mtrue: mtrue, mfalse: mfalse}
+	return &Mutation{cond: cond, mtrue: mtrue, mfalse: mfalse, isConditional: true}
 }
 
 // Set sets a value in a specified column, with the given timestamp.
@@ -1024,6 +1034,7 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	for _, group := range groupEntries(origEntries, maxMutations) {
 		attrMap := make(map[string]interface{})
 		err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+			fmt.Printf("\nNew request\n")
 			attrMap["rowCount"] = len(group)
 			trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 			err := t.doApplyBulk(ctx, group, opts...)
@@ -1104,10 +1115,11 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, opts ...
 
 		for i, entry := range res.Entries {
 			s := entry.Status
+			fmt.Printf("i: %v, s: %v, index: %v\n", i, s, entry.Index)
 			if s.Code == int32(codes.OK) {
-				entryErrs[i].Err = nil
+				entryErrs[entry.Index].Err = nil
 			} else {
-				entryErrs[i].Err = status.Errorf(codes.Code(s.Code), s.Message)
+				entryErrs[entry.Index].Err = status.Errorf(codes.Code(s.Code), s.Message)
 			}
 		}
 		after(res)
