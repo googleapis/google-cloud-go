@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -659,6 +658,8 @@ type TaskSpec struct {
 	ComputeResource *ComputeResource `protobuf:"bytes,3,opt,name=compute_resource,json=computeResource,proto3" json:"compute_resource,omitempty"`
 	// Maximum duration the task should run.
 	// The task will be killed and marked as FAILED if over this limit.
+	// The valid value range for max_run_duration in seconds is [0,
+	// 315576000000.999999999],
 	MaxRunDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=max_run_duration,json=maxRunDuration,proto3" json:"max_run_duration,omitempty"`
 	// Maximum number of retries on failures.
 	// The default, 0, which means never retry.
