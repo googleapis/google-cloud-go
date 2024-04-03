@@ -3,7 +3,7 @@ module cloud.google.com/go/spanner
 go 1.19
 
 require (
-	cloud.google.com/go v0.112.1
+	cloud.google.com/go v0.112.2
 	cloud.google.com/go/iam v1.1.7
 	cloud.google.com/go/longrunning v0.5.6
 	github.com/golang/protobuf v1.5.4
@@ -16,10 +16,10 @@ require (
 	go.opentelemetry.io/otel/metric v1.24.0
 	golang.org/x/oauth2 v0.18.0
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
-	google.golang.org/api v0.170.0
+	google.golang.org/api v0.172.0
 	google.golang.org/genproto v0.0.0-20240213162025-012b6fc9bca9
-	google.golang.org/genproto/googleapis/api v0.0.0-20240314234333-6e1732d8331c
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c
+	google.golang.org/genproto/googleapis/api v0.0.0-20240401170217-c3f982113cda
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda
 	google.golang.org/grpc v1.62.1
 	google.golang.org/protobuf v1.33.0
 )

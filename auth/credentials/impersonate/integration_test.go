@@ -28,12 +28,12 @@ import (
 	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/credentials/idtoken"
 	"cloud.google.com/go/auth/credentials/impersonate"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/testutil"
 	"cloud.google.com/go/auth/internal/testutil/testgcs"
 )
 
 const (
-	envAppCreds    = "GOOGLE_APPLICATION_CREDENTIALS"
 	envProjectID   = "GCLOUD_TESTS_GOLANG_PROJECT_ID"
 	envReaderCreds = "GCLOUD_TESTS_IMPERSONATE_READER_KEY"
 	envReaderEmail = "GCLOUD_TESTS_IMPERSONATE_READER_EMAIL"
@@ -52,7 +52,7 @@ var (
 func TestMain(m *testing.M) {
 	flag.Parse()
 	random = rand.New(rand.NewSource(time.Now().UnixNano()))
-	baseKeyFile = os.Getenv(envAppCreds)
+	baseKeyFile = os.Getenv(credsfile.GoogleAppCredsEnvVar)
 	projectID = os.Getenv(envProjectID)
 	readerKeyFile = os.Getenv(envReaderCreds)
 	readerEmail = os.Getenv(envReaderEmail)
