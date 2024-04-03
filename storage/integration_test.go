@@ -298,10 +298,8 @@ type readCase struct {
 
 var readCases = []readCase{
 	{
-		desc: "Read",
-		readFunc: func(r io.Reader) ([]byte, error) {
-			return io.ReadAll(r)
-		},
+		desc:     "Read",
+		readFunc: io.ReadAll,
 	},
 	{
 		desc: "WriteTo",
@@ -2621,7 +2619,6 @@ func TestIntegration_ZeroSizedObject(t *testing.T) {
 					t.Errorf("Body is %v, want empty []byte{}", body)
 				}
 			})
-
 		}
 	})
 }
@@ -3650,12 +3647,9 @@ func TestIntegration_ReadCRC(t *testing.T) {
 					})
 
 				}
-
 			})
 		}
-
 	})
-
 }
 
 func TestIntegration_CancelWrite(t *testing.T) {
