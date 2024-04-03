@@ -67,10 +67,10 @@ func TestComputeUniverseDomainProvider(t *testing.T) {
 			c := ComputeUniverseDomainProvider{}
 			got, err := c.GetProperty(context.Background())
 			if err != tc.wantErr {
-				t.Errorf("%s: got error %v; want error %v", tc.name, err, tc.wantErr)
+				t.Errorf("got error %v; want error %v", err, tc.wantErr)
 			}
 			if got != tc.want {
-				t.Errorf("%s: got %v; want %v", tc.name, got, tc.want)
+				t.Errorf("got %v; want %v", got, tc.want)
 			}
 		})
 	}
