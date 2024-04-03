@@ -262,18 +262,20 @@ func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
 		},
 	}
 	for _, tt := range tests {
-		at := &grpcCredentialsProvider{clientUniverseDomain: tt.universeDomain}
-		got := at.getClientUniverseDomain()
-		if got != tt.want {
-			t.Errorf("%s: got %q, want %q", tt.name, got, tt.want)
-		}
+		t.Run(tt.name, func(t *testing.T) {
+			at := &grpcCredentialsProvider{clientUniverseDomain: tt.universeDomain}
+			got := at.getClientUniverseDomain()
+			if got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
+		})
 	}
 }
 
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatal(err)
@@ -308,7 +310,7 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	pool, err := Dial(context.Background(), false, &Options{
 		Metadata: map[string]string{"Foo": wantHeader},
 		InternalOptions: &InternalOptions{
-			DefaultEndpoint: l.Addr().String(),
+			DefaultEndpointTemplate: l.Addr().String(),
 		},
 		DetectOpts: &credentials.DetectOptions{
 			Audience:         l.Addr().String(),
