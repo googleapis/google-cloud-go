@@ -23,6 +23,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 // TokenProviderFromTokenSource converts any [golang.org/x/oauth2.TokenSource]
@@ -78,6 +79,38 @@ func (ts *tokenSourceAdapter) Token() (*oauth2.Token, error) {
 		AccessToken: tok.Value,
 		Expiry:      tok.Expiry,
 	}, nil
+}
+
+func AuthCredentialsFromOauth2Credentials(creds *google.Credentials) *auth.Credentials {
+	if creds == nil {
+		return nil
+	}
+	return auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: TokenProviderFromTokenSource(creds.TokenSource),
+		JSON:          creds.JSON,
+		ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
+			return creds.ProjectID, nil
+		}),
+		UniverseDomainProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
+			return creds.GetUniverseDomain()
+		}),
+	})
+}
+
+func Oauth2CredentialsFromAuthCredentials(creds *auth.Credentials) *google.Credentials {
+	if creds == nil {
+		return nil
+	}
+	// Throw away errors as old credentials are not request aware. Also, no
+	// network requests are currently happening for this use case.
+	projectID, _ := creds.ProjectID(context.Background())
+
+	return &google.Credentials{
+		TokenSource: TokenSourceFromTokenProvider(creds.TokenProvider),
+		ProjectID:   projectID,
+		JSON:        creds.JSON(),
+		// TODO(quartzmo): no way to set UD
+	}
 }
 
 type oauth2Error struct {
