@@ -21,12 +21,11 @@
 package securitycenterpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -66,21 +65,21 @@ type SecurityMarks struct {
 	Marks map[string]string `protobuf:"bytes,2,rep,name=marks,proto3" json:"marks,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The canonical name of the marks. The following list shows some examples:
 	//
-	// + `organizations/{organization_id}/assets/{asset_id}/securityMarks"
+	// + `organizations/{organization_id}/assets/{asset_id}/securityMarks`
 	// +
-	// `organizations/{organization_id}/sources/{source_id}/findings/{finding_id}/securityMarks"
+	// `organizations/{organization_id}/sources/{source_id}/findings/{finding_id}/securityMarks`
 	// +
-	// `organizations/{organization_id}/sources/{source_id}/locations/{location}/findings/{finding_id}/securityMarks"
-	// + `folders/{folder_id}/assets/{asset_id}/securityMarks"
+	// `organizations/{organization_id}/sources/{source_id}/locations/{location}/findings/{finding_id}/securityMarks`
+	// + `folders/{folder_id}/assets/{asset_id}/securityMarks`
 	// +
-	// `folders/{folder_id}/sources/{source_id}/findings/{finding_id}/securityMarks"
+	// `folders/{folder_id}/sources/{source_id}/findings/{finding_id}/securityMarks`
 	// +
-	// `folders/{folder_id}/sources/{source_id}/locations/{location}/findings/{finding_id}/securityMarks"
-	// + `projects/{project_number}/assets/{asset_id}/securityMarks"
+	// `folders/{folder_id}/sources/{source_id}/locations/{location}/findings/{finding_id}/securityMarks`
+	// + `projects/{project_number}/assets/{asset_id}/securityMarks`
 	// +
-	// `projects/{project_number}/sources/{source_id}/findings/{finding_id}/securityMarks"
+	// `projects/{project_number}/sources/{source_id}/findings/{finding_id}/securityMarks`
 	// +
-	// `projects/{project_number}/sources/{source_id}/locations/{location}/findings/{finding_id}/securityMarks"
+	// `projects/{project_number}/sources/{source_id}/locations/{location}/findings/{finding_id}/securityMarks`
 	CanonicalName string `protobuf:"bytes,3,opt,name=canonical_name,json=canonicalName,proto3" json:"canonical_name,omitempty"`
 }
 
