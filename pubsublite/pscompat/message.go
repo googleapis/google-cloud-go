@@ -162,11 +162,10 @@ func ParseMessageMetadata(id string) (*MessageMetadata, error) {
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
 	}
-
-	partition, pErr := strconv.ParseInt(parts[0], 10, 64)
+	partition, pErr := strconv.Atoi(parts[0])
 	offset, oErr := strconv.ParseInt(parts[1], 10, 64)
 	if pErr != nil || oErr != nil {
 		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
 	}
-	return &MessageMetadata{Partition: int(partition), Offset: offset}, nil
+	return &MessageMetadata{Partition: partition, Offset: offset}, nil
 }
