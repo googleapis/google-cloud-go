@@ -15,9 +15,6 @@
         "ai": {
             "component": "ai"
         },
-        "aiplatform": {
-            "component": "aiplatform"
-        },
         "alloydb": {
             "component": "alloydb"
         },
