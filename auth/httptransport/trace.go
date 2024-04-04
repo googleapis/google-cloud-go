@@ -77,7 +77,7 @@ func (f *httpFormat) SpanContextFromRequest(req *http.Request) (sc trace.SpanCon
 	if !strings.HasPrefix(h, "o=") {
 		return sc, true
 	}
-	o, err := strconv.ParseUint(h[2:], 10, 64)
+	o, err := strconv.ParseUint(h[2:], 10, 32)
 	if err != nil {
 		return trace.SpanContext{}, false
 	}
