@@ -2180,6 +2180,32 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 	}
 }
 
+func TestIntegration_PublishCompression(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	topic.PublishSettings.EnableCompression = true
+	topic.PublishSettings.CompressionBytesThreshold = 50
+
+	const messageSizeBytes = 1000
+
+	msg := &Message{Data: bytes.Repeat([]byte{'A'}, int(messageSizeBytes))}
+	res := topic.Publish(ctx, msg)
+
+	_, err = res.Get(ctx)
+	if err != nil {
+		t.Errorf("publish result got err: %v", err)
+	}
+}
+
 // createTopicWithRetry creates a topic, wrapped with testutil.Retry and returns the created topic or an error.
 func createTopicWithRetry(ctx context.Context, t *testing.T, c *Client, topicID string, cfg *TopicConfig) (*Topic, error) {
 	var topic *Topic

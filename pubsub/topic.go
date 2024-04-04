@@ -36,6 +36,7 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -117,6 +118,13 @@ type PublishSettings struct {
 
 	// FlowControlSettings defines publisher flow control settings.
 	FlowControlSettings FlowControlSettings
+
+	// EnableCompression enables transport compression for Publish operations
+	EnableCompression bool
+
+	// CompressionBytesThreshold defines the threshold (in bytes) above which messages
+	// are compressed for transport. Only takes effect if EnableCompression is true.
+	CompressionBytesThreshold int
 }
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
@@ -134,6 +142,8 @@ var DefaultPublishSettings = PublishSettings{
 		MaxOutstandingBytes:    -1,
 		LimitExceededBehavior:  FlowControlIgnore,
 	},
+	EnableCompression:         false,
+	CompressionBytesThreshold: 240,
 }
 
 // CreateTopic creates a new topic.
@@ -875,6 +885,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	}
 	pbMsgs := make([]*pb.PubsubMessage, len(bms))
 	var orderingKey string
+	batchSize := 0
 	for i, bm := range bms {
 		orderingKey = bm.msg.OrderingKey
 		pbMsgs[i] = &pb.PubsubMessage{
@@ -882,6 +893,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
+		batchSize = batchSize + proto.Size(pbMsgs[i])
 		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse
@@ -897,11 +909,21 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			opt.Resolve(&settings)
 		}
 		r := &publishRetryer{defaultRetryer: settings.Retry()}
-		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
-			Topic:    t.name,
-			Messages: pbMsgs,
-		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
-			gax.WithRetry(func() gax.Retryer { return r }))
+		if t.PublishSettings.EnableCompression && batchSize > t.PublishSettings.CompressionBytesThreshold {
+			res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
+				Topic:    t.name,
+				Messages: pbMsgs,
+			}, gax.WithGRPCOptions(
+				grpc.UseCompressor(gzip.Name),
+				grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
+				gax.WithRetry(func() gax.Retryer { return r }))
+		} else {
+			res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
+				Topic:    t.name,
+				Messages: pbMsgs,
+			}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
+				gax.WithRetry(func() gax.Retryer { return r }))
+		}
 	}
 	end := time.Now()
 	if err != nil {
