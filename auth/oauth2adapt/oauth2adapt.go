@@ -81,6 +81,8 @@ func (ts *tokenSourceAdapter) Token() (*oauth2.Token, error) {
 	}, nil
 }
 
+// AuthCredentialsFromOauth2Credentials converts a [golang.org/x/oauth2/google.Credentials]
+// to a [cloud.google.com/go/auth.Credentials].
 func AuthCredentialsFromOauth2Credentials(creds *google.Credentials) *auth.Credentials {
 	if creds == nil {
 		return nil
@@ -97,6 +99,8 @@ func AuthCredentialsFromOauth2Credentials(creds *google.Credentials) *auth.Crede
 	})
 }
 
+// Oauth2CredentialsFromAuthCredentials converts a [cloud.google.com/go/auth.Credentials]
+// to a [golang.org/x/oauth2/google.Credentials].
 func Oauth2CredentialsFromAuthCredentials(creds *auth.Credentials) *google.Credentials {
 	if creds == nil {
 		return nil
@@ -109,7 +113,9 @@ func Oauth2CredentialsFromAuthCredentials(creds *auth.Credentials) *google.Crede
 		TokenSource: TokenSourceFromTokenProvider(creds.TokenProvider),
 		ProjectID:   projectID,
 		JSON:        creds.JSON(),
-		// TODO(quartzmo): no way to set UD
+		UniverseDomainProvider: func() (string, error) {
+			return creds.UniverseDomain(context.Background())
+		},
 	}
 }
 
