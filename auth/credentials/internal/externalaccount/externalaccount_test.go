@@ -462,3 +462,47 @@ func TestOptionsValidate(t *testing.T) {
 		})
 	}
 }
+
+func TestOptionsResolveTokenURL(t *testing.T) {
+	tests := []struct {
+		name string
+		o    *Options
+		want string
+	}{
+		{
+			name: "default",
+			o:    &Options{},
+			want: "https://sts.googleapis.com/v1/token",
+		},
+		{
+			name: "Options TokenURL",
+			o: &Options{
+				TokenURL: "http://localhost:8080/v1/token",
+			},
+			want: "http://localhost:8080/v1/token",
+		},
+		{
+			name: "Options UniverseDomain",
+			o: &Options{
+				UniverseDomain: "example.com",
+			},
+			want: "https://sts.example.com/v1/token",
+		},
+		{
+			name: "Options TokenURL overrides UniverseDomain",
+			o: &Options{
+				TokenURL:       "http://localhost:8080/v1/token",
+				UniverseDomain: "example.com",
+			},
+			want: "http://localhost:8080/v1/token",
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			tc.o.resolveTokenURL()
+			if tc.o.TokenURL != tc.want {
+				t.Errorf("got %s, want %s", tc.o.TokenURL, tc.want)
+			}
+		})
+	}
+}
