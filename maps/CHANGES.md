@@ -2,13 +2,6 @@
 
 
 
-## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.1...maps/v1.7.2) (2024-04-04)
-
-
-### Documentation
-
-* **maps/places:** Fix typo in PriceLevel enum ([#9669](https://github.com/googleapis/google-cloud-go/issues/9669)) ([264a6dc](https://github.com/googleapis/google-cloud-go/commit/264a6dcddbffaec987dce1dc00f6550c263d2df7))
-
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.0...maps/v1.7.1) (2024-03-14)
 
 
@@ -220,3 +213,4 @@
 
 * **maps/addressvalidation:** Start generating apiv1 ([#7012](https://github.com/googleapis/google-cloud-go/issues/7012)) ([3e88250](https://github.com/googleapis/google-cloud-go/commit/3e882501ea196ff4f122989e5726bfd4c72e5133))
 * **maps/routing:** Start generating apiv2 ([#7056](https://github.com/googleapis/google-cloud-go/issues/7056)) ([1b7993d](https://github.com/googleapis/google-cloud-go/commit/1b7993d6931cf33bab07124da4180eeb3faffe7e))
+

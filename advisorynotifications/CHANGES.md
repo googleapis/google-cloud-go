@@ -1,13 +1,6 @@
 # Changelog
 
 
-## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.3.2...advisorynotifications/v1.4.0) (2024-04-04)
-
-
-### Features
-
-* **advisorynotifications:** Add GetSettings and UpdateSettings methods at the Project-level to advisorynotifications.googleapis.com ([dbcdfd7](https://github.com/googleapis/google-cloud-go/commit/dbcdfd7843be16573b1683466852242a84891456))
-
 ## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.3.1...advisorynotifications/v1.3.2) (2024-03-14)
 
 
@@ -107,3 +100,4 @@
 * **advisorynotifications:** Start generating apiv1 ([#7502](https://github.com/googleapis/google-cloud-go/issues/7502)) ([6c2b06c](https://github.com/googleapis/google-cloud-go/commit/6c2b06c43873ce4f2037383b204867c8db694a83))
 
 ## Changes
+

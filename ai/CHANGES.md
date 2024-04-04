@@ -1,12 +1,5 @@
 # Changelog
 
-## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.4...ai/v0.4.0) (2024-04-04)
-
-
-### Features
-
-* **ai/generativelanguage:** Add system instructions ([dd7c8e5](https://github.com/googleapis/google-cloud-go/commit/dd7c8e5a206ca6fab7d05e2591a36ea706e5e9f1))
-
 ## [0.3.4](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.3...ai/v0.3.4) (2024-03-19)
 
 
@@ -87,3 +80,4 @@
 * **ai/generativelanguage:** Start generating apiv1beta2 ([#8229](https://github.com/googleapis/google-cloud-go/issues/8229)) ([837f325](https://github.com/googleapis/google-cloud-go/commit/837f32596518d8154f43da1c70f57d1515e2ea8c))
 
 ## Changes
+
