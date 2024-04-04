@@ -120,7 +120,7 @@
     "shell": "1.7.6",
     "shopping": "0.4.0",
     "spanner/test/opentelemetry/test": "0.0.0",
-    "speech": "1.22.1",
+    "speech": "1.23.0",
     "storageinsights": "1.0.6",
     "storagetransfer": "1.10.5",
     "support": "1.0.5",
