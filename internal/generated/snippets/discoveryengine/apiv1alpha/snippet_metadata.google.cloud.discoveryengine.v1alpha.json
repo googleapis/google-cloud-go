@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1alpha",
-    "version": "1.6.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -1574,6 +1574,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1alpha_generated_DocumentService_GetProcessedDocument_sync",
+      "title": "discoveryengine GetProcessedDocument Sample",
+      "description": "GetProcessedDocument gets the parsed layout information for a\n[Document][google.cloud.discoveryengine.v1alpha.Document].",
+      "file": "DocumentClient/GetProcessedDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProcessedDocument",
+        "fullName": "google.cloud.discoveryengine.v1alpha.DocumentClient.GetProcessedDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetProcessedDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.ProcessedDocument",
+        "client": {
+          "shortName": "DocumentClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.DocumentClient"
+        },
+        "method": {
+          "shortName": "GetProcessedDocument",
+          "fullName": "google.cloud.discoveryengine.v1alpha.DocumentService.GetProcessedDocument",
+          "service": {
+            "shortName": "DocumentService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.DocumentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1alpha_generated_DocumentService_ImportDocuments_sync",
       "title": "discoveryengine ImportDocuments Sample",
       "description": "ImportDocuments bulk import of multiple\n[Document][google.cloud.discoveryengine.v1alpha.Document]s. Request\nprocessing may be synchronous. Non-existing items will be created.\n\nNote: It is possible for a subset of the\n[Document][google.cloud.discoveryengine.v1alpha.Document]s to be\nsuccessfully updated.",
@@ -2397,6 +2443,144 @@
         {
           "start": 18,
           "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_RankService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "RankClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1alpha.RankClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "RankClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.RankClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_RankService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "RankClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1alpha.RankClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "RankClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.RankClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1alpha_generated_RankService_Rank_sync",
+      "title": "discoveryengine Rank Sample",
+      "description": "Rank ranks a list of text records based on the given input query.",
+      "file": "RankClient/Rank/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Rank",
+        "fullName": "google.cloud.discoveryengine.v1alpha.RankClient.Rank",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.RankRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.RankResponse",
+        "client": {
+          "shortName": "RankClient",
+          "fullName": "google.cloud.discoveryengine.v1alpha.RankClient"
+        },
+        "method": {
+          "shortName": "Rank",
+          "fullName": "google.cloud.discoveryengine.v1alpha.RankService.Rank",
+          "service": {
+            "shortName": "RankService",
+            "fullName": "google.cloud.discoveryengine.v1alpha.RankService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
