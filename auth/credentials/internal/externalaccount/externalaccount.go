@@ -196,10 +196,10 @@ func (o *Options) resolveTokenURL() {
 // NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider]
 // configured with the provided options.
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
-	opts.resolveTokenURL()
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
+	opts.resolveTokenURL()
 	stp, err := newSubjectTokenProvider(opts)
 	if err != nil {
 		return nil, err
