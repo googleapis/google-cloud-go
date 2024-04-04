@@ -196,26 +196,6 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T
 	}
 }
 
-func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_DefaultAbp_Valid(t *testing.T) {
-	mock := &mockTableAdminClock{}
-	c := setupTableClient(t, mock)
-
-	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupPolicy: &DefaultAutomatedBackupPolicy})
-	if err != nil {
-		t.Fatalf("CreateTableFromConf failed: %v", err)
-	}
-	createTableReq := mock.createTableReq
-	if !cmp.Equal(createTableReq.TableId, "My-table") {
-		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
-	}
-	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(DefaultAutomatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
-		t.Errorf("Unexpected table automated backup policy frequency: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, DefaultAutomatedBackupPolicy.Frequency.(time.Duration))
-	}
-	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(DefaultAutomatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
-		t.Errorf("Unexpected table automated backup policy retention period: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, DefaultAutomatedBackupPolicy.Frequency.(time.Duration))
-	}
-}
-
 func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_JustFrequency_Invalid(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
@@ -302,7 +282,7 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Disable(t *testing
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	automatedBackupPolicy := ZeroAutomatedBackupPolicy
+	automatedBackupPolicy := DisableAutomatedBackupPolicy
 	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupPolicy: &automatedBackupPolicy})
 	if err != nil {
 		t.Fatalf("CreateTableFromConf failed: %v", err)
@@ -653,11 +633,11 @@ func TestTableAdmin_UpdateTableDisableAutomatedBackupPolicy(t *testing.T) {
 	}
 }
 
-func TestTableAdmin_UpdateTableWithConf_ZeroAutomatedBackupPolicy_DisableAbp(t *testing.T) {
+func TestTableAdmin_UpdateTableWithConf_DisableAutomatedBackupPolicy_DisableAbp(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	err := c.updateTableWithConf(context.Background(), &UpdateTableConf{"My-table", None, nil, &ZeroAutomatedBackupPolicy})
+	err := c.updateTableWithConf(context.Background(), &UpdateTableConf{"My-table", None, nil, &DisableAutomatedBackupPolicy})
 	if err != nil {
 		t.Fatalf("UpdateTableDisableAutomatedBackupPolicy failed: %v", err)
 	}

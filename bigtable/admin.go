@@ -238,25 +238,22 @@ const (
 	Unprotected
 )
 
-// Defines an automated backup policy for a table. Zero value struct disables automated
-// backups for this table. Use a Nil pointer of this struct type to not change the policy.
-// Use Nil values for individual fields to not update individual fields. Otherwise, automated
-// backups are enabled with the specified retention period and frequency in seconds.
-// Currently the only valid retention period is 72 hours and valid frequency is 24 hours.
+// Defines an automated backup policy for a table. Automated backups are enabled
+// with the specified retention period and frequency in seconds. Currently the
+// only valid retention period is 72 hours and valid frequency is 24 hours.
+// Use a Nil pointer of this AutomatedBackupPolicy struct type to not change the
+// policy. Use a AutomatedBackupPolicy struct with Nil values for the individual
+// fields to not update those individual fields. Use a AutomatedBackupPolicy struct
+// with zero values for both RetentionPeriod and Frequency to disable Automated Backups.
 type AutomatedBackupPolicy struct {
 	RetentionPeriod optional.Duration
 	Frequency       optional.Duration
 }
 
-const secondsPerHour = 60 * 60
-
-var DefaultAutomatedBackupPolicyFrequency = time.Duration(24 * secondsPerHour)
-var DefaultAutomatedBackupPolicyRetentionPeriod = time.Duration(72 * secondsPerHour)
-var DefaultAutomatedBackupPolicy AutomatedBackupPolicy = AutomatedBackupPolicy{
-	Frequency:       DefaultAutomatedBackupPolicyFrequency,
-	RetentionPeriod: DefaultAutomatedBackupPolicyRetentionPeriod}
-
-var ZeroAutomatedBackupPolicy = AutomatedBackupPolicy{}
+var DisableAutomatedBackupPolicy = AutomatedBackupPolicy{
+	RetentionPeriod: time.Duration(0),
+	Frequency:       time.Duration(0),
+}
 
 // Family represents a column family with its optional GC policy and value type.
 type Family struct {
@@ -320,7 +317,7 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 		tbl.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
 		tbl.ChangeStreamConfig.RetentionPeriod = durationpb.New(conf.ChangeStreamRetention.(time.Duration))
 	}
-	if conf.AutomatedBackupPolicy != nil && *conf.AutomatedBackupPolicy != ZeroAutomatedBackupPolicy {
+	if conf.AutomatedBackupPolicy != nil && *conf.AutomatedBackupPolicy != DisableAutomatedBackupPolicy {
 		// Create Automated Backup Policy
 		if (conf.AutomatedBackupPolicy.Frequency == nil && conf.AutomatedBackupPolicy.RetentionPeriod != nil) ||
 			(conf.AutomatedBackupPolicy.Frequency != nil && conf.AutomatedBackupPolicy.RetentionPeriod == nil) {
@@ -437,7 +434,7 @@ func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, ta
 
 // UpdateTableDisableAutomatedBackupPolicy updates a table to disable automated backups for table ID.
 func (ac *AdminClient) UpdateTableDisableAutomatedBackupPolicy(ctx context.Context, tableID string) error {
-	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, None, nil, &ZeroAutomatedBackupPolicy})
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, None, nil, &DisableAutomatedBackupPolicy})
 }
 
 // UpdateTableWithAutomatedBackupPolicy updates a table to with the given table ID and automated backup policy config.
@@ -483,7 +480,7 @@ func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTabl
 
 	if conf.automatedBackupPolicy != nil {
 		// Update Automated Backup Policy
-		if *conf.automatedBackupPolicy == ZeroAutomatedBackupPolicy {
+		if *conf.automatedBackupPolicy == DisableAutomatedBackupPolicy {
 			// Disable Automated Backup Policy
 			updateMask.Paths = append(updateMask.Paths, "automated_backup_policy")
 		} else if conf.automatedBackupPolicy.Frequency != nil && conf.automatedBackupPolicy.RetentionPeriod != nil {
