@@ -41,18 +41,16 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-var newServingConfigClientHook clientHook
+var newRankClientHook clientHook
 
-// ServingConfigCallOptions contains the retry settings for each method of ServingConfigClient.
-type ServingConfigCallOptions struct {
-	UpdateServingConfig []gax.CallOption
-	GetServingConfig    []gax.CallOption
-	ListServingConfigs  []gax.CallOption
-	GetOperation        []gax.CallOption
-	ListOperations      []gax.CallOption
+// RankCallOptions contains the retry settings for each method of RankClient.
+type RankCallOptions struct {
+	Rank           []gax.CallOption
+	GetOperation   []gax.CallOption
+	ListOperations []gax.CallOption
 }
 
-func defaultServingConfigGRPCClientOptions() []option.ClientOption {
+func defaultRankGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("discoveryengine.googleapis.com:443"),
 		internaloption.WithDefaultEndpointTemplate("discoveryengine.UNIVERSE_DOMAIN:443"),
@@ -66,11 +64,9 @@ func defaultServingConfigGRPCClientOptions() []option.ClientOption {
 	}
 }
 
-func defaultServingConfigCallOptions() *ServingConfigCallOptions {
-	return &ServingConfigCallOptions{
-		UpdateServingConfig: []gax.CallOption{},
-		GetServingConfig:    []gax.CallOption{},
-		ListServingConfigs:  []gax.CallOption{},
+func defaultRankCallOptions() *RankCallOptions {
+	return &RankCallOptions{
+		Rank: []gax.CallOption{},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -98,11 +94,9 @@ func defaultServingConfigCallOptions() *ServingConfigCallOptions {
 	}
 }
 
-func defaultServingConfigRESTCallOptions() *ServingConfigCallOptions {
-	return &ServingConfigCallOptions{
-		UpdateServingConfig: []gax.CallOption{},
-		GetServingConfig:    []gax.CallOption{},
-		ListServingConfigs:  []gax.CallOption{},
+func defaultRankRESTCallOptions() *RankCallOptions {
+	return &RankCallOptions{
+		Rank: []gax.CallOption{},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -128,43 +122,40 @@ func defaultServingConfigRESTCallOptions() *ServingConfigCallOptions {
 	}
 }
 
-// internalServingConfigClient is an interface that defines the methods available from Discovery Engine API.
-type internalServingConfigClient interface {
+// internalRankClient is an interface that defines the methods available from Discovery Engine API.
+type internalRankClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	UpdateServingConfig(context.Context, *discoveryenginepb.UpdateServingConfigRequest, ...gax.CallOption) (*discoveryenginepb.ServingConfig, error)
-	GetServingConfig(context.Context, *discoveryenginepb.GetServingConfigRequest, ...gax.CallOption) (*discoveryenginepb.ServingConfig, error)
-	ListServingConfigs(context.Context, *discoveryenginepb.ListServingConfigsRequest, ...gax.CallOption) *ServingConfigIterator
+	Rank(context.Context, *discoveryenginepb.RankRequest, ...gax.CallOption) (*discoveryenginepb.RankResponse, error)
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ServingConfigClient is a client for interacting with Discovery Engine API.
+// RankClient is a client for interacting with Discovery Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for operations related to
-// ServingConfig.
-type ServingConfigClient struct {
+// Service for ranking text records.
+type RankClient struct {
 	// The internal transport-dependent client.
-	internalClient internalServingConfigClient
+	internalClient internalRankClient
 
 	// The call options for this service.
-	CallOptions *ServingConfigCallOptions
+	CallOptions *RankCallOptions
 }
 
 // Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *ServingConfigClient) Close() error {
+func (c *RankClient) Close() error {
 	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ServingConfigClient) setGoogleClientInfo(keyval ...string) {
+func (c *RankClient) setGoogleClientInfo(keyval ...string) {
 	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
@@ -172,51 +163,37 @@ func (c *ServingConfigClient) setGoogleClientInfo(keyval ...string) {
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *ServingConfigClient) Connection() *grpc.ClientConn {
+func (c *RankClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// UpdateServingConfig updates a ServingConfig.
-//
-// Returns a NOT_FOUND error if the ServingConfig does not exist.
-func (c *ServingConfigClient) UpdateServingConfig(ctx context.Context, req *discoveryenginepb.UpdateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
-	return c.internalClient.UpdateServingConfig(ctx, req, opts...)
-}
-
-// GetServingConfig gets a ServingConfig.
-//
-// Returns a NotFound error if the ServingConfig does not exist.
-func (c *ServingConfigClient) GetServingConfig(ctx context.Context, req *discoveryenginepb.GetServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
-	return c.internalClient.GetServingConfig(ctx, req, opts...)
-}
-
-// ListServingConfigs lists all ServingConfigs linked to this dataStore.
-func (c *ServingConfigClient) ListServingConfigs(ctx context.Context, req *discoveryenginepb.ListServingConfigsRequest, opts ...gax.CallOption) *ServingConfigIterator {
-	return c.internalClient.ListServingConfigs(ctx, req, opts...)
+// Rank ranks a list of text records based on the given input query.
+func (c *RankClient) Rank(ctx context.Context, req *discoveryenginepb.RankRequest, opts ...gax.CallOption) (*discoveryenginepb.RankResponse, error) {
+	return c.internalClient.Rank(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *ServingConfigClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *RankClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	return c.internalClient.GetOperation(ctx, req, opts...)
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *ServingConfigClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *RankClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// servingConfigGRPCClient is a client for interacting with Discovery Engine API over gRPC transport.
+// rankGRPCClient is a client for interacting with Discovery Engine API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type servingConfigGRPCClient struct {
+type rankGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// Points back to the CallOptions field of the containing ServingConfigClient
-	CallOptions **ServingConfigCallOptions
+	// Points back to the CallOptions field of the containing RankClient
+	CallOptions **RankCallOptions
 
 	// The gRPC API client.
-	servingConfigClient discoveryenginepb.ServingConfigServiceClient
+	rankClient discoveryenginepb.RankServiceClient
 
 	operationsClient longrunningpb.OperationsClient
 
@@ -224,15 +201,14 @@ type servingConfigGRPCClient struct {
 	xGoogHeaders []string
 }
 
-// NewServingConfigClient creates a new serving config service client based on gRPC.
+// NewRankClient creates a new rank service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for operations related to
-// ServingConfig.
-func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*ServingConfigClient, error) {
-	clientOpts := defaultServingConfigGRPCClientOptions()
-	if newServingConfigClientHook != nil {
-		hookOpts, err := newServingConfigClientHook(ctx, clientHookParams{})
+// Service for ranking text records.
+func NewRankClient(ctx context.Context, opts ...option.ClientOption) (*RankClient, error) {
+	clientOpts := defaultRankGRPCClientOptions()
+	if newRankClientHook != nil {
+		hookOpts, err := newRankClientHook(ctx, clientHookParams{})
 		if err != nil {
 			return nil, err
 		}
@@ -243,13 +219,13 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 	if err != nil {
 		return nil, err
 	}
-	client := ServingConfigClient{CallOptions: defaultServingConfigCallOptions()}
+	client := RankClient{CallOptions: defaultRankCallOptions()}
 
-	c := &servingConfigGRPCClient{
-		connPool:            connPool,
-		servingConfigClient: discoveryenginepb.NewServingConfigServiceClient(connPool),
-		CallOptions:         &client.CallOptions,
-		operationsClient:    longrunningpb.NewOperationsClient(connPool),
+	c := &rankGRPCClient{
+		connPool:         connPool,
+		rankClient:       discoveryenginepb.NewRankServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -262,14 +238,14 @@ func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*
 //
 // Deprecated: Connections are now pooled so this method does not always
 // return the same resource.
-func (c *servingConfigGRPCClient) Connection() *grpc.ClientConn {
+func (c *rankGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *servingConfigGRPCClient) setGoogleClientInfo(keyval ...string) {
+func (c *rankGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
@@ -277,12 +253,12 @@ func (c *servingConfigGRPCClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *servingConfigGRPCClient) Close() error {
+func (c *rankGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type servingConfigRESTClient struct {
+type rankRESTClient struct {
 	// The http endpoint to connect to.
 	endpoint string
 
@@ -292,33 +268,32 @@ type servingConfigRESTClient struct {
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
 
-	// Points back to the CallOptions field of the containing ServingConfigClient
-	CallOptions **ServingConfigCallOptions
+	// Points back to the CallOptions field of the containing RankClient
+	CallOptions **RankCallOptions
 }
 
-// NewServingConfigRESTClient creates a new serving config service rest client.
+// NewRankRESTClient creates a new rank service rest client.
 //
-// Service for operations related to
-// ServingConfig.
-func NewServingConfigRESTClient(ctx context.Context, opts ...option.ClientOption) (*ServingConfigClient, error) {
-	clientOpts := append(defaultServingConfigRESTClientOptions(), opts...)
+// Service for ranking text records.
+func NewRankRESTClient(ctx context.Context, opts ...option.ClientOption) (*RankClient, error) {
+	clientOpts := append(defaultRankRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
 	}
 
-	callOpts := defaultServingConfigRESTCallOptions()
-	c := &servingConfigRESTClient{
+	callOpts := defaultRankRESTCallOptions()
+	c := &rankRESTClient{
 		endpoint:    endpoint,
 		httpClient:  httpClient,
 		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
-	return &ServingConfigClient{internalClient: c, CallOptions: callOpts}, nil
+	return &RankClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
-func defaultServingConfigRESTClientOptions() []option.ClientOption {
+func defaultRankRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://discoveryengine.googleapis.com"),
 		internaloption.WithDefaultEndpointTemplate("https://discoveryengine.UNIVERSE_DOMAIN"),
@@ -332,7 +307,7 @@ func defaultServingConfigRESTClientOptions() []option.ClientOption {
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *servingConfigRESTClient) setGoogleClientInfo(keyval ...string) {
+func (c *rankRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
 	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
@@ -340,7 +315,7 @@ func (c *servingConfigRESTClient) setGoogleClientInfo(keyval ...string) {
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
-func (c *servingConfigRESTClient) Close() error {
+func (c *rankRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
 	c.httpClient = nil
 	return nil
@@ -349,19 +324,19 @@ func (c *servingConfigRESTClient) Close() error {
 // Connection returns a connection to the API service.
 //
 // Deprecated: This method always returns nil.
-func (c *servingConfigRESTClient) Connection() *grpc.ClientConn {
+func (c *rankRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
-func (c *servingConfigGRPCClient) UpdateServingConfig(ctx context.Context, req *discoveryenginepb.UpdateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config.name", url.QueryEscape(req.GetServingConfig().GetName()))}
+func (c *rankGRPCClient) Rank(ctx context.Context, req *discoveryenginepb.RankRequest, opts ...gax.CallOption) (*discoveryenginepb.RankResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ranking_config", url.QueryEscape(req.GetRankingConfig()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).UpdateServingConfig[0:len((*c.CallOptions).UpdateServingConfig):len((*c.CallOptions).UpdateServingConfig)], opts...)
-	var resp *discoveryenginepb.ServingConfig
+	opts = append((*c.CallOptions).Rank[0:len((*c.CallOptions).Rank):len((*c.CallOptions).Rank)], opts...)
+	var resp *discoveryenginepb.RankResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.servingConfigClient.UpdateServingConfig(ctx, req, settings.GRPC...)
+		resp, err = c.rankClient.Rank(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -370,71 +345,7 @@ func (c *servingConfigGRPCClient) UpdateServingConfig(ctx context.Context, req *
 	return resp, nil
 }
 
-func (c *servingConfigGRPCClient) GetServingConfig(ctx context.Context, req *discoveryenginepb.GetServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).GetServingConfig[0:len((*c.CallOptions).GetServingConfig):len((*c.CallOptions).GetServingConfig)], opts...)
-	var resp *discoveryenginepb.ServingConfig
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.servingConfigClient.GetServingConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *servingConfigGRPCClient) ListServingConfigs(ctx context.Context, req *discoveryenginepb.ListServingConfigsRequest, opts ...gax.CallOption) *ServingConfigIterator {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ListServingConfigs[0:len((*c.CallOptions).ListServingConfigs):len((*c.CallOptions).ListServingConfigs)], opts...)
-	it := &ServingConfigIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListServingConfigsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.ServingConfig, string, error) {
-		resp := &discoveryenginepb.ListServingConfigsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.servingConfigClient.ListServingConfigs(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetServingConfigs(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
-}
-
-func (c *servingConfigGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *rankGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -452,7 +363,7 @@ func (c *servingConfigGRPCClient) GetOperation(ctx context.Context, req *longrun
 	return resp, nil
 }
 
-func (c *servingConfigGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *rankGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
@@ -498,13 +409,10 @@ func (c *servingConfigGRPCClient) ListOperations(ctx context.Context, req *longr
 	return it
 }
 
-// UpdateServingConfig updates a ServingConfig.
-//
-// Returns a NOT_FOUND error if the ServingConfig does not exist.
-func (c *servingConfigRESTClient) UpdateServingConfig(ctx context.Context, req *discoveryenginepb.UpdateServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
+// Rank ranks a list of text records based on the given input query.
+func (c *rankRESTClient) Rank(ctx context.Context, req *discoveryenginepb.RankRequest, opts ...gax.CallOption) (*discoveryenginepb.RankResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	body := req.GetServingConfig()
-	jsonReq, err := m.Marshal(body)
+	jsonReq, err := m.Marshal(req)
 	if err != nil {
 		return nil, err
 	}
@@ -513,34 +421,27 @@ func (c *servingConfigRESTClient) UpdateServingConfig(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetServingConfig().GetName())
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:rank", req.GetRankingConfig())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetUpdateMask() != nil {
-		updateMask, err := protojson.Marshal(req.GetUpdateMask())
-		if err != nil {
-			return nil, err
-		}
-		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
-	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "serving_config.name", url.QueryEscape(req.GetServingConfig().GetName()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ranking_config", url.QueryEscape(req.GetRankingConfig()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).UpdateServingConfig[0:len((*c.CallOptions).UpdateServingConfig):len((*c.CallOptions).UpdateServingConfig)], opts...)
+	opts = append((*c.CallOptions).Rank[0:len((*c.CallOptions).Rank):len((*c.CallOptions).Rank)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &discoveryenginepb.ServingConfig{}
+	resp := &discoveryenginepb.RankResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
 		}
-		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}
@@ -572,161 +473,10 @@ func (c *servingConfigRESTClient) UpdateServingConfig(ctx context.Context, req *
 		return nil, e
 	}
 	return resp, nil
-}
-
-// GetServingConfig gets a ServingConfig.
-//
-// Returns a NotFound error if the ServingConfig does not exist.
-func (c *servingConfigRESTClient) GetServingConfig(ctx context.Context, req *discoveryenginepb.GetServingConfigRequest, opts ...gax.CallOption) (*discoveryenginepb.ServingConfig, error) {
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1alpha/%v", req.GetName())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).GetServingConfig[0:len((*c.CallOptions).GetServingConfig):len((*c.CallOptions).GetServingConfig)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &discoveryenginepb.ServingConfig{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// ListServingConfigs lists all ServingConfigs linked to this dataStore.
-func (c *servingConfigRESTClient) ListServingConfigs(ctx context.Context, req *discoveryenginepb.ListServingConfigsRequest, opts ...gax.CallOption) *ServingConfigIterator {
-	it := &ServingConfigIterator{}
-	req = proto.Clone(req).(*discoveryenginepb.ListServingConfigsRequest)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*discoveryenginepb.ServingConfig, string, error) {
-		resp := &discoveryenginepb.ListServingConfigsResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		baseUrl, err := url.Parse(c.endpoint)
-		if err != nil {
-			return nil, "", err
-		}
-		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/servingConfigs", req.GetParent())
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-		if req.GetPageSize() != 0 {
-			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			httpRsp, err := c.httpClient.Do(httpReq)
-			if err != nil {
-				return err
-			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetServingConfigs(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
-func (c *servingConfigRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+func (c *rankRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
@@ -786,7 +536,7 @@ func (c *servingConfigRESTClient) GetOperation(ctx context.Context, req *longrun
 }
 
 // ListOperations is a utility method from google.longrunning.Operations.
-func (c *servingConfigRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+func (c *rankRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
