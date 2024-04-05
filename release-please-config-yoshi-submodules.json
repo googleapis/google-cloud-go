@@ -60,6 +60,9 @@
         "automl": {
             "component": "automl"
         },
+        "backupdr": {
+            "component": "backupdr"
+        },
         "baremetalsolution": {
             "component": "baremetalsolution"
         },
