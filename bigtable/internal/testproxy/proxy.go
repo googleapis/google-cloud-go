@@ -572,6 +572,11 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	var c int32
 	var rowsPb []*btpb.Row
 	lim := req.GetCancelAfterRows()
+	readOptions := []bigtable.ReadOption{}
+	if rrq.GetRowsLimit() != 0 {
+		readOptions = append(readOptions, bigtable.LimitRows(rrq.GetRowsLimit()))
+	}
+
 	err = t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
 
 		c++
@@ -584,7 +589,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		}
 		rowsPb = append(rowsPb, rpb)
 		return true
-	})
+	}, readOptions...)
 
 	res := &pb.RowsResult{
 		Status: &statpb.Status{
@@ -707,7 +712,8 @@ func (s *goTestProxyServer) BulkMutateRows(ctx context.Context, req *pb.MutateRo
 	for i, e := range errs {
 		var me *btpb.MutateRowsResponse_Entry
 		if e != nil {
-			st := statusFromError(err)
+			fmt.Printf("i: %v, e: %v\n", i, e)
+			st := statusFromError(e)
 			me = &btpb.MutateRowsResponse_Entry{
 				Index:  int64(i),
 				Status: st,

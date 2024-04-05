@@ -229,6 +229,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		defer cancel()
 
 		startTime := time.Now()
+		fmt.Printf("req: %v\n", req)
 		stream, err := t.c.client.ReadRows(ctx, req)
 		if err != nil {
 			return err
@@ -1034,7 +1035,6 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	for _, group := range groupEntries(origEntries, maxMutations) {
 		attrMap := make(map[string]interface{})
 		err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
-			fmt.Printf("\nNew request\n")
 			attrMap["rowCount"] = len(group)
 			trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
 			err := t.doApplyBulk(ctx, group, opts...)
@@ -1065,6 +1065,7 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 		errs = append(errs, entry.Err)
 	}
 	if foundErr {
+		fmt.Printf("errs: %v\n", errs)
 		return errs, nil
 	}
 	return nil, nil
@@ -1113,9 +1114,8 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, opts ...
 			return err
 		}
 
-		for i, entry := range res.Entries {
+		for _, entry := range res.Entries {
 			s := entry.Status
-			fmt.Printf("i: %v, s: %v, index: %v\n", i, s, entry.Index)
 			if s.Code == int32(codes.OK) {
 				entryErrs[entry.Index].Err = nil
 			} else {
