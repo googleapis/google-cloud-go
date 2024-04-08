@@ -364,7 +364,8 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	enableEOD := it.enableExactlyOnceDelivery
 	it.eoMu.RUnlock()
 
-	if got := res.GetSubscriptionProperties().GetExactlyOnceDeliveryEnabled(); got != enableEOD {
+	subProp := res.GetSubscriptionProperties()
+	if got := subProp.GetExactlyOnceDeliveryEnabled(); got != enableEOD {
 		it.eoMu.Lock()
 		it.sendNewAckDeadline = true
 		it.enableExactlyOnceDelivery = got
@@ -376,7 +377,7 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	enableOrdering := it.enableOrdering
 	it.orderingMu.RUnlock()
 
-	if got := res.GetSubscriptionProperties().GetMessageOrderingEnabled(); got != enableOrdering {
+	if got := subProp.GetMessageOrderingEnabled(); got != enableOrdering {
 		it.orderingMu.Lock()
 		it.enableOrdering = got
 		it.orderingMu.Unlock()
