@@ -2,6 +2,13 @@
 
 
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.6...gkebackup/v1.4.0) (2024-03-27)
+
+
+### Features
+
+* **gkebackup:** Add smart scheduling ([#9644](https://github.com/googleapis/google-cloud-go/issues/9644)) ([f8ff971](https://github.com/googleapis/google-cloud-go/commit/f8ff971366999aefb5eb5189c6c9e2bd76a05d9e))
+
 ## [1.3.6](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.5...gkebackup/v1.3.6) (2024-03-14)
 
 
@@ -118,3 +125,4 @@
 ### Features
 
 * **gkebackup:** start generating apiv1 ([#6031](https://github.com/googleapis/google-cloud-go/issues/6031)) ([4816e84](https://github.com/googleapis/google-cloud-go/commit/4816e84076d62c0952eec0a7de80a230dc9074fe))
+

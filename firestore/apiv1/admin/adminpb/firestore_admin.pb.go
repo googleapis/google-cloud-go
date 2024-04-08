@@ -806,7 +806,7 @@ type DeleteBackupScheduleRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name of backup schedule.
+	// Required. The name of the backup schedule.
 	//
 	// Format
 	// `projects/{project}/databases/{database}/backupSchedules/{backup_schedule}`
@@ -3135,8 +3135,7 @@ type FirestoreAdminClient interface {
 	RestoreDatabase(ctx context.Context, in *RestoreDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a backup schedule on a database.
 	// At most two backup schedules can be configured on a database, one daily
-	// backup schedule with retention up to 7 days and one weekly backup schedule
-	// with retention up to 14 weeks.
+	// backup schedule and one weekly backup schedule.
 	CreateBackupSchedule(ctx context.Context, in *CreateBackupScheduleRequest, opts ...grpc.CallOption) (*BackupSchedule, error)
 	// Gets information about a backup schedule.
 	GetBackupSchedule(ctx context.Context, in *GetBackupScheduleRequest, opts ...grpc.CallOption) (*BackupSchedule, error)
@@ -3460,8 +3459,7 @@ type FirestoreAdminServer interface {
 	RestoreDatabase(context.Context, *RestoreDatabaseRequest) (*longrunningpb.Operation, error)
 	// Creates a backup schedule on a database.
 	// At most two backup schedules can be configured on a database, one daily
-	// backup schedule with retention up to 7 days and one weekly backup schedule
-	// with retention up to 14 weeks.
+	// backup schedule and one weekly backup schedule.
 	CreateBackupSchedule(context.Context, *CreateBackupScheduleRequest) (*BackupSchedule, error)
 	// Gets information about a backup schedule.
 	GetBackupSchedule(context.Context, *GetBackupScheduleRequest) (*BackupSchedule, error)
