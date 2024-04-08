@@ -30,7 +30,7 @@ func ExampleDetectDefault() {
 		log.Fatal(err)
 	}
 	client, err := httptransport.NewClient(&httptransport.Options{
-		TokenProvider: creds,
+		Credentials: creds,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -55,7 +55,7 @@ func ExampleDetectDefault_withFilepath() {
 		log.Fatal(err)
 	}
 	client, err := httptransport.NewClient(&httptransport.Options{
-		TokenProvider: creds,
+		Credentials: creds,
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -76,7 +76,7 @@ func ExampleDetectDefault_withJSON() {
 		log.Fatal(err)
 	}
 	client, err := httptransport.NewClient(&httptransport.Options{
-		TokenProvider: creds,
+		Credentials: creds,
 	})
 	if err != nil {
 		log.Fatal(err)

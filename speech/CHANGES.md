@@ -1,5 +1,12 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.22.1...speech/v1.23.0) (2024-04-04)
+
+
+### Features
+
+* **speech:** Add `translation_config` in `RecognitionConfig` message ([#9699](https://github.com/googleapis/google-cloud-go/issues/9699)) ([dbcdfd7](https://github.com/googleapis/google-cloud-go/commit/dbcdfd7843be16573b1683466852242a84891456))
+
 ## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.22.0...speech/v1.22.1) (2024-03-14)
 
 

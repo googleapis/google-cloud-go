@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.4.2...confidentialcomputing/v1.5.0) (2024-03-27)
+
+
+### Features
+
+* **confidentialcomputing:** Add additional `TokenType` options (`TOKEN_TYPE_PKI` and `TOKEN_TYPE_LIMITED_AWS`) ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
 ## [1.4.2](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.4.1...confidentialcomputing/v1.4.2) (2024-03-14)
 
 
@@ -106,3 +113,4 @@
 ### Features
 
 * **confidentialcomputing:** Start generating apiv1alpha1 ([#7846](https://github.com/googleapis/google-cloud-go/issues/7846)) ([d0a5d6e](https://github.com/googleapis/google-cloud-go/commit/d0a5d6eda292a7c87ec6d1a4147b037970242641))
+

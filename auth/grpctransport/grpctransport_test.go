@@ -23,6 +23,7 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
 	echo "cloud.google.com/go/auth/grpctransport/testdata"
+	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -81,7 +82,9 @@ func TestDial_FailsValidation(t *testing.T) {
 			name: "has creds with disable options, tp",
 			opts: &Options{
 				DisableAuthentication: true,
-				TokenProvider:         staticTP("fakeToken"),
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: staticTP("fakeToken"),
+				}),
 			},
 		},
 		{
@@ -240,10 +243,39 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	}
 }
 
+func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
+	nonDefault := "example.com"
+	tests := []struct {
+		name           string
+		universeDomain string
+		want           string
+	}{
+		{
+			name:           "default",
+			universeDomain: "",
+			want:           internal.DefaultUniverseDomain,
+		},
+		{
+			name:           "non-default",
+			universeDomain: nonDefault,
+			want:           nonDefault,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			at := &grpcCredentialsProvider{clientUniverseDomain: tt.universeDomain}
+			got := at.getClientUniverseDomain()
+			if got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatal(err)
@@ -278,14 +310,15 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	pool, err := Dial(context.Background(), false, &Options{
 		Metadata: map[string]string{"Foo": wantHeader},
 		InternalOptions: &InternalOptions{
-			DefaultEndpoint: l.Addr().String(),
+			DefaultEndpointTemplate: l.Addr().String(),
 		},
 		DetectOpts: &credentials.DetectOptions{
 			Audience:         l.Addr().String(),
-			CredentialsFile:  "../internal/testdata/sa.json",
+			CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
 			UseSelfSignedJWT: true,
 		},
-		GRPCDialOpts: []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+		GRPCDialOpts:   []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+		UniverseDomain: "example.com", // Also configured in sa_universe_domain.json
 	})
 	if err != nil {
 		t.Fatalf("NewClient() = %v", err)
