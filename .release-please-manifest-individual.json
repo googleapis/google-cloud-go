@@ -1,5 +1,5 @@
 {
-  "aiplatform": "1.66.0",
+  "aiplatform": "1.67.0",
   "auth": "0.1.1",
   "auth/oauth2adapt": "0.1.0",
   "bigquery": "1.60.0",
