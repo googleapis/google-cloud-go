@@ -1083,14 +1083,20 @@ func (o *ObjectHandle) Restore(ctx context.Context, opts *RestoreOptions) (*Obje
 	if err := o.validate(); err != nil {
 		return nil, err
 	}
-	// Restore is idempotent if GenerationMatch or Generation have been passed in.
-	// The default generation is negative to get the latest version of the object.
-	isIdempotent := (o.conds != nil && o.conds.GenerationMatch != 0) || o.gen >= 0
-	sOpts := makeStorageOpts(isIdempotent, o.retry, o.userProject)
+
+	// Since the generation is required by restore calls, we set the default to
+	// 0 instead of a negative value, which returns a more descriptive error.
+	gen := o.gen
+	if o.gen == defaultGen {
+		gen = 0
+	}
+
+	// Restore is always idempotent because Generation is a required param.
+	sOpts := makeStorageOpts(true, o.retry, o.userProject)
 	return o.c.tc.RestoreObject(ctx, &restoreObjectParams{
 		bucket:        o.bucket,
 		object:        o.object,
-		gen:           o.gen,
+		gen:           gen,
 		conds:         o.conds,
 		copySourceACL: opts.CopySourceACL,
 	}, sOpts...)
@@ -1696,8 +1702,9 @@ type Query struct {
 	// IncludeFoldersAsPrefixes is not yet implemented in the gRPC API.
 	IncludeFoldersAsPrefixes bool
 
-	// SoftDeleted indicates whether to list soft-deleted objects. If true, only
-	// objects that have been soft-deleted will be listed.
+	// SoftDeleted indicates whether to list soft-deleted objects.
+	// If true, only objects that have been soft-deleted will be listed.
+	// By default, soft-deleted objects are not listed.
 	SoftDeleted bool
 }
 
