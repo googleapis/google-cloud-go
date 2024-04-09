@@ -93,9 +93,10 @@ type GenerativeModel struct {
 	fullName string
 
 	GenerationConfig
-	SafetySettings []*SafetySetting
-	Tools          []*Tool
-	ToolConfig     *ToolConfig // configuration for tools
+	SafetySettings    []*SafetySetting
+	Tools             []*Tool
+	ToolConfig        *ToolConfig // configuration for tools
+	SystemInstruction *Content
 }
 
 const defaultMaxOutputTokens = 2048
@@ -142,12 +143,13 @@ func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateC
 
 func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
-		Model:            m.fullName,
-		Contents:         support.TransformSlice(contents, (*Content).toProto),
-		SafetySettings:   support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
-		Tools:            support.TransformSlice(m.Tools, (*Tool).toProto),
-		ToolConfig:       m.ToolConfig.toProto(),
-		GenerationConfig: m.GenerationConfig.toProto(),
+		Model:             m.fullName,
+		Contents:          support.TransformSlice(contents, (*Content).toProto),
+		SafetySettings:    support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Tools:             support.TransformSlice(m.Tools, (*Tool).toProto),
+		ToolConfig:        m.ToolConfig.toProto(),
+		GenerationConfig:  m.GenerationConfig.toProto(),
+		SystemInstruction: m.SystemInstruction.toProto(),
 	}
 }
 
