@@ -1517,7 +1517,7 @@ func TestIntegration_RunWithOptions(t *testing.T) {
 	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
 	for _, testcase := range testcases {
 		var gotSQChildsFromRun []SQChild
-		iter := client.Run(ctx, query, testcase.opts...)
+		iter := client.RunWithOptions(ctx, query, testcase.opts...)
 		for {
 			var gotSQChild SQChild
 			_, err := iter.Next(&gotSQChild)

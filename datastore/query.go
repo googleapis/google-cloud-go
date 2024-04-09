@@ -778,7 +778,7 @@ func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{
 		}
 	}
 
-	for t := c.Run(ctx, q, opts...); ; {
+	for t := c.RunWithOptions(ctx, q, opts...); ; {
 		k, e, err := t.next()
 		res.ExplainMetrics = t.ExplainMetrics
 		if err == iterator.Done {
@@ -825,8 +825,13 @@ func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{
 	return res, errFieldMismatch
 }
 
+// Run runs the given query in the given context
+func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
+	return c.RunWithOptions(ctx, q)
+}
+
 // Run runs the given query in the given context with the provided options
-func (c *Client) Run(ctx context.Context, q *Query, opts ...RunOption) *Iterator {
+func (c *Client) RunWithOptions(ctx context.Context, q *Query, opts ...RunOption) *Iterator {
 	if q.err != nil {
 		return &Iterator{err: q.err}
 	}
