@@ -560,6 +560,12 @@ func ExampleClient_GroupAssets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.GroupAssetsResponse)
 	}
 }
 
@@ -591,6 +597,12 @@ func ExampleClient_GroupFindings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.GroupFindingsResponse)
 	}
 }
 
@@ -622,6 +634,12 @@ func ExampleClient_ListAssets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListAssetsResponse)
 	}
 }
 
@@ -653,6 +671,12 @@ func ExampleClient_ListBigQueryExports() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListBigQueryExportsResponse)
 	}
 }
 
@@ -684,6 +708,12 @@ func ExampleClient_ListDescendantSecurityHealthAnalyticsCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesResponse)
 	}
 }
 
@@ -715,6 +745,12 @@ func ExampleClient_ListEffectiveSecurityHealthAnalyticsCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse)
 	}
 }
 
@@ -746,6 +782,12 @@ func ExampleClient_ListFindings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListFindingsResponse)
 	}
 }
 
@@ -777,6 +819,12 @@ func ExampleClient_ListMuteConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListMuteConfigsResponse)
 	}
 }
 
@@ -808,6 +856,12 @@ func ExampleClient_ListNotificationConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListNotificationConfigsResponse)
 	}
 }
 
@@ -839,6 +893,12 @@ func ExampleClient_ListSecurityHealthAnalyticsCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListSecurityHealthAnalyticsCustomModulesResponse)
 	}
 }
 
@@ -870,6 +930,12 @@ func ExampleClient_ListSources() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListSourcesResponse)
 	}
 }
 
@@ -1352,5 +1418,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

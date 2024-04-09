@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.8.5...accesscontextmanager/v1.8.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **accesscontextmanager:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.8.4...accesscontextmanager/v1.8.5) (2024-01-30)
 
 
@@ -114,3 +121,4 @@
 ## v0.1.0
 
 - feat(accesscontextmanager): start generating clients
+

@@ -1210,9 +1210,8 @@ func (c *CertificateAuthorityClient) DeleteCaPoolOperation(name string) *DeleteC
 
 // FetchCaCerts fetchCaCerts returns the current trust anchor for the
 // CaPool. This will include CA
-// certificate chains for all ACTIVE
-// CertificateAuthority
-// resources in the CaPool.
+// certificate chains for all certificate authorities in the ENABLED,
+// DISABLED, or STAGED states.
 func (c *CertificateAuthorityClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	return c.internalClient.FetchCaCerts(ctx, req, opts...)
 }
@@ -3952,9 +3951,8 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 
 // FetchCaCerts fetchCaCerts returns the current trust anchor for the
 // CaPool. This will include CA
-// certificate chains for all ACTIVE
-// CertificateAuthority
-// resources in the CaPool.
+// certificate chains for all certificate authorities in the ENABLED,
+// DISABLED, or STAGED states.
 func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
