@@ -1588,6 +1588,21 @@ func TestDecodeValue(t *testing.T) {
 		// PG NUMERIC ARRAY with []PGNumeric
 		{desc: "decode ARRAY<PG Numeric> to []PGNumeric", proto: listProto(stringProto("123.456"), stringProto("NaN"), nullProto()), protoType: listType(pgNumericType()), want: []PGNumeric{{"123.456", true}, {"NaN", true}, {}}},
 		{desc: "decode NULL to []PGNumeric", proto: nullProto(), protoType: listType(pgNumericType()), want: []PGNumeric(nil)},
+		// PG OID
+		{desc: "decode PG OID to int64", proto: intProto(15), protoType: pgOidType(), want: int64(15)},
+		{desc: "decode PG OID NULL to int64", proto: nullProto(), protoType: pgOidType(), want: int64(0), wantErr: true},
+		{desc: "decode PG OID to *int64", proto: intProto(15), protoType: pgOidType(), want: &iValue},
+		{desc: "decode PG OID NULL to *int64", proto: nullProto(), protoType: pgOidType(), want: iNilPtr},
+		{desc: "decode PG OID to NullInt64", proto: intProto(15), protoType: pgOidType(), want: NullInt64{15, true}},
+		{desc: "decode PG OID NULL to NullInt64", proto: nullProto(), protoType: pgOidType(), want: NullInt64{}},
+		// PG OID ARRAY with []NullInt64
+		{desc: "decode ARRAY<PG OID> to []NullInt64", proto: listProto(intProto(91), nullProto(), intProto(87)), protoType: listType(pgOidType()), want: []NullInt64{{91, true}, {}, {87, true}}},
+		{desc: "decode PG OID NULL to []NullInt64", proto: nullProto(), protoType: listType(pgOidType()), want: []NullInt64(nil)},
+		// PG OID ARRAY with []int64
+		{desc: "decode ARRAY<PG OID> to []int64", proto: listProto(intProto(91), intProto(87)), protoType: listType(pgOidType()), want: []int64{91, 87}},
+		// PG OID ARRAY with []*int64
+		{desc: "decode ARRAY<PG OID> to []*int64", proto: listProto(intProto(91), nullProto(), intProto(87)), protoType: listType(pgOidType()), want: []*int64{&i1Value, nil, &i2Value}},
+		{desc: "decode PG OID NULL to []*int64", proto: nullProto(), protoType: listType(pgOidType()), want: []*int64(nil)},
 		// TIMESTAMP
 		{desc: "decode TIMESTAMP to time.Time", proto: timeProto(t1), protoType: timeType(), want: t1},
 		{desc: "decode TIMESTAMP to NullTime", proto: timeProto(t1), protoType: timeType(), want: NullTime{t1, true}},
@@ -1802,6 +1817,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode TIMESTAMP to CustomNullTime", proto: timeProto(t1), protoType: timeType(), want: CustomNullTime{t1, true}},
 		{desc: "decode DATE to CustomNullDate", proto: dateProto(d1), protoType: dateType(), want: CustomNullDate{d1, true}},
 		{desc: "decode PG NUMERIC to CustomPGNumeric", proto: stringProto("123.456"), protoType: pgNumericType(), want: CustomPGNumeric{"123.456", true}},
+		{desc: "decode PG OID to CustomNullInt64", proto: intProto(-100), protoType: pgOidType(), want: CustomNullInt64{-100, true}},
 
 		{desc: "decode NULL to CustomNullString", proto: nullProto(), protoType: stringType(), want: CustomNullString{}},
 		{desc: "decode NULL to CustomNullInt64", proto: nullProto(), protoType: intType(), want: CustomNullInt64{}},
@@ -1812,6 +1828,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to CustomNullTime", proto: nullProto(), protoType: timeType(), want: CustomNullTime{}},
 		{desc: "decode NULL to CustomNullDate", proto: nullProto(), protoType: dateType(), want: CustomNullDate{}},
 		{desc: "decode NULL to CustomPGNumeric", proto: nullProto(), protoType: pgNumericType(), want: CustomPGNumeric{}},
+		{desc: "decode PG OID NULL to CustomNullInt64", proto: nullProto(), protoType: pgOidType(), want: CustomNullInt64{}},
 
 		// STRING ARRAY
 		{desc: "decode NULL to []CustomString", proto: nullProto(), protoType: listType(stringType()), want: []CustomString(nil)},

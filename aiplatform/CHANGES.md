@@ -1,6 +1,22 @@
 # Changes
 
 
+## [1.67.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.66.0...aiplatform/v1.67.0) (2024-04-08)
+
+
+### Features
+
+* **aiplatform:** A new field `presence_penalty` is added to message `.google.cloud.aiplatform.v1.GenerationConfig` ([dd7c8e5](https://github.com/googleapis/google-cloud-go/commit/dd7c8e5a206ca6fab7d05e2591a36ea706e5e9f1))
+* **aiplatform:** Add NotebookRuntime resource and APIs to public v1 client library ([dd7c8e5](https://github.com/googleapis/google-cloud-go/commit/dd7c8e5a206ca6fab7d05e2591a36ea706e5e9f1))
+* **aiplatform:** Add NotebookRuntime resource and APIs to public v1beta1 client library ([dd7c8e5](https://github.com/googleapis/google-cloud-go/commit/dd7c8e5a206ca6fab7d05e2591a36ea706e5e9f1))
+* **aiplatform:** Add Persistent Resource reboot api call to v1beta1 ([#9680](https://github.com/googleapis/google-cloud-go/issues/9680)) ([e7342a3](https://github.com/googleapis/google-cloud-go/commit/e7342a3794aec038d6fdc195da4f8df23b1eeca1))
+* **aiplatform:** GenAiTuningService aiplatform v1 initial release ([#9679](https://github.com/googleapis/google-cloud-go/issues/9679)) ([543a58d](https://github.com/googleapis/google-cloud-go/commit/543a58dc0df2ff0aa384ffec41c9ab45a893a714))
+
+
+### Bug Fixes
+
+* **aiplatform:** An existing field `response_recall_input` is removed from message `.google.cloud.aiplatform.v1beta1.EvaluateInstancesRequest` ([#9672](https://github.com/googleapis/google-cloud-go/issues/9672)) ([dd7c8e5](https://github.com/googleapis/google-cloud-go/commit/dd7c8e5a206ca6fab7d05e2591a36ea706e5e9f1))
+
 ## [1.66.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.65.0...aiplatform/v1.66.0) (2024-03-27)
 
 
@@ -708,4 +724,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out aiplatform as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
