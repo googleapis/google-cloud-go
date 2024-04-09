@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 	"sync"
 	"time"
@@ -1400,13 +1401,19 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					iter.eoMu.RUnlock()
 					// otelCtx is used to relate the main subscribe span to the other subspans in the subscribe side.
 					// We don't want to override the ctx passed into Receive, which is necessary for user-initiated cancellations.
-					otelCtx := context.Background()
+					// This context is passed into the callback (regardless of if tracing is enabled). Thus, it shadows ctx2 so
+					// the callback cancellable.
+					otelCtx := ctx2
 					var ccSpan trace.Span
 					if iter.enableTracing {
-						c, _ := iter.activeSpans.Load(ackh.ackID)
-						sc := c.(trace.Span)
-						otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
-						_, ccSpan = startSpan(otelCtx, ccSpanName, "")
+						c, ok := iter.activeSpans.Load(ackh.ackID)
+						if ok {
+							sc := c.(trace.Span)
+							otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
+							_, ccSpan = startSpan(otelCtx, ccSpanName, "")
+						} else {
+							log.Printf("pubsub: subscriber concurrency control failed to load ackID(%s) from activeSpans map", ackh.ackID)
+						}
 					}
 					// Use the original user defined ctx for this operation so the acquire operation can be cancelled.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
@@ -1442,7 +1449,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						defer wg.Done()
 						var ps trace.Span
 						if iter.enableTracing {
-							_, ps = startSpan(otelCtx, processSpanName, s.ID())
+							otelCtx, ps = startSpan(otelCtx, processSpanName, s.ID())
 							old := ackh.doneFunc
 							ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
 								var eventString string
@@ -1457,8 +1464,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 								old(ackID, ack, r, receiveTime)
 							}
 						}
-						defer fc.release(otelCtx, msgLen)
-						f(ctx2, m)
+						defer fc.release(ctx, msgLen)
+						f(otelCtx, m)
 					}); err != nil {
 						wg.Done()
 						// TODO(hongalex): propagate these errors to an otel span.
