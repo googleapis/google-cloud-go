@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -713,7 +712,17 @@ type AllocationPolicy struct {
 	// Describe instances that can be created by this AllocationPolicy.
 	// Only instances[0] is supported now.
 	Instances []*AllocationPolicy_InstancePolicyOrTemplate `protobuf:"bytes,8,rep,name=instances,proto3" json:"instances,omitempty"`
-	// Service account that VMs will run as.
+	// Defines the service account for Batch-created VMs. If omitted, the [default
+	// Compute Engine service
+	// account](https://cloud.google.com/compute/docs/access/service-accounts#default_service_account)
+	// is used. Must match the service account specified in any used instance
+	// template configured in the Batch job.
+	//
+	// Includes the following fields:
+	//   - email: The service account's email address. If not set, the default
+	//     Compute Engine service account is used.
+	//   - scopes: Additional OAuth scopes to grant the service account, beyond the
+	//     default cloud-platform scope. (list of strings)
 	ServiceAccount *ServiceAccount `protobuf:"bytes,9,opt,name=service_account,json=serviceAccount,proto3" json:"service_account,omitempty"`
 	// Labels applied to all VM instances and other resources
 	// created by AllocationPolicy.
@@ -981,13 +990,9 @@ type ServiceAccount struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Email address of the service account. If not specified, the default
-	// Compute Engine service account for the project will be used. If instance
-	// template is being used, the service account has to be specified in the
-	// instance template and it has to match the email field here.
+	// Email address of the service account.
 	Email string `protobuf:"bytes,1,opt,name=email,proto3" json:"email,omitempty"`
-	// List of scopes to be enabled for this service account on the VM, in
-	// addition to the cloud-platform API scope that will be added by default.
+	// List of scopes to be enabled for this service account.
 	Scopes []string `protobuf:"bytes,2,rep,name=scopes,proto3" json:"scopes,omitempty"`
 }
 
