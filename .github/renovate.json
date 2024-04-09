@@ -22,7 +22,8 @@
         {
             "matchPackageNames": [
                 "^github.com/google/go-github/v",
-                "^github.com/apache/arrow/go/v"
+                "^github.com/apache/arrow/go/v",
+                "^github.com/cloudprober/cloudprober"
             ],
             "enabled": false
         }
