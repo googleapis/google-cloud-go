@@ -16,6 +16,7 @@ package metadata
 
 import (
 	"bytes"
+	"context"
 	"io"
 	"log"
 	"net/http"
@@ -23,6 +24,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 )
 
 func TestOnGCE_Stress(t *testing.T) {
@@ -53,21 +55,23 @@ func TestOnGCE_Force(t *testing.T) {
 }
 
 func TestOverrideUserAgent(t *testing.T) {
+	ctx := context.Background()
 	const userAgent = "my-user-agent"
 	rt := &rrt{}
 	c := NewClient(&http.Client{Transport: userAgentTransport{userAgent, rt}})
-	c.Get("foo")
+	c.GetWithContext(ctx, "foo")
 	if got, want := rt.gotUserAgent, userAgent; got != want {
 		t.Errorf("got %q, want %q", got, want)
 	}
 }
 
 func TestGetFailsOnBadURL(t *testing.T) {
+	ctx := context.Background()
 	c := NewClient(http.DefaultClient)
 	old := os.Getenv(metadataHostEnv)
 	defer os.Setenv(metadataHostEnv, old)
 	os.Setenv(metadataHostEnv, "host:-1")
-	_, err := c.Get("suffix")
+	_, err := c.GetWithContext(ctx, "suffix")
 	log.Printf("%v", err)
 	if err == nil {
 		t.Errorf("got %v, want non-nil error", err)
@@ -91,9 +95,10 @@ func TestGet_LeadingSlash(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
 			ct := &captureTransport{}
 			c := NewClient(&http.Client{Transport: ct})
-			c.Get(tc.suffix)
+			c.GetWithContext(ctx, tc.suffix)
 			if ct.url != want {
 				t.Fatalf("got %v, want %v", ct.url, want)
 			}
@@ -163,6 +168,7 @@ func TestRetry(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
 			ft := &failingTransport{
 				timesToFail: tt.timesToFail,
 				failCode:    tt.failCode,
@@ -170,7 +176,7 @@ func TestRetry(t *testing.T) {
 				response:    tt.response,
 			}
 			c := NewClient(&http.Client{Transport: ft})
-			s, err := c.Get("")
+			s, err := c.GetWithContext(ctx, "")
 			if tt.expectError && err == nil {
 				t.Fatalf("did not receive expected error")
 			} else if !tt.expectError && err != nil {
@@ -190,6 +196,51 @@ func TestRetry(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestClientGetWithContext(t *testing.T) {
+	tests := []struct {
+		name       string
+		ctxTimeout time.Duration
+		wantErr    bool
+	}{
+		{
+			name:       "ok",
+			ctxTimeout: 1 * time.Second,
+		},
+		{
+			name:       "times out",
+			ctxTimeout: 200 * time.Millisecond,
+			wantErr:    true,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), tc.ctxTimeout)
+			defer cancel()
+			c := NewClient(&http.Client{Transport: sleepyTransport{}})
+			_, err := c.GetWithContext(ctx, "foo")
+			if tc.wantErr && err == nil {
+				t.Fatal("c.GetWithContext() == nil, want an error")
+			}
+			if !tc.wantErr && err != nil {
+				t.Fatalf("c.GetWithContext() = %v, want nil", err)
+			}
+		})
+	}
+}
+
+type sleepyTransport struct {
+}
+
+func (s sleepyTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	req.Context().Done()
+	select {
+	case <-req.Context().Done():
+		return nil, req.Context().Err()
+	case <-time.After(500 * time.Millisecond):
+	}
+	return &http.Response{StatusCode: http.StatusOK, Body: io.NopCloser(strings.NewReader("I woke up"))}, nil
 }
 
 type failingTransport struct {
