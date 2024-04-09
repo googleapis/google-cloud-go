@@ -1581,7 +1581,7 @@ func TestParseDDL(t *testing.T) {
 			`CREATE CHANGE STREAM csname;
 			CREATE CHANGE STREAM csname FOR ALL;
 			CREATE CHANGE STREAM csname FOR tname, tname2(cname);
-			CREATE CHANGE STREAM csname FOR ALL OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES');`,
+			CREATE CHANGE STREAM csname FOR ALL OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES', exclude_ttl_deletes=TRUE, exclude_insert=TRUE, exclude_update=TRUE, exclude_delete=TRUE);`,
 			&DDL{
 				Filename: "filename",
 				List: []DDLStmt{
@@ -1607,8 +1607,12 @@ func TestParseDDL(t *testing.T) {
 						WatchAllTables: true,
 						Position:       line(4),
 						Options: ChangeStreamOptions{
-							RetentionPeriod:  func(b string) *string { return &b }("36h"),
-							ValueCaptureType: func(b string) *string { return &b }("NEW_VALUES"),
+							RetentionPeriod:   func(b string) *string { return &b }("36h"),
+							ValueCaptureType:  func(b string) *string { return &b }("NEW_VALUES"),
+							ExcludeTTLDeletes: True,
+							ExcludeInsert:     True,
+							ExcludeUpdate:     True,
+							ExcludeDelete:     True,
 						},
 					},
 				},
@@ -1618,7 +1622,7 @@ func TestParseDDL(t *testing.T) {
 			`ALTER CHANGE STREAM csname SET FOR ALL;
 			ALTER CHANGE STREAM csname SET FOR tname, tname2(cname);
 			ALTER CHANGE STREAM csname DROP FOR ALL;
-			ALTER CHANGE STREAM csname SET OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES');`,
+			ALTER CHANGE STREAM csname SET OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES', exclude_ttl_deletes=TRUE, exclude_insert=TRUE, exclude_update=TRUE, exclude_delete=TRUE);`,
 			&DDL{
 				Filename: "filename",
 				List: []DDLStmt{
@@ -1656,8 +1660,12 @@ func TestParseDDL(t *testing.T) {
 						Name: "csname",
 						Alteration: AlterChangeStreamOptions{
 							Options: ChangeStreamOptions{
-								RetentionPeriod:  func(b string) *string { return &b }("36h"),
-								ValueCaptureType: func(b string) *string { return &b }("NEW_VALUES"),
+								RetentionPeriod:   func(b string) *string { return &b }("36h"),
+								ValueCaptureType:  func(b string) *string { return &b }("NEW_VALUES"),
+								ExcludeTTLDeletes: True,
+								ExcludeInsert:     True,
+								ExcludeUpdate:     True,
+								ExcludeDelete:     True,
 							},
 						},
 						Position: line(4),
