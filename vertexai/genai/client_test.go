@@ -234,32 +234,52 @@ func TestLive(t *testing.T) {
 		model := client.GenerativeModel(*modelName)
 		model.SetTemperature(0)
 		model.Tools = []*Tool{weatherTool}
-		session := model.StartChat()
-		res, err := session.SendMessage(ctx, Text("What is the weather like in New York?"))
-		if err != nil {
-			t.Fatal(err)
-		}
-		part := res.Candidates[0].Content.Parts[0]
-		funcall, ok := part.(FunctionCall)
-		if !ok {
-			t.Fatalf("want FunctionCall, got %T", part)
-		}
-		if g, w := funcall.Name, weatherTool.FunctionDeclarations[0].Name; g != w {
-			t.Errorf("FunctionCall.Name: got %q, want %q", g, w)
-		}
-		if g, c := funcall.Args["location"], "New York"; !strings.Contains(g.(string), c) {
-			t.Errorf(`FunctionCall.Args["location"]: got %q, want string containing %q`, g, c)
-		}
-		res, err = session.SendMessage(ctx, FunctionResponse{
-			Name: weatherTool.FunctionDeclarations[0].Name,
-			Response: map[string]any{
-				"weather_there": "cold",
-			},
+		t.Run("funcall-auto", func(t *testing.T) {
+			session := model.StartChat()
+			res, err := session.SendMessage(ctx, Text("What is the weather like in New York?"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			part := res.Candidates[0].Content.Parts[0]
+			funcall, ok := part.(FunctionCall)
+			if !ok {
+				t.Fatalf("want FunctionCall, got %T", part)
+			}
+			if g, w := funcall.Name, weatherTool.FunctionDeclarations[0].Name; g != w {
+				t.Errorf("FunctionCall.Name: got %q, want %q", g, w)
+			}
+			if g, c := funcall.Args["location"], "New York"; !strings.Contains(g.(string), c) {
+				t.Errorf(`FunctionCall.Args["location"]: got %q, want string containing %q`, g, c)
+			}
+			res, err = session.SendMessage(ctx, FunctionResponse{
+				Name: weatherTool.FunctionDeclarations[0].Name,
+				Response: map[string]any{
+					"weather_there": "cold",
+				},
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
 		})
-		if err != nil {
-			t.Fatal(err)
-		}
-		checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
+		t.Run("funcall-none", func(t *testing.T) {
+			model.ToolConfig = &ToolConfig{
+				FunctionCallingConfig: &FunctionCallingConfig{
+					Mode: FunctionCallingNone, // never return a FunctionCall part
+				},
+			}
+			session := model.StartChat()
+			res, err := session.SendMessage(ctx, Text("What is the weather like in New York?"))
+			if err != nil {
+				t.Fatal(err)
+			}
+			// We should not find a FunctionCall part.
+			for _, p := range res.Candidates[0].Content.Parts {
+				if _, ok := p.(FunctionCall); ok {
+					t.Fatal("saw FunctionCall")
+				}
+			}
+		})
 	})
 }
 
