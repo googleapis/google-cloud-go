@@ -413,8 +413,8 @@ func (FunctionCallingConfig) fromProto(p *pb.FunctionCallingConfig) *FunctionCal
 type FunctionCallingMode int32
 
 const (
-	// FunctionCallingModeUnspecified means unspecified function calling mode. This value should not be used.
-	FunctionCallingModeUnspecified FunctionCallingMode = 0
+	// FunctionCallingUnspecified means unspecified function calling mode. This value should not be used.
+	FunctionCallingUnspecified FunctionCallingMode = 0
 	// FunctionCallingAuto means default model behavior, model decides to predict either a function call
 	// or a natural language repspose.
 	FunctionCallingAuto FunctionCallingMode = 1
@@ -429,10 +429,10 @@ const (
 )
 
 var namesForFunctionCallingMode = map[FunctionCallingMode]string{
-	FunctionCallingModeUnspecified: "FunctionCallingModeUnspecified",
-	FunctionCallingAuto:            "FunctionCallingAuto",
-	FunctionCallingAny:             "FunctionCallingAny",
-	FunctionCallingNone:            "FunctionCallingNone",
+	FunctionCallingUnspecified: "FunctionCallingUnspecified",
+	FunctionCallingAuto:        "FunctionCallingAuto",
+	FunctionCallingAny:         "FunctionCallingAny",
+	FunctionCallingNone:        "FunctionCallingNone",
 }
 
 func (v FunctionCallingMode) String() string {

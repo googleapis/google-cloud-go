@@ -77,7 +77,7 @@ types:
       protoPrefix: FunctionCallingConfig
       veneerPrefix: FunctionCalling
       valueNames:
-        FunctionCallingConfig_MODE_UNSPECIFIED: FunctionCallingModeUnspecified
+        FunctionCallingConfig_MODE_UNSPECIFIED: FunctionCallingUnspecified
 
     GenerationConfig:
       fields:
