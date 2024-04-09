@@ -22,9 +22,6 @@ package placespb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -33,6 +30,8 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2040,7 +2039,7 @@ type AutocompletePlacesResponse_Suggestion_QueryPrediction struct {
 
 	// The predicted text. This text does not represent a Place, but rather a
 	// text query that could be used in a search endpoint (for example,
-	// TextSearch).
+	// Text Search).
 	//
 	// `text` is recommended for developers who wish to show a single UI
 	// element. Developers who wish to show two separate, but related, UI
