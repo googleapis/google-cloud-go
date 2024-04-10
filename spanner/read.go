@@ -498,7 +498,7 @@ var (
 )
 
 func (d *resumableStreamDecoder) next() bool {
-	retryer := onCodes(d.backoff, codes.Unavailable, codes.Internal)
+	retryer := onCodes(d.backoff, codes.Unavailable, codes.ResourceExhausted, codes.Internal)
 	for {
 		switch d.state {
 		case unConnected:
