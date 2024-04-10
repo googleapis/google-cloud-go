@@ -400,6 +400,11 @@
                 "GetOperation"
               ]
             },
+            "GetProcessedDocument": {
+              "methods": [
+                "GetProcessedDocument"
+              ]
+            },
             "ImportDocuments": {
               "methods": [
                 "ImportDocuments"
@@ -448,6 +453,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetProcessedDocument": {
+              "methods": [
+                "GetProcessedDocument"
               ]
             },
             "ImportDocuments": {
@@ -631,6 +641,50 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RankService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RankClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Rank": {
+              "methods": [
+                "Rank"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RankClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Rank": {
+              "methods": [
+                "Rank"
               ]
             }
           }

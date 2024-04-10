@@ -600,8 +600,7 @@ func (c *FirestoreAdminClient) RestoreDatabaseOperation(name string) *RestoreDat
 
 // CreateBackupSchedule creates a backup schedule on a database.
 // At most two backup schedules can be configured on a database, one daily
-// backup schedule with retention up to 7 days and one weekly backup schedule
-// with retention up to 14 weeks.
+// backup schedule and one weekly backup schedule.
 func (c *FirestoreAdminClient) CreateBackupSchedule(ctx context.Context, req *adminpb.CreateBackupScheduleRequest, opts ...gax.CallOption) (*adminpb.BackupSchedule, error) {
 	return c.internalClient.CreateBackupSchedule(ctx, req, opts...)
 }
@@ -2704,8 +2703,7 @@ func (c *firestoreAdminRESTClient) RestoreDatabase(ctx context.Context, req *adm
 
 // CreateBackupSchedule creates a backup schedule on a database.
 // At most two backup schedules can be configured on a database, one daily
-// backup schedule with retention up to 7 days and one weekly backup schedule
-// with retention up to 14 weeks.
+// backup schedule and one weekly backup schedule.
 func (c *firestoreAdminRESTClient) CreateBackupSchedule(ctx context.Context, req *adminpb.CreateBackupScheduleRequest, opts ...gax.CallOption) (*adminpb.BackupSchedule, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetBackupSchedule()

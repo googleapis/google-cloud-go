@@ -274,8 +274,8 @@ type Place struct {
 	// description. For example, "Google Sydney", "Starbucks", "Pyrmont", etc.
 	DisplayName *localized_text.LocalizedText `protobuf:"bytes,31,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
 	// A set of type tags for this result. For example, "political" and
-	// "locality".  For the complete list of possible values, see Table A and
-	// Table B at
+	// "locality". For the complete list of possible values, see Table A and Table
+	// B at
 	// https://developers.google.com/maps/documentation/places/web-service/place-types
 	Types []string `protobuf:"bytes,5,rep,name=types,proto3" json:"types,omitempty"`
 	// The primary type of the given result. This type must one of the Places API
@@ -285,8 +285,8 @@ type Place struct {
 	// https://developers.google.com/maps/documentation/places/web-service/place-types
 	PrimaryType string `protobuf:"bytes,50,opt,name=primary_type,json=primaryType,proto3" json:"primary_type,omitempty"`
 	// The display name of the primary type, localized to the request language if
-	// applicable.  For the complete list of possible values, see Table A and
-	// Table B at
+	// applicable. For the complete list of possible values, see Table A and Table
+	// B at
 	// https://developers.google.com/maps/documentation/places/web-service/place-types
 	PrimaryTypeDisplayName *localized_text.LocalizedText `protobuf:"bytes,32,opt,name=primary_type_display_name,json=primaryTypeDisplayName,proto3" json:"primary_type_display_name,omitempty"`
 	// A human-readable phone number for the place, in national format.

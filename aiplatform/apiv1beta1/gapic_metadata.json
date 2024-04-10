@@ -4519,6 +4519,11 @@
                 "ListPersistentResources"
               ]
             },
+            "RebootPersistentResource": {
+              "methods": [
+                "RebootPersistentResource"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -4597,6 +4602,11 @@
             "ListPersistentResources": {
               "methods": [
                 "ListPersistentResources"
+              ]
+            },
+            "RebootPersistentResource": {
+              "methods": [
+                "RebootPersistentResource"
               ]
             },
             "SetIamPolicy": {

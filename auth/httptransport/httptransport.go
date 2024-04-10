@@ -123,8 +123,9 @@ type InternalOptions struct {
 	// DefaultAudience specifies a default audience to be used as the audience
 	// field ("aud") for the JWT token authentication.
 	DefaultAudience string
-	// DefaultEndpoint specifies the default endpoint.
-	DefaultEndpoint string
+	// DefaultEndpointTemplate combined with UniverseDomain specifies the
+	// default endpoint.
+	DefaultEndpointTemplate string
 	// DefaultMTLSEndpoint specifies the default mTLS endpoint.
 	DefaultMTLSEndpoint string
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
@@ -164,9 +165,10 @@ func NewClient(opts *Options) (*http.Client, error) {
 		Endpoint:           opts.Endpoint,
 		ClientCertProvider: opts.ClientCertProvider,
 		Client:             opts.client(),
+		UniverseDomain:     opts.UniverseDomain,
 	}
 	if io := opts.InternalOptions; io != nil {
-		tOpts.DefaultEndpoint = io.DefaultEndpoint
+		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
 		tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
 	}
 	clientCertProvider, dialTLSContext, err := transport.GetHTTPTransportConfig(tOpts)
