@@ -86,6 +86,7 @@ var (
 	geographyParamType  = &bq.QueryParameterType{Type: "GEOGRAPHY"}
 	intervalParamType   = &bq.QueryParameterType{Type: "INTERVAL"}
 	jsonParamType       = &bq.QueryParameterType{Type: "JSON"}
+	rangeParamType      = &bq.QueryParameterType{Type: "RANGE"}
 )
 
 var (
@@ -95,6 +96,7 @@ var (
 	typeOfGoTime              = reflect.TypeOf(time.Time{})
 	typeOfRat                 = reflect.TypeOf(&big.Rat{})
 	typeOfIntervalValue       = reflect.TypeOf(&IntervalValue{})
+	typeOfRangeValue          = reflect.TypeOf(&RangeValue{})
 	typeOfQueryParameterValue = reflect.TypeOf(&QueryParameterValue{})
 )
 
@@ -344,6 +346,15 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 		return geographyParamType, nil
 	case typeOfNullJSON:
 		return jsonParamType, nil
+	case typeOfRangeValue:
+		// TODO: must resolve range element type
+		t := &bq.QueryParameterType{
+			Type: "RANGE",
+			RangeElementType: &bq.QueryParameterType{
+				Type: "TODO",
+			},
+		}
+		return t, nil
 	case typeOfQueryParameterValue:
 		return v.Interface().(*QueryParameterValue).toBQParamType(), nil
 	}
@@ -492,6 +503,12 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 	case typeOfIntervalValue:
 		res.Value = IntervalString(v.Interface().(*IntervalValue))
 		return res, nil
+	case typeOfRangeValue:
+		// TODO: process start/end
+		iv := v.Interface().(*RangeValue)
+		res.RangeValue = &bq.RangeValue{
+			Start: ,
+		}
 	case typeOfQueryParameterValue:
 		return v.Interface().(*QueryParameterValue).toBQParamValue()
 	}

@@ -16,6 +16,10 @@ package bigquery
 
 // RangeValue represents a single value of a BigQuery RANGE type.
 type RangeValue struct {
+
+	// The type of the range's elements.
+	ElementType FieldType
+
 	// The start value of the range.  A missing value represents an
 	// unbounded start.
 	Start Value
