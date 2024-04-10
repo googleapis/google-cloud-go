@@ -495,3 +495,5 @@ replace cloud.google.com/go/parallelstore => ../../../parallelstore
 replace cloud.google.com/go/apphub => ../../../apphub
 
 replace cloud.google.com/go/cloudcontrolspartner => ../../../cloudcontrolspartner
+
+replace cloud.google.com/go/backupdr => ../../../backupdr

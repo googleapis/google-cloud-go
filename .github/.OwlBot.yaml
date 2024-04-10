@@ -36,6 +36,7 @@ deep-remove-regex:
   - /assuredworkloads/apiv1beta1/
   - /automl/apiv1/
   - /automl/apiv1beta1/
+  - /backupdr/apiv1/
   - /baremetalsolution/apiv2/
   - /batch/apiv1/
   - /beyondcorp/appconnections/apiv1/
@@ -164,6 +165,7 @@ deep-remove-regex:
   - /internal/generated/snippets/assuredworkloads/apiv1beta1/
   - /internal/generated/snippets/automl/apiv1/
   - /internal/generated/snippets/automl/apiv1beta1/
+  - /internal/generated/snippets/backupdr/apiv1/
   - /internal/generated/snippets/baremetalsolution/apiv2/
   - /internal/generated/snippets/batch/apiv1/
   - /internal/generated/snippets/beyondcorp/appconnections/apiv1/
@@ -350,6 +352,7 @@ deep-remove-regex:
   - /internal/generated/snippets/shell/apiv1/
   - /internal/generated/snippets/shopping/css/apiv1/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
   - /internal/generated/snippets/spanner/apiv1/
@@ -483,6 +486,7 @@ deep-remove-regex:
   - /shell/apiv1/
   - /shopping/css/apiv1/
   - /shopping/merchant/inventories/apiv1beta/
+  - /shopping/merchant/reports/apiv1beta/
   - /shopping/type/
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
@@ -634,6 +638,8 @@ deep-copy-regex:
   - source: /google/cloud/automl/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/automl/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/backupdr/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/baremetalsolution/v2/cloud.google.com/go
     dest: /
@@ -1016,6 +1022,8 @@ deep-copy-regex:
   - source: /google/shopping/css/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/reports/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/type/cloud.google.com/go
     dest: /
