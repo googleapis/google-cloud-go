@@ -243,6 +243,10 @@ func (s *watchStream) handleTargetChange(tc *pb.TargetChange) bool {
 		s.logf("TargetNoChange %d %v", len(tc.TargetIds), tc.ReadTime)
 		if len(tc.TargetIds) == 0 && tc.ReadTime != nil && s.current {
 			// Everything is up-to-date, so we are ready to return a snapshot.
+			if err := tc.ReadTime.CheckValid(); err != nil {
+				s.err = err
+				return true
+			}
 			s.readTime = tc.ReadTime.AsTime()
 			s.target.ResumeType = &pb.Target_ResumeToken{tc.ResumeToken}
 			return true

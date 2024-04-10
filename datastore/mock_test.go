@@ -32,6 +32,7 @@ import (
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -120,7 +121,7 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 
 		if !proto.Equal(gotReq, ri.wantReq) {
 			return nil, fmt.Errorf("mockServer: bad request\ngot:\n%T\n%s\nwant:\n%T\n%s",
-				gotReq, gotReq,
+				prototext.Format(ri.wantReq), prototext.Format(gotReq),
 				ri.wantReq, ri.wantReq)
 		}
 	}

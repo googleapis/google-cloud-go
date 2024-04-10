@@ -80,14 +80,15 @@ func ExampleOperation_Metadata() {
 	if err := op.Metadata(&meta); err != nil {
 		// TODO: Handle err.
 	}
-	d, err := meta.AsDuration, meta.CheckValid()
-	if err == ErrNoMetadata {
+	if err := meta.CheckValid(); err == ErrNoMetadata {
 		fmt.Println("no metadata")
+		return
 	} else if err != nil {
 		// TODO: Handle err.
-	} else {
-		fmt.Println(d)
+		return
 	}
+	fmt.Println(meta.AsDuration())
+
 	// Output:
 	// 1h0m0s
 }

@@ -21,9 +21,9 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	tspb "google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // A DocumentSnapshot contains document data and metadata.
@@ -298,10 +298,19 @@ func newDocumentSnapshot(ref *DocumentRef, proto *pb.Document, c *Client, readTi
 		proto: proto,
 	}
 	if proto != nil {
-		d.CreateTime = proto.CreateTime.AsTime()
-		d.UpdateTime = proto.UpdateTime.AsTime()
+		if err := proto.GetCreateTime().CheckValid(); err != nil {
+			return nil, err
+		}
+		if err := proto.GetUpdateTime().CheckValid(); err != nil {
+			return nil, err
+		}
+		d.CreateTime = proto.GetCreateTime().AsTime()
+		d.UpdateTime = proto.GetUpdateTime().AsTime()
 	}
 	if readTime != nil {
+		if err := readTime.CheckValid(); err != nil {
+			return nil, err
+		}
 		d.ReadTime = readTime.AsTime()
 	}
 	return d, nil

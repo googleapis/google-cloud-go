@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -107,8 +108,8 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 
 		if !proto.Equal(gotReq, ri.wantReq) {
 			return nil, fmt.Errorf("mockServer: bad request\ngot:\n%T\n%s\nwant:\n%T\n%s",
-				gotReq, gotReq,
-				ri.wantReq, ri.wantReq)
+				gotReq, prototext.Format(gotReq),
+				ri.wantReq, prototext.Format(ri.wantReq))
 		}
 	}
 	resp := s.resps[0]

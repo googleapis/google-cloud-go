@@ -146,7 +146,10 @@ func ExtractRetryDelay(err error) (time.Duration, bool) {
 	}
 	for _, detail := range s.Details() {
 		if retryInfo, ok := detail.(*errdetails.RetryInfo); ok {
-			return retryInfo.RetryDelay.AsDuration(), true
+			if !retryInfo.GetRetryDelay().IsValid() {
+				return 0, false
+			}
+			return retryInfo.GetRetryDelay().AsDuration(), true
 		}
 	}
 	return 0, false

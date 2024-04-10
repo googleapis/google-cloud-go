@@ -33,6 +33,8 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/protoadapt"
+	"google.golang.org/protobuf/runtime/protoiface"
 	"google.golang.org/protobuf/types/known/anypb"
 )
 
@@ -76,9 +78,10 @@ func (op *Operation) Done() bool {
 
 // Metadata unmarshals op's metadata into meta.
 // If op does not contain any metadata, Metadata returns ErrNoMetadata and meta is unmodified.
-func (op *Operation) Metadata(meta proto.Message) error {
+func (op *Operation) Metadata(meta protoiface.MessageV1) error {
 	if m := op.proto.Metadata; m != nil {
-		return anypb.UnmarshalTo(m, meta, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
+		metav2 := protoadapt.MessageV2Of(meta)
+		return anypb.UnmarshalTo(m, metav2, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
 	}
 	return ErrNoMetadata
 }
@@ -91,7 +94,7 @@ func (op *Operation) Metadata(meta proto.Message) error {
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true; if resp != nil, the response of the operation
 // is stored in resp.
-func (op *Operation) Poll(ctx context.Context, resp proto.Message, opts ...gax.CallOption) error {
+func (op *Operation) Poll(ctx context.Context, resp protoiface.MessageV1, opts ...gax.CallOption) error {
 	if !op.Done() {
 		p, err := op.c.GetOperation(ctx, &pb.GetOperationRequest{Name: op.Name()}, opts...)
 		if err != nil {
@@ -111,7 +114,8 @@ func (op *Operation) Poll(ctx context.Context, resp proto.Message, opts ...gax.C
 		if resp == nil {
 			return nil
 		}
-		return anypb.UnmarshalTo(r.Response, resp, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
+		respv2 := protoadapt.MessageV2Of(resp)
+		return anypb.UnmarshalTo(r.Response, respv2, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
 	default:
 		return fmt.Errorf("unsupported result type %[1]T: %[1]v", r)
 	}
@@ -121,7 +125,7 @@ func (op *Operation) Poll(ctx context.Context, resp proto.Message, opts ...gax.C
 const DefaultWaitInterval = 60 * time.Second
 
 // Wait is equivalent to WaitWithInterval using DefaultWaitInterval.
-func (op *Operation) Wait(ctx context.Context, resp proto.Message, opts ...gax.CallOption) error {
+func (op *Operation) Wait(ctx context.Context, resp protoiface.MessageV1, opts ...gax.CallOption) error {
 	return op.WaitWithInterval(ctx, resp, DefaultWaitInterval, opts...)
 }
 
@@ -131,7 +135,7 @@ func (op *Operation) Wait(ctx context.Context, resp proto.Message, opts ...gax.C
 // when it polls using exponential backoff.
 //
 // See documentation of Poll for error-handling information.
-func (op *Operation) WaitWithInterval(ctx context.Context, resp proto.Message, interval time.Duration, opts ...gax.CallOption) error {
+func (op *Operation) WaitWithInterval(ctx context.Context, resp protoiface.MessageV1, interval time.Duration, opts ...gax.CallOption) error {
 	bo := gax.Backoff{
 		Initial: 1 * time.Second,
 		Max:     interval,
@@ -145,7 +149,7 @@ func (op *Operation) WaitWithInterval(ctx context.Context, resp proto.Message, i
 type sleeper func(context.Context, time.Duration) error
 
 // wait implements Wait, taking exponentialBackoff and sleeper arguments for testing.
-func (op *Operation) wait(ctx context.Context, resp proto.Message, bo *gax.Backoff, sl sleeper, opts ...gax.CallOption) error {
+func (op *Operation) wait(ctx context.Context, resp protoiface.MessageV1, bo *gax.Backoff, sl sleeper, opts ...gax.CallOption) error {
 	for {
 		if err := op.Poll(ctx, resp, opts...); err != nil {
 			return err

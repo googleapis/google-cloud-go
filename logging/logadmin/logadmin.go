@@ -137,7 +137,10 @@ func toHTTPRequest(p *logtypepb.HttpRequest) (*logging.HTTPRequest, error) {
 	}
 	var dur time.Duration
 	if p.Latency != nil {
-		dur = p.Latency.AsDuration()
+		if err := p.GetLatency().CheckValid(); err != nil {
+			return nil, err
+		}
+		dur = p.GetLatency().AsDuration()
 	}
 	hr := &http.Request{
 		Method: p.RequestMethod,
@@ -307,7 +310,10 @@ func (it *EntryIterator) fetch(pageSize int, pageToken string) (string, error) {
 var slashUnescaper = strings.NewReplacer("%2F", "/", "%2f", "/")
 
 func fromLogEntry(le *logpb.LogEntry) (*logging.Entry, error) {
-	time := le.Timestamp.AsTime()
+	if err := le.GetTimestamp().CheckValid(); err != nil {
+		return nil, err
+	}
+	time := le.GetTimestamp().AsTime()
 	var payload interface{}
 	switch x := le.Payload.(type) {
 	case *logpb.LogEntry_TextPayload:

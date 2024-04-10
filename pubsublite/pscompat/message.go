@@ -102,6 +102,9 @@ func transformReceivedMessage(from *pb.SequencedMessage, to *pubsub.Message) err
 	msg := from.GetMessage()
 
 	if from.GetPublishTime() != nil {
+		if err := from.GetPublishTime().CheckValid(); err != nil {
+			return fmt.Errorf("%s: %s", errInvalidMessage.Error(), err)
+		}
 		to.PublishTime = from.GetPublishTime().AsTime()
 	}
 	if len(msg.GetKey()) > 0 {

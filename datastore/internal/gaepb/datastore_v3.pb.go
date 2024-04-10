@@ -945,6 +945,12 @@ var file_datastore_v3_proto_goTypes = []interface{}{
 	(*Path_Element)(nil), // 54: appengine.v2.Path.Element
 }
 
+var file_datastore_v3_proto_depIdxs = []int32{
+	54, // 6: appengine.v2.Path.element:type_name -> appengine.v2.Path.Element
+	15, // 7: appengine.v2.Reference.path:type_name -> appengine.v2.Path
+	16, // 8: appengine.v2.EntityProto.key:type_name -> appengine.v2.Reference
+}
+
 func init() { file_datastore_v3_proto_init() }
 func file_datastore_v3_proto_init() {
 	if File_datastore_v3_proto != nil {

@@ -65,6 +65,9 @@ func setReflectFromProtoValue(v reflect.Value, vproto *pb.Value, c *Client) erro
 		if !ok {
 			return typeErr()
 		}
+		if err := x.TimestampValue.CheckValid(); err != nil {
+			return err
+		}
 		v.Set(reflect.ValueOf(x.TimestampValue.AsTime()))
 		return nil
 
@@ -352,6 +355,9 @@ func createFromProtoValue(vproto *pb.Value, c *Client) (interface{}, error) {
 	case *pb.Value_DoubleValue:
 		return v.DoubleValue, nil
 	case *pb.Value_TimestampValue:
+		if err := v.TimestampValue.CheckValid(); err != nil {
+			return nil, err
+		}
 		return v.TimestampValue.AsTime(), nil
 	case *pb.Value_StringValue:
 		return v.StringValue, nil

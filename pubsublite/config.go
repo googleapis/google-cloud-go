@@ -116,7 +116,10 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 	}
 	// An unset retention period proto denotes "infinite retention".
 	if retentionCfg.Period != nil {
-		topic.RetentionDuration = retentionCfg.Period.AsDuration()
+		if err := retentionCfg.GetPeriod().CheckValid(); err != nil {
+			return nil, err
+		}
+		topic.RetentionDuration = retentionCfg.GetPeriod().AsDuration()
 	}
 	return topic, nil
 }

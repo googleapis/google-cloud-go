@@ -35,6 +35,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -190,7 +191,7 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 		got, checkErr := q.toProto()
 		if err := check(checkErr, typedTestcase.Query.IsError); err == nil && checkErr == nil {
 			if want := typedTestcase.Query.Query; !proto.Equal(got, want) {
-				return fmt.Errorf("got:  %s\nwant: %s", got, want)
+				return fmt.Errorf("got:  %s\nwant: %s", prototext.Format(got), prototext.Format(want))
 			}
 		}
 
