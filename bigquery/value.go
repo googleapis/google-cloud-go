@@ -879,7 +879,18 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 	var values []Value
 	for i, cell := range r.F {
 		fs := schema[i]
-		v, err := convertValue(cell.V, fs.Type, fs.Schema)
+		var v Value
+		var err error
+		if fs.Type == RangeFieldType {
+			// interception range conversion here, as we don't propagate range more deeply.
+			if fs.RangeElementType == nil || fs.RangeElementType.Type == "" {
+				return nil, errors.New("bigquery: incomplete range schema for conversion")
+			} else {
+				v, err = convertRangeValue(cell.V.(string), fs.RangeElementType.Type)
+			}
+		} else {
+			v, err = convertValue(cell.V, fs.Type, fs.Schema)
+		}
 		if err != nil {
 			return nil, err
 		}
@@ -990,4 +1001,34 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	default:
 		return nil, fmt.Errorf("unrecognized type: %s", typ)
 	}
+}
+
+// convertRangeValue aids in parsing the compound RANGE api data representation.
+// The format for a range value is: "[startval, endval)"
+func convertRangeValue(val string, elementType FieldType) (Value, error) {
+	if !strings.HasPrefix(val, "[") || !strings.HasSuffix(val, ")") {
+		return nil, fmt.Errorf("bigquery: invalid RANGE value %q", val)
+	}
+	// trim the leading/trailing characters
+	val = val[1 : len(val)-1]
+	parts := strings.Split(val, ", ")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("bigquery: invalid RANGE value %q", val)
+	}
+	rv := &RangeValue{}
+	if parts[0] != "UNBOUNDED" {
+		sv, err := convertBasicType(parts[0], elementType)
+		if err != nil {
+			return nil, fmt.Errorf("bigquery: invalid RANGE start value %q", parts[0])
+		}
+		rv.Start = sv
+	}
+	if parts[1] != "UNBOUNDED" {
+		ev, err := convertBasicType(parts[1], elementType)
+		if err != nil {
+			return nil, fmt.Errorf("bigquery: invalid RANGE end value %q", parts[1])
+		}
+		rv.End = ev
+	}
+	return rv, nil
 }

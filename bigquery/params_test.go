@@ -539,7 +539,6 @@ func TestConvertParamValue(t *testing.T) {
 	if !testutil.Equal(got, s1ParamReturnValue) {
 		t.Errorf("got %+v, want %+v", got, s1ParamReturnValue)
 	}
-	// TODO range conversion testing
 }
 
 func TestIntegration_ScalarParam(t *testing.T) {
@@ -570,7 +569,7 @@ func TestIntegration_ScalarParam(t *testing.T) {
 
 func TestIntegration_OtherParam(t *testing.T) {
 	c := getClient(t)
-	for _, test := range []struct {
+	for k, test := range []struct {
 		val       interface{}
 		wantData  interface{}
 		wantParam interface{}
@@ -601,18 +600,33 @@ func TestIntegration_OtherParam(t *testing.T) {
 			[]Value{int64(1), []Value{"s"}, true},
 			s1ParamReturnValue,
 		},
+		{
+			&RangeValue{
+				Start: time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)),
+				End:   NullTimestamp{},
+			},
+			&RangeValue{
+				Start: time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)),
+				End:   nil,
+			},
+			&RangeValue{
+				Start: time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)),
+				End:   NullTimestamp{},
+			},
+		},
 	} {
 		gotData, gotParam, err := paramRoundTrip(c, test.val)
 		if err != nil {
-			t.Fatal(err)
+			t.Errorf("case %d errored: %v", k, err)
+			continue
 		}
 		if !testutil.Equal(gotData, test.wantData) {
-			t.Errorf("%#v:\ngot  %#v (%T)\nwant %#v (%T)",
-				test.val, gotData, gotData, test.wantData, test.wantData)
+			t.Errorf("case %d data diff %#v:\ngot  %#v (%T)\nwant %#v (%T)",
+				k, test.val, gotData, gotData, test.wantData, test.wantData)
 		}
 		if !testutil.Equal(gotParam, test.wantParam) {
-			t.Errorf("%#v:\ngot  %#v (%T)\nwant %#v (%T)",
-				test.val, gotParam, gotParam, test.wantParam, test.wantParam)
+			t.Errorf("case %d param diff %#v:\ngot  %#v (%T)\nwant %#v (%T)",
+				k, test.val, gotParam, gotParam, test.wantParam, test.wantParam)
 		}
 	}
 }

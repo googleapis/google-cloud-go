@@ -634,8 +634,23 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 		}
 		return convertParamStruct(qval.StructValues, qtype.StructTypes)
 	case "RANGE":
-		//TODO
-		return nil, fmt.Errorf("unimplemented")
+		rv := &RangeValue{}
+		if qval.RangeValue == nil {
+			return rv, nil
+		}
+		startVal, err := convertParamValue(qval.RangeValue.Start, qtype.RangeElementType)
+		if err != nil {
+			return nil, err
+		} else {
+			rv.Start = startVal
+		}
+		endVal, err := convertParamValue(qval.RangeValue.End, qtype.RangeElementType)
+		if err != nil {
+			return nil, err
+		} else {
+			rv.End = endVal
+		}
+		return rv, nil
 	case "TIMESTAMP":
 		if isNullScalar(qval) {
 			return NullTimestamp{Valid: false}, nil
