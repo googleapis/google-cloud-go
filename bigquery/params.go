@@ -317,9 +317,11 @@ func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
 	}, nil
 }
 
+var errNilParam = fmt.Errorf("bigquery: nil parameter")
+
 func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) {
 	if t == nil {
-		return nil, errors.New("bigquery: nil parameter")
+		return nil, errNilParam
 	}
 	switch t {
 	case typeOfDate, typeOfNullDate:
@@ -347,14 +349,20 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 	case typeOfNullJSON:
 		return jsonParamType, nil
 	case typeOfRangeValue:
-		// TODO: must resolve range element type
-		t := &bq.QueryParameterType{
-			Type: "RANGE",
-			RangeElementType: &bq.QueryParameterType{
-				Type: "TODO",
-			},
+		iv := v.Interface().(*RangeValue)
+		// at least one of start,end must be populated.  grab the first non-nil value.
+		element := iv.Start
+		if element == nil {
+			element = iv.End
 		}
-		return t, nil
+		elet, err := paramType(reflect.TypeOf(element), reflect.ValueOf(element))
+		if err != nil {
+			return nil, err
+		}
+		return &bq.QueryParameterType{
+			Type:             "RANGE",
+			RangeElementType: elet,
+		}, nil
 	case typeOfQueryParameterValue:
 		return v.Interface().(*QueryParameterValue).toBQParamType(), nil
 	}
@@ -421,7 +429,7 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 	res := &bq.QueryParameterValue{}
 	if !v.IsValid() {
-		return res, errors.New("bigquery: nil parameter")
+		return res, errNilParam
 	}
 	t := v.Type()
 	switch t {
@@ -504,11 +512,27 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		res.Value = IntervalString(v.Interface().(*IntervalValue))
 		return res, nil
 	case typeOfRangeValue:
-		// TODO: process start/end
+		// RangeValue is a compound type, and we must process the start/end to
+		// fully populate the value.
+		res.RangeValue = &bq.RangeValue{}
 		iv := v.Interface().(*RangeValue)
-		res.RangeValue = &bq.RangeValue{
-			Start: ,
+		sVal, err := paramValue(reflect.ValueOf(iv.Start))
+		if err != nil {
+			if !errors.Is(err, errNilParam) {
+				return nil, err
+			}
+		} else {
+			res.RangeValue.Start = sVal
 		}
+		eVal, err := paramValue(reflect.ValueOf(iv.End))
+		if err != nil {
+			if !errors.Is(err, errNilParam) {
+				return nil, err
+			}
+		} else {
+			res.RangeValue.End = eVal
+		}
+		return res, nil
 	case typeOfQueryParameterValue:
 		return v.Interface().(*QueryParameterValue).toBQParamValue()
 	}
@@ -609,6 +633,9 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 			return map[string]interface{}(nil), nil
 		}
 		return convertParamStruct(qval.StructValues, qtype.StructTypes)
+	case "RANGE":
+		//TODO
+		return nil, fmt.Errorf("unimplemented")
 	case "TIMESTAMP":
 		if isNullScalar(qval) {
 			return NullTimestamp{Valid: false}, nil

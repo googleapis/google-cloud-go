@@ -242,6 +242,120 @@ func TestParamValueStruct(t *testing.T) {
 	}
 }
 
+func TestParamValueRange(t *testing.T) {
+
+	tTime := time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720))
+	//tNullTimestamp := NullTimestamp{}
+	wTime := "2016-03-22 04:22:09.000005-01:02"
+
+	var testCases = []struct {
+		desc string
+		in   interface{}
+		want *bq.QueryParameterValue
+	}{
+		{
+			desc: "RangeValue time.Time both populated",
+			in: &RangeValue{
+				Start: tTime,
+				End:   tTime,
+			},
+			want: &bq.QueryParameterValue{
+				RangeValue: &bq.RangeValue{
+					Start: &bq.QueryParameterValue{
+						Value: wTime,
+					},
+					End: &bq.QueryParameterValue{
+						Value: wTime,
+					},
+				},
+			},
+		},
+		{
+			desc: "RangeValue time.Time start only",
+			in: &RangeValue{
+				Start: tTime,
+			},
+			want: &bq.QueryParameterValue{
+				RangeValue: &bq.RangeValue{
+					Start: &bq.QueryParameterValue{
+						Value: wTime,
+					},
+				},
+			},
+		},
+		{
+			desc: "RangeValue time.Time end only",
+			in: &RangeValue{
+				End: tTime,
+			},
+			want: &bq.QueryParameterValue{
+				RangeValue: &bq.RangeValue{
+					End: &bq.QueryParameterValue{
+						Value: wTime,
+					},
+				},
+			},
+		},
+		{
+			desc: "RangeValue NullTimestamp both populated",
+			in: &RangeValue{
+				Start: NullTimestamp{Valid: true, Timestamp: tTime},
+				End:   NullTimestamp{Valid: true, Timestamp: tTime},
+			},
+			want: &bq.QueryParameterValue{
+				RangeValue: &bq.RangeValue{
+					Start: &bq.QueryParameterValue{
+						Value: wTime,
+					},
+					End: &bq.QueryParameterValue{
+						Value: wTime,
+					},
+				},
+			},
+		},
+		{
+			desc: "RangeValue NullTimestamp start only",
+			in: &RangeValue{
+				Start: NullTimestamp{Valid: true, Timestamp: tTime},
+				End:   NullTimestamp{Valid: false},
+			},
+			want: &bq.QueryParameterValue{
+				RangeValue: &bq.RangeValue{
+					Start: &bq.QueryParameterValue{
+						Value: wTime,
+					},
+					End: &bq.QueryParameterValue{NullFields: []string{"Value"}},
+				},
+			},
+		},
+		{
+			desc: "RangeValue time.Time end only",
+			in: &RangeValue{
+				Start: NullTimestamp{Valid: false},
+				End:   NullTimestamp{Valid: true, Timestamp: tTime},
+			},
+			want: &bq.QueryParameterValue{
+				RangeValue: &bq.RangeValue{
+					Start: &bq.QueryParameterValue{NullFields: []string{"Value"}},
+					End: &bq.QueryParameterValue{
+						Value: wTime,
+					},
+				},
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		got, err := paramValue(reflect.ValueOf(tc.in))
+		if err != nil {
+			t.Errorf("%q: got error %v", tc.desc, err)
+		}
+		if d := testutil.Diff(got, tc.want); d != "" {
+			t.Errorf("%q: mismatch\n%s", tc.desc, d)
+		}
+	}
+}
+
 func TestParamValueErrors(t *testing.T) {
 	// paramValue lets a few invalid types through, but paramType catches them.
 	// Since we never call one without the other that's fine.
