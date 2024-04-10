@@ -40,15 +40,15 @@ package google_pubsub_loadtest
 import (
 	fmt "fmt"
 
-	proto "github.com/golang/protobuf/proto"
+	proto "google.golang.org/protobuf/proto"
 
 	math "math"
 
-	google_protobuf "github.com/golang/protobuf/ptypes/duration"
+	google_protobuf "google.golang.org/protobuf/types/known/durationpb"
 
 	"context"
 
-	google_protobuf1 "github.com/golang/protobuf/ptypes/timestamp"
+	google_protobuf1 "google.golang.org/protobuf/types/known/timestamppb"
 
 	grpc "google.golang.org/grpc"
 )

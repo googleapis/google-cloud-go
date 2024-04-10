@@ -27,13 +27,12 @@ import (
 	"sync"
 
 	pb "cloud.google.com/go/rpcreplay/proto/rpcreplay"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // A Recorder records RPCs for later playback.
@@ -687,7 +686,7 @@ func writeEntry(w io.Writer, e *entry) error {
 	var a *any.Any
 	var err error
 	if m != nil {
-		a, err = ptypes.MarshalAny(m)
+		a, err = anypb.New(m)
 		if err != nil {
 			return err
 		}
@@ -720,14 +719,10 @@ func readEntry(r io.Reader) (*entry, error) {
 	}
 	var msg message
 	if pe.Message != nil {
-		var any ptypes.DynamicAny
-		if err := ptypes.UnmarshalAny(pe.Message, &any); err != nil {
-			return nil, err
-		}
 		if pe.IsError {
-			msg.err = status.ErrorProto(any.Message.(*spb.Status))
+			msg.err = status.ErrorProto(pe.Message..(*spb.Status))
 		} else {
-			msg.msg = any.Message
+			msg.msg = pe.Message.ProtoReflect().Interface()
 		}
 	} else if pe.IsError {
 		msg.err = io.EOF

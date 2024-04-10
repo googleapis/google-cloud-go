@@ -23,7 +23,7 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func encodeTimestamp(seconds int64, nanos int32) string {

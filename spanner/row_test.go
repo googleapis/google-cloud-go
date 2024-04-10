@@ -29,10 +29,10 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	proto "github.com/golang/protobuf/proto"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
+	proto "google.golang.org/protobuf/proto"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 var (

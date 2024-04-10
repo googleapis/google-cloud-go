@@ -20,7 +20,7 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	"github.com/golang/protobuf/ptypes/empty"
+	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -188,7 +188,7 @@ func TestTransactionErrors(t *testing.T) {
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
 	srv.addRPC(getReq, unknownErr)
-	srv.addRPC(rollbackReq, &empty.Empty{})
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	err = c.RunTransaction(ctx, get)
 	if status.Code(err) != codes.Unknown {
 		t.Errorf("got <%v>, want Unknown", err)
@@ -227,7 +227,7 @@ func TestTransactionErrors(t *testing.T) {
 	// Read after write.
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &empty.Empty{})
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
 		if err := tx.Delete(c.Doc("C/a")); err != nil {
 			return err
@@ -244,7 +244,7 @@ func TestTransactionErrors(t *testing.T) {
 	// Read after write, with query.
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &empty.Empty{})
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
 		if err := tx.Delete(c.Doc("C/a")); err != nil {
 			return err
@@ -263,7 +263,7 @@ func TestTransactionErrors(t *testing.T) {
 	// Read after write, with query and GetAll.
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &empty.Empty{})
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
 		if err := tx.Delete(c.Doc("C/a")); err != nil {
 			return err
@@ -278,7 +278,7 @@ func TestTransactionErrors(t *testing.T) {
 	// Read after write fails even if the user ignores the read's error.
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &empty.Empty{})
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
 		if err := tx.Delete(c.Doc("C/a")); err != nil {
 			return err
@@ -303,7 +303,7 @@ func TestTransactionErrors(t *testing.T) {
 		},
 		beginRes,
 	)
-	srv.addRPC(rollbackReq, &empty.Empty{})
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
 		return tx.Delete(c.Doc("C/a"))
 	}, ReadOnly)
@@ -327,7 +327,7 @@ func TestTransactionErrors(t *testing.T) {
 		beginRes,
 	)
 	srv.addRPC(commitReq, status.Errorf(codes.Aborted, ""))
-	srv.addRPC(rollbackReq, &empty.Empty{})
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	err = c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil },
 		MaxAttempts(2))
 	if status.Code(err) != codes.Aborted {
@@ -337,7 +337,7 @@ func TestTransactionErrors(t *testing.T) {
 	// Nested transaction.
 	srv.reset()
 	srv.addRPC(beginReq, beginRes)
-	srv.addRPC(rollbackReq, &empty.Empty{})
+	srv.addRPC(rollbackReq, &emptypb.Empty{})
 	err = c.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
 		return c.RunTransaction(ctx, func(context.Context, *Transaction) error { return nil })
 	})

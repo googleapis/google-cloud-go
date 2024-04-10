@@ -28,7 +28,6 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/firestore/internal"
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -418,12 +417,7 @@ type WriteResult struct {
 }
 
 func writeResultFromProto(wr *pb.WriteResult) (*WriteResult, error) {
-	t, err := ptypes.Timestamp(wr.UpdateTime)
-	if err != nil {
-		t = time.Time{}
-		// TODO(jba): Follow up if Delete is supposed to return a nil timestamp.
-	}
-	return &WriteResult{UpdateTime: t}, nil
+	return &WriteResult{UpdateTime: wr.UpdateTime.AsTime()}, nil
 }
 
 func sleep(ctx context.Context, dur time.Duration) error {

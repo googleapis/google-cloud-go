@@ -21,8 +21,7 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	"github.com/golang/protobuf/ptypes"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -299,23 +298,11 @@ func newDocumentSnapshot(ref *DocumentRef, proto *pb.Document, c *Client, readTi
 		proto: proto,
 	}
 	if proto != nil {
-		ts, err := ptypes.Timestamp(proto.CreateTime)
-		if err != nil {
-			return nil, err
-		}
-		d.CreateTime = ts
-		ts, err = ptypes.Timestamp(proto.UpdateTime)
-		if err != nil {
-			return nil, err
-		}
-		d.UpdateTime = ts
+		d.CreateTime = proto.CreateTime.AsTime()
+		d.UpdateTime = proto.UpdateTime.AsTime()
 	}
 	if readTime != nil {
-		ts, err := ptypes.Timestamp(readTime)
-		if err != nil {
-			return nil, err
-		}
-		d.ReadTime = ts
+		d.ReadTime = readTime.AsTime()
 	}
 	return d, nil
 }

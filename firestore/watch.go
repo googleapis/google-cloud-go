@@ -26,7 +26,6 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -244,12 +243,7 @@ func (s *watchStream) handleTargetChange(tc *pb.TargetChange) bool {
 		s.logf("TargetNoChange %d %v", len(tc.TargetIds), tc.ReadTime)
 		if len(tc.TargetIds) == 0 && tc.ReadTime != nil && s.current {
 			// Everything is up-to-date, so we are ready to return a snapshot.
-			rt, err := ptypes.Timestamp(tc.ReadTime)
-			if err != nil {
-				s.err = err
-				return true
-			}
-			s.readTime = rt
+			s.readTime = tc.ReadTime.AsTime()
 			s.target.ResumeType = &pb.Target_ResumeToken{tc.ResumeToken}
 			return true
 		}

@@ -29,11 +29,11 @@ import (
 
 	autogen "cloud.google.com/go/longrunning/autogen"
 	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // ErrNoMetadata is the error returned by Metadata if the operation contains no metadata.
@@ -78,7 +78,7 @@ func (op *Operation) Done() bool {
 // If op does not contain any metadata, Metadata returns ErrNoMetadata and meta is unmodified.
 func (op *Operation) Metadata(meta proto.Message) error {
 	if m := op.proto.Metadata; m != nil {
-		return ptypes.UnmarshalAny(m, meta)
+		return anypb.UnmarshalTo(m, meta, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
 	}
 	return ErrNoMetadata
 }
@@ -111,7 +111,7 @@ func (op *Operation) Poll(ctx context.Context, resp proto.Message, opts ...gax.C
 		if resp == nil {
 			return nil
 		}
-		return ptypes.UnmarshalAny(r.Response, resp)
+		return anypb.UnmarshalTo(r.Response, resp, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
 	default:
 		return fmt.Errorf("unsupported result type %[1]T: %[1]v", r)
 	}

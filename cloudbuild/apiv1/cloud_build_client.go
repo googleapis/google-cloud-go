@@ -27,7 +27,7 @@ import (
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"cloud.google.com/go/longrunning/autogen/longrunningpb"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"

@@ -23,8 +23,8 @@ import (
 
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/proto"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
+	"google.golang.org/protobuf/proto"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestConvertParams(t *testing.T) {

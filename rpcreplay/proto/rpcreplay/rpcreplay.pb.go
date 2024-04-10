@@ -6,11 +6,11 @@ package rpcreplay
 import (
 	fmt "fmt"
 
-	proto "github.com/golang/protobuf/proto"
+	proto "google.golang.org/protobuf/proto"
 
 	math "math"
 
-	any "github.com/golang/protobuf/ptypes/any"
+	any "google.golang.org/protobuf/types/known/anypb"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.

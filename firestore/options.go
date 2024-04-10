@@ -20,7 +20,7 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	"github.com/golang/protobuf/ptypes"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // A Precondition modifies a Firestore update or delete operation.
@@ -61,12 +61,8 @@ func LastUpdateTime(t time.Time) Precondition { return lastUpdateTime(t) }
 type lastUpdateTime time.Time
 
 func (u lastUpdateTime) preconditionProto() (*pb.Precondition, error) {
-	ts, err := ptypes.TimestampProto(time.Time(u))
-	if err != nil {
-		return nil, err
-	}
 	return &pb.Precondition{
-		ConditionType: &pb.Precondition_UpdateTime{ts},
+		ConditionType: &pb.Precondition_UpdateTime{UpdateTime: timestamppb.New(time.Time(u))},
 	}, nil
 }
 

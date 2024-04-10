@@ -28,11 +28,11 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/proto"
 )
 
 type mockServer struct {
@@ -120,8 +120,8 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 
 		if !proto.Equal(gotReq, ri.wantReq) {
 			return nil, fmt.Errorf("mockServer: bad request\ngot:\n%T\n%s\nwant:\n%T\n%s",
-				gotReq, proto.MarshalTextString(gotReq),
-				ri.wantReq, proto.MarshalTextString(ri.wantReq))
+				gotReq, gotReq,
+				ri.wantReq, ri.wantReq)
 		}
 	}
 	resp := s.resps[0]

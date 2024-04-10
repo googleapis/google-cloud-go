@@ -21,11 +21,10 @@ import (
 	"strings"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/proto"
 
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // EventTimeAttributeKey is the key of the attribute whose value is an encoded
@@ -100,13 +99,10 @@ func transformReceivedMessage(from *pb.SequencedMessage, to *pubsub.Message) err
 		return errInvalidMessage
 	}
 
-	var err error
 	msg := from.GetMessage()
 
 	if from.GetPublishTime() != nil {
-		if to.PublishTime, err = ptypes.Timestamp(from.GetPublishTime()); err != nil {
-			return fmt.Errorf("%s: %s", errInvalidMessage.Error(), err)
-		}
+		to.PublishTime = from.GetPublishTime().AsTime()
 	}
 	if len(msg.GetKey()) > 0 {
 		to.OrderingKey = string(msg.GetKey())

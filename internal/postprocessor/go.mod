@@ -1,6 +1,8 @@
 module cloud.google.com/go/internal/postprocessor
 
-go 1.19
+go 1.21
+
+toolchain go1.22.0
 
 require (
 	github.com/go-git/go-git/v5 v5.12.0

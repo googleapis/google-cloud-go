@@ -14,13 +14,12 @@
 package pubsublite
 
 import (
-	"fmt"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
-	"github.com/golang/protobuf/ptypes"
 
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
+	"google.golang.org/protobuf/types/known/durationpb"
 	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
@@ -93,7 +92,7 @@ func (tc *TopicConfig) toProto() *pb.Topic {
 		},
 	}
 	if tc.RetentionDuration >= 0 {
-		topicpb.RetentionConfig.Period = ptypes.DurationProto(tc.RetentionDuration)
+		topicpb.RetentionConfig.Period = durationpb.New(tc.RetentionDuration)
 	}
 	if len(tc.ThroughputReservation) > 0 {
 		topicpb.ReservationConfig = &pb.Topic_ReservationConfig{
@@ -117,11 +116,7 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 	}
 	// An unset retention period proto denotes "infinite retention".
 	if retentionCfg.Period != nil {
-		period, err := ptypes.Duration(retentionCfg.Period)
-		if err != nil {
-			return nil, fmt.Errorf("pubsublite: invalid retention period in topic config: %w", err)
-		}
-		topic.RetentionDuration = period
+		topic.RetentionDuration = retentionCfg.Period.AsDuration()
 	}
 	return topic, nil
 }
@@ -195,7 +190,7 @@ func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
 		duration := optional.ToDuration(tc.RetentionDuration)
 		// An unset retention period proto denotes "infinite retention".
 		if duration >= 0 {
-			updatedTopic.RetentionConfig.Period = ptypes.DurationProto(duration)
+			updatedTopic.RetentionConfig.Period = durationpb.New(duration)
 		}
 	}
 	if tc.ThroughputReservation != nil {
