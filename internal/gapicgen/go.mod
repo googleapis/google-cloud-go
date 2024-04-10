@@ -2,8 +2,6 @@ module cloud.google.com/go/internal/gapicgen
 
 go 1.21
 
-toolchain go1.22.0
-
 require (
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/google/go-github/v60 v60.0.0
