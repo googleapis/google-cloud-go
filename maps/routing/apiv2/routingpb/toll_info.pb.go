@@ -21,12 +21,11 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	money "google.golang.org/genproto/googleapis/type/money"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -36,16 +35,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Encapsulates toll information on a [Route][google.maps.routing.v2.Route] or
-// on a [RouteLeg][google.maps.routing.v2.RouteLeg].
+// Encapsulates toll information on a [`Route`][google.maps.routing.v2.Route] or
+// on a [`RouteLeg`][google.maps.routing.v2.RouteLeg].
 type TollInfo struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// The monetary amount of tolls for the corresponding
-	// [Route][google.maps.routing.v2.Route] or
-	// [RouteLeg][google.maps.routing.v2.RouteLeg]. This list contains a money
+	// [`Route`][google.maps.routing.v2.Route] or
+	// [`RouteLeg`][google.maps.routing.v2.RouteLeg]. This list contains a money
 	// amount for each currency that is expected to be charged by the toll
 	// stations. Typically this list will contain only one item for routes with
 	// tolls in one currency. For international trips, this list may contain

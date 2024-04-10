@@ -21,12 +21,11 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -101,7 +100,7 @@ const (
 	// No polyline type preference specified. Defaults to `ENCODED_POLYLINE`.
 	PolylineEncoding_POLYLINE_ENCODING_UNSPECIFIED PolylineEncoding = 0
 	// Specifies a polyline encoded using the [polyline encoding
-	// algorithm](https://developers.google.com/maps/documentation/utilities/polylinealgorithm).
+	// algorithm](/maps/documentation/utilities/polylinealgorithm).
 	PolylineEncoding_ENCODED_POLYLINE PolylineEncoding = 1
 	// Specifies a polyline using the [GeoJSON LineString
 	// format](https://tools.ietf.org/html/rfc7946#section-3.1.4)
@@ -229,7 +228,7 @@ type Polyline_EncodedPolyline struct {
 
 type Polyline_GeoJsonLinestring struct {
 	// Specifies a polyline using the [GeoJSON LineString
-	// format](https://tools.ietf.org/html/rfc7946#section-3.1.4)
+	// format](https://tools.ietf.org/html/rfc7946#section-3.1.4).
 	GeoJsonLinestring *structpb.Struct `protobuf:"bytes,2,opt,name=geo_json_linestring,json=geoJsonLinestring,proto3,oneof"`
 }
 

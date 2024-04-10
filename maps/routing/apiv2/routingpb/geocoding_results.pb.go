@@ -21,12 +21,11 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -36,7 +35,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Contains [GeocodedWaypoints][google.maps.routing.v2.GeocodedWaypoint] for
+// Contains [`GeocodedWaypoints`][google.maps.routing.v2.GeocodedWaypoint] for
 // origin, destination and intermediate waypoints. Only populated for address
 // waypoints.
 type GeocodingResults struct {
@@ -122,8 +121,8 @@ type GeocodedWaypoint struct {
 	// waypoint.
 	IntermediateWaypointRequestIndex *int32 `protobuf:"varint,2,opt,name=intermediate_waypoint_request_index,json=intermediateWaypointRequestIndex,proto3,oneof" json:"intermediate_waypoint_request_index,omitempty"`
 	// The type(s) of the result, in the form of zero or more type tags.
-	// Supported types:
-	// https://developers.google.com/maps/documentation/geocoding/requests-geocoding#Types
+	// Supported types: [Address types and address component
+	// types](https://developers.google.com/maps/documentation/geocoding/requests-geocoding#Types).
 	Type []string `protobuf:"bytes,3,rep,name=type,proto3" json:"type,omitempty"`
 	// Indicates that the geocoder did not return an exact match for the original
 	// request, though it was able to match part of the requested address. You may

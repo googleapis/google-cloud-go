@@ -21,11 +21,10 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -35,7 +34,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Labels for the [Route][google.maps.routing.v2.Route] that are useful to
+// Labels for the [`Route`][google.maps.routing.v2.Route] that are useful to
 // identify specific properties of the route to compare against others.
 type RouteLabel int32
 
@@ -46,7 +45,7 @@ const (
 	RouteLabel_DEFAULT_ROUTE RouteLabel = 1
 	// An alternative to the default "best" route. Routes like this will be
 	// returned when
-	// [compute_alternative_routes][google.maps.routing.v2.ComputeRoutesRequest.compute_alternative_routes]
+	// [`compute_alternative_routes`][google.maps.routing.v2.ComputeRoutesRequest.compute_alternative_routes]
 	// is specified.
 	RouteLabel_DEFAULT_ROUTE_ALTERNATE RouteLabel = 2
 	// Fuel efficient route. Routes labeled with this value are determined to be

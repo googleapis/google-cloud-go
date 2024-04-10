@@ -21,11 +21,10 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -44,19 +43,19 @@ type RouteModifiers struct {
 
 	// When set to true, avoids toll roads where reasonable, giving preference to
 	// routes not containing toll roads. Applies only to the `DRIVE` and
-	// `TWO_WHEELER` [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
+	// `TWO_WHEELER` [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode].
 	AvoidTolls bool `protobuf:"varint,1,opt,name=avoid_tolls,json=avoidTolls,proto3" json:"avoid_tolls,omitempty"`
 	// When set to true, avoids highways where reasonable, giving preference to
 	// routes not containing highways. Applies only to the `DRIVE` and
-	// `TWO_WHEELER` [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
+	// `TWO_WHEELER` [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode].
 	AvoidHighways bool `protobuf:"varint,2,opt,name=avoid_highways,json=avoidHighways,proto3" json:"avoid_highways,omitempty"`
 	// When set to true, avoids ferries where reasonable, giving preference to
 	// routes not containing ferries. Applies only to the `DRIVE` and`TWO_WHEELER`
-	// [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
+	// [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode].
 	AvoidFerries bool `protobuf:"varint,3,opt,name=avoid_ferries,json=avoidFerries,proto3" json:"avoid_ferries,omitempty"`
 	// When set to true, avoids navigating indoors where reasonable, giving
 	// preference to routes not containing indoor navigation. Applies only to the
-	// `WALK` [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
+	// `WALK` [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode].
 	AvoidIndoor bool `protobuf:"varint,4,opt,name=avoid_indoor,json=avoidIndoor,proto3" json:"avoid_indoor,omitempty"`
 	// Specifies the vehicle information.
 	VehicleInfo *VehicleInfo `protobuf:"bytes,5,opt,name=vehicle_info,json=vehicleInfo,proto3" json:"vehicle_info,omitempty"`
@@ -65,7 +64,7 @@ type RouteModifiers struct {
 	// toll passes are not provided, the API treats the toll pass as unknown and
 	// tries to return the cash price.
 	// Applies only to the `DRIVE` and `TWO_WHEELER`
-	// [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
+	// [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode].
 	TollPasses []TollPass `protobuf:"varint,6,rep,packed,name=toll_passes,json=tollPasses,proto3,enum=google.maps.routing.v2.TollPass" json:"toll_passes,omitempty"`
 }
 

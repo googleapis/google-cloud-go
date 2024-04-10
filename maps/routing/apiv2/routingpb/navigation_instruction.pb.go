@@ -21,11 +21,10 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -36,14 +35,15 @@ const (
 )
 
 // Encapsulates navigation instructions for a
-// [RouteLegStep][google.maps.routing.v2.RouteLegStep]
+// [`RouteLegStep`][google.maps.routing.v2.RouteLegStep].
 type NavigationInstruction struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Encapsulates the navigation instructions for the current step (e.g., turn
-	// left, merge, straight, etc.). This field determines which icon to display.
+	// Encapsulates the navigation instructions for the current step (for example,
+	// turn left, merge, or straight). This field determines which icon to
+	// display.
 	Maneuver Maneuver `protobuf:"varint,1,opt,name=maneuver,proto3,enum=google.maps.routing.v2.Maneuver" json:"maneuver,omitempty"`
 	// Instructions for navigating this step.
 	Instructions string `protobuf:"bytes,2,opt,name=instructions,proto3" json:"instructions,omitempty"`
