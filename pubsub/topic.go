@@ -948,7 +948,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			links = append(links, trace.Link{SpanContext: bm.createSpan.SpanContext()})
 		}
 
-		topicID := idFromFullyQualified(t.name)
+		topicID := getIDFromFQN(t.name)
 		var pSpan trace.Span
 		opts := getCommonOptions(topicID)
 		opts = append(opts, trace.WithLinks(links...))

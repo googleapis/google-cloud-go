@@ -131,7 +131,9 @@ func newExactlyOnceBackoff() gax.Backoff {
 	}
 }
 
-func idFromFullyQualified(fqn string) string {
+// retrieves the resource ID from a fully qualified name.
+// For example, "projects/p/topics/my-topic" -> "my-topic"
+func getIDFromFQN(fqn string) string {
 	s := strings.Split(fqn, "/")
 	return s[len(s)-1]
 }

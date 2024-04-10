@@ -191,7 +191,3 @@ func newSuccessAckResult() *AckResult {
 	ipubsub.SetAckResult(ar, AcknowledgeStatusSuccess, nil)
 	return ar
 }
-
-func setAckResult(ar *AckResult, s AcknowledgeStatus, err error) {
-	ipubsub.SetAckResult(ar, s, err)
-}
