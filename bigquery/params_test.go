@@ -244,9 +244,12 @@ func TestParamValueStruct(t *testing.T) {
 
 func TestParamValueRange(t *testing.T) {
 
-	tTime := time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720))
-	//tNullTimestamp := NullTimestamp{}
-	wTime := "2016-03-22 04:22:09.000005-01:02"
+	tTimestamp := time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720))
+	tDate := civil.Date{Year: 2016, Month: 03, Day: 22}
+	tTime := civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}
+	wTimestamp := "2016-03-22 04:22:09.000005-01:02"
+	wDate := "2016-03-22"
+	wTime := "04:05:06.789000"
 
 	var testCases = []struct {
 		desc string
@@ -256,16 +259,16 @@ func TestParamValueRange(t *testing.T) {
 		{
 			desc: "RangeValue time.Time both populated",
 			in: &RangeValue{
-				Start: tTime,
-				End:   tTime,
+				Start: tTimestamp,
+				End:   tTimestamp,
 			},
 			want: &bq.QueryParameterValue{
 				RangeValue: &bq.RangeValue{
 					Start: &bq.QueryParameterValue{
-						Value: wTime,
+						Value: wTimestamp,
 					},
 					End: &bq.QueryParameterValue{
-						Value: wTime,
+						Value: wTimestamp,
 					},
 				},
 			},
@@ -273,12 +276,12 @@ func TestParamValueRange(t *testing.T) {
 		{
 			desc: "RangeValue time.Time start only",
 			in: &RangeValue{
-				Start: tTime,
+				Start: tTimestamp,
 			},
 			want: &bq.QueryParameterValue{
 				RangeValue: &bq.RangeValue{
 					Start: &bq.QueryParameterValue{
-						Value: wTime,
+						Value: wTimestamp,
 					},
 				},
 			},
@@ -286,12 +289,12 @@ func TestParamValueRange(t *testing.T) {
 		{
 			desc: "RangeValue time.Time end only",
 			in: &RangeValue{
-				End: tTime,
+				End: tTimestamp,
 			},
 			want: &bq.QueryParameterValue{
 				RangeValue: &bq.RangeValue{
 					End: &bq.QueryParameterValue{
-						Value: wTime,
+						Value: wTimestamp,
 					},
 				},
 			},
@@ -299,16 +302,16 @@ func TestParamValueRange(t *testing.T) {
 		{
 			desc: "RangeValue NullTimestamp both populated",
 			in: &RangeValue{
-				Start: NullTimestamp{Valid: true, Timestamp: tTime},
-				End:   NullTimestamp{Valid: true, Timestamp: tTime},
+				Start: NullTimestamp{Valid: true, Timestamp: tTimestamp},
+				End:   NullTimestamp{Valid: true, Timestamp: tTimestamp},
 			},
 			want: &bq.QueryParameterValue{
 				RangeValue: &bq.RangeValue{
 					Start: &bq.QueryParameterValue{
-						Value: wTime,
+						Value: wTimestamp,
 					},
 					End: &bq.QueryParameterValue{
-						Value: wTime,
+						Value: wTimestamp,
 					},
 				},
 			},
@@ -316,13 +319,13 @@ func TestParamValueRange(t *testing.T) {
 		{
 			desc: "RangeValue NullTimestamp start only",
 			in: &RangeValue{
-				Start: NullTimestamp{Valid: true, Timestamp: tTime},
+				Start: NullTimestamp{Valid: true, Timestamp: tTimestamp},
 				End:   NullTimestamp{Valid: false},
 			},
 			want: &bq.QueryParameterValue{
 				RangeValue: &bq.RangeValue{
 					Start: &bq.QueryParameterValue{
-						Value: wTime,
+						Value: wTimestamp,
 					},
 					End: &bq.QueryParameterValue{NullFields: []string{"Value"}},
 				},
@@ -332,11 +335,45 @@ func TestParamValueRange(t *testing.T) {
 			desc: "RangeValue time.Time end only",
 			in: &RangeValue{
 				Start: NullTimestamp{Valid: false},
-				End:   NullTimestamp{Valid: true, Timestamp: tTime},
+				End:   NullTimestamp{Valid: true, Timestamp: tTimestamp},
 			},
 			want: &bq.QueryParameterValue{
 				RangeValue: &bq.RangeValue{
 					Start: &bq.QueryParameterValue{NullFields: []string{"Value"}},
+					End: &bq.QueryParameterValue{
+						Value: wTimestamp,
+					},
+				},
+			},
+		},
+		{
+			desc: "RangeValue civil.Date both populated",
+			in: &RangeValue{
+				Start: tDate,
+				End:   tDate,
+			},
+			want: &bq.QueryParameterValue{
+				RangeValue: &bq.RangeValue{
+					Start: &bq.QueryParameterValue{
+						Value: wDate,
+					},
+					End: &bq.QueryParameterValue{
+						Value: wDate,
+					},
+				},
+			},
+		},
+		{
+			desc: "RangeValue civil.Time both populated",
+			in: &RangeValue{
+				Start: tTime,
+				End:   tTime,
+			},
+			want: &bq.QueryParameterValue{
+				RangeValue: &bq.RangeValue{
+					Start: &bq.QueryParameterValue{
+						Value: wTime,
+					},
 					End: &bq.QueryParameterValue{
 						Value: wTime,
 					},
@@ -386,6 +423,12 @@ func TestParamType(t *testing.T) {
 		{[]int{}, &bq.QueryParameterType{Type: "ARRAY", ArrayType: int64ParamType}},
 		{[3]bool{}, &bq.QueryParameterType{Type: "ARRAY", ArrayType: boolParamType}},
 		{S1{}, s1ParamType},
+		{&RangeValue{Start: time.Now()}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timestampParamType}},
+		{&RangeValue{End: time.Now()}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timestampParamType}},
+		{&RangeValue{Start: NullTimestamp{Valid: false}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timestampParamType}},
+		{&RangeValue{End: NullTimestamp{Valid: false}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timestampParamType}},
+		{&RangeValue{Start: civil.Time{}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timeParamType}},
+		{&RangeValue{End: civil.Date{}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: dateParamType}},
 	} {
 		got, err := paramType(reflect.TypeOf(test.val), reflect.ValueOf(test.val))
 		if err != nil {
@@ -496,6 +539,7 @@ func TestConvertParamValue(t *testing.T) {
 	if !testutil.Equal(got, s1ParamReturnValue) {
 		t.Errorf("got %+v, want %+v", got, s1ParamReturnValue)
 	}
+	// TODO range conversion testing
 }
 
 func TestIntegration_ScalarParam(t *testing.T) {
