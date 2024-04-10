@@ -106,7 +106,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-				semconv.MessagingSystemKey.String("pubsub"),
+				semconv.MessagingSystemKey.String(pubsubSemConvName),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -139,6 +139,8 @@ func TestTrace_PublishSpan(t *testing.T) {
 		tracetest.SpanStub{
 			Name: fmt.Sprintf("%s %s", topicID, publishRPCSpanName),
 			Attributes: []attribute.KeyValue{
+				semconv.MessagingSystem(pubsubSemConvName),
+				semconv.MessagingDestinationName(topicID),
 				semconv.CodeFunction("publishMessageBundle"),
 				semconv.MessagingBatchMessageCount(1),
 			},
@@ -379,7 +381,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				attribute.String(orderingAttribute, m.OrderingKey),
 				attribute.String(resultAttribute, resultAcked),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
-				semconv.MessagingSystemKey.String("pubsub"),
+				semconv.MessagingSystem(pubsubSemConvName),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -435,6 +437,8 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			Attributes: []attribute.KeyValue{
 				semconv.CodeFunction("sendAck"),
 				semconv.MessagingBatchMessageCount(1),
+				semconv.MessagingSystem(pubsubSemConvName),
+				semconv.MessagingDestinationName(subID),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
@@ -461,6 +465,8 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				attribute.Bool(receiptModackAttribute, true),
 				attribute.Int(ackDeadlineSecAttribute, 10),
 				semconv.MessagingBatchMessageCount(1),
+				semconv.MessagingSystem(pubsubSemConvName),
+				semconv.MessagingDestinationName(subID),
 			},
 		},
 	}
@@ -591,7 +597,7 @@ func getPublishSpanStubsWithError(topicID string, m *Message, msgSize int, err e
 				semconv.MessagingMessageIDKey.String(""),
 				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
 				attribute.String(orderingAttribute, m.OrderingKey),
-				semconv.MessagingSystemKey.String("pubsub"),
+				semconv.MessagingSystem(pubsubSemConvName),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
