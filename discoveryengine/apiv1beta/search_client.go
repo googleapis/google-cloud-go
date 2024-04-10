@@ -67,13 +67,13 @@ func defaultSearchGRPCClientOptions() []option.ClientOption {
 func defaultSearchCallOptions() *SearchCallOptions {
 	return &SearchCallOptions{
 		Search: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        5000 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -108,11 +108,11 @@ func defaultSearchCallOptions() *SearchCallOptions {
 func defaultSearchRESTCallOptions() *SearchCallOptions {
 	return &SearchCallOptions{
 		Search: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        5000 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
 					http.StatusServiceUnavailable)

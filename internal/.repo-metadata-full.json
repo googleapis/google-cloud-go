@@ -2349,6 +2349,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/shopping/merchant/quota/apiv1beta": {
+    "api_shortname": "merchantapi",
+    "distribution_name": "cloud.google.com/go/shopping/merchant/quota/apiv1beta",
+    "description": "Merchant API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/quota/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/shopping/merchant/reports/apiv1beta": {
     "api_shortname": "merchantapi",
     "distribution_name": "cloud.google.com/go/shopping/merchant/reports/apiv1beta",
