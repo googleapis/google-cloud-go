@@ -21,14 +21,13 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -407,7 +406,7 @@ type PageInfo struct {
 	// The most specific category associated with a category page.
 	//
 	// To represent full path of category, use '>' sign to separate different
-	// hierarchies. If '>' is part of the category name, please replace it with
+	// hierarchies. If '>' is part of the category name, replace it with
 	// other character(s).
 	//
 	// Category pages include special pages such as sales or promotions. For

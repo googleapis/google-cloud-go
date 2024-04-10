@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -278,7 +277,7 @@ type Engine_SearchEngineConfig struct {
 	// The search feature tier of this engine.
 	//
 	// Different tiers might have different
-	// pricing. To learn more, please check the pricing documentation.
+	// pricing. To learn more, check the pricing documentation.
 	//
 	// Defaults to
 	// [SearchTier.SEARCH_TIER_STANDARD][google.cloud.discoveryengine.v1beta.SearchTier.SEARCH_TIER_STANDARD]
@@ -362,7 +361,7 @@ type Engine_ChatEngineConfig struct {
 	// [EngineService.GetEngine][google.cloud.discoveryengine.v1beta.EngineService.GetEngine]
 	// or
 	// [EngineService.ListEngines][google.cloud.discoveryengine.v1beta.EngineService.ListEngines]
-	// API after engine creation. Please use
+	// API after engine creation. Use
 	// [ChatEngineMetadata.dialogflow_agent][google.cloud.discoveryengine.v1beta.Engine.ChatEngineMetadata.dialogflow_agent]
 	// for actual agent association after Engine is created.
 	DialogflowAgentToLink string `protobuf:"bytes,2,opt,name=dialogflow_agent_to_link,json=dialogflowAgentToLink,proto3" json:"dialogflow_agent_to_link,omitempty"`
