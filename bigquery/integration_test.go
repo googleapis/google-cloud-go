@@ -2127,6 +2127,12 @@ func initQueryParameterTestCases() {
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	rat := big.NewRat(13, 10)
 	bigRat := big.NewRat(12345, 10e10)
+	rangeTimestamp1 := &RangeValue{
+		Start: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
+	}
+	rangeTimestamp2 := &RangeValue{
+		End: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
+	}
 
 	type ss struct {
 		String string
@@ -2283,6 +2289,46 @@ func initQueryParameterTestCases() {
 			},
 			[]Value{bigRat},
 			bigRat,
+		},
+		{
+			"RangeUnboundedEnd",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "RANGE",
+							RangeElementType: &StandardSQLDataType{
+								TypeKind: "TIMESTAMP",
+							},
+						},
+						Value: rangeTimestamp1,
+					},
+				},
+			},
+			[]Value{rangeTimestamp1},
+			rangeTimestamp1,
+		},
+		{
+			"RangeUnboundedStart",
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "RANGE",
+							RangeElementType: &StandardSQLDataType{
+								TypeKind: "TIMESTAMP",
+							},
+						},
+						Value: rangeTimestamp2,
+					},
+				},
+			},
+			[]Value{rangeTimestamp2},
+			rangeTimestamp2,
 		},
 		{
 			"StringArrayExplicitParam",
