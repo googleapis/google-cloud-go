@@ -367,6 +367,9 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	if uattrs.Autoclass != nil {
 		fieldMask.Paths = append(fieldMask.Paths, "autoclass")
 	}
+	if uattrs.SoftDeletePolicy != nil {
+		fieldMask.Paths = append(fieldMask.Paths, "soft_delete_policy")
+	}
 
 	for label := range uattrs.setLabels {
 		fieldMask.Paths = append(fieldMask.Paths, fmt.Sprintf("labels.%s", label))
@@ -421,6 +424,7 @@ func (c *grpcStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		IncludeTrailingDelimiter: it.query.IncludeTrailingDelimiter,
 		MatchGlob:                it.query.MatchGlob,
 		ReadMask:                 q.toFieldMask(), // a nil Query still results in a "*" FieldMask
+		SoftDeleted:              it.query.SoftDeleted,
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
@@ -490,22 +494,25 @@ func (c *grpcStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	return err
 }
 
-func (c *grpcStorageClient) GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
+func (c *grpcStorageClient) GetObject(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	req := &storagepb.GetObjectRequest{
-		Bucket: bucketResourceName(globalProjectAlias, bucket),
-		Object: object,
+		Bucket: bucketResourceName(globalProjectAlias, params.bucket),
+		Object: params.object,
 		// ProjectionFull by default.
 		ReadMask: &fieldmaskpb.FieldMask{Paths: []string{"*"}},
 	}
-	if err := applyCondsProto("grpcStorageClient.GetObject", gen, conds, req); err != nil {
+	if err := applyCondsProto("grpcStorageClient.GetObject", params.gen, params.conds, req); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
 		ctx = setUserProjectMetadata(ctx, s.userProject)
 	}
-	if encryptionKey != nil {
-		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(encryptionKey)
+	if params.encryptionKey != nil {
+		req.CommonObjectRequestParams = toProtoCommonObjectRequestParams(params.encryptionKey)
+	}
+	if params.softDeleted {
+		req.SoftDeleted = &params.softDeleted
 	}
 
 	var attrs *ObjectAttrs
@@ -605,6 +612,32 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, params *updateObje
 		return nil, ErrObjectNotExist
 	}
 
+	return attrs, err
+}
+
+func (c *grpcStorageClient) RestoreObject(ctx context.Context, params *restoreObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	req := &storagepb.RestoreObjectRequest{
+		Bucket:        bucketResourceName(globalProjectAlias, params.bucket),
+		Object:        params.object,
+		CopySourceAcl: &params.copySourceACL,
+	}
+	if err := applyCondsProto("grpcStorageClient.RestoreObject", params.gen, params.conds, req); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		ctx = setUserProjectMetadata(ctx, s.userProject)
+	}
+
+	var attrs *ObjectAttrs
+	err := run(ctx, func(ctx context.Context) error {
+		res, err := c.raw.RestoreObject(ctx, req, s.gax...)
+		attrs = newObjectFromProto(res)
+		return err
+	}, s.retry, s.idempotent)
+	if s, ok := status.FromError(err); ok && s.Code() == codes.NotFound {
+		return nil, ErrObjectNotExist
+	}
 	return attrs, err
 }
 
@@ -737,7 +770,7 @@ func (c *grpcStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, opts ...storageOption) error {
 	// There is no separate API for PATCH in gRPC.
 	// Make a GET call first to retrieve ObjectAttrs.
-	attrs, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
+	attrs, err := c.GetObject(ctx, &getObjectParams{bucket, object, defaultGen, nil, nil, false}, opts...)
 	if err != nil {
 		return err
 	}
@@ -770,7 +803,7 @@ func (c *grpcStorageClient) DeleteObjectACL(ctx context.Context, bucket, object 
 // ListObjectACLs retrieves object ACL entries. By default, it operates on the latest generation of this object.
 // Selecting a specific generation of this object is not currently supported by the client.
 func (c *grpcStorageClient) ListObjectACLs(ctx context.Context, bucket, object string, opts ...storageOption) ([]ACLRule, error) {
-	o, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
+	o, err := c.GetObject(ctx, &getObjectParams{bucket, object, defaultGen, nil, nil, false}, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -780,7 +813,7 @@ func (c *grpcStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 func (c *grpcStorageClient) UpdateObjectACL(ctx context.Context, bucket, object string, entity ACLEntity, role ACLRole, opts ...storageOption) error {
 	// There is no separate API for PATCH in gRPC.
 	// Make a GET call first to retrieve ObjectAttrs.
-	attrs, err := c.GetObject(ctx, bucket, object, defaultGen, nil, nil, opts...)
+	attrs, err := c.GetObject(ctx, &getObjectParams{bucket, object, defaultGen, nil, nil, false}, opts...)
 	if err != nil {
 		return err
 	}
