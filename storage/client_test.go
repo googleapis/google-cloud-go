@@ -16,8 +16,10 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -26,7 +28,10 @@ import (
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/googleapis/gax-go/v2/apierror"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
 )
 
 var emulatorClients map[string]storageClient
@@ -1338,6 +1343,47 @@ func TestObjectConditionsEmulated(t *testing.T) {
 					r.Errorf("error: %v", err)
 				}
 			})
+		}
+	})
+}
+
+// Test that RetryNever prevents any retries from happening in both transports.
+func TestRetryNeverEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+
+		attrs, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+
+		// Need the HTTP hostname to set up a retry test, as well as knowledge of
+		// underlying transport to specify instructions.
+		host := os.Getenv("STORAGE_EMULATOR_HOST")
+		endpoint, err := url.Parse(host)
+		if err != nil {
+			t.Fatalf("parsing endpoint: %v", err)
+		}
+		var transport string
+		if _, ok := client.(*httpStorageClient); ok {
+			transport = "http"
+		} else {
+			transport = "grpc"
+		}
+
+		et := emulatorTest{T: t, name: "testRetryNever", resources: resources{},
+			host: endpoint}
+		et.create(map[string][]string{"storage.buckets.get": {"return-503"}}, transport)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", et.id)
+		_, err = client.GetBucket(ctx, attrs.Name, nil, withRetryConfig(&retryConfig{policy: RetryNever}))
+
+		var ae *apierror.APIError
+		if errors.As(err, &ae) {
+			// We espect a 503/UNAVAILABLE error. For anything else including a nil
+			// error, the test should fail.
+			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
+				t.Errorf("GetBucket: got unexpected error %v; want 503", err)
+			}
 		}
 	})
 }

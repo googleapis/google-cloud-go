@@ -18,6 +18,7 @@ modules:
   - asset
   - assuredworkloads
   - automl
+  - backupdr
   - baremetalsolution
   - batch
   - beyondcorp
@@ -368,6 +369,9 @@ service-configs:
   - input-directory: google/cloud/automl/v1beta1
     service-config: automl_v1beta1.yaml
     import-path: cloud.google.com/go/automl/apiv1beta1
+  - input-directory: google/cloud/backupdr/v1
+    service-config: backupdr_v1.yaml
+    import-path: cloud.google.com/go/backupdr/apiv1
   - input-directory: google/cloud/baremetalsolution/v2
     service-config: baremetalsolution_v2.yaml
     import-path: cloud.google.com/go/baremetalsolution/apiv2
@@ -842,9 +846,15 @@ service-configs:
   - input-directory: google/shopping/css/v1
     service-config: css_v1.yaml
     import-path: cloud.google.com/go/shopping/css/apiv1
+  - input-directory: google/shopping/merchant/quota/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/quota/apiv1beta
   - input-directory: google/shopping/merchant/inventories/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/inventories/apiv1beta
+  - input-directory: google/shopping/merchant/reports/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/reports/apiv1beta
   - input-directory: google/shopping/type
     service-config:
     import-path: cloud.google.com/go/shopping/type

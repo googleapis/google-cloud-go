@@ -4,13 +4,11 @@ go 1.20
 
 require (
 	cloud.google.com/go/storage v1.40.0
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.22.0
-	github.com/cloudprober/cloudprober v0.13.3
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.21.0
+	github.com/cloudprober/cloudprober v0.12.8
 	github.com/google/uuid v1.6.0
-	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.24.0
 	go.opentelemetry.io/otel v1.24.0
-	go.opentelemetry.io/otel/bridge/opencensus v0.45.0
 	go.opentelemetry.io/otel/sdk v1.24.0
 	go.opentelemetry.io/otel/trace v1.24.0
 	golang.org/x/net v0.22.0
@@ -42,10 +40,10 @@ require (
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.3 // indirect
+	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
-	go.opentelemetry.io/otel/sdk/metric v1.22.0 // indirect
 	golang.org/x/crypto v0.21.0 // indirect
 	golang.org/x/oauth2 v0.18.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
