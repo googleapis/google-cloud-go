@@ -885,9 +885,8 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 			// interception range conversion here, as we don't propagate range more deeply.
 			if fs.RangeElementType == nil || fs.RangeElementType.Type == "" {
 				return nil, errors.New("bigquery: incomplete range schema for conversion")
-			} else {
-				v, err = convertRangeValue(cell.V.(string), fs.RangeElementType.Type)
 			}
+			v, err = convertRangeValue(cell.V.(string), fs.RangeElementType.Type)
 		} else {
 			v, err = convertValue(cell.V, fs.Type, fs.Schema)
 		}
@@ -1003,6 +1002,9 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 	}
 }
 
+// how BQ declares an unbounded RANGE.
+var unboundedRangeSentinel = "UNBOUNDED"
+
 // convertRangeValue aids in parsing the compound RANGE api data representation.
 // The format for a range value is: "[startval, endval)"
 func convertRangeValue(val string, elementType FieldType) (Value, error) {
@@ -1016,14 +1018,14 @@ func convertRangeValue(val string, elementType FieldType) (Value, error) {
 		return nil, fmt.Errorf("bigquery: invalid RANGE value %q", val)
 	}
 	rv := &RangeValue{}
-	if parts[0] != "UNBOUNDED" {
+	if parts[0] != unboundedRangeSentinel {
 		sv, err := convertBasicType(parts[0], elementType)
 		if err != nil {
 			return nil, fmt.Errorf("bigquery: invalid RANGE start value %q", parts[0])
 		}
 		rv.Start = sv
 	}
-	if parts[1] != "UNBOUNDED" {
+	if parts[1] != unboundedRangeSentinel {
 		ev, err := convertBasicType(parts[1], elementType)
 		if err != nil {
 			return nil, fmt.Errorf("bigquery: invalid RANGE end value %q", parts[1])
