@@ -124,7 +124,7 @@ func (c *RoutesClient) Connection() *grpc.ClientConn {
 // the input. You can provide the response field mask by using URL parameter
 // $fields or fields, or by using an HTTP/gRPC header X-Goog-FieldMask
 // (see the available URL parameters and
-// headers (at https://cloud.google.com/apis/docs/system-parameters). The value
+// headers (at https://cloud.google.com/apis/docs/system-parameters)). The value
 // is a comma separated list of field paths. See detailed documentation about
 // how to construct the field
 // paths (at https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).
@@ -165,9 +165,9 @@ func (c *RoutesClient) ComputeRoutes(ctx context.Context, req *routingpb.Compute
 // the input. You can provide the response field mask by using the URL
 // parameter $fields or fields, or by using the HTTP/gRPC header
 // X-Goog-FieldMask (see the available URL parameters and
-// headers (at https://cloud.google.com/apis/docs/system-parameters). The value
-// is a comma separated list of field paths. See this detailed documentation
-// about how to construct the field
+// headers (at https://cloud.google.com/apis/docs/system-parameters)).
+// The value is a comma separated list of field paths. See this detailed
+// documentation about how to construct the field
 // paths (at https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).
 //
 // For example, in this method:
@@ -378,7 +378,7 @@ func (c *routesGRPCClient) ComputeRouteMatrix(ctx context.Context, req *routingp
 // the input. You can provide the response field mask by using URL parameter
 // $fields or fields, or by using an HTTP/gRPC header X-Goog-FieldMask
 // (see the available URL parameters and
-// headers (at https://cloud.google.com/apis/docs/system-parameters). The value
+// headers (at https://cloud.google.com/apis/docs/system-parameters)). The value
 // is a comma separated list of field paths. See detailed documentation about
 // how to construct the field
 // paths (at https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).
@@ -477,9 +477,9 @@ func (c *routesRESTClient) ComputeRoutes(ctx context.Context, req *routingpb.Com
 // the input. You can provide the response field mask by using the URL
 // parameter $fields or fields, or by using the HTTP/gRPC header
 // X-Goog-FieldMask (see the available URL parameters and
-// headers (at https://cloud.google.com/apis/docs/system-parameters). The value
-// is a comma separated list of field paths. See this detailed documentation
-// about how to construct the field
+// headers (at https://cloud.google.com/apis/docs/system-parameters)).
+// The value is a comma separated list of field paths. See this detailed
+// documentation about how to construct the field
 // paths (at https://github.com/protocolbuffers/protobuf/blob/master/src/google/protobuf/field_mask.proto).
 //
 // For example, in this method:
