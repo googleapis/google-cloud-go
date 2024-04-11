@@ -16,6 +16,7 @@ package rpcreplay
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/binary"
 	"errors"
@@ -31,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
 )
@@ -579,7 +581,11 @@ func FprintReader(w io.Writer, r io.Reader) error {
 		switch {
 		case e.msg.msg != nil:
 			fmt.Fprintf(w, ", message:\n")
-			if err := proto.MarshalText(w, e.msg.msg); err != nil {
+			b, err := prototext.Marshal(e.msg.msg)
+			if err != nil {
+				return err
+			}
+			if _, err := io.Copy(w, bytes.NewReader(b)); err != nil {
 				return err
 			}
 		case e.msg.err != nil:
@@ -683,7 +689,7 @@ func writeEntry(w io.Writer, e *entry) error {
 	} else {
 		m = e.msg.msg
 	}
-	var a *any.Any
+	var a *anypb.Any
 	var err error
 	if m != nil {
 		a, err = anypb.New(m)
@@ -720,7 +726,12 @@ func readEntry(r io.Reader) (*entry, error) {
 	var msg message
 	if pe.Message != nil {
 		if pe.IsError {
-			msg.err = status.ErrorProto(pe.Message..(*spb.Status))
+			var s *spb.Status
+			err := anypb.UnmarshalTo(pe.Message, s, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
+			if err != nil {
+				return nil, err
+			}
+			msg.err = status.ErrorProto(s)
 		} else {
 			msg.msg = pe.Message.ProtoReflect().Interface()
 		}

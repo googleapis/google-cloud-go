@@ -24,12 +24,13 @@
 package conformance
 
 import (
+	reflect "reflect"
+	sync "sync"
+
 	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
