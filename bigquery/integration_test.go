@@ -1843,36 +1843,39 @@ func TestIntegration_StandardQuery(t *testing.T) {
 	}
 
 	testCases := []struct {
+		name    string
 		query   string
 		wantRow []Value
 	}{
-		{"SELECT 1", ints(1)},
-		{"SELECT 1.3", []Value{1.3}},
-		{"SELECT CAST(1.3  AS NUMERIC)", []Value{big.NewRat(13, 10)}},
-		{"SELECT NUMERIC '0.25'", []Value{big.NewRat(1, 4)}},
-		{"SELECT TRUE", []Value{true}},
-		{"SELECT 'ABC'", []Value{"ABC"}},
-		{"SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
-		{fmt.Sprintf("SELECT TIMESTAMP '%s'", dtm), []Value{ts}},
-		{fmt.Sprintf("SELECT [TIMESTAMP '%s', TIMESTAMP '%s']", dtm, dtm), []Value{[]Value{ts, ts}}},
-		{fmt.Sprintf("SELECT ('hello', TIMESTAMP '%s')", dtm), []Value{[]Value{"hello", ts}}},
-		{fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", dtm), []Value{civil.DateTime{Date: d, Time: tm}}},
-		{fmt.Sprintf("SELECT DATE(TIMESTAMP '%s')", dtm), []Value{d}},
-		{fmt.Sprintf("SELECT TIME(TIMESTAMP '%s')", dtm), []Value{tm}},
-		{"SELECT (1, 2)", []Value{ints(1, 2)}},
-		{"SELECT [1, 2, 3]", []Value{ints(1, 2, 3)}},
-		{"SELECT ([1, 2], 3, [4, 5])", []Value{[]Value{ints(1, 2), int64(3), ints(4, 5)}}},
-		{"SELECT [(1, 2, 3), (4, 5, 6)]", []Value{[]Value{ints(1, 2, 3), ints(4, 5, 6)}}},
-		{"SELECT [([1, 2, 3], 4), ([5, 6], 7)]", []Value{[]Value{[]Value{ints(1, 2, 3), int64(4)}, []Value{ints(5, 6), int64(7)}}}},
-		{"SELECT ARRAY(SELECT STRUCT([1, 2]))", []Value{[]Value{[]Value{ints(1, 2)}}}},
+		{"Ints", "SELECT 1", ints(1)},
+		{"Float", "SELECT 1.3", []Value{1.3}},
+		{"NumericCast", "SELECT CAST(1.3  AS NUMERIC)", []Value{big.NewRat(13, 10)}},
+		{"NumericLiteral", "SELECT NUMERIC '0.25'", []Value{big.NewRat(1, 4)}},
+		{"Boolean", "SELECT TRUE", []Value{true}},
+		{"String", "SELECT 'ABC'", []Value{"ABC"}},
+		{"Bytes", "SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
+		{"Timestamp", fmt.Sprintf("SELECT TIMESTAMP '%s'", dtm), []Value{ts}},
+		{"TimestampArray", fmt.Sprintf("SELECT [TIMESTAMP '%s', TIMESTAMP '%s']", dtm, dtm), []Value{[]Value{ts, ts}}},
+		{"AnonStruct", fmt.Sprintf("SELECT ('hello', TIMESTAMP '%s')", dtm), []Value{[]Value{"hello", ts}}},
+		{"DatetimeCast", fmt.Sprintf("SELECT DATETIME(TIMESTAMP '%s')", dtm), []Value{civil.DateTime{Date: d, Time: tm}}},
+		{"DateCast", fmt.Sprintf("SELECT DATE(TIMESTAMP '%s')", dtm), []Value{d}},
+		{"TimeCast", fmt.Sprintf("SELECT TIME(TIMESTAMP '%s')", dtm), []Value{tm}},
+		{"StructOfInts", "SELECT (1, 2)", []Value{ints(1, 2)}},
+		{"IntArray", "SELECT [1, 2, 3]", []Value{ints(1, 2, 3)}},
+		{"StructOfArrays", "SELECT ([1, 2], 3, [4, 5])", []Value{[]Value{ints(1, 2), int64(3), ints(4, 5)}}},
+		{"ArrayOfStructs", "SELECT [(1, 2, 3), (4, 5, 6)]", []Value{[]Value{ints(1, 2, 3), ints(4, 5, 6)}}},
+		{"ComplexNested", "SELECT [([1, 2, 3], 4), ([5, 6], 7)]", []Value{[]Value{[]Value{ints(1, 2, 3), int64(4)}, []Value{ints(5, 6), int64(7)}}}},
+		{"SubSelectArray", "SELECT ARRAY(SELECT STRUCT([1, 2]))", []Value{[]Value{[]Value{ints(1, 2)}}}},
 	}
-	for _, c := range testCases {
-		q := client.Query(c.query)
-		it, err := q.Read(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		checkRead(t, "StandardQuery", it, [][]Value{c.wantRow})
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			q := client.Query(tc.query)
+			it, err := q.Read(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkRead(t, "StandardQuery", it, [][]Value{tc.wantRow})
+		})
 	}
 }
 
@@ -1886,26 +1889,27 @@ func TestIntegration_LegacyQuery(t *testing.T) {
 	dtm := ts.Format("2006-01-02 15:04:05")
 
 	testCases := []struct {
+		name    string
 		query   string
 		wantRow []Value
 	}{
-		{"SELECT 1", []Value{int64(1)}},
-		{"SELECT 1.3", []Value{1.3}},
-		{"SELECT TRUE", []Value{true}},
-		{"SELECT 'ABC'", []Value{"ABC"}},
-		{"SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
-		{fmt.Sprintf("SELECT TIMESTAMP('%s')", dtm), []Value{ts}},
-		{fmt.Sprintf("SELECT DATE(TIMESTAMP('%s'))", dtm), []Value{"2016-03-20"}},
-		{fmt.Sprintf("SELECT TIME(TIMESTAMP('%s'))", dtm), []Value{"15:04:05"}},
+		{"Int", "SELECT 1", []Value{int64(1)}},
+		{"Float", "SELECT 1.3", []Value{1.3}},
+		{"Boolean", "SELECT TRUE", []Value{true}},
+		{"String", "SELECT 'ABC'", []Value{"ABC"}},
+		{"Bytes", "SELECT CAST('foo' AS BYTES)", []Value{[]byte("foo")}},
+		{"Timestamp", fmt.Sprintf("SELECT TIMESTAMP('%s')", dtm), []Value{ts}},
+		{"Date", fmt.Sprintf("SELECT DATE(TIMESTAMP('%s'))", dtm), []Value{"2016-03-20"}},
+		{"Time", fmt.Sprintf("SELECT TIME(TIMESTAMP('%s'))", dtm), []Value{"15:04:05"}},
 	}
-	for _, c := range testCases {
-		q := client.Query(c.query)
+	for _, tc := range testCases {
+		q := client.Query(tc.query)
 		q.UseLegacySQL = true
 		it, err := q.Read(ctx)
 		if err != nil {
 			t.Fatal(err)
 		}
-		checkRead(t, "LegacyQuery", it, [][]Value{c.wantRow})
+		checkRead(t, "LegacyQuery", it, [][]Value{tc.wantRow})
 	}
 }
 
@@ -2106,6 +2110,7 @@ func TestIntegration_QuerySessionSupport(t *testing.T) {
 
 var (
 	queryParameterTestCases = []struct {
+		name       string
 		query      string
 		parameters []QueryParameter
 		wantRow    []Value
@@ -2135,78 +2140,91 @@ func initQueryParameterTestCases() {
 	}
 
 	queryParameterTestCases = []struct {
+		name       string
 		query      string
 		parameters []QueryParameter
 		wantRow    []Value
 		wantConfig interface{}
 	}{
 		{
+			"Int64Param",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: 1}},
 			[]Value{int64(1)},
 			int64(1),
 		},
 		{
+			"FloatParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: 1.3}},
 			[]Value{1.3},
 			1.3,
 		},
 		{
+			"BigRatParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: rat}},
 			[]Value{rat},
 			rat,
 		},
 		{
+			"BoolParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: true}},
 			[]Value{true},
 			true,
 		},
 		{
+			"StringParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: "ABC"}},
 			[]Value{"ABC"},
 			"ABC",
 		},
 		{
+			"ByteParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: []byte("foo")}},
 			[]Value{[]byte("foo")},
 			[]byte("foo"),
 		},
 		{
+			"TimestampParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: ts}},
 			[]Value{ts},
 			ts,
 		},
 		{
+			"TimestampArrayParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: []time.Time{ts, ts}}},
 			[]Value{[]Value{ts, ts}},
 			[]interface{}{ts, ts},
 		},
 		{
+			"DatetimeParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: dtm}},
 			[]Value{civil.DateTime{Date: d, Time: rtm}},
 			civil.DateTime{Date: d, Time: rtm},
 		},
 		{
+			"DateParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: d}},
 			[]Value{d},
 			d,
 		},
 		{
+			"TimeParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: tm}},
 			[]Value{rtm},
 			rtm,
 		},
 		{
+			"JsonParam",
 			"SELECT @val",
 			[]QueryParameter{
 				{
@@ -2223,6 +2241,7 @@ func initQueryParameterTestCases() {
 			"{\"alpha\":\"beta\"}",
 		},
 		{
+			"NestedStructParam",
 			"SELECT @val",
 			[]QueryParameter{{Name: "val", Value: s{ts, []string{"a", "b"}, ss{"c"}, []ss{{"d"}, {"e"}}}}},
 			[]Value{[]Value{ts, []Value{"a", "b"}, []Value{"c"}, []Value{[]Value{"d"}, []Value{"e"}}}},
@@ -2237,6 +2256,7 @@ func initQueryParameterTestCases() {
 			},
 		},
 		{
+			"StructFieldParam",
 			"SELECT @val.Timestamp, @val.SubStruct.String",
 			[]QueryParameter{{Name: "val", Value: s{Timestamp: ts, SubStruct: ss{"a"}}}},
 			[]Value{ts, "a"},
@@ -2248,6 +2268,7 @@ func initQueryParameterTestCases() {
 			},
 		},
 		{
+			"BigNumericExplicitParam",
 			"SELECT @val",
 			[]QueryParameter{
 				{
@@ -2264,6 +2285,7 @@ func initQueryParameterTestCases() {
 			bigRat,
 		},
 		{
+			"StringArrayExplicitParam",
 			"SELECT @val",
 			[]QueryParameter{
 				{
@@ -2285,6 +2307,7 @@ func initQueryParameterTestCases() {
 			[]interface{}{"a", "b"},
 		},
 		{
+			"StructExplicitParam",
 			"SELECT @val",
 			[]QueryParameter{
 				{
@@ -2399,30 +2422,32 @@ func TestIntegration_QueryParameters(t *testing.T) {
 
 	initQueryParameterTestCases()
 
-	for _, c := range queryParameterTestCases {
-		q := client.Query(c.query)
-		q.Parameters = c.parameters
-		job, err := q.Run(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if job.LastStatus() == nil {
-			t.Error("no LastStatus")
-		}
-		it, err := job.Read(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
-		config, err := job.Config()
-		if err != nil {
-			t.Fatal(err)
-		}
-		got := config.(*QueryConfig).Parameters[0].Value
-		if !testutil.Equal(got, c.wantConfig) {
-			t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
-				c.parameters[0].Value, got, c.wantConfig)
-		}
+	for _, tc := range queryParameterTestCases {
+		t.Run(tc.name, func(t *testing.T) {
+			q := client.Query(tc.query)
+			q.Parameters = tc.parameters
+			job, err := q.Run(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if job.LastStatus() == nil {
+				t.Error("no LastStatus")
+			}
+			it, err := job.Read(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkRead(t, "QueryParameters", it, [][]Value{tc.wantRow})
+			config, err := job.Config()
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := config.(*QueryConfig).Parameters[0].Value
+			if !testutil.Equal(got, tc.wantConfig) {
+				t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
+					tc.parameters[0].Value, got, tc.wantConfig)
+			}
+		})
 	}
 }
 
@@ -2436,12 +2461,14 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 	ts := time.Date(2020, 10, 15, 15, 04, 05, 0, time.UTC)
 
 	testCases := []struct {
+		name       string
 		query      string
 		parameters []*bq.QueryParameter
 		wantRow    []Value
 		wantConfig interface{}
 	}{
 		{
+			"Literal",
 			"SELECT @val",
 			[]*bq.QueryParameter{
 				{
@@ -2458,6 +2485,7 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 			ts,
 		},
 		{
+			"RFC3339Nano",
 			"SELECT @val",
 			[]*bq.QueryParameter{
 				{
@@ -2474,6 +2502,7 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 			ts,
 		},
 		{
+			"DatetimeFormat",
 			"SELECT @val",
 			[]*bq.QueryParameter{
 				{
@@ -2490,6 +2519,7 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 			ts,
 		},
 		{
+			"RFC3339",
 			"SELECT @val",
 			[]*bq.QueryParameter{
 				{
@@ -2506,35 +2536,37 @@ func TestIntegration_TimestampFormat(t *testing.T) {
 			ts,
 		},
 	}
-	for _, c := range testCases {
-		q := client.Query(c.query)
-		bqJob, err := q.newJob()
-		if err != nil {
-			t.Fatal(err)
-		}
-		bqJob.Configuration.Query.QueryParameters = c.parameters
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			q := client.Query(tc.query)
+			bqJob, err := q.newJob()
+			if err != nil {
+				t.Fatal(err)
+			}
+			bqJob.Configuration.Query.QueryParameters = tc.parameters
 
-		job, err := q.client.insertJob(ctx, bqJob, nil)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if job.LastStatus() == nil {
-			t.Error("no LastStatus")
-		}
-		it, err := job.Read(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
-		config, err := job.Config()
-		if err != nil {
-			t.Fatal(err)
-		}
-		got := config.(*QueryConfig).Parameters[0].Value
-		if !testutil.Equal(got, c.wantConfig) {
-			t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
-				c.parameters[0].ParameterValue.Value, got, c.wantConfig)
-		}
+			job, err := q.client.insertJob(ctx, bqJob, nil)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if job.LastStatus() == nil {
+				t.Error("no LastStatus")
+			}
+			it, err := job.Read(ctx)
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkRead(t, "QueryParameters", it, [][]Value{tc.wantRow})
+			config, err := job.Config()
+			if err != nil {
+				t.Fatal(err)
+			}
+			got := config.(*QueryConfig).Parameters[0].Value
+			if !testutil.Equal(got, tc.wantConfig) {
+				t.Errorf("param %[1]v (%[1]T): config:\ngot %[2]v (%[2]T)\nwant %[3]v (%[3]T)",
+					tc.parameters[0].ParameterValue.Value, got, tc.wantConfig)
+			}
+		})
 	}
 }
 
