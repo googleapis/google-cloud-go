@@ -86,6 +86,14 @@ func (ssdt StandardSQLDataType) toBQParamType() *bq.QueryParameterType {
 		}
 		return &bq.QueryParameterType{Type: "STRUCT", StructTypes: fts}
 	}
+	if ssdt.RangeElementType != nil {
+		return &bq.QueryParameterType{
+			Type: string(RangeFieldType),
+			RangeElementType: &bq.QueryParameterType{
+				Type: ssdt.RangeElementType.TypeKind,
+			},
+		}
+	}
 	return &bq.QueryParameterType{Type: ssdt.TypeKind}
 }
 

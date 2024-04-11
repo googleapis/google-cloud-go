@@ -638,17 +638,21 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 		if qval.RangeValue == nil {
 			return rv, nil
 		}
-		startVal, err := convertParamValue(qval.RangeValue.Start, qtype.RangeElementType)
-		if err != nil {
-			return nil, err
-		} else {
-			rv.Start = startVal
+		if qval.RangeValue.Start != nil {
+			startVal, err := convertParamValue(qval.RangeValue.Start, qtype.RangeElementType)
+			if err != nil {
+				return nil, err
+			} else {
+				rv.Start = startVal
+			}
 		}
-		endVal, err := convertParamValue(qval.RangeValue.End, qtype.RangeElementType)
-		if err != nil {
-			return nil, err
-		} else {
-			rv.End = endVal
+		if qval.RangeValue.End != nil {
+			endVal, err := convertParamValue(qval.RangeValue.End, qtype.RangeElementType)
+			if err != nil {
+				return nil, err
+			} else {
+				rv.End = endVal
+			}
 		}
 		return rv, nil
 	case "TIMESTAMP":

@@ -2122,6 +2122,9 @@ func initQueryParameterTestCases() {
 	ts := time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC)
 	rat := big.NewRat(13, 10)
 	bigRat := big.NewRat(12345, 10e10)
+	rangeTimestamp := &RangeValue{
+		Start: time.Date(2016, 3, 20, 15, 04, 05, 0, time.UTC),
+	}
 
 	type ss struct {
 		String string
@@ -2269,6 +2272,25 @@ func initQueryParameterTestCases() {
 				{
 					Name: "val",
 					Value: &QueryParameterValue{
+						Type: StandardSQLDataType{
+							TypeKind: "RANGE",
+							RangeElementType: &StandardSQLDataType{
+								TypeKind: "TIMESTAMP",
+							},
+						},
+						Value: rangeTimestamp,
+					},
+				},
+			},
+			[]Value{rangeTimestamp},
+			rangeTimestamp,
+		},
+		{
+			"SELECT @val",
+			[]QueryParameter{
+				{
+					Name: "val",
+					Value: &QueryParameterValue{
 						ArrayValue: []QueryParameterValue{
 							{Value: "a"},
 							{Value: "b"},
@@ -2399,24 +2421,28 @@ func TestIntegration_QueryParameters(t *testing.T) {
 
 	initQueryParameterTestCases()
 
-	for _, c := range queryParameterTestCases {
+	for k, c := range queryParameterTestCases {
 		q := client.Query(c.query)
 		q.Parameters = c.parameters
 		job, err := q.Run(ctx)
 		if err != nil {
-			t.Fatal(err)
+			t.Errorf("case %d Run(): %v", k, err)
+			continue
 		}
 		if job.LastStatus() == nil {
-			t.Error("no LastStatus")
+			t.Errorf("case %d: no LastStatus", k)
+			continue
 		}
 		it, err := job.Read(ctx)
 		if err != nil {
-			t.Fatal(err)
+			t.Errorf("case %d Read(): %v", k, err)
+			continue
 		}
 		checkRead(t, "QueryParameters", it, [][]Value{c.wantRow})
 		config, err := job.Config()
 		if err != nil {
-			t.Fatal(err)
+			t.Errorf("case %d Config(): %v", k, err)
+			continue
 		}
 		got := config.(*QueryConfig).Parameters[0].Value
 		if !testutil.Equal(got, c.wantConfig) {
