@@ -1379,12 +1379,12 @@ func TestRetryNeverEmulated(t *testing.T) {
 
 		var ae *apierror.APIError
 		if errors.As(err, &ae) {
-			if ae.GRPCStatus().Code() == codes.Unavailable || ae.HTTPCode() == 503 {
-				return
+			// We espect a 503/UNAVAILABLE error. For anything else including a nil
+			// error, the test should fail.
+			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
+				t.Errorf("GetBucket: got unexpected error %v; want 503", err)
 			}
 		}
-
-		t.Errorf("GetBucket: got unexpected error %v; want 503", err)
 	})
 }
 
