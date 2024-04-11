@@ -61,9 +61,10 @@ func LastUpdateTime(t time.Time) Precondition { return lastUpdateTime(t) }
 type lastUpdateTime time.Time
 
 func (u lastUpdateTime) preconditionProto() (*pb.Precondition, error) {
+	ts := timestamppb.New(time.Time(u))
 	return &pb.Precondition{
-		ConditionType: &pb.Precondition_UpdateTime{UpdateTime: timestamppb.New(time.Time(u))},
-	}, nil
+		ConditionType: &pb.Precondition_UpdateTime{UpdateTime: ts},
+	}, ts.CheckValid()
 }
 
 func (u lastUpdateTime) String() string { return fmt.Sprintf("LastUpdateTime(%s)", time.Time(u)) }

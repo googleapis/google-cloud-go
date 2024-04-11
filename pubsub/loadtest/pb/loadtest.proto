@@ -113,3 +113,4 @@
    // Number of failed messages since the last check.
    int64 failed = 5;
  }
+ 

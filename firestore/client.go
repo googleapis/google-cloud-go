@@ -418,7 +418,7 @@ type WriteResult struct {
 
 func writeResultFromProto(wr *pb.WriteResult) (*WriteResult, error) {
 	if err := wr.GetUpdateTime().CheckValid(); err != nil {
-		return nil, err
+		return &WriteResult{UpdateTime: time.Time{}}, err
 	}
 	return &WriteResult{UpdateTime: wr.GetUpdateTime().AsTime()}, nil
 }

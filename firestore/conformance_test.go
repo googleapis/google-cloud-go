@@ -364,6 +364,9 @@ func convertPrecondition(fp *fspb.Precondition) ([]Precondition, error) {
 	case *fspb.Precondition_Exists:
 		pc = exists(fp.Exists)
 	case *fspb.Precondition_UpdateTime:
+		if err := fp.UpdateTime.CheckValid(); err != nil {
+			return nil, err
+		}
 		pc = LastUpdateTime(fp.UpdateTime.AsTime())
 	default:
 		return nil, fmt.Errorf("unknown precondition type %T", fp)

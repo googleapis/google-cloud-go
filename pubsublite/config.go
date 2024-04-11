@@ -14,6 +14,7 @@
 package pubsublite
 
 import (
+	"fmt"
 	"time"
 
 	"cloud.google.com/go/internal/optional"
@@ -117,7 +118,7 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 	// An unset retention period proto denotes "infinite retention".
 	if retentionCfg.Period != nil {
 		if err := retentionCfg.GetPeriod().CheckValid(); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("pubsublite: invalid retention period in topic config: %w", err)
 		}
 		topic.RetentionDuration = retentionCfg.GetPeriod().AsDuration()
 	}
