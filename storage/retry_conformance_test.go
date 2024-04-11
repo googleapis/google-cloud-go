@@ -759,11 +759,11 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 
 	et.host.Path = "retry_test"
 	resp, err := c.Post(et.host.String(), "application/json", buf)
-	if resp.StatusCode == 501 {
-		et.T.Skip("This retry test case is not yet supported in the testbench.")
-	}
 	if err != nil || resp.StatusCode != 200 {
 		et.Fatalf("creating retry test: err: %v, resp: %+v", err, resp)
+	}
+	if resp.StatusCode == 501 {
+		et.T.Skip("This retry test case is not yet supported in the testbench.")
 	}
 	defer func() {
 		closeErr := resp.Body.Close()
