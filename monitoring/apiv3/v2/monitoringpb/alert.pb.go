@@ -21,15 +21,14 @@
 package monitoringpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -449,8 +448,8 @@ func (x *AlertPolicy) GetSeverity() AlertPolicy_Severity {
 	return AlertPolicy_SEVERITY_UNSPECIFIED
 }
 
-// A content string and a MIME type that describes the content string's
-// format.
+// Documentation that is included in the notifications and incidents
+// pertaining to this policy.
 type AlertPolicy_Documentation struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -961,7 +960,8 @@ type AlertPolicy_Condition_MetricThreshold struct {
 	// are specified.
 	Trigger *AlertPolicy_Condition_Trigger `protobuf:"bytes,7,opt,name=trigger,proto3" json:"trigger,omitempty"`
 	// A condition control that determines how metric-threshold conditions
-	// are evaluated when data stops arriving.
+	// are evaluated when data stops arriving. To use this control, the value
+	// of the `duration` field must be greater than or equal to 60 seconds.
 	EvaluationMissingData AlertPolicy_Condition_EvaluationMissingData `protobuf:"varint,11,opt,name=evaluation_missing_data,json=evaluationMissingData,proto3,enum=google.monitoring.v3.AlertPolicy_Condition_EvaluationMissingData" json:"evaluation_missing_data,omitempty"`
 }
 

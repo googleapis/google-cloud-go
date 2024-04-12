@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,6 @@ package monitoringpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	monitoredres "google.golang.org/genproto/googleapis/api/monitoredres"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -48,8 +47,9 @@ type ListGroupsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name)
-	// whose groups are to be listed. The format is:
+	// Required. The
+	// [project](https://cloud.google.com/monitoring/api/v3#project_name) whose
+	// groups are to be listed. The format is:
 	//
 	//	projects/[PROJECT_ID_OR_NUMBER]
 	Name string `protobuf:"bytes,7,opt,name=name,proto3" json:"name,omitempty"`
@@ -312,13 +312,14 @@ type CreateGroupRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The [project](https://cloud.google.com/monitoring/api/v3#project_name) in
-	// which to create the group. The format is:
+	// Required. The
+	// [project](https://cloud.google.com/monitoring/api/v3#project_name) in which
+	// to create the group. The format is:
 	//
 	//	projects/[PROJECT_ID_OR_NUMBER]
 	Name string `protobuf:"bytes,4,opt,name=name,proto3" json:"name,omitempty"`
-	// Required. A group definition. It is an error to define the `name` field because
-	// the system assigns the name.
+	// Required. A group definition. It is an error to define the `name` field
+	// because the system assigns the name.
 	Group *Group `protobuf:"bytes,2,opt,name=group,proto3" json:"group,omitempty"`
 	// If true, validate this request but do not create the group.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
@@ -383,8 +384,9 @@ type UpdateGroupRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The new definition of the group.  All fields of the existing group,
-	// excepting `name`, are replaced with the corresponding fields of this group.
+	// Required. The new definition of the group.  All fields of the existing
+	// group, excepting `name`, are replaced with the corresponding fields of this
+	// group.
 	Group *Group `protobuf:"bytes,2,opt,name=group,proto3" json:"group,omitempty"`
 	// If true, validate this request but do not update the existing group.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
