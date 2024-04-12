@@ -672,7 +672,7 @@ func ExampleCommitTimestamp() {
 		Creation spanner.NullTime // time.Time can also be used if column isNOT NULL
 	}
 
-	a := account{User: "Joe", Creation: spanner.NullTime{spanner.CommitTimestamp, true}}
+	a := account{User: "Joe", Creation: spanner.NullTime{Time: spanner.CommitTimestamp, Valid: true}}
 	m, err := spanner.InsertStruct("Accounts", a)
 	if err != nil {
 		// TODO: Handle error.
