@@ -2156,7 +2156,6 @@ func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
 
 		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 			panic("cause panic")
-			return nil
 		})
 		if err != nil {
 			t.Fatalf("Unexpected error during transaction: %v", err)
@@ -3462,7 +3461,10 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 		tx.BufferWrite([]*Mutation{Insert("FOO", []string{"ID", "NAME"}, []interface{}{int64(1), "bar"})})
 		return nil
 	})
-	errContext, _ := context.WithTimeout(context.Background(), -time.Second)
+
+	errContext, cancel := context.WithTimeout(context.Background(), -time.Second)
+	defer cancel()
+
 	w := toSpannerErrorWithCommitInfo(errContext.Err(), true).(*Error)
 	var se *Error
 	if !errorAs(err, &se) {
