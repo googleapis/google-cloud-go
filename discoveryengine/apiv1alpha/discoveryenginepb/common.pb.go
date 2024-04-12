@@ -21,12 +21,11 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -159,7 +158,7 @@ func (SolutionType) EnumDescriptor() ([]byte, []int) {
 }
 
 // Tiers of search features. Different tiers might have different
-// pricing. To learn more, please check the pricing documentation.
+// pricing. To learn more, check the pricing documentation.
 type SearchTier int32
 
 const (

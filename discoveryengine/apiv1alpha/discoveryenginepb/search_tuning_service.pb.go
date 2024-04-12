@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -164,7 +163,10 @@ type TrainCustomModelResponse struct {
 	//
 	//   - **bad-data**: The training data quality is bad.
 	//   - **no-improvement**: Tuning didn't improve performance. Won't deploy.
-	//   - **in-progress**: Model training is in progress.
+	//   - **in-progress**: Model training job creation is in progress.
+	//   - **training**: Model is actively training.
+	//   - **evaluating**: The model is evaluating trained metrics.
+	//   - **indexing**: The model trained metrics are indexing.
 	//   - **ready**: The model is ready for serving.
 	ModelStatus string `protobuf:"bytes,3,opt,name=model_status,json=modelStatus,proto3" json:"model_status,omitempty"`
 	// The metrics of the trained model.

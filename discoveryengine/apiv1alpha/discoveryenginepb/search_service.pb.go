@@ -22,9 +22,6 @@ package discoveryenginepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -32,6 +29,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2030,7 +2029,11 @@ type SearchRequest_ContentSearchSpec_SummarySpec struct {
 	// of results returned is less than `summaryResultCount`, the summary is
 	// generated from all of the results.
 	//
-	// At most 10 results can be used to generate a summary.
+	// At most 10 results for documents mode, or 50 for chunks mode, can be
+	// used to generate a summary. The chunks mode is used when
+	// [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1alpha.SearchRequest.ContentSearchSpec.search_result_mode]
+	// is set to
+	// [CHUNKS][google.cloud.discoveryengine.v1alpha.SearchRequest.ContentSearchSpec.SearchResultMode.CHUNKS].
 	SummaryResultCount int32 `protobuf:"varint,1,opt,name=summary_result_count,json=summaryResultCount,proto3" json:"summary_result_count,omitempty"`
 	// Specifies whether to include citations in the summary. The default
 	// value is `false`.
@@ -2085,7 +2088,7 @@ type SearchRequest_ContentSearchSpec_SummarySpec struct {
 	ModelSpec *SearchRequest_ContentSearchSpec_SummarySpec_ModelSpec `protobuf:"bytes,7,opt,name=model_spec,json=modelSpec,proto3" json:"model_spec,omitempty"`
 	// If true, answer will be generated from most relevant chunks from top
 	// search results. This feature will improve summary quality.
-	// Please note that with this feature enabled, not all top search results
+	// Note that with this feature enabled, not all top search results
 	// will be referenced and included in the reference list, so the citation
 	// source index only points to the search results listed in the reference
 	// list.
@@ -2221,7 +2224,7 @@ type SearchRequest_ContentSearchSpec_ExtractiveContentSpec struct {
 	MaxExtractiveSegmentCount int32 `protobuf:"varint,2,opt,name=max_extractive_segment_count,json=maxExtractiveSegmentCount,proto3" json:"max_extractive_segment_count,omitempty"`
 	// Specifies whether to return the confidence score from the extractive
 	// segments in each search result. This feature is available only for new
-	// or allowlisted data stores. To allowlist your data store, please
+	// or allowlisted data stores. To allowlist your data store,
 	// contact your Customer Engineer. The default value is `false`.
 	ReturnExtractiveSegmentScore bool `protobuf:"varint,3,opt,name=return_extractive_segment_score,json=returnExtractiveSegmentScore,proto3" json:"return_extractive_segment_score,omitempty"`
 	// Specifies whether to also include the adjacent from each selected
