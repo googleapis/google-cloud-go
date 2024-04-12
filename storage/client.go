@@ -59,8 +59,9 @@ type storageClient interface {
 	// Object metadata methods.
 
 	DeleteObject(ctx context.Context, bucket, object string, gen int64, conds *Conditions, opts ...storageOption) error
-	GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error)
+	GetObject(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error)
 	UpdateObject(ctx context.Context, params *updateObjectParams, opts ...storageOption) (*ObjectAttrs, error)
+	RestoreObject(ctx context.Context, params *restoreObjectParams, opts ...storageOption) (*ObjectAttrs, error)
 
 	// Default Object ACL methods.
 
@@ -294,6 +295,14 @@ type newRangeReaderParams struct {
 	readCompressed bool // Use accept-encoding: gzip. Only works for HTTP currently.
 }
 
+type getObjectParams struct {
+	bucket, object string
+	gen            int64
+	encryptionKey  []byte
+	conds          *Conditions
+	softDeleted    bool
+}
+
 type updateObjectParams struct {
 	bucket, object    string
 	uattrs            *ObjectAttrsToUpdate
@@ -301,6 +310,14 @@ type updateObjectParams struct {
 	encryptionKey     []byte
 	conds             *Conditions
 	overrideRetention *bool
+}
+
+type restoreObjectParams struct {
+	bucket, object string
+	gen            int64
+	encryptionKey  []byte
+	conds          *Conditions
+	copySourceACL  bool
 }
 
 type composeObjectRequest struct {

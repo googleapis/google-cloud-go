@@ -162,7 +162,7 @@ func shouldUseS2A(clientCertSource cert.Provider, opts *Options) bool {
 		return false
 	}
 	// If EXPERIMENTAL_GOOGLE_API_USE_S2A is not set to true, skip S2A.
-	if b, err := strconv.ParseBool(os.Getenv(googleAPIUseS2AEnv)); err == nil && !b {
+	if !isGoogleS2AEnabled() {
 		return false
 	}
 	// If DefaultMTLSEndpoint is not set and no endpoint override, skip S2A.
@@ -178,4 +178,12 @@ func shouldUseS2A(clientCertSource cert.Provider, opts *Options) bool {
 		return false
 	}
 	return true
+}
+
+func isGoogleS2AEnabled() bool {
+	b, err := strconv.ParseBool(os.Getenv(googleAPIUseS2AEnv))
+	if err != nil {
+		return false
+	}
+	return b
 }

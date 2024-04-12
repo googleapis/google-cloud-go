@@ -1,5 +1,13 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.12.0...networkmanagement/v1.13.0) (2024-03-27)
+
+
+### Features
+
+* **networkmanagement:** Add an "unsupported" type of firewall policy rule ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+* **networkmanagement:** Add new fields and enum values related to round-trip ([f8ff971](https://github.com/googleapis/google-cloud-go/commit/f8ff971366999aefb5eb5189c6c9e2bd76a05d9e))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.11.0...networkmanagement/v1.12.0) (2024-03-25)
 
 
@@ -140,3 +148,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out networkmanagement as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	aiplatformpb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
@@ -74,7 +75,9 @@ func defaultEvaluationGRPCClientOptions() []option.ClientOption {
 
 func defaultEvaluationCallOptions() *EvaluationCallOptions {
 	return &EvaluationCallOptions{
-		EvaluateInstances:  []gax.CallOption{},
+		EvaluateInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -90,7 +93,9 @@ func defaultEvaluationCallOptions() *EvaluationCallOptions {
 
 func defaultEvaluationRESTCallOptions() *EvaluationCallOptions {
 	return &EvaluationCallOptions{
-		EvaluateInstances:  []gax.CallOption{},
+		EvaluateInstances: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},

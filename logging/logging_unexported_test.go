@@ -82,7 +82,7 @@ func TestLoggerCreation(t *testing.T) {
 		DelayThreshold:       DefaultDelayThreshold,
 		BundleCountThreshold: DefaultEntryCountThreshold,
 		BundleByteThreshold:  DefaultEntryByteThreshold,
-		BundleByteLimit:      0,
+		BundleByteLimit:      DefaultBundleByteLimit,
 		BufferedByteLimit:    DefaultBufferedByteLimit,
 	}
 	for _, test := range []struct {

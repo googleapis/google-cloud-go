@@ -296,6 +296,9 @@ func joinContent(dest, src *Content) *Content {
 	if dest == nil {
 		return src
 	}
+	if src == nil {
+		return dest
+	}
 	// Assume roles are the same.
 	dest.Parts = joinParts(dest.Parts, src.Parts)
 	return dest
