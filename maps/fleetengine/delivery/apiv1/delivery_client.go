@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -62,7 +62,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("fleetengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("fleetengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("fleetengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://fleetengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -561,7 +563,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://fleetengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://fleetengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://fleetengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://fleetengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1020,6 +1024,9 @@ func (c *restClient) CreateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
 	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1119,6 +1126,9 @@ func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1232,6 +1242,9 @@ func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
@@ -1422,6 +1435,9 @@ func (c *restClient) CreateTask(ctx context.Context, req *deliverypb.CreateTaskR
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
 	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+	}
 	params.Add("taskId", fmt.Sprintf("%v", req.GetTaskId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1522,6 +1538,9 @@ func (c *restClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -1638,6 +1657,9 @@ func (c *restClient) SearchTasks(ctx context.Context, req *deliverypb.SearchTask
 		if req.GetHeader().GetSdkVersion() != "" {
 			params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
 		}
+		if req.GetHeader().GetTraceId() != "" {
+			params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1752,6 +1774,9 @@ func (c *restClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskR
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
@@ -1876,6 +1901,9 @@ func (c *restClient) ListTasks(ctx context.Context, req *deliverypb.ListTasksReq
 		if req.GetHeader().GetSdkVersion() != "" {
 			params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
 		}
+		if req.GetHeader().GetTraceId() != "" {
+			params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1982,6 +2010,9 @@ func (c *restClient) GetTaskTrackingInfo(ctx context.Context, req *deliverypb.Ge
 	}
 	if req.GetHeader().GetSdkVersion() != "" {
 		params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
+	}
+	if req.GetHeader().GetTraceId() != "" {
+		params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2099,6 +2130,9 @@ func (c *restClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 		if req.GetHeader().GetSdkVersion() != "" {
 			params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
 		}
+		if req.GetHeader().GetTraceId() != "" {
+			params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2175,98 +2209,4 @@ func (c *restClient) ListDeliveryVehicles(ctx context.Context, req *deliverypb.L
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// DeliveryVehicleIterator manages a stream of *deliverypb.DeliveryVehicle.
-type DeliveryVehicleIterator struct {
-	items    []*deliverypb.DeliveryVehicle
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*deliverypb.DeliveryVehicle, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DeliveryVehicleIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DeliveryVehicleIterator) Next() (*deliverypb.DeliveryVehicle, error) {
-	var item *deliverypb.DeliveryVehicle
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DeliveryVehicleIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DeliveryVehicleIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TaskIterator manages a stream of *deliverypb.Task.
-type TaskIterator struct {
-	items    []*deliverypb.Task
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*deliverypb.Task, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TaskIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TaskIterator) Next() (*deliverypb.Task, error) {
-	var item *deliverypb.Task
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TaskIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TaskIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

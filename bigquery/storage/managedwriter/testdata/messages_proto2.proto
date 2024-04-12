@@ -37,6 +37,25 @@ message SimpleMessageEvolvedProto2 {
     optional string other = 3;
 }
 
+// OutOfOrderDefinitionProto2 is used to ensure we apply ordering to representations.
+// It intentionally defines the fields out of order.
+message OutOfOrderDefinitionProto2 {
+
+    enum OutOfOrderEnum {
+        E1 = 1;
+        E3 = 3;
+        E2 = 2;
+    }
+
+    optional string s3 = 3;
+    optional string s1 = 1;
+    optional string s2 = 2;
+    optional OutOfOrderEnum enum2 = 5;
+    optional OutOfOrderEnum enum1 = 4;
+    optional SimpleMessageProto2 msg7 = 7;
+    optional SimpleMessageProto2 msg6 = 6;
+}
+
 message GithubArchiveEntityProto2 {
     optional int64 id = 1;
     optional string login = 2;

@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.2.5](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.4...baremetalsolution/v1.2.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.3...baremetalsolution/v1.2.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.2...baremetalsolution/v1.2.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.1...baremetalsolution/v1.2.2) (2023-10-26)
 
 
@@ -85,3 +106,4 @@
 ### Features
 
 * **baremetalsolution:** start generating apiv2 ([#6147](https://github.com/googleapis/google-cloud-go/issues/6147)) ([5dcbf2f](https://github.com/googleapis/google-cloud-go/commit/5dcbf2f859e2b99e5497d6ac45825a80799f32ab))
+

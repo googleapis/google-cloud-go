@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/retail/apiv2beta",
-    "version": "1.14.3",
+    "version": "1.16.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,144 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "retail_v2beta_generated_AnalyticsService_ExportAnalyticsMetrics_sync",
+      "title": "retail ExportAnalyticsMetrics Sample",
+      "description": "ExportAnalyticsMetrics exports analytics metrics.\n\n`Operation.response` is of type `ExportAnalyticsMetricsResponse`.\n`Operation.metadata` is of type `ExportMetadata`.",
+      "file": "AnalyticsClient/ExportAnalyticsMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportAnalyticsMetrics",
+        "fullName": "google.cloud.retail.v2beta.AnalyticsClient.ExportAnalyticsMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "retailpb.ExportAnalyticsMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportAnalyticsMetricsOperation",
+        "client": {
+          "shortName": "AnalyticsClient",
+          "fullName": "google.cloud.retail.v2beta.AnalyticsClient"
+        },
+        "method": {
+          "shortName": "ExportAnalyticsMetrics",
+          "fullName": "google.cloud.retail.v2beta.AnalyticsService.ExportAnalyticsMetrics",
+          "service": {
+            "shortName": "AnalyticsService",
+            "fullName": "google.cloud.retail.v2beta.AnalyticsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_AnalyticsService_GetOperation_sync",
+      "title": "retail GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AnalyticsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.retail.v2beta.AnalyticsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AnalyticsClient",
+          "fullName": "google.cloud.retail.v2beta.AnalyticsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "retail_v2beta_generated_AnalyticsService_ListOperations_sync",
+      "title": "retail ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AnalyticsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.retail.v2beta.AnalyticsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "AnalyticsClient",
+          "fullName": "google.cloud.retail.v2beta.AnalyticsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "retail_v2beta_generated_CatalogService_AddCatalogAttribute_sync",
       "title": "retail AddCatalogAttribute Sample",
@@ -328,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -374,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -833,7 +971,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1062,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1108,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1383,7 +1521,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1429,7 +1567,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1705,7 +1843,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2118,7 +2256,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2164,7 +2302,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2440,7 +2578,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2486,7 +2624,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2761,7 +2899,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2807,7 +2945,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3083,7 +3221,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

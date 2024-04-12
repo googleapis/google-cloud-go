@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.2.7](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.6...netapp/v0.2.7) (2024-03-25)
+
+
+### Documentation
+
+* **netapp:** Rephrase comment on psa_range ([1ef5b19](https://github.com/googleapis/google-cloud-go/commit/1ef5b1917bb9a1271c3fb152413ec0e74163164d))
+
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.5...netapp/v0.2.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **netapp:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.4...netapp/v0.2.5) (2024-03-07)
+
+
+### Documentation
+
+* **netapp:** Mark optional fields explicitly in Storage Pool ([#9513](https://github.com/googleapis/google-cloud-go/issues/9513)) ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.3...netapp/v0.2.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **netapp:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.2...netapp/v0.2.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **netapp:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.1...netapp/v0.2.2) (2023-10-26)
 
 
@@ -29,3 +64,4 @@
 * **netapp:** Start generating apiv1 ([#8353](https://github.com/googleapis/google-cloud-go/issues/8353)) ([f609b3c](https://github.com/googleapis/google-cloud-go/commit/f609b3cf831fb89c45386f81d0047560120cb3f4))
 
 ## Changes
+

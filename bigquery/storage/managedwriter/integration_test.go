@@ -937,20 +937,18 @@ func testLargeInsertNoRetry(ctx context.Context, t *testing.T, mwClient *Client,
 			t.Errorf("expected InvalidArgument status, got %v", status)
 		}
 	}
-	// our next append should fail (we don't have retries enabled).
-	if _, err = ms.AppendRows(ctx, [][]byte{b}); err == nil {
-		t.Fatalf("expected second append to fail, got success: %v", err)
-	}
-
-	// The send failure triggers reconnect, so an additional append will succeed.
+	// our next append is small and should succeed.
 	result, err = ms.AppendRows(ctx, [][]byte{b})
 	if err != nil {
-		t.Fatalf("third append expected to succeed, got error: %v", err)
+		t.Fatalf("second append failed: %v", err)
 	}
 	_, err = result.GetResult(ctx)
 	if err != nil {
-		t.Errorf("failure result from third append: %v", err)
+		t.Errorf("failure result from second append: %v", err)
 	}
+
+	validateTableConstraints(ctx, t, bqClient, testTable, "final",
+		withExactRowCount(1))
 }
 
 func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Client, bqClient *bigquery.Client, dataset *bigquery.Dataset) {
@@ -1005,7 +1003,7 @@ func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Clien
 		}
 	}
 
-	// The second append will succeed, but internally will show a retry.
+	// The second append will succeed.
 	result, err = ms.AppendRows(ctx, [][]byte{b})
 	if err != nil {
 		t.Fatalf("second append expected to succeed, got error: %v", err)
@@ -1014,8 +1012,8 @@ func testLargeInsertWithRetry(ctx context.Context, t *testing.T, mwClient *Clien
 	if err != nil {
 		t.Errorf("failure result from second append: %v", err)
 	}
-	if attempts, _ := result.TotalAttempts(ctx); attempts != 2 {
-		t.Errorf("expected 2 attempts, got %d", attempts)
+	if attempts, _ := result.TotalAttempts(ctx); attempts != 1 {
+		t.Errorf("expected 1 attempts, got %d", attempts)
 	}
 }
 
@@ -1402,6 +1400,9 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 				},
 				InnerType: &testdata.InnerType{
 					Value: []string{"top"},
+				},
+				RangeType: &testdata.RangeTypeTimestamp{
+					End: proto.Int64(time.Now().UnixNano()),
 				},
 			}
 			b, err := proto.Marshal(mesg)

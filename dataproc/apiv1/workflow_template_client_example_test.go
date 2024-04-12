@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -85,6 +85,29 @@ func ExampleWorkflowTemplateClient_CreateWorkflowTemplate() {
 	_ = resp
 }
 
+func ExampleWorkflowTemplateClient_DeleteWorkflowTemplate() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataproc.NewWorkflowTemplateClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataprocpb.DeleteWorkflowTemplateRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteWorkflowTemplateRequest.
+	}
+	err = c.DeleteWorkflowTemplate(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -108,34 +131,6 @@ func ExampleWorkflowTemplateClient_GetWorkflowTemplate() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dataproc.NewWorkflowTemplateClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dataprocpb.InstantiateWorkflowTemplateRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#InstantiateWorkflowTemplateRequest.
-	}
-	op, err := c.InstantiateWorkflowTemplate(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }
 
 func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
@@ -166,7 +161,7 @@ func ExampleWorkflowTemplateClient_InstantiateInlineWorkflowTemplate() {
 	}
 }
 
-func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
+func ExampleWorkflowTemplateClient_InstantiateWorkflowTemplate() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -179,16 +174,19 @@ func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
 	}
 	defer c.Close()
 
-	req := &dataprocpb.UpdateWorkflowTemplateRequest{
+	req := &dataprocpb.InstantiateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#UpdateWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#InstantiateWorkflowTemplateRequest.
 	}
-	resp, err := c.UpdateWorkflowTemplate(ctx, req)
+	op, err := c.InstantiateWorkflowTemplate(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleWorkflowTemplateClient_ListWorkflowTemplates() {
@@ -219,10 +217,16 @@ func ExampleWorkflowTemplateClient_ListWorkflowTemplates() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dataprocpb.ListWorkflowTemplatesResponse)
 	}
 }
 
-func ExampleWorkflowTemplateClient_DeleteWorkflowTemplate() {
+func ExampleWorkflowTemplateClient_UpdateWorkflowTemplate() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -235,14 +239,16 @@ func ExampleWorkflowTemplateClient_DeleteWorkflowTemplate() {
 	}
 	defer c.Close()
 
-	req := &dataprocpb.DeleteWorkflowTemplateRequest{
+	req := &dataprocpb.UpdateWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#DeleteWorkflowTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataproc/v2/apiv1/dataprocpb#UpdateWorkflowTemplateRequest.
 	}
-	err = c.DeleteWorkflowTemplate(ctx, req)
+	resp, err := c.UpdateWorkflowTemplate(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleWorkflowTemplateClient_GetIamPolicy() {
@@ -419,5 +425,11 @@ func ExampleWorkflowTemplateClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

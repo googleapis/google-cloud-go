@@ -1,5 +1,91 @@
 # Changes
 
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.34.0...container/v1.35.0) (2024-03-27)
+
+
+### Features
+
+* **container:** Add several fields to manage state of database encryption update ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.33.1...container/v1.34.0) (2024-03-25)
+
+
+### Features
+
+* **container:** Add optional secondary_boot_disk_update_strategy field to NodePool API ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+
+## [1.33.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.33.0...container/v1.33.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **container:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.32.0...container/v1.33.0) (2024-03-07)
+
+
+### Features
+
+* **container:** Add API to enable/disable secret manager csi component on GKE clusters ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+* **container:** Add secondary boot disks field to NodePool API ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.31.0...container/v1.32.0) (2024-02-26)
+
+
+### Features
+
+* **container:** Add API to enable Provisioning Request API on existing nodepools ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.30.1...container/v1.31.0) (2024-02-09)
+
+
+### Features
+
+* **container:** Added configuration for the StatefulHA addon to the AddonsConfig ([46a5050](https://github.com/googleapis/google-cloud-go/commit/46a50502f033ff0afe2f17b5f1e9812a956e190e))
+
+## [1.30.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.30.0...container/v1.30.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **container:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.29.0...container/v1.30.0) (2024-01-22)
+
+
+### Features
+
+* **container:** Add fields desired_in_transit_encryption_config and in_transit_encryption_config ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.28.0...container/v1.29.0) (2023-11-27)
+
+
+### Features
+
+* **container:** Add enable_relay field to advanced_datapath_observability_config ([#9037](https://github.com/googleapis/google-cloud-go/issues/9037)) ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+* **container:** Add Provisioning Request API ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.27.1...container/v1.28.0) (2023-11-09)
+
+
+### Features
+
+* **container:** Added EnterpriseConfig ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.27.0...container/v1.27.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **container:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.26.2...container/v1.27.0) (2023-10-31)
+
+
+### Features
+
+* **container:** Add ResourceManagerTags API to attach tags on the underlying Compute Engine VMs of GKE Nodes which can be used to selectively enforce Cloud Firewall network firewall policies ([4d40180](https://github.com/googleapis/google-cloud-go/commit/4d40180da0557c2a2e9e2cb8b0509b429676bfc0))
+
 ## [1.26.2](https://github.com/googleapis/google-cloud-go/compare/container/v1.26.1...container/v1.26.2) (2023-10-26)
 
 
@@ -281,3 +367,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out container as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

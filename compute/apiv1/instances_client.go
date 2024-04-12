@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,6 +61,7 @@ type InstancesCallOptions struct {
 	Insert                             []gax.CallOption
 	List                               []gax.CallOption
 	ListReferrers                      []gax.CallOption
+	PerformMaintenance                 []gax.CallOption
 	RemoveResourcePolicies             []gax.CallOption
 	Reset                              []gax.CallOption
 	Resume                             []gax.CallOption
@@ -75,6 +76,7 @@ type InstancesCallOptions struct {
 	SetMinCpuPlatform                  []gax.CallOption
 	SetName                            []gax.CallOption
 	SetScheduling                      []gax.CallOption
+	SetSecurityPolicy                  []gax.CallOption
 	SetServiceAccount                  []gax.CallOption
 	SetShieldedInstanceIntegrityPolicy []gax.CallOption
 	SetTags                            []gax.CallOption
@@ -237,6 +239,9 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		PerformMaintenance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		RemoveResourcePolicies: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -277,6 +282,9 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		SetScheduling: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetSecurityPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		SetServiceAccount: []gax.CallOption{
@@ -347,6 +355,7 @@ type internalInstancesClient interface {
 	Insert(context.Context, *computepb.InsertInstanceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
 	ListReferrers(context.Context, *computepb.ListReferrersInstancesRequest, ...gax.CallOption) *ReferenceIterator
+	PerformMaintenance(context.Context, *computepb.PerformMaintenanceInstanceRequest, ...gax.CallOption) (*Operation, error)
 	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Reset(context.Context, *computepb.ResetInstanceRequest, ...gax.CallOption) (*Operation, error)
 	Resume(context.Context, *computepb.ResumeInstanceRequest, ...gax.CallOption) (*Operation, error)
@@ -361,6 +370,7 @@ type internalInstancesClient interface {
 	SetMinCpuPlatform(context.Context, *computepb.SetMinCpuPlatformInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetName(context.Context, *computepb.SetNameInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetScheduling(context.Context, *computepb.SetSchedulingInstanceRequest, ...gax.CallOption) (*Operation, error)
+	SetSecurityPolicy(context.Context, *computepb.SetSecurityPolicyInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetServiceAccount(context.Context, *computepb.SetServiceAccountInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetShieldedInstanceIntegrityPolicy(context.Context, *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, ...gax.CallOption) (*Operation, error)
 	SetTags(context.Context, *computepb.SetTagsInstanceRequest, ...gax.CallOption) (*Operation, error)
@@ -422,7 +432,7 @@ func (c *InstancesClient) AddResourcePolicies(ctx context.Context, req *computep
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances.
+// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *InstancesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *InstancesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -502,6 +512,11 @@ func (c *InstancesClient) ListReferrers(ctx context.Context, req *computepb.List
 	return c.internalClient.ListReferrers(ctx, req, opts...)
 }
 
+// PerformMaintenance perform a manual maintenance on the instance.
+func (c *InstancesClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.PerformMaintenance(ctx, req, opts...)
+}
+
 // RemoveResourcePolicies removes resource policies from an instance.
 func (c *InstancesClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.RemoveResourcePolicies(ctx, req, opts...)
@@ -570,6 +585,11 @@ func (c *InstancesClient) SetName(ctx context.Context, req *computepb.SetNameIns
 // SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states. For more information about setting scheduling options for a VM, see Set VM host maintenance policy.
 func (c *InstancesClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetScheduling(ctx, req, opts...)
+}
+
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified instance. For more information, see Google Cloud Armor Overview
+func (c *InstancesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
 }
 
 // SetServiceAccount sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
@@ -694,7 +714,9 @@ func NewInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultInstancesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -882,7 +904,7 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances.
+// AggregatedList retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) *InstancesScopedListPairIterator {
 	it := &InstancesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstancesRequest)
@@ -921,6 +943,9 @@ func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -2053,6 +2078,76 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 	return it
 }
 
+// PerformMaintenance perform a manual maintenance on the instance.
+func (c *instancesRESTClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/performMaintenance", req.GetProject(), req.GetZone(), req.GetInstance())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PerformMaintenance[0:len((*c.CallOptions).PerformMaintenance):len((*c.CallOptions).PerformMaintenance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
 // RemoveResourcePolicies removes resource policies from an instance.
 func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -3071,6 +3166,83 @@ func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.
 	return op, nil
 }
 
+// SetSecurityPolicy sets the Google Cloud Armor security policy for the specified instance. For more information, see Google Cloud Armor Overview
+func (c *instancesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetInstancesSetSecurityPolicyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setSecurityPolicy", req.GetProject(), req.GetZone(), req.GetInstance())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetSecurityPolicy[0:len((*c.CallOptions).SetSecurityPolicy):len((*c.CallOptions).SetSecurityPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
 // SetServiceAccount sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
 func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *computepb.SetServiceAccountInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -3313,6 +3485,9 @@ func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req 
 	params := url.Values{}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.WithExtendedNotifications != nil {
+		params.Add("withExtendedNotifications", fmt.Sprintf("%v", req.GetWithExtendedNotifications()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -4118,151 +4293,4 @@ func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, 
 		},
 	}
 	return op, nil
-}
-
-// InstanceIterator manages a stream of *computepb.Instance.
-type InstanceIterator struct {
-	items    []*computepb.Instance
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Instance, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InstanceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InstanceIterator) Next() (*computepb.Instance, error) {
-	var item *computepb.Instance
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InstanceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InstanceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// InstancesScopedListPair is a holder type for string/*computepb.InstancesScopedList map entries
-type InstancesScopedListPair struct {
-	Key   string
-	Value *computepb.InstancesScopedList
-}
-
-// InstancesScopedListPairIterator manages a stream of InstancesScopedListPair.
-type InstancesScopedListPairIterator struct {
-	items    []InstancesScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []InstancesScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InstancesScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InstancesScopedListPairIterator) Next() (InstancesScopedListPair, error) {
-	var item InstancesScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InstancesScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InstancesScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ReferenceIterator manages a stream of *computepb.Reference.
-type ReferenceIterator struct {
-	items    []*computepb.Reference
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Reference, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ReferenceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ReferenceIterator) Next() (*computepb.Reference, error) {
-	var item *computepb.Reference
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ReferenceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ReferenceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

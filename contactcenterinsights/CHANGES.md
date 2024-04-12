@@ -1,5 +1,45 @@
 # Changes
 
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.0...contactcenterinsights/v1.13.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.12.1...contactcenterinsights/v1.13.0) (2024-01-30)
+
+
+### Features
+
+* **contactcenterinsights:** Add Conversation QualityMetadata ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.12.0...contactcenterinsights/v1.12.1) (2023-11-27)
+
+
+### Documentation
+
+* **contactcenterinsights:** Update IngestConversations and BulkAnalyzeConversations comments ([#9028](https://github.com/googleapis/google-cloud-go/issues/9028)) ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.11.3...contactcenterinsights/v1.12.0) (2023-11-09)
+
+
+### Features
+
+* **contactcenterinsights:** Launch BulkDelete API, and bulk audio import via the IngestConversations API ([#8964](https://github.com/googleapis/google-cloud-go/issues/8964)) ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.11.2...contactcenterinsights/v1.11.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.11.1...contactcenterinsights/v1.11.2) (2023-10-26)
 
 
@@ -159,3 +199,4 @@
 ## v0.1.0
 
 - feat(contactcenterinsights): start generating clients
+

@@ -1,5 +1,26 @@
 # Changes
 
+## [1.7.5](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.4...clouddms/v1.7.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **clouddms:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.3...clouddms/v1.7.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **clouddms:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.2...clouddms/v1.7.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **clouddms:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.1...clouddms/v1.7.2) (2023-10-26)
 
 
@@ -86,3 +107,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out clouddms as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

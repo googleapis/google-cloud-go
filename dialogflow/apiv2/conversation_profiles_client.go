@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -65,7 +65,9 @@ type ConversationProfilesCallOptions struct {
 func defaultConversationProfilesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dialogflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -578,7 +580,9 @@ func NewConversationProfilesRESTClient(ctx context.Context, opts ...option.Clien
 func defaultConversationProfilesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dialogflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dialogflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dialogflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1760,12 +1764,6 @@ func (c *conversationProfilesRESTClient) ListOperations(ctx context.Context, req
 	return it
 }
 
-// ClearSuggestionFeatureConfigOperation manages a long-running operation from ClearSuggestionFeatureConfig.
-type ClearSuggestionFeatureConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ClearSuggestionFeatureConfigOperation returns a new ClearSuggestionFeatureConfigOperation from a given name.
 // The name must be that of a previously created ClearSuggestionFeatureConfigOperation, possibly from a different process.
 func (c *conversationProfilesGRPCClient) ClearSuggestionFeatureConfigOperation(name string) *ClearSuggestionFeatureConfigOperation {
@@ -1784,70 +1782,6 @@ func (c *conversationProfilesRESTClient) ClearSuggestionFeatureConfigOperation(n
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ClearSuggestionFeatureConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.ConversationProfile
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ClearSuggestionFeatureConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.ConversationProfile
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ClearSuggestionFeatureConfigOperation) Metadata() (*dialogflowpb.ClearSuggestionFeatureConfigOperationMetadata, error) {
-	var meta dialogflowpb.ClearSuggestionFeatureConfigOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ClearSuggestionFeatureConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ClearSuggestionFeatureConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SetSuggestionFeatureConfigOperation manages a long-running operation from SetSuggestionFeatureConfig.
-type SetSuggestionFeatureConfigOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // SetSuggestionFeatureConfigOperation returns a new SetSuggestionFeatureConfigOperation from a given name.
 // The name must be that of a previously created SetSuggestionFeatureConfigOperation, possibly from a different process.
 func (c *conversationProfilesGRPCClient) SetSuggestionFeatureConfigOperation(name string) *SetSuggestionFeatureConfigOperation {
@@ -1864,109 +1798,4 @@ func (c *conversationProfilesRESTClient) SetSuggestionFeatureConfigOperation(nam
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SetSuggestionFeatureConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.ConversationProfile
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SetSuggestionFeatureConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dialogflowpb.ConversationProfile, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp dialogflowpb.ConversationProfile
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SetSuggestionFeatureConfigOperation) Metadata() (*dialogflowpb.SetSuggestionFeatureConfigOperationMetadata, error) {
-	var meta dialogflowpb.SetSuggestionFeatureConfigOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SetSuggestionFeatureConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SetSuggestionFeatureConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ConversationProfileIterator manages a stream of *dialogflowpb.ConversationProfile.
-type ConversationProfileIterator struct {
-	items    []*dialogflowpb.ConversationProfile
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.ConversationProfile, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ConversationProfileIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ConversationProfileIterator) Next() (*dialogflowpb.ConversationProfile, error) {
-	var item *dialogflowpb.ConversationProfile
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ConversationProfileIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ConversationProfileIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

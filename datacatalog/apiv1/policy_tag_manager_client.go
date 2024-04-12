@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,7 +67,9 @@ type PolicyTagManagerCallOptions struct {
 func defaultPolicyTagManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("datacatalog.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("datacatalog.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("datacatalog.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -460,7 +462,9 @@ func NewPolicyTagManagerRESTClient(ctx context.Context, opts ...option.ClientOpt
 func defaultPolicyTagManagerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://datacatalog.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://datacatalog.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://datacatalog.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://datacatalog.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1912,98 +1916,4 @@ func (c *policyTagManagerRESTClient) ListOperations(ctx context.Context, req *lo
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// PolicyTagIterator manages a stream of *datacatalogpb.PolicyTag.
-type PolicyTagIterator struct {
-	items    []*datacatalogpb.PolicyTag
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.PolicyTag, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PolicyTagIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PolicyTagIterator) Next() (*datacatalogpb.PolicyTag, error) {
-	var item *datacatalogpb.PolicyTag
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PolicyTagIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PolicyTagIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TaxonomyIterator manages a stream of *datacatalogpb.Taxonomy.
-type TaxonomyIterator struct {
-	items    []*datacatalogpb.Taxonomy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datacatalogpb.Taxonomy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TaxonomyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TaxonomyIterator) Next() (*datacatalogpb.Taxonomy, error) {
-	var item *datacatalogpb.Taxonomy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TaxonomyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TaxonomyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

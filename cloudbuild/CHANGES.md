@@ -1,5 +1,38 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.15.1...cloudbuild/v1.16.0) (2024-03-14)
+
+
+### Features
+
+* **cloudbuild:** Add Bitbucket Data Center Config and Bitbucket Cloud config for Cloud Build Repositories ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.15.0...cloudbuild/v1.15.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.3...cloudbuild/v1.15.0) (2023-11-09)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add optional field "SourceFetcher" to choose source fetcher tool ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.2...cloudbuild/v1.14.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.1...cloudbuild/v1.14.2) (2023-10-26)
 
 
@@ -154,3 +187,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out cloudbuild as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

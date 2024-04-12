@@ -1,5 +1,40 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.3.2...shopping/v0.4.0) (2024-03-27)
+
+
+### Features
+
+* **shopping:** Add DEMAND_GEN_ADS and DEMAND_GEN_ADS_DISCOVER_SURFACE in ReportingContextEnum ([#9648](https://github.com/googleapis/google-cloud-go/issues/9648)) ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
+## [0.3.2](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.3.1...shopping/v0.3.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **shopping:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.3.0...shopping/v0.3.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **shopping:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.2.2...shopping/v0.3.0) (2023-12-13)
+
+
+### Features
+
+* **shopping:** New clients ([#9141](https://github.com/googleapis/google-cloud-go/issues/9141)) ([4f49b79](https://github.com/googleapis/google-cloud-go/commit/4f49b796ed219869920668698726bee445bf5ff4))
+
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.2.1...shopping/v0.2.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **shopping:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.2.0...shopping/v0.2.1) (2023-10-26)
 
 
@@ -30,3 +65,6 @@
 * **shopping:** New clients ([#8699](https://github.com/googleapis/google-cloud-go/issues/8699)) ([0e43b40](https://github.com/googleapis/google-cloud-go/commit/0e43b40184bacac8d355ea2cfd00ebe58bd9e30b))
 
 ## Changes
+
+
+

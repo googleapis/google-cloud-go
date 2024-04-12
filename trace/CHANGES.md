@@ -1,5 +1,26 @@
 # Changes
 
+## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/trace/v1.10.5...trace/v1.10.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **trace:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/trace/v1.10.4...trace/v1.10.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **trace:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.10.4](https://github.com/googleapis/google-cloud-go/compare/trace/v1.10.3...trace/v1.10.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **trace:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/trace/v1.10.2...trace/v1.10.3) (2023-10-26)
 
 
@@ -132,3 +153,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out trace as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

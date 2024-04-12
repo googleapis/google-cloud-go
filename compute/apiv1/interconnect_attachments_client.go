@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -154,7 +154,7 @@ func (c *InterconnectAttachmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of interconnect attachments.
+// AggregatedList retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *InterconnectAttachmentsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInterconnectAttachmentsRequest, opts ...gax.CallOption) *InterconnectAttachmentsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -241,7 +241,9 @@ func NewInterconnectAttachmentsRESTClient(ctx context.Context, opts ...option.Cl
 func defaultInterconnectAttachmentsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -274,7 +276,7 @@ func (c *interconnectAttachmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of interconnect attachments.
+// AggregatedList retrieves an aggregated list of interconnect attachments. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *interconnectAttachmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInterconnectAttachmentsRequest, opts ...gax.CallOption) *InterconnectAttachmentsScopedListPairIterator {
 	it := &InterconnectAttachmentsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInterconnectAttachmentsRequest)
@@ -313,6 +315,9 @@ func (c *interconnectAttachmentsRESTClient) AggregatedList(ctx context.Context, 
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -835,104 +840,4 @@ func (c *interconnectAttachmentsRESTClient) SetLabels(ctx context.Context, req *
 		},
 	}
 	return op, nil
-}
-
-// InterconnectAttachmentIterator manages a stream of *computepb.InterconnectAttachment.
-type InterconnectAttachmentIterator struct {
-	items    []*computepb.InterconnectAttachment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InterconnectAttachment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InterconnectAttachmentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InterconnectAttachmentIterator) Next() (*computepb.InterconnectAttachment, error) {
-	var item *computepb.InterconnectAttachment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InterconnectAttachmentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InterconnectAttachmentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// InterconnectAttachmentsScopedListPair is a holder type for string/*computepb.InterconnectAttachmentsScopedList map entries
-type InterconnectAttachmentsScopedListPair struct {
-	Key   string
-	Value *computepb.InterconnectAttachmentsScopedList
-}
-
-// InterconnectAttachmentsScopedListPairIterator manages a stream of InterconnectAttachmentsScopedListPair.
-type InterconnectAttachmentsScopedListPairIterator struct {
-	items    []InterconnectAttachmentsScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []InterconnectAttachmentsScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InterconnectAttachmentsScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InterconnectAttachmentsScopedListPairIterator) Next() (InterconnectAttachmentsScopedListPair, error) {
-	var item InterconnectAttachmentsScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InterconnectAttachmentsScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InterconnectAttachmentsScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

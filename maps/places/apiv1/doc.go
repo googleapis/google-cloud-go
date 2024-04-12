@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &placespb.SearchNearbyRequest{
+//	req := &placespb.AutocompletePlacesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/maps/places/apiv1/placespb#SearchNearbyRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/maps/places/apiv1/placespb#AutocompletePlacesRequest.
 //	}
-//	resp, err := c.SearchNearby(ctx, req)
+//	resp, err := c.AutocompletePlaces(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

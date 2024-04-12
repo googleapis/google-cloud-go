@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -91,6 +91,93 @@ func ExampleVehicleClient_GetVehicle() {
 	_ = resp
 }
 
+func ExampleVehicleClient_ListVehicles() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := fleetengine.NewVehicleClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &fleetenginepb.ListVehiclesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#ListVehiclesRequest.
+	}
+	it := c.ListVehicles(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*fleetenginepb.ListVehiclesResponse)
+	}
+}
+
+func ExampleVehicleClient_SearchFuzzedVehicles() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := fleetengine.NewVehicleClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &fleetenginepb.SearchVehiclesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#SearchVehiclesRequest.
+	}
+	resp, err := c.SearchFuzzedVehicles(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleVehicleClient_SearchVehicles() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := fleetengine.NewVehicleClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &fleetenginepb.SearchVehiclesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#SearchVehiclesRequest.
+	}
+	resp, err := c.SearchVehicles(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleVehicleClient_UpdateVehicle() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -109,31 +196,6 @@ func ExampleVehicleClient_UpdateVehicle() {
 		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#UpdateVehicleRequest.
 	}
 	resp, err := c.UpdateVehicle(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleVehicleClient_UpdateVehicleLocation() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := fleetengine.NewVehicleClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &fleetenginepb.UpdateVehicleLocationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#UpdateVehicleLocationRequest.
-	}
-	resp, err := c.UpdateVehicleLocation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -166,7 +228,7 @@ func ExampleVehicleClient_UpdateVehicleAttributes() {
 	_ = resp
 }
 
-func ExampleVehicleClient_ListVehicles() {
+func ExampleVehicleClient_UpdateVehicleLocation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -179,67 +241,11 @@ func ExampleVehicleClient_ListVehicles() {
 	}
 	defer c.Close()
 
-	req := &fleetenginepb.ListVehiclesRequest{
+	req := &fleetenginepb.UpdateVehicleLocationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#ListVehiclesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#UpdateVehicleLocationRequest.
 	}
-	it := c.ListVehicles(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleVehicleClient_SearchVehicles() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := fleetengine.NewVehicleClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &fleetenginepb.SearchVehiclesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#SearchVehiclesRequest.
-	}
-	resp, err := c.SearchVehicles(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleVehicleClient_SearchFuzzedVehicles() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := fleetengine.NewVehicleClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &fleetenginepb.SearchVehiclesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb#SearchVehiclesRequest.
-	}
-	resp, err := c.SearchFuzzedVehicles(ctx, req)
+	resp, err := c.UpdateVehicleLocation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

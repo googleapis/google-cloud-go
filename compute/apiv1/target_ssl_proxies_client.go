@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -194,7 +194,7 @@ func (c *TargetSslProxiesClient) SetSslCertificates(ctx context.Context, req *co
 	return c.internalClient.SetSslCertificates(ctx, req, opts...)
 }
 
-// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the SSL proxy load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the load balancer. They do not affect the connection between the load balancer and the backends.
 func (c *TargetSslProxiesClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSslPolicy(ctx, req, opts...)
 }
@@ -251,7 +251,9 @@ func NewTargetSslProxiesRESTClient(ctx context.Context, opts ...option.ClientOpt
 func defaultTargetSslProxiesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -885,7 +887,7 @@ func (c *targetSslProxiesRESTClient) SetSslCertificates(ctx context.Context, req
 	return op, nil
 }
 
-// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the SSL proxy load balancer. They do not affect the connection between the load balancer and the backends.
+// SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the load balancer. They do not affect the connection between the load balancer and the backends.
 func (c *targetSslProxiesRESTClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetSslProxyRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyReferenceResource()
@@ -959,51 +961,4 @@ func (c *targetSslProxiesRESTClient) SetSslPolicy(ctx context.Context, req *comp
 		},
 	}
 	return op, nil
-}
-
-// TargetSslProxyIterator manages a stream of *computepb.TargetSslProxy.
-type TargetSslProxyIterator struct {
-	items    []*computepb.TargetSslProxy
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.TargetSslProxy, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TargetSslProxyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TargetSslProxyIterator) Next() (*computepb.TargetSslProxy, error) {
-	var item *computepb.TargetSslProxy
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TargetSslProxyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TargetSslProxyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

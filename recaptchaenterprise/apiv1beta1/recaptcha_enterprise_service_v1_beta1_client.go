@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,7 +48,9 @@ type RecaptchaEnterpriseServiceV1Beta1CallOptions struct {
 func defaultRecaptchaEnterpriseServiceV1Beta1GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recaptchaenterprise.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("recaptchaenterprise.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("recaptchaenterprise.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recaptchaenterprise.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -245,7 +247,9 @@ func NewRecaptchaEnterpriseServiceV1Beta1RESTClient(ctx context.Context, opts ..
 func defaultRecaptchaEnterpriseServiceV1Beta1RESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://recaptchaenterprise.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://recaptchaenterprise.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://recaptchaenterprise.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recaptchaenterprise.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

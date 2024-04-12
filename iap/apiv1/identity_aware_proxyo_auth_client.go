@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,7 +56,9 @@ type IdentityAwareProxyOAuthCallOptions struct {
 func defaultIdentityAwareProxyOAuthGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("iap.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("iap.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("iap.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -343,7 +345,9 @@ func NewIdentityAwareProxyOAuthRESTClient(ctx context.Context, opts ...option.Cl
 func defaultIdentityAwareProxyOAuthRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://iap.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://iap.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://iap.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iap.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1062,51 +1066,4 @@ func (c *identityAwareProxyOAuthRESTClient) DeleteIdentityAwareProxyClient(ctx c
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
-}
-
-// IdentityAwareProxyClientIterator manages a stream of *iappb.IdentityAwareProxyClient.
-type IdentityAwareProxyClientIterator struct {
-	items    []*iappb.IdentityAwareProxyClient
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*iappb.IdentityAwareProxyClient, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *IdentityAwareProxyClientIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *IdentityAwareProxyClientIterator) Next() (*iappb.IdentityAwareProxyClient, error) {
-	var item *iappb.IdentityAwareProxyClient
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *IdentityAwareProxyClientIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *IdentityAwareProxyClientIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
 // Package batch is an auto-generated package for the
 // Batch API.
 //
-// An API to manage the running of batch jobs on Google Cloud Platform.
+// An API to manage the running of Batch resources on Google Cloud Platform.
 //
 // # General documentation
 //

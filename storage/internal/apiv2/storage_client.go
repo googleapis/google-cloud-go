@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -78,7 +78,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("storage.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("storage.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://storage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -625,18 +627,16 @@ func (c *Client) LockBucketRetentionPolicy(ctx context.Context, req *storagepb.L
 	return c.internalClient.LockBucketRetentionPolicy(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the IAM policy for a specified bucket or object.
+// GetIamPolicy gets the IAM policy for a specified bucket.
 // The resource field in the request should be
-// projects/_/buckets/{bucket} for a bucket or
-// projects/_/buckets/{bucket}/objects/{object} for an object.
+// projects/_/buckets/{bucket}.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
-// SetIamPolicy updates an IAM policy for the specified bucket or object.
+// SetIamPolicy updates an IAM policy for the specified bucket.
 // The resource field in the request should be
-// projects/_/buckets/{bucket} for a bucket or
-// projects/_/buckets/{bucket}/objects/{object} for an object.
+// projects/_/buckets/{bucket}.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -1139,9 +1139,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
 		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
 	}
-	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)/objects(?:/.*)?"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
-	}
 	for headerName, headerValue := range routingHeadersMap {
 		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
 	}
@@ -1167,9 +1164,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
 	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
-		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
-	}
-	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)/objects(?:/.*)?"); reg.MatchString(req.GetResource()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])) > 0 {
 		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetResource())[1])
 	}
 	for headerName, headerValue := range routingHeadersMap {
@@ -1920,192 +1914,4 @@ func (c *gRPCClient) UpdateHmacKey(ctx context.Context, req *storagepb.UpdateHma
 		return nil, err
 	}
 	return resp, nil
-}
-
-// BucketIterator manages a stream of *storagepb.Bucket.
-type BucketIterator struct {
-	items    []*storagepb.Bucket
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*storagepb.Bucket, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BucketIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BucketIterator) Next() (*storagepb.Bucket, error) {
-	var item *storagepb.Bucket
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BucketIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BucketIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// HmacKeyMetadataIterator manages a stream of *storagepb.HmacKeyMetadata.
-type HmacKeyMetadataIterator struct {
-	items    []*storagepb.HmacKeyMetadata
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*storagepb.HmacKeyMetadata, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *HmacKeyMetadataIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *HmacKeyMetadataIterator) Next() (*storagepb.HmacKeyMetadata, error) {
-	var item *storagepb.HmacKeyMetadata
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *HmacKeyMetadataIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *HmacKeyMetadataIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NotificationConfigIterator manages a stream of *storagepb.NotificationConfig.
-type NotificationConfigIterator struct {
-	items    []*storagepb.NotificationConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*storagepb.NotificationConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NotificationConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NotificationConfigIterator) Next() (*storagepb.NotificationConfig, error) {
-	var item *storagepb.NotificationConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NotificationConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NotificationConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ObjectIterator manages a stream of *storagepb.Object.
-type ObjectIterator struct {
-	items    []*storagepb.Object
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*storagepb.Object, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ObjectIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ObjectIterator) Next() (*storagepb.Object, error) {
-	var item *storagepb.Object
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ObjectIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ObjectIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

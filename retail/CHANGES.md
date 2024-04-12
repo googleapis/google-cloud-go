@@ -1,5 +1,41 @@
 # Changes
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.16.0...retail/v1.16.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **retail:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.15.1...retail/v1.16.0) (2024-02-09)
+
+
+### Features
+
+* **retail:** Add analytics service ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.15.0...retail/v1.15.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **retail:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.14.4...retail/v1.15.0) (2024-01-22)
+
+
+### Features
+
+* **retail:** Add analytics service ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+* **retail:** Add analytics service ([#9272](https://github.com/googleapis/google-cloud-go/issues/9272)) ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/retail/v1.14.3...retail/v1.14.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **retail:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/retail/v1.14.2...retail/v1.14.3) (2023-10-26)
 
 
@@ -139,3 +175,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out retail as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

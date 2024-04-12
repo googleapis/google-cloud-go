@@ -1,5 +1,26 @@
 # Changes
 
+## [1.9.7](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.6...servicemanagement/v1.9.7) (2024-03-14)
+
+
+### Bug Fixes
+
+* **servicemanagement:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.9.6](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.5...servicemanagement/v1.9.6) (2024-01-30)
+
+
+### Bug Fixes
+
+* **servicemanagement:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.9.5](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.4...servicemanagement/v1.9.5) (2023-11-01)
+
+
+### Bug Fixes
+
+* **servicemanagement:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/servicemanagement/v1.9.3...servicemanagement/v1.9.4) (2023-10-26)
 
 
@@ -113,3 +134,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out servicemanagement as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -51,7 +51,9 @@ type IamCredentialsCallOptions struct {
 func defaultIamCredentialsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("iamcredentials.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("iamcredentials.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("iamcredentials.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iamcredentials.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -371,7 +373,9 @@ func NewIamCredentialsRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultIamCredentialsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://iamcredentials.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://iamcredentials.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://iamcredentials.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://iamcredentials.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

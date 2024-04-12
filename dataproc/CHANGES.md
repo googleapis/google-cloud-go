@@ -1,5 +1,38 @@
 # Changes
 
+## [2.4.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.4.0...dataproc/v2.4.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **dataproc:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [2.4.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.3.0...dataproc/v2.4.0) (2024-01-30)
+
+
+### Features
+
+* **dataproc:** Add session and session_template controllers ([4d56af1](https://github.com/googleapis/google-cloud-go/commit/4d56af183d42ff12862c0c35226e767ed8763118))
+
+
+### Bug Fixes
+
+* **dataproc:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [2.3.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.3...dataproc/v2.3.0) (2023-11-09)
+
+
+### Features
+
+* **dataproc:** Support required_registration_fraction for secondary workers ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [2.2.3](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.2...dataproc/v2.2.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **dataproc:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [2.2.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.2.1...dataproc/v2.2.2) (2023-10-26)
 
 
@@ -163,3 +196,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out dataproc as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

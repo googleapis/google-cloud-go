@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -91,7 +91,7 @@ func ExampleFeatureOnlineStoreAdminClient_CreateFeatureOnlineStore() {
 	_ = resp
 }
 
-func ExampleFeatureOnlineStoreAdminClient_GetFeatureOnlineStore() {
+func ExampleFeatureOnlineStoreAdminClient_CreateFeatureView() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -104,67 +104,11 @@ func ExampleFeatureOnlineStoreAdminClient_GetFeatureOnlineStore() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.GetFeatureOnlineStoreRequest{
+	req := &aiplatformpb.CreateFeatureViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetFeatureOnlineStoreRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateFeatureViewRequest.
 	}
-	resp, err := c.GetFeatureOnlineStore(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleFeatureOnlineStoreAdminClient_ListFeatureOnlineStores() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ListFeatureOnlineStoresRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListFeatureOnlineStoresRequest.
-	}
-	it := c.ListFeatureOnlineStores(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleFeatureOnlineStoreAdminClient_UpdateFeatureOnlineStore() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.UpdateFeatureOnlineStoreRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateFeatureOnlineStoreRequest.
-	}
-	op, err := c.UpdateFeatureOnlineStore(ctx, req)
+	op, err := c.CreateFeatureView(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -205,7 +149,7 @@ func ExampleFeatureOnlineStoreAdminClient_DeleteFeatureOnlineStore() {
 	}
 }
 
-func ExampleFeatureOnlineStoreAdminClient_CreateFeatureView() {
+func ExampleFeatureOnlineStoreAdminClient_DeleteFeatureView() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -218,16 +162,39 @@ func ExampleFeatureOnlineStoreAdminClient_CreateFeatureView() {
 	}
 	defer c.Close()
 
-	req := &aiplatformpb.CreateFeatureViewRequest{
+	req := &aiplatformpb.DeleteFeatureViewRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#CreateFeatureViewRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteFeatureViewRequest.
 	}
-	op, err := c.CreateFeatureView(ctx, req)
+	op, err := c.DeleteFeatureView(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleFeatureOnlineStoreAdminClient_GetFeatureOnlineStore() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.GetFeatureOnlineStoreRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#GetFeatureOnlineStoreRequest.
+	}
+	resp, err := c.GetFeatureOnlineStore(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -260,120 +227,6 @@ func ExampleFeatureOnlineStoreAdminClient_GetFeatureView() {
 	_ = resp
 }
 
-func ExampleFeatureOnlineStoreAdminClient_ListFeatureViews() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.ListFeatureViewsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListFeatureViewsRequest.
-	}
-	it := c.ListFeatureViews(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleFeatureOnlineStoreAdminClient_UpdateFeatureView() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.UpdateFeatureViewRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateFeatureViewRequest.
-	}
-	op, err := c.UpdateFeatureView(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleFeatureOnlineStoreAdminClient_DeleteFeatureView() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.DeleteFeatureViewRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#DeleteFeatureViewRequest.
-	}
-	op, err := c.DeleteFeatureView(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleFeatureOnlineStoreAdminClient_SyncFeatureView() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &aiplatformpb.SyncFeatureViewRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#SyncFeatureViewRequest.
-	}
-	resp, err := c.SyncFeatureView(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleFeatureOnlineStoreAdminClient_GetFeatureViewSync() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -397,6 +250,43 @@ func ExampleFeatureOnlineStoreAdminClient_GetFeatureViewSync() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleFeatureOnlineStoreAdminClient_ListFeatureOnlineStores() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ListFeatureOnlineStoresRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListFeatureOnlineStoresRequest.
+	}
+	it := c.ListFeatureOnlineStores(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*aiplatformpb.ListFeatureOnlineStoresResponse)
+	}
 }
 
 func ExampleFeatureOnlineStoreAdminClient_ListFeatureViewSyncs() {
@@ -427,7 +317,135 @@ func ExampleFeatureOnlineStoreAdminClient_ListFeatureViewSyncs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*aiplatformpb.ListFeatureViewSyncsResponse)
 	}
+}
+
+func ExampleFeatureOnlineStoreAdminClient_ListFeatureViews() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ListFeatureViewsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#ListFeatureViewsRequest.
+	}
+	it := c.ListFeatureViews(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*aiplatformpb.ListFeatureViewsResponse)
+	}
+}
+
+func ExampleFeatureOnlineStoreAdminClient_SyncFeatureView() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.SyncFeatureViewRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#SyncFeatureViewRequest.
+	}
+	resp, err := c.SyncFeatureView(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFeatureOnlineStoreAdminClient_UpdateFeatureOnlineStore() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.UpdateFeatureOnlineStoreRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateFeatureOnlineStoreRequest.
+	}
+	op, err := c.UpdateFeatureOnlineStore(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFeatureOnlineStoreAdminClient_UpdateFeatureView() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := aiplatform.NewFeatureOnlineStoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.UpdateFeatureViewRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb#UpdateFeatureViewRequest.
+	}
+	op, err := c.UpdateFeatureView(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleFeatureOnlineStoreAdminClient_GetLocation() {
@@ -483,6 +501,12 @@ func ExampleFeatureOnlineStoreAdminClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -660,6 +684,12 @@ func ExampleFeatureOnlineStoreAdminClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }
 

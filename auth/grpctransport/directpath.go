@@ -55,7 +55,7 @@ func checkDirectPathEndPoint(endpoint string) bool {
 	return true
 }
 
-func isTokenProviderDirectPathCompatible(tp auth.TokenProvider, opts *Options) bool {
+func isTokenProviderDirectPathCompatible(tp auth.TokenProvider, _ *Options) bool {
 	if tp == nil {
 		return false
 	}
@@ -90,11 +90,11 @@ func isDirectPathXdsUsed(o *Options) bool {
 // configureDirectPath returns some dial options and an endpoint to use if the
 // configuration allows the use of direct path. If it does not the provided
 // grpcOpts and endpoint are returned.
-func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds auth.TokenProvider) ([]grpc.DialOption, string) {
+func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *auth.Credentials) ([]grpc.DialOption, string) {
 	if isDirectPathEnabled(endpoint, opts) && metadata.OnGCE() && isTokenProviderDirectPathCompatible(creds, opts) {
 		// Overwrite all of the previously specific DialOptions, DirectPath uses its own set of credentials and certificates.
 		grpcOpts = []grpc.DialOption{
-			grpc.WithCredentialsBundle(grpcgoogle.NewDefaultCredentialsWithOptions(grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcTokenProvider{TokenProvider: creds}}))}
+			grpc.WithCredentialsBundle(grpcgoogle.NewDefaultCredentialsWithOptions(grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcCredentialsProvider{creds: creds}}))}
 		if timeoutDialerOption != nil {
 			grpcOpts = append(grpcOpts, timeoutDialerOption)
 		}

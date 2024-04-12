@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,45 +49,48 @@ var newBackupForGKEClientHook clientHook
 
 // BackupForGKECallOptions contains the retry settings for each method of BackupForGKEClient.
 type BackupForGKECallOptions struct {
-	CreateBackupPlan   []gax.CallOption
-	ListBackupPlans    []gax.CallOption
-	GetBackupPlan      []gax.CallOption
-	UpdateBackupPlan   []gax.CallOption
-	DeleteBackupPlan   []gax.CallOption
-	CreateBackup       []gax.CallOption
-	ListBackups        []gax.CallOption
-	GetBackup          []gax.CallOption
-	UpdateBackup       []gax.CallOption
-	DeleteBackup       []gax.CallOption
-	ListVolumeBackups  []gax.CallOption
-	GetVolumeBackup    []gax.CallOption
-	CreateRestorePlan  []gax.CallOption
-	ListRestorePlans   []gax.CallOption
-	GetRestorePlan     []gax.CallOption
-	UpdateRestorePlan  []gax.CallOption
-	DeleteRestorePlan  []gax.CallOption
-	CreateRestore      []gax.CallOption
-	ListRestores       []gax.CallOption
-	GetRestore         []gax.CallOption
-	UpdateRestore      []gax.CallOption
-	DeleteRestore      []gax.CallOption
-	ListVolumeRestores []gax.CallOption
-	GetVolumeRestore   []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
+	CreateBackupPlan          []gax.CallOption
+	ListBackupPlans           []gax.CallOption
+	GetBackupPlan             []gax.CallOption
+	UpdateBackupPlan          []gax.CallOption
+	DeleteBackupPlan          []gax.CallOption
+	CreateBackup              []gax.CallOption
+	ListBackups               []gax.CallOption
+	GetBackup                 []gax.CallOption
+	UpdateBackup              []gax.CallOption
+	DeleteBackup              []gax.CallOption
+	ListVolumeBackups         []gax.CallOption
+	GetVolumeBackup           []gax.CallOption
+	CreateRestorePlan         []gax.CallOption
+	ListRestorePlans          []gax.CallOption
+	GetRestorePlan            []gax.CallOption
+	UpdateRestorePlan         []gax.CallOption
+	DeleteRestorePlan         []gax.CallOption
+	CreateRestore             []gax.CallOption
+	ListRestores              []gax.CallOption
+	GetRestore                []gax.CallOption
+	UpdateRestore             []gax.CallOption
+	DeleteRestore             []gax.CallOption
+	ListVolumeRestores        []gax.CallOption
+	GetVolumeRestore          []gax.CallOption
+	GetBackupIndexDownloadUrl []gax.CallOption
+	GetLocation               []gax.CallOption
+	ListLocations             []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	TestIamPermissions        []gax.CallOption
+	CancelOperation           []gax.CallOption
+	DeleteOperation           []gax.CallOption
+	GetOperation              []gax.CallOption
+	ListOperations            []gax.CallOption
 }
 
 func defaultBackupForGKEGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gkebackup.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("gkebackup.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("gkebackup.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkebackup.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -267,6 +270,18 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 			}),
 		},
 		GetVolumeRestore: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetBackupIndexDownloadUrl: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -460,6 +475,17 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetBackupIndexDownloadUrl: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -513,6 +539,7 @@ type internalBackupForGKEClient interface {
 	DeleteRestoreOperation(name string) *DeleteRestoreOperation
 	ListVolumeRestores(context.Context, *gkebackuppb.ListVolumeRestoresRequest, ...gax.CallOption) *VolumeRestoreIterator
 	GetVolumeRestore(context.Context, *gkebackuppb.GetVolumeRestoreRequest, ...gax.CallOption) (*gkebackuppb.VolumeRestore, error)
+	GetBackupIndexDownloadUrl(context.Context, *gkebackuppb.GetBackupIndexDownloadUrlRequest, ...gax.CallOption) (*gkebackuppb.GetBackupIndexDownloadUrlResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -757,6 +784,11 @@ func (c *BackupForGKEClient) GetVolumeRestore(ctx context.Context, req *gkebacku
 	return c.internalClient.GetVolumeRestore(ctx, req, opts...)
 }
 
+// GetBackupIndexDownloadUrl retrieve the link to the backupIndex.
+func (c *BackupForGKEClient) GetBackupIndexDownloadUrl(ctx context.Context, req *gkebackuppb.GetBackupIndexDownloadUrlRequest, opts ...gax.CallOption) (*gkebackuppb.GetBackupIndexDownloadUrlResponse, error) {
+	return c.internalClient.GetBackupIndexDownloadUrl(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *BackupForGKEClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -966,7 +998,9 @@ func NewBackupForGKERESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultBackupForGKERESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://gkebackup.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://gkebackup.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://gkebackup.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkebackup.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1611,6 +1645,24 @@ func (c *backupForGKEGRPCClient) GetVolumeRestore(ctx context.Context, req *gkeb
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.backupForGKEClient.GetVolumeRestore(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *backupForGKEGRPCClient) GetBackupIndexDownloadUrl(ctx context.Context, req *gkebackuppb.GetBackupIndexDownloadUrlRequest, opts ...gax.CallOption) (*gkebackuppb.GetBackupIndexDownloadUrlResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup", url.QueryEscape(req.GetBackup()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupIndexDownloadUrl[0:len((*c.CallOptions).GetBackupIndexDownloadUrl):len((*c.CallOptions).GetBackupIndexDownloadUrl)], opts...)
+	var resp *gkebackuppb.GetBackupIndexDownloadUrlResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.backupForGKEClient.GetBackupIndexDownloadUrl(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -3638,6 +3690,66 @@ func (c *backupForGKERESTClient) GetVolumeRestore(ctx context.Context, req *gkeb
 	return resp, nil
 }
 
+// GetBackupIndexDownloadUrl retrieve the link to the backupIndex.
+func (c *backupForGKERESTClient) GetBackupIndexDownloadUrl(ctx context.Context, req *gkebackuppb.GetBackupIndexDownloadUrlRequest, opts ...gax.CallOption) (*gkebackuppb.GetBackupIndexDownloadUrlResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getBackupIndexDownloadUrl", req.GetBackup())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup", url.QueryEscape(req.GetBackup()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupIndexDownloadUrl[0:len((*c.CallOptions).GetBackupIndexDownloadUrl):len((*c.CallOptions).GetBackupIndexDownloadUrl)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &gkebackuppb.GetBackupIndexDownloadUrlResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *backupForGKERESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4050,7 +4162,7 @@ func (c *backupForGKERESTClient) DeleteOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
@@ -4238,12 +4350,6 @@ func (c *backupForGKERESTClient) ListOperations(ctx context.Context, req *longru
 	return it
 }
 
-// CreateBackupOperation manages a long-running operation from CreateBackup.
-type CreateBackupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateBackupOperation returns a new CreateBackupOperation from a given name.
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
@@ -4260,70 +4366,6 @@ func (c *backupForGKERESTClient) CreateBackupOperation(name string) *CreateBacku
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.Backup
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.Backup
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateBackupOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateBackupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateBackupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateBackupPlanOperation manages a long-running operation from CreateBackupPlan.
-type CreateBackupPlanOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateBackupPlanOperation returns a new CreateBackupPlanOperation from a given name.
@@ -4344,70 +4386,6 @@ func (c *backupForGKERESTClient) CreateBackupPlanOperation(name string) *CreateB
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateBackupPlanOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.BackupPlan, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.BackupPlan
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateBackupPlanOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.BackupPlan, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.BackupPlan
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateBackupPlanOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateBackupPlanOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateBackupPlanOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateRestoreOperation manages a long-running operation from CreateRestore.
-type CreateRestoreOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateRestoreOperation returns a new CreateRestoreOperation from a given name.
 // The name must be that of a previously created CreateRestoreOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) CreateRestoreOperation(name string) *CreateRestoreOperation {
@@ -4424,70 +4402,6 @@ func (c *backupForGKERESTClient) CreateRestoreOperation(name string) *CreateRest
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateRestoreOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.Restore, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.Restore
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateRestoreOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.Restore, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.Restore
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateRestoreOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateRestoreOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateRestoreOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateRestorePlanOperation manages a long-running operation from CreateRestorePlan.
-type CreateRestorePlanOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateRestorePlanOperation returns a new CreateRestorePlanOperation from a given name.
@@ -4508,70 +4422,6 @@ func (c *backupForGKERESTClient) CreateRestorePlanOperation(name string) *Create
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateRestorePlanOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.RestorePlan, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.RestorePlan
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateRestorePlanOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.RestorePlan, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.RestorePlan
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateRestorePlanOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateRestorePlanOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateRestorePlanOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteBackupOperation manages a long-running operation from DeleteBackup.
-type DeleteBackupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
@@ -4588,59 +4438,6 @@ func (c *backupForGKERESTClient) DeleteBackupOperation(name string) *DeleteBacku
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteBackupOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteBackupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteBackupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteBackupPlanOperation manages a long-running operation from DeleteBackupPlan.
-type DeleteBackupPlanOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteBackupPlanOperation returns a new DeleteBackupPlanOperation from a given name.
@@ -4661,59 +4458,6 @@ func (c *backupForGKERESTClient) DeleteBackupPlanOperation(name string) *DeleteB
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteBackupPlanOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteBackupPlanOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteBackupPlanOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteBackupPlanOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteBackupPlanOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteRestoreOperation manages a long-running operation from DeleteRestore.
-type DeleteRestoreOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteRestoreOperation returns a new DeleteRestoreOperation from a given name.
 // The name must be that of a previously created DeleteRestoreOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) DeleteRestoreOperation(name string) *DeleteRestoreOperation {
@@ -4730,59 +4474,6 @@ func (c *backupForGKERESTClient) DeleteRestoreOperation(name string) *DeleteRest
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteRestoreOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteRestoreOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteRestoreOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteRestoreOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteRestoreOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteRestorePlanOperation manages a long-running operation from DeleteRestorePlan.
-type DeleteRestorePlanOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteRestorePlanOperation returns a new DeleteRestorePlanOperation from a given name.
@@ -4803,59 +4494,6 @@ func (c *backupForGKERESTClient) DeleteRestorePlanOperation(name string) *Delete
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteRestorePlanOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteRestorePlanOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteRestorePlanOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteRestorePlanOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteRestorePlanOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateBackupOperation manages a long-running operation from UpdateBackup.
-type UpdateBackupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateBackupOperation returns a new UpdateBackupOperation from a given name.
 // The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
@@ -4872,70 +4510,6 @@ func (c *backupForGKERESTClient) UpdateBackupOperation(name string) *UpdateBacku
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.Backup
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.Backup
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateBackupOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateBackupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateBackupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateBackupPlanOperation manages a long-running operation from UpdateBackupPlan.
-type UpdateBackupPlanOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateBackupPlanOperation returns a new UpdateBackupPlanOperation from a given name.
@@ -4956,70 +4530,6 @@ func (c *backupForGKERESTClient) UpdateBackupPlanOperation(name string) *UpdateB
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateBackupPlanOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.BackupPlan, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.BackupPlan
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateBackupPlanOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.BackupPlan, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.BackupPlan
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateBackupPlanOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateBackupPlanOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateBackupPlanOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateRestoreOperation manages a long-running operation from UpdateRestore.
-type UpdateRestoreOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateRestoreOperation returns a new UpdateRestoreOperation from a given name.
 // The name must be that of a previously created UpdateRestoreOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) UpdateRestoreOperation(name string) *UpdateRestoreOperation {
@@ -5038,70 +4548,6 @@ func (c *backupForGKERESTClient) UpdateRestoreOperation(name string) *UpdateRest
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateRestoreOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.Restore, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.Restore
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateRestoreOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.Restore, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.Restore
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateRestoreOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateRestoreOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateRestoreOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateRestorePlanOperation manages a long-running operation from UpdateRestorePlan.
-type UpdateRestorePlanOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateRestorePlanOperation returns a new UpdateRestorePlanOperation from a given name.
 // The name must be that of a previously created UpdateRestorePlanOperation, possibly from a different process.
 func (c *backupForGKEGRPCClient) UpdateRestorePlanOperation(name string) *UpdateRestorePlanOperation {
@@ -5118,438 +4564,4 @@ func (c *backupForGKERESTClient) UpdateRestorePlanOperation(name string) *Update
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateRestorePlanOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.RestorePlan, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.RestorePlan
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateRestorePlanOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gkebackuppb.RestorePlan, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp gkebackuppb.RestorePlan
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateRestorePlanOperation) Metadata() (*gkebackuppb.OperationMetadata, error) {
-	var meta gkebackuppb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateRestorePlanOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateRestorePlanOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BackupIterator manages a stream of *gkebackuppb.Backup.
-type BackupIterator struct {
-	items    []*gkebackuppb.Backup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkebackuppb.Backup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BackupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BackupIterator) Next() (*gkebackuppb.Backup, error) {
-	var item *gkebackuppb.Backup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BackupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BackupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// BackupPlanIterator manages a stream of *gkebackuppb.BackupPlan.
-type BackupPlanIterator struct {
-	items    []*gkebackuppb.BackupPlan
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkebackuppb.BackupPlan, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BackupPlanIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BackupPlanIterator) Next() (*gkebackuppb.BackupPlan, error) {
-	var item *gkebackuppb.BackupPlan
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BackupPlanIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BackupPlanIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RestoreIterator manages a stream of *gkebackuppb.Restore.
-type RestoreIterator struct {
-	items    []*gkebackuppb.Restore
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkebackuppb.Restore, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RestoreIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RestoreIterator) Next() (*gkebackuppb.Restore, error) {
-	var item *gkebackuppb.Restore
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RestoreIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RestoreIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RestorePlanIterator manages a stream of *gkebackuppb.RestorePlan.
-type RestorePlanIterator struct {
-	items    []*gkebackuppb.RestorePlan
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkebackuppb.RestorePlan, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RestorePlanIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RestorePlanIterator) Next() (*gkebackuppb.RestorePlan, error) {
-	var item *gkebackuppb.RestorePlan
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RestorePlanIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RestorePlanIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// VolumeBackupIterator manages a stream of *gkebackuppb.VolumeBackup.
-type VolumeBackupIterator struct {
-	items    []*gkebackuppb.VolumeBackup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkebackuppb.VolumeBackup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VolumeBackupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VolumeBackupIterator) Next() (*gkebackuppb.VolumeBackup, error) {
-	var item *gkebackuppb.VolumeBackup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VolumeBackupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VolumeBackupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// VolumeRestoreIterator manages a stream of *gkebackuppb.VolumeRestore.
-type VolumeRestoreIterator struct {
-	items    []*gkebackuppb.VolumeRestore
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*gkebackuppb.VolumeRestore, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VolumeRestoreIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VolumeRestoreIterator) Next() (*gkebackuppb.VolumeRestore, error) {
-	var item *gkebackuppb.VolumeRestore
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VolumeRestoreIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VolumeRestoreIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

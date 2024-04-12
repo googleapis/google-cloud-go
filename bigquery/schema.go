@@ -148,6 +148,10 @@ type FieldSchema struct {
 	//   - '': empty string. Default to case-sensitive behavior.
 	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
 	Collation string
+
+	// Information about the range.
+	// If the type is RANGE, this field is required.
+	RangeElementType *RangeElementType
 }
 
 func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
@@ -161,6 +165,7 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 		Scale:                  fs.Scale,
 		DefaultValueExpression: fs.DefaultValueExpression,
 		Collation:              string(fs.Collation),
+		RangeElementType:       fs.RangeElementType.toBQ(),
 	}
 
 	if fs.Repeated {
@@ -174,6 +179,32 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 	}
 
 	return tfs
+}
+
+// RangeElementType describes information about the range type.
+type RangeElementType struct {
+	// The subtype of the RANGE, if the type of this field is RANGE.
+	// Possible values for the field element type of a RANGE include:
+	// DATE, DATETIME, or TIMESTAMP.
+	Type FieldType
+}
+
+func (rt *RangeElementType) toBQ() *bq.TableFieldSchemaRangeElementType {
+	if rt == nil {
+		return nil
+	}
+	return &bq.TableFieldSchemaRangeElementType{
+		Type: string(rt.Type),
+	}
+}
+
+func bqToRangeElementType(rt *bq.TableFieldSchemaRangeElementType) *RangeElementType {
+	if rt == nil {
+		return nil
+	}
+	return &RangeElementType{
+		Type: FieldType(rt.Type),
+	}
 }
 
 // PolicyTagList represents the annotations on a schema column for enforcing column-level security.
@@ -221,6 +252,7 @@ func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 		Scale:                  tfs.Scale,
 		DefaultValueExpression: tfs.DefaultValueExpression,
 		Collation:              tfs.Collation,
+		RangeElementType:       bqToRangeElementType(tfs.RangeElementType),
 	}
 
 	for _, f := range tfs.Fields {
@@ -277,6 +309,8 @@ const (
 	IntervalFieldType FieldType = "INTERVAL"
 	// JSONFieldType is a representation of a json object.
 	JSONFieldType FieldType = "JSON"
+	// RangeFieldType represents a continuous range of values.
+	RangeFieldType FieldType = "RANGE"
 )
 
 var (
@@ -297,6 +331,7 @@ var (
 		BigNumericFieldType: true,
 		IntervalFieldType:   true,
 		JSONFieldType:       true,
+		RangeFieldType:      true,
 	}
 	// The API will accept alias names for the types based on the Standard SQL type names.
 	fieldAliases = map[FieldType]FieldType{
@@ -328,6 +363,7 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //	TIME        civil.Time
 //	DATETIME    civil.DateTime
 //	NUMERIC     *big.Rat
+//	JSON        map[string]interface{}
 //
 // The big.Rat type supports numbers of arbitrary size and precision. Values
 // will be rounded to 9 digits after the decimal point before being transmitted
@@ -434,10 +470,14 @@ func inferStruct(t reflect.Type) (Schema, error) {
 }
 
 // inferFieldSchema infers the FieldSchema for a Go type
-func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldSchema, error) {
+func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*FieldSchema, error) {
 	// Only []byte and struct pointers can be tagged nullable.
 	if nullable && !(rt == typeOfByteSlice || rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct) {
 		return nil, badNullableError{fieldName, rt}
+	}
+	// Only structs and struct pointers can be tagged as json.
+	if json && !(rt.Kind() == reflect.Struct || rt.Kind() == reflect.Ptr && rt.Elem().Kind() == reflect.Struct) {
+		return nil, badJSONError{fieldName, rt}
 	}
 	switch rt {
 	case typeOfByteSlice:
@@ -474,7 +514,7 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldS
 			// Repeated nullable types are not supported by BigQuery.
 			return nil, unsupportedFieldTypeError{fieldName, rt}
 		}
-		f, err := inferFieldSchema(fieldName, et, false)
+		f, err := inferFieldSchema(fieldName, et, false, false)
 		if err != nil {
 			return nil, err
 		}
@@ -487,6 +527,10 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldS
 		}
 		fallthrough
 	case reflect.Struct:
+		if json {
+			return &FieldSchema{Required: !nullable, Type: JSONFieldType}, nil
+		}
+
 		nested, err := inferStruct(rt)
 		if err != nil {
 			return nil, err
@@ -498,6 +542,11 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldS
 		return &FieldSchema{Required: !nullable, Type: BooleanFieldType}, nil
 	case reflect.Float32, reflect.Float64:
 		return &FieldSchema{Required: !nullable, Type: FloatFieldType}, nil
+	case reflect.Map:
+		if rt.Key().Kind() != reflect.String {
+			return nil, unsupportedFieldTypeError{fieldName, rt}
+		}
+		return &FieldSchema{Required: !nullable, Type: JSONFieldType}, nil
 	default:
 		return nil, unsupportedFieldTypeError{fieldName, rt}
 	}
@@ -511,14 +560,16 @@ func inferFields(rt reflect.Type) (Schema, error) {
 		return nil, err
 	}
 	for _, field := range fields {
-		var nullable bool
+		var nullable, json bool
 		for _, opt := range field.ParsedTag.([]string) {
 			if opt == nullableTagOption {
 				nullable = true
-				break
+			}
+			if opt == jsonTagOption {
+				json = true
 			}
 		}
-		f, err := inferFieldSchema(field.Name, field.Type, nullable)
+		f, err := inferFieldSchema(field.Name, field.Type, nullable, json)
 		if err != nil {
 			return nil, err
 		}
@@ -657,6 +708,15 @@ type badNullableError struct {
 
 func (e badNullableError) Error() string {
 	return fmt.Sprintf(`bigquery: field %q of type %s: use "nullable" only for []byte and struct pointers; for all other types, use a NullXXX type`, e.name, e.typ)
+}
+
+type badJSONError struct {
+	name string
+	typ  reflect.Type
+}
+
+func (e badJSONError) Error() string {
+	return fmt.Sprintf(`bigquery: field %q of type %s: use "json" only for struct and struct pointers`, e.name, e.typ)
 }
 
 type unsupportedFieldTypeError struct {

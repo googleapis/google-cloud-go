@@ -1,5 +1,33 @@
 # Changes
 
+## [1.17.6](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.5...channel/v1.17.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **channel:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.17.5](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.4...channel/v1.17.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **channel:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.3...channel/v1.17.4) (2024-01-03)
+
+
+### Documentation
+
+* **channel:** A comment for service `CloudChannelReportsService` is changed ([cbe96af](https://github.com/googleapis/google-cloud-go/commit/cbe96af778ec9152b528714281de9e534f01c237))
+
+## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.2...channel/v1.17.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **channel:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.1...channel/v1.17.2) (2023-10-26)
 
 
@@ -169,3 +197,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out channel as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

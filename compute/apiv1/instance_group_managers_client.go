@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -233,7 +233,7 @@ func (c *InstanceGroupManagersClient) AbandonInstances(ctx context.Context, req 
 	return c.internalClient.AbandonInstances(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of managed instance groups and groups them by zone.
+// AggregatedList retrieves the list of managed instance groups and groups them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *InstanceGroupManagersClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupManagersRequest, opts ...gax.CallOption) *InstanceGroupManagersScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -283,7 +283,7 @@ func (c *InstanceGroupManagersClient) ListErrors(ctx context.Context, req *compu
 	return c.internalClient.ListErrors(ctx, req, opts...)
 }
 
-// ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The pageToken query parameter is supported only in the alpha and beta API and only if the group’s listManagedInstancesResults field is set to PAGINATED.
+// ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The pageToken query parameter is supported only if the group’s listManagedInstancesResults field is set to PAGINATED.
 func (c *InstanceGroupManagersClient) ListManagedInstances(ctx context.Context, req *computepb.ListManagedInstancesInstanceGroupManagersRequest, opts ...gax.CallOption) *ManagedInstanceIterator {
 	return c.internalClient.ListManagedInstances(ctx, req, opts...)
 }
@@ -380,7 +380,9 @@ func NewInstanceGroupManagersRESTClient(ctx context.Context, opts ...option.Clie
 func defaultInstanceGroupManagersRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -490,7 +492,7 @@ func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, 
 	return op, nil
 }
 
-// AggregatedList retrieves the list of managed instance groups and groups them by zone.
+// AggregatedList retrieves the list of managed instance groups and groups them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupManagersRequest, opts ...gax.CallOption) *InstanceGroupManagersScopedListPairIterator {
 	it := &InstanceGroupManagersScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstanceGroupManagersRequest)
@@ -529,6 +531,9 @@ func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, re
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1287,7 +1292,7 @@ func (c *instanceGroupManagersRESTClient) ListErrors(ctx context.Context, req *c
 	return it
 }
 
-// ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The pageToken query parameter is supported only in the alpha and beta API and only if the group’s listManagedInstancesResults field is set to PAGINATED.
+// ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported. The pageToken query parameter is supported only if the group’s listManagedInstancesResults field is set to PAGINATED.
 func (c *instanceGroupManagersRESTClient) ListManagedInstances(ctx context.Context, req *computepb.ListManagedInstancesInstanceGroupManagersRequest, opts ...gax.CallOption) *ManagedInstanceIterator {
 	it := &ManagedInstanceIterator{}
 	req = proto.Clone(req).(*computepb.ListManagedInstancesInstanceGroupManagersRequest)
@@ -2012,245 +2017,4 @@ func (c *instanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx context.C
 		},
 	}
 	return op, nil
-}
-
-// InstanceGroupManagerIterator manages a stream of *computepb.InstanceGroupManager.
-type InstanceGroupManagerIterator struct {
-	items    []*computepb.InstanceGroupManager
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstanceGroupManager, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InstanceGroupManagerIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InstanceGroupManagerIterator) Next() (*computepb.InstanceGroupManager, error) {
-	var item *computepb.InstanceGroupManager
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InstanceGroupManagerIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InstanceGroupManagerIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// InstanceGroupManagersScopedListPair is a holder type for string/*computepb.InstanceGroupManagersScopedList map entries
-type InstanceGroupManagersScopedListPair struct {
-	Key   string
-	Value *computepb.InstanceGroupManagersScopedList
-}
-
-// InstanceGroupManagersScopedListPairIterator manages a stream of InstanceGroupManagersScopedListPair.
-type InstanceGroupManagersScopedListPairIterator struct {
-	items    []InstanceGroupManagersScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []InstanceGroupManagersScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InstanceGroupManagersScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InstanceGroupManagersScopedListPairIterator) Next() (InstanceGroupManagersScopedListPair, error) {
-	var item InstanceGroupManagersScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InstanceGroupManagersScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InstanceGroupManagersScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// InstanceManagedByIgmErrorIterator manages a stream of *computepb.InstanceManagedByIgmError.
-type InstanceManagedByIgmErrorIterator struct {
-	items    []*computepb.InstanceManagedByIgmError
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.InstanceManagedByIgmError, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InstanceManagedByIgmErrorIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InstanceManagedByIgmErrorIterator) Next() (*computepb.InstanceManagedByIgmError, error) {
-	var item *computepb.InstanceManagedByIgmError
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InstanceManagedByIgmErrorIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InstanceManagedByIgmErrorIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ManagedInstanceIterator manages a stream of *computepb.ManagedInstance.
-type ManagedInstanceIterator struct {
-	items    []*computepb.ManagedInstance
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.ManagedInstance, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ManagedInstanceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ManagedInstanceIterator) Next() (*computepb.ManagedInstance, error) {
-	var item *computepb.ManagedInstance
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ManagedInstanceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ManagedInstanceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PerInstanceConfigIterator manages a stream of *computepb.PerInstanceConfig.
-type PerInstanceConfigIterator struct {
-	items    []*computepb.PerInstanceConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.PerInstanceConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PerInstanceConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PerInstanceConfigIterator) Next() (*computepb.PerInstanceConfig, error) {
-	var item *computepb.PerInstanceConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PerInstanceConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PerInstanceConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

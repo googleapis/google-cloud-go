@@ -1,5 +1,56 @@
 # Changelog
 
+## [0.3.4](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.3...ai/v0.3.4) (2024-03-19)
+
+
+### Bug Fixes
+
+* **ai/generativelanguage:** Make learning rate a one-of ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+
+## [0.3.3](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.2...ai/v0.3.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* **ai:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.3.2](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.1...ai/v0.3.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **ai/generativelanguage:** Fix content.proto's Schema - `type` should be required ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+* **ai:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.0...ai/v0.3.1) (2024-01-22)
+
+
+### Documentation
+
+* **ai/generativelanguage:** Fixed minor documentation typos for field `function_declarations` in message `.google.ai.generativelanguage.v1beta.Tool` ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.2.0...ai/v0.3.0) (2023-12-13)
+
+
+### Features
+
+* **ai:** Expose ability to set headers ([#9154](https://github.com/googleapis/google-cloud-go/issues/9154)) ([40f2d6a](https://github.com/googleapis/google-cloud-go/commit/40f2d6aadffb43f4661badf83274c84f9908f7c1))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.1.4...ai/v0.2.0) (2023-12-11)
+
+
+### Features
+
+* **ai/generativelanguage:** Add v1beta, adds GenerativeService and RetrievalService ([29effe6](https://github.com/googleapis/google-cloud-go/commit/29effe600e16f24a127a1422ec04263c4f7a600a))
+* **ai:** New clients ([#9126](https://github.com/googleapis/google-cloud-go/issues/9126)) ([c09249e](https://github.com/googleapis/google-cloud-go/commit/c09249e16b01da2b441337416115af7931892aaa))
+
+## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/ai/v0.1.3...ai/v0.1.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **ai:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/ai/v0.1.2...ai/v0.1.3) (2023-10-26)
 
 
@@ -29,3 +80,4 @@
 * **ai/generativelanguage:** Start generating apiv1beta2 ([#8229](https://github.com/googleapis/google-cloud-go/issues/8229)) ([837f325](https://github.com/googleapis/google-cloud-go/commit/837f32596518d8154f43da1c70f57d1515e2ea8c))
 
 ## Changes
+

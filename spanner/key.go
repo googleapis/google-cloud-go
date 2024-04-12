@@ -83,9 +83,7 @@ func keyPartValue(part interface{}) (pb *proto3.Value, err error) {
 		pb, _, err = encodeValue(int64(v))
 	case uint32:
 		pb, _, err = encodeValue(int64(v))
-	case float32:
-		pb, _, err = encodeValue(float64(v))
-	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate, big.Rat, NullNumeric:
+	case int64, float64, float32, NullInt64, NullFloat64, NullFloat32, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate, big.Rat, NullNumeric:
 		pb, _, err = encodeValue(v)
 	case Encoder:
 		part, err = v.EncodeSpanner()

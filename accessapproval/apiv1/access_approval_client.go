@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("accessapproval.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("accessapproval.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("accessapproval.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://accessapproval.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -512,7 +514,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://accessapproval.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://accessapproval.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://accessapproval.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://accessapproval.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1339,51 +1343,4 @@ func (c *restClient) GetAccessApprovalServiceAccount(ctx context.Context, req *a
 		return nil, e
 	}
 	return resp, nil
-}
-
-// ApprovalRequestIterator manages a stream of *accessapprovalpb.ApprovalRequest.
-type ApprovalRequestIterator struct {
-	items    []*accessapprovalpb.ApprovalRequest
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*accessapprovalpb.ApprovalRequest, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ApprovalRequestIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ApprovalRequestIterator) Next() (*accessapprovalpb.ApprovalRequest, error) {
-	var item *accessapprovalpb.ApprovalRequest
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ApprovalRequestIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ApprovalRequestIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

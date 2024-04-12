@@ -1,5 +1,26 @@
 # Changelog
 
+## [0.8.4](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.3...apigeeregistry/v0.8.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.2...apigeeregistry/v0.8.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.1...apigeeregistry/v0.8.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
 ## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.0...apigeeregistry/v0.8.1) (2023-10-26)
 
 
@@ -90,3 +111,4 @@
 ### Features
 
 * **apigeeregistry:** start generating apiv1 ([#6463](https://github.com/googleapis/google-cloud-go/issues/6463)) ([55385cb](https://github.com/googleapis/google-cloud-go/commit/55385cbd1a324745b2f2f7b72b2fa33cb34c9cb5))
+

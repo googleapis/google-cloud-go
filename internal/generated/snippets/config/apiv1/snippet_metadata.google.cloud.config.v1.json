@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/config/apiv1",
-    "version": "0.1.3",
+    "version": "0.3.0",
     "language": "GO",
     "apis": [
       {
@@ -87,6 +87,52 @@
         "method": {
           "shortName": "CreateDeployment",
           "fullName": "google.cloud.config.v1.Config.CreateDeployment",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_CreatePreview_sync",
+      "title": "config CreatePreview Sample",
+      "description": "CreatePreview creates a [Preview][google.cloud.config.v1.Preview].",
+      "file": "Client/CreatePreview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePreview",
+        "fullName": "google.cloud.config.v1.Client.CreatePreview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.CreatePreviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePreviewOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "CreatePreview",
+          "fullName": "google.cloud.config.v1.Config.CreatePreview",
           "service": {
             "shortName": "Config",
             "fullName": "google.cloud.config.v1.Config"
@@ -189,6 +235,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_DeletePreview_sync",
+      "title": "config DeletePreview Sample",
+      "description": "DeletePreview deletes a [Preview][google.cloud.config.v1.Preview].",
+      "file": "Client/DeletePreview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePreview",
+        "fullName": "google.cloud.config.v1.Client.DeletePreview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.DeletePreviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePreviewOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "DeletePreview",
+          "fullName": "google.cloud.config.v1.Config.DeletePreview",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -315,6 +407,52 @@
         "method": {
           "shortName": "ExportLockInfo",
           "fullName": "google.cloud.config.v1.Config.ExportLockInfo",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ExportPreviewResult_sync",
+      "title": "config ExportPreviewResult Sample",
+      "description": "ExportPreviewResult export [Preview][google.cloud.config.v1.Preview] results.",
+      "file": "Client/ExportPreviewResult/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportPreviewResult",
+        "fullName": "google.cloud.config.v1.Client.ExportPreviewResult",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ExportPreviewResultRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.ExportPreviewResultResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ExportPreviewResult",
+          "fullName": "google.cloud.config.v1.Config.ExportPreviewResult",
           "service": {
             "shortName": "Config",
             "fullName": "google.cloud.config.v1.Config"
@@ -561,6 +699,52 @@
       ]
     },
     {
+      "regionTag": "config_v1_generated_Config_GetPreview_sync",
+      "title": "config GetPreview Sample",
+      "description": "GetPreview gets details about a [Preview][google.cloud.config.v1.Preview].",
+      "file": "Client/GetPreview/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPreview",
+        "fullName": "google.cloud.config.v1.Client.GetPreview",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.GetPreviewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.Preview",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPreview",
+          "fullName": "google.cloud.config.v1.Config.GetPreview",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "config_v1_generated_Config_GetResource_sync",
       "title": "config GetResource Sample",
       "description": "GetResource gets details about a [Resource][google.cloud.config.v1.Resource] deployed\nby Infra Manager.",
@@ -637,6 +821,52 @@
         "method": {
           "shortName": "GetRevision",
           "fullName": "google.cloud.config.v1.Config.GetRevision",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_GetTerraformVersion_sync",
+      "title": "config GetTerraformVersion Sample",
+      "description": "GetTerraformVersion gets details about a\n[TerraformVersion][google.cloud.config.v1.TerraformVersion].",
+      "file": "Client/GetTerraformVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTerraformVersion",
+        "fullName": "google.cloud.config.v1.Client.GetTerraformVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.GetTerraformVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.TerraformVersion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTerraformVersion",
+          "fullName": "google.cloud.config.v1.Config.GetTerraformVersion",
           "service": {
             "shortName": "Config",
             "fullName": "google.cloud.config.v1.Config"
@@ -739,7 +969,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -785,7 +1015,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -831,7 +1061,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListPreviews_sync",
+      "title": "config ListPreviews Sample",
+      "description": "ListPreviews lists [Preview][google.cloud.config.v1.Preview]s in a given project and\nlocation.",
+      "file": "Client/ListPreviews/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPreviews",
+        "fullName": "google.cloud.config.v1.Client.ListPreviews",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ListPreviewsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PreviewIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPreviews",
+          "fullName": "google.cloud.config.v1.Config.ListPreviews",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -877,7 +1153,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -923,7 +1199,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListTerraformVersions_sync",
+      "title": "config ListTerraformVersions Sample",
+      "description": "ListTerraformVersions lists [TerraformVersion][google.cloud.config.v1.TerraformVersion]s in a\ngiven project and location.",
+      "file": "Client/ListTerraformVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTerraformVersions",
+        "fullName": "google.cloud.config.v1.Client.ListTerraformVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ListTerraformVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TerraformVersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTerraformVersions",
+          "fullName": "google.cloud.config.v1.Config.ListTerraformVersions",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
