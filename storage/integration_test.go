@@ -623,6 +623,15 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
 			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
 		}
+
+		// Empty update should succeed without changing the bucket.
+		gotAttrs, err := b.Update(ctx, BucketAttrsToUpdate{})
+		if err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if !testutil.Equal(attrs, gotAttrs) {
+			t.Fatalf("empty update: got %v, want %v", gotAttrs, attrs)
+		}
 	})
 }
 
@@ -1609,6 +1618,17 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 		}
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
+		}
+
+		// Test empty update. Most fields should be unchanged, but updating will
+		// increase the metageneration and update time.
+		wantAttrs := updated
+		gotAttrs, err := o.Update(ctx, ObjectAttrsToUpdate{})
+		if err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if diff := testutil.Diff(gotAttrs, wantAttrs, cmpopts.IgnoreFields(ObjectAttrs{}, "Etag", "Metageneration", "Updated")); diff != "" {
+			t.Errorf("empty update: got=-, want=+:\n%s", diff)
 		}
 	})
 }
@@ -3746,8 +3766,7 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 				bkt := client.Bucket(prefix + uidSpace.New())
 				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{CORS: initialSettings})
 				defer h.mustDeleteBucket(bkt)
-				// Set VersioningEnabled so that we don't send an empty update/patch request, which is invalid for gRPC
-				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
 				attrs := h.mustBucketAttrs(bkt)
 				if diff := testutil.Diff(attrs.CORS, test.want); diff != "" {
 					t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
@@ -3976,8 +3995,7 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 				bkt := client.Bucket(prefix + uidSpace.New())
 				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
 				defer h.mustDeleteBucket(bkt)
-				// Set VersioningEnabled so that we don't send an empty update request, which is invalid for gRPC
-				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
 
 				attrs := h.mustBucketAttrs(bkt)
 				if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
