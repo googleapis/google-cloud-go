@@ -43,11 +43,11 @@ var (
 	// Metadata for mocked KV table, its rows are returned by SingleUse
 	// transactions.
 	kvMeta = func() *sppb.ResultSetMetadata {
-		meta := KvMeta
+		meta := KvMeta()
 		meta.Transaction = &sppb.Transaction{
 			ReadTimestamp: timestampProto(trxTs),
 		}
-		return &meta
+		return meta
 	}()
 	// Metadata for mocked ListKV table, which uses List for its key and value.
 	// Its rows are returned by snapshot readonly transactions, as indicated in
