@@ -382,6 +382,13 @@ func (c *grpcStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 
 	req.UpdateMask = fieldMask
 
+	if len(fieldMask.Paths) < 1 {
+		// Nothing to update. Send a get request for current attrs instead. This
+		// maintains consistency with JSON bucket updates.
+		opts = append(opts, idempotent(true))
+		return c.GetBucket(ctx, bucket, conds, opts...)
+	}
+
 	var battrs *BucketAttrs
 	err := run(ctx, func(ctx context.Context) error {
 		res, err := c.raw.UpdateBucket(ctx, req, s.gax...)
@@ -601,6 +608,17 @@ func (c *grpcStorageClient) UpdateObject(ctx context.Context, params *updateObje
 	}
 
 	req.UpdateMask = fieldMask
+
+	if len(fieldMask.Paths) < 1 {
+		// Nothing to update. To maintain consistency with JSON, we must still
+		// update the object because metageneration and other fields are
+		// updated even on an empty update.
+		// gRPC will fail if the fieldmask is empty, so instead we add an
+		// output-only field to the update mask. Output-only fields are (and must
+		// be - see AIP 161) ignored, but allow us to send an empty update because
+		// any mask that is valid for read (as this one is) must be valid for write.
+		fieldMask.Paths = append(fieldMask.Paths, "create_time")
+	}
 
 	var attrs *ObjectAttrs
 	err := run(ctx, func(ctx context.Context) error {
