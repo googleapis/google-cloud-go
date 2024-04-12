@@ -21,12 +21,11 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -98,6 +97,8 @@ type Model struct {
 	// Top-k sampling considers the set of `top_k` most probable tokens.
 	// This value specifies default to be used by the backend while making the
 	// call to the model.
+	// If empty, indicates the model doesn't use top-k sampling, and `top_k` isn't
+	// allowed as a generation parameter.
 	TopK *int32 `protobuf:"varint,11,opt,name=top_k,json=topK,proto3,oneof" json:"top_k,omitempty"`
 }
 

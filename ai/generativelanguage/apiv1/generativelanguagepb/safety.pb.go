@@ -21,12 +21,11 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,9 +46,9 @@ const (
 	HarmCategory_HARM_CATEGORY_UNSPECIFIED HarmCategory = 0
 	// Negative or harmful comments targeting identity and/or protected attribute.
 	HarmCategory_HARM_CATEGORY_DEROGATORY HarmCategory = 1
-	// Content that is rude, disrepspectful, or profane.
+	// Content that is rude, disrespectful, or profane.
 	HarmCategory_HARM_CATEGORY_TOXICITY HarmCategory = 2
-	// Describes scenarios depictng violence against an individual or group, or
+	// Describes scenarios depicting violence against an individual or group, or
 	// general descriptions of gore.
 	HarmCategory_HARM_CATEGORY_VIOLENCE HarmCategory = 3
 	// Contains references to sexual acts or other lewd content.
