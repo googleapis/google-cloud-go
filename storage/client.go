@@ -183,16 +183,6 @@ type storageOption interface {
 	Apply(s *settings)
 }
 
-func withGAXOptions(opts ...gax.CallOption) storageOption {
-	return &gaxOption{opts}
-}
-
-type gaxOption struct {
-	opts []gax.CallOption
-}
-
-func (o *gaxOption) Apply(s *settings) { s.gax = o.opts }
-
 func withRetryConfig(rc *retryConfig) storageOption {
 	return &retryOption{rc}
 }
