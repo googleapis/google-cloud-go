@@ -264,13 +264,15 @@ func (c *Client) ListSecrets(ctx context.Context, req *secretmanagerpb.ListSecre
 	return c.internalClient.ListSecrets(ctx, req, opts...)
 }
 
-// CreateSecret creates a new Secret containing no SecretVersions.
+// CreateSecret creates a new Secret containing no
+// SecretVersions.
 func (c *Client) CreateSecret(ctx context.Context, req *secretmanagerpb.CreateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	return c.internalClient.CreateSecret(ctx, req, opts...)
 }
 
-// AddSecretVersion creates a new SecretVersion containing secret data and attaches
-// it to an existing Secret.
+// AddSecretVersion creates a new SecretVersion
+// containing secret data and attaches it to an existing
+// Secret.
 func (c *Client) AddSecretVersion(ctx context.Context, req *secretmanagerpb.AddSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	return c.internalClient.AddSecretVersion(ctx, req, opts...)
 }
@@ -280,7 +282,8 @@ func (c *Client) GetSecret(ctx context.Context, req *secretmanagerpb.GetSecretRe
 	return c.internalClient.GetSecret(ctx, req, opts...)
 }
 
-// UpdateSecret updates metadata of an existing Secret.
+// UpdateSecret updates metadata of an existing
+// Secret.
 func (c *Client) UpdateSecret(ctx context.Context, req *secretmanagerpb.UpdateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	return c.internalClient.UpdateSecret(ctx, req, opts...)
 }
@@ -290,13 +293,14 @@ func (c *Client) DeleteSecret(ctx context.Context, req *secretmanagerpb.DeleteSe
 	return c.internalClient.DeleteSecret(ctx, req, opts...)
 }
 
-// ListSecretVersions lists SecretVersions. This call does not return secret
-// data.
+// ListSecretVersions lists SecretVersions. This
+// call does not return secret data.
 func (c *Client) ListSecretVersions(ctx context.Context, req *secretmanagerpb.ListSecretVersionsRequest, opts ...gax.CallOption) *SecretVersionIterator {
 	return c.internalClient.ListSecretVersions(ctx, req, opts...)
 }
 
-// GetSecretVersion gets metadata for a SecretVersion.
+// GetSecretVersion gets metadata for a
+// SecretVersion.
 //
 // projects/*/secrets/*/versions/latest is an alias to the most recently
 // created SecretVersion.
@@ -304,7 +308,8 @@ func (c *Client) GetSecretVersion(ctx context.Context, req *secretmanagerpb.GetS
 	return c.internalClient.GetSecretVersion(ctx, req, opts...)
 }
 
-// AccessSecretVersion accesses a SecretVersion. This call returns the secret data.
+// AccessSecretVersion accesses a SecretVersion.
+// This call returns the secret data.
 //
 // projects/*/secrets/*/versions/latest is an alias to the most recently
 // created SecretVersion.
@@ -314,7 +319,8 @@ func (c *Client) AccessSecretVersion(ctx context.Context, req *secretmanagerpb.A
 
 // DisableSecretVersion disables a SecretVersion.
 //
-// Sets the state of the SecretVersion to
+// Sets the state of the
+// SecretVersion to
 // DISABLED.
 func (c *Client) DisableSecretVersion(ctx context.Context, req *secretmanagerpb.DisableSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	return c.internalClient.DisableSecretVersion(ctx, req, opts...)
@@ -322,7 +328,8 @@ func (c *Client) DisableSecretVersion(ctx context.Context, req *secretmanagerpb.
 
 // EnableSecretVersion enables a SecretVersion.
 //
-// Sets the state of the SecretVersion to
+// Sets the state of the
+// SecretVersion to
 // ENABLED.
 func (c *Client) EnableSecretVersion(ctx context.Context, req *secretmanagerpb.EnableSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	return c.internalClient.EnableSecretVersion(ctx, req, opts...)
@@ -330,9 +337,10 @@ func (c *Client) EnableSecretVersion(ctx context.Context, req *secretmanagerpb.E
 
 // DestroySecretVersion destroys a SecretVersion.
 //
-// Sets the state of the SecretVersion to
-// DESTROYED and irrevocably destroys the
-// secret data.
+// Sets the state of the
+// SecretVersion to
+// DESTROYED
+// and irrevocably destroys the secret data.
 func (c *Client) DestroySecretVersion(ctx context.Context, req *secretmanagerpb.DestroySecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	return c.internalClient.DestroySecretVersion(ctx, req, opts...)
 }
@@ -340,8 +348,10 @@ func (c *Client) DestroySecretVersion(ctx context.Context, req *secretmanagerpb.
 // SetIamPolicy sets the access control policy on the specified secret. Replaces any
 // existing policy.
 //
-// Permissions on SecretVersions are enforced according
-// to the policy set on the associated Secret.
+// Permissions on
+// SecretVersions are enforced
+// according to the policy set on the associated
+// Secret.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	return c.internalClient.SetIamPolicy(ctx, req, opts...)
 }
@@ -933,7 +943,8 @@ func (c *restClient) ListSecrets(ctx context.Context, req *secretmanagerpb.ListS
 	return it
 }
 
-// CreateSecret creates a new Secret containing no SecretVersions.
+// CreateSecret creates a new Secret containing no
+// SecretVersions.
 func (c *restClient) CreateSecret(ctx context.Context, req *secretmanagerpb.CreateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSecret()
@@ -1001,8 +1012,9 @@ func (c *restClient) CreateSecret(ctx context.Context, req *secretmanagerpb.Crea
 	return resp, nil
 }
 
-// AddSecretVersion creates a new SecretVersion containing secret data and attaches
-// it to an existing Secret.
+// AddSecretVersion creates a new SecretVersion
+// containing secret data and attaches it to an existing
+// Secret.
 func (c *restClient) AddSecretVersion(ctx context.Context, req *secretmanagerpb.AddSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1128,7 +1140,8 @@ func (c *restClient) GetSecret(ctx context.Context, req *secretmanagerpb.GetSecr
 	return resp, nil
 }
 
-// UpdateSecret updates metadata of an existing Secret.
+// UpdateSecret updates metadata of an existing
+// Secret.
 func (c *restClient) UpdateSecret(ctx context.Context, req *secretmanagerpb.UpdateSecretRequest, opts ...gax.CallOption) (*secretmanagerpb.Secret, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetSecret()
@@ -1247,8 +1260,8 @@ func (c *restClient) DeleteSecret(ctx context.Context, req *secretmanagerpb.Dele
 	}, opts...)
 }
 
-// ListSecretVersions lists SecretVersions. This call does not return secret
-// data.
+// ListSecretVersions lists SecretVersions. This
+// call does not return secret data.
 func (c *restClient) ListSecretVersions(ctx context.Context, req *secretmanagerpb.ListSecretVersionsRequest, opts ...gax.CallOption) *SecretVersionIterator {
 	it := &SecretVersionIterator{}
 	req = proto.Clone(req).(*secretmanagerpb.ListSecretVersionsRequest)
@@ -1340,7 +1353,8 @@ func (c *restClient) ListSecretVersions(ctx context.Context, req *secretmanagerp
 	return it
 }
 
-// GetSecretVersion gets metadata for a SecretVersion.
+// GetSecretVersion gets metadata for a
+// SecretVersion.
 //
 // projects/*/secrets/*/versions/latest is an alias to the most recently
 // created SecretVersion.
@@ -1403,7 +1417,8 @@ func (c *restClient) GetSecretVersion(ctx context.Context, req *secretmanagerpb.
 	return resp, nil
 }
 
-// AccessSecretVersion accesses a SecretVersion. This call returns the secret data.
+// AccessSecretVersion accesses a SecretVersion.
+// This call returns the secret data.
 //
 // projects/*/secrets/*/versions/latest is an alias to the most recently
 // created SecretVersion.
@@ -1468,7 +1483,8 @@ func (c *restClient) AccessSecretVersion(ctx context.Context, req *secretmanager
 
 // DisableSecretVersion disables a SecretVersion.
 //
-// Sets the state of the SecretVersion to
+// Sets the state of the
+// SecretVersion to
 // DISABLED.
 func (c *restClient) DisableSecretVersion(ctx context.Context, req *secretmanagerpb.DisableSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1537,7 +1553,8 @@ func (c *restClient) DisableSecretVersion(ctx context.Context, req *secretmanage
 
 // EnableSecretVersion enables a SecretVersion.
 //
-// Sets the state of the SecretVersion to
+// Sets the state of the
+// SecretVersion to
 // ENABLED.
 func (c *restClient) EnableSecretVersion(ctx context.Context, req *secretmanagerpb.EnableSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -1606,9 +1623,10 @@ func (c *restClient) EnableSecretVersion(ctx context.Context, req *secretmanager
 
 // DestroySecretVersion destroys a SecretVersion.
 //
-// Sets the state of the SecretVersion to
-// DESTROYED and irrevocably destroys the
-// secret data.
+// Sets the state of the
+// SecretVersion to
+// DESTROYED
+// and irrevocably destroys the secret data.
 func (c *restClient) DestroySecretVersion(ctx context.Context, req *secretmanagerpb.DestroySecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1677,8 +1695,10 @@ func (c *restClient) DestroySecretVersion(ctx context.Context, req *secretmanage
 // SetIamPolicy sets the access control policy on the specified secret. Replaces any
 // existing policy.
 //
-// Permissions on SecretVersions are enforced according
-// to the policy set on the associated Secret.
+// Permissions on
+// SecretVersions are enforced
+// according to the policy set on the associated
+// Secret.
 func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
