@@ -1407,11 +1407,12 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					var ccSpan trace.Span
 					if iter.enableTracing {
 						c, ok := iter.activeSpans.Load(ackh.ackID)
-						if !ok {
+						if ok {
+							sc := c.(trace.Span)
+							otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
+						} else {
 							log.Printf("pubsub: subscriber concurrency control failed to load ackID(%s) from activeSpans map", ackh.ackID)
 						}
-						sc := c.(trace.Span)
-						otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
 						_, ccSpan = startSpan(otelCtx, ccSpanName, "")
 					}
 					// Use the original user defined ctx for this operation so the acquire operation can be cancelled.
