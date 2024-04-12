@@ -20,7 +20,6 @@ import (
 	"log"
 	"sync"
 
-	"cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/stats/view"
@@ -31,7 +30,6 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 	"go.opentelemetry.io/otel/trace"
-	"google.golang.org/protobuf/proto"
 )
 
 // The following keys are used to tag requests with a specific topic/subscription ID.
@@ -378,16 +376,10 @@ func startCreateSpan(ctx context.Context, m *Message, topicID string) (context.C
 }
 
 func getPublishSpanAttributes(dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
-	// TODO(hongalex): find way to incorporate pubsub client library version in attribute.
-	msgSize := proto.Size(&pubsubpb.PubsubMessage{
-		Data:        msg.Data,
-		Attributes:  msg.Attributes,
-		OrderingKey: msg.OrderingKey,
-	})
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingMessageID(msg.ID),
-			semconv.MessagingMessagePayloadSizeBytes(msgSize),
+			semconv.MessagingMessagePayloadSizeBytes(len(msg.Data)),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(attrs...),
@@ -398,15 +390,10 @@ func getPublishSpanAttributes(dst string, msg *Message, attrs ...attribute.KeyVa
 }
 
 func getSubscriberOpts(dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
-	msgSize := proto.Size(&pubsubpb.PubsubMessage{
-		Data:        msg.Data,
-		Attributes:  msg.Attributes,
-		OrderingKey: msg.OrderingKey,
-	})
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingMessageID(msg.ID),
-			semconv.MessagingMessagePayloadSizeBytes(msgSize),
+			semconv.MessagingMessagePayloadSizeBytes(len(msg.Data)),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(attrs...),

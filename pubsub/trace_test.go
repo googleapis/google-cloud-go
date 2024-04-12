@@ -24,7 +24,6 @@ import (
 	"golang.org/x/exp/slices"
 
 	"cloud.google.com/go/internal/testutil"
-	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal"
 	"cloud.google.com/go/pubsub/pstest"
 	"github.com/google/go-cmp/cmp"
@@ -40,7 +39,6 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
-	"google.golang.org/protobuf/proto"
 )
 
 func TestTrace_MessageCarrier(t *testing.T) {
@@ -87,12 +85,6 @@ func TestTrace_PublishSpan(t *testing.T) {
 		OrderingKey: "my-key",
 	}
 
-	msgSize := proto.Size(&pb.PubsubMessage{
-		Data:        m.Data,
-		Attributes:  m.Attributes,
-		OrderingKey: m.OrderingKey,
-	})
-
 	topicID := "t"
 
 	expectedSpans := tracetest.SpanStubs{
@@ -105,7 +97,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 				attribute.String(orderingAttribute, m.OrderingKey),
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
-				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+				semconv.MessagingMessagePayloadSizeBytesKey.Int(len(m.Data)),
 				semconv.MessagingSystemKey.String(pubsubSemConvName),
 			},
 			Events: []sdktrace.Event{
@@ -197,12 +189,6 @@ func TestTrace_PublishSpanError(t *testing.T) {
 		OrderingKey: "m",
 	}
 
-	msgSize := proto.Size(&pb.PubsubMessage{
-		Data:        m.Data,
-		Attributes:  m.Attributes,
-		OrderingKey: m.OrderingKey,
-	})
-
 	topicID := "t"
 
 	topic, err := c.CreateTopic(ctx, topicID)
@@ -219,7 +205,7 @@ func TestTrace_PublishSpanError(t *testing.T) {
 			t.Fatal("expected err, got nil")
 		}
 
-		want := getPublishSpanStubsWithError(topicID, m, msgSize, errTopicOrderingNotEnabled)
+		want := getPublishSpanStubsWithError(topicID, m, errTopicOrderingNotEnabled)
 
 		got := getSpans(e)
 		opts := []cmp.Option{
@@ -244,7 +230,7 @@ func TestTrace_PublishSpanError(t *testing.T) {
 		}
 
 		got := getSpans(e)
-		want := getPublishSpanStubsWithError(topicID, m, msgSize, ErrTopicStopped)
+		want := getPublishSpanStubsWithError(topicID, m, ErrTopicStopped)
 		opts := []cmp.Option{
 			cmp.Comparer(spanStubComparer),
 		}
@@ -301,12 +287,6 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 		Data:        []byte("test"),
 		OrderingKey: "my-key",
 	}
-
-	msgSize := proto.Size(&pb.PubsubMessage{
-		Data:        m.Data,
-		Attributes:  m.Attributes,
-		OrderingKey: m.OrderingKey,
-	})
 
 	topicID := "t"
 
@@ -380,7 +360,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				attribute.String(ackIDAttribute, "m0"),
 				attribute.String(orderingAttribute, m.OrderingKey),
 				attribute.String(resultAttribute, resultAcked),
-				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+				semconv.MessagingMessagePayloadSizeBytesKey.Int(len(m.Data)),
 				semconv.MessagingSystem(pubsubSemConvName),
 			},
 			Events: []sdktrace.Event{
@@ -586,7 +566,7 @@ func compareSpans(t *testing.T, got, want tracetest.SpanStubs) {
 	}
 }
 
-func getPublishSpanStubsWithError(topicID string, m *Message, msgSize int, err error) tracetest.SpanStubs {
+func getPublishSpanStubsWithError(topicID string, m *Message, err error) tracetest.SpanStubs {
 	return tracetest.SpanStubs{
 		tracetest.SpanStub{
 			Name:     fmt.Sprintf("%s %s", topicID, createSpanName),
@@ -595,7 +575,7 @@ func getPublishSpanStubsWithError(topicID string, m *Message, msgSize int, err e
 				semconv.CodeFunction("Publish"),
 				semconv.MessagingDestinationName(topicID),
 				semconv.MessagingMessageIDKey.String(""),
-				semconv.MessagingMessagePayloadSizeBytesKey.Int(msgSize),
+				semconv.MessagingMessagePayloadSizeBytesKey.Int(len(m.Data)),
 				attribute.String(orderingAttribute, m.OrderingKey),
 				semconv.MessagingSystem(pubsubSemConvName),
 			},
