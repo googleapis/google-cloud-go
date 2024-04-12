@@ -1171,6 +1171,7 @@ type TestStruct struct {
 	DateTime  civil.DateTime
 	Numeric   *big.Rat
 	Geography string
+	RangeDate *RangeValue
 
 	StringArray    []string
 	IntegerArray   []int64
@@ -1196,6 +1197,12 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	schema, err := InferSchema(TestStruct{})
+	// Finish declaring the ambigous range element type.
+	if schema[11].Type != RangeFieldType {
+		t.Fatalf("mismatch in expected RANGE element in schema")
+	} else {
+		schema[11].RangeElementType = &RangeElementType{Type: DateFieldType}
+	}
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1214,6 +1221,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 	dtm2 := civil.DateTime{Date: d2, Time: tm2}
 	g := "POINT(-122.350220 47.649154)"
 	g2 := "POINT(-122.0836791 37.421827)"
+	range_d := &RangeValue{Start: civil.Date{Year: 2024, Month: 04, Day: 11}}
 
 	// Populate the table.
 	ins := table.Inserter()
@@ -1230,6 +1238,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			dtm,
 			big.NewRat(57, 100),
 			g,
+			range_d,
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},

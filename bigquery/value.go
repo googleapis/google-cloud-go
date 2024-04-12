@@ -765,6 +765,8 @@ func toUploadValueReflect(v reflect.Value, fs *FieldSchema) interface{} {
 		return formatUploadValue(v, fs, func(v reflect.Value) string {
 			return IntervalString(v.Interface().(*IntervalValue))
 		})
+	case RangeFieldType:
+		return v.Interface()
 	default:
 		if !fs.Repeated || v.Len() > 0 {
 			return v.Interface()
@@ -882,8 +884,8 @@ func convertRow(r *bq.TableRow, schema Schema) ([]Value, error) {
 		var v Value
 		var err error
 		if fs.Type == RangeFieldType {
-			// interception range conversion here, as we don't propagate range more deeply.
-			if fs.RangeElementType == nil || fs.RangeElementType.Type == "" {
+			// interception range conversion here, as we don't propagate range element type more deeply.
+			if fs.RangeElementType == nil {
 				return nil, errors.New("bigquery: incomplete range schema for conversion")
 			}
 			v, err = convertRangeValue(cell.V.(string), fs.RangeElementType.Type)
@@ -1008,6 +1010,16 @@ var unboundedRangeSentinel = "UNBOUNDED"
 // convertRangeValue aids in parsing the compound RANGE api data representation.
 // The format for a range value is: "[startval, endval)"
 func convertRangeValue(val string, elementType FieldType) (Value, error) {
+	supported := false
+	for _, t := range []FieldType{DateFieldType, TimeFieldType, TimestampFieldType} {
+		if elementType == t {
+			supported = true
+			break
+		}
+	}
+	if !supported {
+		return nil, fmt.Errorf("bigquery: invalid RANGE element type %q", elementType)
+	}
 	if !strings.HasPrefix(val, "[") || !strings.HasSuffix(val, ")") {
 		return nil, fmt.Errorf("bigquery: invalid RANGE value %q", val)
 	}

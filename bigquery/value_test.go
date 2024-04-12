@@ -74,6 +74,7 @@ func TestConvertTime(t *testing.T) {
 		{Type: DateFieldType},
 		{Type: TimeFieldType},
 		{Type: DateTimeFieldType},
+		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
 	}
 	ts := testTimestamp.Round(time.Millisecond)
 	row := &bq.TableRow{
@@ -82,13 +83,14 @@ func TestConvertTime(t *testing.T) {
 			{V: testDate.String()},
 			{V: testTime.String()},
 			{V: testDateTime.String()},
+			{V: fmt.Sprintf("[UNBOUNDED, %d)", ts.UnixMicro())},
 		},
 	}
 	got, err := convertRow(row, schema)
 	if err != nil {
 		t.Fatalf("error converting: %v", err)
 	}
-	want := []Value{ts, testDate, testTime, testDateTime}
+	want := []Value{ts, testDate, testTime, testDateTime, &RangeValue{End: ts}}
 	for i, g := range got {
 		w := want[i]
 		if !testutil.Equal(g, w) {
