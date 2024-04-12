@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -205,7 +206,7 @@ func errDecodeColumn(i int, err error) error {
 		return nil
 	}
 	var se *Error
-	if !errorAs(err, &se) {
+	if !errors.As(err, &se) {
 		return spannerErrorf(codes.InvalidArgument, "failed to decode column %v, error = <%v>", i, err)
 	}
 	se.decorate(fmt.Sprintf("failed to decode column %v", i))
