@@ -177,8 +177,12 @@ The mapping between Spanner types and Go types internal to this package are:
 	TIMESTAMP	time.Time (location set to UTC)
 	ARRAY<T>	[]interface{}
 	STRUCT		TODO
+	JSON            jsonValue
 */
 type row []interface{}
+
+// jsonValue is the internal representation of a JSON value field.
+type jsonValue string
 
 func (r row) copyDataElem(index int) interface{} {
 	v := r[index]
@@ -1136,6 +1140,12 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 				return nil, fmt.Errorf("bad TIMESTAMP string %q: %w", s, err)
 			}
 			return t, nil
+		}
+	case spansql.JSON:
+		// The Spanner protocol encodes JSON fields as strings.
+		sv, ok := v.Kind.(*structpb.Value_StringValue)
+		if ok {
+			return jsonValue(sv.StringValue), nil
 		}
 	}
 	return nil, fmt.Errorf("unsupported inserting value kind %T into column of type %s", v.Kind, t.SQL())
