@@ -27,6 +27,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/stretchr/testify/assert"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -137,5 +138,97 @@ func TestDatabaseAdminStartBackupOperationError(t *testing.T) {
 	}
 	if st.Code() != wantErr {
 		t.Fatalf("got error code %q, want %q", st.Code(), wantErr)
+	}
+}
+
+func TestBackupExpirationTime(t *testing.T) {
+	var nilTime time.Time
+	instanceName := "projects/backup-test-project/instances/test-instance"
+	databasePath := instanceName + "/databases/test-database"
+
+	tests := []struct {
+		name		 string
+		instanceName string
+		backupID 	 string
+		databasePath string
+		backupPath   string
+		expireTime   time.Time
+		expectedRequest *databasepb.CreateBackupRequest
+		expectedResponse *databasepb.Backup
+	} {
+		{
+			name: "Valid Expire Time Test",
+			backupID: "valid-expire-time-test-backup",
+			instanceName: instanceName,
+			databasePath: databasePath,
+			backupPath: instanceName + "/backups" + "valid-expire-time-test-backup",
+			expireTime: time.Unix(221688000, 500),
+			expectedRequest: &databasepb.CreateBackupRequest{
+				Parent:   instanceName,
+				BackupId: "valid-expire-time-test-backup",
+				Backup: &databasepb.Backup{
+					Database: databasePath,
+					ExpireTime: &timestamp.Timestamp{
+						Seconds: 221688000,
+						Nanos:   500,
+					},
+				},
+			},
+			expectedResponse: &databasepb.Backup{
+				Name: instanceName + "/backups" + "valid-expire-time-test-backup",
+				Database: databasePath,
+			},
+		},
+		{
+			name: "Null Expire Time Test",
+			backupID: "null-expire-time-test-backup",
+			instanceName: instanceName,
+			databasePath: databasePath,
+			expireTime: nilTime,
+			expectedRequest: &databasepb.CreateBackupRequest{
+				Parent:   instanceName,
+				BackupId: "null-expire-time-test-backup",
+				Backup: &databasepb.Backup{
+					Database: databasePath,
+				},
+			},
+			expectedResponse: &databasepb.Backup{
+				Name: instanceName + "/backups" + "null-expire-time-test-backup",
+				Database: databasePath,
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ctx := context.Background()
+			mockDatabaseAdmin.err = nil
+			mockDatabaseAdmin.reqs = nil
+			any, err := ptypes.MarshalAny(test.expectedResponse)
+			if err != nil {
+				t.Fatal(err)
+			}
+			mockDatabaseAdmin.resps = append(mockDatabaseAdmin.resps[:0], &longrunningpb.Operation{
+				Name:   "longrunning-test",
+				Done:   true,
+				Result: &longrunningpb.Operation_Response{Response: any},
+			})
+
+			c, err := NewDatabaseAdminClient(ctx, clientOpt)
+			assert.NoError(t, err)
+
+			backupOperation, err := c.StartBackupOperation(ctx, test.backupID, test.databasePath, test.expireTime)
+			assert.NoError(t, err)
+
+			resp, err := backupOperation.Wait(ctx)
+			assert.NoError(t, err)
+
+			if want, got := test.expectedRequest, mockDatabaseAdmin.reqs[0]; !proto.Equal(want, got) {
+				t.Errorf("got request %q, want %q", got, want)
+			}
+			if want, got := test.expectedResponse, resp; !proto.Equal(want, got) {
+				t.Errorf("got response %q, want %q)", got, want)
+			}
+		})
 	}
 }
