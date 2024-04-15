@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/auth"
@@ -32,6 +33,10 @@ import (
 const (
 	timeoutMinimum = 5 * time.Second
 	timeoutMaximum = 120 * time.Second
+
+	universeDomainPlaceholder = "UNIVERSE_DOMAIN"
+	defaultTokenURL           = "https://sts.UNIVERSE_DOMAIN/v1/token"
+	defaultUniverseDomain     = "googleapis.com"
 )
 
 var (
@@ -176,12 +181,25 @@ func (o *Options) validate() error {
 	return nil
 }
 
+// resolveTokenURL sets the default STS token endpoint with the configured
+// universe domain.
+func (o *Options) resolveTokenURL() {
+	if o.TokenURL != "" {
+		return
+	} else if o.UniverseDomain != "" {
+		o.TokenURL = strings.Replace(defaultTokenURL, universeDomainPlaceholder, o.UniverseDomain, 1)
+	} else {
+		o.TokenURL = strings.Replace(defaultTokenURL, universeDomainPlaceholder, defaultUniverseDomain, 1)
+	}
+}
+
 // NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider]
 // configured with the provided options.
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if err := opts.validate(); err != nil {
 		return nil, err
 	}
+	opts.resolveTokenURL()
 	stp, err := newSubjectTokenProvider(opts)
 	if err != nil {
 		return nil, err
@@ -282,7 +300,6 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 // subjectTokenProvider
 func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 	reqOpts := &RequestOptions{Audience: o.Audience, SubjectTokenType: o.SubjectTokenType}
-
 	if o.AwsSecurityCredentialsProvider != nil {
 		return &awsSubjectProvider{
 			securityCredentialsProvider: o.AwsSecurityCredentialsProvider,

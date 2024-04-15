@@ -26,10 +26,10 @@ import (
 
 	lrpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func newTestAdminClient(t *testing.T) *AdminClient {

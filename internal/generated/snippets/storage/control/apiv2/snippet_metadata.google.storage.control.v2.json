@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/storage/control/apiv2",
-    "version": "1.39.1",
+    "version": "1.40.0",
     "language": "GO",
     "apis": [
       {
@@ -42,6 +42,52 @@
         "method": {
           "shortName": "CreateFolder",
           "fullName": "google.storage.control.v2.StorageControl.CreateFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_CreateManagedFolder_sync",
+      "title": "storage CreateManagedFolder Sample",
+      "description": "CreateManagedFolder creates a new managed folder.",
+      "file": "StorageControlClient/CreateManagedFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateManagedFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.CreateManagedFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.CreateManagedFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.ManagedFolder",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "CreateManagedFolder",
+          "fullName": "google.storage.control.v2.StorageControl.CreateManagedFolder",
           "service": {
             "shortName": "StorageControl",
             "fullName": "google.storage.control.v2.StorageControl"
@@ -103,6 +149,51 @@
       ]
     },
     {
+      "regionTag": "storage_v2_generated_StorageControl_DeleteManagedFolder_sync",
+      "title": "storage DeleteManagedFolder Sample",
+      "description": "DeleteManagedFolder permanently deletes an empty managed folder.",
+      "file": "StorageControlClient/DeleteManagedFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteManagedFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.DeleteManagedFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.DeleteManagedFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "DeleteManagedFolder",
+          "fullName": "google.storage.control.v2.StorageControl.DeleteManagedFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "storage_v2_generated_StorageControl_GetFolder_sync",
       "title": "storage GetFolder Sample",
       "description": "GetFolder returns metadata for the specified folder.",
@@ -133,6 +224,52 @@
         "method": {
           "shortName": "GetFolder",
           "fullName": "google.storage.control.v2.StorageControl.GetFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_GetManagedFolder_sync",
+      "title": "storage GetManagedFolder Sample",
+      "description": "GetManagedFolder returns metadata for the specified managed folder.",
+      "file": "StorageControlClient/GetManagedFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetManagedFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.GetManagedFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.GetManagedFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.ManagedFolder",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "GetManagedFolder",
+          "fullName": "google.storage.control.v2.StorageControl.GetManagedFolder",
           "service": {
             "shortName": "StorageControl",
             "fullName": "google.storage.control.v2.StorageControl"
@@ -235,7 +372,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_ListManagedFolders_sync",
+      "title": "storage ListManagedFolders Sample",
+      "description": "ListManagedFolders retrieves a list of managed folders for a given bucket.",
+      "file": "StorageControlClient/ListManagedFolders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListManagedFolders",
+        "fullName": "google.storage.control.v2.StorageControlClient.ListManagedFolders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.ListManagedFoldersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ManagedFolderIterator",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "ListManagedFolders",
+          "fullName": "google.storage.control.v2.StorageControl.ListManagedFolders",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]

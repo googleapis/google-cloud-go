@@ -30,7 +30,6 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
-	"io/ioutil"
 	"log"
 	"math"
 	"math/rand"
@@ -289,6 +288,27 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 			test(t, ctx, bucket, prefix, client)
 		})
 	}
+}
+
+// Use two different reading funcs for some tests to cover both Read and WriteTo.
+type readCase struct {
+	desc     string
+	readFunc (func(io.Reader) ([]byte, error))
+}
+
+var readCases = []readCase{
+	{
+		desc:     "Read",
+		readFunc: io.ReadAll,
+	},
+	{
+		desc: "WriteTo",
+		readFunc: func(r io.Reader) ([]byte, error) {
+			b := new(bytes.Buffer)
+			_, err := io.Copy(b, r)
+			return b.Bytes(), err
+		},
+	},
 }
 
 func TestIntegration_BucketCreateDelete(t *testing.T) {
@@ -602,6 +622,15 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
 		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
 			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+		}
+
+		// Empty update should succeed without changing the bucket.
+		gotAttrs, err := b.Update(ctx, BucketAttrsToUpdate{})
+		if err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if !testutil.Equal(attrs, gotAttrs) {
+			t.Fatalf("empty update: got %v, want %v", gotAttrs, attrs)
 		}
 	})
 }
@@ -996,24 +1025,32 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 
 		for _, last5 := range last5s {
 			t.Run(last5.name, func(t *testing.T) {
-				wantBuf := contents[len(contents)-5:]
-				r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
-				if err != nil {
-					t.Fatalf("Failed to make range read: %v", err)
-				}
-				defer r.Close()
+				// Test Read and WriteTo.
+				for _, c := range readCases {
+					t.Run(c.desc, func(t *testing.T) {
+						wantBuf := contents[len(contents)-5:]
+						r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
+						if err != nil {
+							t.Fatalf("Failed to make range read: %v", err)
+						}
+						defer r.Close()
 
-				if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
-					t.Errorf("StartOffset mismatch, got %d want %d", got, want)
+						if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
+							t.Errorf("StartOffset mismatch, got %d want %d", got, want)
+						}
+
+						gotBuf, err := c.readFunc(r)
+						if err != nil {
+							t.Fatalf("reading object: %v", err)
+						}
+						if got, want := len(gotBuf), 5; got != want {
+							t.Errorf("Body length mismatch, got %d want %d", got, want)
+						} else if diff := cmp.Diff(string(gotBuf), string(wantBuf)); diff != "" {
+							t.Errorf("Content read does not match - got(-),want(+):\n%s", diff)
+						}
+					})
 				}
 
-				gotBuf := &bytes.Buffer{}
-				nr, _ := io.Copy(gotBuf, r)
-				if got, want := nr, int64(5); got != want {
-					t.Errorf("Body length mismatch, got %d want %d", got, want)
-				} else if diff := cmp.Diff(gotBuf.String(), string(wantBuf)); diff != "" {
-					t.Errorf("Content read does not match - got(-),want(+):\n%s", diff)
-				}
 			})
 		}
 	})
@@ -1582,6 +1619,17 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
 		}
+
+		// Test empty update. Most fields should be unchanged, but updating will
+		// increase the metageneration and update time.
+		wantAttrs := updated
+		gotAttrs, err := o.Update(ctx, ObjectAttrsToUpdate{})
+		if err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if diff := testutil.Diff(gotAttrs, wantAttrs, cmpopts.IgnoreFields(ObjectAttrs{}, "Etag", "Metageneration", "Updated")); diff != "" {
+			t.Errorf("empty update: got=-, want=+:\n%s", diff)
+		}
 	})
 }
 
@@ -1664,9 +1712,9 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 				t.Fatalf("new reader: %v", err)
 			}
 
-			slurp, err := ioutil.ReadAll(r)
+			slurp, err := io.ReadAll(r)
 			if err != nil {
-				t.Fatalf("ioutil.ReadAll: %v", err)
+				t.Fatalf("io.ReadAll: %v", err)
 			}
 			defer r.Close()
 			if !bytes.Equal(slurp, wantContents) {
@@ -1877,7 +1925,7 @@ func TestIntegration_Encoding(t *testing.T) {
 		if err != nil {
 			t.Fatalf("NewReader(gzip-test): %v", err)
 		}
-		n, err := io.Copy(ioutil.Discard, r)
+		n, err := io.Copy(io.Discard, r)
 		if err != nil {
 			t.Errorf("io.Copy, download: %v", err)
 		}
@@ -2567,8 +2615,6 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 func TestIntegration_ZeroSizedObject(t *testing.T) {
 	t.Parallel()
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
-		h := testHelper{t}
-
 		obj := client.Bucket(bucket).Object("zero")
 
 		// Check writing it works as expected.
@@ -2578,10 +2624,21 @@ func TestIntegration_ZeroSizedObject(t *testing.T) {
 		}
 		defer obj.Delete(ctx)
 
-		// Check we can read it too.
-		body := h.mustRead(obj)
-		if len(body) != 0 {
-			t.Errorf("Body is %v, want empty []byte{}", body)
+		// Check we can read it too. Test both with WriteTo and Read.
+		for _, c := range readCases {
+			t.Run(c.desc, func(t *testing.T) {
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader: %v", err)
+				}
+				body, err := c.readFunc(r)
+				if err != nil {
+					t.Fatalf("reading object: %v", err)
+				}
+				if len(body) != 0 {
+					t.Errorf("Body is %v, want empty []byte{}", body)
+				}
+			})
 		}
 	})
 }
@@ -3587,25 +3644,32 @@ func TestIntegration_ReadCRC(t *testing.T) {
 				wantCheck:      false,
 			},
 		} {
-			obj := test.obj.ReadCompressed(test.readCompressed)
-			r, err := obj.NewRangeReader(ctx, test.offset, test.length)
-			if err != nil {
-				if test.wantErr {
-					continue
+			t.Run(test.desc, func(t *testing.T) {
+				// Test both Read and WriteTo.
+				for _, c := range readCases {
+					t.Run(c.desc, func(t *testing.T) {
+						obj := test.obj.ReadCompressed(test.readCompressed)
+						r, err := obj.NewRangeReader(ctx, test.offset, test.length)
+						if err != nil {
+							if test.wantErr {
+								return
+							}
+							t.Fatalf("%s: %v", test.desc, err)
+						}
+						if got, want := r.checkCRC, test.wantCheck; got != want {
+							t.Errorf("%s, checkCRC: got %t, want %t", test.desc, got, want)
+						}
+						_, err = c.readFunc(r)
+						_ = r.Close()
+						if err != nil {
+							t.Fatalf("%s: %v", test.desc, err)
+						}
+					})
+
 				}
-				t.Fatalf("%s: %v", test.desc, err)
-			}
-			if got, want := r.checkCRC, test.wantCheck; got != want {
-				t.Errorf("%s, checkCRC: got %t, want %t", test.desc, got, want)
-			}
-			_, err = ioutil.ReadAll(r)
-			_ = r.Close()
-			if err != nil {
-				t.Fatalf("%s: %v", test.desc, err)
-			}
+			})
 		}
 	})
-
 }
 
 func TestIntegration_CancelWrite(t *testing.T) {
@@ -3702,8 +3766,7 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 				bkt := client.Bucket(prefix + uidSpace.New())
 				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{CORS: initialSettings})
 				defer h.mustDeleteBucket(bkt)
-				// Set VersioningEnabled so that we don't send an empty update/patch request, which is invalid for gRPC
-				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
 				attrs := h.mustBucketAttrs(bkt)
 				if diff := testutil.Diff(attrs.CORS, test.want); diff != "" {
 					t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
@@ -3932,8 +3995,7 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 				bkt := client.Bucket(prefix + uidSpace.New())
 				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
 				defer h.mustDeleteBucket(bkt)
-				// Set VersioningEnabled so that we don't send an empty update request, which is invalid for gRPC
-				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
 
 				attrs := h.mustBucketAttrs(bkt)
 				if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
@@ -4220,6 +4282,133 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 	})
 }
 
+func TestIntegration_SoftDelete(t *testing.T) {
+	multiTransportTest(skipJSONReads(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		testStart := time.Now()
+
+		policy := &SoftDeletePolicy{
+			RetentionDuration: time.Hour * 24 * 8,
+		}
+
+		b := client.Bucket(prefix + uidSpace.New())
+
+		// Create bucket with soft delete policy.
+		if err := b.Create(ctx, testutil.ProjID(), &BucketAttrs{SoftDeletePolicy: policy}); err != nil {
+			t.Fatalf("error creating bucket with soft delete policy set: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(b) })
+
+		// Get bucket's soft delete policy and confirm accuracy.
+		attrs, err := b.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("b.Attrs(%q): %v", b.name, err)
+		}
+
+		got := attrs.SoftDeletePolicy
+		if got == nil {
+			t.Fatal("got nil soft delete policy")
+		}
+		if got.RetentionDuration != policy.RetentionDuration {
+			t.Fatalf("mismatching retention duration; got soft delete policy: %+v, expected: %+v", got, policy)
+		}
+		if got.EffectiveTime.Before(testStart) {
+			t.Fatalf("effective time of soft delete policy should not be in the past, got: %v, test start: %v", got.EffectiveTime, testStart.UTC())
+		}
+
+		// Update the soft delete policy.
+		policy.RetentionDuration = time.Hour * 24 * 9
+
+		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
+		if err != nil {
+			t.Fatalf("b.Update: %v", err)
+		}
+
+		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
+			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+		}
+
+		// Create 2 objects and delete one of them.
+		deletedObject := b.Object("soft-delete" + uidSpaceObjects.New())
+		liveObject := b.Object("not-soft-delete" + uidSpaceObjects.New())
+
+		h.mustWrite(deletedObject.NewWriter(ctx), []byte("soft-deleted"))
+		h.mustWrite(liveObject.NewWriter(ctx), []byte("soft-delete"))
+		t.Cleanup(func() {
+			h.mustDeleteObject(liveObject)
+			h.mustDeleteObject(deletedObject)
+		})
+
+		h.mustDeleteObject(deletedObject)
+
+		var gen int64
+		// List soft deleted objects.
+		it := b.Objects(ctx, &Query{SoftDeleted: true})
+		var gotNames []string
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			gotNames = append(gotNames, attrs.Name)
+
+			// Get the generation here as the test will fail if there is more than one object
+			gen = attrs.Generation
+		}
+		if len(gotNames) != 1 || gotNames[0] != deletedObject.ObjectName() {
+			t.Fatalf("list soft deleted objects; got: %v, expected only one object named: %s", gotNames, deletedObject.ObjectName())
+		}
+
+		// List live objects.
+		gotNames = []string{}
+		it = b.Objects(ctx, nil)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			gotNames = append(gotNames, attrs.Name)
+		}
+		if len(gotNames) != 1 || gotNames[0] != liveObject.ObjectName() {
+			t.Fatalf("list objects that are not soft deleted; got: %v, expected only one object named: %s", gotNames, liveObject.ObjectName())
+		}
+
+		// Get a soft deleted object and check soft and hard delete times.
+		oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
+		if err != nil {
+			t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
+		}
+		if oAttrs.SoftDeleteTime.Before(testStart) {
+			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
+		}
+		if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
+			t.Fatalf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
+		}
+
+		// Restore a soft deleted object.
+		_, err = deletedObject.Generation(gen).Restore(ctx, &RestoreOptions{CopySourceACL: true})
+		if err != nil {
+			t.Fatalf("Object(deletedObject).Restore: %v", err)
+		}
+
+		// Update the soft delete policy to remove it.
+		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: &SoftDeletePolicy{}})
+		if err != nil {
+			t.Fatalf("b.Update: %v", err)
+		}
+
+		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, time.Duration(0); got != expect {
+			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+		}
+	})
+}
+
 func TestIntegration_KMS(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket, prefix string, client *Client) {
 		h := testHelper{t}
@@ -4472,49 +4661,57 @@ func TestIntegration_Reader(t *testing.T) {
 			}
 			contents[obj] = c
 		}
+
 		// Test Reader. Cache control and last-modified are tested separately, as
 		// the JSON and XML APIs return different values for these.
 		for _, obj := range objects {
-			rc, err := b.Object(obj).NewReader(ctx)
-			if err != nil {
-				t.Errorf("Can't create a reader for %v, errored with %v", obj, err)
-				continue
-			}
-			if !rc.checkCRC {
-				t.Errorf("%v: not checking CRC", obj)
-			}
+			t.Run(obj, func(t *testing.T) {
+				// Test both Read and WriteTo.
+				for _, c := range readCases {
+					t.Run(c.desc, func(t *testing.T) {
+						rc, err := b.Object(obj).NewReader(ctx)
+						if err != nil {
+							t.Fatalf("Can't create a reader for %v, errored with %v", obj, err)
+						}
+						if !rc.checkCRC {
+							t.Errorf("%v: not checking CRC", obj)
+						}
 
-			slurp, err := ioutil.ReadAll(rc)
-			if err != nil {
-				t.Errorf("Can't ReadAll object %v, errored with %v", obj, err)
-			}
-			if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
-				t.Errorf("Contents (%q) = %q; want %q", obj, got, want)
-			}
-			if got, want := rc.Size(), len(contents[obj]); got != int64(want) {
-				t.Errorf("Size (%q) = %d; want %d", obj, got, want)
-			}
-			if got, want := rc.ContentType(), "text/plain"; got != want {
-				t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
-			}
-			rc.Close()
+						slurp, err := c.readFunc(rc)
+						if err != nil {
+							t.Errorf("Can't read object %v, errored with %v", obj, err)
+						}
+						if got, want := slurp, contents[obj]; !bytes.Equal(got, want) {
+							t.Errorf("Contents (%q) = %q; want %q", obj, got, want)
+						}
+						if got, want := rc.Size(), len(contents[obj]); got != int64(want) {
+							t.Errorf("Size (%q) = %d; want %d", obj, got, want)
+						}
+						if got, want := rc.ContentType(), "text/plain"; got != want {
+							t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
+						}
+						rc.Close()
 
-			// Check early close.
-			buf := make([]byte, 1)
-			rc, err = b.Object(obj).NewReader(ctx)
-			if err != nil {
-				t.Fatalf("%v: %v", obj, err)
-			}
-			_, err = rc.Read(buf)
-			if err != nil {
-				t.Fatalf("%v: %v", obj, err)
-			}
-			if got, want := buf, contents[obj][:1]; !bytes.Equal(got, want) {
-				t.Errorf("Contents[0] (%q) = %q; want %q", obj, got, want)
-			}
-			if err := rc.Close(); err != nil {
-				t.Errorf("%v Close: %v", obj, err)
-			}
+						// Check early close.
+						buf := make([]byte, 1)
+						rc, err = b.Object(obj).NewReader(ctx)
+						if err != nil {
+							t.Fatalf("%v: %v", obj, err)
+						}
+						_, err = rc.Read(buf)
+						if err != nil {
+							t.Fatalf("%v: %v", obj, err)
+						}
+						if got, want := buf, contents[obj][:1]; !bytes.Equal(got, want) {
+							t.Errorf("Contents[0] (%q) = %q; want %q", obj, got, want)
+						}
+						if err := rc.Close(); err != nil {
+							t.Errorf("%v Close: %v", obj, err)
+						}
+					})
+				}
+
+			})
 		}
 
 		obj := objects[0]
@@ -4536,40 +4733,44 @@ func TestIntegration_Reader(t *testing.T) {
 			{"-object length offset", -objlen, -1, objlen},
 			{"-half of object length offset", -(objlen / 2), -1, objlen / 2},
 		} {
-			rc, err := b.Object(obj).NewRangeReader(ctx, r.offset, r.length)
-			if err != nil {
-				t.Errorf("%+v: Can't create a range reader for %v, errored with %v", r.desc, obj, err)
-				continue
-			}
-			if rc.Size() != objlen {
-				t.Errorf("%+v: Reader has a content-size of %d, want %d", r.desc, rc.Size(), objlen)
-			}
-			if rc.Remain() != r.want {
-				t.Errorf("%+v: Reader's available bytes reported as %d, want %d", r.desc, rc.Remain(), r.want)
-			}
-			slurp, err := ioutil.ReadAll(rc)
-			if err != nil {
-				t.Errorf("%+v: can't ReadAll object %v, errored with %v", r, obj, err)
-				continue
-			}
-			if len(slurp) != int(r.want) {
-				t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", r.desc, r.offset, r.length, len(slurp), r.want)
-				continue
-			}
+			t.Run(r.desc, func(t *testing.T) {
 
-			switch {
-			case r.offset < 0: // The case of reading the last N bytes.
-				start := objlen + r.offset
-				if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
-					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
-				}
+				for _, c := range readCases {
+					t.Run(c.desc, func(t *testing.T) {
+						rc, err := b.Object(obj).NewRangeReader(ctx, r.offset, r.length)
+						if err != nil {
+							t.Fatalf("%+v: Can't create a range reader for %v, errored with %v", r.desc, obj, err)
+						}
+						if rc.Size() != objlen {
+							t.Errorf("%+v: Reader has a content-size of %d, want %d", r.desc, rc.Size(), objlen)
+						}
+						if rc.Remain() != r.want {
+							t.Errorf("%+v: Reader's available bytes reported as %d, want %d", r.desc, rc.Remain(), r.want)
+						}
+						slurp, err := c.readFunc(rc)
+						if err != nil {
+							t.Fatalf("%+v: can't read object %v, errored with %v", r, obj, err)
+						}
+						if len(slurp) != int(r.want) {
+							t.Fatalf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", r.desc, r.offset, r.length, len(slurp), r.want)
+						}
 
-			default:
-				if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
-					t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+						switch {
+						case r.offset < 0: // The case of reading the last N bytes.
+							start := objlen + r.offset
+							if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
+								t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+							}
+
+						default:
+							if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
+								t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+							}
+						}
+						rc.Close()
+					})
 				}
-			}
-			rc.Close()
+			})
 		}
 
 		objName := objects[0]
@@ -4902,33 +5103,38 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 			t.Fatalf("ContentType mismtach:\nGot:  %q\nWant: %q", g, w)
 		}
 
-		rWhole, err := obj.NewReader(ctx)
-		if err != nil {
-			t.Fatalf("Failed to create wholesome reader: %v", err)
-		}
-		blobWhole, err := ioutil.ReadAll(rWhole)
-		rWhole.Close()
-		if err != nil {
-			t.Fatalf("Failed to read the whole body: %v", err)
-		}
-		if g, w := blobWhole, original; !bytes.Equal(g, w) {
-			t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
-		}
+		// Test both Read and WriteTo.
+		for _, c := range readCases {
+			t.Run(c.desc, func(t *testing.T) {
+				rWhole, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("Failed to create wholesome reader: %v", err)
+				}
+				blobWhole, err := c.readFunc(rWhole)
+				rWhole.Close()
+				if err != nil {
+					t.Fatalf("Failed to read the whole body: %v", err)
+				}
+				if g, w := blobWhole, original; !bytes.Equal(g, w) {
+					t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+				}
 
-		// Now try a range read, which should return the whole body anyways since
-		// for decompressive transcoding, range requests ARE IGNORED by Cloud Storage.
-		r2kBTo3kB, err := obj.NewRangeReader(ctx, 2<<10, 3<<10)
-		if err != nil {
-			t.Fatalf("Failed to create range reader: %v", err)
-		}
-		blob2kBTo3kB, err := ioutil.ReadAll(r2kBTo3kB)
-		r2kBTo3kB.Close()
-		if err != nil {
-			t.Fatalf("Failed to read with the 2kB to 3kB range request: %v", err)
-		}
-		// The ENTIRE body MUST be served back regardless of the requested range.
-		if g, w := blob2kBTo3kB, original; !bytes.Equal(g, w) {
-			t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+				// Now try a range read, which should return the whole body anyways since
+				// for decompressive transcoding, range requests ARE IGNORED by Cloud Storage.
+				r2kBTo3kB, err := obj.NewRangeReader(ctx, 2<<10, 3<<10)
+				if err != nil {
+					t.Fatalf("Failed to create range reader: %v", err)
+				}
+				blob2kBTo3kB, err := c.readFunc(r2kBTo3kB)
+				r2kBTo3kB.Close()
+				if err != nil {
+					t.Fatalf("Failed to read with the 2kB to 3kB range request: %v", err)
+				}
+				// The ENTIRE body MUST be served back regardless of the requested range.
+				if g, w := blob2kBTo3kB, original; !bytes.Equal(g, w) {
+					t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+				}
+			})
 		}
 	})
 }
@@ -5508,7 +5714,7 @@ func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte,
 				blob, _ := httputil.DumpResponse(res, true)
 				return fmt.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
 			}
-			io.Copy(ioutil.Discard, res.Body)
+			io.Copy(io.Discard, res.Body)
 
 			// Verify that the file was properly uploaded
 			// by reading back its attributes and content
@@ -5528,7 +5734,7 @@ func verifyPostPolicy(pv4 *PostPolicyV4, obj *ObjectHandle, bytesToWrite []byte,
 			if err != nil {
 				return fmt.Errorf("Failed to create a reader: %v", err)
 			}
-			gotBody, err := ioutil.ReadAll(rd)
+			gotBody, err := io.ReadAll(rd)
 			if err != nil {
 				return fmt.Errorf("Failed to read the body: %v", err)
 			}
@@ -5692,7 +5898,7 @@ func readObject(ctx context.Context, obj *ObjectHandle) ([]byte, error) {
 		return nil, err
 	}
 	defer r.Close()
-	return ioutil.ReadAll(r)
+	return io.ReadAll(r)
 }
 
 // cleanupBuckets deletes the bucket used for testing, as well as old
@@ -5804,7 +6010,7 @@ func getURL(url string, headers map[string][]string) ([]byte, error) {
 		return nil, err
 	}
 	defer res.Body.Close()
-	bytes, err := ioutil.ReadAll(res.Body)
+	bytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -5826,7 +6032,7 @@ func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte,
 		return nil, err
 	}
 	defer res.Body.Close()
-	bytes, err := ioutil.ReadAll(res.Body)
+	bytes, err := io.ReadAll(res.Body)
 	if err != nil {
 		return nil, err
 	}
@@ -5837,7 +6043,7 @@ func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte,
 }
 
 func keyFileEmail(filename string) (string, error) {
-	bytes, err := ioutil.ReadFile(filename)
+	bytes, err := os.ReadFile(filename)
 	if err != nil {
 		return "", err
 	}
