@@ -71,7 +71,7 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		ctxWithHeaders := setInvocationHeaders(ctx, invocationID, attempts)
 		err = call(ctxWithHeaders)
 		if retry.maxAttempts != nil && attempts >= *retry.maxAttempts {
-			return true, err
+			return true, fmt.Errorf("storage: retry failed after %v attempts; last error: %w", *retry.maxAttempts, err)
 		}
 		attempts++
 		return !errorFunc(err), err
