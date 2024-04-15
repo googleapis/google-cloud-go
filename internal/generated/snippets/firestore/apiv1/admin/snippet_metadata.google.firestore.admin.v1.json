@@ -59,7 +59,7 @@
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_CreateBackupSchedule_sync",
       "title": "firestore CreateBackupSchedule Sample",
-      "description": "CreateBackupSchedule creates a backup schedule on a database.\nAt most two backup schedules can be configured on a database, one daily\nbackup schedule with retention up to 7 days and one weekly backup schedule\nwith retention up to 14 weeks.",
+      "description": "CreateBackupSchedule creates a backup schedule on a database.\nAt most two backup schedules can be configured on a database, one daily\nbackup schedule and one weekly backup schedule.",
       "file": "FirestoreAdminClient/CreateBackupSchedule/main.go",
       "language": "GO",
       "clientMethod": {
@@ -967,7 +967,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1013,7 +1013,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1059,7 +1059,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

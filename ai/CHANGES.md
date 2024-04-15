@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.4...ai/v0.4.0) (2024-04-15)
+
+
+### Features
+
+* **ai/generativelanguage:** Add question_answering and fact_verification task types for AQA ([#9745](https://github.com/googleapis/google-cloud-go/issues/9745)) ([cca3f47](https://github.com/googleapis/google-cloud-go/commit/cca3f47c895e7cac07d7d48ab3c4850b265a710f))
+* **ai/generativelanguage:** Add rest binding for tuned models ([8892943](https://github.com/googleapis/google-cloud-go/commit/8892943b169060f8ba7be227cd65680696c494a0))
+* **ai/generativelanguage:** Add system instructions ([dd7c8e5](https://github.com/googleapis/google-cloud-go/commit/dd7c8e5a206ca6fab7d05e2591a36ea706e5e9f1))
+
 ## [0.3.4](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.3...ai/v0.3.4) (2024-03-19)
 
 

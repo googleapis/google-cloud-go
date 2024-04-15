@@ -4,10 +4,10 @@ go 1.19
 
 require (
 	github.com/googleapis/gax-go/v2 v2.12.3
-	google.golang.org/api v0.170.0
+	google.golang.org/api v0.172.0
 	google.golang.org/genproto v0.0.0-20240213162025-012b6fc9bca9
-	google.golang.org/genproto/googleapis/api v0.0.0-20240314234333-6e1732d8331c
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c
+	google.golang.org/genproto/googleapis/api v0.0.0-20240401170217-c3f982113cda
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240401170217-c3f982113cda
 	google.golang.org/grpc v1.62.1
 	google.golang.org/protobuf v1.33.0
 )

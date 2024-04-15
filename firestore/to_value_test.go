@@ -21,8 +21,8 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	ts "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/type/latlng"
+	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type testStruct1 struct {

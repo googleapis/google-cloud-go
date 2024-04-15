@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.26.1...documentai/v1.27.0) (2024-04-15)
+
+
+### Features
+
+* **documentai:** Support a new Layout Processor in Document AI ([2cdc40a](https://github.com/googleapis/google-cloud-go/commit/2cdc40a0b4288f5ab5f2b2b8f5c1d6453a9c81ec))
+
 ## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.26.0...documentai/v1.26.1) (2024-03-14)
 
 

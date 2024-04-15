@@ -1042,6 +1042,14 @@ func TestNormalizeDescriptor(t *testing.T) {
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
+					{
+						Name:     proto.String("range_type"),
+						JsonName: proto.String("rangeType"),
+						Number:   proto.Int32(3),
+						TypeName: proto.String("testdata_RangeTypeTimestamp"),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
 				},
 				NestedType: []*descriptorpb.DescriptorProto{
 					{
@@ -1066,6 +1074,25 @@ func TestNormalizeDescriptor(t *testing.T) {
 								TypeName: proto.String("testdata_InnerType"),
 								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
 								Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("testdata_RangeTypeTimestamp"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("start"),
+								JsonName: proto.String("start"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+							{
+								Name:     proto.String("end"),
+								JsonName: proto.String("end"),
+								Number:   proto.Int32(2),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 							},
 						},
 					},

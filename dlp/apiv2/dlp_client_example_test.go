@@ -770,6 +770,12 @@ func ExampleClient_ListColumnDataProfiles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListColumnDataProfilesResponse)
 	}
 }
 
@@ -801,6 +807,12 @@ func ExampleClient_ListDeidentifyTemplates() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListDeidentifyTemplatesResponse)
 	}
 }
 
@@ -832,6 +844,12 @@ func ExampleClient_ListDiscoveryConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListDiscoveryConfigsResponse)
 	}
 }
 
@@ -863,6 +881,12 @@ func ExampleClient_ListDlpJobs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListDlpJobsResponse)
 	}
 }
 
@@ -919,6 +943,12 @@ func ExampleClient_ListInspectTemplates() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListInspectTemplatesResponse)
 	}
 }
 
@@ -950,6 +980,12 @@ func ExampleClient_ListJobTriggers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListJobTriggersResponse)
 	}
 }
 
@@ -981,6 +1017,12 @@ func ExampleClient_ListProjectDataProfiles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListProjectDataProfilesResponse)
 	}
 }
 
@@ -1012,6 +1054,12 @@ func ExampleClient_ListStoredInfoTypes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListStoredInfoTypesResponse)
 	}
 }
 
@@ -1043,6 +1091,12 @@ func ExampleClient_ListTableDataProfiles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListTableDataProfilesResponse)
 	}
 }
 

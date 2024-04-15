@@ -23,6 +23,7 @@ use (
 	./auth
 	./auth/oauth2adapt
 	./automl
+	./backupdr
 	./baremetalsolution
 	./batch
 	./beyondcorp
@@ -148,6 +149,7 @@ use (
 	./spanner/test/opentelemetry/test
 	./speech
 	./storage
+	./storage/internal/benchmarks
 	./storageinsights
 	./storagetransfer
 	./support

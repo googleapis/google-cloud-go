@@ -251,9 +251,9 @@ func TestInvoke(t *testing.T) {
 				return test.finalErr
 			}
 			got := run(ctx, call, test.retry, test.isIdempotentValue)
-			if test.expectFinalErr && got != test.finalErr {
+			if test.expectFinalErr && !errors.Is(got, test.finalErr) {
 				s.Errorf("got %v, want %v", got, test.finalErr)
-			} else if !test.expectFinalErr && got != test.initialErr {
+			} else if !test.expectFinalErr && !errors.Is(got, test.initialErr) {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
 			wantAttempts := 1 + test.count

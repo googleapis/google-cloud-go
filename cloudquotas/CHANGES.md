@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.1.3...cloudquotas/v0.2.0) (2024-04-15)
+
+
+### Features
+
+* **cloudquotas:** Add `rollout_info` field to `QuotaDetails` message ([2cdc40a](https://github.com/googleapis/google-cloud-go/commit/2cdc40a0b4288f5ab5f2b2b8f5c1d6453a9c81ec))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.1.2...cloudquotas/v0.1.3) (2024-03-27)
 
 
