@@ -6,7 +6,6 @@ require (
 	cloud.google.com/go v0.112.2
 	cloud.google.com/go/iam v1.1.7
 	cloud.google.com/go/kms v1.15.8
-	github.com/golang/protobuf v1.5.4
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.12.3
 	go.einride.tech/aip v0.66.0
@@ -28,6 +27,7 @@ require (
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
+	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0 // indirect

@@ -24,8 +24,8 @@ import (
 
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc/codes"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 // A Key can be either a Cloud Spanner row's primary key or a secondary index
