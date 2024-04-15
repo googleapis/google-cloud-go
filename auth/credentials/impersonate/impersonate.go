@@ -30,8 +30,13 @@ import (
 )
 
 var (
-	iamCredentialsEndpoint = "https://iamcredentials.googleapis.com"
-	oauth2Endpoint         = "https://oauth2.googleapis.com"
+	iamCredentialsEndpoint                      = "https://iamcredentials.googleapis.com"
+	oauth2Endpoint                              = "https://oauth2.googleapis.com"
+	errMissingTargetPrincipal                   = errors.New("impersonate: target service account must be provided")
+	errMissingScopes                            = errors.New("impersonate: scopes must be provided")
+	errLifetimeOverMax                          = errors.New("impersonate: max lifetime is 12 hours")
+	errUniverseNotSupportedDomainWideDelegation = errors.New("impersonate: service account user is configured for the credential. " +
+		"Domain-wide delegation is not supported in universes other than googleapis.com")
 )
 
 // TODO(codyoss): plumb through base for this and idtoken
@@ -82,9 +87,12 @@ func NewCredentials(opts *CredentialsOptions) (*auth.Credentials, error) {
 		client = opts.Client
 	}
 
-	// If a subject is specified a different auth-flow is initiated to
-	// impersonate as the provided subject (user).
+	// If a subject is specified a domain-wide delegation auth-flow is initiated
+	// to impersonate as the provided subject (user).
 	if opts.Subject != "" {
+		if !opts.isUniverseDomainGDU() {
+			return nil, errUniverseNotSupportedDomainWideDelegation
+		}
 		tp, err := user(opts, client, lifetime, isStaticToken)
 		if err != nil {
 			return nil, err
@@ -158,6 +166,9 @@ type CredentialsOptions struct {
 	// when fetching tokens. If provided the client should provide it's own
 	// credentials at call time. Optional.
 	Client *http.Client
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". Optional.
+	UniverseDomain string
 }
 
 func (o *CredentialsOptions) validate() error {
@@ -165,15 +176,30 @@ func (o *CredentialsOptions) validate() error {
 		return errors.New("impersonate: options must be provided")
 	}
 	if o.TargetPrincipal == "" {
-		return errors.New("impersonate: target service account must be provided")
+		return errMissingTargetPrincipal
 	}
 	if len(o.Scopes) == 0 {
-		return errors.New("impersonate: scopes must be provided")
+		return errMissingScopes
 	}
 	if o.Lifetime.Hours() > 12 {
-		return errors.New("impersonate: max lifetime is 12 hours")
+		return errLifetimeOverMax
 	}
 	return nil
+}
+
+// getUniverseDomain is the default service domain for a given Cloud universe.
+// The default value is "googleapis.com".
+func (o *CredentialsOptions) getUniverseDomain() string {
+	if o.UniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return o.UniverseDomain
+}
+
+// isUniverseDomainGDU returns true if the universe domain is the default Google
+// universe.
+func (o *CredentialsOptions) isUniverseDomainGDU() bool {
+	return o.getUniverseDomain() == internal.DefaultUniverseDomain
 }
 
 func formatIAMServiceAccountName(name string) string {

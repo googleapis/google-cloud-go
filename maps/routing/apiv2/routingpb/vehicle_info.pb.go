@@ -43,7 +43,7 @@ type VehicleInfo struct {
 
 	// Describes the vehicle's emission type.
 	// Applies only to the `DRIVE`
-	// [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
+	// [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode].
 	EmissionType VehicleEmissionType `protobuf:"varint,2,opt,name=emission_type,json=emissionType,proto3,enum=google.maps.routing.v2.VehicleEmissionType" json:"emission_type,omitempty"`
 }
 

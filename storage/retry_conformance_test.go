@@ -576,6 +576,9 @@ var methods = map[string][]retryFunc{
 }
 
 func TestRetryConformance(t *testing.T) {
+	// This endpoint is used only to call the testbench retry test API, which is HTTP
+	// based. The endpoint called by the client library is determined inside of the
+	// client constructor and will differ depending on the transport.
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
@@ -759,7 +762,7 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 
 	et.host.Path = "retry_test"
 	resp, err := c.Post(et.host.String(), "application/json", buf)
-	if resp.StatusCode == 501 {
+	if resp != nil && resp.StatusCode == 501 {
 		et.T.Skip("This retry test case is not yet supported in the testbench.")
 	}
 	if err != nil || resp.StatusCode != 200 {

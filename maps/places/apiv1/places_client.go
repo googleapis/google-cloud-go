@@ -97,11 +97,10 @@ type internalClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service definition for the Places API.
-// Note: every request actually requires a field mask set outside of
-// the request proto (all/’*’, is not assumed).  That can be set via either a
-// side channel (SystemParameterContext) over RPC, or a header
-// (X-Goog-FieldMask) over HTTP. See:
-// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+// Note: every request (except for Autocomplete requests) requires a field mask
+// set outside of the request proto (all/*, is not assumed). The field mask
+// can be set via the HTTP header X-Goog-FieldMask. See:
+// https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -180,11 +179,10 @@ type gRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service definition for the Places API.
-// Note: every request actually requires a field mask set outside of
-// the request proto (all/’*’, is not assumed).  That can be set via either a
-// side channel (SystemParameterContext) over RPC, or a header
-// (X-Goog-FieldMask) over HTTP. See:
-// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+// Note: every request (except for Autocomplete requests) requires a field mask
+// set outside of the request proto (all/*, is not assumed). The field mask
+// can be set via the HTTP header X-Goog-FieldMask. See:
+// https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -254,11 +252,10 @@ type restClient struct {
 // NewRESTClient creates a new places rest client.
 //
 // Service definition for the Places API.
-// Note: every request actually requires a field mask set outside of
-// the request proto (all/’*’, is not assumed).  That can be set via either a
-// side channel (SystemParameterContext) over RPC, or a header
-// (X-Goog-FieldMask) over HTTP. See:
-// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+// Note: every request (except for Autocomplete requests) requires a field mask
+// set outside of the request proto (all/*, is not assumed). The field mask
+// can be set via the HTTP header X-Goog-FieldMask. See:
+// https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
