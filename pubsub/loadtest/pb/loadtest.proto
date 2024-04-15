@@ -1,0 +1,116 @@
+// Copyright 2024 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+ syntax = "proto3";
+
+ package google.pubsub.loadtest;
+ 
+ import "google/protobuf/duration.proto";
+ import "google/protobuf/timestamp.proto";
+ 
+ option go_package = "cloud.google.com/go/pubsub/loadtest/pb;google_pubsub_loadtest";
+ 
+ service LoadtestWorker {
+   // Starts a worker
+   rpc Start (StartRequest) returns (StartResponse);
+ 
+   // Check the status of a load test worker.
+   rpc Check (CheckRequest) returns (CheckResponse);
+ }
+ 
+ message StartRequest {
+   // The GCP project.
+   string project = 1;
+ 
+   // The Pub/Sub topic name.
+   string topic = 2;
+ 
+   // The time at which the load test should start. If this is less than the current time, we start immediately.
+   google.protobuf.Timestamp start_time = 3;
+ 
+   // The duration the load test should run for.
+   google.protobuf.Duration test_duration = 4;
+ 
+   // Whether to include ids in check responses.
+   bool include_ids = 5;
+ 
+   oneof options {
+     PubsubOptions pubsub_options = 6;
+   }
+ 
+   oneof client_options {
+     PublisherOptions publisher_options = 8;
+     SubscriberOptions subscriber_options = 9;
+   }
+ 
+   // The cpu scaling of the worker.  A multiple of the number of logical processors
+   // on the machine.  The number of threads for the worker is calculated by
+   // max((numCpus * cpu_scaling), 1) for languages which use thread parallelism.
+   // Languages which use process parallelism ignore this setting.
+   int32 cpu_scaling = 10;
+ }
+ 
+ message StartResponse {
+ }
+ 
+ message PublisherOptions {
+   // The max messages-per-second publishing rate.  If unset, no rate limit will
+   // be imposed.
+   float rate = 1;
+   // The max duration for coalescing a batch of published messages.
+   google.protobuf.Duration batch_duration = 2;
+   // The number of user messages of size message_size to publish together.
+   int32 batch_size = 3;
+   // The size in bytes of messages to publish
+   int32 message_size = 4;
+ }
+ 
+ message SubscriberOptions {
+ }
+ 
+ message PubsubOptions {
+   // The Cloud Pub/Sub subscription name
+   string subscription = 1;
+ }
+ 
+ message MessageIdentifier {
+   // The unique id of the client that published the message.
+   int64 publisher_client_id = 1;
+ 
+   // Sequence number of the published message with the given publish_client_id.
+   int32 sequence_number = 2;
+ }
+ 
+ // Request a statistics update.
+ message CheckRequest {}
+ 
+ message CheckResponse {
+   // Histogram of latencies, each one a delta from the previous CheckResponse sent.
+   // The bounds of the nth bucket (starting from the 0th bucket) are
+   // [1.5^(n-1), 1.5^n) milliseconds.  The lower bound of the 0th bucket is 0 seconds.
+   repeated int64 bucket_values = 1;
+ 
+   // The duration from the start of the loadtest to its completion or now if is_finished is false.
+   google.protobuf.Duration running_duration = 2;
+ 
+   // True if the load test has finished running.
+   bool is_finished = 3;
+ 
+   // MessageIdentifiers of all messages since the last Check.
+   repeated MessageIdentifier received_messages = 4;
+ 
+   // Number of failed messages since the last check.
+   int64 failed = 5;
+ }
+ 

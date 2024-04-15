@@ -26,14 +26,14 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
-	"github.com/golang/protobuf/proto"
-	durpb "github.com/golang/protobuf/ptypes/duration"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	durpb "google.golang.org/protobuf/types/known/durationpb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestLoggerRetryer_Retry(t *testing.T) {
