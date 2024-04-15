@@ -726,14 +726,18 @@ func readEntry(r io.Reader) (*entry, error) {
 	var msg message
 	if pe.Message != nil {
 		if pe.IsError {
-			var s *spb.Status
+			s := &spb.Status{}
 			err := anypb.UnmarshalTo(pe.Message, s, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
 			if err != nil {
 				return nil, err
 			}
 			msg.err = status.ErrorProto(s)
 		} else {
-			msg.msg = pe.Message.ProtoReflect().Interface()
+			m, err := anypb.UnmarshalNew(pe.Message, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
+			if err != nil {
+				return nil, err
+			}
+			msg.msg = m
 		}
 	} else if pe.IsError {
 		msg.err = io.EOF
