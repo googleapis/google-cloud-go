@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.1.1...gkemulticloud/v1.1.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **gkemulticloud:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.1.0...gkemulticloud/v1.1.1) (2024-01-30)
 
 
@@ -99,3 +106,4 @@
 ### Features
 
 * **gkemulticloud:** start generating apiv1 ([#6036](https://github.com/googleapis/google-cloud-go/issues/6036)) ([dc2b168](https://github.com/googleapis/google-cloud-go/commit/dc2b168162ba358435c7191f9d02edaea17d19bb))
+

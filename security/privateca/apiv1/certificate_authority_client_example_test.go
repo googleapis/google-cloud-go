@@ -555,6 +555,12 @@ func ExampleCertificateAuthorityClient_ListCaPools() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*privatecapb.ListCaPoolsResponse)
 	}
 }
 
@@ -586,6 +592,12 @@ func ExampleCertificateAuthorityClient_ListCertificateAuthorities() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*privatecapb.ListCertificateAuthoritiesResponse)
 	}
 }
 
@@ -617,6 +629,12 @@ func ExampleCertificateAuthorityClient_ListCertificateRevocationLists() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*privatecapb.ListCertificateRevocationListsResponse)
 	}
 }
 
@@ -648,6 +666,12 @@ func ExampleCertificateAuthorityClient_ListCertificateTemplates() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*privatecapb.ListCertificateTemplatesResponse)
 	}
 }
 
@@ -679,6 +703,12 @@ func ExampleCertificateAuthorityClient_ListCertificates() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*privatecapb.ListCertificatesResponse)
 	}
 }
 
@@ -935,6 +965,12 @@ func ExampleCertificateAuthorityClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -1112,5 +1148,11 @@ func ExampleCertificateAuthorityClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

@@ -154,7 +154,7 @@ func (c *PacketMirroringsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of packetMirrorings.
+// AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *PacketMirroringsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -276,7 +276,7 @@ func (c *packetMirroringsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of packetMirrorings.
+// AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringsScopedListPairIterator {
 	it := &PacketMirroringsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListPacketMirroringsRequest)

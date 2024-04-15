@@ -1360,14 +1360,14 @@ func (f *writeLogEntriesTestHandler) WriteLogEntries(_ context.Context, e *logpb
 	return &logpb.WriteLogEntriesResponse{}, nil
 }
 
-func fakeClient(parent string, writeLogEntryHandler func(e *logpb.WriteLogEntriesRequest)) (*logging.Client, error) {
+func fakeClient(parent string, writeLogEntryHandler func(e *logpb.WriteLogEntriesRequest), serverOptions ...grpc.ServerOption) (*logging.Client, error) {
 	// setup fake server
 	fakeBackend := &writeLogEntriesTestHandler{}
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		return nil, err
 	}
-	gsrv := grpc.NewServer()
+	gsrv := grpc.NewServer(serverOptions...)
 	logpb.RegisterLoggingServiceV2Server(gsrv, fakeBackend)
 	fakeServerAddr := l.Addr().String()
 	go func() {
@@ -1425,6 +1425,30 @@ func TestPartialSuccessOption(t *testing.T) {
 				t.Fatal("e.PartialSuccess = false, want true")
 			}
 		})
+	}
+}
+
+func TestWriteLogEntriesSizeLimit(t *testing.T) {
+	// Test that logging too many large requests at once doesn't bump up
+	// against WriteLogEntriesRequest size limit
+	sizeLimit := 10485760 // 10MiB size limit
+
+	// Create a fake client whose server can only handle messages of at most sizeLimit
+	client, err := fakeClient("projects/test", func(e *logpb.WriteLogEntriesRequest) {}, grpc.MaxRecvMsgSize(sizeLimit))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	client.OnError = func(e error) {
+		t.Fatalf(e.Error())
+	}
+
+	defer client.Close()
+	logger := client.Logger("test")
+	entry := logging.Entry{Payload: strings.Repeat("1", 250000)}
+
+	for i := 0; i < 200; i++ {
+		logger.Log(entry)
 	}
 }
 

@@ -786,7 +786,7 @@ type DisableCertificateAuthorityRequest struct {
 	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	// Optional. This field allows this CA to be disabled even if it's being
 	// depended on by another resource. However, doing so may result in unintended
-	// and unrecoverable effects on any dependent resource(s) since the CA will
+	// and unrecoverable effects on any dependent resources since the CA will
 	// no longer be able to issue certificates.
 	IgnoreDependentResources bool `protobuf:"varint,3,opt,name=ignore_dependent_resources,json=ignoreDependentResources,proto3" json:"ignore_dependent_resources,omitempty"`
 }
@@ -1345,9 +1345,9 @@ type DeleteCertificateAuthorityRequest struct {
 	// soon as possible without a 30-day grace period where undeletion would have
 	// been allowed. If you proceed, there will be no way to recover this CA.
 	SkipGracePeriod bool `protobuf:"varint,5,opt,name=skip_grace_period,json=skipGracePeriod,proto3" json:"skip_grace_period,omitempty"`
-	// Optional. This field allows this ca to be deleted even if it's being
+	// Optional. This field allows this CA to be deleted even if it's being
 	// depended on by another resource. However, doing so may result in unintended
-	// and unrecoverable effects on any dependent resource(s) since the CA will
+	// and unrecoverable effects on any dependent resources since the CA will
 	// no longer be able to issue certificates.
 	IgnoreDependentResources bool `protobuf:"varint,6,opt,name=ignore_dependent_resources,json=ignoreDependentResources,proto3" json:"ignore_dependent_resources,omitempty"`
 }
@@ -1702,7 +1702,7 @@ type DeleteCaPoolRequest struct {
 	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	// Optional. This field allows this pool to be deleted even if it's being
 	// depended on by another resource. However, doing so may result in unintended
-	// and unrecoverable effects on any dependent resource(s) since the pool will
+	// and unrecoverable effects on any dependent resources since the pool will
 	// no longer be able to issue certificates.
 	IgnoreDependentResources bool `protobuf:"varint,4,opt,name=ignore_dependent_resources,json=ignoreDependentResources,proto3" json:"ignore_dependent_resources,omitempty"`
 }
@@ -1840,10 +1840,9 @@ type FetchCaCertsResponse struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The PEM encoded CA certificate chains of all
-	// [ACTIVE][CertificateAuthority.State.ACTIVE]
-	// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-	// resources in this [CaPool][google.cloud.security.privateca.v1.CaPool].
+	// The PEM encoded CA certificate chains of all certificate authorities in
+	// this [CaPool][google.cloud.security.privateca.v1.CaPool] in the ENABLED,
+	// DISABLED, or STAGED states.
 	CaCerts []*FetchCaCertsResponse_CertChain `protobuf:"bytes,1,rep,name=ca_certs,json=caCerts,proto3" json:"ca_certs,omitempty"`
 }
 
@@ -4760,9 +4759,8 @@ type CertificateAuthorityServiceClient interface {
 	DeleteCaPool(ctx context.Context, in *DeleteCaPoolRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// FetchCaCerts returns the current trust anchor for the
 	// [CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA
-	// certificate chains for all ACTIVE
-	// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-	// resources in the [CaPool][google.cloud.security.privateca.v1.CaPool].
+	// certificate chains for all certificate authorities in the ENABLED,
+	// DISABLED, or STAGED states.
 	FetchCaCerts(ctx context.Context, in *FetchCaCertsRequest, opts ...grpc.CallOption) (*FetchCaCertsResponse, error)
 	// Returns a
 	// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].
@@ -5137,9 +5135,8 @@ type CertificateAuthorityServiceServer interface {
 	DeleteCaPool(context.Context, *DeleteCaPoolRequest) (*longrunningpb.Operation, error)
 	// FetchCaCerts returns the current trust anchor for the
 	// [CaPool][google.cloud.security.privateca.v1.CaPool]. This will include CA
-	// certificate chains for all ACTIVE
-	// [CertificateAuthority][google.cloud.security.privateca.v1.CertificateAuthority]
-	// resources in the [CaPool][google.cloud.security.privateca.v1.CaPool].
+	// certificate chains for all certificate authorities in the ENABLED,
+	// DISABLED, or STAGED states.
 	FetchCaCerts(context.Context, *FetchCaCertsRequest) (*FetchCaCertsResponse, error)
 	// Returns a
 	// [CertificateRevocationList][google.cloud.security.privateca.v1.CertificateRevocationList].

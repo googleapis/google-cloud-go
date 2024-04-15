@@ -1075,6 +1075,12 @@ func ExampleWarehouseClient_ListAnnotations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListAnnotationsResponse)
 	}
 }
 
@@ -1106,6 +1112,12 @@ func ExampleWarehouseClient_ListAssets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListAssetsResponse)
 	}
 }
 
@@ -1137,6 +1149,12 @@ func ExampleWarehouseClient_ListCollections() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListCollectionsResponse)
 	}
 }
 
@@ -1168,6 +1186,12 @@ func ExampleWarehouseClient_ListCorpora() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListCorporaResponse)
 	}
 }
 
@@ -1199,6 +1223,12 @@ func ExampleWarehouseClient_ListDataSchemas() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListDataSchemasResponse)
 	}
 }
 
@@ -1230,6 +1260,12 @@ func ExampleWarehouseClient_ListIndexEndpoints() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListIndexEndpointsResponse)
 	}
 }
 
@@ -1261,6 +1297,12 @@ func ExampleWarehouseClient_ListIndexes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListIndexesResponse)
 	}
 }
 
@@ -1292,6 +1334,12 @@ func ExampleWarehouseClient_ListSearchConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListSearchConfigsResponse)
 	}
 }
 
@@ -1323,6 +1371,12 @@ func ExampleWarehouseClient_ListSearchHypernyms() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListSearchHypernymsResponse)
 	}
 }
 
@@ -1409,6 +1463,12 @@ func ExampleWarehouseClient_SearchAssets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.SearchAssetsResponse)
 	}
 }
 
@@ -1440,6 +1500,12 @@ func ExampleWarehouseClient_SearchIndexEndpoint() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.SearchIndexEndpointResponse)
 	}
 }
 
@@ -1766,6 +1832,12 @@ func ExampleWarehouseClient_ViewCollectionItems() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ViewCollectionItemsResponse)
 	}
 }
 
@@ -1797,6 +1869,12 @@ func ExampleWarehouseClient_ViewIndexedAssets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ViewIndexedAssetsResponse)
 	}
 }
 
@@ -1899,5 +1977,11 @@ func ExampleWarehouseClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }
