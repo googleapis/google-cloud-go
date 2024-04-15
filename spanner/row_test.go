@@ -622,14 +622,14 @@ func TestToStructInvalidDst(t *testing.T) {
 	}{
 		{
 			"row.ToStruct(): Decode row as STRUCT into int32",
-			proto.Int(1),
-			errToStructArgType(proto.Int(1)),
+			proto.Int32(1),
+			errToStructArgType(proto.Int32(1)),
 			row.ToStruct,
 		},
 		{
 			"ToStructLenient(): Decode row as STRUCT into int32",
-			proto.Int(1),
-			errToStructArgType(proto.Int(1)),
+			proto.Int32(1),
+			errToStructArgType(proto.Int32(1)),
 			row.ToStructLenient,
 		},
 		{

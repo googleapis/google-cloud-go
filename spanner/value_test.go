@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"math"
@@ -30,6 +31,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -2769,7 +2771,15 @@ func TestBindParamsDynamic(t *testing.T) {
 		gotParamField := gotParams.Fields["var"]
 		if !proto.Equal(gotParamField, test.wantField) {
 			// handle NaN
-			if test.wantType.Code == floatType().Code && proto.MarshalTextString(gotParamField) == proto.MarshalTextString(test.wantField) {
+			gotParamFieldText, err := prototext.Marshal(gotParamField)
+			if err != nil {
+				t.Fatal(err)
+			}
+			wantParamFieldText, err := prototext.Marshal(test.wantField)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if test.wantType.Code == floatType().Code && bytes.Equal(gotParamFieldText, wantParamFieldText) {
 				continue
 			}
 			t.Errorf("%#v: got %v, want %v\n", test.val, gotParamField, test.wantField)
