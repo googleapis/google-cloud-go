@@ -504,10 +504,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		ReadOptions: opts,
 	}
 	resp, err := c.client.Lookup(ctx, req)
-	txnID := resp.Transaction
+
 	if err != nil {
-		return txnID, err
+		return nil, err
 	}
+	txnID := resp.Transaction
 	found := resp.Found
 	missing := resp.Missing
 	// Upper bound 1000 iterations to prevent infinite loop. This matches the max
