@@ -707,7 +707,7 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/channel/v1/cloud.google.com/go
     dest: /
-  - source: /google/cloud/chat/v1/cloud.google.com/go
+  - source: /google/chat/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
     dest: /
