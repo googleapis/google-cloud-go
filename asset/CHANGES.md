@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.18.1...asset/v1.19.0) (2024-04-15)
+
+
+### Features
+
+* **asset:** Add tag key id support ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+
 ## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.18.0...asset/v1.18.1) (2024-03-14)
 
 
@@ -228,4 +235,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out asset as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
