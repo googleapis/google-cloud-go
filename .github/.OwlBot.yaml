@@ -66,6 +66,7 @@ deep-remove-regex:
   - /binaryauthorization/apiv1beta1/
   - /certificatemanager/apiv1/
   - /channel/apiv1/
+  - /chat/apiv1/
   - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
   - /cloudcontrolspartner/apiv1/
@@ -195,6 +196,7 @@ deep-remove-regex:
   - /internal/generated/snippets/binaryauthorization/apiv1beta1/
   - /internal/generated/snippets/certificatemanager/apiv1/
   - /internal/generated/snippets/channel/apiv1/
+  - /internal/generated/snippets/chat/apiv1/
   - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
   - /internal/generated/snippets/cloudcontrolspartner/apiv1/
@@ -704,6 +706,8 @@ deep-copy-regex:
   - source: /google/cloud/certificatemanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/channel/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/chat/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
     dest: /
