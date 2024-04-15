@@ -866,6 +866,9 @@ func TestIntegration_WriteBatch(t *testing.T) {
 }
 
 func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+
 	indexFields := [][]string{
 		{"updatedAt", "weight", "height"},
 		{"weight", "height"}}
@@ -873,8 +876,6 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 	defer cancel()
 	createIndexes(adminCtx, wantDBPath, indexFields)
 
-	ctx := context.Background()
-	coll := integrationColl(t)
 	h := testHelper{t}
 	nowTime := time.Now()
 	todayTime := nowTime.Unix()
@@ -2457,15 +2458,16 @@ func TestIntegration_BulkWriter(t *testing.T) {
 }
 
 func TestIntegration_AggregationQueries(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+	client := integrationClient(t)
+
 	indexFields := [][]string{
 		{"weight", "model"}}
 	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
 	createIndexes(adminCtx, wantDBPath, indexFields)
 
-	ctx := context.Background()
-	coll := integrationColl(t)
-	client := integrationClient(t)
 	h := testHelper{t}
 	docs := []map[string]interface{}{
 		{"weight": 1.5, "height": 99, "model": "A"},
