@@ -22,7 +22,7 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestToProtoDocument(t *testing.T) {

@@ -28,13 +28,13 @@ import (
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	gstatus "google.golang.org/grpc/status"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 )
 
 // Single can only be used once.
@@ -741,7 +741,7 @@ loop:
 func newAbortedErrorWithMinimalRetryDelay() error {
 	st := gstatus.New(codes.Aborted, "Transaction has been aborted")
 	retry := &errdetails.RetryInfo{
-		RetryDelay: ptypes.DurationProto(time.Nanosecond),
+		RetryDelay: durationpb.New(time.Nanosecond),
 	}
 	st, _ = st.WithDetails(retry)
 	return st.Err()

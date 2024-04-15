@@ -74,6 +74,11 @@
         "grpc": {
           "libraryClient": "ConversationalSearchClient",
           "rpcs": {
+            "AnswerQuery": {
+              "methods": [
+                "AnswerQuery"
+              ]
+            },
             "ConverseConversation": {
               "methods": [
                 "ConverseConversation"
@@ -84,9 +89,24 @@
                 "CreateConversation"
               ]
             },
+            "CreateSession": {
+              "methods": [
+                "CreateSession"
+              ]
+            },
             "DeleteConversation": {
               "methods": [
                 "DeleteConversation"
+              ]
+            },
+            "DeleteSession": {
+              "methods": [
+                "DeleteSession"
+              ]
+            },
+            "GetAnswer": {
+              "methods": [
+                "GetAnswer"
               ]
             },
             "GetConversation": {
@@ -99,6 +119,11 @@
                 "GetOperation"
               ]
             },
+            "GetSession": {
+              "methods": [
+                "GetSession"
+              ]
+            },
             "ListConversations": {
               "methods": [
                 "ListConversations"
@@ -109,9 +134,19 @@
                 "ListOperations"
               ]
             },
+            "ListSessions": {
+              "methods": [
+                "ListSessions"
+              ]
+            },
             "UpdateConversation": {
               "methods": [
                 "UpdateConversation"
+              ]
+            },
+            "UpdateSession": {
+              "methods": [
+                "UpdateSession"
               ]
             }
           }
@@ -119,6 +154,11 @@
         "rest": {
           "libraryClient": "ConversationalSearchClient",
           "rpcs": {
+            "AnswerQuery": {
+              "methods": [
+                "AnswerQuery"
+              ]
+            },
             "ConverseConversation": {
               "methods": [
                 "ConverseConversation"
@@ -129,9 +169,24 @@
                 "CreateConversation"
               ]
             },
+            "CreateSession": {
+              "methods": [
+                "CreateSession"
+              ]
+            },
             "DeleteConversation": {
               "methods": [
                 "DeleteConversation"
+              ]
+            },
+            "DeleteSession": {
+              "methods": [
+                "DeleteSession"
+              ]
+            },
+            "GetAnswer": {
+              "methods": [
+                "GetAnswer"
               ]
             },
             "GetConversation": {
@@ -144,6 +199,11 @@
                 "GetOperation"
               ]
             },
+            "GetSession": {
+              "methods": [
+                "GetSession"
+              ]
+            },
             "ListConversations": {
               "methods": [
                 "ListConversations"
@@ -154,9 +214,19 @@
                 "ListOperations"
               ]
             },
+            "ListSessions": {
+              "methods": [
+                "ListSessions"
+              ]
+            },
             "UpdateConversation": {
               "methods": [
                 "UpdateConversation"
+              ]
+            },
+            "UpdateSession": {
+              "methods": [
+                "UpdateSession"
               ]
             }
           }
@@ -386,6 +456,21 @@
                 "ListOperations"
               ]
             },
+            "PauseEngine": {
+              "methods": [
+                "PauseEngine"
+              ]
+            },
+            "ResumeEngine": {
+              "methods": [
+                "ResumeEngine"
+              ]
+            },
+            "TuneEngine": {
+              "methods": [
+                "TuneEngine"
+              ]
+            },
             "UpdateEngine": {
               "methods": [
                 "UpdateEngine"
@@ -426,9 +511,112 @@
                 "ListOperations"
               ]
             },
+            "PauseEngine": {
+              "methods": [
+                "PauseEngine"
+              ]
+            },
+            "ResumeEngine": {
+              "methods": [
+                "ResumeEngine"
+              ]
+            },
+            "TuneEngine": {
+              "methods": [
+                "TuneEngine"
+              ]
+            },
             "UpdateEngine": {
               "methods": [
                 "UpdateEngine"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "GroundedGenerationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GroundedGenerationClient",
+          "rpcs": {
+            "CheckGrounding": {
+              "methods": [
+                "CheckGrounding"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GroundedGenerationClient",
+          "rpcs": {
+            "CheckGrounding": {
+              "methods": [
+                "CheckGrounding"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RankService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RankClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Rank": {
+              "methods": [
+                "Rank"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RankClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "Rank": {
+              "methods": [
+                "Rank"
               ]
             }
           }

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.0...networkmanagement/v1.13.1) (2024-04-15)
+
+
+### Documentation
+
+* **networkmanagement:** Update possible firewall rule actions comment ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.12.0...networkmanagement/v1.13.0) (2024-03-27)
 
 
