@@ -417,10 +417,12 @@ type WriteResult struct {
 }
 
 func writeResultFromProto(wr *pb.WriteResult) (*WriteResult, error) {
-	if err := wr.GetUpdateTime().CheckValid(); err != nil {
-		return &WriteResult{UpdateTime: time.Time{}}, err
+	// TODO(jba): Follow up if Delete is supposed to return a nil timestamp.
+	var t time.Time
+	if err := wr.GetUpdateTime().CheckValid(); err == nil {
+		t = wr.GetUpdateTime().AsTime()
 	}
-	return &WriteResult{UpdateTime: wr.GetUpdateTime().AsTime()}, nil
+	return &WriteResult{UpdateTime: t}, nil
 }
 
 func sleep(ctx context.Context, dur time.Duration) error {

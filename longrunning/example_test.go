@@ -61,7 +61,7 @@ func ExampleOperation_Wait() {
 	} else if err != nil && op.Done() {
 		fmt.Println("operation completed with error", err)
 	} else {
-		fmt.Println(ts.String())
+		fmt.Println(ts.AsTime().Format(time.RFC3339Nano))
 	}
 	// Output:
 	// 2009-11-10T23:00:00Z
