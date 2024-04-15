@@ -59,6 +59,22 @@ func TestLive(t *testing.T) {
 		got := responseString(resp)
 		checkMatch(t, got, `15.* cm|[1-9].* inches`)
 	})
+	t.Run("system-instructions", func(t *testing.T) {
+		t.Skip("feature not yet available")
+		model := client.GenerativeModel(*modelName)
+		model.Temperature = Ptr[float32](0)
+		model.SystemInstruction = &Content{
+			Parts: []Part{Text("You are Yoda from Star Wars.")},
+		}
+		resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
+		if err != nil {
+			t.Fatal(err)
+		}
+		got := responseString(resp)
+		checkMatch(t, got, `15.* cm|[1-9].* inches`)
+		fmt.Println(got)
+
+	})
 
 	t.Run("streaming", func(t *testing.T) {
 		iter := model.GenerateContentStream(ctx, Text("Are you hungry?"))
