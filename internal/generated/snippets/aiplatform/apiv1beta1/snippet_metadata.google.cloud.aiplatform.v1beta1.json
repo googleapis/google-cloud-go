@@ -16845,6 +16845,970 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_CancelOperation_sync",
+      "title": "aiplatform CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelMonitoringClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_CreateModelMonitor_sync",
+      "title": "aiplatform CreateModelMonitor Sample",
+      "description": "CreateModelMonitor creates a ModelMonitor.",
+      "file": "ModelMonitoringClient/CreateModelMonitor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateModelMonitor",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.CreateModelMonitor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateModelMonitorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateModelMonitorOperation",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "CreateModelMonitor",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.CreateModelMonitor",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_CreateModelMonitoringJob_sync",
+      "title": "aiplatform CreateModelMonitoringJob Sample",
+      "description": "CreateModelMonitoringJob creates a ModelMonitoringJob.",
+      "file": "ModelMonitoringClient/CreateModelMonitoringJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateModelMonitoringJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.CreateModelMonitoringJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.CreateModelMonitoringJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.ModelMonitoringJob",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "CreateModelMonitoringJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.CreateModelMonitoringJob",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_DeleteModelMonitor_sync",
+      "title": "aiplatform DeleteModelMonitor Sample",
+      "description": "DeleteModelMonitor deletes a ModelMonitor.",
+      "file": "ModelMonitoringClient/DeleteModelMonitor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteModelMonitor",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.DeleteModelMonitor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteModelMonitorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteModelMonitorOperation",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "DeleteModelMonitor",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.DeleteModelMonitor",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_DeleteModelMonitoringJob_sync",
+      "title": "aiplatform DeleteModelMonitoringJob Sample",
+      "description": "DeleteModelMonitoringJob deletes a ModelMonitoringJob.",
+      "file": "ModelMonitoringClient/DeleteModelMonitoringJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteModelMonitoringJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.DeleteModelMonitoringJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteModelMonitoringJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteModelMonitoringJobOperation",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "DeleteModelMonitoringJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.DeleteModelMonitoringJob",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_DeleteOperation_sync",
+      "title": "aiplatform DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelMonitoringClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_GetIamPolicy_sync",
+      "title": "aiplatform GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "ModelMonitoringClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_GetLocation_sync",
+      "title": "aiplatform GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "ModelMonitoringClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_GetModelMonitor_sync",
+      "title": "aiplatform GetModelMonitor Sample",
+      "description": "GetModelMonitor gets a ModelMonitor.",
+      "file": "ModelMonitoringClient/GetModelMonitor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModelMonitor",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.GetModelMonitor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetModelMonitorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.ModelMonitor",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "GetModelMonitor",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.GetModelMonitor",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_GetModelMonitoringJob_sync",
+      "title": "aiplatform GetModelMonitoringJob Sample",
+      "description": "GetModelMonitoringJob gets a ModelMonitoringJob.",
+      "file": "ModelMonitoringClient/GetModelMonitoringJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModelMonitoringJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.GetModelMonitoringJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetModelMonitoringJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.ModelMonitoringJob",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "GetModelMonitoringJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.GetModelMonitoringJob",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_GetOperation_sync",
+      "title": "aiplatform GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelMonitoringClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_ListLocations_sync",
+      "title": "aiplatform ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "ModelMonitoringClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_ListModelMonitoringJobs_sync",
+      "title": "aiplatform ListModelMonitoringJobs Sample",
+      "description": "ListModelMonitoringJobs lists ModelMonitoringJobs.\nCallers may choose to read across multiple Monitors as per\n[AIP-159](https: //google.aip.dev/159) by using '-' (the hyphen or dash\ncharacter) as a wildcard character instead of modelMonitor id in the\nparent. Format\n`projects/{project_id}/locations/{location}/moodelMonitors/-/modelMonitoringJobs`",
+      "file": "ModelMonitoringClient/ListModelMonitoringJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModelMonitoringJobs",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.ListModelMonitoringJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListModelMonitoringJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelMonitoringJobIterator",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "ListModelMonitoringJobs",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.ListModelMonitoringJobs",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_ListModelMonitors_sync",
+      "title": "aiplatform ListModelMonitors Sample",
+      "description": "ListModelMonitors lists ModelMonitors in a Location.",
+      "file": "ModelMonitoringClient/ListModelMonitors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModelMonitors",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.ListModelMonitors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListModelMonitorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelMonitorIterator",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "ListModelMonitors",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.ListModelMonitors",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_ListOperations_sync",
+      "title": "aiplatform ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ModelMonitoringClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_SearchModelMonitoringAlerts_sync",
+      "title": "aiplatform SearchModelMonitoringAlerts Sample",
+      "description": "SearchModelMonitoringAlerts returns the Model Monitoring alerts.",
+      "file": "ModelMonitoringClient/SearchModelMonitoringAlerts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchModelMonitoringAlerts",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.SearchModelMonitoringAlerts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.SearchModelMonitoringAlertsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelMonitoringAlertIterator",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "SearchModelMonitoringAlerts",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.SearchModelMonitoringAlerts",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_SearchModelMonitoringStats_sync",
+      "title": "aiplatform SearchModelMonitoringStats Sample",
+      "description": "SearchModelMonitoringStats searches Model Monitoring Stats generated within a given time window.",
+      "file": "ModelMonitoringClient/SearchModelMonitoringStats/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchModelMonitoringStats",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.SearchModelMonitoringStats",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.SearchModelMonitoringStatsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelMonitoringStatsIterator",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "SearchModelMonitoringStats",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.SearchModelMonitoringStats",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_SetIamPolicy_sync",
+      "title": "aiplatform SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "ModelMonitoringClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_TestIamPermissions_sync",
+      "title": "aiplatform TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "ModelMonitoringClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_UpdateModelMonitor_sync",
+      "title": "aiplatform UpdateModelMonitor Sample",
+      "description": "UpdateModelMonitor updates a ModelMonitor.",
+      "file": "ModelMonitoringClient/UpdateModelMonitor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateModelMonitor",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.UpdateModelMonitor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateModelMonitorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateModelMonitorOperation",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "UpdateModelMonitor",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService.UpdateModelMonitor",
+          "service": {
+            "shortName": "ModelMonitoringService",
+            "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_ModelMonitoringService_WaitOperation_sync",
+      "title": "aiplatform WaitOperation Sample",
+      "description": "WaitOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelMonitoringClient/WaitOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WaitOperation",
+        "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient.WaitOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.WaitOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ModelMonitoringClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.ModelMonitoringClient"
+        },
+        "method": {
+          "shortName": "WaitOperation",
+          "fullName": "google.longrunning.Operations.WaitOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_ModelService_BatchImportEvaluatedAnnotations_sync",
       "title": "aiplatform BatchImportEvaluatedAnnotations Sample",
       "description": "BatchImportEvaluatedAnnotations imports a list of externally generated EvaluatedAnnotations.",
