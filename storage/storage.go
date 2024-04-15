@@ -232,7 +232,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package.
 func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	opts = append(defaultGRPCOptions(), opts...)
 	tc, err := newGRPCStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
 		return nil, err

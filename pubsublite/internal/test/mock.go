@@ -30,7 +30,7 @@ import (
 
 	lrpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
 
 // MockServer is an in-memory mock implementation of a Pub/Sub Lite service,

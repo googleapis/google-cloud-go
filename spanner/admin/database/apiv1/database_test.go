@@ -25,14 +25,14 @@ import (
 
 	longrunning "cloud.google.com/go/longrunning/autogen"
 	"cloud.google.com/go/longrunning/autogen/longrunningpb"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 func Test_extractDBName(t *testing.T) {
@@ -150,7 +150,7 @@ func Test_CreateDatabaseWithRetry(t *testing.T) {
 	mockDatabaseAdmin.err = nil
 	mockDatabaseAdmin.reqs = nil
 
-	any, err := ptypes.MarshalAny(expectedResponse)
+	any, err := anypb.New(expectedResponse)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -246,7 +246,7 @@ func Test_CreateDatabaseWithRetry_Unavailable_ServerReceivedRequest_OperationInP
 	var expectedResponse = &database.Database{
 		Name: name,
 	}
-	any, err := ptypes.MarshalAny(expectedResponse)
+	any, err := anypb.New(expectedResponse)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -347,7 +347,7 @@ func Test_CreateDatabaseWithRetry_Unavailable_ServerReceivedRequest_OperationFin
 	var expectedResponse = &database.Database{
 		Name: name,
 	}
-	any, err := ptypes.MarshalAny(expectedResponse)
+	any, err := anypb.New(expectedResponse)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -446,7 +446,7 @@ func Test_CreateDatabaseWithRetry_Unavailable_ServerDidNotReceiveRequest(t *test
 	var expectedResponse = &database.Database{
 		Name: name,
 	}
-	any, err := ptypes.MarshalAny(expectedResponse)
+	any, err := anypb.New(expectedResponse)
 	if err != nil {
 		t.Fatal(err)
 	}
