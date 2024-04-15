@@ -623,6 +623,15 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
 			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
 		}
+
+		// Empty update should succeed without changing the bucket.
+		gotAttrs, err := b.Update(ctx, BucketAttrsToUpdate{})
+		if err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if !testutil.Equal(attrs, gotAttrs) {
+			t.Fatalf("empty update: got %v, want %v", gotAttrs, attrs)
+		}
 	})
 }
 
@@ -1609,6 +1618,17 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 		}
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
+		}
+
+		// Test empty update. Most fields should be unchanged, but updating will
+		// increase the metageneration and update time.
+		wantAttrs := updated
+		gotAttrs, err := o.Update(ctx, ObjectAttrsToUpdate{})
+		if err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if diff := testutil.Diff(gotAttrs, wantAttrs, cmpopts.IgnoreFields(ObjectAttrs{}, "Etag", "Metageneration", "Updated")); diff != "" {
+			t.Errorf("empty update: got=-, want=+:\n%s", diff)
 		}
 	})
 }
@@ -3746,8 +3766,7 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 				bkt := client.Bucket(prefix + uidSpace.New())
 				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{CORS: initialSettings})
 				defer h.mustDeleteBucket(bkt)
-				// Set VersioningEnabled so that we don't send an empty update/patch request, which is invalid for gRPC
-				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
 				attrs := h.mustBucketAttrs(bkt)
 				if diff := testutil.Diff(attrs.CORS, test.want); diff != "" {
 					t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
@@ -3976,8 +3995,7 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 				bkt := client.Bucket(prefix + uidSpace.New())
 				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
 				defer h.mustDeleteBucket(bkt)
-				// Set VersioningEnabled so that we don't send an empty update request, which is invalid for gRPC
-				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
 
 				attrs := h.mustBucketAttrs(bkt)
 				if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
@@ -4260,6 +4278,133 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 		// We should be able to delete the object as normal since retention was removed
 		if err := objectWithRetentionOnUpdate.Delete(ctx); err != nil {
 			t.Errorf("object.Delete:%v", err)
+		}
+	})
+}
+
+func TestIntegration_SoftDelete(t *testing.T) {
+	multiTransportTest(skipJSONReads(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		testStart := time.Now()
+
+		policy := &SoftDeletePolicy{
+			RetentionDuration: time.Hour * 24 * 8,
+		}
+
+		b := client.Bucket(prefix + uidSpace.New())
+
+		// Create bucket with soft delete policy.
+		if err := b.Create(ctx, testutil.ProjID(), &BucketAttrs{SoftDeletePolicy: policy}); err != nil {
+			t.Fatalf("error creating bucket with soft delete policy set: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(b) })
+
+		// Get bucket's soft delete policy and confirm accuracy.
+		attrs, err := b.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("b.Attrs(%q): %v", b.name, err)
+		}
+
+		got := attrs.SoftDeletePolicy
+		if got == nil {
+			t.Fatal("got nil soft delete policy")
+		}
+		if got.RetentionDuration != policy.RetentionDuration {
+			t.Fatalf("mismatching retention duration; got soft delete policy: %+v, expected: %+v", got, policy)
+		}
+		if got.EffectiveTime.Before(testStart) {
+			t.Fatalf("effective time of soft delete policy should not be in the past, got: %v, test start: %v", got.EffectiveTime, testStart.UTC())
+		}
+
+		// Update the soft delete policy.
+		policy.RetentionDuration = time.Hour * 24 * 9
+
+		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
+		if err != nil {
+			t.Fatalf("b.Update: %v", err)
+		}
+
+		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
+			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+		}
+
+		// Create 2 objects and delete one of them.
+		deletedObject := b.Object("soft-delete" + uidSpaceObjects.New())
+		liveObject := b.Object("not-soft-delete" + uidSpaceObjects.New())
+
+		h.mustWrite(deletedObject.NewWriter(ctx), []byte("soft-deleted"))
+		h.mustWrite(liveObject.NewWriter(ctx), []byte("soft-delete"))
+		t.Cleanup(func() {
+			h.mustDeleteObject(liveObject)
+			h.mustDeleteObject(deletedObject)
+		})
+
+		h.mustDeleteObject(deletedObject)
+
+		var gen int64
+		// List soft deleted objects.
+		it := b.Objects(ctx, &Query{SoftDeleted: true})
+		var gotNames []string
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			gotNames = append(gotNames, attrs.Name)
+
+			// Get the generation here as the test will fail if there is more than one object
+			gen = attrs.Generation
+		}
+		if len(gotNames) != 1 || gotNames[0] != deletedObject.ObjectName() {
+			t.Fatalf("list soft deleted objects; got: %v, expected only one object named: %s", gotNames, deletedObject.ObjectName())
+		}
+
+		// List live objects.
+		gotNames = []string{}
+		it = b.Objects(ctx, nil)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			gotNames = append(gotNames, attrs.Name)
+		}
+		if len(gotNames) != 1 || gotNames[0] != liveObject.ObjectName() {
+			t.Fatalf("list objects that are not soft deleted; got: %v, expected only one object named: %s", gotNames, liveObject.ObjectName())
+		}
+
+		// Get a soft deleted object and check soft and hard delete times.
+		oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
+		if err != nil {
+			t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
+		}
+		if oAttrs.SoftDeleteTime.Before(testStart) {
+			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
+		}
+		if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
+			t.Fatalf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
+		}
+
+		// Restore a soft deleted object.
+		_, err = deletedObject.Generation(gen).Restore(ctx, &RestoreOptions{CopySourceACL: true})
+		if err != nil {
+			t.Fatalf("Object(deletedObject).Restore: %v", err)
+		}
+
+		// Update the soft delete policy to remove it.
+		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: &SoftDeletePolicy{}})
+		if err != nil {
+			t.Fatalf("b.Update: %v", err)
+		}
+
+		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, time.Duration(0); got != expect {
+			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
 		}
 	})
 }
