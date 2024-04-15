@@ -20,9 +20,9 @@ package bigquery
 type RangeValue struct {
 	// The start value of the range.  A missing value represents an
 	// unbounded start.
-	Start Value
+	Start Value `json:"start"`
 
 	// The end value of the range.  A missing value represents an
 	// unbounded end.
-	End Value
+	End Value `json:"end"`
 }

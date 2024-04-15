@@ -433,7 +433,16 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 				return setNull(v, x, func() interface{} { return x.(*big.Rat) })
 			}
 		}
+
+	case RangeFieldType:
+		if ftype == typeOfRangeValue {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} { return x.(*RangeValue) })
+			}
+		}
+
 	}
+
 	return nil
 }
 

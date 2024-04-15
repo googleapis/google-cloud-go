@@ -1171,7 +1171,7 @@ type TestStruct struct {
 	DateTime  civil.DateTime
 	Numeric   *big.Rat
 	Geography string
-	RangeDate *RangeValue
+	RangeDate *RangeValue `bigquery:"rangedate"` //TODO: remove tag when field normalization works
 
 	StringArray    []string
 	IntegerArray   []int64
@@ -1274,6 +1274,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			Time:      tm,
 			DateTime:  dtm,
 			Numeric:   big.NewRat(4499, 10000),
+			RangeDate: range_d,
 		},
 	}
 	var savers []*StructSaver
