@@ -2,6 +2,29 @@
 
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.1.1...auth/v0.2.0) (2024-04-15)
 
+### Breaking Changes
+
+In the below mentioned commits there were a few large breaking changes since the
+last release of the module.
+
+1. The `Credentials` type has been moved to the root of the module as it is
+   becoming the core abstraction for the whole module.
+2. Because of the above mentioned change many functions that previously
+   returned a `TokenProvider` now return `Credentials`. Similarly, these
+   functions have been renamed to be more specific.
+3. Most places that used to take an optional `TokenProvider` now accept
+   `Credentials`. You can make a `Credentials` from a `TokenProvider` using the
+   constructor found in the `auth` package.
+4. The `detect` package has been renamed to `credentials`. With this change some
+   function signatures were also updated for better readability.
+5. Derivative auth flows like `impersonate` and `downscope` have been moved to
+   be under the new `credentials` package.
+
+Although these changes are disruptive we think that they are for the best of the
+long-term health of the module. We do not expect any more large breaking changes
+like these in future revisions, even before 1.0.0. This version will be the
+first version of the auth library that our client libraries start to use and
+depend on.
 
 ### Features
 
