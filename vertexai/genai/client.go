@@ -95,7 +95,7 @@ type GenerativeModel struct {
 	GenerationConfig
 	SafetySettings []*SafetySetting
 	Tools          []*Tool
-	ToolConfig     *ToolConfig
+	ToolConfig     *ToolConfig // configuration for tools
 }
 
 const defaultMaxOutputTokens = 2048

@@ -234,7 +234,7 @@ func TestLive(t *testing.T) {
 		model := client.GenerativeModel(*modelName)
 		model.SetTemperature(0)
 		model.Tools = []*Tool{weatherTool}
-		t.Run("funcall-auto", func(t *testing.T) {
+		t.Run("funcall", func(t *testing.T) {
 			session := model.StartChat()
 			res, err := session.SendMessage(ctx, Text("What is the weather like in New York?"))
 			if err != nil {
