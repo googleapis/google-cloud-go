@@ -272,7 +272,7 @@ func TestGetObjectEmulated(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		got, err := client.GetObject(context.Background(), bucket, want.Name, defaultGen, nil, nil)
+		got, err := client.GetObject(context.Background(), &getObjectParams{bucket: bucket, object: want.Name, gen: defaultGen})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -1332,7 +1332,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 					if err != nil {
 						return fmt.Errorf("creating object: %w", err)
 					}
-					_, err = client.GetObject(ctx, bucket, objName, gen, nil, &Conditions{GenerationMatch: gen, MetagenerationMatch: metaGen})
+					_, err = client.GetObject(ctx, &getObjectParams{bucket: bucket, object: objName, gen: gen, conds: &Conditions{GenerationMatch: gen, MetagenerationMatch: metaGen}})
 					return err
 				},
 			},
