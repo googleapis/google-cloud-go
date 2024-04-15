@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,10 +52,12 @@ type BackendServicesCallOptions struct {
 	GetIamPolicy          []gax.CallOption
 	Insert                []gax.CallOption
 	List                  []gax.CallOption
+	ListUsable            []gax.CallOption
 	Patch                 []gax.CallOption
 	SetEdgeSecurityPolicy []gax.CallOption
 	SetIamPolicy          []gax.CallOption
 	SetSecurityPolicy     []gax.CallOption
+	TestIamPermissions    []gax.CallOption
 	Update                []gax.CallOption
 }
 
@@ -124,6 +126,18 @@ func defaultBackendServicesRESTCallOptions() *BackendServicesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListUsable: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -134,6 +148,9 @@ func defaultBackendServicesRESTCallOptions() *BackendServicesCallOptions {
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		SetSecurityPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Update: []gax.CallOption{
@@ -156,10 +173,12 @@ type internalBackendServicesClient interface {
 	GetIamPolicy(context.Context, *computepb.GetIamPolicyBackendServiceRequest, ...gax.CallOption) (*computepb.Policy, error)
 	Insert(context.Context, *computepb.InsertBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListBackendServicesRequest, ...gax.CallOption) *BackendServiceIterator
+	ListUsable(context.Context, *computepb.ListUsableBackendServicesRequest, ...gax.CallOption) *BackendServiceIterator
 	Patch(context.Context, *computepb.PatchBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	SetEdgeSecurityPolicy(context.Context, *computepb.SetEdgeSecurityPolicyBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyBackendServiceRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetSecurityPolicy(context.Context, *computepb.SetSecurityPolicyBackendServiceRequest, ...gax.CallOption) (*Operation, error)
+	TestIamPermissions(context.Context, *computepb.TestIamPermissionsBackendServiceRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 	Update(context.Context, *computepb.UpdateBackendServiceRequest, ...gax.CallOption) (*Operation, error)
 }
 
@@ -203,7 +222,7 @@ func (c *BackendServicesClient) AddSignedUrlKey(ctx context.Context, req *comput
 	return c.internalClient.AddSignedUrlKey(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *BackendServicesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -243,6 +262,11 @@ func (c *BackendServicesClient) List(ctx context.Context, req *computepb.ListBac
 	return c.internalClient.List(ctx, req, opts...)
 }
 
+// ListUsable retrieves an aggregated list of all usable backend services in the specified project.
+func (c *BackendServicesClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
+	return c.internalClient.ListUsable(ctx, req, opts...)
+}
+
 // Patch patches the specified BackendService resource with the data included in the request. For more information, see Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *BackendServicesClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
@@ -261,6 +285,11 @@ func (c *BackendServicesClient) SetIamPolicy(ctx context.Context, req *computepb
 // SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview
 func (c *BackendServicesClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetSecurityPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *BackendServicesClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsBackendServiceRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
 // Update updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
@@ -320,7 +349,9 @@ func NewBackendServicesRESTClient(ctx context.Context, opts ...option.ClientOpti
 func defaultBackendServicesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -429,7 +460,7 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	return op, nil
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	it := &BackendServicesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListBackendServicesRequest)
@@ -468,6 +499,9 @@ func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *com
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1027,6 +1061,103 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 	return it
 }
 
+// ListUsable retrieves an aggregated list of all usable backend services in the specified project.
+func (c *backendServicesRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableBackendServicesRequest, opts ...gax.CallOption) *BackendServiceIterator {
+	it := &BackendServiceIterator{}
+	req = proto.Clone(req).(*computepb.ListUsableBackendServicesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.BackendService, string, error) {
+		resp := &computepb.BackendServiceListUsable{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(math.MaxInt32)
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/listUsable", req.GetProject())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // Patch patches the specified BackendService resource with the data included in the request. For more information, see Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -1317,6 +1448,68 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 	return op, nil
 }
 
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *backendServicesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsBackendServiceRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTestPermissionsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/testIamPermissions", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.TestPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // Update updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
 func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendServiceRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -1391,104 +1584,4 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 		},
 	}
 	return op, nil
-}
-
-// BackendServiceIterator manages a stream of *computepb.BackendService.
-type BackendServiceIterator struct {
-	items    []*computepb.BackendService
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.BackendService, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BackendServiceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BackendServiceIterator) Next() (*computepb.BackendService, error) {
-	var item *computepb.BackendService
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BackendServiceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BackendServiceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// BackendServicesScopedListPair is a holder type for string/*computepb.BackendServicesScopedList map entries
-type BackendServicesScopedListPair struct {
-	Key   string
-	Value *computepb.BackendServicesScopedList
-}
-
-// BackendServicesScopedListPairIterator manages a stream of BackendServicesScopedListPair.
-type BackendServicesScopedListPairIterator struct {
-	items    []BackendServicesScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []BackendServicesScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BackendServicesScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BackendServicesScopedListPairIterator) Next() (BackendServicesScopedListPair, error) {
-	var item BackendServicesScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BackendServicesScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BackendServicesScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

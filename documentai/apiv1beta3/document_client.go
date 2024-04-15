@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"time"
 
 	documentaipb "cloud.google.com/go/documentai/apiv1beta3/documentaipb"
 	"cloud.google.com/go/longrunning"
@@ -50,6 +49,7 @@ type DocumentCallOptions struct {
 	UpdateDataset        []gax.CallOption
 	ImportDocuments      []gax.CallOption
 	GetDocument          []gax.CallOption
+	ListDocuments        []gax.CallOption
 	BatchDeleteDocuments []gax.CallOption
 	GetDatasetSchema     []gax.CallOption
 	UpdateDatasetSchema  []gax.CallOption
@@ -63,7 +63,9 @@ type DocumentCallOptions struct {
 func defaultDocumentGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("documentai.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("documentai.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("documentai.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -77,6 +79,7 @@ func defaultDocumentCallOptions() *DocumentCallOptions {
 		UpdateDataset:        []gax.CallOption{},
 		ImportDocuments:      []gax.CallOption{},
 		GetDocument:          []gax.CallOption{},
+		ListDocuments:        []gax.CallOption{},
 		BatchDeleteDocuments: []gax.CallOption{},
 		GetDatasetSchema:     []gax.CallOption{},
 		UpdateDatasetSchema:  []gax.CallOption{},
@@ -93,6 +96,7 @@ func defaultDocumentRESTCallOptions() *DocumentCallOptions {
 		UpdateDataset:        []gax.CallOption{},
 		ImportDocuments:      []gax.CallOption{},
 		GetDocument:          []gax.CallOption{},
+		ListDocuments:        []gax.CallOption{},
 		BatchDeleteDocuments: []gax.CallOption{},
 		GetDatasetSchema:     []gax.CallOption{},
 		UpdateDatasetSchema:  []gax.CallOption{},
@@ -114,6 +118,7 @@ type internalDocumentClient interface {
 	ImportDocuments(context.Context, *documentaipb.ImportDocumentsRequest, ...gax.CallOption) (*ImportDocumentsOperation, error)
 	ImportDocumentsOperation(name string) *ImportDocumentsOperation
 	GetDocument(context.Context, *documentaipb.GetDocumentRequest, ...gax.CallOption) (*documentaipb.GetDocumentResponse, error)
+	ListDocuments(context.Context, *documentaipb.ListDocumentsRequest, ...gax.CallOption) *DocumentMetadataIterator
 	BatchDeleteDocuments(context.Context, *documentaipb.BatchDeleteDocumentsRequest, ...gax.CallOption) (*BatchDeleteDocumentsOperation, error)
 	BatchDeleteDocumentsOperation(name string) *BatchDeleteDocumentsOperation
 	GetDatasetSchema(context.Context, *documentaipb.GetDatasetSchemaRequest, ...gax.CallOption) (*documentaipb.DatasetSchema, error)
@@ -190,6 +195,11 @@ func (c *DocumentClient) ImportDocumentsOperation(name string) *ImportDocumentsO
 // GetDocument returns relevant fields present in the requested document.
 func (c *DocumentClient) GetDocument(ctx context.Context, req *documentaipb.GetDocumentRequest, opts ...gax.CallOption) (*documentaipb.GetDocumentResponse, error) {
 	return c.internalClient.GetDocument(ctx, req, opts...)
+}
+
+// ListDocuments returns a list of documents present in the dataset.
+func (c *DocumentClient) ListDocuments(ctx context.Context, req *documentaipb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentMetadataIterator {
+	return c.internalClient.ListDocuments(ctx, req, opts...)
 }
 
 // BatchDeleteDocuments deletes a set of documents.
@@ -386,7 +396,9 @@ func NewDocumentRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 func defaultDocumentRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://documentai.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://documentai.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://documentai.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -471,6 +483,52 @@ func (c *documentGRPCClient) GetDocument(ctx context.Context, req *documentaipb.
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *documentGRPCClient) ListDocuments(ctx context.Context, req *documentaipb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentMetadataIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset", url.QueryEscape(req.GetDataset()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDocuments[0:len((*c.CallOptions).ListDocuments):len((*c.CallOptions).ListDocuments)], opts...)
+	it := &DocumentMetadataIterator{}
+	req = proto.Clone(req).(*documentaipb.ListDocumentsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.DocumentMetadata, string, error) {
+		resp := &documentaipb.ListDocumentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.documentClient.ListDocuments(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDocumentMetadata(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *documentGRPCClient) BatchDeleteDocuments(ctx context.Context, req *documentaipb.BatchDeleteDocumentsRequest, opts ...gax.CallOption) (*BatchDeleteDocumentsOperation, error) {
@@ -904,6 +962,95 @@ func (c *documentRESTClient) GetDocument(ctx context.Context, req *documentaipb.
 		return nil, e
 	}
 	return resp, nil
+}
+
+// ListDocuments returns a list of documents present in the dataset.
+func (c *documentRESTClient) ListDocuments(ctx context.Context, req *documentaipb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentMetadataIterator {
+	it := &DocumentMetadataIterator{}
+	req = proto.Clone(req).(*documentaipb.ListDocumentsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*documentaipb.DocumentMetadata, string, error) {
+		resp := &documentaipb.ListDocumentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta3/%v:listDocuments", req.GetDataset())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDocumentMetadata(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // BatchDeleteDocuments deletes a set of documents.
@@ -1459,12 +1606,6 @@ func (c *documentRESTClient) ListOperations(ctx context.Context, req *longrunnin
 	return it
 }
 
-// BatchDeleteDocumentsOperation manages a long-running operation from BatchDeleteDocuments.
-type BatchDeleteDocumentsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // BatchDeleteDocumentsOperation returns a new BatchDeleteDocumentsOperation from a given name.
 // The name must be that of a previously created BatchDeleteDocumentsOperation, possibly from a different process.
 func (c *documentGRPCClient) BatchDeleteDocumentsOperation(name string) *BatchDeleteDocumentsOperation {
@@ -1481,70 +1622,6 @@ func (c *documentRESTClient) BatchDeleteDocumentsOperation(name string) *BatchDe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchDeleteDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*documentaipb.BatchDeleteDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp documentaipb.BatchDeleteDocumentsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchDeleteDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*documentaipb.BatchDeleteDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp documentaipb.BatchDeleteDocumentsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchDeleteDocumentsOperation) Metadata() (*documentaipb.BatchDeleteDocumentsMetadata, error) {
-	var meta documentaipb.BatchDeleteDocumentsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchDeleteDocumentsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchDeleteDocumentsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ImportDocumentsOperation manages a long-running operation from ImportDocuments.
-type ImportDocumentsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ImportDocumentsOperation returns a new ImportDocumentsOperation from a given name.
@@ -1565,70 +1642,6 @@ func (c *documentRESTClient) ImportDocumentsOperation(name string) *ImportDocume
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportDocumentsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*documentaipb.ImportDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp documentaipb.ImportDocumentsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportDocumentsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*documentaipb.ImportDocumentsResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp documentaipb.ImportDocumentsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportDocumentsOperation) Metadata() (*documentaipb.ImportDocumentsMetadata, error) {
-	var meta documentaipb.ImportDocumentsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportDocumentsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportDocumentsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateDatasetOperation manages a long-running operation from UpdateDataset.
-type UpdateDatasetOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateDatasetOperation returns a new UpdateDatasetOperation from a given name.
 // The name must be that of a previously created UpdateDatasetOperation, possibly from a different process.
 func (c *documentGRPCClient) UpdateDatasetOperation(name string) *UpdateDatasetOperation {
@@ -1645,62 +1658,4 @@ func (c *documentRESTClient) UpdateDatasetOperation(name string) *UpdateDatasetO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateDatasetOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*documentaipb.Dataset, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp documentaipb.Dataset
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateDatasetOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*documentaipb.Dataset, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp documentaipb.Dataset
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateDatasetOperation) Metadata() (*documentaipb.UpdateDatasetOperationMetadata, error) {
-	var meta documentaipb.UpdateDatasetOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateDatasetOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateDatasetOperation) Name() string {
-	return op.lro.Name()
 }

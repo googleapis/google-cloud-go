@@ -78,7 +78,7 @@ func TestConvertTime(t *testing.T) {
 	ts := testTimestamp.Round(time.Millisecond)
 	row := &bq.TableRow{
 		F: []*bq.TableCell{
-			{V: fmt.Sprintf("%.10f", float64(ts.UnixNano())/1e9)},
+			{V: fmt.Sprint(ts.UnixMicro())},
 			{V: testDate.String()},
 			{V: testTime.String()},
 			{V: testDateTime.String()},
@@ -95,15 +95,17 @@ func TestConvertTime(t *testing.T) {
 			t.Errorf("#%d: got:\n%v\nwant:\n%v", i, g, w)
 		}
 	}
-	if got[0].(time.Time).Location() != time.UTC {
-		t.Errorf("expected time zone UTC: got:\n%v", got)
+	// Ensure that the times are returned in UTC timezone.
+	// https://github.com/googleapis/google-cloud-go/issues/9407
+	if gotTZ := got[0].(time.Time).Location(); gotTZ != time.UTC {
+		t.Errorf("expected time zone UTC: got:\n%v", gotTZ)
 	}
 }
 
 func TestConvertSmallTimes(t *testing.T) {
 	for _, year := range []int{1600, 1066, 1} {
 		want := time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC)
-		s := fmt.Sprintf("%.10f", float64(want.Unix()))
+		s := fmt.Sprint(time.Date(year, time.January, 1, 0, 0, 0, 0, time.UTC).UnixMicro())
 		got, err := convertBasicType(s, TimestampFieldType)
 		if err != nil {
 			t.Fatal(err)
@@ -111,44 +113,6 @@ func TestConvertSmallTimes(t *testing.T) {
 		if !got.(time.Time).Equal(want) {
 			t.Errorf("got %v, want %v", got, want)
 		}
-	}
-}
-
-func TestConvertTimePrecision(t *testing.T) {
-	tcs := []struct {
-		// Internally, BigQuery stores timestamps as microsecond-precision
-		// floats.
-		bq   float64
-		want time.Time
-	}{
-		{
-			bq:   1555593697.154358,
-			want: time.Unix(1555593697, 154358*1000),
-		},
-		{
-			bq:   1555593697.154359,
-			want: time.Unix(1555593697, 154359*1000),
-		},
-		{
-			bq:   1555593697.154360,
-			want: time.Unix(1555593697, 154360*1000),
-		},
-	}
-	for _, tc := range tcs {
-		bqS := fmt.Sprintf("%.6f", tc.bq)
-		t.Run(bqS, func(t *testing.T) {
-			got, err := convertBasicType(bqS, TimestampFieldType)
-			if err != nil {
-				t.Fatalf("convertBasicType failed: %v", err)
-			}
-			gotT, ok := got.(time.Time)
-			if !ok {
-				t.Fatalf("got a %T from convertBasicType, want a time.Time; got = %v", got, got)
-			}
-			if !gotT.Equal(tc.want) {
-				t.Errorf("got %v from convertBasicType, want %v", gotT, tc.want)
-			}
-		})
 	}
 }
 
@@ -441,11 +405,13 @@ func TestConvertRowErrors(t *testing.T) {
 
 func TestValuesSaverConvertsToMap(t *testing.T) {
 	testCases := []struct {
+		name         string
 		vs           ValuesSaver
 		wantInsertID string
 		wantRow      map[string]Value
 	}{
 		{
+			name: "scalars",
 			vs: ValuesSaver{
 				Schema: Schema{
 					{Name: "intField", Type: IntegerFieldType},
@@ -476,6 +442,7 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 			},
 		},
 		{
+			name: "intNested",
 			vs: ValuesSaver{
 				Schema: Schema{
 					{Name: "intField", Type: IntegerFieldType},
@@ -499,6 +466,7 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 			},
 		},
 		{ // repeated nested field
+			name: "nestedArray",
 			vs: ValuesSaver{
 				Schema: Schema{
 					{
@@ -528,6 +496,7 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 			},
 		},
 		{ // zero-length repeated nested field
+			name: "emptyNestedArray",
 			vs: ValuesSaver{
 				Schema: Schema{
 					{
@@ -552,17 +521,18 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		gotRow, gotInsertID, err := tc.vs.Save()
-		if err != nil {
-			t.Errorf("Expected successful save; got: %v", err)
-			continue
-		}
-		if !testutil.Equal(gotRow, tc.wantRow) {
-			t.Errorf("%v row:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotRow, tc.wantRow)
-		}
-		if !testutil.Equal(gotInsertID, tc.wantInsertID) {
-			t.Errorf("%v ID:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotInsertID, tc.wantInsertID)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			gotRow, gotInsertID, err := tc.vs.Save()
+			if err != nil {
+				t.Fatalf("Expected successful save; got: %v", err)
+			}
+			if !testutil.Equal(gotRow, tc.wantRow) {
+				t.Errorf("%v row:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotRow, tc.wantRow)
+			}
+			if !testutil.Equal(gotInsertID, tc.wantInsertID) {
+				t.Errorf("%v ID:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotInsertID, tc.wantInsertID)
+			}
+		})
 	}
 }
 
@@ -749,7 +719,7 @@ func TestStructSaverErrors(t *testing.T) {
 }
 
 func TestNumericStrings(t *testing.T) {
-	for _, test := range []struct {
+	for _, tc := range []struct {
 		description    string
 		in             *big.Rat
 		wantNumeric    string
@@ -761,12 +731,14 @@ func TestNumericStrings(t *testing.T) {
 		{"smaller rounding case 1", big.NewRat(5, 1e10), "0.000000001", "0.00000000050000000000000000000000000000"},
 		{"smaller rounding case 2", big.NewRat(-5, 1e10), "-0.000000001", "-0.00000000050000000000000000000000000000"},
 	} {
-		if got := NumericString(test.in); got != test.wantNumeric {
-			t.Errorf("case %q, val %v as numeric: got %q, want %q", test.description, test.in, got, test.wantNumeric)
-		}
-		if got := BigNumericString(test.in); got != test.wantBigNumeric {
-			t.Errorf("case %q, val %v as bignumeric: got %q, want %q", test.description, test.in, got, test.wantBigNumeric)
-		}
+		t.Run(tc.description, func(t *testing.T) {
+			if got := NumericString(tc.in); got != tc.wantNumeric {
+				t.Errorf("case %q, val %v as numeric: got %q, want %q", tc.description, tc.in, got, tc.wantNumeric)
+			}
+			if got := BigNumericString(tc.in); got != tc.wantBigNumeric {
+				t.Errorf("case %q, val %v as bignumeric: got %q, want %q", tc.description, tc.in, got, tc.wantBigNumeric)
+			}
+		})
 	}
 }
 

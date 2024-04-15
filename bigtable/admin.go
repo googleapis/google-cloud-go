@@ -31,8 +31,6 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/ptypes"
-	durpb "github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/cloudresourcemanager/v1"
 	"google.golang.org/api/iterator"
@@ -43,6 +41,7 @@ import (
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/durationpb"
 	field_mask "google.golang.org/protobuf/types/known/fieldmaskpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const adminAddr = "bigtableadmin.googleapis.com:443"
@@ -114,7 +113,11 @@ func (ac *AdminClient) Close() error {
 }
 
 func (ac *AdminClient) instancePrefix() string {
-	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
+	return instancePrefix(ac.project, ac.instance)
+}
+
+func instancePrefix(project, instance string) string {
+	return fmt.Sprintf("projects/%s/instances/%s", project, instance)
 }
 
 func (ac *AdminClient) backupPath(cluster, instance, backup string) string {
@@ -231,12 +234,23 @@ const (
 	Unprotected
 )
 
-// TableConf contains all of the information necessary to create a table with column families.
+// Family represents a column family with its optional GC policy and value type.
+type Family struct {
+	GCPolicy  GCPolicy
+	ValueType Type
+}
+
+// TableConf contains all the information necessary to create a table with column families.
 type TableConf struct {
 	TableID   string
 	SplitKeys []string
-	// Families is a map from family name to GCPolicy
+	// DEPRECATED: Use ColumnFamilies instead.
+	// Families is a map from family name to GCPolicy.
+	// Only one of Families or ColumnFamilies may be set.
 	Families map[string]GCPolicy
+	// ColumnFamilies is a map from family name to family configuration.
+	// Only one of Families or ColumnFamilies may be set.
+	ColumnFamilies map[string]Family
 	// DeletionProtection can be none, protected or unprotected
 	// set to protected to make the table protected against data loss
 	DeletionProtection    DeletionProtection
@@ -280,7 +294,28 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 		tbl.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
 		tbl.ChangeStreamConfig.RetentionPeriod = durationpb.New(conf.ChangeStreamRetention.(time.Duration))
 	}
-	if conf.Families != nil {
+	if conf.Families != nil && conf.ColumnFamilies != nil {
+		return errors.New("only one of Families or ColumnFamilies may be set, not both")
+	}
+
+	if conf.ColumnFamilies != nil {
+		tbl.ColumnFamilies = make(map[string]*btapb.ColumnFamily)
+		for fam, config := range conf.ColumnFamilies {
+			var gcPolicy *btapb.GcRule
+			if config.GCPolicy != nil {
+				gcPolicy = config.GCPolicy.proto()
+			} else {
+				gcPolicy = &btapb.GcRule{}
+			}
+
+			var typeProto *btapb.Type = nil
+			if config.ValueType != nil {
+				typeProto = config.ValueType.proto()
+			}
+
+			tbl.ColumnFamilies[fam] = &btapb.ColumnFamily{GcRule: gcPolicy, ValueType: typeProto}
+		}
+	} else if conf.Families != nil {
 		tbl.ColumnFamilies = make(map[string]*btapb.ColumnFamily)
 		for fam, policy := range conf.Families {
 			tbl.ColumnFamilies[fam] = &btapb.ColumnFamily{GcRule: policy.proto()}
@@ -307,6 +342,30 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
 			Id:  family,
 			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
+		}},
+	}
+	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
+	return err
+}
+
+// CreateColumnFamilyWithConfig creates a new column family in a table with an optional GC policy and value type.
+func (ac *AdminClient) CreateColumnFamilyWithConfig(ctx context.Context, table, family string, config Family) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+
+	cf := &btapb.ColumnFamily{}
+	if config.GCPolicy != nil {
+		cf.GcRule = config.GCPolicy.proto()
+	}
+	if config.ValueType != nil {
+		cf.ValueType = config.ValueType.proto()
+	}
+
+	req := &btapb.ModifyColumnFamiliesRequest{
+		Name: prefix + "/tables/" + table,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  family,
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: cf},
 		}},
 	}
 	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
@@ -565,10 +624,10 @@ func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapsh
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
-	var ttlProto *durpb.Duration
+	var ttlProto *durationpb.Duration
 
 	if ttl > 0 {
-		ttlProto = ptypes.DurationProto(ttl)
+		ttlProto = durationpb.New(ttl)
 	}
 
 	req := &btapb.SnapshotTableRequest{
@@ -643,15 +702,15 @@ func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
 	tablePathParts := strings.Split(snapshot.SourceTable.Name, "/")
 	tableID := tablePathParts[len(tablePathParts)-1]
 
-	createTime, err := ptypes.Timestamp(snapshot.CreateTime)
-	if err != nil {
+	if err := snapshot.CreateTime.CheckValid(); err != nil {
 		return nil, fmt.Errorf("invalid createTime: %w", err)
 	}
+	createTime := snapshot.CreateTime.AsTime()
 
-	deleteTime, err := ptypes.Timestamp(snapshot.DeleteTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid deleteTime: %w", err)
+	if err := snapshot.DeleteTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid deleteTime: %v", err)
 	}
+	deleteTime := snapshot.DeleteTime.AsTime()
 
 	return &SnapshotInfo{
 		Name:        name,
@@ -1092,7 +1151,7 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 				return fmt.Errorf("UpdateCluster %q failed %w; however UpdateInstance succeeded",
 					cluster.ClusterID, clusterErr)
 			}
-			return err
+			return clusterErr
 		}
 	}
 
@@ -1902,10 +1961,7 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
-	parsedExpireTime, err := ptypes.TimestampProto(expireTime)
-	if err != nil {
-		return err
-	}
+	parsedExpireTime := timestamppb.New(expireTime)
 
 	req := &btapb.CreateBackupRequest{
 		Parent:   prefix + "/clusters/" + cluster,
@@ -1917,6 +1973,27 @@ func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup 
 	}
 
 	op, err := ac.tClient.CreateBackup(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Backup{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+// CopyBackup copies the specified source backup with the user-provided expire time.
+func (ac *AdminClient) CopyBackup(ctx context.Context, sourceCluster, sourceBackup,
+	destProject, destInstance, destCluster, destBackup string, expireTime time.Time) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	sourceBackupPath := ac.backupPath(sourceCluster, ac.instance, sourceBackup)
+	destPrefix := instancePrefix(destProject, destInstance)
+	req := &btapb.CopyBackupRequest{
+		Parent:       destPrefix + "/clusters/" + destCluster,
+		BackupId:     destBackup,
+		SourceBackup: sourceBackupPath,
+		ExpireTime:   timestamppb.New(expireTime),
+	}
+
+	op, err := ac.tClient.CopyBackup(ctx, req)
 	if err != nil {
 		return err
 	}
@@ -1977,24 +2054,25 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	tablePathParts := strings.Split(backup.SourceTable, "/")
 	tableID := tablePathParts[len(tablePathParts)-1]
 
-	startTime, err := ptypes.Timestamp(backup.StartTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid startTime: %w", err)
+	if err := backup.StartTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid startTime: %v", err)
 	}
+	startTime := backup.StartTime.AsTime()
 
-	endTime, err := ptypes.Timestamp(backup.EndTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid endTime: %w", err)
+	if err := backup.EndTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid endTime: %v", err)
 	}
+	endTime := backup.EndTime.AsTime()
 
-	expireTime, err := ptypes.Timestamp(backup.ExpireTime)
-	if err != nil {
-		return nil, fmt.Errorf("invalid expireTime: %w", err)
+	if err := backup.ExpireTime.CheckValid(); err != nil {
+		return nil, fmt.Errorf("invalid expireTime: %v", err)
 	}
+	expireTime := backup.ExpireTime.AsTime()
 	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
 	bi := BackupInfo{
 		Name:           name,
 		SourceTable:    tableID,
+		SourceBackup:   backup.SourceBackup,
 		SizeBytes:      backup.SizeBytes,
 		StartTime:      startTime,
 		EndTime:        endTime,
@@ -2034,6 +2112,7 @@ func (it *BackupIterator) Next() (*BackupInfo, error) {
 type BackupInfo struct {
 	Name           string
 	SourceTable    string
+	SourceBackup   string
 	SizeBytes      int64
 	StartTime      time.Time
 	EndTime        time.Time
@@ -2081,10 +2160,7 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
-	expireTimestamp, err := ptypes.TimestampProto(expireTime)
-	if err != nil {
-		return err
-	}
+	expireTimestamp := timestamppb.New(expireTime)
 
 	updateMask := &field_mask.FieldMask{}
 	updateMask.Paths = append(updateMask.Paths, "expire_time")
@@ -2096,6 +2172,6 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 		},
 		UpdateMask: updateMask,
 	}
-	_, err = ac.tClient.UpdateBackup(ctx, req)
+	_, err := ac.tClient.UpdateBackup(ctx, req)
 	return err
 }

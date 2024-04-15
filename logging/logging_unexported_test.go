@@ -82,7 +82,7 @@ func TestLoggerCreation(t *testing.T) {
 		DelayThreshold:       DefaultDelayThreshold,
 		BundleCountThreshold: DefaultEntryCountThreshold,
 		BundleByteThreshold:  DefaultEntryByteThreshold,
-		BundleByteLimit:      0,
+		BundleByteLimit:      DefaultBundleByteLimit,
 		BufferedByteLimit:    DefaultBufferedByteLimit,
 	}
 	for _, test := range []struct {
@@ -395,5 +395,10 @@ func SetNow(f func() time.Time) func() time.Time {
 
 func SetToLogEntryInternal(f func(Entry, *Logger, string, int) (*logpb.LogEntry, error)) func(Entry, *Logger, string, int) (*logpb.LogEntry, error) {
 	toLogEntryInternal, f = f, toLogEntryInternal
+	return f
+}
+
+func SetDetectResourceInternal(f func() *mrpb.MonitoredResource) func() *mrpb.MonitoredResource {
+	detectResourceInternal, f = f, detectResourceInternal
 	return f
 }

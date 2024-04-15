@@ -82,3 +82,35 @@ The post-processor initializes new modules by generating the required files
 To add a new module, add the directory name of the module to `modules` in
 `google-cloud-go/internal/postprocessor/config.yaml`. Please maintain
 alphabetical ordering of the module names.
+
+## Validating your config changes
+
+The `validate` command is run as a presubmit on changes to either the
+`.github/.OwlBot.yaml` or the `internal/postprocessor/config.yaml`.
+
+If you want to run it manually, from the **repository root**, simply run the
+following:
+
+```
+go run ./internal/postprocessor validate
+```
+
+If you want to validate existence of service config yaml in the PostProcessor
+config, provide an absolute path to a local clone of `googleapis`:
+
+```
+go run ./internal/postprocessor validate -googleapis-dir=$GOOGLEAPIS
+```
+
+If you want validate a specific config file, not the repository default, then
+provide aboslute paths to either or both config files like so:
+
+```
+go run ./internal/postprocessor \
+   -owl-bot-config=$OWL_BOT_YAML \
+   -processor-config=$CONFIG_YAML
+```
+
+If you think there is an issue with the validator, just fix it in the same CL
+as the config change that triggered it. No need to update the postprocessor sha
+when the validate command is changed, it runs from HEAD of the branch.

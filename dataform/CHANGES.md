@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.9.3](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.9.2...dataform/v0.9.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* **dataform:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.9.2](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.9.1...dataform/v0.9.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dataform:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.9.1](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.9.0...dataform/v0.9.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **dataform:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.8.3...dataform/v0.9.0) (2023-10-31)
+
+
+### Features
+
+* **dataform:** Support for ReleaseConfigs ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
+## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.8.2...dataform/v0.8.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **dataform:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.8.1...dataform/v0.8.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **dataform:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.8.0...dataform/v0.8.1) (2023-06-20)
 
 
@@ -70,3 +112,4 @@
 
 * **dataform:** remove unused filter field from alpha2 version of API before release ([8a1ad06](https://github.com/googleapis/google-cloud-go/commit/8a1ad06572a65afa91a0a77a85b849e766876671))
 * **dataform:** start generating apiv1alpha2 ([#6299](https://github.com/googleapis/google-cloud-go/issues/6299)) ([1c434c6](https://github.com/googleapis/google-cloud-go/commit/1c434c6657b9bd8529760681c95aef9373c66120))
+

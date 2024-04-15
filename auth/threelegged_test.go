@@ -36,10 +36,11 @@ func newOpts(url string) *Options3LO {
 		AuthURL:      url + "/auth",
 		TokenURL:     url + "/token",
 		AuthStyle:    StyleInHeader,
+		RefreshToken: "OLD_REFRESH_TOKEN",
 	}
 }
 
-func TestConfig3LO_URLUnsafe(t *testing.T) {
+func Test3LO_URLUnsafe(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got, want := r.Header.Get("Authorization"), "Basic Q0xJRU5UX0lEJTNGJTNGOkNMSUVOVF9TRUNSRVQlM0YlM0Y="; got != want {
 			t.Errorf("Authorization header = %q; want %q", got, want)
@@ -58,7 +59,7 @@ func TestConfig3LO_URLUnsafe(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_StandardExchange(t *testing.T) {
+func Test3LO_StandardExchange(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.String() != "/token" {
 			t.Errorf("Unexpected exchange request URL %q", r.URL)
@@ -102,7 +103,7 @@ func TestConfig3LO_StandardExchange(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_ExchangeCustomParams(t *testing.T) {
+func Test3LO_ExchangeCustomParams(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.String() != "/token" {
 			t.Errorf("Unexpected exchange request URL, %v is found.", r.URL)
@@ -149,7 +150,7 @@ func TestConfig3LO_ExchangeCustomParams(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_ExchangeJSONResponse(t *testing.T) {
+func Test3LO_ExchangeJSONResponse(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.String() != "/token" {
 			t.Errorf("Unexpected exchange request URL, %v is found.", r.URL)
@@ -197,7 +198,7 @@ func TestConfig3LO_ExchangeJSONResponse(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_ExchangeJSONResponseExpiry(t *testing.T) {
+func Test3LO_ExchangeJSONResponseExpiry(t *testing.T) {
 	seconds := int32(day.Seconds())
 	for _, c := range []struct {
 		name        string
@@ -212,12 +213,12 @@ func TestConfig3LO_ExchangeJSONResponseExpiry(t *testing.T) {
 		{"wrong_value", `"expires_in": "zzz"`, false, false},
 	} {
 		t.Run(c.name, func(t *testing.T) {
-			testConfig3LOExchangeJSONResponseExpiry(t, c.expires, c.want, c.nullExpires)
+			test3LOExchangeJSONResponseExpiry(t, c.expires, c.want, c.nullExpires)
 		})
 	}
 }
 
-func testConfig3LOExchangeJSONResponseExpiry(t *testing.T, exp string, want, nullExpires bool) {
+func test3LOExchangeJSONResponseExpiry(t *testing.T, exp string, want, nullExpires bool) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(fmt.Sprintf(`{"access_token": "90d", "scope": "user", "token_type": "bearer", %s}`, exp)))
@@ -251,7 +252,7 @@ func testConfig3LOExchangeJSONResponseExpiry(t *testing.T, exp string, want, nul
 	}
 }
 
-func TestConfig3LO_ExchangeBadResponse(t *testing.T) {
+func Test3LO_ExchangeBadResponse(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"scope": "user", "token_type": "bearer"}`))
@@ -264,7 +265,7 @@ func TestConfig3LO_ExchangeBadResponse(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_ExchangeBadResponseType(t *testing.T) {
+func Test3LO_ExchangeBadResponseType(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"access_token":123,  "scope": "user", "token_type": "bearer"}`))
@@ -277,15 +278,14 @@ func TestConfig3LO_ExchangeBadResponseType(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_RefreshTokenReplacement(t *testing.T) {
+func Test3LO_RefreshTokenReplacement(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"access_token":"ACCESS_TOKEN",  "scope": "user", "token_type": "bearer", "refresh_token": "NEW_REFRESH_TOKEN"}`))
 	}))
 	defer ts.Close()
 	opts := newOpts(ts.URL)
-	const oldRefreshToken = "OLD_REFRESH_TOKEN"
-	tp, err := New3LOTokenProvider(oldRefreshToken, opts)
+	tp, err := New3LOTokenProvider(opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -299,7 +299,7 @@ func TestConfig3LO_RefreshTokenReplacement(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_RefreshTokenPreservation(t *testing.T) {
+func Test3LO_RefreshTokenPreservation(t *testing.T) {
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write([]byte(`{"access_token":"ACCESS_TOKEN",  "scope": "user", "token_type": "bearer"}`))
@@ -307,7 +307,7 @@ func TestConfig3LO_RefreshTokenPreservation(t *testing.T) {
 	defer ts.Close()
 	opts := newOpts(ts.URL)
 	const oldRefreshToken = "OLD_REFRESH_TOKEN"
-	tp, err := New3LOTokenProvider(oldRefreshToken, opts)
+	tp, err := New3LOTokenProvider(opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -321,7 +321,7 @@ func TestConfig3LO_RefreshTokenPreservation(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_AuthHandlerExchangeSuccess(t *testing.T) {
+func Test3LO_AuthHandlerExchangeSuccess(t *testing.T) {
 	authhandler := func(authCodeURL string) (string, string, error) {
 		if authCodeURL == "testAuthCodeURL?client_id=testClientID&response_type=code&scope=pubsub&state=testState" {
 			return "testCode", "testState", nil
@@ -355,7 +355,7 @@ func TestConfig3LO_AuthHandlerExchangeSuccess(t *testing.T) {
 		},
 	}
 
-	tp, err := New3LOTokenProvider("", opts)
+	tp, err := New3LOTokenProvider(opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -381,7 +381,7 @@ func TestConfig3LO_AuthHandlerExchangeSuccess(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_AuthHandlerExchangeStateMismatch(t *testing.T) {
+func Test3LO_AuthHandlerExchangeStateMismatch(t *testing.T) {
 	authhandler := func(authCodeURL string) (string, string, error) {
 		return "testCode", "testStateMismatch", nil
 	}
@@ -398,16 +398,17 @@ func TestConfig3LO_AuthHandlerExchangeStateMismatch(t *testing.T) {
 	defer ts.Close()
 
 	opts := &Options3LO{
-		ClientID: "testClientID",
-		Scopes:   []string{"pubsub"},
-		AuthURL:  "testAuthCodeURL",
-		TokenURL: ts.URL,
+		ClientID:  "testClientID",
+		Scopes:    []string{"pubsub"},
+		AuthURL:   "testAuthCodeURL",
+		TokenURL:  ts.URL,
+		AuthStyle: StyleInParams,
 		AuthHandlerOpts: &AuthorizationHandlerOptions{
 			State:   "testState",
 			Handler: authhandler,
 		},
 	}
-	tp, err := New3LOTokenProvider("", opts)
+	tp, err := New3LOTokenProvider(opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -417,7 +418,7 @@ func TestConfig3LO_AuthHandlerExchangeStateMismatch(t *testing.T) {
 	}
 }
 
-func TestConfig3LO_PKCEExchangeWithSuccess(t *testing.T) {
+func Test3LO_PKCEExchangeWithSuccess(t *testing.T) {
 	authhandler := func(authCodeURL string) (string, string, error) {
 		if authCodeURL == "testAuthCodeURL?client_id=testClientID&code_challenge=codeChallenge&code_challenge_method=plain&response_type=code&scope=pubsub&state=testState" {
 			return "testCode", "testState", nil
@@ -456,7 +457,7 @@ func TestConfig3LO_PKCEExchangeWithSuccess(t *testing.T) {
 		},
 	}
 
-	tp, err := New3LOTokenProvider("", opts)
+	tp, err := New3LOTokenProvider(opts)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -479,5 +480,83 @@ func TestConfig3LO_PKCEExchangeWithSuccess(t *testing.T) {
 	scope := tok.Metadata["scope"].(string)
 	if got, want := scope, "pubsub"; got != want {
 		t.Errorf("scope = %q; want %q", got, want)
+	}
+}
+
+func Test3LO_Validate(t *testing.T) {
+	tests := []struct {
+		name string
+		opts *Options3LO
+	}{
+		{
+			name: "missing options",
+		},
+		{
+			name: "missing client ID",
+			opts: &Options3LO{
+				ClientSecret: "client_secret",
+				AuthURL:      "auth_url",
+				TokenURL:     "token_url",
+				AuthStyle:    StyleInHeader,
+				RefreshToken: "refreshing",
+			},
+		},
+		{
+			name: "missing client secret",
+			opts: &Options3LO{
+				ClientID:     "client_id",
+				AuthURL:      "auth_url",
+				TokenURL:     "token_url",
+				AuthStyle:    StyleInHeader,
+				RefreshToken: "refreshing",
+			},
+		},
+		{
+			name: "missing auth URL",
+			opts: &Options3LO{
+				ClientID:     "client_id",
+				ClientSecret: "client_secret",
+				TokenURL:     "token_url",
+				AuthStyle:    StyleInHeader,
+				RefreshToken: "refreshing",
+			},
+		},
+		{
+			name: "missing token URL",
+			opts: &Options3LO{
+				ClientID:     "client_id",
+				ClientSecret: "client_secret",
+				AuthURL:      "auth_url",
+				AuthStyle:    StyleInHeader,
+				RefreshToken: "refreshing",
+			},
+		},
+		{
+			name: "missing auth style",
+			opts: &Options3LO{
+				ClientID:     "client_id",
+				ClientSecret: "client_secret",
+				AuthURL:      "auth_url",
+				TokenURL:     "token_url",
+				RefreshToken: "refreshing",
+			},
+		},
+		{
+			name: "missing refresh token",
+			opts: &Options3LO{
+				ClientID:     "client_id",
+				ClientSecret: "client_secret",
+				AuthURL:      "auth_url",
+				TokenURL:     "token_url",
+				AuthStyle:    StyleInHeader,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if _, err := New3LOTokenProvider(tt.opts); err == nil {
+				t.Error("got nil, want an error")
+			}
+		})
 	}
 }

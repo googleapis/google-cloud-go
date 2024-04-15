@@ -1,5 +1,55 @@
 # Changes
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.21.0...bigtable/v1.22.0) (2024-03-11)
+
+
+### Features
+
+* **bigtable:** Add aggregate support to the bigtable emulator and client ([c250928](https://github.com/googleapis/google-cloud-go/commit/c25092892dfc55c86784f77222d2bd96e40bd2d1))
+
+
+### Bug Fixes
+
+* **bigtable/bttest:** Make table gc release memory ([#3930](https://github.com/googleapis/google-cloud-go/issues/3930)) ([7d6ff39](https://github.com/googleapis/google-cloud-go/commit/7d6ff39309de41d8847d27241ebee41a30cf5aa7))
+* **bigtable:** Allow micro seconds in filter in Bigtable emulator ([#9414](https://github.com/googleapis/google-cloud-go/issues/9414)) ([9fe6061](https://github.com/googleapis/google-cloud-go/commit/9fe60618e4b0004d23920c8c5aa25dc38c6cf68a))
+* **bigtable:** Fix deadline exceeded conformance test ([#9220](https://github.com/googleapis/google-cloud-go/issues/9220)) ([092ee0b](https://github.com/googleapis/google-cloud-go/commit/092ee0ba59267b8fb4d3f4e7727ed3ccbf81e7e7))
+
+
+### Miscellaneous Chores
+
+* **bigtable:** Release 1.22.0 ([#9547](https://github.com/googleapis/google-cloud-go/issues/9547)) ([48614ab](https://github.com/googleapis/google-cloud-go/commit/48614ab80d8b3e1da876832c88912007ad0e008b))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.20.0...bigtable/v1.21.0) (2023-12-04)
+
+
+### Features
+
+* **bigtable:** Add support for reverse scans ([#8755](https://github.com/googleapis/google-cloud-go/issues/8755)) ([244d135](https://github.com/googleapis/google-cloud-go/commit/244d1357cb1b6ce3b971d367693f6cb6090018d4))
+* **bigtable:** Support copy backup in admin client ([#9005](https://github.com/googleapis/google-cloud-go/issues/9005)) ([834c47f](https://github.com/googleapis/google-cloud-go/commit/834c47fb3bd9e8a21082325780b2dcfd4c6d52c6))
+
+
+### Bug Fixes
+
+* **bigtable:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+* **bigtable:** Return cluster error for Update when populated ([#8657](https://github.com/googleapis/google-cloud-go/issues/8657)) ([2105434](https://github.com/googleapis/google-cloud-go/commit/2105434f27a16ac05790c40b74d3a251ec584527))
+* **bigtable:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+* **bigtable:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **bigtable:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.19.0...bigtable/v1.20.0) (2023-10-02)
+
+
+### Features
+
+* **bigtable/bttest:** Support reverse scans ([#8198](https://github.com/googleapis/google-cloud-go/issues/8198)) ([b8f164f](https://github.com/googleapis/google-cloud-go/commit/b8f164fcdf2be3a6fcf7918b3703e224801cc513))
+* **bigtable:** Support last_scanned_row in the bigtable client ([#8345](https://github.com/googleapis/google-cloud-go/issues/8345)) ([961dd38](https://github.com/googleapis/google-cloud-go/commit/961dd38f9e461d487ba8b6ee26ea14d872991eaf))
+* **bigtable:** Support last_scanned_row_key in emulator ([#8343](https://github.com/googleapis/google-cloud-go/issues/8343)) ([d53ef45](https://github.com/googleapis/google-cloud-go/commit/d53ef459893b29e7050f943da00bcd0a3f3ff900))
+
+
+### Bug Fixes
+
+* **bigtable:** Add missing veneer header ([#8607](https://github.com/googleapis/google-cloud-go/issues/8607)) ([b56f557](https://github.com/googleapis/google-cloud-go/commit/b56f557ff713d70025d2ee0e0acc2169fda77c77))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.18.1...bigtable/v1.19.0) (2023-07-06)
 
 
@@ -211,3 +261,4 @@
 
 This is the first tag to carve out bigtable as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+

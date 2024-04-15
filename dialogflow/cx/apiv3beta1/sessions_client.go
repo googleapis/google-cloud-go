@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import (
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -46,21 +47,25 @@ var newSessionsClientHook clientHook
 
 // SessionsCallOptions contains the retry settings for each method of SessionsClient.
 type SessionsCallOptions struct {
-	DetectIntent          []gax.CallOption
-	StreamingDetectIntent []gax.CallOption
-	MatchIntent           []gax.CallOption
-	FulfillIntent         []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
-	CancelOperation       []gax.CallOption
-	GetOperation          []gax.CallOption
-	ListOperations        []gax.CallOption
+	DetectIntent                []gax.CallOption
+	ServerStreamingDetectIntent []gax.CallOption
+	StreamingDetectIntent       []gax.CallOption
+	MatchIntent                 []gax.CallOption
+	FulfillIntent               []gax.CallOption
+	SubmitAnswerFeedback        []gax.CallOption
+	GetLocation                 []gax.CallOption
+	ListLocations               []gax.CallOption
+	CancelOperation             []gax.CallOption
+	GetOperation                []gax.CallOption
+	ListOperations              []gax.CallOption
 }
 
 func defaultSessionsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dialogflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -83,7 +88,8 @@ func defaultSessionsCallOptions() *SessionsCallOptions {
 				})
 			}),
 		},
-		StreamingDetectIntent: []gax.CallOption{},
+		ServerStreamingDetectIntent: []gax.CallOption{},
+		StreamingDetectIntent:       []gax.CallOption{},
 		MatchIntent: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -97,6 +103,18 @@ func defaultSessionsCallOptions() *SessionsCallOptions {
 			}),
 		},
 		FulfillIntent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SubmitAnswerFeedback: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -129,6 +147,9 @@ func defaultSessionsRESTCallOptions() *SessionsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ServerStreamingDetectIntent: []gax.CallOption{
+			gax.WithTimeout(220000 * time.Millisecond),
+		},
 		StreamingDetectIntent: []gax.CallOption{
 			gax.WithTimeout(220000 * time.Millisecond),
 		},
@@ -154,6 +175,17 @@ func defaultSessionsRESTCallOptions() *SessionsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SubmitAnswerFeedback: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -168,9 +200,11 @@ type internalSessionsClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	DetectIntent(context.Context, *cxpb.DetectIntentRequest, ...gax.CallOption) (*cxpb.DetectIntentResponse, error)
+	ServerStreamingDetectIntent(context.Context, *cxpb.DetectIntentRequest, ...gax.CallOption) (cxpb.Sessions_ServerStreamingDetectIntentClient, error)
 	StreamingDetectIntent(context.Context, ...gax.CallOption) (cxpb.Sessions_StreamingDetectIntentClient, error)
 	MatchIntent(context.Context, *cxpb.MatchIntentRequest, ...gax.CallOption) (*cxpb.MatchIntentResponse, error)
 	FulfillIntent(context.Context, *cxpb.FulfillIntentRequest, ...gax.CallOption) (*cxpb.FulfillIntentResponse, error)
+	SubmitAnswerFeedback(context.Context, *cxpb.SubmitAnswerFeedbackRequest, ...gax.CallOption) (*cxpb.AnswerFeedback, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -228,6 +262,15 @@ func (c *SessionsClient) DetectIntent(ctx context.Context, req *cxpb.DetectInten
 	return c.internalClient.DetectIntent(ctx, req, opts...)
 }
 
+// ServerStreamingDetectIntent processes a natural language query and returns structured, actionable data
+// as a result through server-side streaming. Server-side streaming allows
+// Dialogflow to send partial
+// responses (at https://cloud.google.com/dialogflow/cx/docs/concept/fulfillment#partial-response)
+// earlier in a single request.
+func (c *SessionsClient) ServerStreamingDetectIntent(ctx context.Context, req *cxpb.DetectIntentRequest, opts ...gax.CallOption) (cxpb.Sessions_ServerStreamingDetectIntentClient, error) {
+	return c.internalClient.ServerStreamingDetectIntent(ctx, req, opts...)
+}
+
 // StreamingDetectIntent processes a natural language query in audio format in a streaming fashion
 // and returns structured, actionable data as a result. This method is only
 // available via the gRPC API (not REST).
@@ -256,6 +299,12 @@ func (c *SessionsClient) MatchIntent(ctx context.Context, req *cxpb.MatchIntentR
 // Otherwise, the behavior is undefined.
 func (c *SessionsClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
 	return c.internalClient.FulfillIntent(ctx, req, opts...)
+}
+
+// SubmitAnswerFeedback updates the feedback received from the user for a single turn of the bot
+// response.
+func (c *SessionsClient) SubmitAnswerFeedback(ctx context.Context, req *cxpb.SubmitAnswerFeedbackRequest, opts ...gax.CallOption) (*cxpb.AnswerFeedback, error) {
+	return c.internalClient.SubmitAnswerFeedback(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -406,7 +455,9 @@ func NewSessionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*S
 func defaultSessionsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dialogflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dialogflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dialogflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -445,6 +496,24 @@ func (c *sessionsGRPCClient) DetectIntent(ctx context.Context, req *cxpb.DetectI
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.sessionsClient.DetectIntent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *sessionsGRPCClient) ServerStreamingDetectIntent(ctx context.Context, req *cxpb.DetectIntentRequest, opts ...gax.CallOption) (cxpb.Sessions_ServerStreamingDetectIntentClient, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ServerStreamingDetectIntent[0:len((*c.CallOptions).ServerStreamingDetectIntent):len((*c.CallOptions).ServerStreamingDetectIntent)], opts...)
+	var resp cxpb.Sessions_ServerStreamingDetectIntentClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.sessionsClient.ServerStreamingDetectIntent(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -496,6 +565,24 @@ func (c *sessionsGRPCClient) FulfillIntent(ctx context.Context, req *cxpb.Fulfil
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.sessionsClient.FulfillIntent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *sessionsGRPCClient) SubmitAnswerFeedback(ctx context.Context, req *cxpb.SubmitAnswerFeedbackRequest, opts ...gax.CallOption) (*cxpb.AnswerFeedback, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SubmitAnswerFeedback[0:len((*c.CallOptions).SubmitAnswerFeedback):len((*c.CallOptions).SubmitAnswerFeedback)], opts...)
+	var resp *cxpb.AnswerFeedback
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.sessionsClient.SubmitAnswerFeedback(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -719,6 +806,116 @@ func (c *sessionsRESTClient) DetectIntent(ctx context.Context, req *cxpb.DetectI
 	return resp, nil
 }
 
+// ServerStreamingDetectIntent processes a natural language query and returns structured, actionable data
+// as a result through server-side streaming. Server-side streaming allows
+// Dialogflow to send partial
+// responses (at https://cloud.google.com/dialogflow/cx/docs/concept/fulfillment#partial-response)
+// earlier in a single request.
+func (c *sessionsRESTClient) ServerStreamingDetectIntent(ctx context.Context, req *cxpb.DetectIntentRequest, opts ...gax.CallOption) (cxpb.Sessions_ServerStreamingDetectIntentClient, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:serverStreamingDetectIntent", req.GetSession())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	var streamClient *serverStreamingDetectIntentRESTClient
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		streamClient = &serverStreamingDetectIntentRESTClient{
+			ctx:    ctx,
+			md:     metadata.MD(httpRsp.Header),
+			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&cxpb.DetectIntentResponse{}).ProtoReflect().Type()),
+		}
+		return nil
+	}, opts...)
+
+	return streamClient, e
+}
+
+// serverStreamingDetectIntentRESTClient is the stream client used to consume the server stream created by
+// the REST implementation of ServerStreamingDetectIntent.
+type serverStreamingDetectIntentRESTClient struct {
+	ctx    context.Context
+	md     metadata.MD
+	stream *gax.ProtoJSONStream
+}
+
+func (c *serverStreamingDetectIntentRESTClient) Recv() (*cxpb.DetectIntentResponse, error) {
+	if err := c.ctx.Err(); err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	msg, err := c.stream.Recv()
+	if err != nil {
+		defer c.stream.Close()
+		return nil, err
+	}
+	res := msg.(*cxpb.DetectIntentResponse)
+	return res, nil
+}
+
+func (c *serverStreamingDetectIntentRESTClient) Header() (metadata.MD, error) {
+	return c.md, nil
+}
+
+func (c *serverStreamingDetectIntentRESTClient) Trailer() metadata.MD {
+	return c.md
+}
+
+func (c *serverStreamingDetectIntentRESTClient) CloseSend() error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented for a server-stream")
+}
+
+func (c *serverStreamingDetectIntentRESTClient) Context() context.Context {
+	return c.ctx
+}
+
+func (c *serverStreamingDetectIntentRESTClient) SendMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented for a server-stream")
+}
+
+func (c *serverStreamingDetectIntentRESTClient) RecvMsg(m interface{}) error {
+	// This is a no-op to fulfill the interface.
+	return fmt.Errorf("this method is not implemented, use Recv")
+}
+
 // StreamingDetectIntent processes a natural language query in audio format in a streaming fashion
 // and returns structured, actionable data as a result. This method is only
 // available via the gRPC API (not REST).
@@ -833,6 +1030,73 @@ func (c *sessionsRESTClient) FulfillIntent(ctx context.Context, req *cxpb.Fulfil
 	opts = append((*c.CallOptions).FulfillIntent[0:len((*c.CallOptions).FulfillIntent):len((*c.CallOptions).FulfillIntent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cxpb.FulfillIntentResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SubmitAnswerFeedback updates the feedback received from the user for a single turn of the bot
+// response.
+func (c *sessionsRESTClient) SubmitAnswerFeedback(ctx context.Context, req *cxpb.SubmitAnswerFeedbackRequest, opts ...gax.CallOption) (*cxpb.AnswerFeedback, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v:submitAnswerFeedback", req.GetSession())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SubmitAnswerFeedback[0:len((*c.CallOptions).SubmitAnswerFeedback):len((*c.CallOptions).SubmitAnswerFeedback)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &cxpb.AnswerFeedback{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

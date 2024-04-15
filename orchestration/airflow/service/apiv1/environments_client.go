@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import (
 	"math"
 	"net/http"
 	"net/url"
-	"time"
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
@@ -46,27 +45,40 @@ var newEnvironmentsClientHook clientHook
 
 // EnvironmentsCallOptions contains the retry settings for each method of EnvironmentsClient.
 type EnvironmentsCallOptions struct {
-	CreateEnvironment       []gax.CallOption
-	GetEnvironment          []gax.CallOption
-	ListEnvironments        []gax.CallOption
-	UpdateEnvironment       []gax.CallOption
-	DeleteEnvironment       []gax.CallOption
-	ExecuteAirflowCommand   []gax.CallOption
-	StopAirflowCommand      []gax.CallOption
-	PollAirflowCommand      []gax.CallOption
-	SaveSnapshot            []gax.CallOption
-	LoadSnapshot            []gax.CallOption
-	DatabaseFailover        []gax.CallOption
-	FetchDatabaseProperties []gax.CallOption
-	DeleteOperation         []gax.CallOption
-	GetOperation            []gax.CallOption
-	ListOperations          []gax.CallOption
+	CreateEnvironment            []gax.CallOption
+	GetEnvironment               []gax.CallOption
+	ListEnvironments             []gax.CallOption
+	UpdateEnvironment            []gax.CallOption
+	DeleteEnvironment            []gax.CallOption
+	ExecuteAirflowCommand        []gax.CallOption
+	StopAirflowCommand           []gax.CallOption
+	PollAirflowCommand           []gax.CallOption
+	ListWorkloads                []gax.CallOption
+	CreateUserWorkloadsSecret    []gax.CallOption
+	GetUserWorkloadsSecret       []gax.CallOption
+	ListUserWorkloadsSecrets     []gax.CallOption
+	UpdateUserWorkloadsSecret    []gax.CallOption
+	DeleteUserWorkloadsSecret    []gax.CallOption
+	CreateUserWorkloadsConfigMap []gax.CallOption
+	GetUserWorkloadsConfigMap    []gax.CallOption
+	ListUserWorkloadsConfigMaps  []gax.CallOption
+	UpdateUserWorkloadsConfigMap []gax.CallOption
+	DeleteUserWorkloadsConfigMap []gax.CallOption
+	SaveSnapshot                 []gax.CallOption
+	LoadSnapshot                 []gax.CallOption
+	DatabaseFailover             []gax.CallOption
+	FetchDatabaseProperties      []gax.CallOption
+	DeleteOperation              []gax.CallOption
+	GetOperation                 []gax.CallOption
+	ListOperations               []gax.CallOption
 }
 
 func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("composer.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("composer.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("composer.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://composer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -77,41 +89,63 @@ func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
 
 func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 	return &EnvironmentsCallOptions{
-		CreateEnvironment:       []gax.CallOption{},
-		GetEnvironment:          []gax.CallOption{},
-		ListEnvironments:        []gax.CallOption{},
-		UpdateEnvironment:       []gax.CallOption{},
-		DeleteEnvironment:       []gax.CallOption{},
-		ExecuteAirflowCommand:   []gax.CallOption{},
-		StopAirflowCommand:      []gax.CallOption{},
-		PollAirflowCommand:      []gax.CallOption{},
-		SaveSnapshot:            []gax.CallOption{},
-		LoadSnapshot:            []gax.CallOption{},
-		DatabaseFailover:        []gax.CallOption{},
-		FetchDatabaseProperties: []gax.CallOption{},
-		DeleteOperation:         []gax.CallOption{},
-		GetOperation:            []gax.CallOption{},
-		ListOperations:          []gax.CallOption{},
+		CreateEnvironment:            []gax.CallOption{},
+		GetEnvironment:               []gax.CallOption{},
+		ListEnvironments:             []gax.CallOption{},
+		UpdateEnvironment:            []gax.CallOption{},
+		DeleteEnvironment:            []gax.CallOption{},
+		ExecuteAirflowCommand:        []gax.CallOption{},
+		StopAirflowCommand:           []gax.CallOption{},
+		PollAirflowCommand:           []gax.CallOption{},
+		ListWorkloads:                []gax.CallOption{},
+		CreateUserWorkloadsSecret:    []gax.CallOption{},
+		GetUserWorkloadsSecret:       []gax.CallOption{},
+		ListUserWorkloadsSecrets:     []gax.CallOption{},
+		UpdateUserWorkloadsSecret:    []gax.CallOption{},
+		DeleteUserWorkloadsSecret:    []gax.CallOption{},
+		CreateUserWorkloadsConfigMap: []gax.CallOption{},
+		GetUserWorkloadsConfigMap:    []gax.CallOption{},
+		ListUserWorkloadsConfigMaps:  []gax.CallOption{},
+		UpdateUserWorkloadsConfigMap: []gax.CallOption{},
+		DeleteUserWorkloadsConfigMap: []gax.CallOption{},
+		SaveSnapshot:                 []gax.CallOption{},
+		LoadSnapshot:                 []gax.CallOption{},
+		DatabaseFailover:             []gax.CallOption{},
+		FetchDatabaseProperties:      []gax.CallOption{},
+		DeleteOperation:              []gax.CallOption{},
+		GetOperation:                 []gax.CallOption{},
+		ListOperations:               []gax.CallOption{},
 	}
 }
 
 func defaultEnvironmentsRESTCallOptions() *EnvironmentsCallOptions {
 	return &EnvironmentsCallOptions{
-		CreateEnvironment:       []gax.CallOption{},
-		GetEnvironment:          []gax.CallOption{},
-		ListEnvironments:        []gax.CallOption{},
-		UpdateEnvironment:       []gax.CallOption{},
-		DeleteEnvironment:       []gax.CallOption{},
-		ExecuteAirflowCommand:   []gax.CallOption{},
-		StopAirflowCommand:      []gax.CallOption{},
-		PollAirflowCommand:      []gax.CallOption{},
-		SaveSnapshot:            []gax.CallOption{},
-		LoadSnapshot:            []gax.CallOption{},
-		DatabaseFailover:        []gax.CallOption{},
-		FetchDatabaseProperties: []gax.CallOption{},
-		DeleteOperation:         []gax.CallOption{},
-		GetOperation:            []gax.CallOption{},
-		ListOperations:          []gax.CallOption{},
+		CreateEnvironment:            []gax.CallOption{},
+		GetEnvironment:               []gax.CallOption{},
+		ListEnvironments:             []gax.CallOption{},
+		UpdateEnvironment:            []gax.CallOption{},
+		DeleteEnvironment:            []gax.CallOption{},
+		ExecuteAirflowCommand:        []gax.CallOption{},
+		StopAirflowCommand:           []gax.CallOption{},
+		PollAirflowCommand:           []gax.CallOption{},
+		ListWorkloads:                []gax.CallOption{},
+		CreateUserWorkloadsSecret:    []gax.CallOption{},
+		GetUserWorkloadsSecret:       []gax.CallOption{},
+		ListUserWorkloadsSecrets:     []gax.CallOption{},
+		UpdateUserWorkloadsSecret:    []gax.CallOption{},
+		DeleteUserWorkloadsSecret:    []gax.CallOption{},
+		CreateUserWorkloadsConfigMap: []gax.CallOption{},
+		GetUserWorkloadsConfigMap:    []gax.CallOption{},
+		ListUserWorkloadsConfigMaps:  []gax.CallOption{},
+		UpdateUserWorkloadsConfigMap: []gax.CallOption{},
+		DeleteUserWorkloadsConfigMap: []gax.CallOption{},
+		SaveSnapshot:                 []gax.CallOption{},
+		LoadSnapshot:                 []gax.CallOption{},
+		DatabaseFailover:             []gax.CallOption{},
+		FetchDatabaseProperties:      []gax.CallOption{},
+		DeleteOperation:              []gax.CallOption{},
+		GetOperation:                 []gax.CallOption{},
+		ListOperations:               []gax.CallOption{},
 	}
 }
 
@@ -131,6 +165,17 @@ type internalEnvironmentsClient interface {
 	ExecuteAirflowCommand(context.Context, *servicepb.ExecuteAirflowCommandRequest, ...gax.CallOption) (*servicepb.ExecuteAirflowCommandResponse, error)
 	StopAirflowCommand(context.Context, *servicepb.StopAirflowCommandRequest, ...gax.CallOption) (*servicepb.StopAirflowCommandResponse, error)
 	PollAirflowCommand(context.Context, *servicepb.PollAirflowCommandRequest, ...gax.CallOption) (*servicepb.PollAirflowCommandResponse, error)
+	ListWorkloads(context.Context, *servicepb.ListWorkloadsRequest, ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator
+	CreateUserWorkloadsSecret(context.Context, *servicepb.CreateUserWorkloadsSecretRequest, ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error)
+	GetUserWorkloadsSecret(context.Context, *servicepb.GetUserWorkloadsSecretRequest, ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error)
+	ListUserWorkloadsSecrets(context.Context, *servicepb.ListUserWorkloadsSecretsRequest, ...gax.CallOption) *UserWorkloadsSecretIterator
+	UpdateUserWorkloadsSecret(context.Context, *servicepb.UpdateUserWorkloadsSecretRequest, ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error)
+	DeleteUserWorkloadsSecret(context.Context, *servicepb.DeleteUserWorkloadsSecretRequest, ...gax.CallOption) error
+	CreateUserWorkloadsConfigMap(context.Context, *servicepb.CreateUserWorkloadsConfigMapRequest, ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error)
+	GetUserWorkloadsConfigMap(context.Context, *servicepb.GetUserWorkloadsConfigMapRequest, ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error)
+	ListUserWorkloadsConfigMaps(context.Context, *servicepb.ListUserWorkloadsConfigMapsRequest, ...gax.CallOption) *UserWorkloadsConfigMapIterator
+	UpdateUserWorkloadsConfigMap(context.Context, *servicepb.UpdateUserWorkloadsConfigMapRequest, ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error)
+	DeleteUserWorkloadsConfigMap(context.Context, *servicepb.DeleteUserWorkloadsConfigMapRequest, ...gax.CallOption) error
 	SaveSnapshot(context.Context, *servicepb.SaveSnapshotRequest, ...gax.CallOption) (*SaveSnapshotOperation, error)
 	SaveSnapshotOperation(name string) *SaveSnapshotOperation
 	LoadSnapshot(context.Context, *servicepb.LoadSnapshotRequest, ...gax.CallOption) (*LoadSnapshotOperation, error)
@@ -239,6 +284,96 @@ func (c *EnvironmentsClient) StopAirflowCommand(ctx context.Context, req *servic
 // PollAirflowCommand polls Airflow CLI command execution and fetches logs.
 func (c *EnvironmentsClient) PollAirflowCommand(ctx context.Context, req *servicepb.PollAirflowCommandRequest, opts ...gax.CallOption) (*servicepb.PollAirflowCommandResponse, error) {
 	return c.internalClient.PollAirflowCommand(ctx, req, opts...)
+}
+
+// ListWorkloads lists workloads in a Cloud Composer environment. Workload is a unit that
+// runs a single Composer component.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
+	return c.internalClient.ListWorkloads(ctx, req, opts...)
+}
+
+// CreateUserWorkloadsSecret creates a user workloads Secret.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) CreateUserWorkloadsSecret(ctx context.Context, req *servicepb.CreateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
+	return c.internalClient.CreateUserWorkloadsSecret(ctx, req, opts...)
+}
+
+// GetUserWorkloadsSecret gets an existing user workloads Secret.
+// Values of the “data” field in the response are cleared.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) GetUserWorkloadsSecret(ctx context.Context, req *servicepb.GetUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
+	return c.internalClient.GetUserWorkloadsSecret(ctx, req, opts...)
+}
+
+// ListUserWorkloadsSecrets lists user workloads Secrets.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) ListUserWorkloadsSecrets(ctx context.Context, req *servicepb.ListUserWorkloadsSecretsRequest, opts ...gax.CallOption) *UserWorkloadsSecretIterator {
+	return c.internalClient.ListUserWorkloadsSecrets(ctx, req, opts...)
+}
+
+// UpdateUserWorkloadsSecret updates a user workloads Secret.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) UpdateUserWorkloadsSecret(ctx context.Context, req *servicepb.UpdateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
+	return c.internalClient.UpdateUserWorkloadsSecret(ctx, req, opts...)
+}
+
+// DeleteUserWorkloadsSecret deletes a user workloads Secret.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) DeleteUserWorkloadsSecret(ctx context.Context, req *servicepb.DeleteUserWorkloadsSecretRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteUserWorkloadsSecret(ctx, req, opts...)
+}
+
+// CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) CreateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.CreateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
+	return c.internalClient.CreateUserWorkloadsConfigMap(ctx, req, opts...)
+}
+
+// GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) GetUserWorkloadsConfigMap(ctx context.Context, req *servicepb.GetUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
+	return c.internalClient.GetUserWorkloadsConfigMap(ctx, req, opts...)
+}
+
+// ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) ListUserWorkloadsConfigMaps(ctx context.Context, req *servicepb.ListUserWorkloadsConfigMapsRequest, opts ...gax.CallOption) *UserWorkloadsConfigMapIterator {
+	return c.internalClient.ListUserWorkloadsConfigMaps(ctx, req, opts...)
+}
+
+// UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) UpdateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.UpdateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
+	return c.internalClient.UpdateUserWorkloadsConfigMap(ctx, req, opts...)
+}
+
+// DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *EnvironmentsClient) DeleteUserWorkloadsConfigMap(ctx context.Context, req *servicepb.DeleteUserWorkloadsConfigMapRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteUserWorkloadsConfigMap(ctx, req, opts...)
 }
 
 // SaveSnapshot creates a snapshots of a Cloud Composer environment.
@@ -445,7 +580,9 @@ func NewEnvironmentsRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultEnvironmentsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://composer.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://composer.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://composer.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://composer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -650,6 +787,280 @@ func (c *environmentsGRPCClient) PollAirflowCommand(ctx context.Context, req *se
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *environmentsGRPCClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListWorkloads[0:len((*c.CallOptions).ListWorkloads):len((*c.CallOptions).ListWorkloads)], opts...)
+	it := &ListWorkloadsResponse_ComposerWorkloadIterator{}
+	req = proto.Clone(req).(*servicepb.ListWorkloadsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.ListWorkloadsResponse_ComposerWorkload, string, error) {
+		resp := &servicepb.ListWorkloadsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.environmentsClient.ListWorkloads(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetWorkloads(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *environmentsGRPCClient) CreateUserWorkloadsSecret(ctx context.Context, req *servicepb.CreateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateUserWorkloadsSecret[0:len((*c.CallOptions).CreateUserWorkloadsSecret):len((*c.CallOptions).CreateUserWorkloadsSecret)], opts...)
+	var resp *servicepb.UserWorkloadsSecret
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.CreateUserWorkloadsSecret(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) GetUserWorkloadsSecret(ctx context.Context, req *servicepb.GetUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetUserWorkloadsSecret[0:len((*c.CallOptions).GetUserWorkloadsSecret):len((*c.CallOptions).GetUserWorkloadsSecret)], opts...)
+	var resp *servicepb.UserWorkloadsSecret
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.GetUserWorkloadsSecret(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) ListUserWorkloadsSecrets(ctx context.Context, req *servicepb.ListUserWorkloadsSecretsRequest, opts ...gax.CallOption) *UserWorkloadsSecretIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListUserWorkloadsSecrets[0:len((*c.CallOptions).ListUserWorkloadsSecrets):len((*c.CallOptions).ListUserWorkloadsSecrets)], opts...)
+	it := &UserWorkloadsSecretIterator{}
+	req = proto.Clone(req).(*servicepb.ListUserWorkloadsSecretsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.UserWorkloadsSecret, string, error) {
+		resp := &servicepb.ListUserWorkloadsSecretsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.environmentsClient.ListUserWorkloadsSecrets(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetUserWorkloadsSecrets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *environmentsGRPCClient) UpdateUserWorkloadsSecret(ctx context.Context, req *servicepb.UpdateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "user_workloads_secret.name", url.QueryEscape(req.GetUserWorkloadsSecret().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateUserWorkloadsSecret[0:len((*c.CallOptions).UpdateUserWorkloadsSecret):len((*c.CallOptions).UpdateUserWorkloadsSecret)], opts...)
+	var resp *servicepb.UserWorkloadsSecret
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.UpdateUserWorkloadsSecret(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) DeleteUserWorkloadsSecret(ctx context.Context, req *servicepb.DeleteUserWorkloadsSecretRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteUserWorkloadsSecret[0:len((*c.CallOptions).DeleteUserWorkloadsSecret):len((*c.CallOptions).DeleteUserWorkloadsSecret)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.environmentsClient.DeleteUserWorkloadsSecret(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *environmentsGRPCClient) CreateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.CreateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateUserWorkloadsConfigMap[0:len((*c.CallOptions).CreateUserWorkloadsConfigMap):len((*c.CallOptions).CreateUserWorkloadsConfigMap)], opts...)
+	var resp *servicepb.UserWorkloadsConfigMap
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.CreateUserWorkloadsConfigMap(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) GetUserWorkloadsConfigMap(ctx context.Context, req *servicepb.GetUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetUserWorkloadsConfigMap[0:len((*c.CallOptions).GetUserWorkloadsConfigMap):len((*c.CallOptions).GetUserWorkloadsConfigMap)], opts...)
+	var resp *servicepb.UserWorkloadsConfigMap
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.GetUserWorkloadsConfigMap(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) ListUserWorkloadsConfigMaps(ctx context.Context, req *servicepb.ListUserWorkloadsConfigMapsRequest, opts ...gax.CallOption) *UserWorkloadsConfigMapIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListUserWorkloadsConfigMaps[0:len((*c.CallOptions).ListUserWorkloadsConfigMaps):len((*c.CallOptions).ListUserWorkloadsConfigMaps)], opts...)
+	it := &UserWorkloadsConfigMapIterator{}
+	req = proto.Clone(req).(*servicepb.ListUserWorkloadsConfigMapsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.UserWorkloadsConfigMap, string, error) {
+		resp := &servicepb.ListUserWorkloadsConfigMapsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.environmentsClient.ListUserWorkloadsConfigMaps(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetUserWorkloadsConfigMaps(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *environmentsGRPCClient) UpdateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.UpdateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "user_workloads_config_map.name", url.QueryEscape(req.GetUserWorkloadsConfigMap().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateUserWorkloadsConfigMap[0:len((*c.CallOptions).UpdateUserWorkloadsConfigMap):len((*c.CallOptions).UpdateUserWorkloadsConfigMap)], opts...)
+	var resp *servicepb.UserWorkloadsConfigMap
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.UpdateUserWorkloadsConfigMap(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *environmentsGRPCClient) DeleteUserWorkloadsConfigMap(ctx context.Context, req *servicepb.DeleteUserWorkloadsConfigMapRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteUserWorkloadsConfigMap[0:len((*c.CallOptions).DeleteUserWorkloadsConfigMap):len((*c.CallOptions).DeleteUserWorkloadsConfigMap)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.environmentsClient.DeleteUserWorkloadsConfigMap(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *environmentsGRPCClient) SaveSnapshot(ctx context.Context, req *servicepb.SaveSnapshotRequest, opts ...gax.CallOption) (*SaveSnapshotOperation, error) {
@@ -1368,6 +1779,783 @@ func (c *environmentsRESTClient) PollAirflowCommand(ctx context.Context, req *se
 	return resp, nil
 }
 
+// ListWorkloads lists workloads in a Cloud Composer environment. Workload is a unit that
+// runs a single Composer component.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) ListWorkloads(ctx context.Context, req *servicepb.ListWorkloadsRequest, opts ...gax.CallOption) *ListWorkloadsResponse_ComposerWorkloadIterator {
+	it := &ListWorkloadsResponse_ComposerWorkloadIterator{}
+	req = proto.Clone(req).(*servicepb.ListWorkloadsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.ListWorkloadsResponse_ComposerWorkload, string, error) {
+		resp := &servicepb.ListWorkloadsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/workloads", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetWorkloads(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateUserWorkloadsSecret creates a user workloads Secret.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, req *servicepb.CreateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetUserWorkloadsSecret()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/userWorkloadsSecrets", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateUserWorkloadsSecret[0:len((*c.CallOptions).CreateUserWorkloadsSecret):len((*c.CallOptions).CreateUserWorkloadsSecret)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.UserWorkloadsSecret{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetUserWorkloadsSecret gets an existing user workloads Secret.
+// Values of the “data” field in the response are cleared.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req *servicepb.GetUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetUserWorkloadsSecret[0:len((*c.CallOptions).GetUserWorkloadsSecret):len((*c.CallOptions).GetUserWorkloadsSecret)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.UserWorkloadsSecret{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListUserWorkloadsSecrets lists user workloads Secrets.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) ListUserWorkloadsSecrets(ctx context.Context, req *servicepb.ListUserWorkloadsSecretsRequest, opts ...gax.CallOption) *UserWorkloadsSecretIterator {
+	it := &UserWorkloadsSecretIterator{}
+	req = proto.Clone(req).(*servicepb.ListUserWorkloadsSecretsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.UserWorkloadsSecret, string, error) {
+		resp := &servicepb.ListUserWorkloadsSecretsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/userWorkloadsSecrets", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetUserWorkloadsSecrets(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateUserWorkloadsSecret updates a user workloads Secret.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) UpdateUserWorkloadsSecret(ctx context.Context, req *servicepb.UpdateUserWorkloadsSecretRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsSecret, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetUserWorkloadsSecret()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUserWorkloadsSecret().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "user_workloads_secret.name", url.QueryEscape(req.GetUserWorkloadsSecret().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateUserWorkloadsSecret[0:len((*c.CallOptions).UpdateUserWorkloadsSecret):len((*c.CallOptions).UpdateUserWorkloadsSecret)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.UserWorkloadsSecret{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PUT", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteUserWorkloadsSecret deletes a user workloads Secret.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) DeleteUserWorkloadsSecret(ctx context.Context, req *servicepb.DeleteUserWorkloadsSecretRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.CreateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetUserWorkloadsConfigMap()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/userWorkloadsConfigMaps", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateUserWorkloadsConfigMap[0:len((*c.CallOptions).CreateUserWorkloadsConfigMap):len((*c.CallOptions).CreateUserWorkloadsConfigMap)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.UserWorkloadsConfigMap{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, req *servicepb.GetUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetUserWorkloadsConfigMap[0:len((*c.CallOptions).GetUserWorkloadsConfigMap):len((*c.CallOptions).GetUserWorkloadsConfigMap)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.UserWorkloadsConfigMap{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) ListUserWorkloadsConfigMaps(ctx context.Context, req *servicepb.ListUserWorkloadsConfigMapsRequest, opts ...gax.CallOption) *UserWorkloadsConfigMapIterator {
+	it := &UserWorkloadsConfigMapIterator{}
+	req = proto.Clone(req).(*servicepb.ListUserWorkloadsConfigMapsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*servicepb.UserWorkloadsConfigMap, string, error) {
+		resp := &servicepb.ListUserWorkloadsConfigMapsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/userWorkloadsConfigMaps", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetUserWorkloadsConfigMaps(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) UpdateUserWorkloadsConfigMap(ctx context.Context, req *servicepb.UpdateUserWorkloadsConfigMapRequest, opts ...gax.CallOption) (*servicepb.UserWorkloadsConfigMap, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetUserWorkloadsConfigMap()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetUserWorkloadsConfigMap().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "user_workloads_config_map.name", url.QueryEscape(req.GetUserWorkloadsConfigMap().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateUserWorkloadsConfigMap[0:len((*c.CallOptions).UpdateUserWorkloadsConfigMap):len((*c.CallOptions).UpdateUserWorkloadsConfigMap)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &servicepb.UserWorkloadsConfigMap{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PUT", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.
+//
+// This method is supported for Cloud Composer environments in versions
+// composer-3..-airflow-..* and newer.
+func (c *environmentsRESTClient) DeleteUserWorkloadsConfigMap(ctx context.Context, req *servicepb.DeleteUserWorkloadsConfigMapRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
 // SaveSnapshot creates a snapshots of a Cloud Composer environment.
 //
 // As a result of this operation, snapshot of environment’s state is stored
@@ -1838,12 +3026,6 @@ func (c *environmentsRESTClient) ListOperations(ctx context.Context, req *longru
 	return it
 }
 
-// CreateEnvironmentOperation manages a long-running operation from CreateEnvironment.
-type CreateEnvironmentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
 // The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
 func (c *environmentsGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
@@ -1860,70 +3042,6 @@ func (c *environmentsRESTClient) CreateEnvironmentOperation(name string) *Create
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicepb.Environment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.Environment
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicepb.Environment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.Environment
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateEnvironmentOperation) Metadata() (*servicepb.OperationMetadata, error) {
-	var meta servicepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateEnvironmentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateEnvironmentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DatabaseFailoverOperation manages a long-running operation from DatabaseFailover.
-type DatabaseFailoverOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DatabaseFailoverOperation returns a new DatabaseFailoverOperation from a given name.
@@ -1944,70 +3062,6 @@ func (c *environmentsRESTClient) DatabaseFailoverOperation(name string) *Databas
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DatabaseFailoverOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicepb.DatabaseFailoverResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.DatabaseFailoverResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DatabaseFailoverOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicepb.DatabaseFailoverResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.DatabaseFailoverResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DatabaseFailoverOperation) Metadata() (*servicepb.OperationMetadata, error) {
-	var meta servicepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DatabaseFailoverOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DatabaseFailoverOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteEnvironmentOperation manages a long-running operation from DeleteEnvironment.
-type DeleteEnvironmentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteEnvironmentOperation returns a new DeleteEnvironmentOperation from a given name.
 // The name must be that of a previously created DeleteEnvironmentOperation, possibly from a different process.
 func (c *environmentsGRPCClient) DeleteEnvironmentOperation(name string) *DeleteEnvironmentOperation {
@@ -2024,59 +3078,6 @@ func (c *environmentsRESTClient) DeleteEnvironmentOperation(name string) *Delete
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteEnvironmentOperation) Metadata() (*servicepb.OperationMetadata, error) {
-	var meta servicepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteEnvironmentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteEnvironmentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// LoadSnapshotOperation manages a long-running operation from LoadSnapshot.
-type LoadSnapshotOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // LoadSnapshotOperation returns a new LoadSnapshotOperation from a given name.
@@ -2097,70 +3098,6 @@ func (c *environmentsRESTClient) LoadSnapshotOperation(name string) *LoadSnapsho
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *LoadSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicepb.LoadSnapshotResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.LoadSnapshotResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *LoadSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicepb.LoadSnapshotResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.LoadSnapshotResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *LoadSnapshotOperation) Metadata() (*servicepb.OperationMetadata, error) {
-	var meta servicepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *LoadSnapshotOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *LoadSnapshotOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SaveSnapshotOperation manages a long-running operation from SaveSnapshot.
-type SaveSnapshotOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // SaveSnapshotOperation returns a new SaveSnapshotOperation from a given name.
 // The name must be that of a previously created SaveSnapshotOperation, possibly from a different process.
 func (c *environmentsGRPCClient) SaveSnapshotOperation(name string) *SaveSnapshotOperation {
@@ -2179,70 +3116,6 @@ func (c *environmentsRESTClient) SaveSnapshotOperation(name string) *SaveSnapsho
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SaveSnapshotOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicepb.SaveSnapshotResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.SaveSnapshotResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SaveSnapshotOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicepb.SaveSnapshotResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.SaveSnapshotResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SaveSnapshotOperation) Metadata() (*servicepb.OperationMetadata, error) {
-	var meta servicepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SaveSnapshotOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SaveSnapshotOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateEnvironmentOperation manages a long-running operation from UpdateEnvironment.
-type UpdateEnvironmentOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
 // The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
 func (c *environmentsGRPCClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
@@ -2259,156 +3132,4 @@ func (c *environmentsRESTClient) UpdateEnvironmentOperation(name string) *Update
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateEnvironmentOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicepb.Environment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.Environment
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateEnvironmentOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicepb.Environment, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicepb.Environment
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateEnvironmentOperation) Metadata() (*servicepb.OperationMetadata, error) {
-	var meta servicepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateEnvironmentOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateEnvironmentOperation) Name() string {
-	return op.lro.Name()
-}
-
-// EnvironmentIterator manages a stream of *servicepb.Environment.
-type EnvironmentIterator struct {
-	items    []*servicepb.Environment
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*servicepb.Environment, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EnvironmentIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EnvironmentIterator) Next() (*servicepb.Environment, error) {
-	var item *servicepb.Environment
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EnvironmentIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EnvironmentIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

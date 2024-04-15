@@ -90,6 +90,13 @@ func streamWithReplaceSessionFunc(
 	}
 }
 
+// rowIterator is an interface for iterating over Rows.
+type rowIterator interface {
+	Next() (*Row, error)
+	Do(f func(r *Row) error) error
+	Stop()
+}
+
 // RowIterator is an iterator over Rows.
 type RowIterator struct {
 	// The plan for the query. Available after RowIterator.Next returns
@@ -120,6 +127,9 @@ type RowIterator struct {
 	rows             []*Row
 	sawStats         bool
 }
+
+// this is for safety from future changes to RowIterator making sure that it implements rowIterator interface.
+var _ rowIterator = (*RowIterator)(nil)
 
 // Next returns the next result. Its second return value is iterator.Done if
 // there are no more results. Once Next returns Done, all subsequent calls
@@ -488,7 +498,7 @@ var (
 )
 
 func (d *resumableStreamDecoder) next() bool {
-	retryer := onCodes(d.backoff, codes.Unavailable, codes.Internal)
+	retryer := onCodes(d.backoff, codes.Unavailable, codes.ResourceExhausted, codes.Internal)
 	for {
 		switch d.state {
 		case unConnected:

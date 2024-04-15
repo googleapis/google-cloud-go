@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_EnableService() {
+func ExampleClient_BatchEnableServices() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -72,16 +72,41 @@ func ExampleClient_EnableService() {
 	}
 	defer c.Close()
 
-	req := &serviceusagepb.EnableServiceRequest{
+	req := &serviceusagepb.BatchEnableServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#EnableServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#BatchEnableServicesRequest.
 	}
-	op, err := c.EnableService(ctx, req)
+	op, err := c.BatchEnableServices(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
 	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_BatchGetServices() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := serviceusage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &serviceusagepb.BatchGetServicesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#BatchGetServicesRequest.
+	}
+	resp, err := c.BatchGetServices(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -107,6 +132,36 @@ func ExampleClient_DisableService() {
 		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#DisableServiceRequest.
 	}
 	op, err := c.DisableService(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_EnableService() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := serviceusage.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &serviceusagepb.EnableServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#EnableServiceRequest.
+	}
+	op, err := c.EnableService(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -172,62 +227,13 @@ func ExampleClient_ListServices() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
 
-func ExampleClient_BatchEnableServices() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := serviceusage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*serviceusagepb.ListServicesResponse)
 	}
-	defer c.Close()
-
-	req := &serviceusagepb.BatchEnableServicesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#BatchEnableServicesRequest.
-	}
-	op, err := c.BatchEnableServices(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_BatchGetServices() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := serviceusage.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &serviceusagepb.BatchGetServicesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/serviceusage/apiv1/serviceusagepb#BatchGetServicesRequest.
-	}
-	resp, err := c.BatchGetServices(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleClient_GetOperation() {
@@ -283,5 +289,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

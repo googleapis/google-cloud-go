@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ type ProjectsCallOptions struct {
 	ListXpnHosts              []gax.CallOption
 	MoveDisk                  []gax.CallOption
 	MoveInstance              []gax.CallOption
+	SetCloudArmorTier         []gax.CallOption
 	SetCommonInstanceMetadata []gax.CallOption
 	SetDefaultNetworkTier     []gax.CallOption
 	SetUsageExportBucket      []gax.CallOption
@@ -116,6 +117,9 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 		MoveInstance: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		SetCloudArmorTier: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		SetCommonInstanceMetadata: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -143,6 +147,7 @@ type internalProjectsClient interface {
 	ListXpnHosts(context.Context, *computepb.ListXpnHostsProjectsRequest, ...gax.CallOption) *ProjectIterator
 	MoveDisk(context.Context, *computepb.MoveDiskProjectRequest, ...gax.CallOption) (*Operation, error)
 	MoveInstance(context.Context, *computepb.MoveInstanceProjectRequest, ...gax.CallOption) (*Operation, error)
+	SetCloudArmorTier(context.Context, *computepb.SetCloudArmorTierProjectRequest, ...gax.CallOption) (*Operation, error)
 	SetCommonInstanceMetadata(context.Context, *computepb.SetCommonInstanceMetadataProjectRequest, ...gax.CallOption) (*Operation, error)
 	SetDefaultNetworkTier(context.Context, *computepb.SetDefaultNetworkTierProjectRequest, ...gax.CallOption) (*Operation, error)
 	SetUsageExportBucket(context.Context, *computepb.SetUsageExportBucketProjectRequest, ...gax.CallOption) (*Operation, error)
@@ -233,6 +238,11 @@ func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveIn
 	return c.internalClient.MoveInstance(ctx, req, opts...)
 }
 
+// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+func (c *ProjectsClient) SetCloudArmorTier(ctx context.Context, req *computepb.SetCloudArmorTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetCloudArmorTier(ctx, req, opts...)
+}
+
 // SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
 func (c *ProjectsClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetCommonInstanceMetadata(ctx, req, opts...)
@@ -300,7 +310,9 @@ func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 func defaultProjectsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1085,6 +1097,82 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	return op, nil
 }
 
+// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *computepb.SetCloudArmorTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetProjectsSetCloudArmorTierRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setCloudArmorTier", req.GetProject())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetCloudArmorTier[0:len((*c.CallOptions).SetCloudArmorTier):len((*c.CallOptions).SetCloudArmorTier)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
 // SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
 func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -1311,98 +1399,4 @@ func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *comp
 		},
 	}
 	return op, nil
-}
-
-// ProjectIterator manages a stream of *computepb.Project.
-type ProjectIterator struct {
-	items    []*computepb.Project
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Project, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProjectIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProjectIterator) Next() (*computepb.Project, error) {
-	var item *computepb.Project
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProjectIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProjectIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// XpnResourceIdIterator manages a stream of *computepb.XpnResourceId.
-type XpnResourceIdIterator struct {
-	items    []*computepb.XpnResourceId
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.XpnResourceId, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *XpnResourceIdIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *XpnResourceIdIterator) Next() (*computepb.XpnResourceId, error) {
-	var item *computepb.XpnResourceId
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *XpnResourceIdIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *XpnResourceIdIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

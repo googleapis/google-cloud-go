@@ -17,6 +17,7 @@ package transport
 import (
 	"context"
 	"crypto/tls"
+	"errors"
 	"net"
 	"net/http"
 	"net/url"
@@ -24,6 +25,7 @@ import (
 	"strconv"
 	"strings"
 
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport/cert"
 	"github.com/google/s2a-go"
 	"github.com/google/s2a-go/fallback"
@@ -40,26 +42,74 @@ const (
 	googleAPIUseCertSource = "GOOGLE_API_USE_CLIENT_CERTIFICATE"
 	googleAPIUseMTLS       = "GOOGLE_API_USE_MTLS_ENDPOINT"
 	googleAPIUseMTLSOld    = "GOOGLE_API_USE_MTLS"
+
+	universeDomainPlaceholder = "UNIVERSE_DOMAIN"
 )
 
 var (
-	mdsMTLSAutoConfigSource mtlsConfigSource
+	mdsMTLSAutoConfigSource     mtlsConfigSource
+	errUniverseNotSupportedMTLS = errors.New("mTLS is not supported in any universe other than googleapis.com")
 )
 
 // Options is a struct that is duplicated information from the individual
 // transport packages in order to avoid cyclic deps. It correlates 1:1 with
 // fields on httptransport.Options and grpctransport.Options.
 type Options struct {
-	Endpoint            string
-	DefaultEndpoint     string
-	DefaultMTLSEndpoint string
-	ClientCertProvider  cert.Provider
-	Client              *http.Client
+	Endpoint                string
+	DefaultMTLSEndpoint     string
+	DefaultEndpointTemplate string
+	ClientCertProvider      cert.Provider
+	Client                  *http.Client
+	UniverseDomain          string
 }
 
-// GetGRPCTransportConfigAndEndpoint returns an instance of credentials.TransportCredentials, and the
+// getUniverseDomain returns the default service domain for a given Cloud
+// universe.
+func (o *Options) getUniverseDomain() string {
+	if o.UniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return o.UniverseDomain
+}
+
+// isUniverseDomainGDU returns true if the universe domain is the default Google
+// universe.
+func (o *Options) isUniverseDomainGDU() bool {
+	return o.getUniverseDomain() == internal.DefaultUniverseDomain
+}
+
+// defaultEndpoint returns the DefaultEndpointTemplate merged with the
+// universe domain if the DefaultEndpointTemplate is set, otherwise returns an
+// empty string.
+func (o *Options) defaultEndpoint() string {
+	if o.DefaultEndpointTemplate == "" {
+		return ""
+	}
+	return strings.Replace(o.DefaultEndpointTemplate, universeDomainPlaceholder, o.getUniverseDomain(), 1)
+}
+
+// mergedEndpoint merges a user-provided Endpoint of format host[:port] with the
+// default endpoint.
+func (o *Options) mergedEndpoint() (string, error) {
+	defaultEndpoint := o.defaultEndpoint()
+	u, err := url.Parse(fixScheme(defaultEndpoint))
+	if err != nil {
+		return "", err
+	}
+	return strings.Replace(defaultEndpoint, u.Host, o.Endpoint, 1), nil
+}
+
+func fixScheme(baseURL string) string {
+	if !strings.Contains(baseURL, "://") {
+		baseURL = "https://" + baseURL
+	}
+	return baseURL
+}
+
+// GetGRPCTransportCredsAndEndpoint returns an instance of
+// [google.golang.org/grpc/credentials.TransportCredentials], and the
 // corresponding endpoint to use for GRPC client.
-func GetGRPCTransportConfigAndEndpoint(opts *Options) (credentials.TransportCredentials, string, error) {
+func GetGRPCTransportCredsAndEndpoint(opts *Options) (credentials.TransportCredentials, string, error) {
 	config, err := getTransportConfig(opts)
 	if err != nil {
 		return nil, "", err
@@ -91,8 +141,8 @@ func GetGRPCTransportConfigAndEndpoint(opts *Options) (credentials.TransportCred
 	return s2aTransportCreds, config.s2aMTLSEndpoint, nil
 }
 
-// GetHTTPTransportConfig returns a client certificate source, a function for dialing MTLS with S2A,
-// and the endpoint to use for HTTP client.
+// GetHTTPTransportConfig returns a client certificate source and a function for
+// dialing MTLS with S2A.
 func GetHTTPTransportConfig(opts *Options) (cert.Provider, func(context.Context, string, string) (net.Conn, error), error) {
 	config, err := getTransportConfig(opts)
 	if err != nil {
@@ -126,11 +176,11 @@ func GetHTTPTransportConfig(opts *Options) (cert.Provider, func(context.Context,
 func getTransportConfig(opts *Options) (*transportConfig, error) {
 	clientCertSource, err := getClientCertificateSource(opts)
 	if err != nil {
-		return &transportConfig{}, err
+		return nil, err
 	}
 	endpoint, err := getEndpoint(opts, clientCertSource)
 	if err != nil {
-		return &transportConfig{}, err
+		return nil, err
 	}
 	defaultTransportConfig := transportConfig{
 		clientCertSource: clientCertSource,
@@ -139,6 +189,9 @@ func getTransportConfig(opts *Options) (*transportConfig, error) {
 
 	if !shouldUseS2A(clientCertSource, opts) {
 		return &defaultTransportConfig, nil
+	}
+	if !opts.isUniverseDomainGDU() {
+		return nil, errUniverseNotSupportedMTLS
 	}
 
 	s2aMTLSEndpoint := opts.DefaultMTLSEndpoint
@@ -208,27 +261,31 @@ type transportConfig struct {
 // If the endpoint override is an address (host:port) rather than full base
 // URL (ex. https://...), then the user-provided address will be merged into
 // the default endpoint. For example, WithEndpoint("myhost:8000") and
-// WithDefaultEndpoint("https://foo.com/bar/baz") will return "https://myhost:8080/bar/baz"
+// DefaultEndpointTemplate("https://UNIVERSE_DOMAIN/bar/baz") will return "https://myhost:8080/bar/baz"
 func getEndpoint(opts *Options, clientCertSource cert.Provider) (string, error) {
 	if opts.Endpoint == "" {
 		mtlsMode := getMTLSMode()
 		if mtlsMode == mTLSModeAlways || (clientCertSource != nil && mtlsMode == mTLSModeAuto) {
+			if !opts.isUniverseDomainGDU() {
+				return "", errUniverseNotSupportedMTLS
+			}
 			return opts.DefaultMTLSEndpoint, nil
 		}
-		return opts.DefaultEndpoint, nil
+		return opts.defaultEndpoint(), nil
 	}
 	if strings.Contains(opts.Endpoint, "://") {
 		// User passed in a full URL path, use it verbatim.
 		return opts.Endpoint, nil
 	}
-	if opts.DefaultEndpoint == "" {
-		// If DefaultEndpoint is not configured, use the user provided endpoint verbatim.
-		// This allows a naked "host[:port]" URL to be used with GRPC Direct Path.
+	if opts.defaultEndpoint() == "" {
+		// If DefaultEndpointTemplate is not configured,
+		// use the user provided endpoint verbatim. This allows a naked
+		// "host[:port]" URL to be used with GRPC Direct Path.
 		return opts.Endpoint, nil
 	}
 
 	// Assume user-provided endpoint is host[:port], merge it with the default endpoint.
-	return mergeEndpoints(opts.DefaultEndpoint, opts.Endpoint)
+	return opts.mergedEndpoint()
 }
 
 func getMTLSMode() string {
@@ -240,19 +297,4 @@ func getMTLSMode() string {
 		return mTLSModeAuto
 	}
 	return strings.ToLower(mode)
-}
-
-func mergeEndpoints(baseURL, newHost string) (string, error) {
-	u, err := url.Parse(fixScheme(baseURL))
-	if err != nil {
-		return "", err
-	}
-	return strings.Replace(baseURL, u.Host, newHost, 1), nil
-}
-
-func fixScheme(baseURL string) string {
-	if !strings.Contains(baseURL, "://") {
-		baseURL = "https://" + baseURL
-	}
-	return baseURL
 }

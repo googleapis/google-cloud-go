@@ -1,6 +1,110 @@
 # Changes
 
 
+## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.26.0...documentai/v1.26.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **documentai:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **documentai:** A comment for field `processor_version_source` in message `.google.cloud.documentai.v1beta3.ImportProcessorVersionRequest` is changed ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.25.0...documentai/v1.26.0) (2024-02-21)
+
+
+### Features
+
+* **documentai:** A new field `schema_override` is added to message `ProcessOptions` ([#9400](https://github.com/googleapis/google-cloud-go/issues/9400)) ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+* **documentai:** A new message FoundationModelTuningOptions is added ([7e6c208](https://github.com/googleapis/google-cloud-go/commit/7e6c208c5d97d3f6e2f7fd7aca09b8ae98dc0bf2))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.24.0...documentai/v1.25.0) (2024-02-09)
+
+
+### Features
+
+* **documentai:** Expose model_type in v1 processor, so that user can see the model_type after get or list processor version ([2fcf55c](https://github.com/googleapis/google-cloud-go/commit/2fcf55ccb24749cf5387e707b0212bca722f2e96))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.8...documentai/v1.24.0) (2024-02-06)
+
+
+### Features
+
+* **documentai:** Add model_type in v1beta3 processor proto ([#9355](https://github.com/googleapis/google-cloud-go/issues/9355)) ([05e9e1f](https://github.com/googleapis/google-cloud-go/commit/05e9e1f53f2a0c8b3aaadc1811338ca3e682f245))
+
+## [1.23.8](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.7...documentai/v1.23.8) (2024-01-30)
+
+
+### Bug Fixes
+
+* **documentai:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.23.7](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.6...documentai/v1.23.7) (2023-12-13)
+
+
+### Documentation
+
+* **documentai:** Clarify Properties documentation ([757c1b0](https://github.com/googleapis/google-cloud-go/commit/757c1b0dcca95058aedd091d1e89d5d14f2fbc1c))
+
+## [1.23.6](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.5...documentai/v1.23.6) (2023-11-27)
+
+
+### Documentation
+
+* **documentai:** Update comment for ProcessOptions.page_range ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
+## [1.23.5](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.4...documentai/v1.23.5) (2023-11-01)
+
+
+### Bug Fixes
+
+* **documentai:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+
+### Documentation
+
+* **documentai:** Updated comments ([24e410e](https://github.com/googleapis/google-cloud-go/commit/24e410efbb6add2d33ecfb6ad98b67dc8894e578))
+
+## [1.23.4](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.3...documentai/v1.23.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* **documentai:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.23.3](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.2...documentai/v1.23.3) (2023-10-17)
+
+
+### Documentation
+
+* **documentai:** Minor clarification on fields related to page range ([#8734](https://github.com/googleapis/google-cloud-go/issues/8734)) ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.1...documentai/v1.23.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **documentai:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.23.0...documentai/v1.23.1) (2023-10-12)
+
+
+### Documentation
+
+* **documentai:** Minor comment update ([9c502c2](https://github.com/googleapis/google-cloud-go/commit/9c502c2cf66b15c253e53747e08da77a21549cc2))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.22.1...documentai/v1.23.0) (2023-10-04)
+
+
+### Features
+
+* **documentai:** Added `SummaryOptions` to `ProcessOptions` for the Summarizer processor ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+* **documentai:** Added field Processor.processor_version_aliases ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+* **documentai:** Make `page_range` field public ([#8602](https://github.com/googleapis/google-cloud-go/issues/8602)) ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
 ## [1.22.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.22.0...documentai/v1.22.1) (2023-09-12)
 
 
@@ -321,3 +425,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out documentai as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

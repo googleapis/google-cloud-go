@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,7 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_ListReportConfigs() {
+func ExampleClient_CreateReportConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -73,21 +73,38 @@ func ExampleClient_ListReportConfigs() {
 	}
 	defer c.Close()
 
-	req := &storageinsightspb.ListReportConfigsRequest{
+	req := &storageinsightspb.CreateReportConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#ListReportConfigsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#CreateReportConfigRequest.
 	}
-	it := c.ListReportConfigs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.CreateReportConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteReportConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := storageinsights.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &storageinsightspb.DeleteReportConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#DeleteReportConfigRequest.
+	}
+	err = c.DeleteReportConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
@@ -116,7 +133,7 @@ func ExampleClient_GetReportConfig() {
 	_ = resp
 }
 
-func ExampleClient_CreateReportConfig() {
+func ExampleClient_GetReportDetail() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -129,11 +146,11 @@ func ExampleClient_CreateReportConfig() {
 	}
 	defer c.Close()
 
-	req := &storageinsightspb.CreateReportConfigRequest{
+	req := &storageinsightspb.GetReportDetailRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#CreateReportConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#GetReportDetailRequest.
 	}
-	resp, err := c.CreateReportConfig(ctx, req)
+	resp, err := c.GetReportDetail(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -141,7 +158,7 @@ func ExampleClient_CreateReportConfig() {
 	_ = resp
 }
 
-func ExampleClient_UpdateReportConfig() {
+func ExampleClient_ListReportConfigs() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -154,38 +171,27 @@ func ExampleClient_UpdateReportConfig() {
 	}
 	defer c.Close()
 
-	req := &storageinsightspb.UpdateReportConfigRequest{
+	req := &storageinsightspb.ListReportConfigsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#UpdateReportConfigRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#ListReportConfigsRequest.
 	}
-	resp, err := c.UpdateReportConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
+	it := c.ListReportConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 
-func ExampleClient_DeleteReportConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := storageinsights.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &storageinsightspb.DeleteReportConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#DeleteReportConfigRequest.
-	}
-	err = c.DeleteReportConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*storageinsightspb.ListReportConfigsResponse)
 	}
 }
 
@@ -217,10 +223,16 @@ func ExampleClient_ListReportDetails() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*storageinsightspb.ListReportDetailsResponse)
 	}
 }
 
-func ExampleClient_GetReportDetail() {
+func ExampleClient_UpdateReportConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -233,11 +245,11 @@ func ExampleClient_GetReportDetail() {
 	}
 	defer c.Close()
 
-	req := &storageinsightspb.GetReportDetailRequest{
+	req := &storageinsightspb.UpdateReportConfigRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#GetReportDetailRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/storageinsights/apiv1/storageinsightspb#UpdateReportConfigRequest.
 	}
-	resp, err := c.GetReportDetail(ctx, req)
+	resp, err := c.UpdateReportConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -298,6 +310,12 @@ func ExampleClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -400,5 +418,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

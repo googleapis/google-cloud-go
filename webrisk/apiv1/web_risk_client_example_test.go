@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,7 +84,7 @@ func ExampleClient_ComputeThreatListDiff() {
 	_ = resp
 }
 
-func ExampleClient_SearchUris() {
+func ExampleClient_CreateSubmission() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -97,11 +97,11 @@ func ExampleClient_SearchUris() {
 	}
 	defer c.Close()
 
-	req := &webriskpb.SearchUrisRequest{
+	req := &webriskpb.CreateSubmissionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1/webriskpb#SearchUrisRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1/webriskpb#CreateSubmissionRequest.
 	}
-	resp, err := c.SearchUris(ctx, req)
+	resp, err := c.CreateSubmission(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -134,7 +134,7 @@ func ExampleClient_SearchHashes() {
 	_ = resp
 }
 
-func ExampleClient_CreateSubmission() {
+func ExampleClient_SearchUris() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -147,11 +147,11 @@ func ExampleClient_CreateSubmission() {
 	}
 	defer c.Close()
 
-	req := &webriskpb.CreateSubmissionRequest{
+	req := &webriskpb.SearchUrisRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1/webriskpb#CreateSubmissionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1/webriskpb#SearchUrisRequest.
 	}
-	resp, err := c.CreateSubmission(ctx, req)
+	resp, err := c.SearchUris(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -288,5 +288,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

@@ -1,5 +1,54 @@
 # Changes
 
+## [1.14.8](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.7...artifactregistry/v1.14.8) (2024-03-14)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.6...artifactregistry/v1.14.7) (2024-01-30)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.5...artifactregistry/v1.14.6) (2023-11-01)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.14.5](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.4...artifactregistry/v1.14.5) (2023-10-31)
+
+
+### Documentation
+
+* **artifactregistry:** Use code font for resource name references ([ffb0dda](https://github.com/googleapis/google-cloud-go/commit/ffb0ddabf3d9822ba8120cabaf25515fd32e9615))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.3...artifactregistry/v1.14.4) (2023-10-26)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.2...artifactregistry/v1.14.3) (2023-10-12)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.1...artifactregistry/v1.14.2) (2023-10-04)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Make repository and repository_id in CreateRepository required ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.0...artifactregistry/v1.14.1) (2023-06-20)
 
 
@@ -149,3 +198,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out artifactregistry as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ func ExampleNewClient() {
 	_ = c
 }
 
-func ExampleClient_ListExecutions() {
+func ExampleClient_CancelExecution() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -54,22 +54,16 @@ func ExampleClient_ListExecutions() {
 	}
 	defer c.Close()
 
-	req := &executionspb.ListExecutionsRequest{
+	req := &executionspb.CancelExecutionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workflows/executions/apiv1/executionspb#ListExecutionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/executions/apiv1/executionspb#CancelExecutionRequest.
 	}
-	it := c.ListExecutions(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.CancelExecution(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_CreateExecution() {
@@ -122,7 +116,7 @@ func ExampleClient_GetExecution() {
 	_ = resp
 }
 
-func ExampleClient_CancelExecution() {
+func ExampleClient_ListExecutions() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -135,14 +129,26 @@ func ExampleClient_CancelExecution() {
 	}
 	defer c.Close()
 
-	req := &executionspb.CancelExecutionRequest{
+	req := &executionspb.ListExecutionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/workflows/executions/apiv1/executionspb#CancelExecutionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/workflows/executions/apiv1/executionspb#ListExecutionsRequest.
 	}
-	resp, err := c.CancelExecution(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListExecutions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*executionspb.ListExecutionsResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }

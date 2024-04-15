@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -133,7 +133,7 @@ func (c *DiskTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of disk types.
+// AggregatedList retrieves an aggregated list of disk types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *DiskTypesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDiskTypesRequest, opts ...gax.CallOption) *DiskTypesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -187,7 +187,9 @@ func NewDiskTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultDiskTypesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -217,7 +219,7 @@ func (c *diskTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of disk types.
+// AggregatedList retrieves an aggregated list of disk types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDiskTypesRequest, opts ...gax.CallOption) *DiskTypesScopedListPairIterator {
 	it := &DiskTypesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListDiskTypesRequest)
@@ -256,6 +258,9 @@ func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -474,104 +479,4 @@ func (c *diskTypesRESTClient) List(ctx context.Context, req *computepb.ListDiskT
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// DiskTypeIterator manages a stream of *computepb.DiskType.
-type DiskTypeIterator struct {
-	items    []*computepb.DiskType
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.DiskType, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DiskTypeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DiskTypeIterator) Next() (*computepb.DiskType, error) {
-	var item *computepb.DiskType
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DiskTypeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DiskTypeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DiskTypesScopedListPair is a holder type for string/*computepb.DiskTypesScopedList map entries
-type DiskTypesScopedListPair struct {
-	Key   string
-	Value *computepb.DiskTypesScopedList
-}
-
-// DiskTypesScopedListPairIterator manages a stream of DiskTypesScopedListPair.
-type DiskTypesScopedListPairIterator struct {
-	items    []DiskTypesScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []DiskTypesScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DiskTypesScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DiskTypesScopedListPairIterator) Next() (DiskTypesScopedListPair, error) {
-	var item DiskTypesScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DiskTypesScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DiskTypesScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

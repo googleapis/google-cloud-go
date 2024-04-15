@@ -1,5 +1,54 @@
 # Changes
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.0...monitoring/v1.18.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **monitoring:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.17.1...monitoring/v1.18.0) (2024-02-09)
+
+
+### Features
+
+* **monitoring/dashboard:** Add support for pie charts, incident lists, dropdown groups, error reporting panels, section headers, and styling options on text widgets ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.17.0...monitoring/v1.17.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **monitoring:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.16.3...monitoring/v1.17.0) (2023-12-13)
+
+
+### Features
+
+* **monitoring/apiv3:** Added support for severity in AlertPolicy ([3d9f556](https://github.com/googleapis/google-cloud-go/commit/3d9f55678654fe678d44f3f4a08bf26c3830b653))
+
+## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.16.2...monitoring/v1.16.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **monitoring:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.16.1...monitoring/v1.16.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **monitoring:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.16.0...monitoring/v1.16.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **monitoring:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.15.1...monitoring/v1.16.0) (2023-09-12)
 
 
@@ -157,3 +206,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out monitoring as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

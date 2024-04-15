@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,7 @@ type RoutersCallOptions struct {
 	AggregatedList    []gax.CallOption
 	Delete            []gax.CallOption
 	Get               []gax.CallOption
+	GetNatIpInfo      []gax.CallOption
 	GetNatMappingInfo []gax.CallOption
 	GetRouterStatus   []gax.CallOption
 	Insert            []gax.CallOption
@@ -73,6 +74,18 @@ func defaultRoutersRESTCallOptions() *RoutersCallOptions {
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetNatIpInfo: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -143,6 +156,7 @@ type internalRoutersClient interface {
 	AggregatedList(context.Context, *computepb.AggregatedListRoutersRequest, ...gax.CallOption) *RoutersScopedListPairIterator
 	Delete(context.Context, *computepb.DeleteRouterRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRouterRequest, ...gax.CallOption) (*computepb.Router, error)
+	GetNatIpInfo(context.Context, *computepb.GetNatIpInfoRouterRequest, ...gax.CallOption) (*computepb.NatIpInfoResponse, error)
 	GetNatMappingInfo(context.Context, *computepb.GetNatMappingInfoRoutersRequest, ...gax.CallOption) *VmEndpointNatMappingsIterator
 	GetRouterStatus(context.Context, *computepb.GetRouterStatusRouterRequest, ...gax.CallOption) (*computepb.RouterStatusResponse, error)
 	Insert(context.Context, *computepb.InsertRouterRequest, ...gax.CallOption) (*Operation, error)
@@ -187,7 +201,7 @@ func (c *RoutersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of routers.
+// AggregatedList retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *RoutersClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) *RoutersScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -200,6 +214,11 @@ func (c *RoutersClient) Delete(ctx context.Context, req *computepb.DeleteRouterR
 // Get returns the specified Router resource.
 func (c *RoutersClient) Get(ctx context.Context, req *computepb.GetRouterRequest, opts ...gax.CallOption) (*computepb.Router, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// GetNatIpInfo retrieves runtime NAT IP information.
+func (c *RoutersClient) GetNatIpInfo(ctx context.Context, req *computepb.GetNatIpInfoRouterRequest, opts ...gax.CallOption) (*computepb.NatIpInfoResponse, error) {
+	return c.internalClient.GetNatIpInfo(ctx, req, opts...)
 }
 
 // GetNatMappingInfo retrieves runtime Nat mapping information of VM endpoints.
@@ -289,7 +308,9 @@ func NewRoutersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ro
 func defaultRoutersRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -322,7 +343,7 @@ func (c *routersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of routers.
+// AggregatedList retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) *RoutersScopedListPairIterator {
 	it := &RoutersScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListRoutersRequest)
@@ -361,6 +382,9 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -516,6 +540,68 @@ func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterReq
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Router{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetNatIpInfo retrieves runtime NAT IP information.
+func (c *routersRESTClient) GetNatIpInfo(ctx context.Context, req *computepb.GetNatIpInfoRouterRequest, opts ...gax.CallOption) (*computepb.NatIpInfoResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getNatIpInfo", req.GetProject(), req.GetRegion(), req.GetRouter())
+
+	params := url.Values{}
+	if req != nil && req.NatName != nil {
+		params.Add("natName", fmt.Sprintf("%v", req.GetNatName()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "router", url.QueryEscape(req.GetRouter()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetNatIpInfo[0:len((*c.CallOptions).GetNatIpInfo):len((*c.CallOptions).GetNatIpInfo)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.NatIpInfoResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1097,151 +1183,4 @@ func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRou
 		},
 	}
 	return op, nil
-}
-
-// RouterIterator manages a stream of *computepb.Router.
-type RouterIterator struct {
-	items    []*computepb.Router
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.Router, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RouterIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RouterIterator) Next() (*computepb.Router, error) {
-	var item *computepb.Router
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RouterIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RouterIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RoutersScopedListPair is a holder type for string/*computepb.RoutersScopedList map entries
-type RoutersScopedListPair struct {
-	Key   string
-	Value *computepb.RoutersScopedList
-}
-
-// RoutersScopedListPairIterator manages a stream of RoutersScopedListPair.
-type RoutersScopedListPairIterator struct {
-	items    []RoutersScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []RoutersScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RoutersScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RoutersScopedListPairIterator) Next() (RoutersScopedListPair, error) {
-	var item RoutersScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RoutersScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RoutersScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// VmEndpointNatMappingsIterator manages a stream of *computepb.VmEndpointNatMappings.
-type VmEndpointNatMappingsIterator struct {
-	items    []*computepb.VmEndpointNatMappings
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.VmEndpointNatMappings, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VmEndpointNatMappingsIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VmEndpointNatMappingsIterator) Next() (*computepb.VmEndpointNatMappings, error) {
-	var item *computepb.VmEndpointNatMappings
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VmEndpointNatMappingsIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VmEndpointNatMappingsIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }
