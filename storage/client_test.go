@@ -1359,7 +1359,7 @@ func TestRetryNeverEmulated(t *testing.T) {
 
 		var ae *apierror.APIError
 		if errors.As(err, &ae) {
-			// We espect a 503/UNAVAILABLE error. For anything else including a nil
+			// We expect a 503/UNAVAILABLE error. For anything else including a nil
 			// error, the test should fail.
 			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
 				t.Errorf("GetBucket: got unexpected error %v; want 503", err)
@@ -1381,7 +1381,7 @@ func TestRetryTimeoutEmulated(t *testing.T) {
 
 		var ae *apierror.APIError
 		if errors.As(err, &ae) {
-			// We espect a 503/UNAVAILABLE error. For anything else including a nil
+			// We expect a 503/UNAVAILABLE error. For anything else including a nil
 			// error, the test should fail.
 			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
 				t.Errorf("GetBucket: got unexpected error: %v; want 503", err)
@@ -1406,7 +1406,7 @@ func TestRetryMaxAttemptsEmulated(t *testing.T) {
 
 		var ae *apierror.APIError
 		if errors.As(err, &ae) {
-			// We espect a 503/UNAVAILABLE error. For anything else including a nil
+			// We expect a 503/UNAVAILABLE error. For anything else including a nil
 			// error, the test should fail.
 			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
 				t.Errorf("GetBucket: got unexpected error %v; want 503", err)
@@ -1447,6 +1447,9 @@ func createRetryTest(t *testing.T, project, bucket string, client storageClient,
 
 	et := emulatorTest{T: t, name: t.Name(), resources: resources{}, host: endpoint}
 	et.create(instructions, transport)
+	t.Cleanup(func() {
+		et.delete()
+	})
 	return et.id
 }
 
