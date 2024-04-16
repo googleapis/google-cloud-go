@@ -44,12 +44,16 @@ var newStorageControlClientHook clientHook
 
 // StorageControlCallOptions contains the retry settings for each method of StorageControlClient.
 type StorageControlCallOptions struct {
-	CreateFolder     []gax.CallOption
-	DeleteFolder     []gax.CallOption
-	GetFolder        []gax.CallOption
-	ListFolders      []gax.CallOption
-	RenameFolder     []gax.CallOption
-	GetStorageLayout []gax.CallOption
+	CreateFolder        []gax.CallOption
+	DeleteFolder        []gax.CallOption
+	GetFolder           []gax.CallOption
+	ListFolders         []gax.CallOption
+	RenameFolder        []gax.CallOption
+	GetStorageLayout    []gax.CallOption
+	CreateManagedFolder []gax.CallOption
+	DeleteManagedFolder []gax.CallOption
+	GetManagedFolder    []gax.CallOption
+	ListManagedFolders  []gax.CallOption
 }
 
 func defaultStorageControlGRPCClientOptions() []option.ClientOption {
@@ -138,6 +142,44 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 				})
 			}),
 		},
+		CreateManagedFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteManagedFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetManagedFolder: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
+		ListManagedFolders: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 2.00,
+				})
+			}),
+		},
 	}
 }
 
@@ -153,6 +195,10 @@ type internalStorageControlClient interface {
 	RenameFolder(context.Context, *controlpb.RenameFolderRequest, ...gax.CallOption) (*RenameFolderOperation, error)
 	RenameFolderOperation(name string) *RenameFolderOperation
 	GetStorageLayout(context.Context, *controlpb.GetStorageLayoutRequest, ...gax.CallOption) (*controlpb.StorageLayout, error)
+	CreateManagedFolder(context.Context, *controlpb.CreateManagedFolderRequest, ...gax.CallOption) (*controlpb.ManagedFolder, error)
+	DeleteManagedFolder(context.Context, *controlpb.DeleteManagedFolderRequest, ...gax.CallOption) error
+	GetManagedFolder(context.Context, *controlpb.GetManagedFolderRequest, ...gax.CallOption) (*controlpb.ManagedFolder, error)
+	ListManagedFolders(context.Context, *controlpb.ListManagedFoldersRequest, ...gax.CallOption) *ManagedFolderIterator
 }
 
 // StorageControlClient is a client for interacting with Cloud Storage API.
@@ -231,6 +277,26 @@ func (c *StorageControlClient) RenameFolderOperation(name string) *RenameFolderO
 // GetStorageLayout returns the storage layout configuration for a given bucket.
 func (c *StorageControlClient) GetStorageLayout(ctx context.Context, req *controlpb.GetStorageLayoutRequest, opts ...gax.CallOption) (*controlpb.StorageLayout, error) {
 	return c.internalClient.GetStorageLayout(ctx, req, opts...)
+}
+
+// CreateManagedFolder creates a new managed folder.
+func (c *StorageControlClient) CreateManagedFolder(ctx context.Context, req *controlpb.CreateManagedFolderRequest, opts ...gax.CallOption) (*controlpb.ManagedFolder, error) {
+	return c.internalClient.CreateManagedFolder(ctx, req, opts...)
+}
+
+// DeleteManagedFolder permanently deletes an empty managed folder.
+func (c *StorageControlClient) DeleteManagedFolder(ctx context.Context, req *controlpb.DeleteManagedFolderRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteManagedFolder(ctx, req, opts...)
+}
+
+// GetManagedFolder returns metadata for the specified managed folder.
+func (c *StorageControlClient) GetManagedFolder(ctx context.Context, req *controlpb.GetManagedFolderRequest, opts ...gax.CallOption) (*controlpb.ManagedFolder, error) {
+	return c.internalClient.GetManagedFolder(ctx, req, opts...)
+}
+
+// ListManagedFolders retrieves a list of managed folders for a given bucket.
+func (c *StorageControlClient) ListManagedFolders(ctx context.Context, req *controlpb.ListManagedFoldersRequest, opts ...gax.CallOption) *ManagedFolderIterator {
+	return c.internalClient.ListManagedFolders(ctx, req, opts...)
 }
 
 // storageControlGRPCClient is a client for interacting with Cloud Storage API over gRPC transport.
@@ -519,6 +585,147 @@ func (c *storageControlGRPCClient) GetStorageLayout(ctx context.Context, req *co
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *storageControlGRPCClient) CreateManagedFolder(ctx context.Context, req *controlpb.CreateManagedFolderRequest, opts ...gax.CallOption) (*controlpb.ManagedFolder, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
+	opts = append((*c.CallOptions).CreateManagedFolder[0:len((*c.CallOptions).CreateManagedFolder):len((*c.CallOptions).CreateManagedFolder)], opts...)
+	var resp *controlpb.ManagedFolder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.storageControlClient.CreateManagedFolder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) DeleteManagedFolder(ctx context.Context, req *controlpb.DeleteManagedFolderRequest, opts ...gax.CallOption) error {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
+	opts = append((*c.CallOptions).DeleteManagedFolder[0:len((*c.CallOptions).DeleteManagedFolder):len((*c.CallOptions).DeleteManagedFolder)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.storageControlClient.DeleteManagedFolder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *storageControlGRPCClient) GetManagedFolder(ctx context.Context, req *controlpb.GetManagedFolderRequest, opts ...gax.CallOption) (*controlpb.ManagedFolder, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if req != nil && req.GetRequestId() == "" {
+		req.RequestId = uuid.NewString()
+	}
+	opts = append((*c.CallOptions).GetManagedFolder[0:len((*c.CallOptions).GetManagedFolder):len((*c.CallOptions).GetManagedFolder)], opts...)
+	var resp *controlpb.ManagedFolder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.storageControlClient.GetManagedFolder(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *storageControlGRPCClient) ListManagedFolders(ctx context.Context, req *controlpb.ListManagedFoldersRequest, opts ...gax.CallOption) *ManagedFolderIterator {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>.*)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListManagedFolders[0:len((*c.CallOptions).ListManagedFolders):len((*c.CallOptions).ListManagedFolders)], opts...)
+	it := &ManagedFolderIterator{}
+	req = proto.Clone(req).(*controlpb.ListManagedFoldersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*controlpb.ManagedFolder, string, error) {
+		resp := &controlpb.ListManagedFoldersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.storageControlClient.ListManagedFolders(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetManagedFolders(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // RenameFolderOperation returns a new RenameFolderOperation from a given name.

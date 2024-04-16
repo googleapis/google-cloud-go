@@ -37,7 +37,7 @@ const (
 
 // A set of values describing the vehicle's emission type.
 // Applies only to the `DRIVE`
-// [RouteTravelMode][google.maps.routing.v2.RouteTravelMode].
+// [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode].
 type VehicleEmissionType int32
 
 const (
