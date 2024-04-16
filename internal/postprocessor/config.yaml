@@ -28,6 +28,7 @@ modules:
   - binaryauthorization
   - certificatemanager
   - channel
+  - chat
   - cloudbuild
   - cloudcontrolspartner
   - clouddms
@@ -459,6 +460,9 @@ service-configs:
   - input-directory: google/cloud/channel/v1
     service-config: cloudchannel_v1.yaml
     import-path: cloud.google.com/go/channel/apiv1
+  - input-directory: google/chat/v1
+    service-config: chat_v1.yaml
+    import-path: cloud.google.com/go/chat/apiv1
   - input-directory: google/cloud/cloudcontrolspartner/v1
     service-config: cloudcontrolspartner_v1.yaml
     import-path: cloud.google.com/go/cloudcontrolspartner/apiv1
@@ -846,12 +850,18 @@ service-configs:
   - input-directory: google/shopping/css/v1
     service-config: css_v1.yaml
     import-path: cloud.google.com/go/shopping/css/apiv1
+  - input-directory: google/shopping/merchant/notifications/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
   - input-directory: google/shopping/merchant/quota/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/quota/apiv1beta
   - input-directory: google/shopping/merchant/inventories/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/inventories/apiv1beta
+  - input-directory: google/shopping/merchant/lfp/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/lfp/apiv1beta
   - input-directory: google/shopping/merchant/reports/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/reports/apiv1beta

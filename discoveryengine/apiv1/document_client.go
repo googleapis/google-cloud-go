@@ -1059,6 +1059,13 @@ func (c *documentRESTClient) UpdateDocument(ctx context.Context, req *discoverye
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
