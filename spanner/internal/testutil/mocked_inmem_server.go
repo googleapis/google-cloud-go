@@ -22,9 +22,9 @@ import (
 
 	"cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 // SelectFooFromBar is a SELECT statement that is added to the mocked test

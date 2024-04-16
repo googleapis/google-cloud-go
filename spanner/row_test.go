@@ -29,10 +29,10 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	proto "github.com/golang/protobuf/proto"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
+	proto "google.golang.org/protobuf/proto"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 var (
@@ -622,14 +622,14 @@ func TestToStructInvalidDst(t *testing.T) {
 	}{
 		{
 			"row.ToStruct(): Decode row as STRUCT into int32",
-			proto.Int(1),
-			errToStructArgType(proto.Int(1)),
+			proto.Int32(1),
+			errToStructArgType(proto.Int32(1)),
 			row.ToStruct,
 		},
 		{
 			"ToStructLenient(): Decode row as STRUCT into int32",
-			proto.Int(1),
-			errToStructArgType(proto.Int(1)),
+			proto.Int32(1),
+			errToStructArgType(proto.Int32(1)),
 			row.ToStructLenient,
 		},
 		{
