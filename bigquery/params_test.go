@@ -349,6 +349,21 @@ func TestParamValueRange(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "Unbounded Range in QueryParameterValue",
+			in: &QueryParameterValue{
+				Type: StandardSQLDataType{
+					TypeKind: "RANGE",
+					RangeElementType: &StandardSQLDataType{
+						TypeKind: "TIME",
+					},
+				},
+				Value: &RangeValue{},
+			},
+			want: &bq.QueryParameterValue{
+				RangeValue: &bq.RangeValue{},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
