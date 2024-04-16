@@ -1221,7 +1221,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 	dtm2 := civil.DateTime{Date: d2, Time: tm2}
 	g := "POINT(-122.350220 47.649154)"
 	g2 := "POINT(-122.0836791 37.421827)"
-	range_d := &RangeValue{Start: civil.Date{Year: 2024, Month: 04, Day: 11}}
+	rangedate := &RangeValue{Start: civil.Date{Year: 2024, Month: 04, Day: 11}}
 
 	// Populate the table.
 	ins := table.Inserter()
@@ -1238,7 +1238,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			dtm,
 			big.NewRat(57, 100),
 			g,
-			range_d,
+			rangedate,
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -1274,7 +1274,7 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			Time:      tm,
 			DateTime:  dtm,
 			Numeric:   big.NewRat(4499, 10000),
-			RangeDate: range_d,
+			RangeDate: rangedate,
 		},
 	}
 	var savers []*StructSaver
@@ -1876,6 +1876,10 @@ func TestIntegration_StandardQuery(t *testing.T) {
 		{"ArrayOfStructs", "SELECT [(1, 2, 3), (4, 5, 6)]", []Value{[]Value{ints(1, 2, 3), ints(4, 5, 6)}}},
 		{"ComplexNested", "SELECT [([1, 2, 3], 4), ([5, 6], 7)]", []Value{[]Value{[]Value{ints(1, 2, 3), int64(4)}, []Value{ints(5, 6), int64(7)}}}},
 		{"SubSelectArray", "SELECT ARRAY(SELECT STRUCT([1, 2]))", []Value{[]Value{[]Value{ints(1, 2)}}}},
+		{"RangeOofDateLiteral",
+			"SELECT RANGE(DATE '2023-03-01', DATE '2024-04-16')",
+			[]Value{&RangeValue{Start: civil.Date{Year: 2023, Month: 03, Day: 01}, End: civil.Date{Year: 2024, Month: 04, Day: 16}}},
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
