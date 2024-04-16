@@ -1,6 +1,6 @@
 {
   "aiplatform": "1.67.0",
-  "auth": "0.1.1",
+  "auth": "0.2.0",
   "auth/oauth2adapt": "0.1.0",
   "bigquery": "1.60.0",
   "bigtable": "1.22.0",
