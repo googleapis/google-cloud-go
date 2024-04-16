@@ -1,6 +1,27 @@
 # Changes
 
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.3...dataplex/v1.15.0) (2024-03-19)
+
+
+### Features
+
+* **dataplex:** Added client side library for the followings ([#9592](https://github.com/googleapis/google-cloud-go/issues/9592)) ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.2...dataplex/v1.14.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* **dataplex:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.1...dataplex/v1.14.2) (2024-02-06)
+
+
+### Documentation
+
+* **dataplex:** Fix typo in comment ([e60a6ba](https://github.com/googleapis/google-cloud-go/commit/e60a6ba01acf2ef2e8d12e23ed5c6e876edeb1b7))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.0...dataplex/v1.14.1) (2024-01-30)
 
 
@@ -216,3 +237,4 @@
 ## v0.1.0
 
 - feat(dataplex): start generating clients
+

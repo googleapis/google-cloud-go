@@ -2,6 +2,35 @@
 
 
 
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.1...maps/v1.7.2) (2024-04-15)
+
+
+### Documentation
+
+* **maps/places:** Fix designation of Text Search ([#9728](https://github.com/googleapis/google-cloud-go/issues/9728)) ([ce55ad6](https://github.com/googleapis/google-cloud-go/commit/ce55ad694f21cacfa608e9b9952ee31f8d566e49))
+* **maps/places:** Fix typo in PriceLevel enum ([#9669](https://github.com/googleapis/google-cloud-go/issues/9669)) ([264a6dc](https://github.com/googleapis/google-cloud-go/commit/264a6dcddbffaec987dce1dc00f6550c263d2df7))
+* **maps/routing:** Various formatting and grammar fixes for proto documentation ([cca3f47](https://github.com/googleapis/google-cloud-go/commit/cca3f47c895e7cac07d7d48ab3c4850b265a710f))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.0...maps/v1.7.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **maps:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.4...maps/v1.7.0) (2024-02-21)
+
+
+### Features
+
+* **maps/addressvalidation:** Add session token support for Autocomplete (New) sessions that end with a call to Address Validation ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+* **maps/places:** Add AutoComplete API ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Updated incorrect reference to `Task.journeySharingInfo` ([#9428](https://github.com/googleapis/google-cloud-go/issues/9428)) ([7e6c208](https://github.com/googleapis/google-cloud-go/commit/7e6c208c5d97d3f6e2f7fd7aca09b8ae98dc0bf2))
+
 ## [1.6.4](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.3...maps/v1.6.4) (2024-01-30)
 
 

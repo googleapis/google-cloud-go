@@ -328,11 +328,18 @@ const (
 	// be published to the parent only. The `parent_event` field contains the
 	// name of the parent.
 	Event_MERGED Event_DetailedState = 4
-	// The incident was automatically closed because the issues couldn’t be
-	// confirmed or is no longer impacting Google Cloud Products and/or
-	// Locations.
+	// The incident was automatically closed because of the following reasons:
+	//
+	//   - The impact of the incident could not be confirmed.
+	//
+	//   - The incident was intermittent or resolved itself.
+	//
+	//     The incident does not have a resolution because no action or
+	//     investigation happened. If it is intermittent, the incident may reopen.
 	Event_AUTO_CLOSED Event_DetailedState = 9
-	// The incident was verified as non-impactful. No further action required.
+	// Upon investigation, Google engineers concluded that the incident is not
+	// affecting a Google Cloud product. This state can change if the incident
+	// is reviewed again.
 	Event_FALSE_POSITIVE Event_DetailedState = 10
 )
 
@@ -637,11 +644,18 @@ const (
 	// published to the parent only. The `parent_event` contains the name of the
 	// parent.
 	OrganizationEvent_MERGED OrganizationEvent_DetailedState = 4
-	// The incident was automatically closed because the issues couldn’t be
-	// confirmed or is no longer impacting Google Cloud Products and/or
-	// Locations.
+	// The incident was automatically closed because of the following reasons:
+	//
+	//   - The impact of the incident could not be confirmed.
+	//
+	//   - The incident was intermittent or resolved itself.
+	//
+	//     The incident does not have a resolution because no action or
+	//     investigation happened. If it is intermittent, the incident may reopen.
 	OrganizationEvent_AUTO_CLOSED OrganizationEvent_DetailedState = 9
-	// The incident was verified as non-impactful. No further action required.
+	// Upon investigation, Google engineers concluded that the incident is not
+	// affecting a Google Cloud product. This state can change if the incident
+	// is reviewed again.
 	OrganizationEvent_FALSE_POSITIVE OrganizationEvent_DetailedState = 10
 )
 

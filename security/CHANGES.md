@@ -1,5 +1,19 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.6...security/v1.16.0) (2024-04-15)
+
+
+### Features
+
+* **security/privateca:** Add encoding format to `.google.cloud.security.privateca.v1.CaPool` Resource ([2cdc40a](https://github.com/googleapis/google-cloud-go/commit/2cdc40a0b4288f5ab5f2b2b8f5c1d6453a9c81ec))
+
+## [1.15.6](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.5...security/v1.15.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **security:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.15.5](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.4...security/v1.15.5) (2024-01-30)
 
 

@@ -222,7 +222,7 @@ func (c *BackendServicesClient) AddSignedUrlKey(ctx context.Context, req *comput
 	return c.internalClient.AddSignedUrlKey(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *BackendServicesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -460,7 +460,7 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	return op, nil
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	it := &BackendServicesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListBackendServicesRequest)

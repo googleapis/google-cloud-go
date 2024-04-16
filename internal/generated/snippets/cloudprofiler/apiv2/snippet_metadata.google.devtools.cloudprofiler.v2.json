@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudprofiler/apiv2",
-    "version": "0.2.1",
+    "version": "0.3.1",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudprofiler_v2_generated_ProfilerService_CreateOfflineProfile_sync",
       "title": "cloudprofiler CreateOfflineProfile Sample",
-      "description": "CreateOfflineProfile createOfflineProfile creates a new profile resource in the offline mode.\nThe client provides the profile to create along with the profile bytes, the\nserver records it.",
+      "description": "CreateOfflineProfile createOfflineProfile creates a new profile resource in the offline\nmode. The client provides the profile to create along with the profile\nbytes, the server records it.\n\n_Direct use of this API is discouraged, please use a [supported\nprofiler\nagent](https: //cloud.google.com/profiler/docs/about-profiler#profiling_agent)\ninstead for profile collection._",
       "file": "ProfilerClient/CreateOfflineProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "cloudprofiler_v2_generated_ProfilerService_CreateProfile_sync",
       "title": "cloudprofiler CreateProfile Sample",
-      "description": "CreateProfile createProfile creates a new profile resource in the online mode.\n\nThe server ensures that the new profiles are created at a constant rate per\ndeployment, so the creation request may hang for some time until the next\nprofile session is available.\n\nThe request may fail with ABORTED error if the creation is not available\nwithin ~1m, the response will indicate the duration of the backoff the\nclient should take before attempting creating a profile again. The backoff\nduration is returned in google.rpc.RetryInfo extension on the response\nstatus. To a gRPC client, the extension will be return as a\nbinary-serialized proto in the trailing metadata item named\n\"google.rpc.retryinfo-bin\".",
+      "description": "CreateProfile createProfile creates a new profile resource in the online mode.\n\n_Direct use of this API is discouraged, please use a [supported\nprofiler\nagent](https: //cloud.google.com/profiler/docs/about-profiler#profiling_agent)\ninstead for profile collection._\n\nThe server ensures that the new profiles are created at a constant rate per\ndeployment, so the creation request may hang for some time until the next\nprofile session is available.\n\nThe request may fail with ABORTED error if the creation is not available\nwithin ~1m, the response will indicate the duration of the backoff the\nclient should take before attempting creating a profile again. The backoff\nduration is returned in google.rpc.RetryInfo extension on the response\nstatus. To a gRPC client, the extension will be return as a\nbinary-serialized proto in the trailing metadata item named\n\"google.rpc.retryinfo-bin\".",
       "file": "ProfilerClient/CreateProfile/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudprofiler_v2_generated_ProfilerService_UpdateProfile_sync",
       "title": "cloudprofiler UpdateProfile Sample",
-      "description": "UpdateProfile updateProfile updates the profile bytes and labels on the profile resource\ncreated in the online mode. Updating the bytes for profiles created in the\noffline mode is currently not supported: the profile content must be\nprovided at the time of the profile creation.",
+      "description": "UpdateProfile updateProfile updates the profile bytes and labels on the profile resource\ncreated in the online mode. Updating the bytes for profiles created in the\noffline mode is currently not supported: the profile content must be\nprovided at the time of the profile creation.\n\n_Direct use of this API is discouraged, please use a [supported\nprofiler\nagent](https: //cloud.google.com/profiler/docs/about-profiler#profiling_agent)\ninstead for profile collection._",
       "file": "ProfilerClient/UpdateProfile/main.go",
       "language": "GO",
       "clientMethod": {

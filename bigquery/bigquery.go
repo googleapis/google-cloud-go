@@ -249,7 +249,7 @@ func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons
 
 var (
 	defaultRetryReasons = []string{"backendError", "rateLimitExceeded"}
-	jobRetryReasons     = []string{"backendError", "rateLimitExceeded", "internalError"}
+	jobRetryReasons     = []string{"backendError", "rateLimitExceeded", "jobRateLimitExceeded", "internalError"}
 	retry5xxCodes       = []int{
 		http.StatusInternalServerError,
 		http.StatusBadGateway,

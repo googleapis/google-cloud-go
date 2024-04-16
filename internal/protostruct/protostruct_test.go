@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	pb "github.com/golang/protobuf/ptypes/struct"
+	pb "google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestDecodeToMap(t *testing.T) {

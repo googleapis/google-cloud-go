@@ -32,7 +32,7 @@ conformanceTestsHome=$rootDir/cloud-bigtable-clients-test/tests
 sponge_log=$clientLibHome/sponge_log.log
 
 cd $testProxyHome
-go build
+GOWORK=off go build
 
 nohup $testProxyHome/testproxy --port $testProxyPort &
 proxyPID=$!

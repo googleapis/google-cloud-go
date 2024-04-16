@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.5](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.4...baremetalsolution/v1.2.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.3...baremetalsolution/v1.2.4) (2024-01-30)
 
 
@@ -99,3 +106,4 @@
 ### Features
 
 * **baremetalsolution:** start generating apiv2 ([#6147](https://github.com/googleapis/google-cloud-go/issues/6147)) ([5dcbf2f](https://github.com/googleapis/google-cloud-go/commit/5dcbf2f859e2b99e5497d6ac45825a80799f32ab))
+

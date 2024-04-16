@@ -375,6 +375,7 @@ type UpdateFeatureOnlineStoreRequest struct {
 	// Updatable fields:
 	//
 	//   - `big_query_source`
+	//   - `bigtable`
 	//   - `labels`
 	//   - `sync_config`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -834,6 +835,7 @@ type UpdateFeatureViewRequest struct {
 	// Updatable fields:
 	//
 	//   - `labels`
+	//   - `serviceAgentType`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

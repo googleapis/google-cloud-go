@@ -118,6 +118,7 @@ func getVersionClient() string {
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
 	return []string{
-		"",
+		"https://www.googleapis.com/auth/meetings.space.created",
+		"https://www.googleapis.com/auth/meetings.space.readonly",
 	}
 }

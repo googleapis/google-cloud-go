@@ -33,7 +33,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v58/github"
+	"github.com/google/go-github/v60/github"
 )
 
 const (
@@ -70,6 +70,17 @@ func main() {
 	githubUsername := flag.String("gh-user", "googleapis", "GitHub username where repo lives.")
 	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
 
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "validate":
+			log.Println("Starting config validation.")
+			if err := validate(); err != nil {
+				log.Fatal(err)
+			}
+			log.Println("Validation complete.")
+			return
+		}
+	}
 	flag.Parse()
 	ctx := context.Background()
 
@@ -204,6 +215,8 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			if err := p.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
 				return err
 			}
+			log.Printf("Adding new module %s to list of modules to process", moduleName)
+			p.modules = append(p.modules, moduleName)
 			if err := p.modEditReplaceInSnippets(modulePath, importPath); err != nil {
 				return err
 			}

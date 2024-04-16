@@ -80,6 +80,11 @@
                 "MigrateKey"
               ]
             },
+            "ReorderFirewallPolicies": {
+              "methods": [
+                "ReorderFirewallPolicies"
+              ]
+            },
             "RetrieveLegacySecretKey": {
               "methods": [
                 "RetrieveLegacySecretKey"
