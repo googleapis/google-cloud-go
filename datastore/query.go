@@ -25,9 +25,9 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/trace"
-	wrapperspb "github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type operator string
@@ -716,7 +716,15 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 }
 
 // Run runs the given query in the given context.
-func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
+func (c *Client) Run(ctx context.Context, q *Query) (it *Iterator) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+	defer func() { trace.EndSpan(ctx, it.err) }()
+	it = c.run(ctx, q)
+	return it
+}
+
+// run runs the given query in the given context.
+func (c *Client) run(ctx context.Context, q *Query) *Iterator {
 	if q.err != nil {
 		return &Iterator{err: q.err}
 	}

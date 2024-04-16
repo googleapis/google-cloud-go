@@ -23,6 +23,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -351,6 +352,9 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
 		internaloption.AllowNonDefaultServiceAccount(true),
+	}
+	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPathXds())
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

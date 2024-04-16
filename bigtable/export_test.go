@@ -57,6 +57,7 @@ func init() {
 	flag.StringVar(&c.Project2, "it.project2", "", "Optional secondary project to use for copy backup integration test")
 	flag.StringVar(&c.Instance, "it.instance", "", "Bigtable instance to use")
 	flag.StringVar(&c.Cluster, "it.cluster", "", "Bigtable cluster to use")
+	flag.StringVar(&c.Cluster2, "it.cluster2", "", "Optional Bigtable secondary cluster in primary project to use for copy backup integration test")
 	flag.StringVar(&c.Table, "it.table", "", "Bigtable table to create")
 	flag.BoolVar(&c.AttemptDirectPath, "it.attempt-directpath", false, "Attempt DirectPath")
 	flag.BoolVar(&c.DirectPathIPV4Only, "it.directpath-ipv4-only", false, "Run DirectPath on a ipv4-only VM")
@@ -87,6 +88,7 @@ type IntegrationTestConfig struct {
 	Project2           string
 	Instance           string
 	Cluster            string
+	Cluster2           string
 	Table              string
 	AttemptDirectPath  bool
 	DirectPathIPV4Only bool
@@ -121,6 +123,9 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 	}
 	if c.Cluster == "" {
 		c.Cluster = os.Getenv("GCLOUD_TESTS_BIGTABLE_CLUSTER")
+	}
+	if c.Cluster2 == "" {
+		c.Cluster2 = os.Getenv("GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER")
 	}
 
 	if legacyUseProd != "" {

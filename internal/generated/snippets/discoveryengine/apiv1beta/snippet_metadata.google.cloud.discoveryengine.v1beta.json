@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/discoveryengine/apiv1beta",
-    "version": "1.5.0",
+    "version": "1.6.0",
     "language": "GO",
     "apis": [
       {
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -237,6 +237,52 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_ConversationalSearchService_AnswerQuery_sync",
+      "title": "discoveryengine AnswerQuery Sample",
+      "description": "AnswerQuery answer query method.",
+      "file": "ConversationalSearchClient/AnswerQuery/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnswerQuery",
+        "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient.AnswerQuery",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.AnswerQueryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.AnswerQueryResponse",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "AnswerQuery",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService.AnswerQuery",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -334,6 +380,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1beta_generated_ConversationalSearchService_CreateSession_sync",
+      "title": "discoveryengine CreateSession Sample",
+      "description": "CreateSession creates a Session.\n\nIf the [Session][google.cloud.discoveryengine.v1beta.Session] to create\nalready exists, an ALREADY_EXISTS error is returned.",
+      "file": "ConversationalSearchClient/CreateSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSession",
+        "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient.CreateSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CreateSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Session",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "CreateSession",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService.CreateSession",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1beta_generated_ConversationalSearchService_DeleteConversation_sync",
       "title": "discoveryengine DeleteConversation Sample",
       "description": "DeleteConversation deletes a Conversation.\n\nIf the [Conversation][google.cloud.discoveryengine.v1beta.Conversation] to\ndelete does not exist, a NOT_FOUND error is returned.",
@@ -374,6 +466,97 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_ConversationalSearchService_DeleteSession_sync",
+      "title": "discoveryengine DeleteSession Sample",
+      "description": "DeleteSession deletes a Session.\n\nIf the [Session][google.cloud.discoveryengine.v1beta.Session] to delete\ndoes not exist, a NOT_FOUND error is returned.",
+      "file": "ConversationalSearchClient/DeleteSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSession",
+        "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient.DeleteSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.DeleteSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "DeleteSession",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService.DeleteSession",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_ConversationalSearchService_GetAnswer_sync",
+      "title": "discoveryengine GetAnswer Sample",
+      "description": "GetAnswer gets a Answer.",
+      "file": "ConversationalSearchClient/GetAnswer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAnswer",
+        "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient.GetAnswer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetAnswerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Answer",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "GetAnswer",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService.GetAnswer",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -471,6 +654,52 @@
       ]
     },
     {
+      "regionTag": "discoveryengine_v1beta_generated_ConversationalSearchService_GetSession_sync",
+      "title": "discoveryengine GetSession Sample",
+      "description": "GetSession gets a Session.",
+      "file": "ConversationalSearchClient/GetSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSession",
+        "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient.GetSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.GetSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Session",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "GetSession",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService.GetSession",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "discoveryengine_v1beta_generated_ConversationalSearchService_ListConversations_sync",
       "title": "discoveryengine ListConversations Sample",
       "description": "ListConversations lists all Conversations by their parent\n[DataStore][google.cloud.discoveryengine.v1beta.DataStore].",
@@ -511,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -557,7 +786,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_ConversationalSearchService_ListSessions_sync",
+      "title": "discoveryengine ListSessions Sample",
+      "description": "ListSessions lists all Sessions by their parent\n[DataStore][google.cloud.discoveryengine.v1beta.DataStore].",
+      "file": "ConversationalSearchClient/ListSessions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSessions",
+        "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient.ListSessions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ListSessionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SessionIterator",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "ListSessions",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService.ListSessions",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -593,6 +868,52 @@
         "method": {
           "shortName": "UpdateConversation",
           "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService.UpdateConversation",
+          "service": {
+            "shortName": "ConversationalSearchService",
+            "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_ConversationalSearchService_UpdateSession_sync",
+      "title": "discoveryengine UpdateSession Sample",
+      "description": "UpdateSession updates a Session.\n\n[Session][google.cloud.discoveryengine.v1beta.Session] action type cannot\nbe changed. If the [Session][google.cloud.discoveryengine.v1beta.Session]\nto update does not exist, a NOT_FOUND error is returned.",
+      "file": "ConversationalSearchClient/UpdateSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSession",
+        "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient.UpdateSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.UpdateSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Session",
+        "client": {
+          "shortName": "ConversationalSearchClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchClient"
+        },
+        "method": {
+          "shortName": "UpdateSession",
+          "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService.UpdateSession",
           "service": {
             "shortName": "ConversationalSearchService",
             "fullName": "google.cloud.discoveryengine.v1beta.ConversationalSearchService"
@@ -833,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -879,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1200,7 +1521,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1246,7 +1567,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1568,7 +1889,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1614,7 +1935,145 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_EngineService_PauseEngine_sync",
+      "title": "discoveryengine PauseEngine Sample",
+      "description": "PauseEngine pauses the training of an existing engine. Only applicable if\n[SolutionType][google.cloud.discoveryengine.v1beta.SolutionType] is\n[SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1beta.SolutionType.SOLUTION_TYPE_RECOMMENDATION].",
+      "file": "EngineClient/PauseEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PauseEngine",
+        "fullName": "google.cloud.discoveryengine.v1beta.EngineClient.PauseEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.PauseEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Engine",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.EngineClient"
+        },
+        "method": {
+          "shortName": "PauseEngine",
+          "fullName": "google.cloud.discoveryengine.v1beta.EngineService.PauseEngine",
+          "service": {
+            "shortName": "EngineService",
+            "fullName": "google.cloud.discoveryengine.v1beta.EngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_EngineService_ResumeEngine_sync",
+      "title": "discoveryengine ResumeEngine Sample",
+      "description": "ResumeEngine resumes the training of an existing engine. Only applicable if\n[SolutionType][google.cloud.discoveryengine.v1beta.SolutionType] is\n[SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1beta.SolutionType.SOLUTION_TYPE_RECOMMENDATION].",
+      "file": "EngineClient/ResumeEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ResumeEngine",
+        "fullName": "google.cloud.discoveryengine.v1beta.EngineClient.ResumeEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.ResumeEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.Engine",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.EngineClient"
+        },
+        "method": {
+          "shortName": "ResumeEngine",
+          "fullName": "google.cloud.discoveryengine.v1beta.EngineService.ResumeEngine",
+          "service": {
+            "shortName": "EngineService",
+            "fullName": "google.cloud.discoveryengine.v1beta.EngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_EngineService_TuneEngine_sync",
+      "title": "discoveryengine TuneEngine Sample",
+      "description": "TuneEngine tunes an existing engine. Only applicable if\n[SolutionType][google.cloud.discoveryengine.v1beta.SolutionType] is\n[SOLUTION_TYPE_RECOMMENDATION][google.cloud.discoveryengine.v1beta.SolutionType.SOLUTION_TYPE_RECOMMENDATION].",
+      "file": "EngineClient/TuneEngine/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TuneEngine",
+        "fullName": "google.cloud.discoveryengine.v1beta.EngineClient.TuneEngine",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.TuneEngineRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TuneEngineOperation",
+        "client": {
+          "shortName": "EngineClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.EngineClient"
+        },
+        "method": {
+          "shortName": "TuneEngine",
+          "fullName": "google.cloud.discoveryengine.v1beta.EngineService.TuneEngine",
+          "service": {
+            "shortName": "EngineService",
+            "fullName": "google.cloud.discoveryengine.v1beta.EngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1653,6 +2112,282 @@
           "service": {
             "shortName": "EngineService",
             "fullName": "google.cloud.discoveryengine.v1beta.EngineService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_GroundedGenerationService_CheckGrounding_sync",
+      "title": "discoveryengine CheckGrounding Sample",
+      "description": "CheckGrounding performs a grounding check.",
+      "file": "GroundedGenerationClient/CheckGrounding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckGrounding",
+        "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient.CheckGrounding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.CheckGroundingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.CheckGroundingResponse",
+        "client": {
+          "shortName": "GroundedGenerationClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient"
+        },
+        "method": {
+          "shortName": "CheckGrounding",
+          "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationService.CheckGrounding",
+          "service": {
+            "shortName": "GroundedGenerationService",
+            "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_GroundedGenerationService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "GroundedGenerationClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "GroundedGenerationClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_GroundedGenerationService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "GroundedGenerationClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "GroundedGenerationClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.GroundedGenerationClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_RankService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "RankClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1beta.RankClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "RankClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.RankClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_RankService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "RankClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1beta.RankClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "RankClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.RankClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_RankService_Rank_sync",
+      "title": "discoveryengine Rank Sample",
+      "description": "Rank ranks a list of text records based on the given input query.",
+      "file": "RankClient/Rank/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Rank",
+        "fullName": "google.cloud.discoveryengine.v1beta.RankClient.Rank",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.RankRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*discoveryenginepb.RankResponse",
+        "client": {
+          "shortName": "RankClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.RankClient"
+        },
+        "method": {
+          "shortName": "Rank",
+          "fullName": "google.cloud.discoveryengine.v1beta.RankService.Rank",
+          "service": {
+            "shortName": "RankService",
+            "fullName": "google.cloud.discoveryengine.v1beta.RankService"
           }
         }
       },
@@ -1752,7 +2487,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2028,7 +2763,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2074,7 +2809,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2212,7 +2947,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2258,7 +2993,145 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_SearchTuningService_GetOperation_sync",
+      "title": "discoveryengine GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SearchTuningClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.discoveryengine.v1beta.SearchTuningClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SearchTuningClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.SearchTuningClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_SearchTuningService_ListOperations_sync",
+      "title": "discoveryengine ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SearchTuningClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.discoveryengine.v1beta.SearchTuningClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SearchTuningClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.SearchTuningClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "discoveryengine_v1beta_generated_SearchTuningService_TrainCustomModel_sync",
+      "title": "discoveryengine TrainCustomModel Sample",
+      "description": "TrainCustomModel trains a custom model.",
+      "file": "SearchTuningClient/TrainCustomModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TrainCustomModel",
+        "fullName": "google.cloud.discoveryengine.v1beta.SearchTuningClient.TrainCustomModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "discoveryenginepb.TrainCustomModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TrainCustomModelOperation",
+        "client": {
+          "shortName": "SearchTuningClient",
+          "fullName": "google.cloud.discoveryengine.v1beta.SearchTuningClient"
+        },
+        "method": {
+          "shortName": "TrainCustomModel",
+          "fullName": "google.cloud.discoveryengine.v1beta.SearchTuningService.TrainCustomModel",
+          "service": {
+            "shortName": "SearchTuningService",
+            "fullName": "google.cloud.discoveryengine.v1beta.SearchTuningService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -2396,7 +3269,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2442,7 +3315,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2810,7 +3683,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2994,7 +3867,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3040,7 +3913,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3316,7 +4189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

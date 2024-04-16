@@ -1,5 +1,19 @@
 # Changes
 
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.1...monitoring/v1.18.2) (2024-04-15)
+
+
+### Documentation
+
+* **monitoring/apiv3:** Various updates ([8892943](https://github.com/googleapis/google-cloud-go/commit/8892943b169060f8ba7be227cd65680696c494a0))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.0...monitoring/v1.18.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **monitoring:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.17.1...monitoring/v1.18.0) (2024-02-09)
 
 

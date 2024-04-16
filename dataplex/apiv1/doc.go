@@ -41,7 +41,7 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := dataplex.NewContentClient(ctx)
+//	c, err := dataplex.NewClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
@@ -61,26 +61,24 @@
 //	// - It may require correct/in-range values for request initialization.
 //	// - It may require specifying regional endpoints when creating the service client as shown in:
 //	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-//	c, err := dataplex.NewContentClient(ctx)
+//	c, err := dataplex.NewClient(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
 //	defer c.Close()
 //
-//	req := &dataplexpb.CreateContentRequest{
+//	req := &dataplexpb.CancelJobRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CreateContentRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/dataplex/apiv1/dataplexpb#CancelJobRequest.
 //	}
-//	resp, err := c.CreateContent(ctx, req)
+//	err = c.CancelJob(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
-//	// TODO: Use resp.
-//	_ = resp
 //
 // # Use of Context
 //
-// The ctx passed to NewContentClient is used for authentication requests and
+// The ctx passed to NewClient is used for authentication requests and
 // for creating the underlying connection, but is not used for subsequent calls.
 // Individual methods on the client use the ctx given to them.
 //

@@ -45,6 +45,8 @@ type Client struct {
 //
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
+// projectID is your GCP project; location is GCP region/location per
+// https://cloud.google.com/vertex-ai/docs/general/locations
 //
 // You may configure the client by passing in options from the
 // [google.golang.org/api/option] package. You may also use options defined in
@@ -98,6 +100,9 @@ type GenerativeModel struct {
 const defaultMaxOutputTokens = 2048
 
 // GenerativeModel creates a new instance of the named model.
+// name is a string model name like "gemini-1.0.-pro".
+// See https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versioning
+// for details on model naming and versioning.
 func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	return &GenerativeModel{
 		c:        c,
@@ -291,6 +296,9 @@ func joinContent(dest, src *Content) *Content {
 	if dest == nil {
 		return src
 	}
+	if src == nil {
+		return dest
+	}
 	// Assume roles are the same.
 	dest.Parts = joinParts(dest.Parts, src.Parts)
 	return dest
@@ -323,4 +331,20 @@ func mergeTexts(in []Part) []Part {
 		}
 	}
 	return out
+}
+
+func int32pToFloat32p(x *int32) *float32 {
+	if x == nil {
+		return nil
+	}
+	f := float32(*x)
+	return &f
+}
+
+func float32pToInt32p(x *float32) *int32 {
+	if x == nil {
+		return nil
+	}
+	i := int32(*x)
+	return &i
 }

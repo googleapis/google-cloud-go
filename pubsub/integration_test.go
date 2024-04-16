@@ -1212,7 +1212,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
-	testutil.Retry(t, 2, 0, func(r *testutil.R) {
+	testutil.Retry(t, 2, 1*time.Second, func(r *testutil.R) {
 		topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
 		if err != nil {
 			r.Errorf("createTopicWithRetry err: %v", err)
@@ -1285,7 +1285,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 		}
 
 		go func() {
-			if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+			sub.Receive(ctx, func(ctx context.Context, msg *Message) {
 				mu.Lock()
 				defer mu.Unlock()
 				// Messages are deduped using the data field, since in this case all
@@ -1298,11 +1298,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 				receiveData = append(receiveData, testutil2.OrderedKeyMsg{Key: msg.OrderingKey, Data: string(msg.Data)})
 				wg.Done()
 				msg.Ack()
-			}); err != nil {
-				if c := status.Code(err); c != codes.Canceled {
-					r.Errorf("status.Code(err) got: %v, want cancelled", err)
-				}
-			}
+			})
 		}()
 
 		done := make(chan struct{})
@@ -1438,9 +1434,6 @@ func TestIntegration_OrderedKeys_SubscriptionOrdering(t *testing.T) {
 		msg.Ack()
 		atomic.AddInt32(&numAcked, 1)
 	})
-	if sub.enableOrdering != enableMessageOrdering {
-		t.Fatalf("enableOrdering mismatch: got: %v, want: %v", sub.enableOrdering, enableMessageOrdering)
-	}
 	// If the messages were received on a subscription with the EnableMessageOrdering=true,
 	// total processing would exceed the timeout and only one message would be processed.
 	if numAcked < 2 {

@@ -1,5 +1,25 @@
 # Changes
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.28.0...securitycenter/v1.29.0) (2024-04-15)
+
+
+### Features
+
+* **securitycenter:** Add Notebook field to finding's list of attributes ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+
+
+### Documentation
+
+* **securitycenter:** Fixed backtick and double quotes mismatch in security_marks.proto ([dbcdfd7](https://github.com/googleapis/google-cloud-go/commit/dbcdfd7843be16573b1683466852242a84891456))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.27.0...securitycenter/v1.28.0) (2024-03-12)
+
+
+### Features
+
+* **securitycenter:** Add security_posture, external_system.case_uri, external_system.case_priority, external_system.case_sla, external_system.case_create_time, external_system.case_close_time, and external_system.ticket_info to finding's list of attributes ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+* **securitycenter:** New client(s) ([#9562](https://github.com/googleapis/google-cloud-go/issues/9562)) ([9d6b29d](https://github.com/googleapis/google-cloud-go/commit/9d6b29d136cad2dde290b4ca1383c9382eb83b34))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.26.0...securitycenter/v1.27.0) (2024-03-04)
 
 

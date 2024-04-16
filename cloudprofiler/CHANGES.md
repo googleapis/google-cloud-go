@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.3.0...cloudprofiler/v0.3.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **cloudprofiler:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/cloudprofiler/v0.2.1...cloudprofiler/v0.3.0) (2024-02-26)
 
 
@@ -30,3 +37,4 @@
 * **cloudprofiler:** New clients ([#9016](https://github.com/googleapis/google-cloud-go/issues/9016)) ([8fefcce](https://github.com/googleapis/google-cloud-go/commit/8fefcce1bdd86afb07a4c8bcfc3d3d00f61a9100))
 
 ## Changes
+

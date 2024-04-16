@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.0...orchestration/v1.9.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **orchestration:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.8.5...orchestration/v1.9.0) (2024-02-21)
 
 
@@ -116,3 +123,4 @@
 ## v0.1.0
 
 - feat(orchestration): start generating clients
+

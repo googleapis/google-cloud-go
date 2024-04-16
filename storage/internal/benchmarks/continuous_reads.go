@@ -19,7 +19,7 @@ import (
 	"math/rand"
 	"os"
 	"path"
-	"slices"
+	"sort"
 	"sync"
 	"time"
 
@@ -183,7 +183,10 @@ func (r *continuousReads) run(ctx context.Context) error {
 }
 
 func (r *continuousReads) compileResults() {
-	slices.Sort(r.results)
+	// TO-DO: switch to slices.Sort(r.results) when Go<1.21 support is dropped
+	sort.Slice(r.results, func(i, j int) bool {
+		return r.results[i] < r.results[j]
+	})
 	l := len(r.results)
 
 	percentiles := map[string]time.Duration{

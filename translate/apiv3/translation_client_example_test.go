@@ -452,6 +452,12 @@ func ExampleTranslationClient_ListAdaptiveMtDatasets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*translatepb.ListAdaptiveMtDatasetsResponse)
 	}
 }
 
@@ -483,6 +489,12 @@ func ExampleTranslationClient_ListAdaptiveMtFiles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*translatepb.ListAdaptiveMtFilesResponse)
 	}
 }
 
@@ -514,6 +526,12 @@ func ExampleTranslationClient_ListAdaptiveMtSentences() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*translatepb.ListAdaptiveMtSentencesResponse)
 	}
 }
 
@@ -545,6 +563,12 @@ func ExampleTranslationClient_ListGlossaries() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*translatepb.ListGlossariesResponse)
 	}
 }
 

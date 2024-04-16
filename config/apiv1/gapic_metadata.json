@@ -100,6 +100,11 @@
                 "GetRevision"
               ]
             },
+            "GetTerraformVersion": {
+              "methods": [
+                "GetTerraformVersion"
+              ]
+            },
             "ImportStatefile": {
               "methods": [
                 "ImportStatefile"
@@ -133,6 +138,11 @@
             "ListRevisions": {
               "methods": [
                 "ListRevisions"
+              ]
+            },
+            "ListTerraformVersions": {
+              "methods": [
+                "ListTerraformVersions"
               ]
             },
             "LockDeployment": {
@@ -255,6 +265,11 @@
                 "GetRevision"
               ]
             },
+            "GetTerraformVersion": {
+              "methods": [
+                "GetTerraformVersion"
+              ]
+            },
             "ImportStatefile": {
               "methods": [
                 "ImportStatefile"
@@ -288,6 +303,11 @@
             "ListRevisions": {
               "methods": [
                 "ListRevisions"
+              ]
+            },
+            "ListTerraformVersions": {
+              "methods": [
+                "ListTerraformVersions"
               ]
             },
             "LockDeployment": {

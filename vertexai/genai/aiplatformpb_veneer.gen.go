@@ -309,15 +309,27 @@ const (
 	FinishReasonRecitation FinishReason = 4
 	// FinishReasonOther means all other reasons that stopped the token generation
 	FinishReasonOther FinishReason = 5
+	// FinishReasonBlocklist means the token generation was stopped as the response was flagged for the
+	// terms which are included from the terminology blocklist.
+	FinishReasonBlocklist FinishReason = 6
+	// FinishReasonProhibitedContent means the token generation was stopped as the response was flagged for
+	// the prohibited contents.
+	FinishReasonProhibitedContent FinishReason = 7
+	// FinishReasonSpii means the token generation was stopped as the response was flagged for
+	// Sensitive Personally Identifiable Information (SPII) contents.
+	FinishReasonSpii FinishReason = 8
 )
 
 var namesForFinishReason = map[FinishReason]string{
-	FinishReasonUnspecified: "FinishReasonUnspecified",
-	FinishReasonStop:        "FinishReasonStop",
-	FinishReasonMaxTokens:   "FinishReasonMaxTokens",
-	FinishReasonSafety:      "FinishReasonSafety",
-	FinishReasonRecitation:  "FinishReasonRecitation",
-	FinishReasonOther:       "FinishReasonOther",
+	FinishReasonUnspecified:       "FinishReasonUnspecified",
+	FinishReasonStop:              "FinishReasonStop",
+	FinishReasonMaxTokens:         "FinishReasonMaxTokens",
+	FinishReasonSafety:            "FinishReasonSafety",
+	FinishReasonRecitation:        "FinishReasonRecitation",
+	FinishReasonOther:             "FinishReasonOther",
+	FinishReasonBlocklist:         "FinishReasonBlocklist",
+	FinishReasonProhibitedContent: "FinishReasonProhibitedContent",
+	FinishReasonSpii:              "FinishReasonSpii",
 }
 
 func (v FinishReason) String() string {
@@ -485,7 +497,7 @@ type GenerationConfig struct {
 	// Optional. If specified, nucleus sampling will be used.
 	TopP *float32
 	// Optional. If specified, top-k sampling will be used.
-	TopK *float32
+	TopK *int32
 	// Optional. Number of candidates to generate.
 	CandidateCount *int32
 	// Optional. The maximum number of output tokens to generate per message.
@@ -501,7 +513,7 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 	return &pb.GenerationConfig{
 		Temperature:     v.Temperature,
 		TopP:            v.TopP,
-		TopK:            v.TopK,
+		TopK:            int32pToFloat32p(v.TopK),
 		CandidateCount:  v.CandidateCount,
 		MaxOutputTokens: v.MaxOutputTokens,
 		StopSequences:   v.StopSequences,
@@ -515,7 +527,7 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 	return &GenerationConfig{
 		Temperature:     p.Temperature,
 		TopP:            p.TopP,
-		TopK:            p.TopK,
+		TopK:            float32pToInt32p(p.TopK),
 		CandidateCount:  p.CandidateCount,
 		MaxOutputTokens: p.MaxOutputTokens,
 		StopSequences:   p.StopSequences,
@@ -615,6 +627,37 @@ func (v HarmProbability) String() string {
 	return fmt.Sprintf("HarmProbability(%d)", v)
 }
 
+// HarmSeverity is harm severity levels.
+type HarmSeverity int32
+
+const (
+	// HarmSeverityUnspecified means harm severity unspecified.
+	HarmSeverityUnspecified HarmSeverity = 0
+	// HarmSeverityNegligible means negligible level of harm severity.
+	HarmSeverityNegligible HarmSeverity = 1
+	// HarmSeverityLow means low level of harm severity.
+	HarmSeverityLow HarmSeverity = 2
+	// HarmSeverityMedium means medium level of harm severity.
+	HarmSeverityMedium HarmSeverity = 3
+	// HarmSeverityHigh means high level of harm severity.
+	HarmSeverityHigh HarmSeverity = 4
+)
+
+var namesForHarmSeverity = map[HarmSeverity]string{
+	HarmSeverityUnspecified: "HarmSeverityUnspecified",
+	HarmSeverityNegligible:  "HarmSeverityNegligible",
+	HarmSeverityLow:         "HarmSeverityLow",
+	HarmSeverityMedium:      "HarmSeverityMedium",
+	HarmSeverityHigh:        "HarmSeverityHigh",
+}
+
+func (v HarmSeverity) String() string {
+	if n, ok := namesForHarmSeverity[v]; ok {
+		return n
+	}
+	return fmt.Sprintf("HarmSeverity(%d)", v)
+}
+
 // PromptFeedback contains content filter results for a prompt sent in the request.
 type PromptFeedback struct {
 	// Output only. Blocked reason.
@@ -653,6 +696,12 @@ type SafetyRating struct {
 	Category HarmCategory
 	// Output only. Harm probability levels in the content.
 	Probability HarmProbability
+	// Output only. Harm probability score.
+	ProbabilityScore float32
+	// Output only. Harm severity levels in the content.
+	Severity HarmSeverity
+	// Output only. Harm severity score.
+	SeverityScore float32
 	// Output only. Indicates whether the content was filtered out because of this
 	// rating.
 	Blocked bool
@@ -663,9 +712,12 @@ func (v *SafetyRating) toProto() *pb.SafetyRating {
 		return nil
 	}
 	return &pb.SafetyRating{
-		Category:    pb.HarmCategory(v.Category),
-		Probability: pb.SafetyRating_HarmProbability(v.Probability),
-		Blocked:     v.Blocked,
+		Category:         pb.HarmCategory(v.Category),
+		Probability:      pb.SafetyRating_HarmProbability(v.Probability),
+		ProbabilityScore: v.ProbabilityScore,
+		Severity:         pb.SafetyRating_HarmSeverity(v.Severity),
+		SeverityScore:    v.SeverityScore,
+		Blocked:          v.Blocked,
 	}
 }
 
@@ -674,9 +726,12 @@ func (SafetyRating) fromProto(p *pb.SafetyRating) *SafetyRating {
 		return nil
 	}
 	return &SafetyRating{
-		Category:    HarmCategory(p.Category),
-		Probability: HarmProbability(p.Probability),
-		Blocked:     p.Blocked,
+		Category:         HarmCategory(p.Category),
+		Probability:      HarmProbability(p.Probability),
+		ProbabilityScore: p.ProbabilityScore,
+		Severity:         HarmSeverity(p.Severity),
+		SeverityScore:    p.SeverityScore,
+		Blocked:          p.Blocked,
 	}
 }
 
@@ -774,16 +829,17 @@ func (Schema) fromProto(p *pb.Schema) *Schema {
 // A `Tool` is a piece of code that enables the system to interact with
 // external systems to perform an action, or set of actions, outside of
 // knowledge and scope of the model. A Tool object should contain exactly
-// one type of Tool.
+// one type of Tool (e.g FunctionDeclaration, Retrieval or
+// GoogleSearchRetrieval).
 type Tool struct {
-	// Optional. One or more function declarations to be passed to the model along
-	// with the current user query. Model may decide to call a subset of these
-	// functions by populating [FunctionCall][content.part.function_call] in the
-	// response. User should provide a
-	// [FunctionResponse][content.part.function_response] for each function call
-	// in the next turn. Based on the function responses, Model will generate the
-	// final response back to the user. Maximum 64 function declarations can be
-	// provided.
+	// Optional. Function tool type.
+	// One or more function declarations to be passed to the model along with the
+	// current user query. Model may decide to call a subset of these functions
+	// by populating [FunctionCall][content.part.function_call] in the response.
+	// User should provide a [FunctionResponse][content.part.function_response]
+	// for each function call in the next turn. Based on the function responses,
+	// Model will generate the final response back to the user.
+	// Maximum 64 function declarations can be provided.
 	FunctionDeclarations []*FunctionDeclaration
 }
 

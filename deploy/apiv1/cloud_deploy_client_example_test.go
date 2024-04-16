@@ -756,6 +756,12 @@ func ExampleCloudDeployClient_ListAutomationRuns() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListAutomationRunsResponse)
 	}
 }
 
@@ -787,6 +793,12 @@ func ExampleCloudDeployClient_ListAutomations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListAutomationsResponse)
 	}
 }
 
@@ -818,6 +830,12 @@ func ExampleCloudDeployClient_ListCustomTargetTypes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListCustomTargetTypesResponse)
 	}
 }
 
@@ -849,6 +867,12 @@ func ExampleCloudDeployClient_ListDeliveryPipelines() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListDeliveryPipelinesResponse)
 	}
 }
 
@@ -880,6 +904,12 @@ func ExampleCloudDeployClient_ListJobRuns() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListJobRunsResponse)
 	}
 }
 
@@ -911,6 +941,12 @@ func ExampleCloudDeployClient_ListReleases() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListReleasesResponse)
 	}
 }
 
@@ -942,6 +978,12 @@ func ExampleCloudDeployClient_ListRollouts() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListRolloutsResponse)
 	}
 }
 
@@ -973,6 +1015,12 @@ func ExampleCloudDeployClient_ListTargets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListTargetsResponse)
 	}
 }
 
@@ -1224,6 +1272,12 @@ func ExampleCloudDeployClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -1401,5 +1455,11 @@ func ExampleCloudDeployClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

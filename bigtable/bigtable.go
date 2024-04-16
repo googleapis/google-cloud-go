@@ -181,16 +181,19 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
 	err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
-		if !arg.valid() {
-			// Empty row set, no need to make an API call.
-			// NOTE: we must return early if arg == RowList{} because reading
-			// an empty RowList from bigtable returns all rows from that table.
-			return nil
-		}
 		req := &btpb.ReadRowsRequest{
 			TableName:    t.c.fullTableName(t.table),
 			AppProfileId: t.c.appProfile,
-			Rows:         arg.proto(),
+		}
+
+		if arg != nil {
+			if !arg.valid() {
+				// Empty row set, no need to make an API call.
+				// NOTE: we must return early if arg == RowList{} because reading
+				// an empty RowList from bigtable returns all rows from that table.
+				return nil
+			}
+			req.Rows = arg.proto()
 		}
 		settings := makeReadSettings(req)
 		for _, opt := range opts {
@@ -219,6 +222,10 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 			}
 			if err != nil {
 				// Reset arg for next Invoke call.
+				if arg == nil {
+					// Should be lowest possible key value, an empty byte array
+					arg = InfiniteRange("")
+				}
 				if req.Reversed {
 					arg = arg.retainRowsBefore(prevRowKey)
 				} else {
@@ -955,6 +962,21 @@ func (m *Mutation) DeleteCellsInFamily(family string) {
 // DeleteRow deletes the entire row.
 func (m *Mutation) DeleteRow() {
 	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromRow_{DeleteFromRow: &btpb.Mutation_DeleteFromRow{}}})
+}
+
+// AddIntToCell adds an int64 value to a cell in an aggregate column family. The column family must
+// have an input type of Int64 or this mutation will fail.
+func (m *Mutation) AddIntToCell(family, column string, ts Timestamp, value int64) {
+	m.addToCell(family, column, ts, &btpb.Value{Kind: &btpb.Value_IntValue{IntValue: value}})
+}
+
+func (m *Mutation) addToCell(family, column string, ts Timestamp, value *btpb.Value) {
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_AddToCell_{AddToCell: &btpb.Mutation_AddToCell{
+		FamilyName:      family,
+		ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte(column)}},
+		Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: int64(ts.TruncateToMilliseconds())}},
+		Input:           value,
+	}}})
 }
 
 // entryErr is a container that combines an entry with the error that was returned for it.

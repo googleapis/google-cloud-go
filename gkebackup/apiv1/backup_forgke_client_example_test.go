@@ -318,6 +318,31 @@ func ExampleBackupForGKEClient_GetBackup() {
 	_ = resp
 }
 
+func ExampleBackupForGKEClient_GetBackupIndexDownloadUrl() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkebackup.NewBackupForGKEClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkebackuppb.GetBackupIndexDownloadUrlRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkebackup/apiv1/gkebackuppb#GetBackupIndexDownloadUrlRequest.
+	}
+	resp, err := c.GetBackupIndexDownloadUrl(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleBackupForGKEClient_GetBackupPlan() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -471,6 +496,12 @@ func ExampleBackupForGKEClient_ListBackupPlans() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkebackuppb.ListBackupPlansResponse)
 	}
 }
 
@@ -502,6 +533,12 @@ func ExampleBackupForGKEClient_ListBackups() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkebackuppb.ListBackupsResponse)
 	}
 }
 
@@ -533,6 +570,12 @@ func ExampleBackupForGKEClient_ListRestorePlans() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkebackuppb.ListRestorePlansResponse)
 	}
 }
 
@@ -564,6 +607,12 @@ func ExampleBackupForGKEClient_ListRestores() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkebackuppb.ListRestoresResponse)
 	}
 }
 
@@ -595,6 +644,12 @@ func ExampleBackupForGKEClient_ListVolumeBackups() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkebackuppb.ListVolumeBackupsResponse)
 	}
 }
 
@@ -626,6 +681,12 @@ func ExampleBackupForGKEClient_ListVolumeRestores() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkebackuppb.ListVolumeRestoresResponse)
 	}
 }
 
@@ -802,6 +863,12 @@ func ExampleBackupForGKEClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -979,5 +1046,11 @@ func ExampleBackupForGKEClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

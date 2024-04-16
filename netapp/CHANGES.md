@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.7](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.6...netapp/v0.2.7) (2024-03-25)
+
+
+### Documentation
+
+* **netapp:** Rephrase comment on psa_range ([1ef5b19](https://github.com/googleapis/google-cloud-go/commit/1ef5b1917bb9a1271c3fb152413ec0e74163164d))
+
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.5...netapp/v0.2.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **netapp:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.4...netapp/v0.2.5) (2024-03-07)
 
 
@@ -50,3 +64,4 @@
 * **netapp:** Start generating apiv1 ([#8353](https://github.com/googleapis/google-cloud-go/issues/8353)) ([f609b3c](https://github.com/googleapis/google-cloud-go/commit/f609b3cf831fb89c45386f81d0047560120cb3f4))
 
 ## Changes
+

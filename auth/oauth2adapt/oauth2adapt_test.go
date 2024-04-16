@@ -23,6 +23,7 @@ import (
 	"cloud.google.com/go/auth"
 	"github.com/google/go-cmp/cmp"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 func TestTokenProviderFromTokenSource(t *testing.T) {
@@ -137,6 +138,108 @@ func TestTokenSourceFromTokenProvider(t *testing.T) {
 				t.Errorf("got %q, want %q", tok.AccessToken, tt.token)
 			}
 		})
+	}
+}
+
+func TestAuthCredentialsFromOauth2Credentials(t *testing.T) {
+	ctx := context.Background()
+	inputCreds := &google.Credentials{
+		ProjectID:   "test_project",
+		TokenSource: tokenSource{token: "token"},
+		JSON:        []byte("json"),
+		UniverseDomainProvider: func() (string, error) {
+			return "domain", nil
+		},
+	}
+	outCreds := AuthCredentialsFromOauth2Credentials(inputCreds)
+
+	gotProject, err := outCreds.ProjectID(ctx)
+	if err != nil {
+		t.Fatalf("outCreds.ProjectID() = %v", err)
+	}
+	if want := inputCreds.ProjectID; gotProject != want {
+		t.Fatalf("got %q, want %q", gotProject, want)
+	}
+
+	gotToken, err := outCreds.Token(ctx)
+	if err != nil {
+		t.Fatalf("outCreds.Token() = %v", err)
+	}
+	wantTok, err := inputCreds.TokenSource.Token()
+	if err != nil {
+		t.Fatalf("inputCreds.TokenSource.Token() = %v", err)
+	}
+	if gotToken.Value != wantTok.AccessToken {
+		t.Fatalf("got %q, want %q", gotToken.Value, wantTok.AccessToken)
+	}
+
+	gotJSON := outCreds.JSON()
+	if want := inputCreds.JSON; !cmp.Equal(gotJSON, want) {
+		t.Fatalf("got %s, want %s", gotJSON, want)
+	}
+
+	gotUD, err := outCreds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatalf("outCreds.UniverseDomain() = %v", err)
+	}
+	wantUD, err := inputCreds.GetUniverseDomain()
+	if err != nil {
+		t.Fatalf("inputCreds.GetUniverseDomain() = %v", err)
+	}
+	if gotUD != wantUD {
+		t.Fatalf("got %q, want %q", wantUD, wantUD)
+	}
+}
+
+func TestOauth2CredentialsFromAuthCredentials(t *testing.T) {
+	ctx := context.Background()
+	inputCreds := auth.NewCredentials(&auth.CredentialsOptions{
+		ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
+			return "project", nil
+		}),
+		TokenProvider: tokenProvider{token: "token"},
+		JSON:          []byte("json"),
+		UniverseDomainProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
+			return "domain", nil
+		}),
+	})
+	outCreds := Oauth2CredentialsFromAuthCredentials(inputCreds)
+
+	wantProject, err := inputCreds.ProjectID(ctx)
+	if err != nil {
+		t.Fatalf("inputCreds.ProjectID() = %v", err)
+	}
+	if outCreds.ProjectID != wantProject {
+		t.Fatalf("got %q, want %q", outCreds.ProjectID, wantProject)
+	}
+
+	gotToken, err := inputCreds.Token(ctx)
+	if err != nil {
+		t.Fatalf("inputCreds.Token() = %v", err)
+	}
+	wantTok, err := outCreds.TokenSource.Token()
+	if err != nil {
+		t.Fatalf("outCreds.TokenSource.Token() = %v", err)
+	}
+	if gotToken.Value != wantTok.AccessToken {
+		t.Fatalf("got %q, want %q", gotToken.Value, wantTok.AccessToken)
+	}
+
+	wantJSON := inputCreds.JSON()
+	if !cmp.Equal(outCreds.JSON, wantJSON) {
+		t.Fatalf("got %s, want %s", outCreds.JSON, wantJSON)
+	}
+
+	wantUD, err := inputCreds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatalf("outCreds.UniverseDomain() = %v", err)
+	}
+	gotUD, err := outCreds.GetUniverseDomain()
+	if err != nil {
+		t.Fatalf("inputCreds.GetUniverseDomain() = %v", err)
+	}
+	if gotUD != wantUD {
+		t.Fatalf("got %q, want %q", wantUD, wantUD)
 	}
 }
 

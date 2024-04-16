@@ -1,0 +1,383 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.apphub.v1",
+  "libraryPackage": "cloud.google.com/go/apphub/apiv1",
+  "services": {
+    "AppHub": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApplication": {
+              "methods": [
+                "CreateApplication"
+              ]
+            },
+            "CreateService": {
+              "methods": [
+                "CreateService"
+              ]
+            },
+            "CreateServiceProjectAttachment": {
+              "methods": [
+                "CreateServiceProjectAttachment"
+              ]
+            },
+            "CreateWorkload": {
+              "methods": [
+                "CreateWorkload"
+              ]
+            },
+            "DeleteApplication": {
+              "methods": [
+                "DeleteApplication"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "DeleteServiceProjectAttachment": {
+              "methods": [
+                "DeleteServiceProjectAttachment"
+              ]
+            },
+            "DeleteWorkload": {
+              "methods": [
+                "DeleteWorkload"
+              ]
+            },
+            "DetachServiceProjectAttachment": {
+              "methods": [
+                "DetachServiceProjectAttachment"
+              ]
+            },
+            "GetApplication": {
+              "methods": [
+                "GetApplication"
+              ]
+            },
+            "GetDiscoveredService": {
+              "methods": [
+                "GetDiscoveredService"
+              ]
+            },
+            "GetDiscoveredWorkload": {
+              "methods": [
+                "GetDiscoveredWorkload"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "GetServiceProjectAttachment": {
+              "methods": [
+                "GetServiceProjectAttachment"
+              ]
+            },
+            "GetWorkload": {
+              "methods": [
+                "GetWorkload"
+              ]
+            },
+            "ListApplications": {
+              "methods": [
+                "ListApplications"
+              ]
+            },
+            "ListDiscoveredServices": {
+              "methods": [
+                "ListDiscoveredServices"
+              ]
+            },
+            "ListDiscoveredWorkloads": {
+              "methods": [
+                "ListDiscoveredWorkloads"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServiceProjectAttachments": {
+              "methods": [
+                "ListServiceProjectAttachments"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            },
+            "LookupDiscoveredService": {
+              "methods": [
+                "LookupDiscoveredService"
+              ]
+            },
+            "LookupDiscoveredWorkload": {
+              "methods": [
+                "LookupDiscoveredWorkload"
+              ]
+            },
+            "LookupServiceProjectAttachment": {
+              "methods": [
+                "LookupServiceProjectAttachment"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateApplication": {
+              "methods": [
+                "UpdateApplication"
+              ]
+            },
+            "UpdateService": {
+              "methods": [
+                "UpdateService"
+              ]
+            },
+            "UpdateWorkload": {
+              "methods": [
+                "UpdateWorkload"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateApplication": {
+              "methods": [
+                "CreateApplication"
+              ]
+            },
+            "CreateService": {
+              "methods": [
+                "CreateService"
+              ]
+            },
+            "CreateServiceProjectAttachment": {
+              "methods": [
+                "CreateServiceProjectAttachment"
+              ]
+            },
+            "CreateWorkload": {
+              "methods": [
+                "CreateWorkload"
+              ]
+            },
+            "DeleteApplication": {
+              "methods": [
+                "DeleteApplication"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "DeleteServiceProjectAttachment": {
+              "methods": [
+                "DeleteServiceProjectAttachment"
+              ]
+            },
+            "DeleteWorkload": {
+              "methods": [
+                "DeleteWorkload"
+              ]
+            },
+            "DetachServiceProjectAttachment": {
+              "methods": [
+                "DetachServiceProjectAttachment"
+              ]
+            },
+            "GetApplication": {
+              "methods": [
+                "GetApplication"
+              ]
+            },
+            "GetDiscoveredService": {
+              "methods": [
+                "GetDiscoveredService"
+              ]
+            },
+            "GetDiscoveredWorkload": {
+              "methods": [
+                "GetDiscoveredWorkload"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "GetServiceProjectAttachment": {
+              "methods": [
+                "GetServiceProjectAttachment"
+              ]
+            },
+            "GetWorkload": {
+              "methods": [
+                "GetWorkload"
+              ]
+            },
+            "ListApplications": {
+              "methods": [
+                "ListApplications"
+              ]
+            },
+            "ListDiscoveredServices": {
+              "methods": [
+                "ListDiscoveredServices"
+              ]
+            },
+            "ListDiscoveredWorkloads": {
+              "methods": [
+                "ListDiscoveredWorkloads"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServiceProjectAttachments": {
+              "methods": [
+                "ListServiceProjectAttachments"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            },
+            "LookupDiscoveredService": {
+              "methods": [
+                "LookupDiscoveredService"
+              ]
+            },
+            "LookupDiscoveredWorkload": {
+              "methods": [
+                "LookupDiscoveredWorkload"
+              ]
+            },
+            "LookupServiceProjectAttachment": {
+              "methods": [
+                "LookupServiceProjectAttachment"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateApplication": {
+              "methods": [
+                "UpdateApplication"
+              ]
+            },
+            "UpdateService": {
+              "methods": [
+                "UpdateService"
+              ]
+            },
+            "UpdateWorkload": {
+              "methods": [
+                "UpdateWorkload"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
