@@ -28,6 +28,7 @@ modules:
   - binaryauthorization
   - certificatemanager
   - channel
+  - chat
   - cloudbuild
   - cloudcontrolspartner
   - clouddms
@@ -459,6 +460,9 @@ service-configs:
   - input-directory: google/cloud/channel/v1
     service-config: cloudchannel_v1.yaml
     import-path: cloud.google.com/go/channel/apiv1
+  - input-directory: google/chat/v1
+    service-config: chat_v1.yaml
+    import-path: cloud.google.com/go/chat/apiv1
   - input-directory: google/cloud/cloudcontrolspartner/v1
     service-config: cloudcontrolspartner_v1.yaml
     import-path: cloud.google.com/go/cloudcontrolspartner/apiv1
@@ -928,7 +932,7 @@ service-configs:
     service-config: videointelligence_v1.yaml
     import-path: cloud.google.com/go/videointelligence/apiv1
   - input-directory: google/cloud/videointelligence/v1beta2
-    service-config: ../videointelligence_v1beta2.yaml
+    service-config: videointelligence_v1beta2.yaml
     import-path: cloud.google.com/go/videointelligence/apiv1beta2
   - input-directory: google/cloud/videointelligence/v1p3beta1
     service-config: videointelligence_v1p3beta1.yaml

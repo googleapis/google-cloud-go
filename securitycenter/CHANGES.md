@@ -1,5 +1,17 @@
 # Changes
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.28.0...securitycenter/v1.29.0) (2024-04-15)
+
+
+### Features
+
+* **securitycenter:** Add Notebook field to finding's list of attributes ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+
+
+### Documentation
+
+* **securitycenter:** Fixed backtick and double quotes mismatch in security_marks.proto ([dbcdfd7](https://github.com/googleapis/google-cloud-go/commit/dbcdfd7843be16573b1683466852242a84891456))
+
 ## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.27.0...securitycenter/v1.28.0) (2024-03-12)
 
 
@@ -269,4 +281,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out securitycenter as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
