@@ -42,7 +42,7 @@ type mockTableAdminClock struct {
 	copyBackupReq   *btapb.CopyBackupRequest
 	copyBackupError error
 
-	modColumnReq		*btapb.ModifyColumnFamiliesRequest
+	modColumnReq *btapb.ModifyColumnFamiliesRequest
 }
 
 func (c *mockTableAdminClock) CreateTable(
@@ -286,32 +286,48 @@ func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
 }
 
 func TestTableAdmin_SetGcPolicy(t *testing.T) {
+	for _, test := range []struct {
+		desc string
+		opts GCPolicyOptions
+		want bool
+	}{
+		{
+			desc: "IgnoreWarnings: false",
+			opts: GCPolicyOptions{},
+			want: false,
+		},
+		{
+			desc: "IgnoreWarnings: true",
+			opts: GCPolicyOptions{IgnoreWarnings: true},
+			want: true,
+		},
+	} {
+
+		mock := &mockTableAdminClock{}
+		c := setupTableClient(t, mock)
+
+		err := c.SetGCPolicyWithOptions(context.Background(), "My-table", "cf1", NoGcPolicy(), test.opts)
+		if err != nil {
+			t.Fatalf("%v: Failed to set GC Policy: %v", test.desc, err)
+		}
+
+		modColumnReq := mock.modColumnReq
+		if modColumnReq.IgnoreWarnings != test.want {
+			t.Errorf("%v: IgnoreWarnings got: %v, want: %v", test.desc, modColumnReq.IgnoreWarnings, test.want)
+		}
+	}
+
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
 	err := c.SetGCPolicy(context.Background(), "My-table", "cf1", NoGcPolicy())
 	if err != nil {
-		t.Fatalf("Failed to set GC Policy: %v", err)
+		t.Fatalf("SetGCPolicy: Failed to set GC Policy: %v", err)
 	}
 
 	modColumnReq := mock.modColumnReq
 	if modColumnReq.IgnoreWarnings {
-		t.Errorf("IgnoreWarnings should be set to false")
-	}
-}
-
-func TestTableAdmin_SetGcPolicyIgnoreWarnings(t *testing.T) {
-	mock := &mockTableAdminClock{}
-	c := setupTableClient(t, mock)
-
-	err := c.SetGCPolicyIgnoreWarnings(context.Background(), "My-table", "cf1", NoGcPolicy())
-	if err != nil {
-		t.Fatalf("Failed to set GC Policy: %v", err)
-	}
-
-	modColumnReq := mock.modColumnReq
-	if !modColumnReq.IgnoreWarnings {
-		t.Errorf("IgnoreWarnings should be set to true")
+		t.Errorf("SetGCPolicy: IgnoreWarnings should be set to false")
 	}
 }
 

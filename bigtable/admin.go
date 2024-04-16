@@ -546,7 +546,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 // SetGCPolicy specifies which cells in a column family should be garbage collected.
 // GC executes opportunistically in the background; table reads may return data
 // matching the GC policy.
-func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, policy GCPolicy, ignoreWarnings bool) error {
+func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, policy GCPolicy, opts GCPolicyOptions) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	req := &btapb.ModifyColumnFamiliesRequest{
@@ -555,18 +555,22 @@ func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, po
 			Id:  family,
 			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: &btapb.ColumnFamily{GcRule: policy.proto()}},
 		}},
-		IgnoreWarnings: ignoreWarnings,
+		IgnoreWarnings: opts.IgnoreWarnings,
 	}
 	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
 	return err
 }
 
-func (ac *AdminClient) SetGCPolicyIgnoreWarnings(ctx context.Context, table, family string, policy GCPolicy) error {
-	return ac.setGCPolicy(ctx, table, family, policy, true)
+type GCPolicyOptions struct {
+	IgnoreWarnings bool
+}
+
+func (ac *AdminClient) SetGCPolicyWithOptions(ctx context.Context, table, family string, policy GCPolicy, opts GCPolicyOptions) error {
+	return ac.setGCPolicy(ctx, table, family, policy, opts)
 }
 
 func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, policy GCPolicy) error {
-	return ac.setGCPolicy(ctx, table, family, policy, false)
+	return ac.setGCPolicy(ctx, table, family, policy, GCPolicyOptions{})
 }
 
 // DropRowRange permanently deletes a row range from the specified table.
