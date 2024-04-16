@@ -339,6 +339,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/backupdr/apiv1": {
+    "api_shortname": "backupdr",
+    "distribution_name": "cloud.google.com/go/backupdr/apiv1",
+    "description": "Backup and DR Service API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/backupdr/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/baremetalsolution/apiv2": {
     "api_shortname": "baremetalsolution",
     "distribution_name": "cloud.google.com/go/baremetalsolution/apiv2",
@@ -2336,6 +2346,26 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/inventories/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/shopping/merchant/quota/apiv1beta": {
+    "api_shortname": "merchantapi",
+    "distribution_name": "cloud.google.com/go/shopping/merchant/quota/apiv1beta",
+    "description": "Merchant API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/quota/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/shopping/merchant/reports/apiv1beta": {
+    "api_shortname": "merchantapi",
+    "distribution_name": "cloud.google.com/go/shopping/merchant/reports/apiv1beta",
+    "description": "Merchant API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/reports/apiv1beta",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },

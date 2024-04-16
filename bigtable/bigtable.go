@@ -85,9 +85,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
-	// Attempts direct access to spanner service over gRPC to improve throughput,
-	// whether the attempt is allowed is totally controlled by service owner.
-	o = append(o, internaloption.EnableDirectPath(true))
+
+	// Allow non-default service account in DirectPath.
+	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
@@ -189,6 +189,7 @@ func (c *Client) Open(table string) *Table {
 // ReadRows reads rows from a table. f is called for each row.
 // If f returns false, the stream is shut down and ReadRows returns.
 // f owns its argument, and f is called serially in order by row key.
+// f will be executed in the same Go routine as the caller.
 //
 // By default, the yielded rows will contain all values in all cells.
 // Use RowFilter to limit the cells returned.

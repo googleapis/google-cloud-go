@@ -22,9 +22,9 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/fields"
-	"github.com/golang/protobuf/ptypes"
-	ts "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/type/latlng"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var nullValue = &pb.Value{ValueType: &pb.Value_NullValue{}}
@@ -63,11 +63,7 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 	case []byte:
 		return &pb.Value{ValueType: &pb.Value_BytesValue{x}}, false, nil
 	case time.Time:
-		ts, err := ptypes.TimestampProto(x)
-		if err != nil {
-			return nil, false, err
-		}
-		return &pb.Value{ValueType: &pb.Value_TimestampValue{ts}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: timestamppb.New(x)}}, false, nil
 	case *ts.Timestamp:
 		if x == nil {
 			// gRPC doesn't like nil oneofs. Use NullValue.

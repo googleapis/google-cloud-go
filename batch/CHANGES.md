@@ -1,6 +1,14 @@
 # Changelog
 
 
+## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.3...batch/v1.8.4) (2024-04-15)
+
+
+### Documentation
+
+* **batch:** State one Resource Allowance per region per project limitation on v1alpha ([dbcdfd7](https://github.com/googleapis/google-cloud-go/commit/dbcdfd7843be16573b1683466852242a84891456))
+* **batch:** Update comments on ServiceAccount email and scopes fields ([#9734](https://github.com/googleapis/google-cloud-go/issues/9734)) ([4d5a342](https://github.com/googleapis/google-cloud-go/commit/4d5a3429cec6816d50bdf284063dddf1971b79cf))
+
 ## [1.8.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.2...batch/v1.8.3) (2024-03-14)
 
 
@@ -221,4 +229,3 @@
 ### Features
 
 * **batch:** start generating apiv1 ([#6145](https://github.com/googleapis/google-cloud-go/issues/6145)) ([41525fa](https://github.com/googleapis/google-cloud-go/commit/41525fab52da7e913f3593e89cef91c022898be3))
-

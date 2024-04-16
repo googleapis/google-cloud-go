@@ -21,17 +21,17 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
 	"github.com/googleapis/gax-go/v2"
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 )
 
 func TestRetryInfo(t *testing.T) {
 	s := status.New(codes.Aborted, "")
 	s, err := s.WithDetails(&edpb.RetryInfo{
-		RetryDelay: ptypes.DurationProto(time.Second),
+		RetryDelay: durationpb.New(time.Second),
 	})
 	if err != nil {
 		t.Fatalf("Error setting retry details: %v", err)
@@ -45,7 +45,7 @@ func TestRetryInfo(t *testing.T) {
 func TestRetryInfoInWrappedError(t *testing.T) {
 	s := status.New(codes.Aborted, "")
 	s, err := s.WithDetails(&edpb.RetryInfo{
-		RetryDelay: ptypes.DurationProto(time.Second),
+		RetryDelay: durationpb.New(time.Second),
 	})
 	if err != nil {
 		t.Fatalf("Error setting retry details: %v", err)
@@ -74,7 +74,7 @@ func TestRetryerRespectsServerDelay(t *testing.T) {
 	serverDelay := 50 * time.Millisecond
 	s := status.New(codes.Aborted, "transaction was aborted")
 	s, err := s.WithDetails(&edpb.RetryInfo{
-		RetryDelay: ptypes.DurationProto(serverDelay),
+		RetryDelay: durationpb.New(serverDelay),
 	})
 	if err != nil {
 		t.Fatalf("Error setting retry details: %v", err)

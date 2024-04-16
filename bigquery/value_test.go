@@ -405,11 +405,13 @@ func TestConvertRowErrors(t *testing.T) {
 
 func TestValuesSaverConvertsToMap(t *testing.T) {
 	testCases := []struct {
+		name         string
 		vs           ValuesSaver
 		wantInsertID string
 		wantRow      map[string]Value
 	}{
 		{
+			name: "scalars",
 			vs: ValuesSaver{
 				Schema: Schema{
 					{Name: "intField", Type: IntegerFieldType},
@@ -440,6 +442,7 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 			},
 		},
 		{
+			name: "intNested",
 			vs: ValuesSaver{
 				Schema: Schema{
 					{Name: "intField", Type: IntegerFieldType},
@@ -463,6 +466,7 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 			},
 		},
 		{ // repeated nested field
+			name: "nestedArray",
 			vs: ValuesSaver{
 				Schema: Schema{
 					{
@@ -492,6 +496,7 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 			},
 		},
 		{ // zero-length repeated nested field
+			name: "emptyNestedArray",
 			vs: ValuesSaver{
 				Schema: Schema{
 					{
@@ -516,17 +521,18 @@ func TestValuesSaverConvertsToMap(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		gotRow, gotInsertID, err := tc.vs.Save()
-		if err != nil {
-			t.Errorf("Expected successful save; got: %v", err)
-			continue
-		}
-		if !testutil.Equal(gotRow, tc.wantRow) {
-			t.Errorf("%v row:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotRow, tc.wantRow)
-		}
-		if !testutil.Equal(gotInsertID, tc.wantInsertID) {
-			t.Errorf("%v ID:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotInsertID, tc.wantInsertID)
-		}
+		t.Run(tc.name, func(t *testing.T) {
+			gotRow, gotInsertID, err := tc.vs.Save()
+			if err != nil {
+				t.Fatalf("Expected successful save; got: %v", err)
+			}
+			if !testutil.Equal(gotRow, tc.wantRow) {
+				t.Errorf("%v row:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotRow, tc.wantRow)
+			}
+			if !testutil.Equal(gotInsertID, tc.wantInsertID) {
+				t.Errorf("%v ID:\ngot:\n%+v\nwant:\n%+v", tc.vs, gotInsertID, tc.wantInsertID)
+			}
+		})
 	}
 }
 
@@ -713,7 +719,7 @@ func TestStructSaverErrors(t *testing.T) {
 }
 
 func TestNumericStrings(t *testing.T) {
-	for _, test := range []struct {
+	for _, tc := range []struct {
 		description    string
 		in             *big.Rat
 		wantNumeric    string
@@ -725,12 +731,14 @@ func TestNumericStrings(t *testing.T) {
 		{"smaller rounding case 1", big.NewRat(5, 1e10), "0.000000001", "0.00000000050000000000000000000000000000"},
 		{"smaller rounding case 2", big.NewRat(-5, 1e10), "-0.000000001", "-0.00000000050000000000000000000000000000"},
 	} {
-		if got := NumericString(test.in); got != test.wantNumeric {
-			t.Errorf("case %q, val %v as numeric: got %q, want %q", test.description, test.in, got, test.wantNumeric)
-		}
-		if got := BigNumericString(test.in); got != test.wantBigNumeric {
-			t.Errorf("case %q, val %v as bignumeric: got %q, want %q", test.description, test.in, got, test.wantBigNumeric)
-		}
+		t.Run(tc.description, func(t *testing.T) {
+			if got := NumericString(tc.in); got != tc.wantNumeric {
+				t.Errorf("case %q, val %v as numeric: got %q, want %q", tc.description, tc.in, got, tc.wantNumeric)
+			}
+			if got := BigNumericString(tc.in); got != tc.wantBigNumeric {
+				t.Errorf("case %q, val %v as bignumeric: got %q, want %q", tc.description, tc.in, got, tc.wantBigNumeric)
+			}
+		})
 	}
 }
 
