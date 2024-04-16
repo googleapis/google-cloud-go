@@ -24,7 +24,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 // Helpers to generate protobuf values and Cloud Spanner types.
@@ -83,6 +83,10 @@ func numericType() *sppb.Type {
 
 func pgNumericType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_NUMERIC, TypeAnnotation: sppb.TypeAnnotationCode_PG_NUMERIC}
+}
+
+func pgOidType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_INT64, TypeAnnotation: sppb.TypeAnnotationCode_PG_OID}
 }
 
 func jsonType() *sppb.Type {

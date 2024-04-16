@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,14 +43,16 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Request message for [SecretManagerService.ListSecrets][google.cloud.secretmanager.v1.SecretManagerService.ListSecrets].
+// Request message for
+// [SecretManagerService.ListSecrets][google.cloud.secretmanager.v1.SecretManagerService.ListSecrets].
 type ListSecretsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The resource name of the project associated with the
-	// [Secrets][google.cloud.secretmanager.v1.Secret], in the format `projects/*`.
+	// [Secrets][google.cloud.secretmanager.v1.Secret], in the format
+	// `projects/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to be returned in a single page. If
 	// set to 0, the server decides the number of results to return. If the
@@ -127,17 +129,19 @@ func (x *ListSecretsRequest) GetFilter() string {
 	return ""
 }
 
-// Response message for [SecretManagerService.ListSecrets][google.cloud.secretmanager.v1.SecretManagerService.ListSecrets].
+// Response message for
+// [SecretManagerService.ListSecrets][google.cloud.secretmanager.v1.SecretManagerService.ListSecrets].
 type ListSecretsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of [Secrets][google.cloud.secretmanager.v1.Secret] sorted in reverse by create_time (newest
-	// first).
+	// The list of [Secrets][google.cloud.secretmanager.v1.Secret] sorted in
+	// reverse by create_time (newest first).
 	Secrets []*Secret `protobuf:"bytes,1,rep,name=secrets,proto3" json:"secrets,omitempty"`
 	// A token to retrieve the next page of results. Pass this value in
-	// [ListSecretsRequest.page_token][google.cloud.secretmanager.v1.ListSecretsRequest.page_token] to retrieve the next page.
+	// [ListSecretsRequest.page_token][google.cloud.secretmanager.v1.ListSecretsRequest.page_token]
+	// to retrieve the next page.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// The total number of [Secrets][google.cloud.secretmanager.v1.Secret].
 	TotalSize int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
@@ -196,7 +200,8 @@ func (x *ListSecretsResponse) GetTotalSize() int32 {
 	return 0
 }
 
-// Request message for [SecretManagerService.CreateSecret][google.cloud.secretmanager.v1.SecretManagerService.CreateSecret].
+// Request message for
+// [SecretManagerService.CreateSecret][google.cloud.secretmanager.v1.SecretManagerService.CreateSecret].
 type CreateSecretRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -211,7 +216,8 @@ type CreateSecretRequest struct {
 	// contain uppercase and lowercase letters, numerals, and the hyphen (`-`) and
 	// underscore (`_`) characters.
 	SecretId string `protobuf:"bytes,2,opt,name=secret_id,json=secretId,proto3" json:"secret_id,omitempty"`
-	// Required. A [Secret][google.cloud.secretmanager.v1.Secret] with initial field values.
+	// Required. A [Secret][google.cloud.secretmanager.v1.Secret] with initial
+	// field values.
 	Secret *Secret `protobuf:"bytes,3,opt,name=secret,proto3" json:"secret,omitempty"`
 }
 
@@ -268,16 +274,20 @@ func (x *CreateSecretRequest) GetSecret() *Secret {
 	return nil
 }
 
-// Request message for [SecretManagerService.AddSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.AddSecretVersion].
+// Request message for
+// [SecretManagerService.AddSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.AddSecretVersion].
 type AddSecretVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [Secret][google.cloud.secretmanager.v1.Secret] to associate with the
-	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] in the format `projects/*/secrets/*`.
+	// Required. The resource name of the
+	// [Secret][google.cloud.secretmanager.v1.Secret] to associate with the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] in the format
+	// `projects/*/secrets/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The secret payload of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+	// Required. The secret payload of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	Payload *SecretPayload `protobuf:"bytes,2,opt,name=payload,proto3" json:"payload,omitempty"`
 }
 
@@ -327,13 +337,16 @@ func (x *AddSecretVersionRequest) GetPayload() *SecretPayload {
 	return nil
 }
 
-// Request message for [SecretManagerService.GetSecret][google.cloud.secretmanager.v1.SecretManagerService.GetSecret].
+// Request message for
+// [SecretManagerService.GetSecret][google.cloud.secretmanager.v1.SecretManagerService.GetSecret].
 type GetSecretRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [Secret][google.cloud.secretmanager.v1.Secret], in the format `projects/*/secrets/*`.
+	// Required. The resource name of the
+	// [Secret][google.cloud.secretmanager.v1.Secret], in the format
+	// `projects/*/secrets/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -376,15 +389,17 @@ func (x *GetSecretRequest) GetName() string {
 	return ""
 }
 
-// Request message for [SecretManagerService.ListSecretVersions][google.cloud.secretmanager.v1.SecretManagerService.ListSecretVersions].
+// Request message for
+// [SecretManagerService.ListSecretVersions][google.cloud.secretmanager.v1.SecretManagerService.ListSecretVersions].
 type ListSecretVersionsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [Secret][google.cloud.secretmanager.v1.Secret] associated with the
-	// [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in the format
-	// `projects/*/secrets/*`.
+	// Required. The resource name of the
+	// [Secret][google.cloud.secretmanager.v1.Secret] associated with the
+	// [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] to list, in
+	// the format `projects/*/secrets/*`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of results to be returned in a single page. If
 	// set to 0, the server decides the number of results to return. If the
@@ -461,19 +476,22 @@ func (x *ListSecretVersionsRequest) GetFilter() string {
 	return ""
 }
 
-// Response message for [SecretManagerService.ListSecretVersions][google.cloud.secretmanager.v1.SecretManagerService.ListSecretVersions].
+// Response message for
+// [SecretManagerService.ListSecretVersions][google.cloud.secretmanager.v1.SecretManagerService.ListSecretVersions].
 type ListSecretVersionsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The list of [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] sorted in reverse by
-	// create_time (newest first).
+	// The list of [SecretVersions][google.cloud.secretmanager.v1.SecretVersion]
+	// sorted in reverse by create_time (newest first).
 	Versions []*SecretVersion `protobuf:"bytes,1,rep,name=versions,proto3" json:"versions,omitempty"`
 	// A token to retrieve the next page of results. Pass this value in
-	// [ListSecretVersionsRequest.page_token][google.cloud.secretmanager.v1.ListSecretVersionsRequest.page_token] to retrieve the next page.
+	// [ListSecretVersionsRequest.page_token][google.cloud.secretmanager.v1.ListSecretVersionsRequest.page_token]
+	// to retrieve the next page.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	// The total number of [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
+	// The total number of
+	// [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
 	TotalSize int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
 }
 
@@ -530,13 +548,15 @@ func (x *ListSecretVersionsResponse) GetTotalSize() int32 {
 	return 0
 }
 
-// Request message for [SecretManagerService.GetSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.GetSecretVersion].
+// Request message for
+// [SecretManagerService.GetSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.GetSecretVersion].
 type GetSecretVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] in the format
+	// Required. The resource name of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] in the format
 	// `projects/*/secrets/*/versions/*`.
 	//
 	// `projects/*/secrets/*/versions/latest` is an alias to the most recently
@@ -583,13 +603,15 @@ func (x *GetSecretVersionRequest) GetName() string {
 	return ""
 }
 
-// Request message for [SecretManagerService.UpdateSecret][google.cloud.secretmanager.v1.SecretManagerService.UpdateSecret].
+// Request message for
+// [SecretManagerService.UpdateSecret][google.cloud.secretmanager.v1.SecretManagerService.UpdateSecret].
 type UpdateSecretRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. [Secret][google.cloud.secretmanager.v1.Secret] with updated field values.
+	// Required. [Secret][google.cloud.secretmanager.v1.Secret] with updated field
+	// values.
 	Secret *Secret `protobuf:"bytes,1,opt,name=secret,proto3" json:"secret,omitempty"`
 	// Required. Specifies the fields to be updated.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
@@ -641,13 +663,15 @@ func (x *UpdateSecretRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
-// Request message for [SecretManagerService.AccessSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.AccessSecretVersion].
+// Request message for
+// [SecretManagerService.AccessSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.AccessSecretVersion].
 type AccessSecretVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] in the format
+	// Required. The resource name of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] in the format
 	// `projects/*/secrets/*/versions/*`.
 	//
 	// `projects/*/secrets/*/versions/latest` is an alias to the most recently
@@ -694,13 +718,15 @@ func (x *AccessSecretVersionRequest) GetName() string {
 	return ""
 }
 
-// Response message for [SecretManagerService.AccessSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.AccessSecretVersion].
+// Response message for
+// [SecretManagerService.AccessSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.AccessSecretVersion].
 type AccessSecretVersionResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The resource name of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] in the format
+	// The resource name of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] in the format
 	// `projects/*/secrets/*/versions/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Secret payload
@@ -753,18 +779,20 @@ func (x *AccessSecretVersionResponse) GetPayload() *SecretPayload {
 	return nil
 }
 
-// Request message for [SecretManagerService.DeleteSecret][google.cloud.secretmanager.v1.SecretManagerService.DeleteSecret].
+// Request message for
+// [SecretManagerService.DeleteSecret][google.cloud.secretmanager.v1.SecretManagerService.DeleteSecret].
 type DeleteSecretRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [Secret][google.cloud.secretmanager.v1.Secret] to delete in the format
+	// Required. The resource name of the
+	// [Secret][google.cloud.secretmanager.v1.Secret] to delete in the format
 	// `projects/*/secrets/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. Etag of the [Secret][google.cloud.secretmanager.v1.Secret]. The request succeeds if it matches
-	// the etag of the currently stored secret object. If the etag is omitted,
-	// the request succeeds.
+	// Optional. Etag of the [Secret][google.cloud.secretmanager.v1.Secret]. The
+	// request succeeds if it matches the etag of the currently stored secret
+	// object. If the etag is omitted, the request succeeds.
 	Etag string `protobuf:"bytes,2,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 
@@ -814,18 +842,21 @@ func (x *DeleteSecretRequest) GetEtag() string {
 	return ""
 }
 
-// Request message for [SecretManagerService.DisableSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.DisableSecretVersion].
+// Request message for
+// [SecretManagerService.DisableSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.DisableSecretVersion].
 type DisableSecretVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to disable in the format
-	// `projects/*/secrets/*/versions/*`.
+	// Required. The resource name of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to disable in
+	// the format `projects/*/secrets/*/versions/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. Etag of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]. The request succeeds if it matches
-	// the etag of the currently stored secret version object. If the etag is
-	// omitted, the request succeeds.
+	// Optional. Etag of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]. The request
+	// succeeds if it matches the etag of the currently stored secret version
+	// object. If the etag is omitted, the request succeeds.
 	Etag string `protobuf:"bytes,2,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 
@@ -875,18 +906,21 @@ func (x *DisableSecretVersionRequest) GetEtag() string {
 	return ""
 }
 
-// Request message for [SecretManagerService.EnableSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.EnableSecretVersion].
+// Request message for
+// [SecretManagerService.EnableSecretVersion][google.cloud.secretmanager.v1.SecretManagerService.EnableSecretVersion].
 type EnableSecretVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to enable in the format
-	// `projects/*/secrets/*/versions/*`.
+	// Required. The resource name of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to enable in
+	// the format `projects/*/secrets/*/versions/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. Etag of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]. The request succeeds if it matches
-	// the etag of the currently stored secret version object. If the etag is
-	// omitted, the request succeeds.
+	// Optional. Etag of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]. The request
+	// succeeds if it matches the etag of the currently stored secret version
+	// object. If the etag is omitted, the request succeeds.
 	Etag string `protobuf:"bytes,2,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 
@@ -936,18 +970,21 @@ func (x *EnableSecretVersionRequest) GetEtag() string {
 	return ""
 }
 
-// Request message for [SecretManagerService.DestroySecretVersion][google.cloud.secretmanager.v1.SecretManagerService.DestroySecretVersion].
+// Request message for
+// [SecretManagerService.DestroySecretVersion][google.cloud.secretmanager.v1.SecretManagerService.DestroySecretVersion].
 type DestroySecretVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to destroy in the format
-	// `projects/*/secrets/*/versions/*`.
+	// Required. The resource name of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to destroy in
+	// the format `projects/*/secrets/*/versions/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Optional. Etag of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]. The request succeeds if it matches
-	// the etag of the currently stored secret version object. If the etag is
-	// omitted, the request succeeds.
+	// Optional. Etag of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]. The request
+	// succeeds if it matches the etag of the currently stored secret version
+	// object. If the etag is omitted, the request succeeds.
 	Etag string `protobuf:"bytes,2,opt,name=etag,proto3" json:"etag,omitempty"`
 }
 
@@ -1659,51 +1696,61 @@ const _ = grpc.SupportPackageIsVersion6
 type SecretManagerServiceClient interface {
 	// Lists [Secrets][google.cloud.secretmanager.v1.Secret].
 	ListSecrets(ctx context.Context, in *ListSecretsRequest, opts ...grpc.CallOption) (*ListSecretsResponse, error)
-	// Creates a new [Secret][google.cloud.secretmanager.v1.Secret] containing no [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
+	// Creates a new [Secret][google.cloud.secretmanager.v1.Secret] containing no
+	// [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
 	CreateSecret(ctx context.Context, in *CreateSecretRequest, opts ...grpc.CallOption) (*Secret, error)
-	// Creates a new [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] containing secret data and attaches
-	// it to an existing [Secret][google.cloud.secretmanager.v1.Secret].
+	// Creates a new [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]
+	// containing secret data and attaches it to an existing
+	// [Secret][google.cloud.secretmanager.v1.Secret].
 	AddSecretVersion(ctx context.Context, in *AddSecretVersionRequest, opts ...grpc.CallOption) (*SecretVersion, error)
 	// Gets metadata for a given [Secret][google.cloud.secretmanager.v1.Secret].
 	GetSecret(ctx context.Context, in *GetSecretRequest, opts ...grpc.CallOption) (*Secret, error)
-	// Updates metadata of an existing [Secret][google.cloud.secretmanager.v1.Secret].
+	// Updates metadata of an existing
+	// [Secret][google.cloud.secretmanager.v1.Secret].
 	UpdateSecret(ctx context.Context, in *UpdateSecretRequest, opts ...grpc.CallOption) (*Secret, error)
 	// Deletes a [Secret][google.cloud.secretmanager.v1.Secret].
 	DeleteSecret(ctx context.Context, in *DeleteSecretRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// Lists [SecretVersions][google.cloud.secretmanager.v1.SecretVersion]. This call does not return secret
-	// data.
+	// Lists [SecretVersions][google.cloud.secretmanager.v1.SecretVersion]. This
+	// call does not return secret data.
 	ListSecretVersions(ctx context.Context, in *ListSecretVersionsRequest, opts ...grpc.CallOption) (*ListSecretVersionsResponse, error)
-	// Gets metadata for a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+	// Gets metadata for a
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	//
 	// `projects/*/secrets/*/versions/latest` is an alias to the most recently
 	// created [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	GetSecretVersion(ctx context.Context, in *GetSecretVersionRequest, opts ...grpc.CallOption) (*SecretVersion, error)
-	// Accesses a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]. This call returns the secret data.
+	// Accesses a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+	// This call returns the secret data.
 	//
 	// `projects/*/secrets/*/versions/latest` is an alias to the most recently
 	// created [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	AccessSecretVersion(ctx context.Context, in *AccessSecretVersionRequest, opts ...grpc.CallOption) (*AccessSecretVersionResponse, error)
 	// Disables a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	//
-	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
+	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
 	// [DISABLED][google.cloud.secretmanager.v1.SecretVersion.State.DISABLED].
 	DisableSecretVersion(ctx context.Context, in *DisableSecretVersionRequest, opts ...grpc.CallOption) (*SecretVersion, error)
 	// Enables a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	//
-	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
+	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
 	// [ENABLED][google.cloud.secretmanager.v1.SecretVersion.State.ENABLED].
 	EnableSecretVersion(ctx context.Context, in *EnableSecretVersionRequest, opts ...grpc.CallOption) (*SecretVersion, error)
 	// Destroys a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	//
-	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
-	// [DESTROYED][google.cloud.secretmanager.v1.SecretVersion.State.DESTROYED] and irrevocably destroys the
-	// secret data.
+	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
+	// [DESTROYED][google.cloud.secretmanager.v1.SecretVersion.State.DESTROYED]
+	// and irrevocably destroys the secret data.
 	DestroySecretVersion(ctx context.Context, in *DestroySecretVersionRequest, opts ...grpc.CallOption) (*SecretVersion, error)
 	// Sets the access control policy on the specified secret. Replaces any
 	// existing policy.
 	//
-	// Permissions on [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] are enforced according
-	// to the policy set on the associated [Secret][google.cloud.secretmanager.v1.Secret].
+	// Permissions on
+	// [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] are enforced
+	// according to the policy set on the associated
+	// [Secret][google.cloud.secretmanager.v1.Secret].
 	SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error)
 	// Gets the access control policy for a secret.
 	// Returns empty policy if the secret exists and does not have a policy set.
@@ -1865,51 +1912,61 @@ func (c *secretManagerServiceClient) TestIamPermissions(ctx context.Context, in 
 type SecretManagerServiceServer interface {
 	// Lists [Secrets][google.cloud.secretmanager.v1.Secret].
 	ListSecrets(context.Context, *ListSecretsRequest) (*ListSecretsResponse, error)
-	// Creates a new [Secret][google.cloud.secretmanager.v1.Secret] containing no [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
+	// Creates a new [Secret][google.cloud.secretmanager.v1.Secret] containing no
+	// [SecretVersions][google.cloud.secretmanager.v1.SecretVersion].
 	CreateSecret(context.Context, *CreateSecretRequest) (*Secret, error)
-	// Creates a new [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] containing secret data and attaches
-	// it to an existing [Secret][google.cloud.secretmanager.v1.Secret].
+	// Creates a new [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]
+	// containing secret data and attaches it to an existing
+	// [Secret][google.cloud.secretmanager.v1.Secret].
 	AddSecretVersion(context.Context, *AddSecretVersionRequest) (*SecretVersion, error)
 	// Gets metadata for a given [Secret][google.cloud.secretmanager.v1.Secret].
 	GetSecret(context.Context, *GetSecretRequest) (*Secret, error)
-	// Updates metadata of an existing [Secret][google.cloud.secretmanager.v1.Secret].
+	// Updates metadata of an existing
+	// [Secret][google.cloud.secretmanager.v1.Secret].
 	UpdateSecret(context.Context, *UpdateSecretRequest) (*Secret, error)
 	// Deletes a [Secret][google.cloud.secretmanager.v1.Secret].
 	DeleteSecret(context.Context, *DeleteSecretRequest) (*emptypb.Empty, error)
-	// Lists [SecretVersions][google.cloud.secretmanager.v1.SecretVersion]. This call does not return secret
-	// data.
+	// Lists [SecretVersions][google.cloud.secretmanager.v1.SecretVersion]. This
+	// call does not return secret data.
 	ListSecretVersions(context.Context, *ListSecretVersionsRequest) (*ListSecretVersionsResponse, error)
-	// Gets metadata for a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+	// Gets metadata for a
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	//
 	// `projects/*/secrets/*/versions/latest` is an alias to the most recently
 	// created [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	GetSecretVersion(context.Context, *GetSecretVersionRequest) (*SecretVersion, error)
-	// Accesses a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion]. This call returns the secret data.
+	// Accesses a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
+	// This call returns the secret data.
 	//
 	// `projects/*/secrets/*/versions/latest` is an alias to the most recently
 	// created [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	AccessSecretVersion(context.Context, *AccessSecretVersionRequest) (*AccessSecretVersionResponse, error)
 	// Disables a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	//
-	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
+	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
 	// [DISABLED][google.cloud.secretmanager.v1.SecretVersion.State.DISABLED].
 	DisableSecretVersion(context.Context, *DisableSecretVersionRequest) (*SecretVersion, error)
 	// Enables a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	//
-	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
+	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
 	// [ENABLED][google.cloud.secretmanager.v1.SecretVersion.State.ENABLED].
 	EnableSecretVersion(context.Context, *EnableSecretVersionRequest) (*SecretVersion, error)
 	// Destroys a [SecretVersion][google.cloud.secretmanager.v1.SecretVersion].
 	//
-	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
-	// [DESTROYED][google.cloud.secretmanager.v1.SecretVersion.State.DESTROYED] and irrevocably destroys the
-	// secret data.
+	// Sets the [state][google.cloud.secretmanager.v1.SecretVersion.state] of the
+	// [SecretVersion][google.cloud.secretmanager.v1.SecretVersion] to
+	// [DESTROYED][google.cloud.secretmanager.v1.SecretVersion.State.DESTROYED]
+	// and irrevocably destroys the secret data.
 	DestroySecretVersion(context.Context, *DestroySecretVersionRequest) (*SecretVersion, error)
 	// Sets the access control policy on the specified secret. Replaces any
 	// existing policy.
 	//
-	// Permissions on [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] are enforced according
-	// to the policy set on the associated [Secret][google.cloud.secretmanager.v1.Secret].
+	// Permissions on
+	// [SecretVersions][google.cloud.secretmanager.v1.SecretVersion] are enforced
+	// according to the policy set on the associated
+	// [Secret][google.cloud.secretmanager.v1.Secret].
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest) (*iampb.Policy, error)
 	// Gets the access control policy for a secret.
 	// Returns empty policy if the secret exists and does not have a policy set.
