@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -70,7 +70,9 @@ type ServiceManagerCallOptions struct {
 func defaultServiceManagerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("servicemanagement.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("servicemanagement.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("servicemanagement.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicemanagement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -594,7 +596,9 @@ func NewServiceManagerRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultServiceManagerRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://servicemanagement.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://servicemanagement.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://servicemanagement.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://servicemanagement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -2340,12 +2344,6 @@ func (c *serviceManagerRESTClient) ListOperations(ctx context.Context, req *long
 	return it
 }
 
-// CreateServiceOperation manages a long-running operation from CreateService.
-type CreateServiceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateServiceOperation returns a new CreateServiceOperation from a given name.
 // The name must be that of a previously created CreateServiceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) CreateServiceOperation(name string) *CreateServiceOperation {
@@ -2362,70 +2360,6 @@ func (c *serviceManagerRESTClient) CreateServiceOperation(name string) *CreateSe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.ManagedService, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicemanagementpb.ManagedService
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.ManagedService, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicemanagementpb.ManagedService
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateServiceOperation) Metadata() (*servicemanagementpb.OperationMetadata, error) {
-	var meta servicemanagementpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateServiceRolloutOperation manages a long-running operation from CreateServiceRollout.
-type CreateServiceRolloutOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateServiceRolloutOperation returns a new CreateServiceRolloutOperation from a given name.
@@ -2446,70 +2380,6 @@ func (c *serviceManagerRESTClient) CreateServiceRolloutOperation(name string) *C
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateServiceRolloutOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicemanagementpb.Rollout
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateServiceRolloutOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.Rollout, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicemanagementpb.Rollout
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateServiceRolloutOperation) Metadata() (*servicemanagementpb.OperationMetadata, error) {
-	var meta servicemanagementpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateServiceRolloutOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateServiceRolloutOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteServiceOperation manages a long-running operation from DeleteService.
-type DeleteServiceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteServiceOperation returns a new DeleteServiceOperation from a given name.
 // The name must be that of a previously created DeleteServiceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) DeleteServiceOperation(name string) *DeleteServiceOperation {
@@ -2526,59 +2396,6 @@ func (c *serviceManagerRESTClient) DeleteServiceOperation(name string) *DeleteSe
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteServiceOperation) Metadata() (*servicemanagementpb.OperationMetadata, error) {
-	var meta servicemanagementpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SubmitConfigSourceOperation manages a long-running operation from SubmitConfigSource.
-type SubmitConfigSourceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // SubmitConfigSourceOperation returns a new SubmitConfigSourceOperation from a given name.
@@ -2599,70 +2416,6 @@ func (c *serviceManagerRESTClient) SubmitConfigSourceOperation(name string) *Sub
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SubmitConfigSourceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.SubmitConfigSourceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicemanagementpb.SubmitConfigSourceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SubmitConfigSourceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.SubmitConfigSourceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicemanagementpb.SubmitConfigSourceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SubmitConfigSourceOperation) Metadata() (*servicemanagementpb.OperationMetadata, error) {
-	var meta servicemanagementpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SubmitConfigSourceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SubmitConfigSourceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UndeleteServiceOperation manages a long-running operation from UndeleteService.
-type UndeleteServiceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UndeleteServiceOperation returns a new UndeleteServiceOperation from a given name.
 // The name must be that of a previously created UndeleteServiceOperation, possibly from a different process.
 func (c *serviceManagerGRPCClient) UndeleteServiceOperation(name string) *UndeleteServiceOperation {
@@ -2679,250 +2432,4 @@ func (c *serviceManagerRESTClient) UndeleteServiceOperation(name string) *Undele
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UndeleteServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.UndeleteServiceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicemanagementpb.UndeleteServiceResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UndeleteServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*servicemanagementpb.UndeleteServiceResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp servicemanagementpb.UndeleteServiceResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UndeleteServiceOperation) Metadata() (*servicemanagementpb.OperationMetadata, error) {
-	var meta servicemanagementpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UndeleteServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UndeleteServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ManagedServiceIterator manages a stream of *servicemanagementpb.ManagedService.
-type ManagedServiceIterator struct {
-	items    []*servicemanagementpb.ManagedService
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*servicemanagementpb.ManagedService, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ManagedServiceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ManagedServiceIterator) Next() (*servicemanagementpb.ManagedService, error) {
-	var item *servicemanagementpb.ManagedService
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ManagedServiceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ManagedServiceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RolloutIterator manages a stream of *servicemanagementpb.Rollout.
-type RolloutIterator struct {
-	items    []*servicemanagementpb.Rollout
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*servicemanagementpb.Rollout, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RolloutIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RolloutIterator) Next() (*servicemanagementpb.Rollout, error) {
-	var item *servicemanagementpb.Rollout
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RolloutIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RolloutIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ServiceIterator manages a stream of *serviceconfigpb.Service.
-type ServiceIterator struct {
-	items    []*serviceconfigpb.Service
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*serviceconfigpb.Service, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ServiceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ServiceIterator) Next() (*serviceconfigpb.Service, error) {
-	var item *serviceconfigpb.Service
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ServiceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ServiceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

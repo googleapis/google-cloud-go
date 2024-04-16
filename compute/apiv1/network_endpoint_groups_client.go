@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -164,7 +164,7 @@ func (c *NetworkEndpointGroupsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of network endpoint groups and sorts them by zone.
+// AggregatedList retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *NetworkEndpointGroupsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -261,7 +261,9 @@ func NewNetworkEndpointGroupsRESTClient(ctx context.Context, opts ...option.Clie
 func defaultNetworkEndpointGroupsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -294,7 +296,7 @@ func (c *networkEndpointGroupsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of network endpoint groups and sorts them by zone.
+// AggregatedList retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupsScopedListPairIterator {
 	it := &NetworkEndpointGroupsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNetworkEndpointGroupsRequest)
@@ -333,6 +335,9 @@ func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, re
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1017,57 +1022,4 @@ func (c *networkEndpointGroupsRESTClient) TestIamPermissions(ctx context.Context
 		return nil, e
 	}
 	return resp, nil
-}
-
-// NetworkEndpointGroupsScopedListPair is a holder type for string/*computepb.NetworkEndpointGroupsScopedList map entries
-type NetworkEndpointGroupsScopedListPair struct {
-	Key   string
-	Value *computepb.NetworkEndpointGroupsScopedList
-}
-
-// NetworkEndpointGroupsScopedListPairIterator manages a stream of NetworkEndpointGroupsScopedListPair.
-type NetworkEndpointGroupsScopedListPairIterator struct {
-	items    []NetworkEndpointGroupsScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []NetworkEndpointGroupsScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NetworkEndpointGroupsScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NetworkEndpointGroupsScopedListPairIterator) Next() (NetworkEndpointGroupsScopedListPair, error) {
-	var item NetworkEndpointGroupsScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NetworkEndpointGroupsScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NetworkEndpointGroupsScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

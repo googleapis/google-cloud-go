@@ -695,6 +695,274 @@
         }
       }
     },
+    "SessionController": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SessionControllerClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSession": {
+              "methods": [
+                "CreateSession"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSession": {
+              "methods": [
+                "DeleteSession"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSession": {
+              "methods": [
+                "GetSession"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSessions": {
+              "methods": [
+                "ListSessions"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TerminateSession": {
+              "methods": [
+                "TerminateSession"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SessionControllerClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSession": {
+              "methods": [
+                "CreateSession"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSession": {
+              "methods": [
+                "DeleteSession"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSession": {
+              "methods": [
+                "GetSession"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSessions": {
+              "methods": [
+                "ListSessions"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TerminateSession": {
+              "methods": [
+                "TerminateSession"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SessionTemplateController": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SessionTemplateControllerClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSessionTemplate": {
+              "methods": [
+                "CreateSessionTemplate"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSessionTemplate": {
+              "methods": [
+                "DeleteSessionTemplate"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSessionTemplate": {
+              "methods": [
+                "GetSessionTemplate"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSessionTemplates": {
+              "methods": [
+                "ListSessionTemplates"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateSessionTemplate": {
+              "methods": [
+                "UpdateSessionTemplate"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SessionTemplateControllerClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSessionTemplate": {
+              "methods": [
+                "CreateSessionTemplate"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteSessionTemplate": {
+              "methods": [
+                "DeleteSessionTemplate"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSessionTemplate": {
+              "methods": [
+                "GetSessionTemplate"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSessionTemplates": {
+              "methods": [
+                "ListSessionTemplates"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateSessionTemplate": {
+              "methods": [
+                "UpdateSessionTemplate"
+              ]
+            }
+          }
+        }
+      }
+    },
     "WorkflowTemplateService": {
       "clients": {
         "grpc": {

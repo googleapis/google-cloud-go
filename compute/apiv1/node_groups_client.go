@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -203,7 +203,7 @@ func (c *NodeGroupsClient) AddNodes(ctx context.Context, req *computepb.AddNodes
 	return c.internalClient.AddNodes(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.
+// AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *NodeGroupsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeGroupsRequest, opts ...gax.CallOption) *NodeGroupsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -320,7 +320,9 @@ func NewNodeGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultNodeGroupsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -430,7 +432,7 @@ func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddN
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.
+// AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *nodeGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeGroupsRequest, opts ...gax.CallOption) *NodeGroupsScopedListPairIterator {
 	it := &NodeGroupsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNodeGroupsRequest)
@@ -469,6 +471,9 @@ func (c *nodeGroupsRESTClient) AggregatedList(ctx context.Context, req *computep
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -1426,151 +1431,4 @@ func (c *nodeGroupsRESTClient) TestIamPermissions(ctx context.Context, req *comp
 		return nil, e
 	}
 	return resp, nil
-}
-
-// NodeGroupIterator manages a stream of *computepb.NodeGroup.
-type NodeGroupIterator struct {
-	items    []*computepb.NodeGroup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NodeGroup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NodeGroupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NodeGroupIterator) Next() (*computepb.NodeGroup, error) {
-	var item *computepb.NodeGroup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NodeGroupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NodeGroupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NodeGroupNodeIterator manages a stream of *computepb.NodeGroupNode.
-type NodeGroupNodeIterator struct {
-	items    []*computepb.NodeGroupNode
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.NodeGroupNode, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NodeGroupNodeIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NodeGroupNodeIterator) Next() (*computepb.NodeGroupNode, error) {
-	var item *computepb.NodeGroupNode
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NodeGroupNodeIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NodeGroupNodeIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NodeGroupsScopedListPair is a holder type for string/*computepb.NodeGroupsScopedList map entries
-type NodeGroupsScopedListPair struct {
-	Key   string
-	Value *computepb.NodeGroupsScopedList
-}
-
-// NodeGroupsScopedListPairIterator manages a stream of NodeGroupsScopedListPair.
-type NodeGroupsScopedListPairIterator struct {
-	items    []NodeGroupsScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []NodeGroupsScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NodeGroupsScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NodeGroupsScopedListPairIterator) Next() (NodeGroupsScopedListPair, error) {
-	var item NodeGroupsScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NodeGroupsScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NodeGroupsScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

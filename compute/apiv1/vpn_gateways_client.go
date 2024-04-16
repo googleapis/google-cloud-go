@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -168,7 +168,7 @@ func (c *VpnGatewaysClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of VPN gateways.
+// AggregatedList retrieves an aggregated list of VPN gateways. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *VpnGatewaysClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnGatewaysRequest, opts ...gax.CallOption) *VpnGatewaysScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -260,7 +260,9 @@ func NewVpnGatewaysRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultVpnGatewaysRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -293,7 +295,7 @@ func (c *vpnGatewaysRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of VPN gateways.
+// AggregatedList retrieves an aggregated list of VPN gateways. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *vpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListVpnGatewaysRequest, opts ...gax.CallOption) *VpnGatewaysScopedListPairIterator {
 	it := &VpnGatewaysScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListVpnGatewaysRequest)
@@ -332,6 +334,9 @@ func (c *vpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *compute
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -891,104 +896,4 @@ func (c *vpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, req *com
 		return nil, e
 	}
 	return resp, nil
-}
-
-// VpnGatewayIterator manages a stream of *computepb.VpnGateway.
-type VpnGatewayIterator struct {
-	items    []*computepb.VpnGateway
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.VpnGateway, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VpnGatewayIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VpnGatewayIterator) Next() (*computepb.VpnGateway, error) {
-	var item *computepb.VpnGateway
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VpnGatewayIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VpnGatewayIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// VpnGatewaysScopedListPair is a holder type for string/*computepb.VpnGatewaysScopedList map entries
-type VpnGatewaysScopedListPair struct {
-	Key   string
-	Value *computepb.VpnGatewaysScopedList
-}
-
-// VpnGatewaysScopedListPairIterator manages a stream of VpnGatewaysScopedListPair.
-type VpnGatewaysScopedListPairIterator struct {
-	items    []VpnGatewaysScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []VpnGatewaysScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *VpnGatewaysScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *VpnGatewaysScopedListPairIterator) Next() (VpnGatewaysScopedListPair, error) {
-	var item VpnGatewaysScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *VpnGatewaysScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *VpnGatewaysScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

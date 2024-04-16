@@ -1,6 +1,48 @@
 # Changelog
 
 
+## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.1.1...vmwareengine/v1.1.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.1.0...vmwareengine/v1.1.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.3...vmwareengine/v1.1.0) (2024-01-22)
+
+
+### Features
+
+* **vmwareengine:** Adding ManagementDnsZoneBinding, DnsBindPermission, DnsForwarding, ExternalAccessRule, ExternalAddress, LoggingServer, NetworkPeering, Node and stretched PC features ([af2f8b4](https://github.com/googleapis/google-cloud-go/commit/af2f8b4f3401c0b12dadb2c504aa0f902aee76de))
+
+## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.2...vmwareengine/v1.0.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.1...vmwareengine/v1.0.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.0.0...vmwareengine/v1.0.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v0.4.1...vmwareengine/v1.0.0) (2023-07-24)
 
 
@@ -66,3 +108,4 @@
 * **vmwareengine:** Start generating apiv1 ([#7093](https://github.com/googleapis/google-cloud-go/issues/7093)) ([9cb00af](https://github.com/googleapis/google-cloud-go/commit/9cb00af1ad8ea1dcfd5b4a73cac75218460f9f6d))
 
 ## Changes
+

@@ -27,6 +27,7 @@ import (
 
 var individuallyReleasedModules map[string]bool = map[string]bool{
 	".":                true,
+	"aiplatform":       true,
 	"auth":             true,
 	"auth/oauth2adapt": true,
 	"bigquery":         true,
@@ -40,6 +41,7 @@ var individuallyReleasedModules map[string]bool = map[string]bool{
 	"pubsublite":       true,
 	"spanner":          true,
 	"storage":          true,
+	"vertexai":         true,
 }
 
 var defaultReleasePleaseConfig = &releasePleaseConfig{

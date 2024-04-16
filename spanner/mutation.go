@@ -20,8 +20,8 @@ import (
 	"reflect"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc/codes"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 // op is the mutation operation.
@@ -139,6 +139,12 @@ type Mutation struct {
 	// values specifies the new values for the target columns
 	// named by Columns.
 	values []interface{}
+}
+
+// A MutationGroup is a list of Mutation to be committed atomically.
+type MutationGroup struct {
+	// The Mutations in this group
+	Mutations []*Mutation
 }
 
 // mapToMutationParams converts Go map into mutation parameters.
@@ -431,4 +437,18 @@ func mutationsProto(ms []*Mutation) ([]*sppb.Mutation, error) {
 		l = append(l, pb)
 	}
 	return l, nil
+}
+
+// mutationGroupsProto turns a spanner.MutationGroup array into a
+// sppb.BatchWriteRequest_MutationGroup array, in preparation to send RPCs.
+func mutationGroupsProto(mgs []*MutationGroup) ([]*sppb.BatchWriteRequest_MutationGroup, error) {
+	gs := make([]*sppb.BatchWriteRequest_MutationGroup, 0, len(mgs))
+	for _, mg := range mgs {
+		ms, err := mutationsProto(mg.Mutations)
+		if err != nil {
+			return nil, err
+		}
+		gs = append(gs, &sppb.BatchWriteRequest_MutationGroup{Mutations: ms})
+	}
+	return gs, nil
 }

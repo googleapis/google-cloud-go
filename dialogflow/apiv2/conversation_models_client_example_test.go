@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ func ExampleConversationModelsClient_CreateConversationModel() {
 	_ = resp
 }
 
-func ExampleConversationModelsClient_GetConversationModel() {
+func ExampleConversationModelsClient_CreateConversationModelEvaluation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -103,47 +103,21 @@ func ExampleConversationModelsClient_GetConversationModel() {
 	}
 	defer c.Close()
 
-	req := &dialogflowpb.GetConversationModelRequest{
+	req := &dialogflowpb.CreateConversationModelEvaluationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetConversationModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateConversationModelEvaluationRequest.
 	}
-	resp, err := c.GetConversationModel(ctx, req)
+	op, err := c.CreateConversationModelEvaluation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleConversationModelsClient_ListConversationModels() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := dialogflow.NewConversationModelsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &dialogflowpb.ListConversationModelsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListConversationModelsRequest.
-	}
-	it := c.ListConversationModels(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }
 
 func ExampleConversationModelsClient_DeleteConversationModel() {
@@ -202,7 +176,7 @@ func ExampleConversationModelsClient_DeployConversationModel() {
 	}
 }
 
-func ExampleConversationModelsClient_UndeployConversationModel() {
+func ExampleConversationModelsClient_GetConversationModel() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -215,19 +189,16 @@ func ExampleConversationModelsClient_UndeployConversationModel() {
 	}
 	defer c.Close()
 
-	req := &dialogflowpb.UndeployConversationModelRequest{
+	req := &dialogflowpb.GetConversationModelRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#UndeployConversationModelRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#GetConversationModelRequest.
 	}
-	op, err := c.UndeployConversationModel(ctx, req)
+	resp, err := c.GetConversationModel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleConversationModelsClient_GetConversationModelEvaluation() {
@@ -283,10 +254,16 @@ func ExampleConversationModelsClient_ListConversationModelEvaluations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dialogflowpb.ListConversationModelEvaluationsResponse)
 	}
 }
 
-func ExampleConversationModelsClient_CreateConversationModelEvaluation() {
+func ExampleConversationModelsClient_ListConversationModels() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -299,21 +276,56 @@ func ExampleConversationModelsClient_CreateConversationModelEvaluation() {
 	}
 	defer c.Close()
 
-	req := &dialogflowpb.CreateConversationModelEvaluationRequest{
+	req := &dialogflowpb.ListConversationModelsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#CreateConversationModelEvaluationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#ListConversationModelsRequest.
 	}
-	op, err := c.CreateConversationModelEvaluation(ctx, req)
+	it := c.ListConversationModels(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dialogflowpb.ListConversationModelsResponse)
+	}
+}
+
+func ExampleConversationModelsClient_UndeployConversationModel() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dialogflow.NewConversationModelsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dialogflowpb.UndeployConversationModelRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dialogflow/apiv2/dialogflowpb#UndeployConversationModelRequest.
+	}
+	op, err := c.UndeployConversationModel(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleConversationModelsClient_GetLocation() {
@@ -369,6 +381,12 @@ func ExampleConversationModelsClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -448,5 +466,11 @@ func ExampleConversationModelsClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

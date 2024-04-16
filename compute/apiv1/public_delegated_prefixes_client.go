@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,11 +44,13 @@ var newPublicDelegatedPrefixesClientHook clientHook
 // PublicDelegatedPrefixesCallOptions contains the retry settings for each method of PublicDelegatedPrefixesClient.
 type PublicDelegatedPrefixesCallOptions struct {
 	AggregatedList []gax.CallOption
+	Announce       []gax.CallOption
 	Delete         []gax.CallOption
 	Get            []gax.CallOption
 	Insert         []gax.CallOption
 	List           []gax.CallOption
 	Patch          []gax.CallOption
+	Withdraw       []gax.CallOption
 }
 
 func defaultPublicDelegatedPrefixesRESTCallOptions() *PublicDelegatedPrefixesCallOptions {
@@ -64,6 +66,9 @@ func defaultPublicDelegatedPrefixesRESTCallOptions() *PublicDelegatedPrefixesCal
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
 			}),
+		},
+		Announce: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Delete: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -98,6 +103,9 @@ func defaultPublicDelegatedPrefixesRESTCallOptions() *PublicDelegatedPrefixesCal
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		Withdraw: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 	}
 }
 
@@ -107,11 +115,13 @@ type internalPublicDelegatedPrefixesClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AggregatedList(context.Context, *computepb.AggregatedListPublicDelegatedPrefixesRequest, ...gax.CallOption) *PublicDelegatedPrefixesScopedListPairIterator
+	Announce(context.Context, *computepb.AnnouncePublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeletePublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetPublicDelegatedPrefixeRequest, ...gax.CallOption) (*computepb.PublicDelegatedPrefix, error)
 	Insert(context.Context, *computepb.InsertPublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListPublicDelegatedPrefixesRequest, ...gax.CallOption) *PublicDelegatedPrefixIterator
 	Patch(context.Context, *computepb.PatchPublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
+	Withdraw(context.Context, *computepb.WithdrawPublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // PublicDelegatedPrefixesClient is a client for interacting with Google Compute Engine API.
@@ -149,9 +159,14 @@ func (c *PublicDelegatedPrefixesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes.
+// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *PublicDelegatedPrefixesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPublicDelegatedPrefixesRequest, opts ...gax.CallOption) *PublicDelegatedPrefixesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
+}
+
+// Announce announces the specified PublicDelegatedPrefix in the given region.
+func (c *PublicDelegatedPrefixesClient) Announce(ctx context.Context, req *computepb.AnnouncePublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Announce(ctx, req, opts...)
 }
 
 // Delete deletes the specified PublicDelegatedPrefix in the given region.
@@ -177,6 +192,11 @@ func (c *PublicDelegatedPrefixesClient) List(ctx context.Context, req *computepb
 // Patch patches the specified PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *PublicDelegatedPrefixesClient) Patch(ctx context.Context, req *computepb.PatchPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
+}
+
+// Withdraw withdraws the specified PublicDelegatedPrefix in the given region.
+func (c *PublicDelegatedPrefixesClient) Withdraw(ctx context.Context, req *computepb.WithdrawPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Withdraw(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -231,7 +251,9 @@ func NewPublicDelegatedPrefixesRESTClient(ctx context.Context, opts ...option.Cl
 func defaultPublicDelegatedPrefixesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -264,7 +286,7 @@ func (c *publicDelegatedPrefixesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes.
+// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *publicDelegatedPrefixesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPublicDelegatedPrefixesRequest, opts ...gax.CallOption) *PublicDelegatedPrefixesScopedListPairIterator {
 	it := &PublicDelegatedPrefixesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListPublicDelegatedPrefixesRequest)
@@ -303,6 +325,9 @@ func (c *publicDelegatedPrefixesRESTClient) AggregatedList(ctx context.Context, 
 		}
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -369,6 +394,76 @@ func (c *publicDelegatedPrefixesRESTClient) AggregatedList(ctx context.Context, 
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// Announce announces the specified PublicDelegatedPrefix in the given region.
+func (c *publicDelegatedPrefixesRESTClient) Announce(ctx context.Context, req *computepb.AnnouncePublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/publicDelegatedPrefixes/%v/announce", req.GetProject(), req.GetRegion(), req.GetPublicDelegatedPrefix())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "public_delegated_prefix", url.QueryEscape(req.GetPublicDelegatedPrefix()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Announce[0:len((*c.CallOptions).Announce):len((*c.CallOptions).Announce)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }
 
 // Delete deletes the specified PublicDelegatedPrefix in the given region.
@@ -747,55 +842,72 @@ func (c *publicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req *comp
 	return op, nil
 }
 
-// PublicDelegatedPrefixesScopedListPair is a holder type for string/*computepb.PublicDelegatedPrefixesScopedList map entries
-type PublicDelegatedPrefixesScopedListPair struct {
-	Key   string
-	Value *computepb.PublicDelegatedPrefixesScopedList
-}
-
-// PublicDelegatedPrefixesScopedListPairIterator manages a stream of PublicDelegatedPrefixesScopedListPair.
-type PublicDelegatedPrefixesScopedListPairIterator struct {
-	items    []PublicDelegatedPrefixesScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []PublicDelegatedPrefixesScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PublicDelegatedPrefixesScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PublicDelegatedPrefixesScopedListPairIterator) Next() (PublicDelegatedPrefixesScopedListPair, error) {
-	var item PublicDelegatedPrefixesScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
+// Withdraw withdraws the specified PublicDelegatedPrefix in the given region.
+func (c *publicDelegatedPrefixesRESTClient) Withdraw(ctx context.Context, req *computepb.WithdrawPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/publicDelegatedPrefixes/%v/withdraw", req.GetProject(), req.GetRegion(), req.GetPublicDelegatedPrefix())
 
-func (it *PublicDelegatedPrefixesScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
 
-func (it *PublicDelegatedPrefixesScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "public_delegated_prefix", url.QueryEscape(req.GetPublicDelegatedPrefix()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Withdraw[0:len((*c.CallOptions).Withdraw):len((*c.CallOptions).Withdraw)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }

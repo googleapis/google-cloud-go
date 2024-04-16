@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -81,7 +81,9 @@ type DataprocMetastoreCallOptions struct {
 func defaultDataprocMetastoreGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("metastore.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("metastore.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("metastore.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://metastore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -895,7 +897,9 @@ func NewDataprocMetastoreRESTClient(ctx context.Context, opts ...option.ClientOp
 func defaultDataprocMetastoreRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://metastore.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://metastore.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://metastore.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://metastore.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -3506,12 +3510,6 @@ func (c *dataprocMetastoreRESTClient) ListOperations(ctx context.Context, req *l
 	return it
 }
 
-// AlterMetadataResourceLocationOperation manages a long-running operation from AlterMetadataResourceLocation.
-type AlterMetadataResourceLocationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // AlterMetadataResourceLocationOperation returns a new AlterMetadataResourceLocationOperation from a given name.
 // The name must be that of a previously created AlterMetadataResourceLocationOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) AlterMetadataResourceLocationOperation(name string) *AlterMetadataResourceLocationOperation {
@@ -3528,70 +3526,6 @@ func (c *dataprocMetastoreRESTClient) AlterMetadataResourceLocationOperation(nam
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *AlterMetadataResourceLocationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.AlterMetadataResourceLocationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.AlterMetadataResourceLocationResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *AlterMetadataResourceLocationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.AlterMetadataResourceLocationResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.AlterMetadataResourceLocationResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *AlterMetadataResourceLocationOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *AlterMetadataResourceLocationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *AlterMetadataResourceLocationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateBackupOperation manages a long-running operation from CreateBackup.
-type CreateBackupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateBackupOperation returns a new CreateBackupOperation from a given name.
@@ -3612,70 +3546,6 @@ func (c *dataprocMetastoreRESTClient) CreateBackupOperation(name string) *Create
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.Backup
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.Backup
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateBackupOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateBackupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateBackupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateMetadataImportOperation manages a long-running operation from CreateMetadataImport.
-type CreateMetadataImportOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateMetadataImportOperation returns a new CreateMetadataImportOperation from a given name.
 // The name must be that of a previously created CreateMetadataImportOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) CreateMetadataImportOperation(name string) *CreateMetadataImportOperation {
@@ -3692,70 +3562,6 @@ func (c *dataprocMetastoreRESTClient) CreateMetadataImportOperation(name string)
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateMetadataImportOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MetadataImport, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.MetadataImport
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateMetadataImportOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MetadataImport, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.MetadataImport
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateMetadataImportOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateMetadataImportOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateMetadataImportOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateServiceOperation manages a long-running operation from CreateService.
-type CreateServiceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateServiceOperation returns a new CreateServiceOperation from a given name.
@@ -3776,70 +3582,6 @@ func (c *dataprocMetastoreRESTClient) CreateServiceOperation(name string) *Creat
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.Service, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.Service
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.Service, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.Service
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateServiceOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteBackupOperation manages a long-running operation from DeleteBackup.
-type DeleteBackupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
@@ -3856,59 +3598,6 @@ func (c *dataprocMetastoreRESTClient) DeleteBackupOperation(name string) *Delete
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteBackupOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteBackupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteBackupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteServiceOperation manages a long-running operation from DeleteService.
-type DeleteServiceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteServiceOperation returns a new DeleteServiceOperation from a given name.
@@ -3929,59 +3618,6 @@ func (c *dataprocMetastoreRESTClient) DeleteServiceOperation(name string) *Delet
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteServiceOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ExportMetadataOperation manages a long-running operation from ExportMetadata.
-type ExportMetadataOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ExportMetadataOperation returns a new ExportMetadataOperation from a given name.
 // The name must be that of a previously created ExportMetadataOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) ExportMetadataOperation(name string) *ExportMetadataOperation {
@@ -3998,70 +3634,6 @@ func (c *dataprocMetastoreRESTClient) ExportMetadataOperation(name string) *Expo
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportMetadataOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MetadataExport, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.MetadataExport
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportMetadataOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MetadataExport, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.MetadataExport
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportMetadataOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportMetadataOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportMetadataOperation) Name() string {
-	return op.lro.Name()
-}
-
-// MoveTableToDatabaseOperation manages a long-running operation from MoveTableToDatabase.
-type MoveTableToDatabaseOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // MoveTableToDatabaseOperation returns a new MoveTableToDatabaseOperation from a given name.
@@ -4082,70 +3654,6 @@ func (c *dataprocMetastoreRESTClient) MoveTableToDatabaseOperation(name string) 
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *MoveTableToDatabaseOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MoveTableToDatabaseResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.MoveTableToDatabaseResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *MoveTableToDatabaseOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MoveTableToDatabaseResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.MoveTableToDatabaseResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *MoveTableToDatabaseOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *MoveTableToDatabaseOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *MoveTableToDatabaseOperation) Name() string {
-	return op.lro.Name()
-}
-
-// QueryMetadataOperation manages a long-running operation from QueryMetadata.
-type QueryMetadataOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // QueryMetadataOperation returns a new QueryMetadataOperation from a given name.
 // The name must be that of a previously created QueryMetadataOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) QueryMetadataOperation(name string) *QueryMetadataOperation {
@@ -4162,70 +3670,6 @@ func (c *dataprocMetastoreRESTClient) QueryMetadataOperation(name string) *Query
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *QueryMetadataOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.QueryMetadataResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.QueryMetadataResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *QueryMetadataOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.QueryMetadataResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.QueryMetadataResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *QueryMetadataOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *QueryMetadataOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *QueryMetadataOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RestoreServiceOperation manages a long-running operation from RestoreService.
-type RestoreServiceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // RestoreServiceOperation returns a new RestoreServiceOperation from a given name.
@@ -4246,70 +3690,6 @@ func (c *dataprocMetastoreRESTClient) RestoreServiceOperation(name string) *Rest
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RestoreServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.Restore, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.Restore
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RestoreServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.Restore, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.Restore
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RestoreServiceOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RestoreServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RestoreServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateMetadataImportOperation manages a long-running operation from UpdateMetadataImport.
-type UpdateMetadataImportOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateMetadataImportOperation returns a new UpdateMetadataImportOperation from a given name.
 // The name must be that of a previously created UpdateMetadataImportOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) UpdateMetadataImportOperation(name string) *UpdateMetadataImportOperation {
@@ -4328,70 +3708,6 @@ func (c *dataprocMetastoreRESTClient) UpdateMetadataImportOperation(name string)
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateMetadataImportOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MetadataImport, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.MetadataImport
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateMetadataImportOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.MetadataImport, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.MetadataImport
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateMetadataImportOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateMetadataImportOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateMetadataImportOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateServiceOperation manages a long-running operation from UpdateService.
-type UpdateServiceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateServiceOperation returns a new UpdateServiceOperation from a given name.
 // The name must be that of a previously created UpdateServiceOperation, possibly from a different process.
 func (c *dataprocMetastoreGRPCClient) UpdateServiceOperation(name string) *UpdateServiceOperation {
@@ -4408,297 +3724,4 @@ func (c *dataprocMetastoreRESTClient) UpdateServiceOperation(name string) *Updat
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*metastorepb.Service, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.Service
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*metastorepb.Service, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp metastorepb.Service
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateServiceOperation) Metadata() (*metastorepb.OperationMetadata, error) {
-	var meta metastorepb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BackupIterator manages a stream of *metastorepb.Backup.
-type BackupIterator struct {
-	items    []*metastorepb.Backup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*metastorepb.Backup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BackupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BackupIterator) Next() (*metastorepb.Backup, error) {
-	var item *metastorepb.Backup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BackupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BackupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// MetadataImportIterator manages a stream of *metastorepb.MetadataImport.
-type MetadataImportIterator struct {
-	items    []*metastorepb.MetadataImport
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*metastorepb.MetadataImport, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MetadataImportIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MetadataImportIterator) Next() (*metastorepb.MetadataImport, error) {
-	var item *metastorepb.MetadataImport
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MetadataImportIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MetadataImportIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ServiceIterator manages a stream of *metastorepb.Service.
-type ServiceIterator struct {
-	items    []*metastorepb.Service
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*metastorepb.Service, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ServiceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ServiceIterator) Next() (*metastorepb.Service, error) {
-	var item *metastorepb.Service
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ServiceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ServiceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

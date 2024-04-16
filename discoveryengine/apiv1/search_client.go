@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,7 +53,9 @@ type SearchCallOptions struct {
 func defaultSearchGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("discoveryengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("discoveryengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("discoveryengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -65,13 +67,13 @@ func defaultSearchGRPCClientOptions() []option.ClientOption {
 func defaultSearchCallOptions() *SearchCallOptions {
 	return &SearchCallOptions{
 		Search: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
 				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        5000 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -106,11 +108,11 @@ func defaultSearchCallOptions() *SearchCallOptions {
 func defaultSearchRESTCallOptions() *SearchCallOptions {
 	return &SearchCallOptions{
 		Search: []gax.CallOption{
-			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        5000 * time.Millisecond,
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
 					http.StatusServiceUnavailable)
@@ -315,7 +317,9 @@ func NewSearchRESTClient(ctx context.Context, opts ...option.ClientOption) (*Sea
 func defaultSearchRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://discoveryengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://discoveryengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://discoveryengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -693,51 +697,4 @@ func (c *searchRESTClient) ListOperations(ctx context.Context, req *longrunningp
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// SearchResponse_SearchResultIterator manages a stream of *discoveryenginepb.SearchResponse_SearchResult.
-type SearchResponse_SearchResultIterator struct {
-	items    []*discoveryenginepb.SearchResponse_SearchResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*discoveryenginepb.SearchResponse_SearchResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SearchResponse_SearchResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SearchResponse_SearchResultIterator) Next() (*discoveryenginepb.SearchResponse_SearchResult, error) {
-	var item *discoveryenginepb.SearchResponse_SearchResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SearchResponse_SearchResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SearchResponse_SearchResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

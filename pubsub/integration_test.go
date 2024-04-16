@@ -1177,29 +1177,32 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 	}
 
 	received := make(chan string, numItems)
+	ctx2, cancel := context.WithCancel(ctx)
 	go func() {
-		if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
-			defer msg.Ack()
-			if msg.OrderingKey != orderingKey {
-				t.Errorf("got ordering key %s, expected %s", msg.OrderingKey, orderingKey)
-			}
-
-			received <- string(msg.Data)
-		}); err != nil {
-			if c := status.Code(err); c != codes.Canceled {
-				t.Error(err)
+		for i := 0; i < numItems; i++ {
+			select {
+			case r := <-received:
+				if got, want := r, fmt.Sprintf("item-%d", i); got != want {
+					t.Errorf("%d: got %s, want %s", i, got, want)
+				}
+			case <-time.After(30 * time.Second):
+				t.Errorf("timed out after 30s waiting for item %d", i)
+				cancel()
 			}
 		}
+		cancel()
 	}()
 
-	for i := 0; i < numItems; i++ {
-		select {
-		case r := <-received:
-			if got, want := r, fmt.Sprintf("item-%d", i); got != want {
-				t.Fatalf("%d: got %s, want %s", i, got, want)
-			}
-		case <-time.After(30 * time.Second):
-			t.Fatalf("timed out after 30s waiting for item %d", i)
+	if err := sub.Receive(ctx2, func(ctx context.Context, msg *Message) {
+		defer msg.Ack()
+		if msg.OrderingKey != orderingKey {
+			t.Errorf("got ordering key %s, expected %s", msg.OrderingKey, orderingKey)
+		}
+
+		received <- string(msg.Data)
+	}); err != nil {
+		if c := status.Code(err); c != codes.Canceled {
+			t.Error(err)
 		}
 	}
 }
@@ -1209,118 +1212,113 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
-	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer topic.Delete(ctx)
-	defer topic.Stop()
-	exists, err := topic.Exists(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !exists {
-		t.Fatalf("topic %v should exist, but it doesn't", topic)
-	}
-	var sub *Subscription
-	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{
-		Topic:                 topic,
-		EnableMessageOrdering: true,
-	}); err != nil {
-		t.Fatal(err)
-	}
-	defer sub.Delete(ctx)
-	exists, err = sub.Exists(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if !exists {
-		t.Fatalf("subscription %s should exist, but it doesn't", sub.ID())
-	}
-
-	topic.PublishSettings.DelayThreshold = time.Second
-	topic.EnableMessageOrdering = true
-
-	inFile, err := os.Open("testdata/publish.csv")
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer inFile.Close()
-
-	mu := sync.Mutex{}
-	var publishData []testutil2.OrderedKeyMsg
-	var receiveData []testutil2.OrderedKeyMsg
-	// Keep track of duplicate messages to avoid negative waitgroup counter.
-	receiveSet := make(map[string]struct{})
-
-	wg := sync.WaitGroup{}
-	scanner := bufio.NewScanner(inFile)
-	for scanner.Scan() {
-		line := scanner.Text()
-		// TODO: use strings.ReplaceAll once we only support 1.11+.
-		line = strings.Replace(line, "\"", "", -1)
-		parts := strings.Split(line, ",")
-		key := parts[0]
-		msg := parts[1]
-		publishData = append(publishData, testutil2.OrderedKeyMsg{Key: key, Data: msg})
-		topic.Publish(ctx, &Message{
-			Data:        []byte(msg),
-			OrderingKey: key,
-		})
-		wg.Add(1)
-	}
-	if err := scanner.Err(); err != nil {
-		t.Fatal(err)
-	}
-
-	receiveDone := make(chan struct{})
-	ctx, cancel := context.WithCancel(ctx)
-	go func() {
-		if err := sub.Receive(ctx, func(ctx context.Context, msg *Message) {
-			mu.Lock()
-			defer mu.Unlock()
-			// Messages are deduped using the data field, since in this case all
-			// messages are unique.
-			if _, ok := receiveSet[string(msg.Data)]; ok {
-				return
-			}
-			receiveSet[string(msg.Data)] = struct{}{}
-			receiveData = append(receiveData, testutil2.OrderedKeyMsg{Key: msg.OrderingKey, Data: string(msg.Data)})
-			wg.Done()
-			msg.Ack()
-		}); err != nil {
-			if c := status.Code(err); c != codes.Canceled {
-				t.Error(err)
-			}
+	testutil.Retry(t, 2, 1*time.Second, func(r *testutil.R) {
+		topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
+		if err != nil {
+			r.Errorf("createTopicWithRetry err: %v", err)
 		}
-		close(receiveDone)
-	}()
+		defer topic.Delete(ctx)
+		defer topic.Stop()
+		exists, err := topic.Exists(ctx)
+		if err != nil {
+			r.Errorf("topic.Exists err: %v", err)
+		}
+		if !exists {
+			r.Errorf("topic %v should exist, but it doesn't", topic)
+		}
+		var sub *Subscription
+		if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{
+			Topic:                 topic,
+			EnableMessageOrdering: true,
+		}); err != nil {
+			r.Errorf("creteSubWithRetry err: %v", err)
+		}
+		defer sub.Delete(ctx)
+		exists, err = sub.Exists(ctx)
+		if err != nil {
+			r.Errorf("sub.Exists err: %v", err)
+		}
+		if !exists {
+			r.Errorf("subscription %s should exist, but it doesn't", sub.ID())
+		}
 
-	done := make(chan struct{})
-	go func() {
-		wg.Wait()
-		close(done)
-	}()
+		topic.PublishSettings.DelayThreshold = time.Second
+		topic.EnableMessageOrdering = true
 
-	select {
-	case <-done:
-		cancel()
-	case <-time.After(5 * time.Minute):
-		t.Fatal("timed out after 5m waiting for all messages to be received")
-	}
+		inFile, err := os.Open("testdata/publish.csv")
+		if err != nil {
+			r.Errorf("os.Open err: %v", err)
+		}
+		defer inFile.Close()
 
-	mu.Lock()
-	defer mu.Unlock()
-	if err := testutil2.VerifyKeyOrdering(publishData, receiveData); err != nil {
-		t.Fatalf("VerifyKeyOrdering error: %v", err)
-	}
+		mu := sync.Mutex{}
+		var publishData []testutil2.OrderedKeyMsg
+		var receiveData []testutil2.OrderedKeyMsg
+		// Keep track of duplicate messages to avoid negative waitgroup counter.
+		receiveSet := make(map[string]struct{})
 
-	select {
-	case <-receiveDone:
-	case <-time.After(5 * time.Minute):
-		t.Fatal("timed out after 5m waiting for receive to exit")
-	}
+		wg := sync.WaitGroup{}
+		scanner := bufio.NewScanner(inFile)
+		for scanner.Scan() {
+			line := scanner.Text()
+			// TODO: use strings.ReplaceAll once we only support 1.11+.
+			line = strings.Replace(line, "\"", "", -1)
+			parts := strings.Split(line, ",")
+			key := parts[0]
+			msg := parts[1]
+			publishData = append(publishData, testutil2.OrderedKeyMsg{Key: key, Data: msg})
+			res := topic.Publish(ctx, &Message{
+				Data:        []byte(msg),
+				OrderingKey: key,
+			})
+			go func() {
+				_, err := res.Get(ctx)
+				if err != nil {
+					// Can't fail inside goroutine, so just log the error.
+					r.Logf("publish error for message(%s): %v", msg, err)
+				}
+			}()
+			wg.Add(1)
+		}
+		if err := scanner.Err(); err != nil {
+			r.Errorf("scanner.Err(): %v", err)
+		}
 
+		go func() {
+			sub.Receive(ctx, func(ctx context.Context, msg *Message) {
+				mu.Lock()
+				defer mu.Unlock()
+				// Messages are deduped using the data field, since in this case all
+				// messages are unique.
+				if _, ok := receiveSet[string(msg.Data)]; ok {
+					r.Logf("received duplicate message: %s", msg.Data)
+					return
+				}
+				receiveSet[string(msg.Data)] = struct{}{}
+				receiveData = append(receiveData, testutil2.OrderedKeyMsg{Key: msg.OrderingKey, Data: string(msg.Data)})
+				wg.Done()
+				msg.Ack()
+			})
+		}()
+
+		done := make(chan struct{})
+		go func() {
+			wg.Wait()
+			close(done)
+		}()
+
+		select {
+		case <-done:
+		case <-time.After(2 * time.Minute):
+			r.Errorf("timed out after 2m waiting for all messages to be received")
+		}
+
+		mu.Lock()
+		defer mu.Unlock()
+		if err := testutil2.VerifyKeyOrdering(publishData, receiveData); err != nil {
+			r.Errorf("VerifyKeyOrdering error: %v", err)
+		}
+	})
 }
 
 func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
@@ -1436,14 +1434,96 @@ func TestIntegration_OrderedKeys_SubscriptionOrdering(t *testing.T) {
 		msg.Ack()
 		atomic.AddInt32(&numAcked, 1)
 	})
-	if sub.enableOrdering != enableMessageOrdering {
-		t.Fatalf("enableOrdering mismatch: got: %v, want: %v", sub.enableOrdering, enableMessageOrdering)
-	}
 	// If the messages were received on a subscription with the EnableMessageOrdering=true,
 	// total processing would exceed the timeout and only one message would be processed.
 	if numAcked < 2 {
 		t.Fatalf("did not process all messages in time, numAcked: %d", numAcked)
 	}
+}
+
+func TestIntegration_OrderingWithExactlyOnce(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
+	defer client.Close()
+
+	topic, err := createTopicWithRetry(ctx, t, client, topicIDs.New(), nil)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("topic %v should exist, but it doesn't", topic)
+	}
+	var sub *Subscription
+	if sub, err = createSubWithRetry(ctx, t, client, subIDs.New(), SubscriptionConfig{
+		Topic:                     topic,
+		EnableMessageOrdering:     true,
+		EnableExactlyOnceDelivery: true,
+	}); err != nil {
+		t.Fatal(err)
+	}
+	defer sub.Delete(ctx)
+	exists, err = sub.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("subscription %s should exist, but it doesn't", sub.ID())
+	}
+
+	topic.PublishSettings.DelayThreshold = time.Second
+	topic.EnableMessageOrdering = true
+
+	orderingKey := "some-ordering-key"
+	numItems := 10
+	for i := 0; i < numItems; i++ {
+		r := topic.Publish(ctx, &Message{
+			ID:          fmt.Sprintf("id-%d", i),
+			Data:        []byte(fmt.Sprintf("item-%d", i)),
+			OrderingKey: orderingKey,
+		})
+		go func() {
+			if _, err := r.Get(ctx); err != nil {
+				t.Error(err)
+			}
+		}()
+	}
+
+	received := make(chan string, numItems)
+	ctx2, cancel := context.WithCancel(ctx)
+	go func() {
+		for i := 0; i < numItems; i++ {
+			select {
+			case r := <-received:
+				if got, want := r, fmt.Sprintf("item-%d", i); got != want {
+					t.Errorf("%d: got %s, want %s", i, got, want)
+				}
+			case <-time.After(30 * time.Second):
+				t.Errorf("timed out after 30s waiting for item %d", i)
+				cancel()
+			}
+		}
+		cancel()
+	}()
+
+	if err := sub.Receive(ctx2, func(ctx context.Context, msg *Message) {
+		defer msg.Ack()
+		if msg.OrderingKey != orderingKey {
+			t.Errorf("got ordering key %s, expected %s", msg.OrderingKey, orderingKey)
+		}
+
+		received <- string(msg.Data)
+	}); err != nil {
+		if c := status.Code(err); c != codes.Canceled {
+			t.Error(err)
+		}
+	}
+
 }
 
 func TestIntegration_CreateSubscription_DeadLetterPolicy(t *testing.T) {
@@ -1969,55 +2049,54 @@ func TestIntegration_TopicRetention(t *testing.T) {
 	c := integrationTestClient(ctx, t)
 	defer c.Close()
 
-	testutil.Retry(t, 5, 1*time.Second, func(r *testutil.R) {
-		tc := TopicConfig{
-			RetentionDuration: 50 * time.Minute,
-		}
-		topic, err := createTopicWithRetry(ctx, t, c, topicIDs.New(), &tc)
-		if err != nil {
-			r.Errorf("failed to create topic: %v", err)
-		}
-		defer topic.Delete(ctx)
-		defer topic.Stop()
+	tc := TopicConfig{
+		RetentionDuration: 31 * 24 * time.Hour, // max retention duration
+	}
 
-		newDur := 11 * time.Minute
-		cfg, err := topic.Update(ctx, TopicConfigToUpdate{
-			RetentionDuration: newDur,
-		})
-		if err != nil {
-			r.Errorf("failed to update topic: %v", err)
-		}
-		if got := cfg.RetentionDuration; got != newDur {
-			r.Errorf("cfg.RetentionDuration, got: %v, want: %v", got, newDur)
-		}
+	topic, err := createTopicWithRetry(ctx, t, c, topicIDs.New(), &tc)
+	if err != nil {
+		t.Fatalf("failed to create topic: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
 
-		// Create a subscription on the topic and read TopicMessageRetentionDuration.
-		s, err := createSubWithRetry(ctx, t, c, subIDs.New(), SubscriptionConfig{
-			Topic: topic,
-		})
-		if err != nil {
-			r.Errorf("failed to create subscription: %v", err)
-		}
-		defer s.Delete(ctx)
-		sCfg, err := s.Config(ctx)
-		if err != nil {
-			r.Errorf("failed to get sub config: %v", err)
-		}
-		if got := sCfg.TopicMessageRetentionDuration; got != newDur {
-			r.Errorf("sCfg.TopicMessageRetentionDuration, got: %v, want: %v", got, newDur)
-		}
-
-		// Clear retention duration by setting to a negative value.
-		cfg, err = topic.Update(ctx, TopicConfigToUpdate{
-			RetentionDuration: -1 * time.Minute,
-		})
-		if err != nil {
-			t.Fatal(err)
-		}
-		if got := cfg.RetentionDuration; got != nil {
-			t.Fatalf("expected cleared retention duration, got: %v", got)
-		}
+	newDur := 11 * time.Minute
+	cfg, err := topic.Update(ctx, TopicConfigToUpdate{
+		RetentionDuration: newDur,
 	})
+	if err != nil {
+		t.Fatalf("failed to update topic: %v", err)
+	}
+	if got := cfg.RetentionDuration; got != newDur {
+		t.Fatalf("cfg.RetentionDuration, got: %v, want: %v", got, newDur)
+	}
+
+	// Create a subscription on the topic and read TopicMessageRetentionDuration.
+	s, err := createSubWithRetry(ctx, t, c, subIDs.New(), SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		t.Fatalf("failed to create subscription: %v", err)
+	}
+	defer s.Delete(ctx)
+	sCfg, err := s.Config(ctx)
+	if err != nil {
+		t.Fatalf("failed to get sub config: %v", err)
+	}
+	if got := sCfg.TopicMessageRetentionDuration; got != newDur {
+		t.Fatalf("sCfg.TopicMessageRetentionDuration, got: %v, want: %v", got, newDur)
+	}
+
+	// Clear retention duration by setting to a negative value.
+	cfg, err = topic.Update(ctx, TopicConfigToUpdate{
+		RetentionDuration: -1 * time.Minute,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := cfg.RetentionDuration; got != nil {
+		t.Fatalf("expected cleared retention duration, got: %v", got)
+	}
 }
 
 func TestIntegration_ExactlyOnceDelivery_PublishReceive(t *testing.T) {

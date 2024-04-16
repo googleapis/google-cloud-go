@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,7 +66,7 @@ func ExampleServiceMonitoringClient_CreateService() {
 	_ = resp
 }
 
-func ExampleServiceMonitoringClient_GetService() {
+func ExampleServiceMonitoringClient_CreateServiceLevelObjective() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -79,67 +79,11 @@ func ExampleServiceMonitoringClient_GetService() {
 	}
 	defer c.Close()
 
-	req := &monitoringpb.GetServiceRequest{
+	req := &monitoringpb.CreateServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateServiceLevelObjectiveRequest.
 	}
-	resp, err := c.GetService(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleServiceMonitoringClient_ListServices() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := monitoring.NewServiceMonitoringClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.ListServicesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListServicesRequest.
-	}
-	it := c.ListServices(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleServiceMonitoringClient_UpdateService() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := monitoring.NewServiceMonitoringClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.UpdateServiceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateServiceRequest.
-	}
-	resp, err := c.UpdateService(ctx, req)
+	resp, err := c.CreateServiceLevelObjective(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -170,7 +114,7 @@ func ExampleServiceMonitoringClient_DeleteService() {
 	}
 }
 
-func ExampleServiceMonitoringClient_CreateServiceLevelObjective() {
+func ExampleServiceMonitoringClient_DeleteServiceLevelObjective() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -183,11 +127,34 @@ func ExampleServiceMonitoringClient_CreateServiceLevelObjective() {
 	}
 	defer c.Close()
 
-	req := &monitoringpb.CreateServiceLevelObjectiveRequest{
+	req := &monitoringpb.DeleteServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateServiceLevelObjectiveRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteServiceLevelObjectiveRequest.
 	}
-	resp, err := c.CreateServiceLevelObjective(ctx, req)
+	err = c.DeleteServiceLevelObjective(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleServiceMonitoringClient_GetService() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewServiceMonitoringClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.GetServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetServiceRequest.
+	}
+	resp, err := c.GetService(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -248,7 +215,75 @@ func ExampleServiceMonitoringClient_ListServiceLevelObjectives() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*monitoringpb.ListServiceLevelObjectivesResponse)
 	}
+}
+
+func ExampleServiceMonitoringClient_ListServices() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewServiceMonitoringClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.ListServicesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListServicesRequest.
+	}
+	it := c.ListServices(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*monitoringpb.ListServicesResponse)
+	}
+}
+
+func ExampleServiceMonitoringClient_UpdateService() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewServiceMonitoringClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.UpdateServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateServiceRequest.
+	}
+	resp, err := c.UpdateService(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleServiceMonitoringClient_UpdateServiceLevelObjective() {
@@ -274,27 +309,4 @@ func ExampleServiceMonitoringClient_UpdateServiceLevelObjective() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleServiceMonitoringClient_DeleteServiceLevelObjective() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := monitoring.NewServiceMonitoringClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.DeleteServiceLevelObjectiveRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteServiceLevelObjectiveRequest.
-	}
-	err = c.DeleteServiceLevelObjective(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }

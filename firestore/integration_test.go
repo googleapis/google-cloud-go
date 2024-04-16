@@ -27,12 +27,14 @@ import (
 	"runtime"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
 	"cloud.google.com/go/firestore/apiv1/admin/adminpb"
 	firestorev1 "cloud.google.com/go/firestore/apiv1/firestorepb"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -43,6 +45,7 @@ import (
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestMain(m *testing.M) {
@@ -130,13 +133,13 @@ func initIntegrationTest() {
 	iClient = c
 	iColl = c.Collection(collectionIDs.New())
 
-	adminC, err := apiv1.NewFirestoreAdminClient(ctx, option.WithTokenSource(ts))
+	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	adminC, err := apiv1.NewFirestoreAdminClient(adminCtx, option.WithTokenSource(ts))
 	if err != nil {
 		log.Fatalf("NewFirestoreAdminClient: %v", err)
 	}
 	iAdminClient = adminC
-
-	createIndexes(ctx, wantDBPath)
 
 	refDoc := iColl.NewDoc()
 	integrationTestMap["ref"] = refDoc
@@ -148,13 +151,13 @@ func initIntegrationTest() {
 // Indexes are required to run queries with composite filters on multiple fields.
 // Without indexes, FailedPrecondition rpc error is seen with
 // desc 'The query requires multiple indexes'.
-func createIndexes(ctx context.Context, dbPath string) {
-
-	indexFields := [][]string{{"updatedAt", "weight", "height"}, {"weight", "height"}}
+func createIndexes(ctx context.Context, dbPath string, indexFields [][]string) {
 	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
+	var wg sync.WaitGroup
 	for i, fields := range indexFields {
+		wg.Add(1)
 		var adminPbIndexFields []*adminpb.Index_IndexField
 		for _, field := range fields {
 			adminPbIndexFields = append(adminPbIndexFields, &adminpb.Index_IndexField{
@@ -175,13 +178,23 @@ func createIndexes(ctx context.Context, dbPath string) {
 		if createErr != nil {
 			log.Fatalf("CreateIndex: %v", createErr)
 		}
-
-		createdIndex, waitErr := op.Wait(ctx)
-		if waitErr != nil {
-			log.Fatalf("Wait: %v", waitErr)
+		if i == 0 {
+			// Seed first index to prevent FirestoreMetadataWrite.BootstrapDatabase Concurrent access error
+			handleCreateIndexResp(ctx, &wg, i, op)
+		} else {
+			go handleCreateIndexResp(ctx, &wg, i, op)
 		}
-		indexNames[i] = createdIndex.Name
 	}
+	wg.Wait()
+}
+
+func handleCreateIndexResp(ctx context.Context, wg *sync.WaitGroup, i int, op *apiv1.CreateIndexOperation) {
+	defer wg.Done()
+	createdIndex, waitErr := op.Wait(ctx)
+	if waitErr != nil {
+		log.Fatalf("CreateIndexes failed. Wait: %v", waitErr)
+	}
+	indexNames[i] = createdIndex.Name
 }
 
 // deleteIndexes deletes composite indexes created in createIndexes function
@@ -281,8 +294,11 @@ func deleteDocument(ctx context.Context, docRef *DocumentRef, bulkwriter *BulkWr
 
 func cleanupIntegrationTest() {
 	if iClient != nil {
+		adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+		defer cancel()
+		deleteIndexes(adminCtx)
+
 		ctx := context.Background()
-		deleteIndexes(ctx)
 		deleteCollection(ctx, iColl)
 		iClient.Close()
 	}
@@ -852,6 +868,14 @@ func TestIntegration_WriteBatch(t *testing.T) {
 func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
+
+	indexFields := [][]string{
+		{"updatedAt", "weight", "height"},
+		{"weight", "height"}}
+	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	createIndexes(adminCtx, wantDBPath, indexFields)
+
 	h := testHelper{t}
 	nowTime := time.Now()
 	todayTime := nowTime.Unix()
@@ -1001,13 +1025,22 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 	})
 }
 
+func reverseSlice(s []map[string]interface{}) []map[string]interface{} {
+	reversed := make([]map[string]interface{}, len(s))
+	for i, j := 0, len(s)-1; i <= j; i, j = i+1, j-1 {
+		reversed[i] = s[j]
+		reversed[j] = s[i]
+	}
+	return reversed
+}
+
 func TestIntegration_QueryDocuments(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
 	var wants []map[string]interface{}
 	var createdDocRefs []*DocumentRef
-	for i := 0; i < 3; i++ {
+	for i := 0; i < 8; i++ {
 		doc := coll.NewDoc()
 		createdDocRefs = append(createdDocRefs, doc)
 
@@ -1018,45 +1051,66 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	}
 	q := coll.Select("q")
 	for i, test := range []struct {
-		q       Query
-		want    []map[string]interface{}
-		orderBy bool // Some query types do not allow ordering.
+		desc       string
+		q          Query
+		want       []map[string]interface{}
+		orderBy    bool // Some query types do not allow ordering.
+		orderByDir Direction
 	}{
-		{q, wants, true},
-		{q.Where("q", ">", 1), wants[2:], true},
-		{q.Where("q", "<", 1), wants[:1], true},
-		{q.Where("q", "==", 1), wants[1:2], false},
-		{q.Where("q", "!=", 0), wants[1:], true},
-		{q.Where("q", ">=", 1), wants[1:], true},
-		{q.Where("q", "<=", 1), wants[:2], true},
-		{q.Where("q", "in", []int{0}), wants[:1], false},
-		{q.Where("q", "not-in", []int{0, 1}), wants[2:], true},
-		{q.WherePath([]string{"q"}, ">", 1), wants[2:], true},
-		{q.Offset(1).Limit(1), wants[1:2], true},
-		{q.StartAt(1), wants[1:], true},
-		{q.StartAfter(1), wants[2:], true},
-		{q.EndAt(1), wants[:2], true},
-		{q.EndBefore(1), wants[:1], true},
-		{q.LimitToLast(2), wants[1:], true},
-		{q.EndBefore(2).LimitToLast(2), wants[:2], true},
-		{q.StartAt(1).EndBefore(2).LimitToLast(3), wants[1:2], true},
+		{"Without filters", q, wants, true, 0},
+		{"> filter", q.Where("q", ">", 1), wants[2:], true, Asc},
+		{"< filter", q.Where("q", "<", 1), wants[:1], true, Asc},
+		{"== filter", q.Where("q", "==", 1), wants[1:2], false, 0},
+		{"!= filter", q.Where("q", "!=", 0), wants[1:], true, Asc},
+		{">= filter", q.Where("q", ">=", 1), wants[1:], true, Asc},
+		{"<= filter", q.Where("q", "<=", 1), wants[:2], true, Asc},
+		{"in filter", q.Where("q", "in", []int{0}), wants[:1], false, 0},
+		{"not-in filter", q.Where("q", "not-in", []int{0, 1}), wants[2:], true, Asc},
+		{"WherePath", q.WherePath([]string{"q"}, ">", 1), wants[2:], true, Asc},
+		{"Offset with Limit", q.Offset(1).Limit(1), wants[1:2], true, Asc},
+		{"StartAt", q.StartAt(1), wants[1:], true, Asc},
+		{"StartAfter", q.StartAfter(1), wants[2:], true, Asc},
+		{"EndAt", q.EndAt(1), wants[:2], true, Asc},
+		{"EndBefore", q.EndBefore(1), wants[:1], true, Asc},
+		{"Open range with DESC order", q.StartAfter(6).EndBefore(2), reverseSlice(wants[3:6]), true, Desc},
+		{"LimitToLast", q.LimitToLast(2), wants[len(wants)-2:], true, Asc},
+		{"StartAfter with LimitToLast", q.StartAfter(2).LimitToLast(2), wants[len(wants)-2:], true, Asc},
+		{"StartAt with LimitToLast", q.StartAt(2).LimitToLast(2), wants[len(wants)-2:], true, Asc},
+		{"EndBefore with LimitToLast", q.EndBefore(7).LimitToLast(2), wants[5:7], true, Asc},
+		{"EndAt with LimitToLast", q.EndAt(7).LimitToLast(2), wants[6:8], true, Asc},
+		{"LimitToLast greater than no. of results", q.StartAt(1).EndBefore(2).LimitToLast(3), wants[1:2], true, Asc},
+		{"Closed range with LimitToLast ASC order", q.StartAt(2).EndAt(6).LimitToLast(2), wants[5:7], true, Asc},
+		{"Left closed right open range with LimitToLast ASC order", q.StartAt(2).EndBefore(6).LimitToLast(2), wants[4:6], true, Asc},
+		{"Left open right closed with LimitToLast ASC order", q.StartAfter(2).EndAt(6).LimitToLast(2), wants[5:7], true, Asc},
+		{"Open range with LimitToLast ASC order", q.StartAfter(2).EndBefore(6).LimitToLast(2), wants[4:6], true, Asc},
+		{"Closed range with LimitToLast DESC order", q.StartAt(6).EndAt(2).LimitToLast(2), reverseSlice(wants[2:4]), true, Desc},
+		{"Left closed right open range with LimitToLast DESC order", q.StartAt(6).EndBefore(2).LimitToLast(2), reverseSlice(wants[3:5]), true, Desc},
+		{"Left open right closed with LimitToLast DESC order", q.StartAfter(6).EndAt(2).LimitToLast(2), reverseSlice(wants[2:4]), true, Desc},
+		{"Open range with LimitToLast DESC order", q.StartAfter(6).EndBefore(2).LimitToLast(2), reverseSlice(wants[3:5]), true, Desc},
 	} {
 		if test.orderBy {
-			test.q = test.q.OrderBy("q", Asc)
+			test.q = test.q.OrderBy("q", test.orderByDir)
 		}
 		gotDocs, err := test.q.Documents(ctx).GetAll()
 		if err != nil {
-			t.Errorf("#%d: %+v: %v", i, test.q, err)
+			t.Errorf("#%d %v: %+v: %v", i, test.desc, test.q, err)
 			continue
 		}
 		if len(gotDocs) != len(test.want) {
-			t.Errorf("#%d: %+v: got %d docs, want %d", i, test.q, len(gotDocs), len(test.want))
+			t.Errorf("#%d %v: %+v: got %d docs, want %d", i, test.desc, test.q, len(gotDocs), len(test.want))
 			continue
 		}
+
+		docsEqual := true
+		docsNotEqualErr := ""
 		for j, g := range gotDocs {
 			if got, want := g.Data(), test.want[j]; !testEqual(got, want) {
-				t.Errorf("#%d: %+v, #%d: got\n%+v\nwant\n%+v", i, test.q, j, got, want)
+				docsNotEqualErr += fmt.Sprintf("\n\t#%d: got %+v want %+v", j, got, want)
+				docsEqual = false
 			}
+		}
+		if !docsEqual {
+			t.Errorf("#%d %v: %+v %v", i, test.desc, test.q, docsNotEqualErr)
 		}
 	}
 	_, err := coll.Select("q").Where("x", "==", 1).OrderBy("q", Asc).Documents(ctx).GetAll()
@@ -2297,6 +2351,54 @@ func TestIntegration_BulkWriter_Set(t *testing.T) {
 	})
 }
 
+func TestIntegration_BulkWriter_Create(t *testing.T) {
+	c := integrationClient(t)
+	ctx := context.Background()
+
+	type BWDoc struct {
+		A int
+	}
+
+	docRef := iColl.Doc(fmt.Sprintf("bw_create_1_%d", time.Now().Unix()))
+	_, err := docRef.Create(ctx, BWDoc{A: 6})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+
+	doc := BWDoc{A: 5}
+	testcases := []struct {
+		desc           string
+		ref            *DocumentRef
+		wantStatusCode codes.Code
+	}{
+		{
+			desc:           "Successful",
+			ref:            iColl.Doc(fmt.Sprintf("bw_create_2_%d", time.Now().Unix())),
+			wantStatusCode: codes.OK,
+		},
+		{
+			desc:           "Already exists error",
+			ref:            docRef,
+			wantStatusCode: codes.AlreadyExists,
+		},
+	}
+	for _, testcase := range testcases {
+		bw := c.BulkWriter(ctx)
+
+		bwJob, err := bw.Create(testcase.ref, doc)
+		if err != nil {
+			t.Errorf("%v Create %v", testcase.desc, err)
+			continue
+		}
+		bw.Flush()
+
+		_, gotErr := bwJob.Results()
+		if status.Code(gotErr) != testcase.wantStatusCode {
+			t.Errorf("%q: Mismatch in error got: %v, want: %q", testcase.desc, status.Code(gotErr), testcase.wantStatusCode)
+		}
+	}
+}
+
 func TestIntegration_BulkWriter(t *testing.T) {
 	doc := iColl.NewDoc()
 	docRefs := []*DocumentRef{doc}
@@ -2353,6 +2455,223 @@ func TestIntegration_BulkWriter(t *testing.T) {
 	t.Cleanup(func() {
 		deleteDocuments(docRefs)
 	})
+}
+
+func TestIntegration_AggregationQueries(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+	client := integrationClient(t)
+
+	indexFields := [][]string{
+		{"weight", "model"}}
+	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	createIndexes(adminCtx, wantDBPath, indexFields)
+
+	h := testHelper{t}
+	docs := []map[string]interface{}{
+		{"weight": 1.5, "height": 99, "model": "A"},
+		{"weight": 2.6, "height": 98, "model": "A"},
+		{"weight": 3.7, "height": 97, "model": "B"},
+		{"weight": 4.8, "height": 96, "model": "B"},
+		{"weight": 5.9, "height": 95, "model": "C"},
+		{"weight": 6.0, "height": 94, "model": "B"},
+		{"weight": 7.1, "height": 93, "model": "C"},
+		{"weight": 8.2, "height": 93, "model": "A"},
+	}
+	for _, doc := range docs {
+		newDoc := coll.NewDoc()
+		h.mustCreate(newDoc, doc)
+	}
+
+	query := coll.Where("weight", ">=", 1)
+
+	limitQuery := coll.Where("weight", ">=", 1).Limit(4)
+	limitToLastQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).LimitToLast(4)
+
+	startAtQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).StartAt(3.7)
+	startAfterQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).StartAfter(3.7)
+
+	endAtQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).EndAt(7.1)
+	endBeforeQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).EndBefore(7.1)
+
+	emptyResultsQuery := coll.Where("weight", "<", 1)
+	emptyResultsQueryPtr := &emptyResultsQuery
+
+	testcases := []struct {
+		desc             string
+		aggregationQuery *AggregationQuery
+		wantErr          bool
+		runInTransaction bool
+		result           AggregationResult
+	}{
+		{
+			desc:             "Multiple aggregations",
+			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("height", "height_avg1").WithSum("weight", "weight_sum1").WithSum("height", "height_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+			},
+		},
+		{
+			desc:             "Aggregations in transaction",
+			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("height", "height_avg1").WithSum("weight", "weight_sum1").WithSum("height", "height_sum1"),
+			wantErr:          false,
+			runInTransaction: true,
+			result: map[string]interface{}{
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+			},
+		},
+		{
+			desc:             "WithSum aggregation without alias",
+			aggregationQuery: query.NewAggregationQuery().WithSum("weight", ""),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+			},
+		},
+		{
+			desc:             "WithSumPath aggregation without alias",
+			aggregationQuery: query.NewAggregationQuery().WithSumPath([]string{"weight"}, ""),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+			},
+		},
+		{
+			desc:             "WithAvg aggregation without alias",
+			aggregationQuery: query.NewAggregationQuery().WithAvg("weight", ""),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+			},
+		},
+		{
+			desc:             "WithAvgPath aggregation without alias",
+			aggregationQuery: query.NewAggregationQuery().WithAvgPath([]string{"weight"}, ""),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+			},
+		},
+		{
+			desc:             "Aggregations with limit",
+			aggregationQuery: (&limitQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
+			},
+		},
+		{
+			desc:             "Aggregations with StartAt",
+			aggregationQuery: (&startAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(35.7)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.95)}},
+			},
+		},
+		{
+			desc:             "Aggregations with StartAfter",
+			aggregationQuery: (&startAfterQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(32)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.4)}},
+			},
+		},
+		{
+			desc:             "Aggregations with EndAt",
+			aggregationQuery: (&endAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(30.1)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.016666666666667)}},
+			},
+		},
+		{
+			desc:             "Aggregations with EndBefore",
+			aggregationQuery: (&endBeforeQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(23)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.6)}},
+			},
+		},
+		{
+			desc:             "Aggregations with LimitToLast",
+			aggregationQuery: (&limitToLastQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(27.2)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.8)}},
+			},
+		},
+		{
+			desc:             "Aggregations on empty results",
+			aggregationQuery: emptyResultsQueryPtr.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithSum("weight", "weight_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			},
+		},
+		{
+			desc:             "Aggregation on non-numeric field",
+			aggregationQuery: query.NewAggregationQuery().WithAvg("model", "model_avg1").WithSum("model", "model_sum1"),
+			wantErr:          false,
+			result: map[string]interface{}{
+				"model_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"model_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+			},
+		},
+		{
+			desc:             "Aggregation on non existent key",
+			aggregationQuery: query.NewAggregationQuery().WithAvg("randKey", "key_avg1").WithSum("randKey", "key_sum1"),
+			wantErr:          true,
+		},
+	}
+
+	for _, tc := range testcases {
+		var aggResult AggregationResult
+		var err error
+		if tc.runInTransaction {
+			client.RunTransaction(ctx, func(ctx context.Context, tx *Transaction) error {
+				aggResult, err = tc.aggregationQuery.Transaction(tx).Get(ctx)
+				return err
+			})
+		} else {
+			aggResult, err = tc.aggregationQuery.Get(ctx)
+		}
+		if err != nil && !tc.wantErr {
+			t.Errorf("%s: got: %v, want: nil", tc.desc, err)
+			continue
+		}
+		if err == nil && tc.wantErr {
+			t.Errorf("%s: got: %v, wanted error", tc.desc, err)
+			continue
+		}
+		if !reflect.DeepEqual(aggResult, tc.result) {
+			t.Errorf("%s: got: %v, want: %v", tc.desc, aggResult, tc.result)
+			continue
+		}
+	}
 }
 
 func TestIntegration_CountAggregationQuery(t *testing.T) {
@@ -2443,7 +2762,7 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		}
 	}
 
-	tm := time.Now()
+	tm := time.Now().Add(-time.Minute)
 	c.WithReadOptions(ReadTime(tm))
 
 	ds, err := c.GetAll(ctx, docs)
@@ -2451,10 +2770,9 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	// TODO(6894): Re-enable this test when snapshot reads is available on test project.
-	t.SkipNow()
+	wantReadTime := tm.Truncate(time.Second)
 	for _, d := range ds {
-		if !tm.Equal(d.ReadTime) {
+		if !wantReadTime.Equal(d.ReadTime) {
 			t.Errorf("wanted read time: %v; got: %v",
 				tm.UnixNano(), d.ReadTime.UnixNano())
 		}

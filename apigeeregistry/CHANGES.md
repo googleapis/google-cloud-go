@@ -1,5 +1,47 @@
 # Changelog
 
+## [0.8.4](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.3...apigeeregistry/v0.8.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.2...apigeeregistry/v0.8.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.1...apigeeregistry/v0.8.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.0...apigeeregistry/v0.8.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.7.2...apigeeregistry/v0.8.0) (2023-10-17)
+
+
+### Features
+
+* **apigeeregistry:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [0.7.2](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.7.1...apigeeregistry/v0.7.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry-v0.7.0...apigeeregistry/v0.7.1) (2023-06-20)
 
 
@@ -69,3 +111,4 @@
 ### Features
 
 * **apigeeregistry:** start generating apiv1 ([#6463](https://github.com/googleapis/google-cloud-go/issues/6463)) ([55385cb](https://github.com/googleapis/google-cloud-go/commit/55385cbd1a324745b2f2f7b72b2fa33cb34c9cb5))
+

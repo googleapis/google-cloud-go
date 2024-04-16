@@ -49,6 +49,9 @@ func (ct CreateTable) SQL() string {
 	for _, tc := range ct.Constraints {
 		str += "  " + tc.SQL() + ",\n"
 	}
+	if len(ct.Synonym) > 0 {
+		str += "  SYNONYM(" + ct.Synonym.SQL() + "),\n"
+	}
 	str += ") PRIMARY KEY("
 	for i, c := range ct.PrimaryKey {
 		if i > 0 {
@@ -100,8 +103,18 @@ func (cv CreateView) SQL() string {
 	if cv.OrReplace {
 		str += " OR REPLACE"
 	}
-	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY INVOKER AS " + cv.Query.SQL()
+	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY " + cv.SecurityType.SQL() + " AS " + cv.Query.SQL()
 	return str
+}
+
+func (st SecurityType) SQL() string {
+	switch st {
+	case Invoker:
+		return "INVOKER"
+	case Definer:
+		return "DEFINER"
+	}
+	panic("unknown SecurityType")
 }
 
 func (cr CreateRole) SQL() string {
@@ -296,6 +309,22 @@ func (dc DropConstraint) SQL() string {
 	return "DROP CONSTRAINT " + dc.Name.SQL()
 }
 
+func (rt RenameTo) SQL() string {
+	str := "RENAME TO " + rt.ToName.SQL()
+	if len(rt.Synonym) > 0 {
+		str += ", ADD SYNONYM " + rt.Synonym.SQL()
+	}
+	return str
+}
+
+func (as AddSynonym) SQL() string {
+	return "ADD SYNONYM " + as.Name.SQL()
+}
+
+func (ds DropSynonym) SQL() string {
+	return "DROP SYNONYM " + ds.Name.SQL()
+}
+
 func (sod SetOnDelete) SQL() string {
 	return "SET ON DELETE " + sod.Action.SQL()
 }
@@ -360,6 +389,17 @@ func (co ColumnOptions) SQL() string {
 		}
 	}
 	str += ")"
+	return str
+}
+
+func (rt RenameTable) SQL() string {
+	str := "RENAME TABLE "
+	for i, op := range rt.TableRenameOps {
+		if i > 0 {
+			str += ", "
+		}
+		str += op.FromName.SQL() + " TO " + op.ToName.SQL()
+	}
 	return str
 }
 

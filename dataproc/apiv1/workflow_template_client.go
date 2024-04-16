@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,7 +67,9 @@ type WorkflowTemplateCallOptions struct {
 func defaultWorkflowTemplateGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataproc.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dataproc.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataproc.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataproc.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -623,7 +625,9 @@ func NewWorkflowTemplateRESTClient(ctx context.Context, opts ...option.ClientOpt
 func defaultWorkflowTemplateRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dataproc.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dataproc.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dataproc.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataproc.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1919,12 +1923,6 @@ func (c *workflowTemplateRESTClient) ListOperations(ctx context.Context, req *lo
 	return it
 }
 
-// InstantiateInlineWorkflowTemplateOperation manages a long-running operation from InstantiateInlineWorkflowTemplate.
-type InstantiateInlineWorkflowTemplateOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // InstantiateInlineWorkflowTemplateOperation returns a new InstantiateInlineWorkflowTemplateOperation from a given name.
 // The name must be that of a previously created InstantiateInlineWorkflowTemplateOperation, possibly from a different process.
 func (c *workflowTemplateGRPCClient) InstantiateInlineWorkflowTemplateOperation(name string) *InstantiateInlineWorkflowTemplateOperation {
@@ -1943,59 +1941,6 @@ func (c *workflowTemplateRESTClient) InstantiateInlineWorkflowTemplateOperation(
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *InstantiateInlineWorkflowTemplateOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *InstantiateInlineWorkflowTemplateOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *InstantiateInlineWorkflowTemplateOperation) Metadata() (*dataprocpb.WorkflowMetadata, error) {
-	var meta dataprocpb.WorkflowMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *InstantiateInlineWorkflowTemplateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *InstantiateInlineWorkflowTemplateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// InstantiateWorkflowTemplateOperation manages a long-running operation from InstantiateWorkflowTemplate.
-type InstantiateWorkflowTemplateOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // InstantiateWorkflowTemplateOperation returns a new InstantiateWorkflowTemplateOperation from a given name.
 // The name must be that of a previously created InstantiateWorkflowTemplateOperation, possibly from a different process.
 func (c *workflowTemplateGRPCClient) InstantiateWorkflowTemplateOperation(name string) *InstantiateWorkflowTemplateOperation {
@@ -2012,98 +1957,4 @@ func (c *workflowTemplateRESTClient) InstantiateWorkflowTemplateOperation(name s
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *InstantiateWorkflowTemplateOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *InstantiateWorkflowTemplateOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *InstantiateWorkflowTemplateOperation) Metadata() (*dataprocpb.WorkflowMetadata, error) {
-	var meta dataprocpb.WorkflowMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *InstantiateWorkflowTemplateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *InstantiateWorkflowTemplateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// WorkflowTemplateIterator manages a stream of *dataprocpb.WorkflowTemplate.
-type WorkflowTemplateIterator struct {
-	items    []*dataprocpb.WorkflowTemplate
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dataprocpb.WorkflowTemplate, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *WorkflowTemplateIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *WorkflowTemplateIterator) Next() (*dataprocpb.WorkflowTemplate, error) {
-	var item *dataprocpb.WorkflowTemplate
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *WorkflowTemplateIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *WorkflowTemplateIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

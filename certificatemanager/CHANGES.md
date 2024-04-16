@@ -1,5 +1,47 @@
 # Changes
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.6...certificatemanager/v1.8.0) (2024-03-19)
+
+
+### Features
+
+* **certificatemanager:** Added Trust Configs and DnsAuthorization.Type to Certificate Manager ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+
+## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.5...certificatemanager/v1.7.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.7.5](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.4...certificatemanager/v1.7.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.3...certificatemanager/v1.7.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.2...certificatemanager/v1.7.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.1...certificatemanager/v1.7.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.0...certificatemanager/v1.7.1) (2023-06-20)
 
 
@@ -188,3 +230,4 @@
 
 * **certificatemanager:** release 0.1.0 ([#5743](https://github.com/googleapis/google-cloud-go/issues/5743)) ([24a817a](https://github.com/googleapis/google-cloud-go/commit/24a817a2a75dde10bcbecf2ced8f399cb05dc011))
 * ****certificatemanager**:** release v0.1.0 ([#5758](https://github.com/googleapis/google-cloud-go/issues/5758)) ([809f4ba](https://github.com/googleapis/google-cloud-go/commit/809f4ba385e2e9ed61df8ecbb6df7b371dc10641))
+

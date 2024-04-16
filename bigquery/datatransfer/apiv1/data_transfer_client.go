@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ type CallOptions struct {
 	ListTransferLogs        []gax.CallOption
 	CheckValidCreds         []gax.CallOption
 	EnrollDataSources       []gax.CallOption
+	UnenrollDataSources     []gax.CallOption
 	GetLocation             []gax.CallOption
 	ListLocations           []gax.CallOption
 }
@@ -67,7 +68,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("bigquerydatatransfer.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("bigquerydatatransfer.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("bigquerydatatransfer.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigquerydatatransfer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -218,9 +221,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		EnrollDataSources: []gax.CallOption{},
-		GetLocation:       []gax.CallOption{},
-		ListLocations:     []gax.CallOption{},
+		EnrollDataSources:   []gax.CallOption{},
+		UnenrollDataSources: []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
 	}
 }
 
@@ -356,9 +360,10 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		EnrollDataSources: []gax.CallOption{},
-		GetLocation:       []gax.CallOption{},
-		ListLocations:     []gax.CallOption{},
+		EnrollDataSources:   []gax.CallOption{},
+		UnenrollDataSources: []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
 	}
 }
 
@@ -382,6 +387,7 @@ type internalClient interface {
 	ListTransferLogs(context.Context, *datatransferpb.ListTransferLogsRequest, ...gax.CallOption) *TransferMessageIterator
 	CheckValidCreds(context.Context, *datatransferpb.CheckValidCredsRequest, ...gax.CallOption) (*datatransferpb.CheckValidCredsResponse, error)
 	EnrollDataSources(context.Context, *datatransferpb.EnrollDataSourcesRequest, ...gax.CallOption) error
+	UnenrollDataSources(context.Context, *datatransferpb.UnenrollDataSourcesRequest, ...gax.CallOption) error
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
@@ -516,6 +522,15 @@ func (c *Client) EnrollDataSources(ctx context.Context, req *datatransferpb.Enro
 	return c.internalClient.EnrollDataSources(ctx, req, opts...)
 }
 
+// UnenrollDataSources unenroll data sources in a user project. This allows users to remove
+// transfer configurations for these data sources. They will no longer appear
+// in the ListDataSources RPC and will also no longer appear in the BigQuery
+// UI (at https://console.cloud.google.com/bigquery). Data transfers
+// configurations of unenrolled data sources will not be scheduled.
+func (c *Client) UnenrollDataSources(ctx context.Context, req *datatransferpb.UnenrollDataSourcesRequest, opts ...gax.CallOption) error {
+	return c.internalClient.UnenrollDataSources(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -640,7 +655,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://bigquerydatatransfer.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://bigquerydatatransfer.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://bigquerydatatransfer.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://bigquerydatatransfer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1034,6 +1051,20 @@ func (c *gRPCClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.EnrollDataSources(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) UnenrollDataSources(ctx context.Context, req *datatransferpb.UnenrollDataSourcesRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UnenrollDataSources[0:len((*c.CallOptions).UnenrollDataSources):len((*c.CallOptions).UnenrollDataSources)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.UnenrollDataSources(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	return err
@@ -2166,6 +2197,58 @@ func (c *restClient) EnrollDataSources(ctx context.Context, req *datatransferpb.
 	}, opts...)
 }
 
+// UnenrollDataSources unenroll data sources in a user project. This allows users to remove
+// transfer configurations for these data sources. They will no longer appear
+// in the ListDataSources RPC and will also no longer appear in the BigQuery
+// UI (at https://console.cloud.google.com/bigquery). Data transfers
+// configurations of unenrolled data sources will not be scheduled.
+func (c *restClient) UnenrollDataSources(ctx context.Context, req *datatransferpb.UnenrollDataSourcesRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:unenrollDataSources", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2316,239 +2399,4 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// DataSourceIterator manages a stream of *datatransferpb.DataSource.
-type DataSourceIterator struct {
-	items    []*datatransferpb.DataSource
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datatransferpb.DataSource, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataSourceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataSourceIterator) Next() (*datatransferpb.DataSource, error) {
-	var item *datatransferpb.DataSource
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataSourceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataSourceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TransferConfigIterator manages a stream of *datatransferpb.TransferConfig.
-type TransferConfigIterator struct {
-	items    []*datatransferpb.TransferConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datatransferpb.TransferConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TransferConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TransferConfigIterator) Next() (*datatransferpb.TransferConfig, error) {
-	var item *datatransferpb.TransferConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TransferConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TransferConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TransferMessageIterator manages a stream of *datatransferpb.TransferMessage.
-type TransferMessageIterator struct {
-	items    []*datatransferpb.TransferMessage
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datatransferpb.TransferMessage, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TransferMessageIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TransferMessageIterator) Next() (*datatransferpb.TransferMessage, error) {
-	var item *datatransferpb.TransferMessage
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TransferMessageIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TransferMessageIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TransferRunIterator manages a stream of *datatransferpb.TransferRun.
-type TransferRunIterator struct {
-	items    []*datatransferpb.TransferRun
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*datatransferpb.TransferRun, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TransferRunIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TransferRunIterator) Next() (*datatransferpb.TransferRun, error) {
-	var item *datatransferpb.TransferRun
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TransferRunIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TransferRunIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

@@ -440,7 +440,10 @@ func (s *goTestProxyServer) CreateClient(ctx context.Context, req *pb.CreateClie
 		return nil, stat.Error(codes.Unknown, fmt.Sprintf("%s: failed to create connection: %v", logLabel, err))
 	}
 
-	c, err := bigtable.NewClient(ctx, req.ProjectId, req.InstanceId, option.WithGRPCConn(conn))
+	config := bigtable.ClientConfig{
+		AppProfile: req.AppProfileId,
+	}
+	c, err := bigtable.NewClientWithConfig(ctx, req.ProjectId, req.InstanceId, config, option.WithGRPCConn(conn))
 	if err != nil {
 		return nil, stat.Error(codes.Internal,
 			fmt.Sprintf("%s: failed to create client: %v", logLabel, err))
@@ -563,13 +566,6 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	rowPbs := rrq.Rows
 	rs := rowSetFromProto(rowPbs)
 
-	// Bigtable client doesn't have a Table.GetAll() function--RowSet must be
-	// provided for ReadRows. Use InfiniteRange() to get the full table.
-	if rs == nil {
-		// Should be lowest possible key value, an empty byte array
-		rs = bigtable.InfiniteRange("")
-	}
-
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
@@ -598,13 +594,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	}
 
 	if err != nil {
-		log.Printf("error from Table.ReadRows: %v\n", err)
-		if st, ok := stat.FromError(err); ok {
-			res.Status = &statpb.Status{
-				Code:    st.Proto().Code,
-				Message: st.Message(),
-			}
-		}
+		res.Status = statusFromError(err)
 		return res, nil
 	}
 
@@ -892,7 +882,8 @@ func (s *goTestProxyServer) ReadModifyWriteRow(ctx context.Context, req *pb.Read
 
 	r, err := t.ApplyReadModifyWrite(ctx, k, rmw)
 	if err != nil {
-		return nil, err
+		res.Status = statusFromError(err)
+		return res, nil
 	}
 
 	rp, err := rowToProto(r)

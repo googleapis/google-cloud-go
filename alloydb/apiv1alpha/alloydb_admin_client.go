@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -79,6 +79,7 @@ type AlloyDBAdminCallOptions struct {
 	CreateUser                 []gax.CallOption
 	UpdateUser                 []gax.CallOption
 	DeleteUser                 []gax.CallOption
+	ListDatabases              []gax.CallOption
 	GetLocation                []gax.CallOption
 	ListLocations              []gax.CallOption
 	CancelOperation            []gax.CallOption
@@ -90,7 +91,9 @@ type AlloyDBAdminCallOptions struct {
 func defaultAlloyDBAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("alloydb.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("alloydb.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("alloydb.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://alloydb.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -293,6 +296,18 @@ func defaultAlloyDBAdminCallOptions() *AlloyDBAdminCallOptions {
 		DeleteUser: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -485,6 +500,17 @@ func defaultAlloyDBAdminRESTCallOptions() *AlloyDBAdminCallOptions {
 		DeleteUser: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		ListDatabases: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -547,6 +573,7 @@ type internalAlloyDBAdminClient interface {
 	CreateUser(context.Context, *alloydbpb.CreateUserRequest, ...gax.CallOption) (*alloydbpb.User, error)
 	UpdateUser(context.Context, *alloydbpb.UpdateUserRequest, ...gax.CallOption) (*alloydbpb.User, error)
 	DeleteUser(context.Context, *alloydbpb.DeleteUserRequest, ...gax.CallOption) error
+	ListDatabases(context.Context, *alloydbpb.ListDatabasesRequest, ...gax.CallOption) *DatabaseIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -875,6 +902,11 @@ func (c *AlloyDBAdminClient) DeleteUser(ctx context.Context, req *alloydbpb.Dele
 	return c.internalClient.DeleteUser(ctx, req, opts...)
 }
 
+// ListDatabases lists Databases in a given project and location.
+func (c *AlloyDBAdminClient) ListDatabases(ctx context.Context, req *alloydbpb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	return c.internalClient.ListDatabases(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *AlloyDBAdminClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -1053,7 +1085,9 @@ func NewAlloyDBAdminRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultAlloyDBAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://alloydb.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://alloydb.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://alloydb.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://alloydb.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -1808,6 +1842,52 @@ func (c *alloyDBAdminGRPCClient) DeleteUser(ctx context.Context, req *alloydbpb.
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *alloyDBAdminGRPCClient) ListDatabases(ctx context.Context, req *alloydbpb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDatabases[0:len((*c.CallOptions).ListDatabases):len((*c.CallOptions).ListDatabases)], opts...)
+	it := &DatabaseIterator{}
+	req = proto.Clone(req).(*alloydbpb.ListDatabasesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Database, string, error) {
+		resp := &alloydbpb.ListDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.alloyDBAdminClient.ListDatabases(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDatabases(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *alloyDBAdminGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -4335,6 +4415,98 @@ func (c *alloyDBAdminRESTClient) DeleteUser(ctx context.Context, req *alloydbpb.
 	}, opts...)
 }
 
+// ListDatabases lists Databases in a given project and location.
+func (c *alloyDBAdminRESTClient) ListDatabases(ctx context.Context, req *alloydbpb.ListDatabasesRequest, opts ...gax.CallOption) *DatabaseIterator {
+	it := &DatabaseIterator{}
+	req = proto.Clone(req).(*alloydbpb.ListDatabasesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*alloydbpb.Database, string, error) {
+		resp := &alloydbpb.ListDatabasesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1alpha/%v/databases", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDatabases(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 // GetLocation gets information about a location.
 func (c *alloyDBAdminRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4729,12 +4901,6 @@ func (c *alloyDBAdminRESTClient) ListOperations(ctx context.Context, req *longru
 	return it
 }
 
-// BatchCreateInstancesOperation manages a long-running operation from BatchCreateInstances.
-type BatchCreateInstancesOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // BatchCreateInstancesOperation returns a new BatchCreateInstancesOperation from a given name.
 // The name must be that of a previously created BatchCreateInstancesOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) BatchCreateInstancesOperation(name string) *BatchCreateInstancesOperation {
@@ -4751,70 +4917,6 @@ func (c *alloyDBAdminRESTClient) BatchCreateInstancesOperation(name string) *Bat
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BatchCreateInstancesOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.BatchCreateInstancesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.BatchCreateInstancesResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BatchCreateInstancesOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.BatchCreateInstancesResponse, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.BatchCreateInstancesResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchCreateInstancesOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BatchCreateInstancesOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BatchCreateInstancesOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateBackupOperation manages a long-running operation from CreateBackup.
-type CreateBackupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateBackupOperation returns a new CreateBackupOperation from a given name.
@@ -4835,70 +4937,6 @@ func (c *alloyDBAdminRESTClient) CreateBackupOperation(name string) *CreateBacku
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Backup
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Backup
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateBackupOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateBackupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateBackupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateClusterOperation manages a long-running operation from CreateCluster.
-type CreateClusterOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateClusterOperation returns a new CreateClusterOperation from a given name.
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
@@ -4915,70 +4953,6 @@ func (c *alloyDBAdminRESTClient) CreateClusterOperation(name string) *CreateClus
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateClusterOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateInstanceOperation manages a long-running operation from CreateInstance.
-type CreateInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateInstanceOperation returns a new CreateInstanceOperation from a given name.
@@ -4999,70 +4973,6 @@ func (c *alloyDBAdminRESTClient) CreateInstanceOperation(name string) *CreateIns
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateInstanceOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateSecondaryClusterOperation manages a long-running operation from CreateSecondaryCluster.
-type CreateSecondaryClusterOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // CreateSecondaryClusterOperation returns a new CreateSecondaryClusterOperation from a given name.
 // The name must be that of a previously created CreateSecondaryClusterOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) CreateSecondaryClusterOperation(name string) *CreateSecondaryClusterOperation {
@@ -5079,70 +4989,6 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryClusterOperation(name string) *C
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateSecondaryClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateSecondaryClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateSecondaryClusterOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateSecondaryClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateSecondaryClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateSecondaryInstanceOperation manages a long-running operation from CreateSecondaryInstance.
-type CreateSecondaryInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // CreateSecondaryInstanceOperation returns a new CreateSecondaryInstanceOperation from a given name.
@@ -5163,70 +5009,6 @@ func (c *alloyDBAdminRESTClient) CreateSecondaryInstanceOperation(name string) *
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateSecondaryInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateSecondaryInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateSecondaryInstanceOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateSecondaryInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateSecondaryInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteBackupOperation manages a long-running operation from DeleteBackup.
-type DeleteBackupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
@@ -5243,59 +5025,6 @@ func (c *alloyDBAdminRESTClient) DeleteBackupOperation(name string) *DeleteBacku
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteBackupOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteBackupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteBackupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteClusterOperation manages a long-running operation from DeleteCluster.
-type DeleteClusterOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // DeleteClusterOperation returns a new DeleteClusterOperation from a given name.
@@ -5316,59 +5045,6 @@ func (c *alloyDBAdminRESTClient) DeleteClusterOperation(name string) *DeleteClus
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteClusterOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteInstanceOperation manages a long-running operation from DeleteInstance.
-type DeleteInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteInstanceOperation returns a new DeleteInstanceOperation from a given name.
 // The name must be that of a previously created DeleteInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) DeleteInstanceOperation(name string) *DeleteInstanceOperation {
@@ -5385,59 +5061,6 @@ func (c *alloyDBAdminRESTClient) DeleteInstanceOperation(name string) *DeleteIns
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteInstanceOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// FailoverInstanceOperation manages a long-running operation from FailoverInstance.
-type FailoverInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // FailoverInstanceOperation returns a new FailoverInstanceOperation from a given name.
@@ -5458,70 +5081,6 @@ func (c *alloyDBAdminRESTClient) FailoverInstanceOperation(name string) *Failove
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *FailoverInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *FailoverInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *FailoverInstanceOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *FailoverInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *FailoverInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// InjectFaultOperation manages a long-running operation from InjectFault.
-type InjectFaultOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // InjectFaultOperation returns a new InjectFaultOperation from a given name.
 // The name must be that of a previously created InjectFaultOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) InjectFaultOperation(name string) *InjectFaultOperation {
@@ -5538,70 +5097,6 @@ func (c *alloyDBAdminRESTClient) InjectFaultOperation(name string) *InjectFaultO
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *InjectFaultOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *InjectFaultOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *InjectFaultOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *InjectFaultOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *InjectFaultOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PromoteClusterOperation manages a long-running operation from PromoteCluster.
-type PromoteClusterOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // PromoteClusterOperation returns a new PromoteClusterOperation from a given name.
@@ -5622,70 +5117,6 @@ func (c *alloyDBAdminRESTClient) PromoteClusterOperation(name string) *PromoteCl
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PromoteClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PromoteClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PromoteClusterOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PromoteClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PromoteClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RestartInstanceOperation manages a long-running operation from RestartInstance.
-type RestartInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // RestartInstanceOperation returns a new RestartInstanceOperation from a given name.
 // The name must be that of a previously created RestartInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) RestartInstanceOperation(name string) *RestartInstanceOperation {
@@ -5702,70 +5133,6 @@ func (c *alloyDBAdminRESTClient) RestartInstanceOperation(name string) *RestartI
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RestartInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RestartInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RestartInstanceOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RestartInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RestartInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RestoreClusterOperation manages a long-running operation from RestoreCluster.
-type RestoreClusterOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // RestoreClusterOperation returns a new RestoreClusterOperation from a given name.
@@ -5786,70 +5153,6 @@ func (c *alloyDBAdminRESTClient) RestoreClusterOperation(name string) *RestoreCl
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RestoreClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RestoreClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RestoreClusterOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RestoreClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RestoreClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateBackupOperation manages a long-running operation from UpdateBackup.
-type UpdateBackupOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateBackupOperation returns a new UpdateBackupOperation from a given name.
 // The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
@@ -5866,70 +5169,6 @@ func (c *alloyDBAdminRESTClient) UpdateBackupOperation(name string) *UpdateBacku
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateBackupOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Backup
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateBackupOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Backup, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Backup
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateBackupOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateBackupOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateBackupOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateClusterOperation manages a long-running operation from UpdateCluster.
-type UpdateClusterOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // UpdateClusterOperation returns a new UpdateClusterOperation from a given name.
@@ -5950,70 +5189,6 @@ func (c *alloyDBAdminRESTClient) UpdateClusterOperation(name string) *UpdateClus
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Cluster, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Cluster
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateClusterOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateClusterOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateClusterOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateInstanceOperation manages a long-running operation from UpdateInstance.
-type UpdateInstanceOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateInstanceOperation returns a new UpdateInstanceOperation from a given name.
 // The name must be that of a previously created UpdateInstanceOperation, possibly from a different process.
 func (c *alloyDBAdminGRPCClient) UpdateInstanceOperation(name string) *UpdateInstanceOperation {
@@ -6030,391 +5205,4 @@ func (c *alloyDBAdminRESTClient) UpdateInstanceOperation(name string) *UpdateIns
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateInstanceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateInstanceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*alloydbpb.Instance, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp alloydbpb.Instance
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateInstanceOperation) Metadata() (*alloydbpb.OperationMetadata, error) {
-	var meta alloydbpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateInstanceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateInstanceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BackupIterator manages a stream of *alloydbpb.Backup.
-type BackupIterator struct {
-	items    []*alloydbpb.Backup
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*alloydbpb.Backup, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BackupIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BackupIterator) Next() (*alloydbpb.Backup, error) {
-	var item *alloydbpb.Backup
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BackupIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BackupIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ClusterIterator manages a stream of *alloydbpb.Cluster.
-type ClusterIterator struct {
-	items    []*alloydbpb.Cluster
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*alloydbpb.Cluster, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ClusterIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ClusterIterator) Next() (*alloydbpb.Cluster, error) {
-	var item *alloydbpb.Cluster
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ClusterIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ClusterIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// InstanceIterator manages a stream of *alloydbpb.Instance.
-type InstanceIterator struct {
-	items    []*alloydbpb.Instance
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*alloydbpb.Instance, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InstanceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InstanceIterator) Next() (*alloydbpb.Instance, error) {
-	var item *alloydbpb.Instance
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InstanceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InstanceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// LocationIterator manages a stream of *locationpb.Location.
-type LocationIterator struct {
-	items    []*locationpb.Location
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*locationpb.Location, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *LocationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *LocationIterator) Next() (*locationpb.Location, error) {
-	var item *locationpb.Location
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *LocationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *LocationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OperationIterator manages a stream of *longrunningpb.Operation.
-type OperationIterator struct {
-	items    []*longrunningpb.Operation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*longrunningpb.Operation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OperationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OperationIterator) Next() (*longrunningpb.Operation, error) {
-	var item *longrunningpb.Operation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OperationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OperationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SupportedDatabaseFlagIterator manages a stream of *alloydbpb.SupportedDatabaseFlag.
-type SupportedDatabaseFlagIterator struct {
-	items    []*alloydbpb.SupportedDatabaseFlag
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*alloydbpb.SupportedDatabaseFlag, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SupportedDatabaseFlagIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SupportedDatabaseFlagIterator) Next() (*alloydbpb.SupportedDatabaseFlag, error) {
-	var item *alloydbpb.SupportedDatabaseFlag
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SupportedDatabaseFlagIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SupportedDatabaseFlagIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// UserIterator manages a stream of *alloydbpb.User.
-type UserIterator struct {
-	items    []*alloydbpb.User
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*alloydbpb.User, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *UserIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *UserIterator) Next() (*alloydbpb.User, error) {
-	var item *alloydbpb.User
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *UserIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *UserIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

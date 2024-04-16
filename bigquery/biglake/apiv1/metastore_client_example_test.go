@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -83,6 +83,56 @@ func ExampleMetastoreClient_CreateCatalog() {
 	_ = resp
 }
 
+func ExampleMetastoreClient_CreateDatabase() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := biglake.NewMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &biglakepb.CreateDatabaseRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#CreateDatabaseRequest.
+	}
+	resp, err := c.CreateDatabase(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleMetastoreClient_CreateTable() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := biglake.NewMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &biglakepb.CreateTableRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#CreateTableRequest.
+	}
+	resp, err := c.CreateTable(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleMetastoreClient_DeleteCatalog() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -108,6 +158,56 @@ func ExampleMetastoreClient_DeleteCatalog() {
 	_ = resp
 }
 
+func ExampleMetastoreClient_DeleteDatabase() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := biglake.NewMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &biglakepb.DeleteDatabaseRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#DeleteDatabaseRequest.
+	}
+	resp, err := c.DeleteDatabase(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleMetastoreClient_DeleteTable() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := biglake.NewMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &biglakepb.DeleteTableRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#DeleteTableRequest.
+	}
+	resp, err := c.DeleteTable(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleMetastoreClient_GetCatalog() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -126,6 +226,56 @@ func ExampleMetastoreClient_GetCatalog() {
 		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#GetCatalogRequest.
 	}
 	resp, err := c.GetCatalog(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleMetastoreClient_GetDatabase() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := biglake.NewMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &biglakepb.GetDatabaseRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#GetDatabaseRequest.
+	}
+	resp, err := c.GetDatabase(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleMetastoreClient_GetTable() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := biglake.NewMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &biglakepb.GetTableRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#GetTableRequest.
+	}
+	resp, err := c.GetTable(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -161,10 +311,16 @@ func ExampleMetastoreClient_ListCatalogs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*biglakepb.ListCatalogsResponse)
 	}
 }
 
-func ExampleMetastoreClient_CreateDatabase() {
+func ExampleMetastoreClient_ListDatabases() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -177,19 +333,31 @@ func ExampleMetastoreClient_CreateDatabase() {
 	}
 	defer c.Close()
 
-	req := &biglakepb.CreateDatabaseRequest{
+	req := &biglakepb.ListDatabasesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#CreateDatabaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#ListDatabasesRequest.
 	}
-	resp, err := c.CreateDatabase(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListDatabases(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*biglakepb.ListDatabasesResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleMetastoreClient_DeleteDatabase() {
+func ExampleMetastoreClient_ListTables() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -202,11 +370,48 @@ func ExampleMetastoreClient_DeleteDatabase() {
 	}
 	defer c.Close()
 
-	req := &biglakepb.DeleteDatabaseRequest{
+	req := &biglakepb.ListTablesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#DeleteDatabaseRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#ListTablesRequest.
 	}
-	resp, err := c.DeleteDatabase(ctx, req)
+	it := c.ListTables(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*biglakepb.ListTablesResponse)
+	}
+}
+
+func ExampleMetastoreClient_RenameTable() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := biglake.NewMetastoreClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &biglakepb.RenameTableRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#RenameTableRequest.
+	}
+	resp, err := c.RenameTable(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -239,112 +444,6 @@ func ExampleMetastoreClient_UpdateDatabase() {
 	_ = resp
 }
 
-func ExampleMetastoreClient_GetDatabase() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := biglake.NewMetastoreClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &biglakepb.GetDatabaseRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#GetDatabaseRequest.
-	}
-	resp, err := c.GetDatabase(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleMetastoreClient_ListDatabases() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := biglake.NewMetastoreClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &biglakepb.ListDatabasesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#ListDatabasesRequest.
-	}
-	it := c.ListDatabases(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleMetastoreClient_CreateTable() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := biglake.NewMetastoreClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &biglakepb.CreateTableRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#CreateTableRequest.
-	}
-	resp, err := c.CreateTable(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleMetastoreClient_DeleteTable() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := biglake.NewMetastoreClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &biglakepb.DeleteTableRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#DeleteTableRequest.
-	}
-	resp, err := c.DeleteTable(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleMetastoreClient_UpdateTable() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -368,85 +467,4 @@ func ExampleMetastoreClient_UpdateTable() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleMetastoreClient_RenameTable() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := biglake.NewMetastoreClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &biglakepb.RenameTableRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#RenameTableRequest.
-	}
-	resp, err := c.RenameTable(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleMetastoreClient_GetTable() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := biglake.NewMetastoreClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &biglakepb.GetTableRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#GetTableRequest.
-	}
-	resp, err := c.GetTable(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleMetastoreClient_ListTables() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := biglake.NewMetastoreClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &biglakepb.ListTablesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/bigquery/biglake/apiv1/biglakepb#ListTablesRequest.
-	}
-	it := c.ListTables(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }

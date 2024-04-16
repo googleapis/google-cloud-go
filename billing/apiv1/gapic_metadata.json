@@ -40,6 +40,11 @@
                 "ListProjectBillingInfo"
               ]
             },
+            "MoveBillingAccount": {
+              "methods": [
+                "MoveBillingAccount"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -93,6 +98,11 @@
             "ListProjectBillingInfo": {
               "methods": [
                 "ListProjectBillingInfo"
+              ]
+            },
+            "MoveBillingAccount": {
+              "methods": [
+                "MoveBillingAccount"
               ]
             },
             "SetIamPolicy": {

@@ -39,13 +39,19 @@ type AuthorizationHandler func(authCodeURL string) (code string, state string, e
 type Options3LO struct {
 	// ClientID is the application's ID.
 	ClientID string
-	// ClientSecret is the application's secret.
+	// ClientSecret is the application's secret. Not required if AuthHandlerOpts
+	// is set.
 	ClientSecret string
 	// AuthURL is the URL for authenticating.
 	AuthURL string
 	// TokenURL is the URL for retrieving a token.
 	TokenURL string
-	// RedirectURL is the URL to redirect users to.
+	// AuthStyle is used to describe how to client info in the token request.
+	AuthStyle Style
+	// RefreshToken is the token used to refresh the credential. Not required
+	// if AuthHandlerOpts is set.
+	RefreshToken string
+	// RedirectURL is the URL to redirect users to. Optional.
 	RedirectURL string
 	// Scopes specifies requested permissions for the Token. Optional.
 	Scopes []string
@@ -55,8 +61,6 @@ type Options3LO struct {
 	// Client is the client to be used to make the underlying token requests.
 	// Optional.
 	Client *http.Client
-	// AuthStyle is used to describe how to client info in the token request.
-	AuthStyle Style
 	// EarlyTokenExpiry is the time before the token expires that it should be
 	// refreshed. If not set the default value is 10 seconds. Optional.
 	EarlyTokenExpiry time.Duration
@@ -64,6 +68,31 @@ type Options3LO struct {
 	// AuthHandlerOpts provides a set of options for doing a
 	// 3-legged OAuth2 flow with a custom [AuthorizationHandler]. Optional.
 	AuthHandlerOpts *AuthorizationHandlerOptions
+}
+
+func (o *Options3LO) validate() error {
+	if o == nil {
+		return errors.New("auth: options must be provided")
+	}
+	if o.ClientID == "" {
+		return errors.New("auth: client ID must be provided")
+	}
+	if o.AuthHandlerOpts == nil && o.ClientSecret == "" {
+		return errors.New("auth: client secret must be provided")
+	}
+	if o.AuthURL == "" {
+		return errors.New("auth: auth URL must be provided")
+	}
+	if o.TokenURL == "" {
+		return errors.New("auth: token URL must be provided")
+	}
+	if o.AuthStyle == StyleUnknown {
+		return errors.New("auth: auth style must be provided")
+	}
+	if o.AuthHandlerOpts == nil && o.RefreshToken == "" {
+		return errors.New("auth: refresh token must be provided")
+	}
+	return nil
 }
 
 // PKCEOptions holds parameters to support PKCE.
@@ -94,44 +123,44 @@ func (e *tokenJSON) expiry() (t time.Time) {
 	return
 }
 
-func (c *Options3LO) client() *http.Client {
-	if c.Client != nil {
-		return c.Client
+func (o *Options3LO) client() *http.Client {
+	if o.Client != nil {
+		return o.Client
 	}
 	return internal.CloneDefaultClient()
 }
 
 // authCodeURL returns a URL that points to a OAuth2 consent page.
-func (c *Options3LO) authCodeURL(state string, values url.Values) string {
+func (o *Options3LO) authCodeURL(state string, values url.Values) string {
 	var buf bytes.Buffer
-	buf.WriteString(c.AuthURL)
+	buf.WriteString(o.AuthURL)
 	v := url.Values{
 		"response_type": {"code"},
-		"client_id":     {c.ClientID},
+		"client_id":     {o.ClientID},
 	}
-	if c.RedirectURL != "" {
-		v.Set("redirect_uri", c.RedirectURL)
+	if o.RedirectURL != "" {
+		v.Set("redirect_uri", o.RedirectURL)
 	}
-	if len(c.Scopes) > 0 {
-		v.Set("scope", strings.Join(c.Scopes, " "))
+	if len(o.Scopes) > 0 {
+		v.Set("scope", strings.Join(o.Scopes, " "))
 	}
 	if state != "" {
 		v.Set("state", state)
 	}
-	if c.AuthHandlerOpts != nil {
-		if c.AuthHandlerOpts.PKCEOpts != nil &&
-			c.AuthHandlerOpts.PKCEOpts.Challenge != "" {
-			v.Set(codeChallengeKey, c.AuthHandlerOpts.PKCEOpts.Challenge)
+	if o.AuthHandlerOpts != nil {
+		if o.AuthHandlerOpts.PKCEOpts != nil &&
+			o.AuthHandlerOpts.PKCEOpts.Challenge != "" {
+			v.Set(codeChallengeKey, o.AuthHandlerOpts.PKCEOpts.Challenge)
 		}
-		if c.AuthHandlerOpts.PKCEOpts != nil &&
-			c.AuthHandlerOpts.PKCEOpts.ChallengeMethod != "" {
-			v.Set(codeChallengeMethodKey, c.AuthHandlerOpts.PKCEOpts.ChallengeMethod)
+		if o.AuthHandlerOpts.PKCEOpts != nil &&
+			o.AuthHandlerOpts.PKCEOpts.ChallengeMethod != "" {
+			v.Set(codeChallengeMethodKey, o.AuthHandlerOpts.PKCEOpts.ChallengeMethod)
 		}
 	}
 	for k := range values {
 		v.Set(k, v.Get(k))
 	}
-	if strings.Contains(c.AuthURL, "?") {
+	if strings.Contains(o.AuthURL, "?") {
 		buf.WriteByte('&')
 	} else {
 		buf.WriteByte('?')
@@ -143,12 +172,14 @@ func (c *Options3LO) authCodeURL(state string, values url.Values) string {
 // New3LOTokenProvider returns a [TokenProvider] based on the 3-legged OAuth2
 // configuration. The TokenProvider is caches and auto-refreshes tokens by
 // default.
-func New3LOTokenProvider(refreshToken string, opts *Options3LO) (TokenProvider, error) {
+func New3LOTokenProvider(opts *Options3LO) (TokenProvider, error) {
+	if err := opts.validate(); err != nil {
+		return nil, err
+	}
 	if opts.AuthHandlerOpts != nil {
 		return new3LOTokenProviderWithAuthHandler(opts), nil
 	}
-	// TODO(codyoss): validate the things
-	return NewCachedTokenProvider(&tokenProvider3LO{opts: opts, refreshToken: refreshToken, client: opts.client()}, &CachedTokenProviderOptions{
+	return NewCachedTokenProvider(&tokenProvider3LO{opts: opts, refreshToken: opts.RefreshToken, client: opts.client()}, &CachedTokenProviderOptions{
 		ExpireEarly: opts.EarlyTokenExpiry,
 	}), nil
 }
@@ -174,24 +205,24 @@ func new3LOTokenProviderWithAuthHandler(opts *Options3LO) TokenProvider {
 
 // exchange handles the final exchange portion of the 3lo flow. Returns a Token,
 // refreshToken, and error.
-func (c *Options3LO) exchange(ctx context.Context, code string) (*Token, string, error) {
+func (o *Options3LO) exchange(ctx context.Context, code string) (*Token, string, error) {
 	// Build request
 	v := url.Values{
 		"grant_type": {"authorization_code"},
 		"code":       {code},
 	}
-	if c.RedirectURL != "" {
-		v.Set("redirect_uri", c.RedirectURL)
+	if o.RedirectURL != "" {
+		v.Set("redirect_uri", o.RedirectURL)
 	}
-	if c.AuthHandlerOpts != nil &&
-		c.AuthHandlerOpts.PKCEOpts != nil &&
-		c.AuthHandlerOpts.PKCEOpts.Verifier != "" {
-		v.Set(codeVerifierKey, c.AuthHandlerOpts.PKCEOpts.Verifier)
+	if o.AuthHandlerOpts != nil &&
+		o.AuthHandlerOpts.PKCEOpts != nil &&
+		o.AuthHandlerOpts.PKCEOpts.Verifier != "" {
+		v.Set(codeVerifierKey, o.AuthHandlerOpts.PKCEOpts.Verifier)
 	}
-	for k := range c.URLParams {
-		v.Set(k, c.URLParams.Get(k))
+	for k := range o.URLParams {
+		v.Set(k, o.URLParams.Get(k))
 	}
-	return fetchToken(ctx, c, v)
+	return fetchToken(ctx, o, v)
 }
 
 // This struct is not safe for concurrent access alone, but the way it is used
@@ -243,30 +274,27 @@ func (tp tokenProviderWithHandler) Token(ctx context.Context) (*Token, error) {
 }
 
 // fetchToken returns a Token, refresh token, and/or an error.
-func fetchToken(ctx context.Context, c *Options3LO, v url.Values) (*Token, string, error) {
+func fetchToken(ctx context.Context, o *Options3LO, v url.Values) (*Token, string, error) {
 	var refreshToken string
-	if c.AuthStyle == StyleUnknown {
-		return nil, refreshToken, fmt.Errorf("auth: missing required field AuthStyle")
-	}
-	if c.AuthStyle == StyleInParams {
-		if c.ClientID != "" {
-			v.Set("client_id", c.ClientID)
+	if o.AuthStyle == StyleInParams {
+		if o.ClientID != "" {
+			v.Set("client_id", o.ClientID)
 		}
-		if c.ClientSecret != "" {
-			v.Set("client_secret", c.ClientSecret)
+		if o.ClientSecret != "" {
+			v.Set("client_secret", o.ClientSecret)
 		}
 	}
-	req, err := http.NewRequest("POST", c.TokenURL, strings.NewReader(v.Encode()))
+	req, err := http.NewRequest("POST", o.TokenURL, strings.NewReader(v.Encode()))
 	if err != nil {
 		return nil, refreshToken, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	if c.AuthStyle == StyleInHeader {
-		req.SetBasicAuth(url.QueryEscape(c.ClientID), url.QueryEscape(c.ClientSecret))
+	if o.AuthStyle == StyleInHeader {
+		req.SetBasicAuth(url.QueryEscape(o.ClientID), url.QueryEscape(o.ClientSecret))
 	}
 
 	// Make request
-	r, err := c.client().Do(req.WithContext(ctx))
+	r, err := o.client().Do(req.WithContext(ctx))
 	if err != nil {
 		return nil, refreshToken, err
 	}

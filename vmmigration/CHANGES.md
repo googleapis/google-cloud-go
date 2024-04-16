@@ -1,6 +1,41 @@
 # Changes
 
 
+## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.5...vmmigration/v1.7.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **vmmigration:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.7.5](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.4...vmmigration/v1.7.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **vmmigration:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.3...vmmigration/v1.7.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **vmmigration:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.2...vmmigration/v1.7.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **vmmigration:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.1...vmmigration/v1.7.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **vmmigration:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.0...vmmigration/v1.7.1) (2023-06-20)
 
 
@@ -93,3 +128,4 @@
 ## v0.1.0
 
 - feat(vmmigration): start generating clients
+

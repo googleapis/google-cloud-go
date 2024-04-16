@@ -71,7 +71,7 @@ func TestIntegration_HTTPR(t *testing.T) {
 }
 
 func runRecord(t *testing.T, filename string) string {
-	cmd, tr, cport, err := start("-record", filename)
+	cmd, tr, cport, err := start(t, "-record", filename)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -102,7 +102,7 @@ func runRecord(t *testing.T, filename string) string {
 }
 
 func runReplay(t *testing.T, filename string) string {
-	cmd, tr, cport, err := start("-replay", filename)
+	cmd, tr, cport, err := start(t, "-replay", filename)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -134,7 +134,7 @@ func runReplay(t *testing.T, filename string) string {
 // Start the proxy binary and wait for it to come up.
 // Return a transport that talks to the proxy, as well as the control port.
 // modeFlag must be either "-record" or "-replay".
-func start(modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error) {
+func start(t *testing.T, modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error) {
 	pport, err := pickPort()
 	if err != nil {
 		return nil, nil, "", err
@@ -166,7 +166,7 @@ func start(modeFlag, filename string) (*exec.Cmd, *http.Transport, string, error
 	if !serverUp {
 		return nil, nil, "", errors.New("server never came up")
 	}
-	tr, err := proxyTransport(pport, cport)
+	tr, err := proxyTransport(t, pport, cport)
 	if err != nil {
 		return nil, nil, "", err
 	}
@@ -194,8 +194,15 @@ func pickPort() (string, error) {
 	return port, nil
 }
 
-func proxyTransport(pport, cport string) (*http.Transport, error) {
-	caCert, err := getBody(fmt.Sprintf("http://localhost:%s/authority.cer", cport))
+func proxyTransport(t *testing.T, pport, cport string) (*http.Transport, error) {
+	var caCert []byte
+	var err error
+	// GET localhost authority.cer can be flaky; retry 10 times before marking as failing.
+	testutil.Retry(t, 10, 1*time.Second, func(r *testutil.R) {
+		if caCert, err = getBody(fmt.Sprintf("http://localhost:%s/authority.cer", cport)); err != nil {
+			r.Errorf("proxyTransport Retry: %v", err)
+		}
+	})
 	if err != nil {
 		return nil, err
 	}

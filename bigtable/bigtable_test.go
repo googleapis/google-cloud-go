@@ -17,7 +17,10 @@ limitations under the License.
 package bigtable
 
 import (
+	"bytes"
 	"context"
+	"encoding/binary"
+	"reflect"
 	"testing"
 	"time"
 
@@ -42,11 +45,206 @@ func TestPrefix(t *testing.T) {
 			continue
 		}
 		r := PrefixRange(test.prefix)
-		if test.succ == "" && r.limit != "" {
-			t.Errorf("PrefixRange(%q) got limit %q", test.prefix, r.limit)
+		if test.succ == "" && r.end != "" {
+			t.Errorf("PrefixRange(%q) got end %q", test.prefix, r.end)
 		}
-		if test.succ != "" && r.limit != test.succ {
-			t.Errorf("PrefixRange(%q) got limit %q, want %q", test.prefix, r.limit, test.succ)
+		if test.succ != "" && r.end != test.succ {
+			t.Errorf("PrefixRange(%q) got end %q, want %q", test.prefix, r.end, test.succ)
+		}
+	}
+}
+
+func TestNewClosedOpenRange(t *testing.T) {
+	start := "b"
+	limit := "b\x01"
+	r := NewClosedOpenRange(start, limit)
+	for _, test := range []struct {
+		k        string
+		contains bool
+	}{
+		{"a", false},
+		{"b", true},
+		{"b\x00", true},
+		{"b\x01", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("%s.Contains(%q) = %t, want %t", r.String(), test.k, got, want)
+		}
+	}
+
+	for _, test := range []struct {
+		start, limit string
+		valid        bool
+	}{
+		{"a", "a", false},
+		{"b", "a", false},
+		{"a", "a\x00", true},
+		{"a", "b", true},
+	} {
+		r := NewClosedOpenRange(test.start, test.limit)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("%s.valid() = %t, want %t", r.String(), got, want)
+		}
+	}
+}
+func TestNewOpenClosedRange(t *testing.T) {
+	start := "b"
+	limit := "b\x01"
+	r := NewOpenClosedRange(start, limit)
+	for _, test := range []struct {
+		k        string
+		contains bool
+	}{
+		{"a", false},
+		{"b", false},
+		{"b\x00", true},
+		{"b\x01", true},
+		{"b\x01\x00", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("%s.Contains(%q) = %t, want %t", r.String(), test.k, got, want)
+		}
+	}
+
+	for _, test := range []struct {
+		start, limit string
+		valid        bool
+	}{
+		{"a", "a", false},
+		{"b", "a", false},
+		{"a", "a\x00", true},
+		{"a", "b", true},
+	} {
+		r := NewOpenClosedRange(test.start, test.limit)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("%s.valid() = %t, want %t", r.String(), got, want)
+		}
+	}
+}
+func TestNewClosedRange(t *testing.T) {
+	start := "b"
+	limit := "b"
+
+	r := NewClosedRange(start, limit)
+	for _, test := range []struct {
+		k        string
+		contains bool
+	}{
+		{"a", false},
+		{"b", true},
+		{"b\x01", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("NewClosedRange(%q, %q).Contains(%q) = %t, want %t", "a", "a\x01", test.k, got, test.contains)
+		}
+	}
+
+	for _, test := range []struct {
+		start, limit string
+		valid        bool
+	}{
+		{"a", "b", true},
+		{"b", "b", true},
+		{"b", "b\x00", true},
+		{"b\x00", "b", false},
+	} {
+		r := NewClosedRange(test.start, test.limit)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("NewClosedRange(%q, %q).valid() = %t, want %t", test.start, test.limit, got, want)
+		}
+	}
+}
+
+func TestNewOpenRange(t *testing.T) {
+	start := "b"
+	limit := "b\x01"
+
+	r := NewOpenRange(start, limit)
+	for _, test := range []struct {
+		k        string
+		contains bool
+	}{
+		{"a", false},
+		{"b", false},
+		{"b\x00", true},
+		{"b\x01", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("NewOpenRange(%q, %q).Contains(%q) = %t, want %t", "a", "a\x01", test.k, got, test.contains)
+		}
+	}
+
+	for _, test := range []struct {
+		start, limit string
+		valid        bool
+	}{
+		{"a", "a", false},
+		{"a", "b", true},
+		{"a", "a\x00", true},
+		{"a", "a\x01", true},
+	} {
+		r := NewOpenRange(test.start, test.limit)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("NewOpenRange(%q, %q).valid() = %t, want %t", test.start, test.limit, got, want)
+		}
+	}
+}
+
+func TestInfiniteRange(t *testing.T) {
+	r := InfiniteRange("b")
+	for _, test := range []struct {
+		k        string
+		contains bool
+	}{
+		{"a", false},
+		{"b", true},
+		{"b\x00", true},
+		{"z", true},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("%s.Contains(%q) = %t, want %t", r.String(), test.k, got, want)
+		}
+	}
+
+	for _, test := range []struct {
+		start string
+		valid bool
+	}{
+		{"a", true},
+		{"", true},
+	} {
+		r := InfiniteRange(test.start)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("%s.valid() = %t, want %t", r.String(), got, want)
+		}
+	}
+}
+
+func TestInfiniteReverseRange(t *testing.T) {
+	r := InfiniteReverseRange("z")
+	for _, test := range []struct {
+		k        string
+		contains bool
+	}{
+		{"a", true},
+		{"z", true},
+		{"z\x00", false},
+	} {
+		if want, got := test.contains, r.Contains(test.k); want != got {
+			t.Errorf("%s.Contains(%q) = %t, want %t", r.String(), test.k, got, want)
+		}
+	}
+
+	for _, test := range []struct {
+		start string
+		valid bool
+	}{
+		{"a", true},
+		{"", true},
+	} {
+		r := InfiniteReverseRange(test.start)
+		if want, got := test.valid, r.valid(); want != got {
+			t.Errorf("%s.valid() = %t, want %t", r.String(), got, want)
 		}
 	}
 }
@@ -176,6 +374,188 @@ func requestCallback(callback func()) func(ctx context.Context, desc *grpc.Strea
 	}
 }
 
+func TestRowRangeProto(t *testing.T) {
+
+	for _, test := range []struct {
+		desc  string
+		rr    RowRange
+		proto *btpb.RowSet
+	}{
+		{
+			desc: "RowRange proto start and end",
+			rr:   NewClosedOpenRange("a", "b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("b")},
+			}}},
+		},
+		{
+			desc: "RowRange proto start but empty end",
+			rr:   NewClosedOpenRange("a", ""),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+			}}},
+		},
+		{
+			desc:  "RowRange proto unbound",
+			rr:    NewClosedOpenRange("", ""),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{}}},
+		},
+		{
+			desc:  "RowRange proto unbound with no start or end",
+			rr:    InfiniteRange(""),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{}}},
+		},
+		{
+			desc: "RowRange proto open closed",
+			rr:   NewOpenClosedRange("a", "b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyOpen{StartKeyOpen: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("b")},
+			}}},
+		},
+		{
+			desc: "RowRange proto open closed and empty start",
+			rr:   NewOpenClosedRange("", "b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				EndKey: &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("b")},
+			}}},
+		},
+		{
+			desc: "RowRange proto open closed and empty start",
+			rr:   NewOpenClosedRange("", "b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				EndKey: &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("b")},
+			}}},
+		},
+		{
+			desc: "RowRange proto closed open",
+			rr:   NewClosedOpenRange("a", "b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("b")},
+			}}},
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			got := test.rr.proto()
+			want := test.proto
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("Bad proto for %s: got %v, want %v", test.rr.String(), got, want)
+			}
+		})
+	}
+}
+
+func TestRowRangeRetainRowsBefore(t *testing.T) {
+	for _, test := range []struct {
+		desc  string
+		rr    RowSet
+		proto *btpb.RowSet
+	}{
+		{
+			desc: "retain rows before",
+			rr:   NewRange("a", "c").retainRowsBefore("b"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("b")},
+			}}},
+		},
+		{
+			desc: "retain rows before empty key",
+			rr:   NewRange("a", "c").retainRowsBefore(""),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("c")},
+			}}},
+		},
+		{
+			desc: "retain rows before key greater than range end",
+			rr:   NewClosedRange("a", "c").retainRowsBefore("d"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte("c")},
+			}}},
+		},
+		{
+			desc: "retain rows before key same as closed end key",
+			rr:   NewClosedRange("a", "c").retainRowsBefore("c"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte("a")},
+				EndKey:   &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("c")},
+			}}},
+		},
+		{
+			desc: "retain rows before on unbounded range",
+			rr:   InfiniteRange("").retainRowsBefore("z"),
+			proto: &btpb.RowSet{RowRanges: []*btpb.RowRange{{
+				EndKey: &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte("z")},
+			}}},
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			got := test.rr.proto()
+			want := test.proto
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("Bad retain rows before proto: got %v, want %v", got, want)
+			}
+		})
+	}
+}
+
+func TestRowRangeString(t *testing.T) {
+
+	for _, test := range []struct {
+		desc string
+		rr   RowRange
+		str  string
+	}{
+		{
+			desc: "RowRange closed open",
+			rr:   NewClosedOpenRange("a", "b"),
+			str:  "[\"a\",b)",
+		},
+		{
+			desc: "RowRange open open",
+			rr:   NewOpenRange("c", "d"),
+			str:  "(\"c\",d)",
+		},
+		{
+			desc: "RowRange closed closed",
+			rr:   NewClosedRange("e", "f"),
+			str:  "[\"e\",f]",
+		},
+		{
+			desc: "RowRange open closed",
+			rr:   NewOpenClosedRange("g", "h"),
+			str:  "(\"g\",h]",
+		},
+		{
+			desc: "RowRange unbound unbound",
+			rr:   InfiniteRange(""),
+			str:  "(∞,∞)",
+		},
+		{
+			desc: "RowRange closed unbound",
+			rr:   InfiniteRange("b"),
+			str:  "[\"b\",∞)",
+		},
+		{
+			desc: "RowRange unbound closed",
+			rr:   InfiniteReverseRange("c"),
+			str:  "(∞,c]",
+		},
+	} {
+		t.Run(test.desc, func(t *testing.T) {
+			got := test.rr.String()
+			want := test.str
+			if !reflect.DeepEqual(got, want) {
+				t.Errorf("Bad String(): got %v, want %v", got, want)
+			}
+		})
+	}
+}
+
 // TestReadRowsInvalidRowSet verifies that the client doesn't send ReadRows() requests with invalid RowSets.
 func TestReadRowsInvalidRowSet(t *testing.T) {
 	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
@@ -212,19 +592,19 @@ func TestReadRowsInvalidRowSet(t *testing.T) {
 		valid bool
 	}{
 		{
-			rr:    RowRange{},
+			rr:    RowRange{startBound: rangeUnbounded, endBound: rangeUnbounded},
 			valid: true,
 		},
 		{
-			rr:    RowRange{start: "b"},
+			rr:    RowRange{startBound: rangeClosed, start: "b", endBound: rangeUnbounded},
 			valid: true,
 		},
 		{
-			rr:    RowRange{start: "b", limit: "c"},
+			rr:    RowRange{startBound: rangeClosed, start: "b", endBound: rangeOpen, end: "c"},
 			valid: true,
 		},
 		{
-			rr:    RowRange{start: "b", limit: "a"},
+			rr:    RowRange{startBound: rangeClosed, start: "b", endBound: rangeOpen, end: "a"},
 			valid: false,
 		},
 		{
@@ -307,7 +687,7 @@ func TestReadRowsRequestStats(t *testing.T) {
 	statsChannel := make(chan FullReadStats, 1)
 
 	readStart := time.Now()
-	if err := table.ReadRows(ctx, RowRange{}, func(r Row) bool { return true }, WithFullReadStats(func(s *FullReadStats) { statsChannel <- *s }), RowFilter(ColumnFilter("q.*"))); err != nil {
+	if err := table.ReadRows(ctx, InfiniteRange(""), func(r Row) bool { return true }, WithFullReadStats(func(s *FullReadStats) { statsChannel <- *s }), RowFilter(ColumnFilter("q.*"))); err != nil {
 		t.Fatalf("NewClient failed: %v", err)
 	}
 	readElapsed := time.Since(readStart)
@@ -368,5 +748,66 @@ func TestHeaderPopulatedWithAppProfile(t *testing.T) {
 	}
 	if got, want := requestParamsHeaderValue[0], "table_name=projects%2Fmy-project%2Finstances%2Fmy-instance%2Ftables%2Fmy-table&app_profile_id=my-app-profile"; got != want {
 		t.Errorf("Incorrect value in resourcePrefixHeader. Got %s, want %s", got, want)
+	}
+}
+
+func TestMutateRowsWithAggregates(t *testing.T) {
+	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
+	if err != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", err)
+	}
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock(),
+		grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(100<<20), grpc.MaxCallRecvMsgSize(100<<20)),
+	)
+	if err != nil {
+		t.Fatalf("grpc.Dial failed: %v", err)
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+	defer cancel()
+	adminClient, err := NewAdminClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer adminClient.Close()
+
+	tableConf := &TableConf{
+		TableID: testEnv.config.Table,
+		ColumnFamilies: map[string]Family{
+			"f": {
+				ValueType: AggregateType{
+					Input:      Int64Type{},
+					Aggregator: SumAggregator{},
+				},
+			},
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, tableConf); err != nil {
+		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
+	}
+
+	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	if err != nil {
+		t.Fatalf("NewClient failed: %v", err)
+	}
+	defer client.Close()
+	table := client.Open(testEnv.config.Table)
+
+	m := NewMutation()
+	m.AddIntToCell("f", "q", 0, 1000)
+	err = table.Apply(ctx, "row1", m)
+	if err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	m = NewMutation()
+	m.AddIntToCell("f", "q", 0, 2000)
+	err = table.Apply(ctx, "row1", m)
+	if err != nil {
+		t.Fatalf("Apply failed: %v", err)
+	}
+
+	row, err := table.ReadRow(ctx, "row1")
+	if !bytes.Equal(row["f"][0].Value, binary.BigEndian.AppendUint64([]byte{}, 3000)) {
+		t.Error()
 	}
 }

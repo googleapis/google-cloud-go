@@ -85,9 +85,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
-	// Attempts direct access to spanner service over gRPC to improve throughput,
-	// whether the attempt is allowed is totally controlled by service owner.
-	o = append(o, internaloption.EnableDirectPath(true))
+
+	// Allow non-default service account in DirectPath.
+	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
@@ -126,6 +126,22 @@ func init() {
 	for _, code := range idempotentRetryCodes {
 		isIdempotentRetryCode[code] = true
 	}
+}
+
+// Convert error to grpc status error
+func convertToGrpcStatusErr(err error) error {
+	if err != nil {
+		if errStatus, ok := status.FromError(err); ok {
+			return status.Error(errStatus.Code(), errStatus.Message())
+		}
+
+		ctxStatus := status.FromContextError(err)
+		if ctxStatus.Code() != codes.Unknown {
+			return status.Error(ctxStatus.Code(), ctxStatus.Message())
+		}
+	}
+
+	return err
 }
 
 func (c *Client) fullTableName(table string) string {
@@ -173,6 +189,7 @@ func (c *Client) Open(table string) *Table {
 // ReadRows reads rows from a table. f is called for each row.
 // If f returns false, the stream is shut down and ReadRows returns.
 // f owns its argument, and f is called serially in order by row key.
+// f will be executed in the same Go routine as the caller.
 //
 // By default, the yielded rows will contain all values in all cells.
 // Use RowFilter to limit the cells returned.
@@ -184,16 +201,19 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
 	err = gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
-		if !arg.valid() {
-			// Empty row set, no need to make an API call.
-			// NOTE: we must return early if arg == RowList{} because reading
-			// an empty RowList from bigtable returns all rows from that table.
-			return nil
-		}
 		req := &btpb.ReadRowsRequest{
 			TableName:    t.c.fullTableName(t.table),
 			AppProfileId: t.c.appProfile,
-			Rows:         arg.proto(),
+		}
+
+		if arg != nil {
+			if !arg.valid() {
+				// Empty row set, no need to make an API call.
+				// NOTE: we must return early if arg == RowList{} because reading
+				// an empty RowList from bigtable returns all rows from that table.
+				return nil
+			}
+			req.Rows = arg.proto()
 		}
 		settings := makeReadSettings(req)
 		for _, opt := range opts {
@@ -207,7 +227,14 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		if err != nil {
 			return err
 		}
-		cr := newChunkReader()
+
+		var cr *chunkReader
+		if req.Reversed {
+			cr = newReverseChunkReader()
+		} else {
+			cr = newChunkReader()
+		}
+
 		for {
 			res, err := stream.Recv()
 			if err == io.EOF {
@@ -215,7 +242,15 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 			}
 			if err != nil {
 				// Reset arg for next Invoke call.
-				arg = arg.retainRowsAfter(prevRowKey)
+				if arg == nil {
+					// Should be lowest possible key value, an empty byte array
+					arg = InfiniteRange("")
+				}
+				if req.Reversed {
+					arg = arg.retainRowsBefore(prevRowKey)
+				} else {
+					arg = arg.retainRowsAfter(prevRowKey)
+				}
 				attrMap["rowKey"] = prevRowKey
 				attrMap["error"] = err.Error()
 				attrMap["time_secs"] = time.Since(startTime).Seconds()
@@ -267,13 +302,15 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		return err
 	}, retryOptions...)
 
-	return err
+	return convertToGrpcStatusErr(err)
 }
 
 // ReadRow is a convenience implementation of a single-row reader.
 // A missing row will return nil for both Row and error.
 func (t *Table) ReadRow(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
 	var r Row
+
+	opts = append([]ReadOption{LimitRows(1)}, opts...)
 	err := t.ReadRows(ctx, SingleRow(row), func(rr Row) bool {
 		r = rr
 		return true
@@ -306,6 +343,10 @@ type RowSet interface {
 	// given row key or any row key lexicographically less than it.
 	retainRowsAfter(lastRowKey string) RowSet
 
+	// retainRowsBefore returns a new RowSet that does not include the
+	// given row key or any row key lexicographically greater than it.
+	retainRowsBefore(lastRowKey string) RowSet
+
 	// Valid reports whether this set can cover at least one row.
 	valid() bool
 }
@@ -331,53 +372,184 @@ func (r RowList) retainRowsAfter(lastRowKey string) RowSet {
 	return retryKeys
 }
 
+func (r RowList) retainRowsBefore(lastRowKey string) RowSet {
+	var retryKeys RowList
+	for _, key := range r {
+		if key < lastRowKey {
+			retryKeys = append(retryKeys, key)
+		}
+	}
+	return retryKeys
+}
+
 func (r RowList) valid() bool {
 	return len(r) > 0
 }
 
-// A RowRange is a half-open interval [Start, Limit) encompassing
-// all the rows with keys at least as large as Start, and less than Limit.
-// (Bigtable string comparison is the same as Go's.)
-// A RowRange can be unbounded, encompassing all keys at least as large as Start.
+type rangeBoundType int64
+
+const (
+	rangeUnbounded rangeBoundType = iota
+	rangeOpen
+	rangeClosed
+)
+
+// A RowRange describes a range of rows between the start and end key. Start and
+// end keys may be rangeOpen, rangeClosed or rangeUnbounded.
 type RowRange struct {
-	start string
-	limit string
+	startBound rangeBoundType
+	start      string
+	endBound   rangeBoundType
+	end        string
 }
 
 // NewRange returns the new RowRange [begin, end).
 func NewRange(begin, end string) RowRange {
+	return createRowRange(rangeClosed, begin, rangeOpen, end)
+}
+
+// NewClosedOpenRange returns the RowRange consisting of all greater than or
+// equal to the start and less than the end: [start, end).
+func NewClosedOpenRange(start, end string) RowRange {
+	return createRowRange(rangeClosed, start, rangeOpen, end)
+}
+
+// NewOpenClosedRange returns the RowRange consisting of all keys greater than
+// the start and less than or equal to the end: (start, end].
+func NewOpenClosedRange(start, end string) RowRange {
+	return createRowRange(rangeOpen, start, rangeClosed, end)
+}
+
+// NewOpenRange returns the RowRange consisting of all keys greater than the
+// start and less than the end: (start, end).
+func NewOpenRange(start, end string) RowRange {
+	return createRowRange(rangeOpen, start, rangeOpen, end)
+}
+
+// NewClosedRange returns the RowRange consisting of all keys greater than or
+// equal to the start and less than or equal to the end: [start, end].
+func NewClosedRange(start, end string) RowRange {
+	return createRowRange(rangeClosed, start, rangeClosed, end)
+}
+
+// PrefixRange returns a RowRange consisting of all keys starting with the prefix.
+func PrefixRange(prefix string) RowRange {
+	end := prefixSuccessor(prefix)
+	return createRowRange(rangeClosed, prefix, rangeOpen, end)
+}
+
+// InfiniteRange returns the RowRange consisting of all keys at least as
+// large as start: [start, ∞).
+func InfiniteRange(start string) RowRange {
+	return createRowRange(rangeClosed, start, rangeUnbounded, "")
+}
+
+// InfiniteReverseRange returns the RowRange consisting of all keys less than or
+// equal to the end: (∞, end].
+func InfiniteReverseRange(end string) RowRange {
+	return createRowRange(rangeUnbounded, "", rangeClosed, end)
+}
+
+// createRowRange creates a new RowRange, normalizing start and end
+// rangeBoundType to rangeUnbounded if they're empty strings because empty
+// strings also represent unbounded keys
+func createRowRange(startBound rangeBoundType, start string, endBound rangeBoundType, end string) RowRange {
+	// normalize start bound type
+	if start == "" {
+		startBound = rangeUnbounded
+	}
+	// normalize end bound type
+	if end == "" {
+		endBound = rangeUnbounded
+	}
 	return RowRange{
-		start: begin,
-		limit: end,
+		startBound: startBound,
+		start:      start,
+		endBound:   endBound,
+		end:        end,
 	}
 }
 
 // Unbounded tests whether a RowRange is unbounded.
 func (r RowRange) Unbounded() bool {
-	return r.limit == ""
+	return r.startBound == rangeUnbounded || r.endBound == rangeUnbounded
 }
 
 // Contains says whether the RowRange contains the key.
 func (r RowRange) Contains(row string) bool {
-	return r.start <= row && (r.limit == "" || r.limit > row)
+	switch r.startBound {
+	case rangeOpen:
+		if r.start >= row {
+			return false
+		}
+	case rangeClosed:
+		if r.start > row {
+			return false
+		}
+	case rangeUnbounded:
+	}
+
+	switch r.endBound {
+	case rangeOpen:
+		if r.end <= row {
+			return false
+		}
+	case rangeClosed:
+		if r.end < row {
+			return false
+		}
+	case rangeUnbounded:
+	}
+
+	return true
 }
 
 // String provides a printable description of a RowRange.
 func (r RowRange) String() string {
-	a := strconv.Quote(r.start)
-	if r.Unbounded() {
-		return fmt.Sprintf("[%s,∞)", a)
+	var startStr string
+	switch r.startBound {
+	case rangeOpen:
+		startStr = "(" + strconv.Quote(r.start)
+	case rangeClosed:
+		startStr = "[" + strconv.Quote(r.start)
+	case rangeUnbounded:
+		startStr = "(∞"
 	}
-	return fmt.Sprintf("[%s,%q)", a, r.limit)
+
+	var endStr string
+	switch r.endBound {
+	case rangeOpen:
+		endStr = r.end + ")"
+	case rangeClosed:
+		endStr = r.end + "]"
+	case rangeUnbounded:
+		endStr = "∞)"
+	}
+
+	return fmt.Sprintf("%s,%s", startStr, endStr)
 }
 
 func (r RowRange) proto() *btpb.RowSet {
-	rr := &btpb.RowRange{
-		StartKey: &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)},
+	rr := &btpb.RowRange{}
+
+	switch r.startBound {
+	case rangeOpen:
+		rr.StartKey = &btpb.RowRange_StartKeyOpen{StartKeyOpen: []byte(r.start)}
+	case rangeClosed:
+		rr.StartKey = &btpb.RowRange_StartKeyClosed{StartKeyClosed: []byte(r.start)}
+	case rangeUnbounded:
+		// leave unbounded
 	}
-	if !r.Unbounded() {
-		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.limit)}
+
+	switch r.endBound {
+	case rangeOpen:
+		rr.EndKey = &btpb.RowRange_EndKeyOpen{EndKeyOpen: []byte(r.end)}
+	case rangeClosed:
+		rr.EndKey = &btpb.RowRange_EndKeyClosed{EndKeyClosed: []byte(r.end)}
+	case rangeUnbounded:
+		// leave unbounded
 	}
+
 	return &btpb.RowSet{RowRanges: []*btpb.RowRange{rr}}
 }
 
@@ -385,16 +557,45 @@ func (r RowRange) retainRowsAfter(lastRowKey string) RowSet {
 	if lastRowKey == "" || lastRowKey < r.start {
 		return r
 	}
-	// Set the beginning of the range to the row after the last scanned.
-	start := lastRowKey + "\x00"
-	if r.Unbounded() {
-		return InfiniteRange(start)
+
+	return RowRange{
+		// Set the beginning of the range to the row after the last scanned.
+		startBound: rangeOpen,
+		start:      lastRowKey,
+		endBound:   r.endBound,
+		end:        r.end,
 	}
-	return NewRange(start, r.limit)
+}
+
+func (r RowRange) retainRowsBefore(lastRowKey string) RowSet {
+	if lastRowKey == "" || (r.endBound != rangeUnbounded && r.end < lastRowKey) {
+		return r
+	}
+
+	return RowRange{
+		startBound: r.startBound,
+		start:      r.start,
+		endBound:   rangeOpen,
+		end:        lastRowKey,
+	}
 }
 
 func (r RowRange) valid() bool {
-	return r.Unbounded() || r.start < r.limit
+	// If either end is unbounded, then the range is always valid.
+	if r.Unbounded() {
+		return true
+	}
+
+	// If either end is an open interval, then the start must be strictly less
+	// than the end and since neither end is unbounded, we don't have to check
+	// for empty strings.
+	if r.startBound == rangeOpen || r.endBound == rangeOpen {
+		return r.start < r.end
+	}
+
+	// At this point both endpoints must be closed, which makes [a,a] a valid
+	// interval
+	return r.start <= r.end
 }
 
 // RowRangeList is a sequence of RowRanges representing the union of the ranges.
@@ -424,6 +625,21 @@ func (r RowRangeList) retainRowsAfter(lastRowKey string) RowSet {
 	return ranges
 }
 
+func (r RowRangeList) retainRowsBefore(lastRowKey string) RowSet {
+	if lastRowKey == "" {
+		return r
+	}
+	// Return a list of any range that has not yet been completely processed
+	var ranges RowRangeList
+	for _, rr := range r {
+		retained := rr.retainRowsBefore(lastRowKey)
+		if retained.valid() {
+			ranges = append(ranges, retained.(RowRange))
+		}
+	}
+	return ranges
+}
+
 func (r RowRangeList) valid() bool {
 	for _, rr := range r {
 		if rr.valid() {
@@ -436,23 +652,6 @@ func (r RowRangeList) valid() bool {
 // SingleRow returns a RowSet for reading a single row.
 func SingleRow(row string) RowSet {
 	return RowList{row}
-}
-
-// PrefixRange returns a RowRange consisting of all keys starting with the prefix.
-func PrefixRange(prefix string) RowRange {
-	return RowRange{
-		start: prefix,
-		limit: prefixSuccessor(prefix),
-	}
-}
-
-// InfiniteRange returns the RowRange consisting of all keys at least as
-// large as start.
-func InfiniteRange(start string) RowRange {
-	return RowRange{
-		start: start,
-		limit: "",
-	}
 }
 
 // prefixSuccessor returns the lexically smallest string greater than the
@@ -557,7 +756,7 @@ type rowFilter struct{ f Filter }
 
 func (rf rowFilter) set(settings *readSettings) { settings.req.Filter = rf.f.proto() }
 
-// LimitRows returns a ReadOption that will limit the number of rows to be read.
+// LimitRows returns a ReadOption that will end the number of rows to be read.
 func LimitRows(limit int64) ReadOption { return limitRows{limit} }
 
 type limitRows struct{ limit int64 }
@@ -575,6 +774,25 @@ type withFullReadStats struct {
 func (wrs withFullReadStats) set(settings *readSettings) {
 	settings.req.RequestStatsView = btpb.ReadRowsRequest_REQUEST_STATS_FULL
 	settings.fullReadStatsFunc = wrs.f
+}
+
+// ReverseScan returns a RadOption that will reverse the results of a Scan.
+// The rows will be streamed in reverse lexiographic order of the keys. The row key ranges of the RowSet are
+// still expected to be oriented the same way as forwards. ie [a,c] where a <= c. The row content
+// will remain unchanged from the ordering forward scans. This is particularly useful to get the
+// last N records before a key:
+//
+//	table.ReadRows(ctx, NewOpenClosedRange("", "key"), func(row bigtable.Row) bool {
+//	   return true
+//	}, bigtable.ReverseScan(), bigtable.LimitRows(10))
+func ReverseScan() ReadOption {
+	return reverseScan{}
+}
+
+type reverseScan struct{}
+
+func (rs reverseScan) set(settings *readSettings) {
+	settings.req.Reversed = true
 }
 
 // mutationsAreRetryable returns true if all mutations are idempotent
@@ -626,7 +844,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		if err == nil {
 			after(res)
 		}
-		return err
+		return convertToGrpcStatusErr(err)
 	}
 
 	req := &btpb.CheckAndMutateRowRequest{
@@ -659,7 +877,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	if err == nil {
 		after(cmRes)
 	}
-	return err
+	return convertToGrpcStatusErr(err)
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -752,6 +970,21 @@ func (m *Mutation) DeleteCellsInFamily(family string) {
 // DeleteRow deletes the entire row.
 func (m *Mutation) DeleteRow() {
 	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_DeleteFromRow_{DeleteFromRow: &btpb.Mutation_DeleteFromRow{}}})
+}
+
+// AddIntToCell adds an int64 value to a cell in an aggregate column family. The column family must
+// have an input type of Int64 or this mutation will fail.
+func (m *Mutation) AddIntToCell(family, column string, ts Timestamp, value int64) {
+	m.addToCell(family, column, ts, &btpb.Value{Kind: &btpb.Value_IntValue{IntValue: value}})
+}
+
+func (m *Mutation) addToCell(family, column string, ts Timestamp, value *btpb.Value) {
+	m.ops = append(m.ops, &btpb.Mutation{Mutation: &btpb.Mutation_AddToCell_{AddToCell: &btpb.Mutation_AddToCell{
+		FamilyName:      family,
+		ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte(column)}},
+		Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: int64(ts.TruncateToMilliseconds())}},
+		Input:           value,
+	}}})
 }
 
 // entryErr is a container that combines an entry with the error that was returned for it.
@@ -1031,5 +1264,5 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 		}
 		return nil
 	}, retryOptions...)
-	return sampledRowKeys, err
+	return sampledRowKeys, convertToGrpcStatusErr(err)
 }

@@ -38,6 +38,29 @@ type config struct {
 	ManualClientInfo []*ManifestEntry
 }
 
+type serviceConfigEntry struct {
+	InputDirectory       string `yaml:"input-directory"`
+	ServiceConfig        string `yaml:"service-config"`
+	ImportPath           string `yaml:"import-path"`
+	RelPath              string `yaml:"rel-path"`
+	ReleaseLevelOverride string `yaml:"release-level-override"`
+}
+
+type postProcessorConfig struct {
+	Modules        []string              `yaml:"modules"`
+	ServiceConfigs []*serviceConfigEntry `yaml:"service-configs"`
+	ManualClients  []*ManifestEntry      `yaml:"manual-clients"`
+}
+
+type deepCopyConfig struct {
+	Source string `yaml:"source"`
+	Dest   string `yaml:"dest"`
+}
+type owlBotConfig struct {
+	DeepCopyRegex   []deepCopyConfig `yaml:"deep-copy-regex"`
+	DeepRemoveRegex []string         `yaml:"deep-remove-regex"`
+}
+
 // libraryInfo contains information about a GAPIC client.
 type libraryInfo struct {
 	// ImportPath is the Go import path for the GAPIC library.
@@ -54,46 +77,42 @@ type libraryInfo struct {
 	ReleaseLevel string
 }
 
+func loadConfigs(ppcPath, obcPath string) (*postProcessorConfig, *owlBotConfig, error) {
+	var ppc postProcessorConfig
+	b, err := os.ReadFile(ppcPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := yaml.Unmarshal(b, &ppc); err != nil {
+		return nil, nil, err
+	}
+	var obc owlBotConfig
+	b2, err := os.ReadFile(obcPath)
+	if err != nil {
+		return nil, nil, err
+	}
+	if err := yaml.Unmarshal(b2, &obc); err != nil {
+		return nil, nil, err
+	}
+
+	return &ppc, &obc, nil
+}
+
 func (p *postProcessor) loadConfig() error {
-	var postProcessorConfig struct {
-		Modules        []string `yaml:"modules"`
-		ServiceConfigs []*struct {
-			InputDirectory       string `yaml:"input-directory"`
-			ServiceConfig        string `yaml:"service-config"`
-			ImportPath           string `yaml:"import-path"`
-			RelPath              string `yaml:"rel-path"`
-			ReleaseLevelOverride string `yaml:"release-level-override"`
-		} `yaml:"service-configs"`
-		ManualClients []*ManifestEntry `yaml:"manual-clients"`
-	}
-	b, err := os.ReadFile(filepath.Join(p.googleCloudDir, "internal", "postprocessor", "config.yaml"))
+	ppcPath := filepath.Join(p.googleCloudDir, "internal", "postprocessor", "config.yaml")
+	obcPath := filepath.Join(p.googleCloudDir, ".github", ".OwlBot.yaml")
+	ppc, obc, err := loadConfigs(ppcPath, obcPath)
 	if err != nil {
-		return err
-	}
-	if err := yaml.Unmarshal(b, &postProcessorConfig); err != nil {
-		return err
-	}
-	var owlBotConfig struct {
-		DeepCopyRegex []struct {
-			Source string `yaml:"source"`
-			Dest   string `yaml:"dest"`
-		} `yaml:"deep-copy-regex"`
-	}
-	b2, err := os.ReadFile(filepath.Join(p.googleCloudDir, ".github", ".OwlBot.yaml"))
-	if err != nil {
-		return err
-	}
-	if err := yaml.Unmarshal(b2, &owlBotConfig); err != nil {
 		return err
 	}
 
 	c := &config{
-		Modules:                postProcessorConfig.Modules,
+		Modules:                ppc.Modules,
 		ClientRelPaths:         make([]string, 0),
 		GoogleapisToImportPath: make(map[string]*libraryInfo),
-		ManualClientInfo:       postProcessorConfig.ManualClients,
+		ManualClientInfo:       ppc.ManualClients,
 	}
-	for _, v := range postProcessorConfig.ServiceConfigs {
+	for _, v := range ppc.ServiceConfigs {
 		c.GoogleapisToImportPath[v.InputDirectory] = &libraryInfo{
 			ServiceConfig: v.ServiceConfig,
 			ImportPath:    v.ImportPath,
@@ -101,7 +120,7 @@ func (p *postProcessor) loadConfig() error {
 			ReleaseLevel:  v.ReleaseLevelOverride,
 		}
 	}
-	for _, v := range owlBotConfig.DeepCopyRegex {
+	for _, v := range obc.DeepCopyRegex {
 		i := strings.Index(v.Source, "/cloud.google.com/go")
 		li, ok := c.GoogleapisToImportPath[v.Source[1:i]]
 		if !ok {

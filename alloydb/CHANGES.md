@@ -2,6 +2,69 @@
 
 
 
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.0...alloydb/v1.10.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **alloydb:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.9.0...alloydb/v1.10.0) (2024-03-04)
+
+
+### Features
+
+* **alloydb:** Support for obtaining the public IP address of an Instance ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.8.1...alloydb/v1.9.0) (2024-02-26)
+
+
+### Features
+
+* **alloydb:** Support for obtaining the public IP address of an Instance ([#9470](https://github.com/googleapis/google-cloud-go/issues/9470)) ([c1f4bc8](https://github.com/googleapis/google-cloud-go/commit/c1f4bc8c087aa6ba7421426d5ab6b0404527db6c))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.8.0...alloydb/v1.8.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **alloydb:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.7.0...alloydb/v1.8.0) (2024-01-03)
+
+
+### Features
+
+* **alloydb:** Added PSC config, PSC interface config, PSC instance config ([#9184](https://github.com/googleapis/google-cloud-go/issues/9184)) ([36fec33](https://github.com/googleapis/google-cloud-go/commit/36fec33b8225f3e7df552839290ddbfefb222816))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.3...alloydb/v1.7.0) (2023-11-09)
+
+
+### Features
+
+* **alloydb:** Add new field in `GenerateClientCertificate` v1 API to allow AlloyDB connectors request client certs with metadata exchange support ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.2...alloydb/v1.6.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **alloydb:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.1...alloydb/v1.6.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **alloydb:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.6.0...alloydb/v1.6.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **alloydb:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.5.0...alloydb/v1.6.0) (2023-10-04)
 
 
@@ -92,3 +155,4 @@
 * **alloydb:** Start generating apiv1, apiv1beta, apiv1alpha ([#7503](https://github.com/googleapis/google-cloud-go/issues/7503)) ([25e8426](https://github.com/googleapis/google-cloud-go/commit/25e842659ef5c3941717827459e6524f024e5a26))
 
 ## Changes
+

@@ -1,6 +1,89 @@
 # Changelog
 
 
+## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.3...batch/v1.8.4) (2024-04-15)
+
+
+### Documentation
+
+* **batch:** State one Resource Allowance per region per project limitation on v1alpha ([dbcdfd7](https://github.com/googleapis/google-cloud-go/commit/dbcdfd7843be16573b1683466852242a84891456))
+* **batch:** Update comments on ServiceAccount email and scopes fields ([#9734](https://github.com/googleapis/google-cloud-go/issues/9734)) ([4d5a342](https://github.com/googleapis/google-cloud-go/commit/4d5a3429cec6816d50bdf284063dddf1971b79cf))
+
+## [1.8.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.2...batch/v1.8.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* **batch:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.1...batch/v1.8.2) (2024-03-04)
+
+
+### Documentation
+
+* **batch:** Update description of Job uid field ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.0...batch/v1.8.1) (2024-02-21)
+
+
+### Documentation
+
+* **batch:** Refine proto comment for run_as_non_root ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.7.0...batch/v1.8.0) (2024-01-30)
+
+
+### Features
+
+* **batch:** Add `run_as_non_root` field to allow user's runnable be executed as non root ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **batch:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.3...batch/v1.7.0) (2023-11-27)
+
+
+### Features
+
+* **batch:** Add a CloudLoggingOption and use_generic_task_monitored_resource fields for users to opt out new batch monitored resource in cloud logging ([63ffff2](https://github.com/googleapis/google-cloud-go/commit/63ffff2a994d991304ba1ef93cab847fa7cd39e4))
+
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.2...batch/v1.6.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **batch:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.1...batch/v1.6.2) (2023-10-31)
+
+
+### Documentation
+
+* **batch:** Update default max parallel tasks per job ([#8940](https://github.com/googleapis/google-cloud-go/issues/8940)) ([4d40180](https://github.com/googleapis/google-cloud-go/commit/4d40180da0557c2a2e9e2cb8b0509b429676bfc0))
+
+## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.6.0...batch/v1.6.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **batch:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.5.1...batch/v1.6.0) (2023-10-17)
+
+
+### Features
+
+* **batch:** Expose display_name to batch v1 API ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/batch/v1.5.0...batch/v1.5.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **batch:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
 ## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/batch/v1.4.1...batch/v1.5.0) (2023-10-04)
 
 

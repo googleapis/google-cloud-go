@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,7 +67,9 @@ type ParticipantsCallOptions struct {
 func defaultParticipantsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dialogflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -655,7 +657,9 @@ func NewParticipantsRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultParticipantsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dialogflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dialogflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dialogflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -2205,98 +2209,4 @@ func (c *participantsRESTClient) ListOperations(ctx context.Context, req *longru
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// ParticipantIterator manages a stream of *dialogflowpb.Participant.
-type ParticipantIterator struct {
-	items    []*dialogflowpb.Participant
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Participant, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ParticipantIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ParticipantIterator) Next() (*dialogflowpb.Participant, error) {
-	var item *dialogflowpb.Participant
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ParticipantIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ParticipantIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SuggestionIterator manages a stream of *dialogflowpb.Suggestion.
-type SuggestionIterator struct {
-	items    []*dialogflowpb.Suggestion
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.Suggestion, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SuggestionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SuggestionIterator) Next() (*dialogflowpb.Suggestion, error) {
-	var item *dialogflowpb.Suggestion
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SuggestionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SuggestionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

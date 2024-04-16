@@ -18,24 +18,26 @@ import (
 	"bytes"
 	"context"
 	"encoding/binary"
+	"encoding/json"
 	"fmt"
 	"math/rand"
+	"reflect"
 	"sort"
 	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/ptypes"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -87,6 +89,7 @@ const (
 	MethodExecuteStreamingSql string = "EXECUTE_STREAMING_SQL"
 	MethodExecuteBatchDml     string = "EXECUTE_BATCH_DML"
 	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
+	MethodBatchWrite          string = "BATCH_WRITE"
 )
 
 // StatementResult represents a mocked result on the test server. The result is
@@ -206,11 +209,12 @@ func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.Tran
 		ResumeTokens: s.ResumeTokens,
 	}
 	if s.ResultSet != nil {
-		res.ResultSet = &spannerpb.ResultSet{
-			Metadata: s.ResultSet.Metadata,
-			Rows:     s.ResultSet.Rows,
-			Stats:    s.ResultSet.Stats,
+		p, err := deepCopy(s.ResultSet)
+		if err != nil {
+			// panic here as this should never happen.
+			panic(err)
 		}
+		res.ResultSet = p.(*spannerpb.ResultSet)
 	}
 	if _, ok := selector.GetSelector().(*spannerpb.TransactionSelector_Begin); ok {
 		if res.ResultSet == nil {
@@ -222,6 +226,20 @@ func (s StatementResult) getResultSetWithTransactionSet(selector *spannerpb.Tran
 		res.ResultSet.Metadata.Transaction = &spannerpb.Transaction{Id: tx}
 	}
 	return res
+}
+
+func deepCopy(v interface{}) (interface{}, error) {
+	data, err := json.Marshal(v)
+	if err != nil {
+		return nil, err
+	}
+
+	vptr := reflect.New(reflect.TypeOf(v))
+	err = json.Unmarshal(data, vptr.Interface())
+	if err != nil {
+		return nil, err
+	}
+	return vptr.Elem().Interface(), err
 }
 
 // SimulatedExecutionTime represents the time the execution of a method
@@ -537,9 +555,9 @@ func (s *inMemSpannerServer) updateSessionLastUseTime(session string) {
 	s.sessionLastUseTime[session] = time.Now()
 }
 
-func getCurrentTimestamp() *timestamp.Timestamp {
+func getCurrentTimestamp() *timestamppb.Timestamp {
 	t := time.Now()
-	return &timestamp.Timestamp{Seconds: t.Unix(), Nanos: int32(t.Nanosecond())}
+	return &timestamppb.Timestamp{Seconds: t.Unix(), Nanos: int32(t.Nanosecond())}
 }
 
 // Gets the transaction id from the transaction selector. If the selector
@@ -602,7 +620,7 @@ func (s *inMemSpannerServer) getTransactionByID(session *spannerpb.Session, id [
 func newAbortedErrorWithMinimalRetryDelay() error {
 	st := gstatus.New(codes.Aborted, "Transaction has been aborted")
 	retry := &errdetails.RetryInfo{
-		RetryDelay: ptypes.DurationProto(time.Nanosecond),
+		RetryDelay: durationpb.New(time.Nanosecond),
 	}
 	st, _ = st.WithDetails(retry)
 	return st.Err()
@@ -879,7 +897,7 @@ func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlReques
 		return err
 	}
 	s.mu.Lock()
-	statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
+	statementResult = statementResult.getResultSetWithTransactionSet(req.GetTransaction(), id)
 	isPartitionedDml := s.partitionedDmlTransactions[string(id)]
 	s.mu.Unlock()
 	switch statementResult.Type {
@@ -1143,4 +1161,37 @@ func DecodeResumeToken(t []byte) (uint64, error) {
 		return 0, fmt.Errorf("invalid resume token: %v", t)
 	}
 	return s, nil
+}
+
+func (s *inMemSpannerServer) BatchWrite(req *spannerpb.BatchWriteRequest, stream spannerpb.Spanner_BatchWriteServer) error {
+	if err := s.simulateExecutionTime(MethodBatchWrite, req); err != nil {
+		return err
+	}
+	return s.batchWrite(req, stream)
+}
+
+func (s *inMemSpannerServer) batchWrite(req *spannerpb.BatchWriteRequest, stream spannerpb.Spanner_BatchWriteServer) error {
+	if req.Session == "" {
+		return gstatus.Error(codes.InvalidArgument, "Missing session name")
+	}
+	session, err := s.findSession(req.Session)
+	if err != nil {
+		return err
+	}
+	s.updateSessionLastUseTime(session.Name)
+	if len(req.GetMutationGroups()) == 0 {
+		return gstatus.Error(codes.InvalidArgument, "No mutations in Batch Write")
+	}
+	// For each MutationGroup, write a BatchWriteResponse to the response stream
+	for idx := range req.GetMutationGroups() {
+		res := &spannerpb.BatchWriteResponse{
+			Indexes:         []int32{int32(idx)},
+			CommitTimestamp: getCurrentTimestamp(),
+			Status:          &status.Status{},
+		}
+		if err = stream.Send(res); err != nil {
+			return err
+		}
+	}
+	return nil
 }

@@ -1,6 +1,124 @@
 # Changes
 
 
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.39.1...storage/v1.40.0) (2024-03-29)
+
+
+### Features
+
+* **storage:** Implement io.WriterTo in Reader ([#9659](https://github.com/googleapis/google-cloud-go/issues/9659)) ([8264a96](https://github.com/googleapis/google-cloud-go/commit/8264a962d1c21d52e8fca50af064c5535c3708d3))
+* **storage:** New storage control client ([#9631](https://github.com/googleapis/google-cloud-go/issues/9631)) ([1f4d279](https://github.com/googleapis/google-cloud-go/commit/1f4d27957743878976d6b4549cc02a5bb894d330))
+
+
+### Bug Fixes
+
+* **storage:** Retry errors from last recv on uploads ([#9616](https://github.com/googleapis/google-cloud-go/issues/9616)) ([b6574aa](https://github.com/googleapis/google-cloud-go/commit/b6574aa42ebad0532c2749b6ece879b932f95cb9))
+* **storage:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Performance Improvements
+
+* **storage:** Remove protobuf's copy of data on unmarshalling ([#9526](https://github.com/googleapis/google-cloud-go/issues/9526)) ([81281c0](https://github.com/googleapis/google-cloud-go/commit/81281c04e503fd83301baf88cc352c77f5d476ca))
+
+## [1.39.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.39.0...storage/v1.39.1) (2024-03-11)
+
+
+### Bug Fixes
+
+* **storage:** Add object validation case and test ([#9521](https://github.com/googleapis/google-cloud-go/issues/9521)) ([386bef3](https://github.com/googleapis/google-cloud-go/commit/386bef319b4678beaa926ddfe4edef190f11b68d))
+
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.38.0...storage/v1.39.0) (2024-02-29)
+
+
+### Features
+
+* **storage:** Make it possible to disable Content-Type sniffing ([#9431](https://github.com/googleapis/google-cloud-go/issues/9431)) ([0676670](https://github.com/googleapis/google-cloud-go/commit/067667058c06689b64401be11858d84441584039))
+
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.37.0...storage/v1.38.0) (2024-02-12)
+
+
+### Features
+
+* **storage:** Support auto-detection of access ID for external_account creds ([#9208](https://github.com/googleapis/google-cloud-go/issues/9208)) ([b958d44](https://github.com/googleapis/google-cloud-go/commit/b958d44589f2b6b226ea3bef23829ac75a0aa6a6))
+* **storage:** Support custom hostname for VirtualHostedStyle SignedURLs ([#9348](https://github.com/googleapis/google-cloud-go/issues/9348)) ([7eec40e](https://github.com/googleapis/google-cloud-go/commit/7eec40e4cf82c53e5bf02bd2c14e0b25043da6d0))
+* **storage:** Support universe domains ([#9344](https://github.com/googleapis/google-cloud-go/issues/9344)) ([29a7498](https://github.com/googleapis/google-cloud-go/commit/29a7498b8eb0d00fdb5acd7ee8ce0e5a2a8c11ce))
+
+
+### Bug Fixes
+
+* **storage:** Fix v4 url signing for hosts that specify ports ([#9347](https://github.com/googleapis/google-cloud-go/issues/9347)) ([f127b46](https://github.com/googleapis/google-cloud-go/commit/f127b4648f861c1ba44f41a280a62652620c04c2))
+
+
+### Documentation
+
+* **storage:** Indicate that gRPC is incompatible with universe domains ([#9386](https://github.com/googleapis/google-cloud-go/issues/9386)) ([e8bd85b](https://github.com/googleapis/google-cloud-go/commit/e8bd85bbce12d5f7ab87fa49d166a6a0d84bd12d))
+
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.36.0...storage/v1.37.0) (2024-01-24)
+
+
+### Features
+
+* **storage:** Add maxAttempts RetryOption ([#9215](https://github.com/googleapis/google-cloud-go/issues/9215)) ([e348cc5](https://github.com/googleapis/google-cloud-go/commit/e348cc5340e127b530e8ee4664fd995e6f038b2c))
+* **storage:** Support IncludeFoldersAsPrefixes ([#9211](https://github.com/googleapis/google-cloud-go/issues/9211)) ([98c9d71](https://github.com/googleapis/google-cloud-go/commit/98c9d7157306de5134547a67c084c248484c9a51))
+
+
+### Bug Fixes
+
+* **storage:** Migrate deprecated proto dep ([#9232](https://github.com/googleapis/google-cloud-go/issues/9232)) ([ebbb610](https://github.com/googleapis/google-cloud-go/commit/ebbb610e0f58035fd01ad7893971382d8bbd092f)), refs [#9189](https://github.com/googleapis/google-cloud-go/issues/9189)
+
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.35.1...storage/v1.36.0) (2023-12-14)
+
+
+### Features
+
+* **storage:** Add object retention feature ([#9072](https://github.com/googleapis/google-cloud-go/issues/9072)) ([16ecfd1](https://github.com/googleapis/google-cloud-go/commit/16ecfd150ff1982f03d207a80a82e934d1013874))
+
+
+### Bug Fixes
+
+* **storage:** Do not inhibit the dead code elimination. ([#8543](https://github.com/googleapis/google-cloud-go/issues/8543)) ([ca2493f](https://github.com/googleapis/google-cloud-go/commit/ca2493f43c299bbaed5f7e5b70f66cc763ff9802))
+* **storage:** Set flush and get_state to false on the last write in gRPC ([#9013](https://github.com/googleapis/google-cloud-go/issues/9013)) ([c1e9fe5](https://github.com/googleapis/google-cloud-go/commit/c1e9fe5f4166a71e55814ccf126926ec0e0e7945))
+
+## [1.35.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.35.0...storage/v1.35.1) (2023-11-09)
+
+
+### Bug Fixes
+
+* **storage:** Rename aux.go to auxiliary.go fixing windows build ([ba23673](https://github.com/googleapis/google-cloud-go/commit/ba23673da7707c31292e4aa29d65b7ac1446d4a6))
+
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.34.1...storage/v1.35.0) (2023-11-09)
+
+
+### Features
+
+* **storage:** Change gRPC writes to use bi-directional streams ([#8930](https://github.com/googleapis/google-cloud-go/issues/8930)) ([3e23a36](https://github.com/googleapis/google-cloud-go/commit/3e23a364b1a20c4fda7aef257e4136586ec769a4))
+
+## [1.34.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.34.0...storage/v1.34.1) (2023-11-01)
+
+
+### Bug Fixes
+
+* **storage:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.33.0...storage/v1.34.0) (2023-10-31)
+
+
+### Features
+
+* **storage/internal:** Add match_glob field to ListObjectsRequest ([#8618](https://github.com/googleapis/google-cloud-go/issues/8618)) ([e9ae601](https://github.com/googleapis/google-cloud-go/commit/e9ae6018983ae09781740e4ff939e6e365863dbb))
+* **storage/internal:** Add terminal_storage_class fields to Autoclass message ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+* **storage/internal:** Adds the RestoreObject operation ([56ce871](https://github.com/googleapis/google-cloud-go/commit/56ce87195320634b07ae0b012efcc5f2b3813fb0))
+* **storage:** Support autoclass v2.1 ([#8721](https://github.com/googleapis/google-cloud-go/issues/8721)) ([fe1e195](https://github.com/googleapis/google-cloud-go/commit/fe1e19590a252c6adc6ca6c51a69b6e561e143b8))
+* **storage:** Support MatchGlob for gRPC ([#8670](https://github.com/googleapis/google-cloud-go/issues/8670)) ([3df0287](https://github.com/googleapis/google-cloud-go/commit/3df0287f88d5e2c4526e9e6b8dc2a4ca54f88918)), refs [#7727](https://github.com/googleapis/google-cloud-go/issues/7727)
+
+
+### Bug Fixes
+
+* **storage:** Drop stream reference after closing it for gRPC writes ([#8872](https://github.com/googleapis/google-cloud-go/issues/8872)) ([525abde](https://github.com/googleapis/google-cloud-go/commit/525abdee433864d4d456f1f1fff5599017b557ff))
+* **storage:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+* **storage:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **storage:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
 ## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.32.0...storage/v1.33.0) (2023-09-07)
 
 
@@ -418,3 +536,6 @@
 
 This is the first tag to carve out storage as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+
+
+

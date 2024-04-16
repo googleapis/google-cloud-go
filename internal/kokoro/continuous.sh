@@ -30,20 +30,33 @@ export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_
 # doing when changing / removing the next line.
 
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
+export GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID=gcloud-golang-firestore-tests
 export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 export GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES=database-01
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
 export GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES=database-02
-export GCLOUD_TESTS_API_KEY=`cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key`
+export GCLOUD_TESTS_API_KEY=$(cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key)
 export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRings/go-integration-test
 export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
+export GCLOUD_TESTS_IMPERSONATE_READER_KEY="${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-impersonate-reader-service-account"
+export GCLOUD_TESTS_IMPERSONATE_READER_EMAIL="impersonate-reader@${GCLOUD_TESTS_GOLANG_PROJECT_ID}.iam.gserviceaccount.com"
+export GCLOUD_TESTS_IMPERSONATE_WRITER_EMAIL="impersonate-writer@${GCLOUD_TESTS_GOLANG_PROJECT_ID}.iam.gserviceaccount.com"
+export GCLOUD_TESTS_GOLANG_PROJECT_NUMBER=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-project-number)
+export GCLOUD_TESTS_GOLANG_SERVICE_ACCOUNT_CLIENT_ID=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-client-id)
+export GCLOUD_TESTS_GOLANG_AWS_ACCOUNT_ID=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aws-acc-id)
+export GCLOUD_TESTS_GOLANG_AWS_ROLE_NAME=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aws-role-name)
+export GCLOUD_TESTS_GOLANG_AWS_ROLE_ID="arn:aws:iam::$GCLOUD_TESTS_GOLANG_AWS_ACCOUNT_ID:role/$GCLOUD_TESTS_GOLANG_AWS_ROLE_NAME"
+export GCLOUD_TESTS_GOLANG_AUDIENCE_OIDC=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aud-oidc)
+export GCLOUD_TESTS_GOLANG_AUDIENCE_AWS=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aud-aws)
+export GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES="1"
 
 # Bigtable integration tests expect an existing instance and cluster
 #  ❯ cbt createinstance gc-bt-it-instance gc-bt-it-instance \
 #    gc-bt-it-cluster us-west1-b 1 SSD
 export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/dulcet-port-762/locations/us-central1/keyRings/go-integration-test-regional
 export GCLOUD_TESTS_BIGTABLE_CLUSTER="gc-bt-it-cluster"
+export GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER="gc-bt-it-cluster-02"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
 
 # TODO: Remove this env after OMG/43748 is fixed
@@ -86,7 +99,7 @@ runDirectoryTests() {
     # internal tools only expected to work with latest go version
     return
   fi
-  go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
+  GOWORK=off go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
     tee sponge_log.log
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
@@ -150,8 +163,12 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # CHANGED_DIRS is the list of significant top-level directories that changed,
   # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
+  if [[ -n $TARGET_MODULE ]]; then
+    pushd $TARGET_MODULE > /dev/null;
+      runDirectoryTests
+    popd > /dev/null
+  elif [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
   # If PR changes affect all submodules, then run all tests.
-  if [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
     testAllModules
   else
     runDirectoryTests . # Always run base tests.

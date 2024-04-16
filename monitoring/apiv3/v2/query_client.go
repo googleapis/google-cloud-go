@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,9 @@ type QueryCallOptions struct {
 func defaultQueryGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -68,7 +70,7 @@ type internalQueryClient interface {
 // QueryClient is a client for interacting with Cloud Monitoring API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The QueryService API is used to manage time series data in Stackdriver
+// The QueryService API is used to manage time series data in Cloud
 // Monitoring. Time series data is a collection of data points that describes
 // the time-varying values of a metric.
 type QueryClient struct {
@@ -102,7 +104,7 @@ func (c *QueryClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// QueryTimeSeries queries time series using Monitoring Query Language. This method does not require a Workspace.
+// QueryTimeSeries queries time series using Monitoring Query Language.
 func (c *QueryClient) QueryTimeSeries(ctx context.Context, req *monitoringpb.QueryTimeSeriesRequest, opts ...gax.CallOption) *TimeSeriesDataIterator {
 	return c.internalClient.QueryTimeSeries(ctx, req, opts...)
 }
@@ -127,7 +129,7 @@ type queryGRPCClient struct {
 // NewQueryClient creates a new query service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The QueryService API is used to manage time series data in Stackdriver
+// The QueryService API is used to manage time series data in Cloud
 // Monitoring. Time series data is a collection of data points that describes
 // the time-varying values of a metric.
 func NewQueryClient(ctx context.Context, opts ...option.ClientOption) (*QueryClient, error) {
@@ -225,51 +227,4 @@ func (c *queryGRPCClient) QueryTimeSeries(ctx context.Context, req *monitoringpb
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// TimeSeriesDataIterator manages a stream of *monitoringpb.TimeSeriesData.
-type TimeSeriesDataIterator struct {
-	items    []*monitoringpb.TimeSeriesData
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*monitoringpb.TimeSeriesData, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TimeSeriesDataIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TimeSeriesDataIterator) Next() (*monitoringpb.TimeSeriesData, error) {
-	var item *monitoringpb.TimeSeriesData
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TimeSeriesDataIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TimeSeriesDataIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

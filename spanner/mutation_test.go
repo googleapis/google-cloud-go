@@ -25,7 +25,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 // keysetProto returns protobuf encoding of valid spanner.KeySet.
@@ -615,6 +615,113 @@ func TestEncodeMutationArray(t *testing.T) {
 		}
 		if !testEqual(gotProto, test.want) {
 			t.Errorf("%v: mutationsProto(%v) = (%v, nil), want (%v, nil)", test.name, test.ms, gotProto, test.want)
+		}
+	}
+}
+
+func TestEncodeMutationGroupArray(t *testing.T) {
+	for _, test := range []struct {
+		name    string
+		mgs     []*MutationGroup
+		want    []*sppb.BatchWriteRequest_MutationGroup
+		wantErr error
+	}{
+		{
+			"Multiple Mutations",
+			[]*MutationGroup{
+				{[]*Mutation{
+					{opDelete, "t_test", Key{"bar"}, nil, nil},
+					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+				}},
+				{[]*Mutation{
+					{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo2", 1}},
+					{opUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo3", 1}},
+				}},
+				{[]*Mutation{
+					{opReplace, "t_test", nil, []string{"key", "val"}, []interface{}{"foo4", 1}},
+				}},
+			},
+			[]*sppb.BatchWriteRequest_MutationGroup{
+				{Mutations: []*sppb.Mutation{
+					{
+						Operation: &sppb.Mutation_Delete_{
+							Delete: &sppb.Mutation_Delete{
+								Table: "t_test",
+								KeySet: &sppb.KeySet{
+									Keys: []*proto3.ListValue{listValueProto(stringProto("bar"))},
+								},
+							},
+						},
+					},
+					{
+						Operation: &sppb.Mutation_InsertOrUpdate{
+							InsertOrUpdate: &sppb.Mutation_Write{
+								Table:   "t_test",
+								Columns: []string{"key", "val"},
+								Values:  []*proto3.ListValue{listValueProto(stringProto("foo1"), intProto(1))},
+							},
+						},
+					},
+				}},
+				{Mutations: []*sppb.Mutation{
+					{
+						Operation: &sppb.Mutation_Insert{
+							Insert: &sppb.Mutation_Write{
+								Table:   "t_test",
+								Columns: []string{"key", "val"},
+								Values:  []*proto3.ListValue{listValueProto(stringProto("foo2"), intProto(1))},
+							},
+						},
+					},
+					{
+						Operation: &sppb.Mutation_Update{
+							Update: &sppb.Mutation_Write{
+								Table:   "t_test",
+								Columns: []string{"key", "val"},
+								Values:  []*proto3.ListValue{listValueProto(stringProto("foo3"), intProto(1))},
+							},
+						},
+					},
+				}},
+				{Mutations: []*sppb.Mutation{
+					{
+						Operation: &sppb.Mutation_Replace{
+							Replace: &sppb.Mutation_Write{
+								Table:   "t_test",
+								Columns: []string{"key", "val"},
+								Values:  []*proto3.ListValue{listValueProto(stringProto("foo4"), intProto(1))},
+							},
+						},
+					},
+				}},
+			},
+			nil,
+		},
+		{
+			"Multiple Mutations - Bad Mutation",
+			[]*MutationGroup{
+				{[]*Mutation{
+					{opDelete, "t_test", Key{"bar"}, nil, nil},
+					{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", struct{}{}}},
+				}},
+				{[]*Mutation{
+					{opInsert, "t_test", nil, []string{"key", "val"}, []interface{}{"foo2", 1}},
+					{opUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo3", 1}},
+				}},
+			},
+			[]*sppb.BatchWriteRequest_MutationGroup{},
+			errEncoderUnsupportedType(struct{}{}),
+		},
+	} {
+		gotProto, gotErr := mutationGroupsProto(test.mgs)
+		if gotErr != nil {
+			if !testEqual(gotErr, test.wantErr) {
+				t.Errorf("%v: mutationGroupsProto(%v) returns error %v, want %v", test.name, test.mgs, gotErr, test.wantErr)
+			}
+			continue
+		}
+		if !testEqual(gotProto, test.want) {
+			t.Errorf("%v: mutationGroupsProto(%v) = (%v, nil), want (%v, nil)", test.name, test.mgs, gotProto, test.want)
 		}
 	}
 }
