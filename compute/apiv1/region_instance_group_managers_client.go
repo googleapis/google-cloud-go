@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -63,7 +63,96 @@ type RegionInstanceGroupManagersCallOptions struct {
 	UpdatePerInstanceConfigs []gax.CallOption
 }
 
-// internalRegionInstanceGroupManagersClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionInstanceGroupManagersRESTCallOptions() *RegionInstanceGroupManagersCallOptions {
+	return &RegionInstanceGroupManagersCallOptions{
+		AbandonInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ApplyUpdatesToInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeletePerInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListErrors: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListManagedInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		ListPerInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		PatchPerInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		RecreateInstances: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Resize: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetInstanceTemplate: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetTargetPools: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		UpdatePerInstanceConfigs: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+	}
+}
+
+// internalRegionInstanceGroupManagersClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionInstanceGroupManagersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -118,7 +207,8 @@ func (c *RegionInstanceGroupManagersClient) setGoogleClientInfo(keyval ...string
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegionInstanceGroupManagersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -133,7 +223,7 @@ func (c *RegionInstanceGroupManagersClient) ApplyUpdatesToInstances(ctx context.
 	return c.internalClient.ApplyUpdatesToInstances(ctx, req, opts...)
 }
 
-// CreateInstances creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+// CreateInstances creates instances with per-instance configurations in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
 func (c *RegionInstanceGroupManagersClient) CreateInstances(ctx context.Context, req *computepb.CreateInstancesRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.CreateInstances(ctx, req, opts...)
 }
@@ -148,7 +238,7 @@ func (c *RegionInstanceGroupManagersClient) DeleteInstances(ctx context.Context,
 	return c.internalClient.DeleteInstances(ctx, req, opts...)
 }
 
-// DeletePerInstanceConfigs deletes selected per-instance configs for the managed instance group.
+// DeletePerInstanceConfigs deletes selected per-instance configurations for the managed instance group.
 func (c *RegionInstanceGroupManagersClient) DeletePerInstanceConfigs(ctx context.Context, req *computepb.DeletePerInstanceConfigsRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.DeletePerInstanceConfigs(ctx, req, opts...)
 }
@@ -173,12 +263,12 @@ func (c *RegionInstanceGroupManagersClient) ListErrors(ctx context.Context, req 
 	return c.internalClient.ListErrors(ctx, req, opts...)
 }
 
-// ListManagedInstances lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported.
+// ListManagedInstances lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported. The pageToken query parameter is supported only if the group’s listManagedInstancesResults field is set to PAGINATED.
 func (c *RegionInstanceGroupManagersClient) ListManagedInstances(ctx context.Context, req *computepb.ListManagedInstancesRegionInstanceGroupManagersRequest, opts ...gax.CallOption) *ManagedInstanceIterator {
 	return c.internalClient.ListManagedInstances(ctx, req, opts...)
 }
 
-// ListPerInstanceConfigs lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported.
+// ListPerInstanceConfigs lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported.
 func (c *RegionInstanceGroupManagersClient) ListPerInstanceConfigs(ctx context.Context, req *computepb.ListPerInstanceConfigsRegionInstanceGroupManagersRequest, opts ...gax.CallOption) *PerInstanceConfigIterator {
 	return c.internalClient.ListPerInstanceConfigs(ctx, req, opts...)
 }
@@ -188,7 +278,7 @@ func (c *RegionInstanceGroupManagersClient) Patch(ctx context.Context, req *comp
 	return c.internalClient.Patch(ctx, req, opts...)
 }
 
-// PatchPerInstanceConfigs inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
+// PatchPerInstanceConfigs inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
 func (c *RegionInstanceGroupManagersClient) PatchPerInstanceConfigs(ctx context.Context, req *computepb.PatchPerInstanceConfigsRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.PatchPerInstanceConfigs(ctx, req, opts...)
 }
@@ -213,7 +303,7 @@ func (c *RegionInstanceGroupManagersClient) SetTargetPools(ctx context.Context, 
 	return c.internalClient.SetTargetPools(ctx, req, opts...)
 }
 
-// UpdatePerInstanceConfigs inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
+// UpdatePerInstanceConfigs inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
 func (c *RegionInstanceGroupManagersClient) UpdatePerInstanceConfigs(ctx context.Context, req *computepb.UpdatePerInstanceConfigsRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.UpdatePerInstanceConfigs(ctx, req, opts...)
 }
@@ -229,8 +319,11 @@ type regionInstanceGroupManagersRESTClient struct {
 	// operationClient is used to call the operation-specific management service.
 	operationClient *RegionOperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing RegionInstanceGroupManagersClient
+	CallOptions **RegionInstanceGroupManagersCallOptions
 }
 
 // NewRegionInstanceGroupManagersRESTClient creates a new region instance group managers rest client.
@@ -243,9 +336,11 @@ func NewRegionInstanceGroupManagersRESTClient(ctx context.Context, opts ...optio
 		return nil, err
 	}
 
+	callOpts := defaultRegionInstanceGroupManagersRESTCallOptions()
 	c := &regionInstanceGroupManagersRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -259,13 +354,15 @@ func NewRegionInstanceGroupManagersRESTClient(ctx context.Context, opts ...optio
 	}
 	c.operationClient = opC
 
-	return &RegionInstanceGroupManagersClient{internalClient: c, CallOptions: &RegionInstanceGroupManagersCallOptions{}}, nil
+	return &RegionInstanceGroupManagersClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionInstanceGroupManagersRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -275,9 +372,9 @@ func defaultRegionInstanceGroupManagersRESTClientOptions() []option.ClientOption
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *regionInstanceGroupManagersRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -293,7 +390,7 @@ func (c *regionInstanceGroupManagersRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *regionInstanceGroupManagersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -307,7 +404,10 @@ func (c *regionInstanceGroupManagersRESTClient) AbandonInstances(ctx context.Con
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/abandonInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -318,10 +418,18 @@ func (c *regionInstanceGroupManagersRESTClient) AbandonInstances(ctx context.Con
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AbandonInstances[0:len((*c.CallOptions).AbandonInstances):len((*c.CallOptions).AbandonInstances)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -339,13 +447,13 @@ func (c *regionInstanceGroupManagersRESTClient) AbandonInstances(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -373,14 +481,25 @@ func (c *regionInstanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx cont
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/applyUpdatesToInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ApplyUpdatesToInstances[0:len((*c.CallOptions).ApplyUpdatesToInstances):len((*c.CallOptions).ApplyUpdatesToInstances)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -398,13 +517,13 @@ func (c *regionInstanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -423,7 +542,7 @@ func (c *regionInstanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx cont
 	return op, nil
 }
 
-// CreateInstances creates instances with per-instance configs in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
+// CreateInstances creates instances with per-instance configurations in this regional managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
 func (c *regionInstanceGroupManagersRESTClient) CreateInstances(ctx context.Context, req *computepb.CreateInstancesRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionInstanceGroupManagersCreateInstancesRequestResource()
@@ -432,7 +551,10 @@ func (c *regionInstanceGroupManagersRESTClient) CreateInstances(ctx context.Cont
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/createInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -443,10 +565,18 @@ func (c *regionInstanceGroupManagersRESTClient) CreateInstances(ctx context.Cont
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateInstances[0:len((*c.CallOptions).CreateInstances):len((*c.CallOptions).CreateInstances)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -464,13 +594,13 @@ func (c *regionInstanceGroupManagersRESTClient) CreateInstances(ctx context.Cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -491,7 +621,10 @@ func (c *regionInstanceGroupManagersRESTClient) CreateInstances(ctx context.Cont
 
 // Delete deletes the specified managed instance group and all of the instances in that group.
 func (c *regionInstanceGroupManagersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -502,10 +635,18 @@ func (c *regionInstanceGroupManagersRESTClient) Delete(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -523,13 +664,13 @@ func (c *regionInstanceGroupManagersRESTClient) Delete(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -557,7 +698,10 @@ func (c *regionInstanceGroupManagersRESTClient) DeleteInstances(ctx context.Cont
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/deleteInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -568,10 +712,18 @@ func (c *regionInstanceGroupManagersRESTClient) DeleteInstances(ctx context.Cont
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteInstances[0:len((*c.CallOptions).DeleteInstances):len((*c.CallOptions).DeleteInstances)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -589,13 +741,13 @@ func (c *regionInstanceGroupManagersRESTClient) DeleteInstances(ctx context.Cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -614,7 +766,7 @@ func (c *regionInstanceGroupManagersRESTClient) DeleteInstances(ctx context.Cont
 	return op, nil
 }
 
-// DeletePerInstanceConfigs deletes selected per-instance configs for the managed instance group.
+// DeletePerInstanceConfigs deletes selected per-instance configurations for the managed instance group.
 func (c *regionInstanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.Context, req *computepb.DeletePerInstanceConfigsRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionInstanceGroupManagerDeleteInstanceConfigReqResource()
@@ -623,14 +775,25 @@ func (c *regionInstanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx con
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/deletePerInstanceConfigs", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).DeletePerInstanceConfigs[0:len((*c.CallOptions).DeletePerInstanceConfigs):len((*c.CallOptions).DeletePerInstanceConfigs)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -648,13 +811,13 @@ func (c *regionInstanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -675,14 +838,25 @@ func (c *regionInstanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx con
 
 // Get returns all of the details about the specified managed instance group.
 func (c *regionInstanceGroupManagersRESTClient) Get(ctx context.Context, req *computepb.GetRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManager, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.InstanceGroupManager{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -700,13 +874,13 @@ func (c *regionInstanceGroupManagersRESTClient) Get(ctx context.Context, req *co
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -726,7 +900,10 @@ func (c *regionInstanceGroupManagersRESTClient) Insert(ctx context.Context, req 
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -737,10 +914,18 @@ func (c *regionInstanceGroupManagersRESTClient) Insert(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -758,13 +943,13 @@ func (c *regionInstanceGroupManagersRESTClient) Insert(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -798,7 +983,10 @@ func (c *regionInstanceGroupManagersRESTClient) List(ctx context.Context, req *c
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -821,8 +1009,12 @@ func (c *regionInstanceGroupManagersRESTClient) List(ctx context.Context, req *c
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -839,13 +1031,13 @@ func (c *regionInstanceGroupManagersRESTClient) List(ctx context.Context, req *c
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -888,7 +1080,10 @@ func (c *regionInstanceGroupManagersRESTClient) ListErrors(ctx context.Context, 
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/listErrors", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 		params := url.Values{}
@@ -911,8 +1106,12 @@ func (c *regionInstanceGroupManagersRESTClient) ListErrors(ctx context.Context, 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -929,13 +1128,13 @@ func (c *regionInstanceGroupManagersRESTClient) ListErrors(ctx context.Context, 
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -963,7 +1162,7 @@ func (c *regionInstanceGroupManagersRESTClient) ListErrors(ctx context.Context, 
 	return it
 }
 
-// ListManagedInstances lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported.
+// ListManagedInstances lists the instances in the managed instance group and instances that are scheduled to be created. The list includes any current actions that the group has scheduled for its instances. The orderBy query parameter is not supported. The pageToken query parameter is supported only if the group’s listManagedInstancesResults field is set to PAGINATED.
 func (c *regionInstanceGroupManagersRESTClient) ListManagedInstances(ctx context.Context, req *computepb.ListManagedInstancesRegionInstanceGroupManagersRequest, opts ...gax.CallOption) *ManagedInstanceIterator {
 	it := &ManagedInstanceIterator{}
 	req = proto.Clone(req).(*computepb.ListManagedInstancesRegionInstanceGroupManagersRequest)
@@ -978,7 +1177,10 @@ func (c *regionInstanceGroupManagersRESTClient) ListManagedInstances(ctx context
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/listManagedInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 		params := url.Values{}
@@ -1001,8 +1203,12 @@ func (c *regionInstanceGroupManagersRESTClient) ListManagedInstances(ctx context
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -1019,13 +1225,13 @@ func (c *regionInstanceGroupManagersRESTClient) ListManagedInstances(ctx context
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1053,7 +1259,7 @@ func (c *regionInstanceGroupManagersRESTClient) ListManagedInstances(ctx context
 	return it
 }
 
-// ListPerInstanceConfigs lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported.
+// ListPerInstanceConfigs lists all of the per-instance configurations defined for the managed instance group. The orderBy query parameter is not supported.
 func (c *regionInstanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx context.Context, req *computepb.ListPerInstanceConfigsRegionInstanceGroupManagersRequest, opts ...gax.CallOption) *PerInstanceConfigIterator {
 	it := &PerInstanceConfigIterator{}
 	req = proto.Clone(req).(*computepb.ListPerInstanceConfigsRegionInstanceGroupManagersRequest)
@@ -1068,7 +1274,10 @@ func (c *regionInstanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx conte
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/listPerInstanceConfigs", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 		params := url.Values{}
@@ -1091,8 +1300,12 @@ func (c *regionInstanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx conte
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -1109,13 +1322,13 @@ func (c *regionInstanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx conte
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1152,7 +1365,10 @@ func (c *regionInstanceGroupManagersRESTClient) Patch(ctx context.Context, req *
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1163,10 +1379,18 @@ func (c *regionInstanceGroupManagersRESTClient) Patch(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1184,13 +1408,13 @@ func (c *regionInstanceGroupManagersRESTClient) Patch(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1209,7 +1433,7 @@ func (c *regionInstanceGroupManagersRESTClient) Patch(ctx context.Context, req *
 	return op, nil
 }
 
-// PatchPerInstanceConfigs inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
+// PatchPerInstanceConfigs inserts or patches per-instance configurations for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
 func (c *regionInstanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Context, req *computepb.PatchPerInstanceConfigsRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionInstanceGroupManagerPatchInstanceConfigReqResource()
@@ -1218,7 +1442,10 @@ func (c *regionInstanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx cont
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/patchPerInstanceConfigs", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1229,10 +1456,18 @@ func (c *regionInstanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx cont
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PatchPerInstanceConfigs[0:len((*c.CallOptions).PatchPerInstanceConfigs):len((*c.CallOptions).PatchPerInstanceConfigs)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1250,13 +1485,13 @@ func (c *regionInstanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx cont
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1284,7 +1519,10 @@ func (c *regionInstanceGroupManagersRESTClient) RecreateInstances(ctx context.Co
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/recreateInstances", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1295,10 +1533,18 @@ func (c *regionInstanceGroupManagersRESTClient) RecreateInstances(ctx context.Co
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RecreateInstances[0:len((*c.CallOptions).RecreateInstances):len((*c.CallOptions).RecreateInstances)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1316,13 +1562,13 @@ func (c *regionInstanceGroupManagersRESTClient) RecreateInstances(ctx context.Co
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1343,7 +1589,10 @@ func (c *regionInstanceGroupManagersRESTClient) RecreateInstances(ctx context.Co
 
 // Resize changes the intended size of the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes one or more instances. The resize operation is marked DONE if the resize request is successful. The underlying actions take additional time. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 func (c *regionInstanceGroupManagersRESTClient) Resize(ctx context.Context, req *computepb.ResizeRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/resize", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1355,10 +1604,18 @@ func (c *regionInstanceGroupManagersRESTClient) Resize(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Resize[0:len((*c.CallOptions).Resize):len((*c.CallOptions).Resize)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -1376,13 +1633,13 @@ func (c *regionInstanceGroupManagersRESTClient) Resize(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1410,7 +1667,10 @@ func (c *regionInstanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/setInstanceTemplate", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1421,10 +1681,18 @@ func (c *regionInstanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetInstanceTemplate[0:len((*c.CallOptions).SetInstanceTemplate):len((*c.CallOptions).SetInstanceTemplate)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1442,13 +1710,13 @@ func (c *regionInstanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1476,7 +1744,10 @@ func (c *regionInstanceGroupManagersRESTClient) SetTargetPools(ctx context.Conte
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/setTargetPools", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1487,10 +1758,18 @@ func (c *regionInstanceGroupManagersRESTClient) SetTargetPools(ctx context.Conte
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetTargetPools[0:len((*c.CallOptions).SetTargetPools):len((*c.CallOptions).SetTargetPools)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1508,13 +1787,13 @@ func (c *regionInstanceGroupManagersRESTClient) SetTargetPools(ctx context.Conte
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1533,7 +1812,7 @@ func (c *regionInstanceGroupManagersRESTClient) SetTargetPools(ctx context.Conte
 	return op, nil
 }
 
-// UpdatePerInstanceConfigs inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
+// UpdatePerInstanceConfigs inserts or updates per-instance configurations for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
 func (c *regionInstanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx context.Context, req *computepb.UpdatePerInstanceConfigsRegionInstanceGroupManagerRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionInstanceGroupManagerUpdateInstanceConfigReqResource()
@@ -1542,7 +1821,10 @@ func (c *regionInstanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx con
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroupManagers/%v/updatePerInstanceConfigs", req.GetProject(), req.GetRegion(), req.GetInstanceGroupManager())
 
 	params := url.Values{}
@@ -1553,10 +1835,18 @@ func (c *regionInstanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx con
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "instance_group_manager", url.QueryEscape(req.GetInstanceGroupManager()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdatePerInstanceConfigs[0:len((*c.CallOptions).UpdatePerInstanceConfigs):len((*c.CallOptions).UpdatePerInstanceConfigs)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -1574,13 +1864,13 @@ func (c *regionInstanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil

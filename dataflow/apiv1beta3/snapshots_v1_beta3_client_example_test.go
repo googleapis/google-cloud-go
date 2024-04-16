@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,16 @@ import (
 	"context"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
-	dataflowpb "google.golang.org/genproto/googleapis/dataflow/v1beta3"
+	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 )
 
 func ExampleNewSnapshotsV1Beta3Client() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewSnapshotsV1Beta3Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,28 +40,30 @@ func ExampleNewSnapshotsV1Beta3Client() {
 	_ = c
 }
 
-func ExampleSnapshotsV1Beta3Client_GetSnapshot() {
+func ExampleNewSnapshotsV1Beta3RESTClient() {
 	ctx := context.Background()
-	c, err := dataflow.NewSnapshotsV1Beta3Client(ctx)
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataflow.NewSnapshotsV1Beta3RESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &dataflowpb.GetSnapshotRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#GetSnapshotRequest.
-	}
-	resp, err := c.GetSnapshot(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
+	// TODO: Use client.
+	_ = c
 }
 
 func ExampleSnapshotsV1Beta3Client_DeleteSnapshot() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewSnapshotsV1Beta3Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +72,7 @@ func ExampleSnapshotsV1Beta3Client_DeleteSnapshot() {
 
 	req := &dataflowpb.DeleteSnapshotRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#DeleteSnapshotRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#DeleteSnapshotRequest.
 	}
 	resp, err := c.DeleteSnapshot(ctx, req)
 	if err != nil {
@@ -75,8 +82,38 @@ func ExampleSnapshotsV1Beta3Client_DeleteSnapshot() {
 	_ = resp
 }
 
+func ExampleSnapshotsV1Beta3Client_GetSnapshot() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataflow.NewSnapshotsV1Beta3Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataflowpb.GetSnapshotRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#GetSnapshotRequest.
+	}
+	resp, err := c.GetSnapshot(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleSnapshotsV1Beta3Client_ListSnapshots() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataflow.NewSnapshotsV1Beta3Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +122,7 @@ func ExampleSnapshotsV1Beta3Client_ListSnapshots() {
 
 	req := &dataflowpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/dataflow/v1beta3#ListSnapshotsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataflow/apiv1beta3/dataflowpb#ListSnapshotsRequest.
 	}
 	resp, err := c.ListSnapshots(ctx, req)
 	if err != nil {

@@ -20,11 +20,11 @@ import (
 	"reflect"
 	"time"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/fields"
-	"github.com/golang/protobuf/ptypes"
-	ts "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var nullValue = &pb.Value{ValueType: &pb.Value_NullValue{}}
@@ -39,13 +39,13 @@ var (
 
 // toProtoValue converts a Go value to a Firestore Value protobuf.
 // Some corner cases:
-// - All nils (nil interface, nil slice, nil map, nil pointer) are converted to
-//   a NullValue (not a nil *pb.Value). toProtoValue never returns (nil, false, nil).
-//   It returns (nil, true, nil) if everything in the value is ServerTimestamp.
-// - An error is returned for uintptr, uint, and uint64, because Firestore uses
-//   an int64 to represent integral values, and those types can't be properly
-//   represented in an int64.
-// - An error is returned for the special Delete value.
+//   - All nils (nil interface, nil slice, nil map, nil pointer) are converted to
+//     a NullValue (not a nil *pb.Value). toProtoValue never returns (nil, false, nil).
+//     It returns (nil, true, nil) if everything in the value is ServerTimestamp.
+//   - An error is returned for uintptr, uint, and uint64, because Firestore uses
+//     an int64 to represent integral values, and those types can't be properly
+//     represented in an int64.
+//   - An error is returned for the special Delete value.
 //
 // toProtoValue also reports whether it recursively encountered a transform.
 func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error) {
@@ -63,11 +63,7 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 	case []byte:
 		return &pb.Value{ValueType: &pb.Value_BytesValue{x}}, false, nil
 	case time.Time:
-		ts, err := ptypes.TimestampProto(x)
-		if err != nil {
-			return nil, false, err
-		}
-		return &pb.Value{ValueType: &pb.Value_TimestampValue{ts}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: timestamppb.New(x)}}, false, nil
 	case *ts.Timestamp:
 		if x == nil {
 			// gRPC doesn't like nil oneofs. Use NullValue.
@@ -258,7 +254,7 @@ type tagOptions struct {
 func parseTag(t reflect.StructTag) (name string, keep bool, other interface{}, err error) {
 	name, keep, opts, err := fields.ParseStandardTag("firestore", t)
 	if err != nil {
-		return "", false, nil, fmt.Errorf("firestore: %v", err)
+		return "", false, nil, fmt.Errorf("firestore: %w", err)
 	}
 	tagOpts := tagOptions{}
 	for _, opt := range opts {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,34 @@ import (
 	"context"
 
 	debugger "cloud.google.com/go/debugger/apiv2"
-	clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
+	debuggerpb "cloud.google.com/go/debugger/apiv2/debuggerpb"
 )
 
 func ExampleNewDebugger2Client() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := debugger.NewDebugger2Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewDebugger2RESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := debugger.NewDebugger2RESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -37,15 +59,20 @@ func ExampleNewDebugger2Client() {
 
 func ExampleDebugger2Client_SetBreakpoint() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &clouddebuggerpb.SetBreakpointRequest{
+	req := &debuggerpb.SetBreakpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#SetBreakpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/debugger/apiv2/debuggerpb#SetBreakpointRequest.
 	}
 	resp, err := c.SetBreakpoint(ctx, req)
 	if err != nil {
@@ -57,15 +84,20 @@ func ExampleDebugger2Client_SetBreakpoint() {
 
 func ExampleDebugger2Client_GetBreakpoint() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &clouddebuggerpb.GetBreakpointRequest{
+	req := &debuggerpb.GetBreakpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#GetBreakpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/debugger/apiv2/debuggerpb#GetBreakpointRequest.
 	}
 	resp, err := c.GetBreakpoint(ctx, req)
 	if err != nil {
@@ -77,15 +109,20 @@ func ExampleDebugger2Client_GetBreakpoint() {
 
 func ExampleDebugger2Client_DeleteBreakpoint() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &clouddebuggerpb.DeleteBreakpointRequest{
+	req := &debuggerpb.DeleteBreakpointRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#DeleteBreakpointRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/debugger/apiv2/debuggerpb#DeleteBreakpointRequest.
 	}
 	err = c.DeleteBreakpoint(ctx, req)
 	if err != nil {
@@ -95,15 +132,20 @@ func ExampleDebugger2Client_DeleteBreakpoint() {
 
 func ExampleDebugger2Client_ListBreakpoints() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &clouddebuggerpb.ListBreakpointsRequest{
+	req := &debuggerpb.ListBreakpointsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#ListBreakpointsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/debugger/apiv2/debuggerpb#ListBreakpointsRequest.
 	}
 	resp, err := c.ListBreakpoints(ctx, req)
 	if err != nil {
@@ -115,15 +157,20 @@ func ExampleDebugger2Client_ListBreakpoints() {
 
 func ExampleDebugger2Client_ListDebuggees() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &clouddebuggerpb.ListDebuggeesRequest{
+	req := &debuggerpb.ListDebuggeesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/clouddebugger/v2#ListDebuggeesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/debugger/apiv2/debuggerpb#ListDebuggeesRequest.
 	}
 	resp, err := c.ListDebuggees(ctx, req)
 	if err != nil {

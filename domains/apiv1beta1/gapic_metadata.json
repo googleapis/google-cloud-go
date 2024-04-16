@@ -86,6 +86,86 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ConfigureContactSettings": {
+              "methods": [
+                "ConfigureContactSettings"
+              ]
+            },
+            "ConfigureDnsSettings": {
+              "methods": [
+                "ConfigureDnsSettings"
+              ]
+            },
+            "ConfigureManagementSettings": {
+              "methods": [
+                "ConfigureManagementSettings"
+              ]
+            },
+            "DeleteRegistration": {
+              "methods": [
+                "DeleteRegistration"
+              ]
+            },
+            "ExportRegistration": {
+              "methods": [
+                "ExportRegistration"
+              ]
+            },
+            "GetRegistration": {
+              "methods": [
+                "GetRegistration"
+              ]
+            },
+            "ListRegistrations": {
+              "methods": [
+                "ListRegistrations"
+              ]
+            },
+            "RegisterDomain": {
+              "methods": [
+                "RegisterDomain"
+              ]
+            },
+            "ResetAuthorizationCode": {
+              "methods": [
+                "ResetAuthorizationCode"
+              ]
+            },
+            "RetrieveAuthorizationCode": {
+              "methods": [
+                "RetrieveAuthorizationCode"
+              ]
+            },
+            "RetrieveRegisterParameters": {
+              "methods": [
+                "RetrieveRegisterParameters"
+              ]
+            },
+            "RetrieveTransferParameters": {
+              "methods": [
+                "RetrieveTransferParameters"
+              ]
+            },
+            "SearchDomains": {
+              "methods": [
+                "SearchDomains"
+              ]
+            },
+            "TransferDomain": {
+              "methods": [
+                "TransferDomain"
+              ]
+            },
+            "UpdateRegistration": {
+              "methods": [
+                "UpdateRegistration"
+              ]
+            }
+          }
         }
       }
     }

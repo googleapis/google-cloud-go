@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,13 +20,35 @@ import (
 	"context"
 
 	recommendationengine "cloud.google.com/go/recommendationengine/apiv1beta1"
+	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	"google.golang.org/api/iterator"
-	recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
 )
 
 func ExampleNewCatalogClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewCatalogRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommendationengine.NewCatalogRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -38,6 +60,11 @@ func ExampleNewCatalogClient() {
 
 func ExampleCatalogClient_CreateCatalogItem() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,6 +73,7 @@ func ExampleCatalogClient_CreateCatalogItem() {
 
 	req := &recommendationenginepb.CreateCatalogItemRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#CreateCatalogItemRequest.
 	}
 	resp, err := c.CreateCatalogItem(ctx, req)
 	if err != nil {
@@ -55,8 +83,36 @@ func ExampleCatalogClient_CreateCatalogItem() {
 	_ = resp
 }
 
+func ExampleCatalogClient_DeleteCatalogItem() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommendationengine.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommendationenginepb.DeleteCatalogItemRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#DeleteCatalogItemRequest.
+	}
+	err = c.DeleteCatalogItem(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleCatalogClient_GetCatalogItem() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,6 +121,7 @@ func ExampleCatalogClient_GetCatalogItem() {
 
 	req := &recommendationenginepb.GetCatalogItemRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#GetCatalogItemRequest.
 	}
 	resp, err := c.GetCatalogItem(ctx, req)
 	if err != nil {
@@ -74,8 +131,43 @@ func ExampleCatalogClient_GetCatalogItem() {
 	_ = resp
 }
 
+func ExampleCatalogClient_ImportCatalogItems() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := recommendationengine.NewCatalogClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &recommendationenginepb.ImportCatalogItemsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#ImportCatalogItemsRequest.
+	}
+	op, err := c.ImportCatalogItems(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCatalogClient_ListCatalogItems() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,6 +176,7 @@ func ExampleCatalogClient_ListCatalogItems() {
 
 	req := &recommendationenginepb.ListCatalogItemsRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#ListCatalogItemsRequest.
 	}
 	it := c.ListCatalogItems(ctx, req)
 	for {
@@ -96,11 +189,22 @@ func ExampleCatalogClient_ListCatalogItems() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*recommendationenginepb.ListCatalogItemsResponse)
 	}
 }
 
 func ExampleCatalogClient_UpdateCatalogItem() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,49 +213,9 @@ func ExampleCatalogClient_UpdateCatalogItem() {
 
 	req := &recommendationenginepb.UpdateCatalogItemRequest{
 		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb#UpdateCatalogItemRequest.
 	}
 	resp, err := c.UpdateCatalogItem(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCatalogClient_DeleteCatalogItem() {
-	ctx := context.Background()
-	c, err := recommendationengine.NewCatalogClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &recommendationenginepb.DeleteCatalogItemRequest{
-		// TODO: Fill request struct fields.
-	}
-	err = c.DeleteCatalogItem(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleCatalogClient_ImportCatalogItems() {
-	ctx := context.Background()
-	c, err := recommendationengine.NewCatalogClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &recommendationenginepb.ImportCatalogItemsRequest{
-		// TODO: Fill request struct fields.
-	}
-	op, err := c.ImportCatalogItems(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}

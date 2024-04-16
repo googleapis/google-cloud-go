@@ -15,8 +15,12 @@
 package scheduler
 
 import (
+	"errors"
 	"sync"
 )
+
+// ErrReceiveDraining indicates the scheduler has shutdown and is draining.
+var ErrReceiveDraining error = errors.New("pubsub: receive scheduler draining")
 
 // ReceiveScheduler is a scheduler which is designed for Pub/Sub's Receive flow.
 //
@@ -67,6 +71,11 @@ func NewReceiveScheduler(workers int) *ReceiveScheduler {
 // call causes pushback to the pubsub service (less Receive calls on the
 // long-lived stream), which keeps memory footprint stable.
 func (s *ReceiveScheduler) Add(key string, item interface{}, handle func(item interface{})) error {
+	select {
+	case <-s.done:
+		return ErrReceiveDraining
+	default:
+	}
 	if key == "" {
 		// Spawn a worker.
 		s.workers <- struct{}{}

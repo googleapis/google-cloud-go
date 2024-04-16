@@ -12,25 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//go:build go1.15
-// +build go1.15
-
 package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"io/fs"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"testing"
 	"time"
 
 	_ "cloud.google.com/go/bigquery" // Implicitly required by test.
-	_ "cloud.google.com/go/storage"  // Implicitly required by test.
 	"github.com/google/go-cmp/cmp"
-	_ "golang.org/x/sync/semaphore" // Implicitly required by test.
 	"golang.org/x/tools/go/packages"
 )
 
@@ -42,17 +40,36 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
+func fakeMetaServer() *httptest.Server {
+	meta := repoMetadata{
+		"cloud.google.com/go/storage": repoMetadataItem{
+			Description: "Storage API",
+		},
+		"cloud.google.com/iam/apiv1beta1": repoMetadataItem{
+			Description: "IAM",
+		},
+		"cloud.google.com/go/cloudbuild/apiv1/v2": repoMetadataItem{
+			Description: "Cloud Build API",
+		},
+	}
+	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(meta)
+	}))
+}
+
 func TestParse(t *testing.T) {
 	mod := "cloud.google.com/go/bigquery"
-	r, err := parse(mod+"/...", ".", []string{"README.md"}, nil)
+	metaServer := fakeMetaServer()
+	defer metaServer.Close()
+	r, err := parse(mod+"/...", ".", []string{"README.md"}, nil, &friendlyAPINamer{metaURL: metaServer.URL})
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
 	if got, want := len(r.toc), 1; got != want {
 		t.Fatalf("Parse got len(toc) = %d, want %d", got, want)
 	}
-	if got, want := len(r.pages), 12; got != want {
-		t.Errorf("Parse got len(pages) = %d, want %d", got, want)
+	if got, want := len(r.pages), 33; got < want {
+		t.Errorf("Parse got len(pages) = %d, want at least %d", got, want)
 	}
 	if got := r.module.Path; got != mod {
 		t.Fatalf("Parse got module = %q, want %q", got, mod)
@@ -107,72 +124,75 @@ func TestParse(t *testing.T) {
 func TestGoldens(t *testing.T) {
 	gotDir := "testdata/out"
 	goldenDir := "testdata/golden"
+	if updateGoldens {
+		os.RemoveAll(gotDir)
+		os.RemoveAll(goldenDir)
+		gotDir = goldenDir
+	}
 	extraFiles := []string{"README.md"}
 
-	testPath := "cloud.google.com/go/storage"
-	r, err := parse(testPath, ".", extraFiles, nil)
-	if err != nil {
-		t.Fatalf("parse: %v", err)
+	testMod := indexEntry{Path: "cloud.google.com/go/storage", Version: "v1.33.0"}
+	metaServer := fakeMetaServer()
+	defer metaServer.Close()
+	namer := &friendlyAPINamer{metaURL: metaServer.URL}
+	ok := processMods([]indexEntry{testMod}, gotDir, namer, extraFiles, false)
+	if !ok {
+		t.Fatalf("failed to process modules")
 	}
 
-	ignoreFiles := map[string]bool{"docs.metadata": true}
+	ignoreGoldens := []string{fmt.Sprintf("%s@%s/docs.metadata", testMod.Path, testMod.Version)}
 
 	if updateGoldens {
-		os.RemoveAll(goldenDir)
-
-		if err := write(goldenDir, r); err != nil {
-			t.Fatalf("write: %v", err)
-		}
-
-		for ignore := range ignoreFiles {
+		for _, ignore := range ignoreGoldens {
 			if err := os.Remove(filepath.Join(goldenDir, ignore)); err != nil {
 				t.Fatalf("Remove: %v", err)
 			}
 		}
-
 		t.Logf("Successfully updated goldens in %s", goldenDir)
-
 		return
 	}
 
-	if err := write(gotDir, r); err != nil {
-		t.Fatalf("write: %v", err)
-	}
-
-	gotFiles, err := ioutil.ReadDir(gotDir)
-	if err != nil {
-		t.Fatalf("ReadDir: %v", err)
-	}
-
-	goldens, err := ioutil.ReadDir(goldenDir)
-	if err != nil {
-		t.Fatalf("ReadDir: %v", err)
-	}
-
-	if got, want := len(gotFiles)-len(ignoreFiles), len(goldens); got != want {
-		t.Fatalf("parse & write got %d files in %s, want %d ignoring %v", got, gotDir, want, ignoreFiles)
-	}
-
-	for _, golden := range goldens {
-		if golden.IsDir() {
-			continue
+	goldenCount := 0
+	err := filepath.WalkDir(goldenDir, func(goldenPath string, d fs.DirEntry, err error) error {
+		goldenCount++
+		if d.IsDir() {
+			return nil
 		}
-		gotPath := filepath.Join(gotDir, golden.Name())
-		goldenPath := filepath.Join(goldenDir, golden.Name())
-
-		gotContent, err := ioutil.ReadFile(gotPath)
 		if err != nil {
-			t.Fatalf("ReadFile: %v", err)
+			return err
 		}
 
-		goldenContent, err := ioutil.ReadFile(goldenPath)
+		gotPath := filepath.Join(gotDir, goldenPath[len(goldenDir):])
+
+		gotContent, err := os.ReadFile(gotPath)
 		if err != nil {
-			t.Fatalf("ReadFile: %v", err)
+			t.Fatalf("failed to read got: %v", err)
+		}
+
+		goldenContent, err := os.ReadFile(goldenPath)
+		if err != nil {
+			t.Fatalf("failed to read golden: %v", err)
 		}
 
 		if string(gotContent) != string(goldenContent) {
 			t.Errorf("got %s is different from expected %s", gotPath, goldenPath)
 		}
+
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("failed to compare goldens: %v", err)
+	}
+	gotCount := 0
+	err = filepath.WalkDir(gotDir, func(_ string, _ fs.DirEntry, _ error) error {
+		gotCount++
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("failed to count got: %v", err)
+	}
+	if gotCount-len(ignoreGoldens) != goldenCount {
+		t.Fatalf("processMods got %d files in %s, want %d ignoring %v", gotCount, gotDir, goldenCount, ignoreGoldens)
 	}
 }
 
@@ -279,6 +299,45 @@ Deprecated: use Reader.Attrs.Size.`,
 	for _, test := range tests {
 		if got := getStatus(test.doc); got != test.want {
 			t.Errorf("getStatus(%v) got %q, want %q", test.doc, got, test.want)
+		}
+	}
+}
+
+func TestFriendlyAPIName(t *testing.T) {
+	metaServer := fakeMetaServer()
+	defer metaServer.Close()
+	namer := &friendlyAPINamer{metaURL: metaServer.URL}
+
+	tests := []struct {
+		importPath string
+		want       string
+	}{
+		{
+			importPath: "cloud.google.com/go/storage",
+			want:       "Storage API",
+		},
+		{
+			importPath: "cloud.google.com/iam/apiv1beta1",
+			want:       "IAM v1beta1",
+		},
+		{
+			importPath: "cloud.google.com/go/cloudbuild/apiv1/v2",
+			want:       "Cloud Build API v1",
+		},
+		{
+			importPath: "not found",
+			want:       "",
+		},
+	}
+
+	for _, test := range tests {
+		got, err := namer.friendlyAPIName(test.importPath)
+		if err != nil {
+			t.Errorf("friendlyAPIName(%q) got err: %v", test.importPath, err)
+			continue
+		}
+		if got != test.want {
+			t.Errorf("friendlyAPIName(%q) got %q, want %q", test.importPath, got, test.want)
 		}
 	}
 }

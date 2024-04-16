@@ -26,6 +26,26 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "SearchCatalogs": {
+              "methods": [
+                "SearchCatalogs"
+              ]
+            },
+            "SearchProducts": {
+              "methods": [
+                "SearchProducts"
+              ]
+            },
+            "SearchVersions": {
+              "methods": [
+                "SearchVersions"
+              ]
+            }
+          }
         }
       }
     }

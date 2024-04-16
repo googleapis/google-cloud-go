@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"context"
 	"fmt"
 	"reflect"
 	"testing"
@@ -22,6 +23,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -598,6 +600,68 @@ func TestTimezone(t *testing.T) {
 	wantZone, _ := want.Time.Zone()
 	if diff := testutil.Diff(dstZone, wantZone); diff != "" {
 		t.Fatalf("Mismatch: got - want +\n%s", diff)
+	}
+}
+
+func TestLoadArrayIndex(t *testing.T) {
+	src := &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"indexed": {
+				ValueType: &pb.Value_ArrayValue{
+					ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{
+								ValueType:          &pb.Value_StringValue{StringValue: "1"},
+								ExcludeFromIndexes: false,
+							},
+							{
+								ValueType:          &pb.Value_StringValue{StringValue: "2"},
+								ExcludeFromIndexes: false,
+							},
+						},
+					},
+				},
+			},
+			"non-indexed": {
+				ValueType: &pb.Value_ArrayValue{
+					ArrayValue: &pb.ArrayValue{
+						Values: []*pb.Value{
+							{
+								ValueType:          &pb.Value_StringValue{StringValue: "3"},
+								ExcludeFromIndexes: true,
+							},
+							{
+								ValueType:          &pb.Value_StringValue{StringValue: "4"},
+								ExcludeFromIndexes: true,
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+	want := &Entity{
+		Key: testKey0,
+		Properties: []Property{
+			{Name: "indexed", Value: []interface{}{"1", "2"}, NoIndex: false},
+			{Name: "non-indexed", Value: []interface{}{"3", "4"}, NoIndex: true},
+		},
+	}
+
+	dst, err := protoToEntity(src)
+	if err != nil {
+		t.Fatalf("protoToEntity: %v", err)
+	}
+
+	cmpProperties := func(p1, p2 Property) bool {
+		return p1.Name < p2.Name
+	}
+	if !testutil.Equal(want.Properties, dst.Properties, cmpopts.SortSlices(cmpProperties)) {
+		t.Errorf("NoIndex should be correct: Property:\ngot:  %#v\nwant: %#v", dst, want)
+	}
+	if !testutil.Equal(want.Key, dst.Key) {
+		t.Errorf("NoIndex should be correct: Key:\ngot:  %#v\nwant: %#v", dst, want)
 	}
 }
 
@@ -1264,9 +1328,102 @@ func TestLoadNull(t *testing.T) {
 	}
 }
 
-// 	var got2 struct{ S []Pet }
-// 	if err := LoadStruct(&got2, []Property{{Name: "S", Value: nil}}); err != nil {
-// 		t.Fatal(err)
-// 	}
+func TestLoadNilInterface(t *testing.T) {
+	type WithAny struct {
+		AnyField interface{}
+	}
 
-// }
+	withAny1 := &WithAny{}
+	err := loadEntityProto(withAny1, &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"AnyField": {ValueType: &pb.Value_NullValue{}},
+		},
+	})
+	if err != nil {
+		t.Fatalf("loadEntityProto got: %v, want: nil", err)
+	}
+
+	if withAny1.AnyField != nil {
+		t.Fatalf("got: %v, want: nil", withAny1.AnyField)
+	}
+}
+
+type KeyLoaderEnt struct {
+	A int
+	K *Key
+}
+
+func (e *KeyLoaderEnt) Load(p []Property) error {
+	e.A = 2
+	return nil
+}
+
+func (e *KeyLoaderEnt) LoadKey(k *Key) error {
+	e.K = k
+	return nil
+}
+
+func (e *KeyLoaderEnt) Save() ([]Property, error) {
+	return []Property{{Name: "A", Value: int64(3)}}, nil
+}
+
+func TestKeyLoaderEndToEnd(t *testing.T) {
+	keys := []*Key{
+		NameKey("testKind", "first", nil),
+		NameKey("testKind", "second", nil),
+	}
+
+	entity1 := &pb.Entity{
+		Key: keyToProto(keys[0]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 1}},
+			"B": {ValueType: &pb.Value_StringValue{StringValue: "one"}},
+		},
+	}
+	entity2 := &pb.Entity{
+		Key: keyToProto(keys[1]),
+		Properties: map[string]*pb.Value{
+			"A": {ValueType: &pb.Value_IntegerValue{IntegerValue: 2}},
+			"B": {ValueType: &pb.Value_StringValue{StringValue: "two"}},
+		},
+	}
+
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(&pb.LookupRequest{
+		ProjectId:  "projectID",
+		DatabaseId: "",
+		Keys: []*pb.Key{
+			keyToProto(keys[0]),
+			keyToProto(keys[1]),
+		},
+	},
+		&pb.LookupResponse{
+			Found: []*pb.EntityResult{
+				{
+					Entity:  entity1,
+					Version: 1,
+				},
+				{
+					Entity:  entity2,
+					Version: 1,
+				},
+			},
+		})
+
+	ctx := context.Background()
+
+	dst := make([]*KeyLoaderEnt, len(keys))
+	err := client.GetMulti(ctx, keys, dst)
+	if err != nil {
+		t.Fatalf("client.Get: %v", err)
+	}
+
+	for i := range dst {
+		if !testutil.Equal(dst[i].K, keys[i]) {
+			t.Fatalf("unexpected entity %d to have key %+v, got %+v", i, keys[i], dst[i].K)
+		}
+	}
+}

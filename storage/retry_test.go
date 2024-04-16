@@ -4,7 +4,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//      http://www.apache.org/licenses/LICENSE-2.0
+//	http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -15,6 +15,7 @@ package storage_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -25,7 +26,6 @@ import (
 	"time"
 
 	"golang.org/x/oauth2"
-	"golang.org/x/xerrors"
 
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/googleapi"
@@ -33,7 +33,6 @@ import (
 )
 
 func TestIndefiniteRetries(t *testing.T) {
-
 	uploadRoute := "/upload"
 
 	var resumableUploadIDs atomic.Value
@@ -161,8 +160,7 @@ func TestIndefiniteRetries(t *testing.T) {
 		t.Fatalf("Test took longer than %s to return", maxWait)
 	case err := <-closeDone:
 		var ge *googleapi.Error
-		ok := xerrors.As(err, &ge)
-		if !ok {
+		if !errors.As(err, &ge) {
 			t.Fatalf("Got error (%v) of type %T, expected *googleapi.Error", err, err)
 		}
 		if ge.Code != http.StatusTooManyRequests {

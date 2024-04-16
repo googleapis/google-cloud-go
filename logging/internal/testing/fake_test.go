@@ -23,10 +23,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	grpc "google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestNewServer(t *testing.T) {

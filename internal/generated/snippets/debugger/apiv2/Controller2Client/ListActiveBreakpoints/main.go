@@ -22,7 +22,7 @@ import (
 	"context"
 
 	debugger "cloud.google.com/go/debugger/apiv2"
-	clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
+	clouddebuggerpb "cloud.google.com/go/debugger/apiv2/debuggerpb"
 )
 
 func main() {

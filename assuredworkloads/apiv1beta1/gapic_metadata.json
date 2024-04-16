@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "AnalyzeWorkloadMove": {
+              "methods": [
+                "AnalyzeWorkloadMove"
+              ]
+            },
             "CreateWorkload": {
               "methods": [
                 "CreateWorkload"
@@ -20,14 +25,79 @@
                 "DeleteWorkload"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetWorkload": {
               "methods": [
                 "GetWorkload"
               ]
             },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "ListWorkloads": {
               "methods": [
                 "ListWorkloads"
+              ]
+            },
+            "RestrictAllowedResources": {
+              "methods": [
+                "RestrictAllowedResources"
+              ]
+            },
+            "UpdateWorkload": {
+              "methods": [
+                "UpdateWorkload"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AnalyzeWorkloadMove": {
+              "methods": [
+                "AnalyzeWorkloadMove"
+              ]
+            },
+            "CreateWorkload": {
+              "methods": [
+                "CreateWorkload"
+              ]
+            },
+            "DeleteWorkload": {
+              "methods": [
+                "DeleteWorkload"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetWorkload": {
+              "methods": [
+                "GetWorkload"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListWorkloads": {
+              "methods": [
+                "ListWorkloads"
+              ]
+            },
+            "RestrictAllowedResources": {
+              "methods": [
+                "RestrictAllowedResources"
               ]
             },
             "UpdateWorkload": {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,19 +21,19 @@ import (
 	"fmt"
 	"math"
 	"net/url"
-	"time"
 
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -41,22 +41,42 @@ var newDatasetClientHook clientHook
 
 // DatasetCallOptions contains the retry settings for each method of DatasetClient.
 type DatasetCallOptions struct {
-	CreateDataset     []gax.CallOption
-	GetDataset        []gax.CallOption
-	UpdateDataset     []gax.CallOption
-	ListDatasets      []gax.CallOption
-	DeleteDataset     []gax.CallOption
-	ImportData        []gax.CallOption
-	ExportData        []gax.CallOption
-	ListDataItems     []gax.CallOption
-	GetAnnotationSpec []gax.CallOption
-	ListAnnotations   []gax.CallOption
+	CreateDataset         []gax.CallOption
+	GetDataset            []gax.CallOption
+	UpdateDataset         []gax.CallOption
+	ListDatasets          []gax.CallOption
+	DeleteDataset         []gax.CallOption
+	ImportData            []gax.CallOption
+	ExportData            []gax.CallOption
+	CreateDatasetVersion  []gax.CallOption
+	DeleteDatasetVersion  []gax.CallOption
+	GetDatasetVersion     []gax.CallOption
+	ListDatasetVersions   []gax.CallOption
+	RestoreDatasetVersion []gax.CallOption
+	ListDataItems         []gax.CallOption
+	SearchDataItems       []gax.CallOption
+	ListSavedQueries      []gax.CallOption
+	DeleteSavedQuery      []gax.CallOption
+	GetAnnotationSpec     []gax.CallOption
+	ListAnnotations       []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	CancelOperation       []gax.CallOption
+	DeleteOperation       []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
+	WaitOperation         []gax.CallOption
 }
 
 func defaultDatasetGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -67,20 +87,38 @@ func defaultDatasetGRPCClientOptions() []option.ClientOption {
 
 func defaultDatasetCallOptions() *DatasetCallOptions {
 	return &DatasetCallOptions{
-		CreateDataset:     []gax.CallOption{},
-		GetDataset:        []gax.CallOption{},
-		UpdateDataset:     []gax.CallOption{},
-		ListDatasets:      []gax.CallOption{},
-		DeleteDataset:     []gax.CallOption{},
-		ImportData:        []gax.CallOption{},
-		ExportData:        []gax.CallOption{},
-		ListDataItems:     []gax.CallOption{},
-		GetAnnotationSpec: []gax.CallOption{},
-		ListAnnotations:   []gax.CallOption{},
+		CreateDataset:         []gax.CallOption{},
+		GetDataset:            []gax.CallOption{},
+		UpdateDataset:         []gax.CallOption{},
+		ListDatasets:          []gax.CallOption{},
+		DeleteDataset:         []gax.CallOption{},
+		ImportData:            []gax.CallOption{},
+		ExportData:            []gax.CallOption{},
+		CreateDatasetVersion:  []gax.CallOption{},
+		DeleteDatasetVersion:  []gax.CallOption{},
+		GetDatasetVersion:     []gax.CallOption{},
+		ListDatasetVersions:   []gax.CallOption{},
+		RestoreDatasetVersion: []gax.CallOption{},
+		ListDataItems:         []gax.CallOption{},
+		SearchDataItems:       []gax.CallOption{},
+		ListSavedQueries:      []gax.CallOption{},
+		DeleteSavedQuery:      []gax.CallOption{},
+		GetAnnotationSpec:     []gax.CallOption{},
+		ListAnnotations:       []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		GetIamPolicy:          []gax.CallOption{},
+		SetIamPolicy:          []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
+		WaitOperation:         []gax.CallOption{},
 	}
 }
 
-// internalDatasetClient is an interface that defines the methods availaible from Vertex AI API.
+// internalDatasetClient is an interface that defines the methods available from Vertex AI API.
 type internalDatasetClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -96,16 +134,37 @@ type internalDatasetClient interface {
 	ImportDataOperation(name string) *ImportDataOperation
 	ExportData(context.Context, *aiplatformpb.ExportDataRequest, ...gax.CallOption) (*ExportDataOperation, error)
 	ExportDataOperation(name string) *ExportDataOperation
+	CreateDatasetVersion(context.Context, *aiplatformpb.CreateDatasetVersionRequest, ...gax.CallOption) (*CreateDatasetVersionOperation, error)
+	CreateDatasetVersionOperation(name string) *CreateDatasetVersionOperation
+	DeleteDatasetVersion(context.Context, *aiplatformpb.DeleteDatasetVersionRequest, ...gax.CallOption) (*DeleteDatasetVersionOperation, error)
+	DeleteDatasetVersionOperation(name string) *DeleteDatasetVersionOperation
+	GetDatasetVersion(context.Context, *aiplatformpb.GetDatasetVersionRequest, ...gax.CallOption) (*aiplatformpb.DatasetVersion, error)
+	ListDatasetVersions(context.Context, *aiplatformpb.ListDatasetVersionsRequest, ...gax.CallOption) *DatasetVersionIterator
+	RestoreDatasetVersion(context.Context, *aiplatformpb.RestoreDatasetVersionRequest, ...gax.CallOption) (*RestoreDatasetVersionOperation, error)
+	RestoreDatasetVersionOperation(name string) *RestoreDatasetVersionOperation
 	ListDataItems(context.Context, *aiplatformpb.ListDataItemsRequest, ...gax.CallOption) *DataItemIterator
+	SearchDataItems(context.Context, *aiplatformpb.SearchDataItemsRequest, ...gax.CallOption) *DataItemViewIterator
+	ListSavedQueries(context.Context, *aiplatformpb.ListSavedQueriesRequest, ...gax.CallOption) *SavedQueryIterator
+	DeleteSavedQuery(context.Context, *aiplatformpb.DeleteSavedQueryRequest, ...gax.CallOption) (*DeleteSavedQueryOperation, error)
+	DeleteSavedQueryOperation(name string) *DeleteSavedQueryOperation
 	GetAnnotationSpec(context.Context, *aiplatformpb.GetAnnotationSpecRequest, ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error)
 	ListAnnotations(context.Context, *aiplatformpb.ListAnnotationsRequest, ...gax.CallOption) *AnnotationIterator
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
+	WaitOperation(context.Context, *longrunningpb.WaitOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // DatasetClient is a client for interacting with Vertex AI API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The service that handles the CRUD of Vertex AI Dataset and its child
-// resources.
+// The service that manages Vertex AI Dataset and its child resources.
 type DatasetClient struct {
 	// The internal transport-dependent client.
 	internalClient internalDatasetClient
@@ -136,7 +195,8 @@ func (c *DatasetClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *DatasetClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -200,9 +260,73 @@ func (c *DatasetClient) ExportDataOperation(name string) *ExportDataOperation {
 	return c.internalClient.ExportDataOperation(name)
 }
 
+// CreateDatasetVersion create a version from a Dataset.
+func (c *DatasetClient) CreateDatasetVersion(ctx context.Context, req *aiplatformpb.CreateDatasetVersionRequest, opts ...gax.CallOption) (*CreateDatasetVersionOperation, error) {
+	return c.internalClient.CreateDatasetVersion(ctx, req, opts...)
+}
+
+// CreateDatasetVersionOperation returns a new CreateDatasetVersionOperation from a given name.
+// The name must be that of a previously created CreateDatasetVersionOperation, possibly from a different process.
+func (c *DatasetClient) CreateDatasetVersionOperation(name string) *CreateDatasetVersionOperation {
+	return c.internalClient.CreateDatasetVersionOperation(name)
+}
+
+// DeleteDatasetVersion deletes a Dataset version.
+func (c *DatasetClient) DeleteDatasetVersion(ctx context.Context, req *aiplatformpb.DeleteDatasetVersionRequest, opts ...gax.CallOption) (*DeleteDatasetVersionOperation, error) {
+	return c.internalClient.DeleteDatasetVersion(ctx, req, opts...)
+}
+
+// DeleteDatasetVersionOperation returns a new DeleteDatasetVersionOperation from a given name.
+// The name must be that of a previously created DeleteDatasetVersionOperation, possibly from a different process.
+func (c *DatasetClient) DeleteDatasetVersionOperation(name string) *DeleteDatasetVersionOperation {
+	return c.internalClient.DeleteDatasetVersionOperation(name)
+}
+
+// GetDatasetVersion gets a Dataset version.
+func (c *DatasetClient) GetDatasetVersion(ctx context.Context, req *aiplatformpb.GetDatasetVersionRequest, opts ...gax.CallOption) (*aiplatformpb.DatasetVersion, error) {
+	return c.internalClient.GetDatasetVersion(ctx, req, opts...)
+}
+
+// ListDatasetVersions lists DatasetVersions in a Dataset.
+func (c *DatasetClient) ListDatasetVersions(ctx context.Context, req *aiplatformpb.ListDatasetVersionsRequest, opts ...gax.CallOption) *DatasetVersionIterator {
+	return c.internalClient.ListDatasetVersions(ctx, req, opts...)
+}
+
+// RestoreDatasetVersion restores a dataset version.
+func (c *DatasetClient) RestoreDatasetVersion(ctx context.Context, req *aiplatformpb.RestoreDatasetVersionRequest, opts ...gax.CallOption) (*RestoreDatasetVersionOperation, error) {
+	return c.internalClient.RestoreDatasetVersion(ctx, req, opts...)
+}
+
+// RestoreDatasetVersionOperation returns a new RestoreDatasetVersionOperation from a given name.
+// The name must be that of a previously created RestoreDatasetVersionOperation, possibly from a different process.
+func (c *DatasetClient) RestoreDatasetVersionOperation(name string) *RestoreDatasetVersionOperation {
+	return c.internalClient.RestoreDatasetVersionOperation(name)
+}
+
 // ListDataItems lists DataItems in a Dataset.
 func (c *DatasetClient) ListDataItems(ctx context.Context, req *aiplatformpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
 	return c.internalClient.ListDataItems(ctx, req, opts...)
+}
+
+// SearchDataItems searches DataItems in a Dataset.
+func (c *DatasetClient) SearchDataItems(ctx context.Context, req *aiplatformpb.SearchDataItemsRequest, opts ...gax.CallOption) *DataItemViewIterator {
+	return c.internalClient.SearchDataItems(ctx, req, opts...)
+}
+
+// ListSavedQueries lists SavedQueries in a Dataset.
+func (c *DatasetClient) ListSavedQueries(ctx context.Context, req *aiplatformpb.ListSavedQueriesRequest, opts ...gax.CallOption) *SavedQueryIterator {
+	return c.internalClient.ListSavedQueries(ctx, req, opts...)
+}
+
+// DeleteSavedQuery deletes a SavedQuery.
+func (c *DatasetClient) DeleteSavedQuery(ctx context.Context, req *aiplatformpb.DeleteSavedQueryRequest, opts ...gax.CallOption) (*DeleteSavedQueryOperation, error) {
+	return c.internalClient.DeleteSavedQuery(ctx, req, opts...)
+}
+
+// DeleteSavedQueryOperation returns a new DeleteSavedQueryOperation from a given name.
+// The name must be that of a previously created DeleteSavedQueryOperation, possibly from a different process.
+func (c *DatasetClient) DeleteSavedQueryOperation(name string) *DeleteSavedQueryOperation {
+	return c.internalClient.DeleteSavedQueryOperation(name)
 }
 
 // GetAnnotationSpec gets an AnnotationSpec.
@@ -215,15 +339,73 @@ func (c *DatasetClient) ListAnnotations(ctx context.Context, req *aiplatformpb.L
 	return c.internalClient.ListAnnotations(ctx, req, opts...)
 }
 
+// GetLocation gets information about a location.
+func (c *DatasetClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *DatasetClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *DatasetClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *DatasetClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *DatasetClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *DatasetClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *DatasetClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *DatasetClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *DatasetClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
+// WaitOperation is a utility method from google.longrunning.Operations.
+func (c *DatasetClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.WaitOperation(ctx, req, opts...)
+}
+
 // datasetGRPCClient is a client for interacting with Vertex AI API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type datasetGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing DatasetClient
 	CallOptions **DatasetCallOptions
@@ -236,15 +418,20 @@ type datasetGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
+	iamPolicyClient iampb.IAMPolicyClient
+
+	locationsClient locationpb.LocationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewDatasetClient creates a new dataset service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The service that handles the CRUD of Vertex AI Dataset and its child
-// resources.
+// The service that manages Vertex AI Dataset and its child resources.
 func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*DatasetClient, error) {
 	clientOpts := defaultDatasetGRPCClientOptions()
 	if newDatasetClientHook != nil {
@@ -255,11 +442,6 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -268,9 +450,11 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 
 	c := &datasetGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		datasetClient:    aiplatformpb.NewDatasetServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -292,7 +476,8 @@ func NewDatasetClient(ctx context.Context, opts ...option.ClientOption) (*Datase
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *datasetGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -301,9 +486,9 @@ func (c *datasetGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *datasetGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -313,9 +498,10 @@ func (c *datasetGRPCClient) Close() error {
 }
 
 func (c *datasetGRPCClient) CreateDataset(ctx context.Context, req *aiplatformpb.CreateDatasetRequest, opts ...gax.CallOption) (*CreateDatasetOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -332,9 +518,10 @@ func (c *datasetGRPCClient) CreateDataset(ctx context.Context, req *aiplatformpb
 }
 
 func (c *datasetGRPCClient) GetDataset(ctx context.Context, req *aiplatformpb.GetDatasetRequest, opts ...gax.CallOption) (*aiplatformpb.Dataset, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *aiplatformpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -349,9 +536,10 @@ func (c *datasetGRPCClient) GetDataset(ctx context.Context, req *aiplatformpb.Ge
 }
 
 func (c *datasetGRPCClient) UpdateDataset(ctx context.Context, req *aiplatformpb.UpdateDatasetRequest, opts ...gax.CallOption) (*aiplatformpb.Dataset, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDataset[0:len((*c.CallOptions).UpdateDataset):len((*c.CallOptions).UpdateDataset)], opts...)
 	var resp *aiplatformpb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -366,9 +554,10 @@ func (c *datasetGRPCClient) UpdateDataset(ctx context.Context, req *aiplatformpb
 }
 
 func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *aiplatformpb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListDatasetsRequest)
@@ -411,9 +600,10 @@ func (c *datasetGRPCClient) ListDatasets(ctx context.Context, req *aiplatformpb.
 }
 
 func (c *datasetGRPCClient) DeleteDataset(ctx context.Context, req *aiplatformpb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -430,9 +620,10 @@ func (c *datasetGRPCClient) DeleteDataset(ctx context.Context, req *aiplatformpb
 }
 
 func (c *datasetGRPCClient) ImportData(ctx context.Context, req *aiplatformpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ImportData[0:len((*c.CallOptions).ImportData):len((*c.CallOptions).ImportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -449,9 +640,10 @@ func (c *datasetGRPCClient) ImportData(ctx context.Context, req *aiplatformpb.Im
 }
 
 func (c *datasetGRPCClient) ExportData(ctx context.Context, req *aiplatformpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ExportData[0:len((*c.CallOptions).ExportData):len((*c.CallOptions).ExportData)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -467,10 +659,135 @@ func (c *datasetGRPCClient) ExportData(ctx context.Context, req *aiplatformpb.Ex
 	}, nil
 }
 
-func (c *datasetGRPCClient) ListDataItems(ctx context.Context, req *aiplatformpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+func (c *datasetGRPCClient) CreateDatasetVersion(ctx context.Context, req *aiplatformpb.CreateDatasetVersionRequest, opts ...gax.CallOption) (*CreateDatasetVersionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateDatasetVersion[0:len((*c.CallOptions).CreateDatasetVersion):len((*c.CallOptions).CreateDatasetVersion)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.datasetClient.CreateDatasetVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateDatasetVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *datasetGRPCClient) DeleteDatasetVersion(ctx context.Context, req *aiplatformpb.DeleteDatasetVersionRequest, opts ...gax.CallOption) (*DeleteDatasetVersionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteDatasetVersion[0:len((*c.CallOptions).DeleteDatasetVersion):len((*c.CallOptions).DeleteDatasetVersion)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.datasetClient.DeleteDatasetVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteDatasetVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *datasetGRPCClient) GetDatasetVersion(ctx context.Context, req *aiplatformpb.GetDatasetVersionRequest, opts ...gax.CallOption) (*aiplatformpb.DatasetVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetDatasetVersion[0:len((*c.CallOptions).GetDatasetVersion):len((*c.CallOptions).GetDatasetVersion)], opts...)
+	var resp *aiplatformpb.DatasetVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.datasetClient.GetDatasetVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *datasetGRPCClient) ListDatasetVersions(ctx context.Context, req *aiplatformpb.ListDatasetVersionsRequest, opts ...gax.CallOption) *DatasetVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDatasetVersions[0:len((*c.CallOptions).ListDatasetVersions):len((*c.CallOptions).ListDatasetVersions)], opts...)
+	it := &DatasetVersionIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListDatasetVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DatasetVersion, string, error) {
+		resp := &aiplatformpb.ListDatasetVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.datasetClient.ListDatasetVersions(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDatasetVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *datasetGRPCClient) RestoreDatasetVersion(ctx context.Context, req *aiplatformpb.RestoreDatasetVersionRequest, opts ...gax.CallOption) (*RestoreDatasetVersionOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RestoreDatasetVersion[0:len((*c.CallOptions).RestoreDatasetVersion):len((*c.CallOptions).RestoreDatasetVersion)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.datasetClient.RestoreDatasetVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RestoreDatasetVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *datasetGRPCClient) ListDataItems(ctx context.Context, req *aiplatformpb.ListDataItemsRequest, opts ...gax.CallOption) *DataItemIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDataItems[0:len((*c.CallOptions).ListDataItems):len((*c.CallOptions).ListDataItems)], opts...)
 	it := &DataItemIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListDataItemsRequest)
@@ -512,10 +829,123 @@ func (c *datasetGRPCClient) ListDataItems(ctx context.Context, req *aiplatformpb
 	return it
 }
 
-func (c *datasetGRPCClient) GetAnnotationSpec(ctx context.Context, req *aiplatformpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *datasetGRPCClient) SearchDataItems(ctx context.Context, req *aiplatformpb.SearchDataItemsRequest, opts ...gax.CallOption) *DataItemViewIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset", url.QueryEscape(req.GetDataset()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SearchDataItems[0:len((*c.CallOptions).SearchDataItems):len((*c.CallOptions).SearchDataItems)], opts...)
+	it := &DataItemViewIterator{}
+	req = proto.Clone(req).(*aiplatformpb.SearchDataItemsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.DataItemView, string, error) {
+		resp := &aiplatformpb.SearchDataItemsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.datasetClient.SearchDataItems(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDataItemViews(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *datasetGRPCClient) ListSavedQueries(ctx context.Context, req *aiplatformpb.ListSavedQueriesRequest, opts ...gax.CallOption) *SavedQueryIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSavedQueries[0:len((*c.CallOptions).ListSavedQueries):len((*c.CallOptions).ListSavedQueries)], opts...)
+	it := &SavedQueryIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListSavedQueriesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.SavedQuery, string, error) {
+		resp := &aiplatformpb.ListSavedQueriesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.datasetClient.ListSavedQueries(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSavedQueries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *datasetGRPCClient) DeleteSavedQuery(ctx context.Context, req *aiplatformpb.DeleteSavedQueryRequest, opts ...gax.CallOption) (*DeleteSavedQueryOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSavedQuery[0:len((*c.CallOptions).DeleteSavedQuery):len((*c.CallOptions).DeleteSavedQuery)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.datasetClient.DeleteSavedQuery(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteSavedQueryOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *datasetGRPCClient) GetAnnotationSpec(ctx context.Context, req *aiplatformpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*aiplatformpb.AnnotationSpec, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetAnnotationSpec[0:len((*c.CallOptions).GetAnnotationSpec):len((*c.CallOptions).GetAnnotationSpec)], opts...)
 	var resp *aiplatformpb.AnnotationSpec
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -530,9 +960,10 @@ func (c *datasetGRPCClient) GetAnnotationSpec(ctx context.Context, req *aiplatfo
 }
 
 func (c *datasetGRPCClient) ListAnnotations(ctx context.Context, req *aiplatformpb.ListAnnotationsRequest, opts ...gax.CallOption) *AnnotationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListAnnotations[0:len((*c.CallOptions).ListAnnotations):len((*c.CallOptions).ListAnnotations)], opts...)
 	it := &AnnotationIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListAnnotationsRequest)
@@ -574,9 +1005,232 @@ func (c *datasetGRPCClient) ListAnnotations(ctx context.Context, req *aiplatform
 	return it
 }
 
-// CreateDatasetOperation manages a long-running operation from CreateDataset.
-type CreateDatasetOperation struct {
-	lro *longrunning.Operation
+func (c *datasetGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *datasetGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *datasetGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *datasetGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *datasetGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *datasetGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *datasetGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *datasetGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *datasetGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *datasetGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateDatasetOperation returns a new CreateDatasetOperation from a given name.
@@ -587,65 +1241,12 @@ func (c *datasetGRPCClient) CreateDatasetOperation(name string) *CreateDatasetOp
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateDatasetOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Dataset, error) {
-	var resp aiplatformpb.Dataset
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// CreateDatasetVersionOperation returns a new CreateDatasetVersionOperation from a given name.
+// The name must be that of a previously created CreateDatasetVersionOperation, possibly from a different process.
+func (c *datasetGRPCClient) CreateDatasetVersionOperation(name string) *CreateDatasetVersionOperation {
+	return &CreateDatasetVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateDatasetOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.Dataset, error) {
-	var resp aiplatformpb.Dataset
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateDatasetOperation) Metadata() (*aiplatformpb.CreateDatasetOperationMetadata, error) {
-	var meta aiplatformpb.CreateDatasetOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateDatasetOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateDatasetOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteDatasetOperation manages a long-running operation from DeleteDataset.
-type DeleteDatasetOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeleteDatasetOperation returns a new DeleteDatasetOperation from a given name.
@@ -656,54 +1257,20 @@ func (c *datasetGRPCClient) DeleteDatasetOperation(name string) *DeleteDatasetOp
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteDatasetOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteDatasetOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteDatasetOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// DeleteDatasetVersionOperation returns a new DeleteDatasetVersionOperation from a given name.
+// The name must be that of a previously created DeleteDatasetVersionOperation, possibly from a different process.
+func (c *datasetGRPCClient) DeleteDatasetVersionOperation(name string) *DeleteDatasetVersionOperation {
+	return &DeleteDatasetVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &meta, nil
 }
 
-// Done reports whether the long-running operation has completed.
-func (op *DeleteDatasetOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteDatasetOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ExportDataOperation manages a long-running operation from ExportData.
-type ExportDataOperation struct {
-	lro *longrunning.Operation
+// DeleteSavedQueryOperation returns a new DeleteSavedQueryOperation from a given name.
+// The name must be that of a previously created DeleteSavedQueryOperation, possibly from a different process.
+func (c *datasetGRPCClient) DeleteSavedQueryOperation(name string) *DeleteSavedQueryOperation {
+	return &DeleteSavedQueryOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
 // ExportDataOperation returns a new ExportDataOperation from a given name.
@@ -714,67 +1281,6 @@ func (c *datasetGRPCClient) ExportDataOperation(name string) *ExportDataOperatio
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportDataOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ExportDataResponse, error) {
-	var resp aiplatformpb.ExportDataResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportDataOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ExportDataResponse, error) {
-	var resp aiplatformpb.ExportDataResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportDataOperation) Metadata() (*aiplatformpb.ExportDataOperationMetadata, error) {
-	var meta aiplatformpb.ExportDataOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportDataOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportDataOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ImportDataOperation manages a long-running operation from ImportData.
-type ImportDataOperation struct {
-	lro *longrunning.Operation
-}
-
 // ImportDataOperation returns a new ImportDataOperation from a given name.
 // The name must be that of a previously created ImportDataOperation, possibly from a different process.
 func (c *datasetGRPCClient) ImportDataOperation(name string) *ImportDataOperation {
@@ -783,199 +1289,10 @@ func (c *datasetGRPCClient) ImportDataOperation(name string) *ImportDataOperatio
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportDataOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ImportDataResponse, error) {
-	var resp aiplatformpb.ImportDataResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// RestoreDatasetVersionOperation returns a new RestoreDatasetVersionOperation from a given name.
+// The name must be that of a previously created RestoreDatasetVersionOperation, possibly from a different process.
+func (c *datasetGRPCClient) RestoreDatasetVersionOperation(name string) *RestoreDatasetVersionOperation {
+	return &RestoreDatasetVersionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportDataOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.ImportDataResponse, error) {
-	var resp aiplatformpb.ImportDataResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportDataOperation) Metadata() (*aiplatformpb.ImportDataOperationMetadata, error) {
-	var meta aiplatformpb.ImportDataOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportDataOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportDataOperation) Name() string {
-	return op.lro.Name()
-}
-
-// AnnotationIterator manages a stream of *aiplatformpb.Annotation.
-type AnnotationIterator struct {
-	items    []*aiplatformpb.Annotation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Annotation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *AnnotationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *AnnotationIterator) Next() (*aiplatformpb.Annotation, error) {
-	var item *aiplatformpb.Annotation
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *AnnotationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *AnnotationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DataItemIterator manages a stream of *aiplatformpb.DataItem.
-type DataItemIterator struct {
-	items    []*aiplatformpb.DataItem
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.DataItem, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DataItemIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DataItemIterator) Next() (*aiplatformpb.DataItem, error) {
-	var item *aiplatformpb.DataItem
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DataItemIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DataItemIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// DatasetIterator manages a stream of *aiplatformpb.Dataset.
-type DatasetIterator struct {
-	items    []*aiplatformpb.Dataset
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Dataset, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DatasetIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DatasetIterator) Next() (*aiplatformpb.Dataset, error) {
-	var item *aiplatformpb.Dataset
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DatasetIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DatasetIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

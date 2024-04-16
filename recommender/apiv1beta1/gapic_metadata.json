@@ -30,6 +30,11 @@
                 "GetRecommenderConfig"
               ]
             },
+            "ListInsightTypes": {
+              "methods": [
+                "ListInsightTypes"
+              ]
+            },
             "ListInsights": {
               "methods": [
                 "ListInsights"
@@ -38,6 +43,86 @@
             "ListRecommendations": {
               "methods": [
                 "ListRecommendations"
+              ]
+            },
+            "ListRecommenders": {
+              "methods": [
+                "ListRecommenders"
+              ]
+            },
+            "MarkInsightAccepted": {
+              "methods": [
+                "MarkInsightAccepted"
+              ]
+            },
+            "MarkRecommendationClaimed": {
+              "methods": [
+                "MarkRecommendationClaimed"
+              ]
+            },
+            "MarkRecommendationFailed": {
+              "methods": [
+                "MarkRecommendationFailed"
+              ]
+            },
+            "MarkRecommendationSucceeded": {
+              "methods": [
+                "MarkRecommendationSucceeded"
+              ]
+            },
+            "UpdateInsightTypeConfig": {
+              "methods": [
+                "UpdateInsightTypeConfig"
+              ]
+            },
+            "UpdateRecommenderConfig": {
+              "methods": [
+                "UpdateRecommenderConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetInsight": {
+              "methods": [
+                "GetInsight"
+              ]
+            },
+            "GetInsightTypeConfig": {
+              "methods": [
+                "GetInsightTypeConfig"
+              ]
+            },
+            "GetRecommendation": {
+              "methods": [
+                "GetRecommendation"
+              ]
+            },
+            "GetRecommenderConfig": {
+              "methods": [
+                "GetRecommenderConfig"
+              ]
+            },
+            "ListInsightTypes": {
+              "methods": [
+                "ListInsightTypes"
+              ]
+            },
+            "ListInsights": {
+              "methods": [
+                "ListInsights"
+              ]
+            },
+            "ListRecommendations": {
+              "methods": [
+                "ListRecommendations"
+              ]
+            },
+            "ListRecommenders": {
+              "methods": [
+                "ListRecommenders"
               ]
             },
             "MarkInsightAccepted": {

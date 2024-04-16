@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,13 +19,19 @@ package iap_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	iap "cloud.google.com/go/iap/apiv1"
-	iappb "google.golang.org/genproto/googleapis/cloud/iap/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	iappb "cloud.google.com/go/iap/apiv1/iappb"
+	"google.golang.org/api/iterator"
 )
 
 func ExampleNewIdentityAwareProxyAdminClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,19 +42,41 @@ func ExampleNewIdentityAwareProxyAdminClient() {
 	_ = c
 }
 
-func ExampleIdentityAwareProxyAdminClient_SetIamPolicy() {
+func ExampleNewIdentityAwareProxyAdminRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := iap.NewIdentityAwareProxyAdminRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleIdentityAwareProxyAdminClient_CreateTunnelDestGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &iampb.SetIamPolicyRequest{
+	req := &iappb.CreateTunnelDestGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#CreateTunnelDestGroupRequest.
 	}
-	resp, err := c.SetIamPolicy(ctx, req)
+	resp, err := c.CreateTunnelDestGroup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -56,8 +84,36 @@ func ExampleIdentityAwareProxyAdminClient_SetIamPolicy() {
 	_ = resp
 }
 
+func ExampleIdentityAwareProxyAdminClient_DeleteTunnelDestGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iappb.DeleteTunnelDestGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#DeleteTunnelDestGroupRequest.
+	}
+	err = c.DeleteTunnelDestGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleIdentityAwareProxyAdminClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +122,7 @@ func ExampleIdentityAwareProxyAdminClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -76,28 +132,13 @@ func ExampleIdentityAwareProxyAdminClient_GetIamPolicy() {
 	_ = resp
 }
 
-func ExampleIdentityAwareProxyAdminClient_TestIamPermissions() {
-	ctx := context.Background()
-	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &iampb.TestIamPermissionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
-	}
-	resp, err := c.TestIamPermissions(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleIdentityAwareProxyAdminClient_GetIapSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -106,7 +147,7 @@ func ExampleIdentityAwareProxyAdminClient_GetIapSettings() {
 
 	req := &iappb.GetIapSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#GetIapSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#GetIapSettingsRequest.
 	}
 	resp, err := c.GetIapSettings(ctx, req)
 	if err != nil {
@@ -116,8 +157,125 @@ func ExampleIdentityAwareProxyAdminClient_GetIapSettings() {
 	_ = resp
 }
 
+func ExampleIdentityAwareProxyAdminClient_GetTunnelDestGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iappb.GetTunnelDestGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#GetTunnelDestGroupRequest.
+	}
+	resp, err := c.GetTunnelDestGroup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIdentityAwareProxyAdminClient_ListTunnelDestGroups() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iappb.ListTunnelDestGroupsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#ListTunnelDestGroupsRequest.
+	}
+	it := c.ListTunnelDestGroups(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*iappb.ListTunnelDestGroupsResponse)
+	}
+}
+
+func ExampleIdentityAwareProxyAdminClient_SetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.SetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIdentityAwareProxyAdminClient_TestIamPermissions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.TestIamPermissionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
+	}
+	resp, err := c.TestIamPermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleIdentityAwareProxyAdminClient_UpdateIapSettings() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -126,9 +284,34 @@ func ExampleIdentityAwareProxyAdminClient_UpdateIapSettings() {
 
 	req := &iappb.UpdateIapSettingsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/iap/v1#UpdateIapSettingsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#UpdateIapSettingsRequest.
 	}
 	resp, err := c.UpdateIapSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleIdentityAwareProxyAdminClient_UpdateTunnelDestGroup() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := iap.NewIdentityAwareProxyAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iappb.UpdateTunnelDestGroupRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iap/apiv1/iappb#UpdateTunnelDestGroupRequest.
+	}
+	resp, err := c.UpdateTunnelDestGroup(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

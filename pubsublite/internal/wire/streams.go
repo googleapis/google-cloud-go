@@ -15,12 +15,12 @@ package wire
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"reflect"
 	"sync"
 	"time"
 
-	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -362,7 +362,7 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, err err
 			break
 		}
 		if r.ExceededDeadline() {
-			err = xerrors.Errorf("%v: %w", err, ErrBackendUnavailable)
+			err = fmt.Errorf("%v: %w", err, ErrBackendUnavailable)
 			break
 		}
 		if err = gax.Sleep(rs.ctx, backoff); err != nil {

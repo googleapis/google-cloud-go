@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "CloudRedisClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
@@ -18,6 +23,11 @@
             "DeleteInstance": {
               "methods": [
                 "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "ExportInstance": {
@@ -35,6 +45,21 @@
                 "GetInstance"
               ]
             },
+            "GetInstanceAuthString": {
+              "methods": [
+                "GetInstanceAuthString"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ImportInstance": {
               "methods": [
                 "ImportInstance"
@@ -43,6 +68,111 @@
             "ListInstances": {
               "methods": [
                 "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
+              ]
+            },
+            "UpdateInstance": {
+              "methods": [
+                "UpdateInstance"
+              ]
+            },
+            "UpgradeInstance": {
+              "methods": [
+                "UpgradeInstance"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudRedisClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateInstance": {
+              "methods": [
+                "CreateInstance"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExportInstance": {
+              "methods": [
+                "ExportInstance"
+              ]
+            },
+            "FailoverInstance": {
+              "methods": [
+                "FailoverInstance"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "GetInstanceAuthString": {
+              "methods": [
+                "GetInstanceAuthString"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportInstance": {
+              "methods": [
+                "ImportInstance"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RescheduleMaintenance": {
+              "methods": [
+                "RescheduleMaintenance"
               ]
             },
             "UpdateInstance": {

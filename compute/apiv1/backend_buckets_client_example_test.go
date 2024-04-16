@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewBackendBucketsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewBackendBucketsRESTClient() {
 
 func ExampleBackendBucketsClient_AddSignedUrlKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleBackendBucketsClient_AddSignedUrlKey() {
 
 	req := &computepb.AddSignedUrlKeyBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddSignedUrlKeyBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddSignedUrlKeyBackendBucketRequest.
 	}
 	op, err := c.AddSignedUrlKey(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleBackendBucketsClient_AddSignedUrlKey() {
 
 func ExampleBackendBucketsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleBackendBucketsClient_Delete() {
 
 	req := &computepb.DeleteBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteBackendBucketRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleBackendBucketsClient_Delete() {
 
 func ExampleBackendBucketsClient_DeleteSignedUrlKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleBackendBucketsClient_DeleteSignedUrlKey() {
 
 	req := &computepb.DeleteSignedUrlKeyBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSignedUrlKeyBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteSignedUrlKeyBackendBucketRequest.
 	}
 	op, err := c.DeleteSignedUrlKey(ctx, req)
 	if err != nil {
@@ -107,6 +127,11 @@ func ExampleBackendBucketsClient_DeleteSignedUrlKey() {
 
 func ExampleBackendBucketsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -115,7 +140,7 @@ func ExampleBackendBucketsClient_Get() {
 
 	req := &computepb.GetBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetBackendBucketRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -125,8 +150,38 @@ func ExampleBackendBucketsClient_Get() {
 	_ = resp
 }
 
+func ExampleBackendBucketsClient_GetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewBackendBucketsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.GetIamPolicyBackendBucketRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyBackendBucketRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleBackendBucketsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -135,7 +190,7 @@ func ExampleBackendBucketsClient_Insert() {
 
 	req := &computepb.InsertBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertBackendBucketRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -150,6 +205,11 @@ func ExampleBackendBucketsClient_Insert() {
 
 func ExampleBackendBucketsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,7 +218,7 @@ func ExampleBackendBucketsClient_List() {
 
 	req := &computepb.ListBackendBucketsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListBackendBucketsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListBackendBucketsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -171,11 +231,22 @@ func ExampleBackendBucketsClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.BackendBucketList)
 	}
 }
 
 func ExampleBackendBucketsClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -184,7 +255,7 @@ func ExampleBackendBucketsClient_Patch() {
 
 	req := &computepb.PatchBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchBackendBucketRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -199,6 +270,11 @@ func ExampleBackendBucketsClient_Patch() {
 
 func ExampleBackendBucketsClient_SetEdgeSecurityPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -207,7 +283,7 @@ func ExampleBackendBucketsClient_SetEdgeSecurityPolicy() {
 
 	req := &computepb.SetEdgeSecurityPolicyBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetEdgeSecurityPolicyBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetEdgeSecurityPolicyBackendBucketRequest.
 	}
 	op, err := c.SetEdgeSecurityPolicy(ctx, req)
 	if err != nil {
@@ -220,8 +296,63 @@ func ExampleBackendBucketsClient_SetEdgeSecurityPolicy() {
 	}
 }
 
+func ExampleBackendBucketsClient_SetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewBackendBucketsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetIamPolicyBackendBucketRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyBackendBucketRequest.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleBackendBucketsClient_TestIamPermissions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewBackendBucketsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.TestIamPermissionsBackendBucketRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsBackendBucketRequest.
+	}
+	resp, err := c.TestIamPermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleBackendBucketsClient_Update() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewBackendBucketsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -230,7 +361,7 @@ func ExampleBackendBucketsClient_Update() {
 
 	req := &computepb.UpdateBackendBucketRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateBackendBucketRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateBackendBucketRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {

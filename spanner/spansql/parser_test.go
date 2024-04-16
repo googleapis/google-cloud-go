@@ -32,7 +32,8 @@ func TestParseQuery(t *testing.T) {
 		want Query
 	}{
 		{`SELECT 17`, Query{Select: Select{List: []Expr{IntegerLiteral(17)}}}},
-		{`SELECT Alias AS aka From Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit OFFSET 3` + "\n\t",
+		{
+			`SELECT Alias AS aka From Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit OFFSET 3` + "\n\t",
 			Query{
 				Select: Select{
 					List: []Expr{ID("Alias")},
@@ -62,7 +63,8 @@ func TestParseQuery(t *testing.T) {
 				Offset: IntegerLiteral(3),
 			},
 		},
-		{`SELECT COUNT(*) FROM Packages`,
+		{
+			`SELECT COUNT(*) FROM Packages`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -75,7 +77,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM Packages`,
+		{
+			`SELECT * FROM Packages`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -83,7 +86,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT date, timestamp as timestamp FROM Packages WHERE date = DATE '2014-09-27' AND timestamp = TIMESTAMP '2014-09-27 12:30:00'`,
+		{
+			`SELECT date, timestamp as timestamp FROM Packages WHERE date = DATE '2014-09-27' AND timestamp = TIMESTAMP '2014-09-27 12:30:00'`,
 			Query{
 				Select: Select{
 					List: []Expr{ID("date"), ID("timestamp")},
@@ -105,14 +109,16 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT UNIX_DATE(DATE "2008-12-25")`,
+		{
+			`SELECT UNIX_DATE(DATE "2008-12-25")`,
 			Query{
 				Select: Select{
 					List: []Expr{Func{Name: "UNIX_DATE", Args: []Expr{DateLiteral{Year: 2008, Month: 12, Day: 25}}}},
 				},
 			},
 		},
-		{`SELECT * FROM Foo WHERE STARTS_WITH(Bar, 'B')`,
+		{
+			`SELECT * FROM Foo WHERE STARTS_WITH(Bar, 'B')`,
 			Query{
 				Select: Select{
 					List:  []Expr{Star},
@@ -121,7 +127,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM Foo WHERE CAST(Bar AS STRING)='Bar'`,
+		{
+			`SELECT * FROM Foo WHERE CAST(Bar AS STRING)='Bar'`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -134,7 +141,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT SUM(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
+		{
+			`SELECT SUM(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -149,7 +157,8 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// https://github.com/googleapis/google-cloud-go/issues/1973
-		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l.user_id=@userID`,
+		{
+			`SELECT COUNT(*) AS count FROM Lists AS l WHERE l.user_id=@userID`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -166,7 +175,8 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// with single table hint
-		{`SELECT * FROM Packages@{FORCE_INDEX=PackagesIdx} WHERE package_idx=@packageIdx`,
+		{
+			`SELECT * FROM Packages@{FORCE_INDEX=PackagesIdx} WHERE package_idx=@packageIdx`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -180,7 +190,8 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// with multiple table hints
-		{`SELECT * FROM Packages@{ FORCE_INDEX=PackagesIdx, GROUPBY_SCAN_OPTIMIZATION=TRUE } WHERE package_idx=@packageIdx`,
+		{
+			`SELECT * FROM Packages@{ FORCE_INDEX=PackagesIdx, GROUPBY_SCAN_OPTIMIZATION=TRUE } WHERE package_idx=@packageIdx`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -193,7 +204,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM A INNER JOIN B ON A.w = B.y`,
+		{
+			`SELECT * FROM A INNER JOIN B ON A.w = B.y`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -210,7 +222,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM A INNER JOIN B USING (x)`,
+		{
+			`SELECT * FROM A INNER JOIN B USING (x)`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -223,7 +236,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT Roster . LastName, TeamMascot.Mascot FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID`,
+		{
+			`SELECT Roster . LastName, TeamMascot.Mascot FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -244,7 +258,8 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// Joins with hints.
-		{`SELECT * FROM A HASH JOIN B USING (x)`,
+		{
+			`SELECT * FROM A HASH JOIN B USING (x)`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -258,7 +273,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM A JOIN @{ JOIN_METHOD=HASH_JOIN } B USING (x)`,
+		{
+			`SELECT * FROM A JOIN @{ JOIN_METHOD=HASH_JOIN } B USING (x)`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -272,7 +288,8 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM UNNEST ([1, 2, 3]) AS data`,
+		{
+			`SELECT * FROM UNNEST ([1, 2, 3]) AS data`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
@@ -296,6 +313,58 @@ func TestParseQuery(t *testing.T) {
 		}
 		if !reflect.DeepEqual(got, test.want) {
 			t.Errorf("ParseQuery(%q) incorrect.\n got %#v\nwant %#v", test.in, got, test.want)
+		}
+	}
+}
+
+func TestParseDMLStmt(t *testing.T) {
+	tests := []struct {
+		in   string
+		want DMLStmt
+	}{
+		{
+			"INSERT Singers (SingerId, FirstName, LastName) VALUES (1, 'Marc', 'Richards')",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+		},
+		{
+			"INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, 'Marc', 'Richards')",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input:   Values{{IntegerLiteral(1), StringLiteral("Marc"), StringLiteral("Richards")}},
+			},
+		},
+		{
+			"INSERT Singers (SingerId, FirstName, LastName) SELECT * FROM UNNEST ([1, 2, 3]) AS data",
+			&Insert{
+				Table:   "Singers",
+				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
+				Input: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromUnnest{
+						Expr: Array{
+							IntegerLiteral(1),
+							IntegerLiteral(2),
+							IntegerLiteral(3),
+						},
+						Alias: ID("data"),
+					}},
+				},
+			},
+		},
+	}
+	for _, test := range tests {
+		got, err := ParseDMLStmt(test.in)
+		if err != nil {
+			t.Errorf("ParseDMLStmt(%q): %v", test.in, err)
+			continue
+		}
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("ParseDMLStmt(%q) incorrect.\n got %#v\nwant %#v", test.in, got, test.want)
 		}
 	}
 }
@@ -342,6 +411,68 @@ func TestParseExpr(t *testing.T) {
 		{`SAFE_CAST(Bar AS INT64)`, Func{Name: "SAFE_CAST", Args: []Expr{TypedExpr{Expr: ID("Bar"), Type: Type{Base: Int64}}}}},
 		{`EXTRACT(DATE FROM TIMESTAMP AT TIME ZONE "America/Los_Angeles")`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DATE", Type: Type{Base: Date}, Expr: AtTimeZoneExpr{Expr: ID("TIMESTAMP"), Zone: "America/Los_Angeles", Type: Type{Base: Timestamp}}}}}},
 		{`EXTRACT(DAY FROM DATE)`, Func{Name: "EXTRACT", Args: []Expr{ExtractExpr{Part: "DAY", Expr: ID("DATE"), Type: Type{Base: Int64}}}}},
+		{`DATE_ADD(CURRENT_DATE(), INTERVAL 1 DAY)`, Func{Name: "DATE_ADD", Args: []Expr{Func{Name: "CURRENT_DATE"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "DAY"}}}},
+		{`DATE_SUB(CURRENT_DATE(), INTERVAL 1 WEEK)`, Func{Name: "DATE_SUB", Args: []Expr{Func{Name: "CURRENT_DATE"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "WEEK"}}}},
+		{`GENERATE_DATE_ARRAY('2022-01-01', CURRENT_DATE(), INTERVAL 1 MONTH)`, Func{Name: "GENERATE_DATE_ARRAY", Args: []Expr{StringLiteral("2022-01-01"), Func{Name: "CURRENT_DATE"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MONTH"}}}},
+		{`TIMESTAMP_ADD(CURRENT_TIMESTAMP(), INTERVAL 1 HOUR)`, Func{Name: "TIMESTAMP_ADD", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "HOUR"}}}},
+		{`TIMESTAMP_SUB(CURRENT_TIMESTAMP(), INTERVAL 1 MINUTE)`, Func{Name: "TIMESTAMP_SUB", Args: []Expr{Func{Name: "CURRENT_TIMESTAMP"}, IntervalExpr{Expr: IntegerLiteral(1), DatePart: "MINUTE"}}}},
+		{`GET_NEXT_SEQUENCE_VALUE(SEQUENCE MySequence)`, Func{Name: "GET_NEXT_SEQUENCE_VALUE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
+		{`GET_INTERNAL_SEQUENCE_STATE(SEQUENCE MySequence)`, Func{Name: "GET_INTERNAL_SEQUENCE_STATE", Args: []Expr{SequenceExpr{Name: ID("MySequence")}}}},
+
+		// Aggregate Functions
+		{`COUNT(*)`, Func{Name: "COUNT", Args: []Expr{Star}}},
+		{`COUNTIF(DISTINCT cname)`, Func{Name: "COUNTIF", Args: []Expr{ID("cname")}, Distinct: true}},
+		{`ARRAY_AGG(Foo IGNORE NULLS)`, Func{Name: "ARRAY_AGG", Args: []Expr{ID("Foo")}, NullsHandling: IgnoreNulls}},
+		{`ANY_VALUE(Foo HAVING MAX Bar)`, Func{Name: "ANY_VALUE", Args: []Expr{ID("Foo")}, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}}},
+		{`STRING_AGG(DISTINCT Foo, "," IGNORE NULLS HAVING MAX Bar)`, Func{Name: "STRING_AGG", Args: []Expr{ID("Foo"), StringLiteral(",")}, Distinct: true, NullsHandling: IgnoreNulls, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}}},
+
+		// Conditional expressions
+		{
+			`CASE X WHEN 1 THEN "X" WHEN 2 THEN "Y" ELSE NULL END`,
+			Case{
+				Expr: ID("X"),
+				WhenClauses: []WhenClause{
+					{Cond: IntegerLiteral(1), Result: StringLiteral("X")},
+					{Cond: IntegerLiteral(2), Result: StringLiteral("Y")},
+				},
+				ElseResult: Null,
+			},
+		},
+		{
+			`CASE WHEN TRUE THEN "X" WHEN FALSE THEN "Y" END`,
+			Case{
+				WhenClauses: []WhenClause{
+					{Cond: True, Result: StringLiteral("X")},
+					{Cond: False, Result: StringLiteral("Y")},
+				},
+			},
+		},
+		{
+			`COALESCE(NULL, "B", "C")`,
+			Coalesce{ExprList: []Expr{Null, StringLiteral("B"), StringLiteral("C")}},
+		},
+		{
+			`IF(A < B, TRUE, FALSE)`,
+			If{
+				Expr:       ComparisonOp{LHS: ID("A"), Op: Lt, RHS: ID("B")},
+				TrueResult: True,
+				ElseResult: False,
+			},
+		},
+		{
+			`IFNULL(NULL, TRUE)`,
+			IfNull{
+				Expr:       Null,
+				NullResult: True,
+			},
+		},
+		{
+			`NULLIF("a", "b")`,
+			NullIf{
+				Expr:        StringLiteral("a"),
+				ExprToMatch: StringLiteral("b"),
+			},
+		},
 
 		// String literal:
 		// Accept double quote and single quote.
@@ -407,6 +538,9 @@ func TestParseExpr(t *testing.T) {
 		{`[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
 		{`['x', 'y', 'xy']`, Array{StringLiteral("x"), StringLiteral("y"), StringLiteral("xy")}},
 		{`ARRAY[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
+		// JSON literals:
+		// https://cloud.google.com/spanner/docs/reference/standard-sql/lexical#json_literals
+		{`JSON '{"a": 1}'`, JSONLiteral(`{"a": 1}`)},
 
 		// OR is lower precedence than AND.
 		{`A AND B OR C`, LogicalOp{LHS: LogicalOp{LHS: ID("A"), Op: And, RHS: ID("B")}, Op: Or, RHS: ID("C")}},
@@ -415,7 +549,8 @@ func TestParseExpr(t *testing.T) {
 		{`A OR (B AND C)`, LogicalOp{LHS: ID("A"), Op: Or, RHS: Paren{Expr: LogicalOp{LHS: ID("B"), Op: And, RHS: ID("C")}}}},
 
 		// This is the same as the WHERE clause from the test in ParseQuery.
-		{`Age < @ageLimit AND Alias IS NOT NULL`,
+		{
+			`Age < @ageLimit AND Alias IS NOT NULL`,
 			LogicalOp{
 				LHS: ComparisonOp{LHS: ID("Age"), Op: Lt, RHS: Param("ageLimit")},
 				Op:  And,
@@ -424,7 +559,8 @@ func TestParseExpr(t *testing.T) {
 		},
 
 		// This used to be broken because the lexer didn't reset the token type.
-		{`C < "whelp" AND D IS NOT NULL`,
+		{
+			`C < "whelp" AND D IS NOT NULL`,
 			LogicalOp{
 				LHS: ComparisonOp{LHS: ID("C"), Op: Lt, RHS: StringLiteral("whelp")},
 				Op:  And,
@@ -453,7 +589,6 @@ func TestParseExpr(t *testing.T) {
 }
 
 func TestParseDDL(t *testing.T) {
-	line := func(n int) Position { return Position{Line: n} }
 	tests := []struct {
 		in   string
 		want *DDL
@@ -531,6 +666,80 @@ func TestParseDDL(t *testing.T) {
 		  generated_date DATE AS (EXTRACT(DATE FROM some_time AT TIME ZONE "CET")) STORED,
 		  shard_id  INT64 AS (MOD(FARM_FINGERPRINT(user_id), 19)) STORED,
 		) PRIMARY KEY(user_id);
+
+		-- Table has a column with a default value.
+		CREATE TABLE DefaultCol (
+			Name STRING(MAX) NOT NULL,
+			Age INT64 DEFAULT (0),
+		) PRIMARY KEY (Name);
+
+		ALTER TABLE DefaultCol ALTER COLUMN Age DROP DEFAULT;
+		ALTER TABLE DefaultCol ALTER COLUMN Age SET DEFAULT (0);
+		ALTER TABLE DefaultCol ALTER COLUMN Age STRING(MAX) DEFAULT ("0");
+
+		CREATE ROLE TestRole;
+
+		GRANT SELECT ON TABLE employees TO ROLE hr_rep;
+		GRANT SELECT(name, address, phone) ON TABLE contractors TO ROLE hr_rep;
+		GRANT SELECT, UPDATE(location), DELETE ON TABLE employees TO ROLE hr_manager;
+		GRANT SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors TO ROLE hr_manager;
+		GRANT ROLE pii_access, pii_update TO ROLE hr_manager, hr_director;
+		GRANT EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two TO ROLE hr_manager, hr_director;
+		GRANT SELECT ON VIEW view_name_one, view_name_two TO ROLE hr_manager, hr_director;
+		GRANT SELECT ON CHANGE STREAM cs_name_one, cs_name_two TO ROLE hr_manager, hr_director;
+
+		REVOKE SELECT ON TABLE employees FROM ROLE hr_rep;
+		REVOKE SELECT(name, address, phone) ON TABLE contractors FROM ROLE hr_rep;
+		REVOKE SELECT, UPDATE(location), DELETE ON TABLE employees FROM ROLE hr_manager;
+		REVOKE SELECT(name, level, location), UPDATE(location) ON TABLE employees, contractors FROM ROLE hr_manager;
+		REVOKE ROLE pii_access, pii_update FROM ROLE hr_manager, hr_director;
+		REVOKE EXECUTE ON TABLE FUNCTION tvf_name_one, tvf_name_two FROM ROLE hr_manager, hr_director;
+		REVOKE SELECT ON VIEW view_name_one, view_name_two FROM ROLE hr_manager, hr_director;
+		REVOKE SELECT ON CHANGE STREAM cs_name_one, cs_name_two FROM ROLE hr_manager, hr_director;
+
+		ALTER INDEX MyFirstIndex ADD STORED COLUMN UpdatedAt;
+		ALTER INDEX MyFirstIndex DROP STORED COLUMN UpdatedAt;
+
+		CREATE SEQUENCE MySequence OPTIONS (
+			sequence_kind='bit_reversed_positive',
+			skip_range_min = 1,
+			skip_range_max = 1000,
+			start_with_counter = 50
+		);
+		ALTER SEQUENCE MySequence SET OPTIONS (
+			sequence_kind='bit_reversed_positive',
+			skip_range_min = 1,
+			skip_range_max = 1000,
+			start_with_counter = 50
+		);
+		DROP SEQUENCE MySequence;
+
+		-- Table with a synonym.
+		CREATE TABLE TableWithSynonym (
+			Name STRING(MAX) NOT NULL,
+			SYNONYM(AnotherName),
+		) PRIMARY KEY (Name);
+
+		ALTER TABLE TableWithSynonym DROP SYNONYM AnotherName;
+		ALTER TABLE TableWithSynonym ADD SYNONYM YetAnotherName;
+
+		-- Table rename.
+		CREATE TABLE OldName (
+			Name STRING(MAX) NOT NULL,
+		) PRIMARY KEY (Name);
+
+		ALTER TABLE OldName RENAME TO NewName;
+		ALTER TABLE NewName RENAME TO OldName, ADD SYNONYM NewName;
+
+		-- Table rename chain.
+		CREATE TABLE Table1 (
+			Name STRING(MAX) NOT NULL,
+		) PRIMARY KEY (Name);
+		CREATE TABLE Table2 (
+			Name STRING(MAX) NOT NULL,
+		) PRIMARY KEY (Name);
+
+		RENAME TABLE Table1 TO temp, Table2 TO Table1, temp TO Table2;
 
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -722,8 +931,9 @@ func TestParseDDL(t *testing.T) {
 				Position: line(58),
 			},
 			&CreateView{
-				Name:      "SingersView",
-				OrReplace: false,
+				Name:         "SingersView",
+				OrReplace:    false,
+				SecurityType: Invoker,
 				Query: Query{
 					Select: Select{
 						List: []Expr{ID("SingerId"), ID("FullName")},
@@ -775,19 +985,308 @@ func TestParseDDL(t *testing.T) {
 				PrimaryKey: []KeyPart{{Column: "user_id"}},
 				Position:   line(66),
 			},
+
+			&CreateTable{
+				Name: "DefaultCol",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(77)},
+					{
+						Name: "Age", Type: Type{Base: Int64},
+						Default:  IntegerLiteral(0),
+						Position: line(78),
+					},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(76),
+			},
+			&AlterTable{
+				Name: "DefaultCol",
+				Alteration: AlterColumn{
+					Name:       "Age",
+					Alteration: DropDefault{},
+				},
+				Position: line(81),
+			},
+			&AlterTable{
+				Name: "DefaultCol",
+				Alteration: AlterColumn{
+					Name: "Age",
+					Alteration: SetDefault{
+						Default: IntegerLiteral(0),
+					},
+				},
+				Position: line(82),
+			},
+			&AlterTable{
+				Name: "DefaultCol",
+				Alteration: AlterColumn{
+					Name: "Age",
+					Alteration: SetColumnType{
+						Type:    Type{Base: String, Len: MaxLen},
+						Default: StringLiteral("0"),
+					},
+				},
+				Position: line(83),
+			},
+			&CreateRole{
+				Name:     "TestRole",
+				Position: line(85),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(87),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
+				},
+				TableNames: []ID{"contractors"},
+
+				Position: line(88),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeDelete},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(89),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(90),
+			},
+			&GrantRole{
+				ToRoleNames:    []ID{"hr_manager", "hr_director"},
+				GrantRoleNames: []ID{"pii_access", "pii_update"},
+
+				Position: line(91),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager", "hr_director"},
+				TvfNames:    []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(92),
+			},
+			&GrantRole{
+				ToRoleNames: []ID{"hr_manager", "hr_director"},
+				ViewNames:   []ID{"view_name_one", "view_name_two"},
+
+				Position: line(93),
+			},
+			&GrantRole{
+				ToRoleNames:       []ID{"hr_manager", "hr_director"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(94),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(96),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_rep"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "address", "phone"}},
+				},
+				TableNames: []ID{"contractors"},
+
+				Position: line(97),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+					{Type: PrivilegeTypeDelete},
+				},
+				TableNames: []ID{"employees"},
+
+				Position: line(98),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager"},
+				Privileges: []Privilege{
+					{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+					{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+				},
+				TableNames: []ID{"employees", "contractors"},
+
+				Position: line(99),
+			},
+			&RevokeRole{
+				FromRoleNames:   []ID{"hr_manager", "hr_director"},
+				RevokeRoleNames: []ID{"pii_access", "pii_update"},
+
+				Position: line(100),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager", "hr_director"},
+				TvfNames:      []ID{"tvf_name_one", "tvf_name_two"},
+
+				Position: line(101),
+			},
+			&RevokeRole{
+				FromRoleNames: []ID{"hr_manager", "hr_director"},
+				ViewNames:     []ID{"view_name_one", "view_name_two"},
+
+				Position: line(102),
+			},
+			&RevokeRole{
+				FromRoleNames:     []ID{"hr_manager", "hr_director"},
+				ChangeStreamNames: []ID{"cs_name_one", "cs_name_two"},
+
+				Position: line(103),
+			},
+			&AlterIndex{
+				Name:       "MyFirstIndex",
+				Alteration: AddStoredColumn{Name: "UpdatedAt"},
+				Position:   line(105),
+			},
+			&AlterIndex{
+				Name:       "MyFirstIndex",
+				Alteration: DropStoredColumn{Name: "UpdatedAt"},
+				Position:   line(106),
+			},
+			&CreateSequence{
+				Name: "MySequence",
+				Options: SequenceOptions{
+					SequenceKind:     stringAddr("bit_reversed_positive"),
+					SkipRangeMin:     intAddr(1),
+					SkipRangeMax:     intAddr(1000),
+					StartWithCounter: intAddr(50),
+				},
+				Position: line(108),
+			},
+			&AlterSequence{
+				Name: "MySequence",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						SequenceKind:     stringAddr("bit_reversed_positive"),
+						SkipRangeMin:     intAddr(1),
+						SkipRangeMax:     intAddr(1000),
+						StartWithCounter: intAddr(50),
+					},
+				},
+				Position: line(114),
+			},
+			&DropSequence{Name: "MySequence", Position: line(120)},
+
+			&CreateTable{
+				Name: "TableWithSynonym",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(124)},
+				},
+				Synonym:    "AnotherName",
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(123),
+			},
+			&AlterTable{
+				Name: "TableWithSynonym",
+				Alteration: DropSynonym{
+					Name: "AnotherName",
+				},
+				Position: line(128),
+			},
+			&AlterTable{
+				Name: "TableWithSynonym",
+				Alteration: AddSynonym{
+					Name: "YetAnotherName",
+				},
+				Position: line(129),
+			},
+			&CreateTable{
+				Name: "OldName",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(133)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(132),
+			},
+			&AlterTable{
+				Name: "OldName",
+				Alteration: RenameTo{
+					ToName: "NewName",
+				},
+				Position: line(136),
+			},
+			&AlterTable{
+				Name: "NewName",
+				Alteration: RenameTo{
+					ToName:  "OldName",
+					Synonym: "NewName",
+				},
+				Position: line(137),
+			},
+			&CreateTable{
+				Name: "Table1",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(141)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(140),
+			},
+			&CreateTable{
+				Name: "Table2",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(144)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(143),
+			},
+			&RenameTable{
+				TableRenameOps: []TableRenameOp{
+					{FromName: "Table1", ToName: "temp"},
+					{FromName: "Table2", ToName: "Table1"},
+					{FromName: "temp", ToName: "Table2"},
+				},
+				Position: line(147),
+			},
 		}, Comments: []*Comment{
-			{Marker: "#", Start: line(2), End: line(2),
-				Text: []string{"This is a comment."}},
-			{Marker: "--", Start: line(3), End: line(3),
-				Text: []string{"This is another comment."}},
-			{Marker: "/*", Start: line(4), End: line(5),
-				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."}},
-			{Marker: "--", Start: line(15), End: line(15),
-				Text: []string{"unnamed foreign key"}},
-			{Marker: "--", Start: line(17), End: line(17),
-				Text: []string{"not a constraint"}},
-			{Marker: "--", Isolated: true, Start: line(33), End: line(34),
-				Text: []string{"This table has some commentary", "that spans multiple lines."}},
+			{
+				Marker: "#", Start: line(2), End: line(2),
+				Text: []string{"This is a comment."},
+			},
+			{
+				Marker: "--", Start: line(3), End: line(3),
+				Text: []string{"This is another comment."},
+			},
+			{
+				Marker: "/*", Start: line(4), End: line(5),
+				Text: []string{" This is a", "\t\t\t\t\t\t  * multiline comment."},
+			},
+			{
+				Marker: "--", Start: line(15), End: line(15),
+				Text: []string{"unnamed foreign key"},
+			},
+			{
+				Marker: "--", Start: line(17), End: line(17),
+				Text: []string{"not a constraint"},
+			},
+			{
+				Marker: "--", Isolated: true, Start: line(33), End: line(34),
+				Text: []string{"This table has some commentary", "that spans multiple lines."},
+			},
 			// These comments shouldn't get combined:
 			{Marker: "--", Start: line(36), End: line(36), Text: []string{"dummy comment"}},
 			{Marker: "--", Start: line(37), End: line(37), Text: []string{"comment on ids"}},
@@ -795,9 +1294,13 @@ func TestParseDDL(t *testing.T) {
 
 			{Marker: "--", Isolated: true, Start: line(43), End: line(43), Text: []string{"Table with generated column."}},
 			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Table with row deletion policy."}},
+			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Table has a column with a default value."}},
+			{Marker: "--", Isolated: true, Start: line(122), End: line(122), Text: []string{"Table with a synonym."}},
+			{Marker: "--", Isolated: true, Start: line(131), End: line(131), Text: []string{"Table rename."}},
+			{Marker: "--", Isolated: true, Start: line(139), End: line(139), Text: []string{"Table rename chain."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(75), End: line(75), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(149), End: line(149), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -823,65 +1326,126 @@ func TestParseDDL(t *testing.T) {
 				Position: line(1),
 			},
 		}}},
-		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true)`,
-			&DDL{Filename: "filename", List: []DDLStmt{
-				&AlterDatabase{
-					Name: "dbname",
-					Alteration: SetDatabaseOptions{
-						Options: DatabaseOptions{
-							OptimizerVersion:       func(i int) *int { return &i }(2),
-							VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
-							EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+		{
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, optimizer_statistics_package='auto_20191128_14_47_22UTC', version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1')`,
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&AlterDatabase{
+						Name: "dbname",
+						Alteration: SetDatabaseOptions{
+							Options: DatabaseOptions{
+								OptimizerVersion:           func(i int) *int { return &i }(2),
+								OptimizerStatisticsPackage: func(s string) *string { return &s }("auto_20191128_14_47_22UTC"),
+								VersionRetentionPeriod:     func(s string) *string { return &s }("7d"),
+								EnableKeyVisualizer:        func(b bool) *bool { return &b }(true),
+								DefaultLeader:              func(s string) *string { return &s }("europe-west1"),
+							},
 						},
+						Position: line(1),
 					},
-					Position: line(1),
 				},
 			},
-			}},
-		{`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)`,
-			&DDL{Filename: "filename", List: []DDLStmt{
-				&AlterDatabase{
-					Name: "dbname",
-					Alteration: SetDatabaseOptions{
-						Options: DatabaseOptions{
-							OptimizerVersion:       func(i int) *int { return &i }(0),
-							VersionRetentionPeriod: func(s string) *string { return &s }(""),
-							EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
+		},
+		{
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, optimizer_statistics_package='auto_20191128_14_47_22UTC', version_retention_period='7d', enable_key_visualizer=true, default_leader='europe-west1'); CREATE TABLE users (UserId STRING(MAX) NOT NULL,) PRIMARY KEY (UserId);`,
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&AlterDatabase{
+						Name: "dbname",
+						Alteration: SetDatabaseOptions{
+							Options: DatabaseOptions{
+								OptimizerVersion:           func(i int) *int { return &i }(2),
+								OptimizerStatisticsPackage: func(s string) *string { return &s }("auto_20191128_14_47_22UTC"),
+								VersionRetentionPeriod:     func(s string) *string { return &s }("7d"),
+								EnableKeyVisualizer:        func(b bool) *bool { return &b }(true),
+								DefaultLeader:              func(s string) *string { return &s }("europe-west1"),
+							},
 						},
+						Position: line(1),
 					},
-					Position: line(1),
-				},
-			},
-			}},
-		{"CREATE OR REPLACE VIEW `SingersView` SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
-			&DDL{Filename: "filename", List: []DDLStmt{
-				&CreateView{
-					Name:      "SingersView",
-					OrReplace: true,
-					Query: Query{
-						Select: Select{
-							List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
-							From: []SelectFrom{SelectFromTable{
-								Table: "Singers",
-							}},
+					&CreateTable{
+						Name: "users", Columns: []ColumnDef{
+							{Name: "UserId", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(1)},
 						},
-						Order: []Order{
-							{Expr: ID("LastName")},
-							{Expr: ID("FirstName")},
+						PrimaryKey: []KeyPart{
+							{Column: "UserId"},
 						},
+						Position: line(1),
 					},
-					Position: line(1),
 				},
 			},
-			}},
-		{"DROP VIEW `SingersView`",
-			&DDL{Filename: "filename", List: []DDLStmt{
-				&DropView{
-					Name:     "SingersView",
-					Position: line(1),
+		},
+		{
+			`ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, optimizer_statistics_package=null, version_retention_period=null, enable_key_visualizer=null, default_leader=null)`,
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&AlterDatabase{
+						Name: "dbname",
+						Alteration: SetDatabaseOptions{
+							Options: DatabaseOptions{
+								OptimizerVersion:           func(i int) *int { return &i }(0),
+								OptimizerStatisticsPackage: func(s string) *string { return &s }(""),
+								VersionRetentionPeriod:     func(s string) *string { return &s }(""),
+								EnableKeyVisualizer:        func(b bool) *bool { return &b }(false),
+								DefaultLeader:              func(s string) *string { return &s }(""),
+							},
+						},
+						Position: line(1),
+					},
 				},
 			},
-			}},
+		},
+		{
+			"CREATE OR REPLACE VIEW `SingersView` SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&CreateView{
+						Name:         "SingersView",
+						OrReplace:    true,
+						SecurityType: Invoker,
+						Query: Query{
+							Select: Select{
+								List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
+								From: []SelectFrom{SelectFromTable{
+									Table: "Singers",
+								}},
+							},
+							Order: []Order{
+								{Expr: ID("LastName")},
+								{Expr: ID("FirstName")},
+							},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"DROP VIEW `SingersView`",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&DropView{
+						Name:     "SingersView",
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (JSON_QUERY(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_QUERY",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
 		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (JSON_VALUE(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
 			&AlterTable{
 				Name: "products",
@@ -897,6 +1461,401 @@ func TestParseDDL(t *testing.T) {
 				Position: line(1),
 			},
 		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (JSON_QUERY_ARRAY(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_QUERY_ARRAY",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (JSON_VALUE_ARRAY(itemDetails, '$.itemDetails')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "JSON_VALUE_ARRAY",
+						Args: []Expr{ID("itemDetails"), StringLiteral("$.itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{
+			`ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterStatistics{
+						Name: "auto_20191128_14_47_22UTC",
+						Alteration: SetStatisticsOptions{
+							Options: StatisticsOptions{
+								AllowGC: func(b bool) *bool { return &b }(false),
+							},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"DROP ROLE `TestRole`",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&DropRole{
+						Name:     "TestRole",
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"GRANT SELECT(`name`, `level`, `location`), UPDATE(`location`) ON TABLE `employees`, `contractors` TO ROLE `hr_manager`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&GrantRole{
+						ToRoleNames: []ID{"hr_manager"},
+						Privileges: []Privilege{
+							{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+							{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+						},
+						TableNames: []ID{"employees", "contractors"},
+						Position:   line(1),
+					},
+				},
+			},
+		},
+		{
+			"GRANT ROLE `pii_access`, `pii_update` TO ROLE `hr_manager`, `hr_director`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&GrantRole{
+						ToRoleNames:    []ID{"hr_manager", "hr_director"},
+						GrantRoleNames: []ID{"pii_access", "pii_update"},
+
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"REVOKE SELECT(`name`, `level`, `location`), UPDATE(`location`) ON TABLE `employees`, `contractors` FROM ROLE `hr_manager`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&RevokeRole{
+						FromRoleNames: []ID{"hr_manager"},
+						Privileges: []Privilege{
+							{Type: PrivilegeTypeSelect, Columns: []ID{"name", "level", "location"}},
+							{Type: PrivilegeTypeUpdate, Columns: []ID{"location"}},
+						},
+						TableNames: []ID{"employees", "contractors"},
+
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"REVOKE ROLE `pii_access`, `pii_update` FROM ROLE `hr_manager`, `hr_director`;",
+			&DDL{
+				Filename: "filename", List: []DDLStmt{
+					&RevokeRole{
+						FromRoleNames:   []ID{"hr_manager", "hr_director"},
+						RevokeRoleNames: []ID{"pii_access", "pii_update"},
+						Position:        line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE CHANGE STREAM csname;
+			CREATE CHANGE STREAM csname FOR ALL;
+			CREATE CHANGE STREAM csname FOR tname, tname2(cname);
+			CREATE CHANGE STREAM csname FOR ALL OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES');`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateChangeStream{
+						Name:     "csname",
+						Position: line(1),
+					},
+					&CreateChangeStream{
+						Name:           "csname",
+						WatchAllTables: true,
+						Position:       line(2),
+					},
+					&CreateChangeStream{
+						Name: "csname",
+						Watch: []WatchDef{
+							{Table: "tname", WatchAllCols: true, Position: line(3)},
+							{Table: "tname2", Columns: []ID{ID("cname")}, Position: line(3)},
+						},
+						Position: line(3),
+					},
+					&CreateChangeStream{
+						Name:           "csname",
+						WatchAllTables: true,
+						Position:       line(4),
+						Options: ChangeStreamOptions{
+							RetentionPeriod:  func(b string) *string { return &b }("36h"),
+							ValueCaptureType: func(b string) *string { return &b }("NEW_VALUES"),
+						},
+					},
+				},
+			},
+		},
+		{
+			`ALTER CHANGE STREAM csname SET FOR ALL;
+			ALTER CHANGE STREAM csname SET FOR tname, tname2(cname);
+			ALTER CHANGE STREAM csname DROP FOR ALL;
+			ALTER CHANGE STREAM csname SET OPTIONS (retention_period = '36h', value_capture_type = 'NEW_VALUES');`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterChangeStream{
+						Name: "csname",
+						Alteration: AlterWatch{
+							WatchAllTables: true,
+						},
+						Position: line(1),
+					},
+					&AlterChangeStream{
+						Name: "csname",
+						Alteration: AlterWatch{
+							Watch: []WatchDef{
+								{
+									Table:        "tname",
+									WatchAllCols: true,
+									Position:     Position{Line: 2, Offset: 78},
+								},
+								{
+									Table:    "tname2",
+									Columns:  []ID{"cname"},
+									Position: Position{Line: 2, Offset: 85},
+								},
+							},
+						},
+						Position: line(2),
+					},
+					&AlterChangeStream{
+						Name:       "csname",
+						Alteration: DropChangeStreamWatch{},
+						Position:   line(3),
+					},
+					&AlterChangeStream{
+						Name: "csname",
+						Alteration: AlterChangeStreamOptions{
+							Options: ChangeStreamOptions{
+								RetentionPeriod:  func(b string) *string { return &b }("36h"),
+								ValueCaptureType: func(b string) *string { return &b }("NEW_VALUES"),
+							},
+						},
+						Position: line(4),
+					},
+				},
+			},
+		},
+		{
+			`DROP CHANGE STREAM csname`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&DropChangeStream{
+						Name:     "csname",
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE TABLE IF NOT EXISTS tname (id INT64, name STRING(64)) PRIMARY KEY (id)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "name", Type: Type{Base: String, Len: 64}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`CREATE INDEX IF NOT EXISTS iname ON tname (cname)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateIndex{
+						Name:        "iname",
+						IfNotExists: true,
+						Table:       "tname",
+						Columns: []KeyPart{
+							{Column: "cname"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`ALTER TABLE tname ADD COLUMN IF NOT EXISTS cname STRING(64)`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&AlterTable{
+						Name: "tname",
+						Alteration: AddColumn{
+							IfNotExists: true,
+							Def:         ColumnDef{Name: "cname", Type: Type{Base: String, Len: 64}, Position: line(1)},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			`DROP TABLE IF EXISTS tname;
+			DROP INDEX IF EXISTS iname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&DropTable{
+						Name:     "tname",
+						IfExists: true,
+						Position: line(1),
+					},
+					&DropIndex{
+						Name:     "iname",
+						IfExists: true,
+						Position: line(2),
+					},
+				},
+			},
+		},
+		{
+			`CREATE TABLE tname1 (col1 INT64, col2 INT64, CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE CASCADE) PRIMARY KEY (col1);
+			CREATE TABLE tname1 (col1 INT64, col2 INT64, CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE NO ACTION) PRIMARY KEY (col1);
+			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE CASCADE;
+			ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (col2) REFERENCES tname2 (col3) ON DELETE NO ACTION;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name: "tname1",
+						Columns: []ColumnDef{
+							{Name: "col1", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "col2", Type: Type{Base: Int64}, Position: line(1)},
+						},
+						Constraints: []TableConstraint{
+							{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: CascadeOnDelete, Position: line(1)}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "col1"},
+						},
+						Position: line(1),
+					},
+					&CreateTable{
+						Name: "tname1",
+						Columns: []ColumnDef{
+							{Name: "col1", Type: Type{Base: Int64}, Position: line(2)},
+							{Name: "col2", Type: Type{Base: Int64}, Position: line(2)},
+						},
+						Constraints: []TableConstraint{
+							{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(2)}, Position: line(2)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "col1"},
+						},
+						Position: line(2),
+					},
+					&AlterTable{
+						Name: "tname1",
+						Alteration: AddConstraint{
+							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: CascadeOnDelete, Position: line(3)}, Position: line(3)},
+						},
+						Position: line(3),
+					},
+					&AlterTable{
+						Name: "tname1",
+						Alteration: AddConstraint{
+							Constraint: TableConstraint{Name: "con1", Constraint: ForeignKey{Columns: []ID{"col2"}, RefTable: "tname2", RefColumns: []ID{"col3"}, OnDelete: NoActionOnDelete, Position: line(4)}, Position: line(4)},
+						},
+						Position: line(4),
+					},
+				},
+			},
+		},
+		{
+			`CREATE SEQUENCE IF NOT EXISTS sname OPTIONS (sequence_kind='bit_reversed_positive');
+			ALTER SEQUENCE sname SET OPTIONS (start_with_counter=1);
+			DROP SEQUENCE IF EXISTS sname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateSequence{
+						Name:        "sname",
+						IfNotExists: true,
+						Options: SequenceOptions{
+							SequenceKind: stringAddr("bit_reversed_positive"),
+						},
+						Position: line(1),
+					},
+					&AlterSequence{
+						Name: "sname",
+						Alteration: SetSequenceOptions{
+							Options: SequenceOptions{
+								StartWithCounter: intAddr(1),
+							},
+						},
+						Position: line(2),
+					},
+					&DropSequence{
+						Name:     "sname",
+						IfExists: true,
+						Position: line(3),
+					},
+				},
+			},
+		},
+		{
+			`CREATE VIEW vname SQL SECURITY DEFINER AS SELECT cname FROM tname;`,
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateView{
+						Name:         "vname",
+						OrReplace:    false,
+						SecurityType: Definer,
+						Query: Query{
+							Select: Select{
+								List: []Expr{ID("cname")},
+								From: []SelectFrom{SelectFromTable{
+									Table: "tname",
+								}},
+							},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseDDL("filename", test.in)
@@ -954,6 +1913,107 @@ func TestParseDDL(t *testing.T) {
 		}
 	}
 }
+
+func TestParseDML(t *testing.T) {
+	tests := []struct {
+		in   string
+		want *DML
+	}{
+		{
+			`UPDATE FooBar SET Name = "foo"
+			WHERE ID = 0; # This is a comment.
+			Update FooBar SET Name = "foo" /* This is a
+									        * multiline comment. */
+				WHERE ID = 0;
+			INSERT FooBar (ID, Name) VALUES (0, 'foo');
+			DELETE FROM FooBar WHERE Name = "foo"; -- This is another comment.
+		-- This is an isolated comment.
+		`, &DML{Filename: "filename", List: []DMLStmt{
+				&Update{
+					Table: "FooBar",
+					Items: []UpdateItem{
+						{Column: "Name", Value: StringLiteral("foo")},
+					},
+					Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
+				},
+				&Update{
+					Table: "FooBar",
+					Items: []UpdateItem{
+						{Column: "Name", Value: StringLiteral("foo")},
+					},
+					Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
+				},
+				&Insert{
+					Table:   "FooBar",
+					Columns: []ID{"ID", "Name"},
+					Input:   Values{[]Expr{IntegerLiteral(0), StringLiteral("foo")}},
+				},
+				&Delete{
+					Table: "FooBar",
+					Where: ComparisonOp{Op: 4, LHS: ID("Name"), RHS: StringLiteral("foo"), RHS2: nil},
+				},
+			}, Comments: []*Comment{
+				{
+					Marker: "#", Start: line(2), End: line(2),
+					Text: []string{"This is a comment."},
+				},
+				{
+					Marker: "/*", Start: line(3), End: line(4),
+					Text:     []string{" This is a", "\t\t\t\t\t\t\t\t\t        * multiline comment."},
+					Isolated: false,
+				},
+				{
+					Marker: "--", Start: line(7), End: line(7),
+					Text:     []string{"This is another comment."},
+					Isolated: false,
+				},
+				{
+					Marker: "--", Start: line(8), End: line(8),
+					Text:     []string{"This is an isolated comment."},
+					Isolated: true,
+				},
+			}},
+		},
+		// No trailing comma:
+		{`Update FooBar SET Name = "foo" WHERE ID = 0`, &DML{
+			Filename: "filename", List: []DMLStmt{
+				&Update{
+					Table: "FooBar",
+					Items: []UpdateItem{
+						{Column: "Name", Value: StringLiteral("foo")},
+					},
+					Where: ComparisonOp{Op: 4, LHS: ID("ID"), RHS: IntegerLiteral(0), RHS2: nil},
+				},
+			},
+		}},
+	}
+	for _, test := range tests {
+		got, err := ParseDML("filename", test.in)
+		if err != nil {
+			t.Errorf("ParseDML(%q): %v", test.in, err)
+			continue
+		}
+		got.clearOffset()
+		if !reflect.DeepEqual(got, test.want) {
+			t.Errorf("ParseDML(%q) incorrect.\n got %v\nwant %v", test.in, got, test.want)
+
+			// Also log the specific elements that don't match to make it easier to debug
+			// especially the large DMLs.
+			for i := range got.List {
+				if !reflect.DeepEqual(got.List[i], test.want.List[i]) {
+					t.Errorf("\tstatement %d mismatch:\n\t got %v\n\twant %v", i, got.List[i], test.want.List[i])
+				}
+			}
+			for i := range got.Comments {
+				if !reflect.DeepEqual(got.Comments[i], test.want.Comments[i]) {
+					t.Errorf("\tcomment %d mismatch:\n\t got %v\n\twant %v", i, got.Comments[i], test.want.Comments[i])
+				}
+			}
+		}
+	}
+}
+
+func line(n int) Position { return Position{Line: n} }
 
 func tableByName(t *testing.T, ddl *DDL, name ID) *CreateTable {
 	t.Helper()

@@ -17,7 +17,9 @@ package errorreporting
 // ResultPath returns the path for the result resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("inspect/results/%s", result)
+//
+//	fmt.Sprintf("inspect/results/%s", result)
+//
 // instead.
 func ResultPath(result string) string {
 	return "" +
@@ -29,7 +31,9 @@ func ResultPath(result string) string {
 // ErrorStatsProjectPath returns the path for the project resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s", project)
+//
+//	fmt.Sprintf("projects/%s", project)
+//
 // instead.
 func ErrorStatsProjectPath(project string) string {
 	return "" +
@@ -41,7 +45,9 @@ func ErrorStatsProjectPath(project string) string {
 // ReportErrorsProjectPath returns the path for the project resource.
 //
 // Deprecated: Use
-//   fmt.Sprintf("projects/%s", project)
+//
+//	fmt.Sprintf("projects/%s", project)
+//
 // instead.
 func ReportErrorsProjectPath(project string) string {
 	return "" +

@@ -23,6 +23,7 @@ by ascending esotericism:
 - more aggregation functions
 - SELECT HAVING
 - more literal types
+- DEFAULT
 - expressions that return null for generated columns
 - generated columns referencing other generated columns
 - checking dependencies on a generated column before deleting a column
@@ -32,7 +33,6 @@ by ascending esotericism:
 - case insensitivity of table and column names and query aliases
 - transaction simulation
 - FOREIGN KEY and CHECK constraints
-- INSERT DML statements
 - set operations (UNION, INTERSECT, EXCEPT)
 - STRUCT types
 - partition support

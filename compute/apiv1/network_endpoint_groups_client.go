@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,21 +20,21 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
 	"sort"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -54,7 +54,66 @@ type NetworkEndpointGroupsCallOptions struct {
 	TestIamPermissions     []gax.CallOption
 }
 
-// internalNetworkEndpointGroupsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultNetworkEndpointGroupsRESTCallOptions() *NetworkEndpointGroupsCallOptions {
+	return &NetworkEndpointGroupsCallOptions{
+		AggregatedList: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		AttachNetworkEndpoints: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DetachNetworkEndpoints: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListNetworkEndpoints: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+	}
+}
+
+// internalNetworkEndpointGroupsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalNetworkEndpointGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -99,12 +158,13 @@ func (c *NetworkEndpointGroupsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *NetworkEndpointGroupsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of network endpoint groups and sorts them by zone.
+// AggregatedList retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *NetworkEndpointGroupsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -124,7 +184,7 @@ func (c *NetworkEndpointGroupsClient) DetachNetworkEndpoints(ctx context.Context
 	return c.internalClient.DetachNetworkEndpoints(ctx, req, opts...)
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *NetworkEndpointGroupsClient) Get(ctx context.Context, req *computepb.GetNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
 	return c.internalClient.Get(ctx, req, opts...)
 }
@@ -160,8 +220,11 @@ type networkEndpointGroupsRESTClient struct {
 	// operationClient is used to call the operation-specific management service.
 	operationClient *ZoneOperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing NetworkEndpointGroupsClient
+	CallOptions **NetworkEndpointGroupsCallOptions
 }
 
 // NewNetworkEndpointGroupsRESTClient creates a new network endpoint groups rest client.
@@ -174,9 +237,11 @@ func NewNetworkEndpointGroupsRESTClient(ctx context.Context, opts ...option.Clie
 		return nil, err
 	}
 
+	callOpts := defaultNetworkEndpointGroupsRESTCallOptions()
 	c := &networkEndpointGroupsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -190,13 +255,15 @@ func NewNetworkEndpointGroupsRESTClient(ctx context.Context, opts ...option.Clie
 	}
 	c.operationClient = opC
 
-	return &NetworkEndpointGroupsClient{internalClient: c, CallOptions: &NetworkEndpointGroupsCallOptions{}}, nil
+	return &NetworkEndpointGroupsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultNetworkEndpointGroupsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -206,9 +273,9 @@ func defaultNetworkEndpointGroupsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *networkEndpointGroupsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -224,12 +291,12 @@ func (c *networkEndpointGroupsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *networkEndpointGroupsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of network endpoint groups and sorts them by zone.
+// AggregatedList retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupsScopedListPairIterator {
 	it := &NetworkEndpointGroupsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNetworkEndpointGroupsRequest)
@@ -244,7 +311,10 @@ func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, re
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/networkEndpointGroups", req.GetProject())
 
 		params := url.Values{}
@@ -266,12 +336,19 @@ func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, re
 		if req != nil && req.ReturnPartialSuccess != nil {
 			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
+		if req != nil && req.ServiceProjectNumber != nil {
+			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
+		}
 
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -288,13 +365,13 @@ func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, re
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -338,7 +415,10 @@ func (c *networkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx context.Con
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/networkEndpointGroups/%v/attachNetworkEndpoints", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup())
 
 	params := url.Values{}
@@ -349,10 +429,18 @@ func (c *networkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx context.Con
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "network_endpoint_group", url.QueryEscape(req.GetNetworkEndpointGroup()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AttachNetworkEndpoints[0:len((*c.CallOptions).AttachNetworkEndpoints):len((*c.CallOptions).AttachNetworkEndpoints)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -370,13 +458,13 @@ func (c *networkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -397,7 +485,10 @@ func (c *networkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx context.Con
 
 // Delete deletes the specified network endpoint group. The network endpoints in the NEG and the VM instances they belong to are not terminated when the NEG is deleted. Note that the NEG cannot be deleted if there are backend services referencing it.
 func (c *networkEndpointGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteNetworkEndpointGroupRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/networkEndpointGroups/%v", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup())
 
 	params := url.Values{}
@@ -408,10 +499,18 @@ func (c *networkEndpointGroupsRESTClient) Delete(ctx context.Context, req *compu
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "network_endpoint_group", url.QueryEscape(req.GetNetworkEndpointGroup()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -429,13 +528,13 @@ func (c *networkEndpointGroupsRESTClient) Delete(ctx context.Context, req *compu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -463,7 +562,10 @@ func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Con
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/networkEndpointGroups/%v/detachNetworkEndpoints", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup())
 
 	params := url.Values{}
@@ -474,10 +576,18 @@ func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Con
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "network_endpoint_group", url.QueryEscape(req.GetNetworkEndpointGroup()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).DetachNetworkEndpoints[0:len((*c.CallOptions).DetachNetworkEndpoints):len((*c.CallOptions).DetachNetworkEndpoints)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -495,13 +605,13 @@ func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Con
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -520,16 +630,27 @@ func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Con
 	return op, nil
 }
 
-// Get returns the specified network endpoint group. Gets a list of available network endpoint groups by making a list() request.
+// Get returns the specified network endpoint group.
 func (c *networkEndpointGroupsRESTClient) Get(ctx context.Context, req *computepb.GetNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroup, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/networkEndpointGroups/%v", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "network_endpoint_group", url.QueryEscape(req.GetNetworkEndpointGroup()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.NetworkEndpointGroup{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -547,13 +668,13 @@ func (c *networkEndpointGroupsRESTClient) Get(ctx context.Context, req *computep
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -573,7 +694,10 @@ func (c *networkEndpointGroupsRESTClient) Insert(ctx context.Context, req *compu
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/networkEndpointGroups", req.GetProject(), req.GetZone())
 
 	params := url.Values{}
@@ -584,10 +708,18 @@ func (c *networkEndpointGroupsRESTClient) Insert(ctx context.Context, req *compu
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -605,13 +737,13 @@ func (c *networkEndpointGroupsRESTClient) Insert(ctx context.Context, req *compu
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -645,7 +777,10 @@ func (c *networkEndpointGroupsRESTClient) List(ctx context.Context, req *compute
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/networkEndpointGroups", req.GetProject(), req.GetZone())
 
 		params := url.Values{}
@@ -668,8 +803,12 @@ func (c *networkEndpointGroupsRESTClient) List(ctx context.Context, req *compute
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -686,13 +825,13 @@ func (c *networkEndpointGroupsRESTClient) List(ctx context.Context, req *compute
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -724,7 +863,7 @@ func (c *networkEndpointGroupsRESTClient) List(ctx context.Context, req *compute
 func (c *networkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context.Context, req *computepb.ListNetworkEndpointsNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointWithHealthStatusIterator {
 	it := &NetworkEndpointWithHealthStatusIterator{}
 	req = proto.Clone(req).(*computepb.ListNetworkEndpointsNetworkEndpointGroupsRequest)
-	m := protojson.MarshalOptions{AllowPartial: true, UseProtoNames: false}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.NetworkEndpointWithHealthStatus, string, error) {
 		resp := &computepb.NetworkEndpointGroupsListNetworkEndpoints{}
@@ -741,7 +880,10 @@ func (c *networkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context.Conte
 			return nil, "", err
 		}
 
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/networkEndpointGroups/%v/listNetworkEndpoints", req.GetProject(), req.GetZone(), req.GetNetworkEndpointGroup())
 
 		params := url.Values{}
@@ -764,8 +906,12 @@ func (c *networkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context.Conte
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 			if err != nil {
 				return err
@@ -782,13 +928,13 @@ func (c *networkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context.Conte
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -825,14 +971,25 @@ func (c *networkEndpointGroupsRESTClient) TestIamPermissions(ctx context.Context
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/networkEndpointGroups/%v/testIamPermissions", req.GetProject(), req.GetZone(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -850,13 +1007,13 @@ func (c *networkEndpointGroupsRESTClient) TestIamPermissions(ctx context.Context
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -865,57 +1022,4 @@ func (c *networkEndpointGroupsRESTClient) TestIamPermissions(ctx context.Context
 		return nil, e
 	}
 	return resp, nil
-}
-
-// NetworkEndpointGroupsScopedListPair is a holder type for string/*computepb.NetworkEndpointGroupsScopedList map entries
-type NetworkEndpointGroupsScopedListPair struct {
-	Key   string
-	Value *computepb.NetworkEndpointGroupsScopedList
-}
-
-// NetworkEndpointGroupsScopedListPairIterator manages a stream of NetworkEndpointGroupsScopedListPair.
-type NetworkEndpointGroupsScopedListPairIterator struct {
-	items    []NetworkEndpointGroupsScopedListPair
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []NetworkEndpointGroupsScopedListPair, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NetworkEndpointGroupsScopedListPairIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NetworkEndpointGroupsScopedListPairIterator) Next() (NetworkEndpointGroupsScopedListPair, error) {
-	var item NetworkEndpointGroupsScopedListPair
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NetworkEndpointGroupsScopedListPairIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NetworkEndpointGroupsScopedListPairIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

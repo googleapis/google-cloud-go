@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,21 +17,26 @@
 package recommender
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	recommenderpb "cloud.google.com/go/recommender/apiv1beta1/recommenderpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -51,12 +56,16 @@ type CallOptions struct {
 	UpdateRecommenderConfig     []gax.CallOption
 	GetInsightTypeConfig        []gax.CallOption
 	UpdateInsightTypeConfig     []gax.CallOption
+	ListRecommenders            []gax.CallOption
+	ListInsightTypes            []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recommender.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("recommender.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("recommender.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recommender.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -68,6 +77,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ListInsights: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -80,6 +90,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetInsight: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -91,8 +102,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		MarkInsightAccepted: []gax.CallOption{},
+		MarkInsightAccepted: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListRecommendations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -105,6 +119,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetRecommendation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -116,17 +131,96 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		MarkRecommendationClaimed:   []gax.CallOption{},
-		MarkRecommendationSucceeded: []gax.CallOption{},
-		MarkRecommendationFailed:    []gax.CallOption{},
-		GetRecommenderConfig:        []gax.CallOption{},
-		UpdateRecommenderConfig:     []gax.CallOption{},
-		GetInsightTypeConfig:        []gax.CallOption{},
-		UpdateInsightTypeConfig:     []gax.CallOption{},
+		MarkRecommendationClaimed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MarkRecommendationSucceeded: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MarkRecommendationFailed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRecommenderConfig:    []gax.CallOption{},
+		UpdateRecommenderConfig: []gax.CallOption{},
+		GetInsightTypeConfig:    []gax.CallOption{},
+		UpdateInsightTypeConfig: []gax.CallOption{},
+		ListRecommenders:        []gax.CallOption{},
+		ListInsightTypes:        []gax.CallOption{},
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Recommender API.
+func defaultRESTCallOptions() *CallOptions {
+	return &CallOptions{
+		ListInsights: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetInsight: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		MarkInsightAccepted: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListRecommendations: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetRecommendation: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		MarkRecommendationClaimed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MarkRecommendationSucceeded: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		MarkRecommendationFailed: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetRecommenderConfig:    []gax.CallOption{},
+		UpdateRecommenderConfig: []gax.CallOption{},
+		GetInsightTypeConfig:    []gax.CallOption{},
+		UpdateInsightTypeConfig: []gax.CallOption{},
+		ListRecommenders:        []gax.CallOption{},
+		ListInsightTypes:        []gax.CallOption{},
+	}
+}
+
+// internalClient is an interface that defines the methods available from Recommender API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -143,6 +237,8 @@ type internalClient interface {
 	UpdateRecommenderConfig(context.Context, *recommenderpb.UpdateRecommenderConfigRequest, ...gax.CallOption) (*recommenderpb.RecommenderConfig, error)
 	GetInsightTypeConfig(context.Context, *recommenderpb.GetInsightTypeConfigRequest, ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error)
 	UpdateInsightTypeConfig(context.Context, *recommenderpb.UpdateInsightTypeConfigRequest, ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error)
+	ListRecommenders(context.Context, *recommenderpb.ListRecommendersRequest, ...gax.CallOption) *RecommenderTypeIterator
+	ListInsightTypes(context.Context, *recommenderpb.ListInsightTypesRequest, ...gax.CallOption) *InsightTypeIterator
 }
 
 // Client is a client for interacting with Recommender API.
@@ -177,7 +273,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -284,15 +381,24 @@ func (c *Client) UpdateInsightTypeConfig(ctx context.Context, req *recommenderpb
 	return c.internalClient.UpdateInsightTypeConfig(ctx, req, opts...)
 }
 
+// ListRecommenders lists all available Recommenders.
+// No IAM permissions are required.
+func (c *Client) ListRecommenders(ctx context.Context, req *recommenderpb.ListRecommendersRequest, opts ...gax.CallOption) *RecommenderTypeIterator {
+	return c.internalClient.ListRecommenders(ctx, req, opts...)
+}
+
+// ListInsightTypes lists available InsightTypes.
+// No IAM permissions are required.
+func (c *Client) ListInsightTypes(ctx context.Context, req *recommenderpb.ListInsightTypesRequest, opts ...gax.CallOption) *InsightTypeIterator {
+	return c.internalClient.ListInsightTypes(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Recommender API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -301,7 +407,7 @@ type gRPCClient struct {
 	client recommenderpb.RecommenderClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new recommender client based on gRPC.
@@ -321,11 +427,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -333,10 +434,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           recommenderpb.NewRecommenderClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      recommenderpb.NewRecommenderClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -347,7 +447,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -356,9 +457,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -367,10 +468,84 @@ func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *gRPCClient) ListInsights(ctx context.Context, req *recommenderpb.ListInsightsRequest, opts ...gax.CallOption) *InsightIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type restClient struct {
+	// The http endpoint to connect to.
+	endpoint string
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+}
+
+// NewRESTClient creates a new recommender rest client.
+//
+// Provides insights and recommendations for cloud customers for various
+// categories like performance optimization, cost savings, reliability, feature
+// discovery, etc. Insights and recommendations are generated automatically
+// based on analysis of user resources, configuration and monitoring metrics.
+func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := append(defaultRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultRESTCallOptions()
+	c := &restClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &Client{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://recommender.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://recommender.UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint("https://recommender.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://recommender.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *restClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *restClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *restClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *gRPCClient) ListInsights(ctx context.Context, req *recommenderpb.ListInsightsRequest, opts ...gax.CallOption) *InsightIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListInsights[0:len((*c.CallOptions).ListInsights):len((*c.CallOptions).ListInsights)], opts...)
 	it := &InsightIterator{}
 	req = proto.Clone(req).(*recommenderpb.ListInsightsRequest)
@@ -413,14 +588,10 @@ func (c *gRPCClient) ListInsights(ctx context.Context, req *recommenderpb.ListIn
 }
 
 func (c *gRPCClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsightRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetInsight[0:len((*c.CallOptions).GetInsight):len((*c.CallOptions).GetInsight)], opts...)
 	var resp *recommenderpb.Insight
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -435,14 +606,10 @@ func (c *gRPCClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsig
 }
 
 func (c *gRPCClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb.MarkInsightAcceptedRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).MarkInsightAccepted[0:len((*c.CallOptions).MarkInsightAccepted):len((*c.CallOptions).MarkInsightAccepted)], opts...)
 	var resp *recommenderpb.Insight
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -457,9 +624,10 @@ func (c *gRPCClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb
 }
 
 func (c *gRPCClient) ListRecommendations(ctx context.Context, req *recommenderpb.ListRecommendationsRequest, opts ...gax.CallOption) *RecommendationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListRecommendations[0:len((*c.CallOptions).ListRecommendations):len((*c.CallOptions).ListRecommendations)], opts...)
 	it := &RecommendationIterator{}
 	req = proto.Clone(req).(*recommenderpb.ListRecommendationsRequest)
@@ -502,14 +670,10 @@ func (c *gRPCClient) ListRecommendations(ctx context.Context, req *recommenderpb
 }
 
 func (c *gRPCClient) GetRecommendation(ctx context.Context, req *recommenderpb.GetRecommendationRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetRecommendation[0:len((*c.CallOptions).GetRecommendation):len((*c.CallOptions).GetRecommendation)], opts...)
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -524,14 +688,10 @@ func (c *gRPCClient) GetRecommendation(ctx context.Context, req *recommenderpb.G
 }
 
 func (c *gRPCClient) MarkRecommendationClaimed(ctx context.Context, req *recommenderpb.MarkRecommendationClaimedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).MarkRecommendationClaimed[0:len((*c.CallOptions).MarkRecommendationClaimed):len((*c.CallOptions).MarkRecommendationClaimed)], opts...)
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -546,14 +706,10 @@ func (c *gRPCClient) MarkRecommendationClaimed(ctx context.Context, req *recomme
 }
 
 func (c *gRPCClient) MarkRecommendationSucceeded(ctx context.Context, req *recommenderpb.MarkRecommendationSucceededRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).MarkRecommendationSucceeded[0:len((*c.CallOptions).MarkRecommendationSucceeded):len((*c.CallOptions).MarkRecommendationSucceeded)], opts...)
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -568,14 +724,10 @@ func (c *gRPCClient) MarkRecommendationSucceeded(ctx context.Context, req *recom
 }
 
 func (c *gRPCClient) MarkRecommendationFailed(ctx context.Context, req *recommenderpb.MarkRecommendationFailedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).MarkRecommendationFailed[0:len((*c.CallOptions).MarkRecommendationFailed):len((*c.CallOptions).MarkRecommendationFailed)], opts...)
 	var resp *recommenderpb.Recommendation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -590,9 +742,10 @@ func (c *gRPCClient) MarkRecommendationFailed(ctx context.Context, req *recommen
 }
 
 func (c *gRPCClient) GetRecommenderConfig(ctx context.Context, req *recommenderpb.GetRecommenderConfigRequest, opts ...gax.CallOption) (*recommenderpb.RecommenderConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetRecommenderConfig[0:len((*c.CallOptions).GetRecommenderConfig):len((*c.CallOptions).GetRecommenderConfig)], opts...)
 	var resp *recommenderpb.RecommenderConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -607,9 +760,10 @@ func (c *gRPCClient) GetRecommenderConfig(ctx context.Context, req *recommenderp
 }
 
 func (c *gRPCClient) UpdateRecommenderConfig(ctx context.Context, req *recommenderpb.UpdateRecommenderConfigRequest, opts ...gax.CallOption) (*recommenderpb.RecommenderConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "recommender_config.name", url.QueryEscape(req.GetRecommenderConfig().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "recommender_config.name", url.QueryEscape(req.GetRecommenderConfig().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateRecommenderConfig[0:len((*c.CallOptions).UpdateRecommenderConfig):len((*c.CallOptions).UpdateRecommenderConfig)], opts...)
 	var resp *recommenderpb.RecommenderConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -624,9 +778,10 @@ func (c *gRPCClient) UpdateRecommenderConfig(ctx context.Context, req *recommend
 }
 
 func (c *gRPCClient) GetInsightTypeConfig(ctx context.Context, req *recommenderpb.GetInsightTypeConfigRequest, opts ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetInsightTypeConfig[0:len((*c.CallOptions).GetInsightTypeConfig):len((*c.CallOptions).GetInsightTypeConfig)], opts...)
 	var resp *recommenderpb.InsightTypeConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -641,9 +796,10 @@ func (c *gRPCClient) GetInsightTypeConfig(ctx context.Context, req *recommenderp
 }
 
 func (c *gRPCClient) UpdateInsightTypeConfig(ctx context.Context, req *recommenderpb.UpdateInsightTypeConfigRequest, opts ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "insight_type_config.name", url.QueryEscape(req.GetInsightTypeConfig().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "insight_type_config.name", url.QueryEscape(req.GetInsightTypeConfig().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateInsightTypeConfig[0:len((*c.CallOptions).UpdateInsightTypeConfig):len((*c.CallOptions).UpdateInsightTypeConfig)], opts...)
 	var resp *recommenderpb.InsightTypeConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -657,96 +813,1152 @@ func (c *gRPCClient) UpdateInsightTypeConfig(ctx context.Context, req *recommend
 	return resp, nil
 }
 
-// InsightIterator manages a stream of *recommenderpb.Insight.
-type InsightIterator struct {
-	items    []*recommenderpb.Insight
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+func (c *gRPCClient) ListRecommenders(ctx context.Context, req *recommenderpb.ListRecommendersRequest, opts ...gax.CallOption) *RecommenderTypeIterator {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).ListRecommenders[0:len((*c.CallOptions).ListRecommenders):len((*c.CallOptions).ListRecommenders)], opts...)
+	it := &RecommenderTypeIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListRecommendersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.RecommenderType, string, error) {
+		resp := &recommenderpb.ListRecommendersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListRecommenders(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recommenderpb.Insight, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *InsightIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *InsightIterator) Next() (*recommenderpb.Insight, error) {
-	var item *recommenderpb.Insight
-	if err := it.nextFunc(); err != nil {
-		return item, err
+		it.Response = resp
+		return resp.GetRecommenders(), resp.GetNextPageToken(), nil
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *InsightIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *InsightIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// RecommendationIterator manages a stream of *recommenderpb.Recommendation.
-type RecommendationIterator struct {
-	items    []*recommenderpb.Recommendation
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recommenderpb.Recommendation, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RecommendationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RecommendationIterator) Next() (*recommenderpb.Recommendation, error) {
-	var item *recommenderpb.Recommendation
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
-func (it *RecommendationIterator) bufLen() int {
-	return len(it.items)
+func (c *gRPCClient) ListInsightTypes(ctx context.Context, req *recommenderpb.ListInsightTypesRequest, opts ...gax.CallOption) *InsightTypeIterator {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).ListInsightTypes[0:len((*c.CallOptions).ListInsightTypes):len((*c.CallOptions).ListInsightTypes)], opts...)
+	it := &InsightTypeIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListInsightTypesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.InsightType, string, error) {
+		resp := &recommenderpb.ListInsightTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListInsightTypes(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetInsightTypes(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
-func (it *RecommendationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+// ListInsights lists insights for the specified Cloud Resource. Requires the
+// recommender.*.list IAM permission for the specified insight type.
+func (c *restClient) ListInsights(ctx context.Context, req *recommenderpb.ListInsightsRequest, opts ...gax.CallOption) *InsightIterator {
+	it := &InsightIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListInsightsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Insight, string, error) {
+		resp := &recommenderpb.ListInsightsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/insights", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetInsights(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetInsight gets the requested insight. Requires the recommender.*.get IAM permission
+// for the specified insight type.
+func (c *restClient) GetInsight(ctx context.Context, req *recommenderpb.GetInsightRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetInsight[0:len((*c.CallOptions).GetInsight):len((*c.CallOptions).GetInsight)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.Insight{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// MarkInsightAccepted marks the Insight State as Accepted. Users can use this method to
+// indicate to the Recommender API that they have applied some action based
+// on the insight. This stops the insight content from being updated.
+//
+// MarkInsightAccepted can be applied to insights in ACTIVE state. Requires
+// the recommender.*.update IAM permission for the specified insight.
+func (c *restClient) MarkInsightAccepted(ctx context.Context, req *recommenderpb.MarkInsightAcceptedRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:markAccepted", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).MarkInsightAccepted[0:len((*c.CallOptions).MarkInsightAccepted):len((*c.CallOptions).MarkInsightAccepted)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.Insight{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListRecommendations lists recommendations for the specified Cloud Resource. Requires the
+// recommender.*.list IAM permission for the specified recommender.
+func (c *restClient) ListRecommendations(ctx context.Context, req *recommenderpb.ListRecommendationsRequest, opts ...gax.CallOption) *RecommendationIterator {
+	it := &RecommendationIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListRecommendationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.Recommendation, string, error) {
+		resp := &recommenderpb.ListRecommendationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/recommendations", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRecommendations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetRecommendation gets the requested recommendation. Requires the recommender.*.get
+// IAM permission for the specified recommender.
+func (c *restClient) GetRecommendation(ctx context.Context, req *recommenderpb.GetRecommendationRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetRecommendation[0:len((*c.CallOptions).GetRecommendation):len((*c.CallOptions).GetRecommendation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.Recommendation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// MarkRecommendationClaimed marks the Recommendation State as Claimed. Users can use this method to
+// indicate to the Recommender API that they are starting to apply the
+// recommendation themselves. This stops the recommendation content from being
+// updated. Associated insights are frozen and placed in the ACCEPTED state.
+//
+// MarkRecommendationClaimed can be applied to recommendations in CLAIMED or
+// ACTIVE state.
+//
+// Requires the recommender.*.update IAM permission for the specified
+// recommender.
+func (c *restClient) MarkRecommendationClaimed(ctx context.Context, req *recommenderpb.MarkRecommendationClaimedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:markClaimed", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).MarkRecommendationClaimed[0:len((*c.CallOptions).MarkRecommendationClaimed):len((*c.CallOptions).MarkRecommendationClaimed)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.Recommendation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// MarkRecommendationSucceeded marks the Recommendation State as Succeeded. Users can use this method to
+// indicate to the Recommender API that they have applied the recommendation
+// themselves, and the operation was successful. This stops the recommendation
+// content from being updated. Associated insights are frozen and placed in
+// the ACCEPTED state.
+//
+// MarkRecommendationSucceeded can be applied to recommendations in ACTIVE,
+// CLAIMED, SUCCEEDED, or FAILED state.
+//
+// Requires the recommender.*.update IAM permission for the specified
+// recommender.
+func (c *restClient) MarkRecommendationSucceeded(ctx context.Context, req *recommenderpb.MarkRecommendationSucceededRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:markSucceeded", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).MarkRecommendationSucceeded[0:len((*c.CallOptions).MarkRecommendationSucceeded):len((*c.CallOptions).MarkRecommendationSucceeded)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.Recommendation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// MarkRecommendationFailed marks the Recommendation State as Failed. Users can use this method to
+// indicate to the Recommender API that they have applied the recommendation
+// themselves, and the operation failed. This stops the recommendation content
+// from being updated. Associated insights are frozen and placed in the
+// ACCEPTED state.
+//
+// MarkRecommendationFailed can be applied to recommendations in ACTIVE,
+// CLAIMED, SUCCEEDED, or FAILED state.
+//
+// Requires the recommender.*.update IAM permission for the specified
+// recommender.
+func (c *restClient) MarkRecommendationFailed(ctx context.Context, req *recommenderpb.MarkRecommendationFailedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:markFailed", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).MarkRecommendationFailed[0:len((*c.CallOptions).MarkRecommendationFailed):len((*c.CallOptions).MarkRecommendationFailed)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.Recommendation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetRecommenderConfig gets the requested Recommender Config. There is only one instance of the
+// config for each Recommender.
+func (c *restClient) GetRecommenderConfig(ctx context.Context, req *recommenderpb.GetRecommenderConfigRequest, opts ...gax.CallOption) (*recommenderpb.RecommenderConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetRecommenderConfig[0:len((*c.CallOptions).GetRecommenderConfig):len((*c.CallOptions).GetRecommenderConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.RecommenderConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateRecommenderConfig updates a Recommender Config. This will create a new revision of the
+// config.
+func (c *restClient) UpdateRecommenderConfig(ctx context.Context, req *recommenderpb.UpdateRecommenderConfigRequest, opts ...gax.CallOption) (*recommenderpb.RecommenderConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRecommenderConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRecommenderConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "recommender_config.name", url.QueryEscape(req.GetRecommenderConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateRecommenderConfig[0:len((*c.CallOptions).UpdateRecommenderConfig):len((*c.CallOptions).UpdateRecommenderConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.RecommenderConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetInsightTypeConfig gets the requested InsightTypeConfig. There is only one instance of the
+// config for each InsightType.
+func (c *restClient) GetInsightTypeConfig(ctx context.Context, req *recommenderpb.GetInsightTypeConfigRequest, opts ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetInsightTypeConfig[0:len((*c.CallOptions).GetInsightTypeConfig):len((*c.CallOptions).GetInsightTypeConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.InsightTypeConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateInsightTypeConfig updates an InsightTypeConfig change. This will create a new revision of the
+// config.
+func (c *restClient) UpdateInsightTypeConfig(ctx context.Context, req *recommenderpb.UpdateInsightTypeConfigRequest, opts ...gax.CallOption) (*recommenderpb.InsightTypeConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetInsightTypeConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetInsightTypeConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "insight_type_config.name", url.QueryEscape(req.GetInsightTypeConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateInsightTypeConfig[0:len((*c.CallOptions).UpdateInsightTypeConfig):len((*c.CallOptions).UpdateInsightTypeConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommenderpb.InsightTypeConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListRecommenders lists all available Recommenders.
+// No IAM permissions are required.
+func (c *restClient) ListRecommenders(ctx context.Context, req *recommenderpb.ListRecommendersRequest, opts ...gax.CallOption) *RecommenderTypeIterator {
+	it := &RecommenderTypeIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListRecommendersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.RecommenderType, string, error) {
+		resp := &recommenderpb.ListRecommendersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/recommenders")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRecommenders(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListInsightTypes lists available InsightTypes.
+// No IAM permissions are required.
+func (c *restClient) ListInsightTypes(ctx context.Context, req *recommenderpb.ListInsightTypesRequest, opts ...gax.CallOption) *InsightTypeIterator {
+	it := &InsightTypeIterator{}
+	req = proto.Clone(req).(*recommenderpb.ListInsightTypesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommenderpb.InsightType, string, error) {
+		resp := &recommenderpb.ListInsightTypesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/insightTypes")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetInsightTypes(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }

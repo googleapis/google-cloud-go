@@ -15,43 +15,44 @@
 package managedwriter
 
 import (
-	"bytes"
+	"context"
 	"fmt"
 	"testing"
 	"time"
+
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
+	"github.com/google/go-cmp/cmp"
+	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
+	"google.golang.org/protobuf/types/descriptorpb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func TestAppendResult(t *testing.T) {
-
-	wantRowBytes := [][]byte{[]byte("rowdata")}
-
-	gotAR := newAppendResult(wantRowBytes)
-	if len(gotAR.rowData) != len(wantRowBytes) {
-		t.Fatalf("length mismatch, got %d want %d elements", len(gotAR.rowData), len(wantRowBytes))
-	}
-	for i := 0; i < len(gotAR.rowData); i++ {
-		if !bytes.Equal(gotAR.rowData[i], wantRowBytes[i]) {
-			t.Errorf("mismatch in row data %d, got %q want %q", i, gotAR.rowData, wantRowBytes)
-		}
-	}
-}
-
 func TestPendingWrite(t *testing.T) {
-	wantRowData := [][]byte{
-		[]byte("row1"),
-		[]byte("row2"),
-		[]byte("row3"),
+	ctx := context.Background()
+	wantReq := &storagepb.AppendRowsRequest{
+		Rows: &storagepb.AppendRowsRequest_ProtoRows{
+			ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+				Rows: &storagepb.ProtoRows{
+					SerializedRows: [][]byte{
+						[]byte("row1"),
+						[]byte("row2"),
+						[]byte("row3"),
+					},
+				},
+			},
+		},
 	}
 
 	// verify no offset behavior
-	pending := newPendingWrite(wantRowData)
-	if pending.request.GetOffset() != nil {
-		t.Errorf("request should have no offset, but is present: %q", pending.request.GetOffset().GetValue())
+	pending := newPendingWrite(ctx, nil, wantReq, nil, "", "")
+	if pending.req.GetOffset() != nil {
+		t.Errorf("request should have no offset, but is present: %q", pending.req.GetOffset().GetValue())
 	}
 
-	gotRowCount := len(pending.request.GetProtoRows().GetRows().GetSerializedRows())
-	if gotRowCount != len(wantRowData) {
-		t.Errorf("pendingWrite request mismatch, got %d rows, want %d rows", gotRowCount, len(wantRowData))
+	if diff := cmp.Diff(pending.req, wantReq, protocmp.Transform()); diff != "" {
+		t.Errorf("request mismatch: -got, +want:\n%s", diff)
 	}
 
 	// Verify request is not acknowledged.
@@ -63,54 +64,46 @@ func TestPendingWrite(t *testing.T) {
 	}
 
 	// Mark completed, verify result.
-	pending.markDone(NoStreamOffset, nil, nil)
-	if pending.result.offset != NoStreamOffset {
-		t.Errorf("mismatch on completed AppendResult without offset: got %d want %d", pending.result.offset, NoStreamOffset)
+	pending.markDone(&storage.AppendRowsResponse{}, nil)
+	if gotOff := pending.result.offset(ctx); gotOff != NoStreamOffset {
+		t.Errorf("mismatch on completed AppendResult without offset: got %d want %d", gotOff, NoStreamOffset)
 	}
 	if pending.result.err != nil {
 		t.Errorf("mismatch in error on AppendResult, got %v want nil", pending.result.err)
 	}
-	gotData := pending.result.rowData
-	if len(gotData) != len(wantRowData) {
-		t.Errorf("length mismatch on appendresult, got %d, want %d", len(gotData), len(wantRowData))
-	}
-	for i := 0; i < len(gotData); i++ {
-		if !bytes.Equal(gotData[i], wantRowData[i]) {
-			t.Errorf("row %d mismatch in data: got %q want %q", i, gotData[i], wantRowData[i])
-		}
-	}
 
 	// Create new write to verify error result.
-	pending = newPendingWrite(wantRowData)
+	pending = newPendingWrite(ctx, nil, wantReq, nil, "", "")
 
 	// Manually invoke option to apply offset to request.
 	// This would normally be appied as part of the AppendRows() method on the managed stream.
-	reportedOffset := int64(101)
-	f := WithOffset(reportedOffset)
+	wantOffset := int64(101)
+	f := WithOffset(wantOffset)
 	f(pending)
 
-	if pending.request.GetOffset() == nil {
+	if pending.req.GetOffset() == nil {
 		t.Errorf("expected offset, got none")
 	}
-	if pending.request.GetOffset().GetValue() != reportedOffset {
-		t.Errorf("offset mismatch, got %d wanted %d", pending.request.GetOffset().GetValue(), reportedOffset)
+	if pending.req.GetOffset().GetValue() != wantOffset {
+		t.Errorf("offset mismatch, got %d wanted %d", pending.req.GetOffset().GetValue(), wantOffset)
 	}
 
 	// Verify completion behavior with an error.
 	wantErr := fmt.Errorf("foo")
-	pending.markDone(reportedOffset, wantErr, nil)
 
-	if pending.request != nil {
-		t.Errorf("expected request to be cleared, is present: %#v", pending.request)
+	testResp := &storagepb.AppendRowsResponse{
+		Response: &storagepb.AppendRowsResponse_AppendResult_{
+			AppendResult: &storagepb.AppendRowsResponse_AppendResult{
+				Offset: &wrapperspb.Int64Value{
+					Value: wantOffset,
+				},
+			},
+		},
 	}
-	gotData = pending.result.rowData
-	if len(gotData) != len(wantRowData) {
-		t.Errorf("length mismatch in data: got %d, want %d", len(gotData), len(wantRowData))
-	}
-	for i := 0; i < len(gotData); i++ {
-		if !bytes.Equal(gotData[i], wantRowData[i]) {
-			t.Errorf("row %d mismatch in data: got %q want %q", i, gotData[i], wantRowData[i])
-		}
+	pending.markDone(testResp, wantErr)
+
+	if pending.req != nil {
+		t.Errorf("expected request to be cleared, is present: %#v", pending.req)
 	}
 
 	select {
@@ -118,12 +111,111 @@ func TestPendingWrite(t *testing.T) {
 	case <-time.After(100 * time.Millisecond):
 		t.Errorf("possible blocking on completed AppendResult")
 	case <-pending.result.Ready():
-		if pending.result.offset != reportedOffset {
-			t.Errorf("mismatch on completed AppendResult offset: got %d want %d", pending.result.offset, reportedOffset)
+		gotOffset, gotErr := pending.result.GetResult(ctx)
+		if gotOffset != wantOffset {
+			t.Errorf("GetResult: mismatch on completed AppendResult offset: got %d want %d", gotOffset, wantOffset)
 		}
-		if pending.result.err != wantErr {
-			t.Errorf("mismatch in errors, got %v want %v", pending.result.err, wantErr)
+		if gotErr != wantErr {
+			t.Errorf("GetResult: mismatch in errors, got %v want %v", gotErr, wantErr)
+		}
+		// Now, check FullResponse.
+		gotResp, gotErr := pending.result.FullResponse(ctx)
+		if gotErr != wantErr {
+			t.Errorf("FullResponse: mismatch in errors, got %v want %v", gotErr, wantErr)
+		}
+		if diff := cmp.Diff(gotResp, testResp, protocmp.Transform()); diff != "" {
+			t.Errorf("FullResponse diff: %s", diff)
 		}
 	}
+}
 
+func TestPendingWrite_ConstructFullRequest(t *testing.T) {
+
+	testDP := &descriptorpb.DescriptorProto{Name: proto.String("foo")}
+	testTmpl := newVersionedTemplate().revise(reviseProtoSchema(testDP))
+
+	testEmptyTraceID := buildTraceID(&streamSettings{})
+
+	for _, tc := range []struct {
+		desc     string
+		pw       *pendingWrite
+		addTrace bool
+		want     *storagepb.AppendRowsRequest
+	}{
+		{
+			desc: "nil request",
+			pw: &pendingWrite{
+				reqTmpl: testTmpl,
+			},
+			want: &storagepb.AppendRowsRequest{
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "empty req w/trace",
+			pw: &pendingWrite{
+				req:     &storagepb.AppendRowsRequest{},
+				reqTmpl: testTmpl,
+			},
+			addTrace: true,
+			want: &storagepb.AppendRowsRequest{
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+				TraceId: testEmptyTraceID,
+			},
+		},
+		{
+			desc: "basic req",
+			pw: &pendingWrite{
+				req:     &storagepb.AppendRowsRequest{},
+				reqTmpl: testTmpl,
+			},
+			want: &storagepb.AppendRowsRequest{
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: "everything w/trace",
+			pw: &pendingWrite{
+				req:           &storagepb.AppendRowsRequest{},
+				reqTmpl:       testTmpl,
+				traceID:       "foo",
+				writeStreamID: "streamid",
+			},
+			addTrace: true,
+			want: &storagepb.AppendRowsRequest{
+				WriteStream: "streamid",
+				Rows: &storagepb.AppendRowsRequest_ProtoRows{
+					ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+						WriterSchema: &storagepb.ProtoSchema{
+							ProtoDescriptor: testDP,
+						},
+					},
+				},
+				TraceId: buildTraceID(&streamSettings{TraceID: "foo"}),
+			},
+		},
+	} {
+		got := tc.pw.constructFullRequest(tc.addTrace)
+		if diff := cmp.Diff(got, tc.want, protocmp.Transform()); diff != "" {
+			t.Errorf("%s diff: %s", tc.desc, diff)
+		}
+	}
 }

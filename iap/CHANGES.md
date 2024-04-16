@@ -1,5 +1,123 @@
 # Changes
 
+## [1.9.5](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.4...iap/v1.9.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **iap:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.3...iap/v1.9.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **iap:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.2...iap/v1.9.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **iap:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.1...iap/v1.9.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **iap:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.0...iap/v1.9.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **iap:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.8.1...iap/v1.9.0) (2023-09-20)
+
+
+### Features
+
+* **iap:** Adding programmatic_clients attribute to UpdateIapSettings API request ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+
+
+### Documentation
+
+* **iap:** Fixing Oauth typo ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/iap/v1.8.0...iap/v1.8.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **iap:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.3...iap/v1.8.0) (2023-05-30)
+
+
+### Features
+
+* **iap:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.2...iap/v1.7.3) (2023-05-08)
+
+
+### Bug Fixes
+
+* **iap:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.1...iap/v1.7.2) (2023-04-11)
+
+
+### Documentation
+
+* **iap:** Few minor changes on doc description came out of cl/512701532 ([19f18c0](https://github.com/googleapis/google-cloud-go/commit/19f18c0a33d85e1949981d58bca2b765ce9787b5))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/iap/v1.7.0...iap/v1.7.1) (2023-04-04)
+
+
+### Documentation
+
+* **iap:** Few minor changes on doc description came out of cl/512701532 ([c893c15](https://github.com/googleapis/google-cloud-go/commit/c893c158f1e6d03b0cde45dda2059c0e2aa9ead1))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.6.0...iap/v1.7.0) (2023-03-15)
+
+
+### Features
+
+* **iap:** Add an enum ENROLLED_SECOND_FACTORS under IapSettings ([8775cae](https://github.com/googleapis/google-cloud-go/commit/8775cae47a9efb358ce34240853a1b09c7f6dc62))
+* **iap:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.5.0...iap/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **iap:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.4.0...iap/v1.5.0) (2022-11-03)
+
+
+### Features
+
+* **iap:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.3.0...iap/v1.4.0) (2022-10-25)
+
+
+### Features
+
+* **iap:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.2.0...iap/v1.3.0) (2022-05-24)
+
+
+### Features
+
+* **iap:** add the TunnelDestGroup-related methods and types feat: add ReauthSettings to the UpdateIapSettingsRequest ([6ef576e](https://github.com/googleapis/google-cloud-go/commit/6ef576e2d821d079e7b940cd5d49fe3ca64a7ba2))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/iap/v1.1.0...iap/v1.2.0) (2022-02-23)
 
 
@@ -29,3 +147,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out iap as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

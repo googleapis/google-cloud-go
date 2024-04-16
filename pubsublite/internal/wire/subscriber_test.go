@@ -14,6 +14,7 @@
 package wire
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"sort"
@@ -28,7 +29,7 @@ import (
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 const (
@@ -587,6 +588,36 @@ func TestSubscribeStreamHandleResetError(t *testing.T) {
 	if gotErr := sub.FinalError(); gotErr != nil {
 		t.Errorf("Final err: (%v), want: <nil>", gotErr)
 	}
+}
+
+func TestSubscribeStreamReceiveLargeMessage(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
+	const msgSize = 10 * 1024 * 1024 // 10 MiB
+	msg := &pb.SequencedMessage{
+		Cursor:    &pb.Cursor{Offset: 1},
+		SizeBytes: msgSize,
+		Message:   &pb.PubSubMessage{Data: bytes.Repeat([]byte{'0'}, msgSize)},
+	}
+
+	settings := testSubscriberSettings()
+	settings.MaxOutstandingBytes = msgSize
+	expectedFlowControlReq := flowControlSubReq(flowControlTokens{
+		Bytes:    int64(settings.MaxOutstandingBytes),
+		Messages: int64(settings.MaxOutstandingMessages),
+	})
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
+	stream.Push(expectedFlowControlReq, msgSubResp(msg), nil)
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	sub := newTestSubscribeStream(t, subscription, settings)
+	sub.Receiver.ValidateMsg(msg)
+	sub.StopVerifyNoError()
 }
 
 type testSinglePartitionSubscriber singlePartitionSubscriber
@@ -1159,7 +1190,7 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 	cmtStream3 := test.NewRPCVerifier(t)
 	cmtStream3.Push(initCommitReq(subscriptionPartition{Path: subscription, Partition: 3}), initCommitResp(), nil)
 	cmtStream3.Push(commitReq(34), commitResp(1), nil)
-	cmtStream3.Push(commitReq(35), commitResp(1), nil)
+	cmt2Barrier := cmtStream3.PushWithBarrier(commitReq(35), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription, 3, cmtStream3)
 
 	// Partition 6
@@ -1172,7 +1203,7 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 
 	cmtStream6 := test.NewRPCVerifier(t)
 	cmtStream6.Push(initCommitReq(subscriptionPartition{Path: subscription, Partition: 6}), initCommitResp(), nil)
-	cmtStream6.Push(commitReq(67), commitResp(1), nil)
+	cmt3Barrier := cmtStream6.PushWithBarrier(commitReq(67), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription, 6, cmtStream6)
 
 	// Partition 8
@@ -1183,7 +1214,7 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 
 	cmtStream8 := test.NewRPCVerifier(t)
 	cmtStream8.Push(initCommitReq(subscriptionPartition{Path: subscription, Partition: 8}), initCommitResp(), nil)
-	cmtStream8.Push(commitReq(89), commitResp(1), nil)
+	cmt5Barrier := cmtStream8.PushWithBarrier(commitReq(89), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription, 8, cmtStream8)
 
 	mockServer.OnTestStart(verifiers)
@@ -1212,8 +1243,11 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 	msg4Barrier.Release()
 	receiver.ValidateMsgs(partitionMsgs(3, msg2))
 
-	// Ensure the second assignment ack is received by the server to avoid test
-	// flakiness.
+	// Ensure requests are received by the server to avoid test flakiness.
+	sub.FlushCommits()
+	cmt2Barrier.Release()
+	cmt3Barrier.Release()
+	cmt5Barrier.Release()
 	assignmentBarrier2.Release()
 
 	// Stop should flush all commit cursors.

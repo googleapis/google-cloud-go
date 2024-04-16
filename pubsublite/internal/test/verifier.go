@@ -250,11 +250,11 @@ func (sv *streamVerifiers) Push(v *RPCVerifier) {
 	sv.verifiers.PushBack(v)
 }
 
-func (sv *streamVerifiers) Pop() (*RPCVerifier, error) {
+func (sv *streamVerifiers) Pop(key string) (*RPCVerifier, error) {
 	sv.numStreams++
 	elem := sv.verifiers.Front()
 	if elem == nil {
-		sv.t.Errorf("stream(%d): unexpected connection with no verifiers", sv.numStreams)
+		sv.t.Errorf("unexpected stream index %d for key %s", sv.numStreams, key)
 		return nil, status.Error(codes.FailedPrecondition, "mockserver: got unexpected stream connection")
 	}
 
@@ -294,7 +294,7 @@ func (kv *keyedStreamVerifiers) Pop(key string) (*RPCVerifier, error) {
 	if !ok {
 		return nil, status.Error(codes.FailedPrecondition, "mockserver: unexpected connection with no configured responses")
 	}
-	return sv.Pop()
+	return sv.Pop(key)
 }
 
 func (kv *keyedStreamVerifiers) Flush() {

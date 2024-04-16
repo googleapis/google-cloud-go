@@ -10,6 +10,36 @@
         "grpc": {
           "libraryClient": "LookupClient",
           "rpcs": {
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ResolveService": {
+              "methods": [
+                "ResolveService"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "LookupClient",
+          "rpcs": {
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ResolveService": {
               "methods": [
                 "ResolveService"
@@ -64,6 +94,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetNamespace": {
               "methods": [
                 "GetNamespace"
@@ -77,6 +112,116 @@
             "ListEndpoints": {
               "methods": [
                 "ListEndpoints"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListNamespaces": {
+              "methods": [
+                "ListNamespaces"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateEndpoint": {
+              "methods": [
+                "UpdateEndpoint"
+              ]
+            },
+            "UpdateNamespace": {
+              "methods": [
+                "UpdateNamespace"
+              ]
+            },
+            "UpdateService": {
+              "methods": [
+                "UpdateService"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RegistrationClient",
+          "rpcs": {
+            "CreateEndpoint": {
+              "methods": [
+                "CreateEndpoint"
+              ]
+            },
+            "CreateNamespace": {
+              "methods": [
+                "CreateNamespace"
+              ]
+            },
+            "CreateService": {
+              "methods": [
+                "CreateService"
+              ]
+            },
+            "DeleteEndpoint": {
+              "methods": [
+                "DeleteEndpoint"
+              ]
+            },
+            "DeleteNamespace": {
+              "methods": [
+                "DeleteNamespace"
+              ]
+            },
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "GetEndpoint": {
+              "methods": [
+                "GetEndpoint"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetNamespace": {
+              "methods": [
+                "GetNamespace"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListEndpoints": {
+              "methods": [
+                "ListEndpoints"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListNamespaces": {

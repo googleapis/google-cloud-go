@@ -1,0 +1,2376 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/pubsublite/apiv1",
+    "version": "1.8.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.pubsublite.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_CancelOperation_sync",
+      "title": "pubsublite CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "AdminClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_CreateReservation_sync",
+      "title": "pubsublite CreateReservation Sample",
+      "description": "CreateReservation creates a new reservation.",
+      "file": "AdminClient/CreateReservation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateReservation",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.CreateReservation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.CreateReservationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.Reservation",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "CreateReservation",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.CreateReservation",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_CreateSubscription_sync",
+      "title": "pubsublite CreateSubscription Sample",
+      "description": "CreateSubscription creates a new subscription.",
+      "file": "AdminClient/CreateSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSubscription",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.CreateSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.CreateSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.Subscription",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "CreateSubscription",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.CreateSubscription",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_CreateTopic_sync",
+      "title": "pubsublite CreateTopic Sample",
+      "description": "CreateTopic creates a new topic.",
+      "file": "AdminClient/CreateTopic/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTopic",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.CreateTopic",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.CreateTopicRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.Topic",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "CreateTopic",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.CreateTopic",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_DeleteOperation_sync",
+      "title": "pubsublite DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "AdminClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_DeleteReservation_sync",
+      "title": "pubsublite DeleteReservation Sample",
+      "description": "DeleteReservation deletes the specified reservation.",
+      "file": "AdminClient/DeleteReservation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteReservation",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.DeleteReservation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.DeleteReservationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "DeleteReservation",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.DeleteReservation",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_DeleteSubscription_sync",
+      "title": "pubsublite DeleteSubscription Sample",
+      "description": "DeleteSubscription deletes the specified subscription.",
+      "file": "AdminClient/DeleteSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSubscription",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.DeleteSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.DeleteSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "DeleteSubscription",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.DeleteSubscription",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_DeleteTopic_sync",
+      "title": "pubsublite DeleteTopic Sample",
+      "description": "DeleteTopic deletes the specified topic.",
+      "file": "AdminClient/DeleteTopic/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTopic",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.DeleteTopic",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.DeleteTopicRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "DeleteTopic",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.DeleteTopic",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_GetOperation_sync",
+      "title": "pubsublite GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AdminClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_GetReservation_sync",
+      "title": "pubsublite GetReservation Sample",
+      "description": "GetReservation returns the reservation configuration.",
+      "file": "AdminClient/GetReservation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetReservation",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.GetReservation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.GetReservationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.Reservation",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "GetReservation",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.GetReservation",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_GetSubscription_sync",
+      "title": "pubsublite GetSubscription Sample",
+      "description": "GetSubscription returns the subscription configuration.",
+      "file": "AdminClient/GetSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSubscription",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.GetSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.GetSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.Subscription",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "GetSubscription",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.GetSubscription",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_GetTopic_sync",
+      "title": "pubsublite GetTopic Sample",
+      "description": "GetTopic returns the topic configuration.",
+      "file": "AdminClient/GetTopic/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTopic",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.GetTopic",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.GetTopicRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.Topic",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "GetTopic",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.GetTopic",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_GetTopicPartitions_sync",
+      "title": "pubsublite GetTopicPartitions Sample",
+      "description": "GetTopicPartitions returns the partition information for the requested topic.",
+      "file": "AdminClient/GetTopicPartitions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTopicPartitions",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.GetTopicPartitions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.GetTopicPartitionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.TopicPartitions",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "GetTopicPartitions",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.GetTopicPartitions",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_ListOperations_sync",
+      "title": "pubsublite ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "AdminClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_ListReservationTopics_sync",
+      "title": "pubsublite ListReservationTopics Sample",
+      "description": "ListReservationTopics lists the topics attached to the specified reservation.",
+      "file": "AdminClient/ListReservationTopics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReservationTopics",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.ListReservationTopics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.ListReservationTopicsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StringIterator",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "ListReservationTopics",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.ListReservationTopics",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_ListReservations_sync",
+      "title": "pubsublite ListReservations Sample",
+      "description": "ListReservations returns the list of reservations for the given project.",
+      "file": "AdminClient/ListReservations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReservations",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.ListReservations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.ListReservationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReservationIterator",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "ListReservations",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.ListReservations",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_ListSubscriptions_sync",
+      "title": "pubsublite ListSubscriptions Sample",
+      "description": "ListSubscriptions returns the list of subscriptions for the given project.",
+      "file": "AdminClient/ListSubscriptions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubscriptions",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.ListSubscriptions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.ListSubscriptionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubscriptionIterator",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "ListSubscriptions",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.ListSubscriptions",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_ListTopicSubscriptions_sync",
+      "title": "pubsublite ListTopicSubscriptions Sample",
+      "description": "ListTopicSubscriptions lists the subscriptions attached to the specified topic.",
+      "file": "AdminClient/ListTopicSubscriptions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTopicSubscriptions",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.ListTopicSubscriptions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.ListTopicSubscriptionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StringIterator",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "ListTopicSubscriptions",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.ListTopicSubscriptions",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_ListTopics_sync",
+      "title": "pubsublite ListTopics Sample",
+      "description": "ListTopics returns the list of topics for the given project.",
+      "file": "AdminClient/ListTopics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTopics",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.ListTopics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.ListTopicsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TopicIterator",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "ListTopics",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.ListTopics",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_SeekSubscription_sync",
+      "title": "pubsublite SeekSubscription Sample",
+      "description": "SeekSubscription performs an out-of-band seek for a subscription to a specified target,\nwhich may be timestamps or named positions within the message backlog.\nSeek translates these targets to cursors for each partition and\norchestrates subscribers to start consuming messages from these seek\ncursors.\n\nIf an operation is returned, the seek has been registered and subscribers\nwill eventually receive messages from the seek cursors (i.e. eventual\nconsistency), as long as they are using a minimum supported client library\nversion and not a system that tracks cursors independently of Pub/Sub Lite\n(e.g. Apache Beam, Dataflow, Spark). The seek operation will fail for\nunsupported clients.\n\nIf clients would like to know when subscribers react to the seek (or not),\nthey can poll the operation. The seek operation will succeed and complete\nonce subscribers are ready to receive messages from the seek cursors for\nall partitions of the topic. This means that the seek operation will not\ncomplete until all subscribers come online.\n\nIf the previous seek operation has not yet completed, it will be aborted\nand the new invocation of seek will supersede it.",
+      "file": "AdminClient/SeekSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SeekSubscription",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.SeekSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.SeekSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SeekSubscriptionOperation",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "SeekSubscription",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.SeekSubscription",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_UpdateReservation_sync",
+      "title": "pubsublite UpdateReservation Sample",
+      "description": "UpdateReservation updates properties of the specified reservation.",
+      "file": "AdminClient/UpdateReservation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateReservation",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.UpdateReservation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.UpdateReservationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.Reservation",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "UpdateReservation",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.UpdateReservation",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_UpdateSubscription_sync",
+      "title": "pubsublite UpdateSubscription Sample",
+      "description": "UpdateSubscription updates properties of the specified subscription.",
+      "file": "AdminClient/UpdateSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSubscription",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.UpdateSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.UpdateSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.Subscription",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "UpdateSubscription",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.UpdateSubscription",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_AdminService_UpdateTopic_sync",
+      "title": "pubsublite UpdateTopic Sample",
+      "description": "UpdateTopic updates properties of the specified topic.",
+      "file": "AdminClient/UpdateTopic/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTopic",
+        "fullName": "google.cloud.pubsublite.v1.AdminClient.UpdateTopic",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.UpdateTopicRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.Topic",
+        "client": {
+          "shortName": "AdminClient",
+          "fullName": "google.cloud.pubsublite.v1.AdminClient"
+        },
+        "method": {
+          "shortName": "UpdateTopic",
+          "fullName": "google.cloud.pubsublite.v1.AdminService.UpdateTopic",
+          "service": {
+            "shortName": "AdminService",
+            "fullName": "google.cloud.pubsublite.v1.AdminService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_CursorService_CancelOperation_sync",
+      "title": "pubsublite CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CursorClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.pubsublite.v1.CursorClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CursorClient",
+          "fullName": "google.cloud.pubsublite.v1.CursorClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_CursorService_CommitCursor_sync",
+      "title": "pubsublite CommitCursor Sample",
+      "description": "CommitCursor updates the committed cursor.",
+      "file": "CursorClient/CommitCursor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CommitCursor",
+        "fullName": "google.cloud.pubsublite.v1.CursorClient.CommitCursor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.CommitCursorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.CommitCursorResponse",
+        "client": {
+          "shortName": "CursorClient",
+          "fullName": "google.cloud.pubsublite.v1.CursorClient"
+        },
+        "method": {
+          "shortName": "CommitCursor",
+          "fullName": "google.cloud.pubsublite.v1.CursorService.CommitCursor",
+          "service": {
+            "shortName": "CursorService",
+            "fullName": "google.cloud.pubsublite.v1.CursorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_CursorService_DeleteOperation_sync",
+      "title": "pubsublite DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CursorClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.pubsublite.v1.CursorClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CursorClient",
+          "fullName": "google.cloud.pubsublite.v1.CursorClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_CursorService_GetOperation_sync",
+      "title": "pubsublite GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CursorClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.pubsublite.v1.CursorClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CursorClient",
+          "fullName": "google.cloud.pubsublite.v1.CursorClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_CursorService_ListOperations_sync",
+      "title": "pubsublite ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CursorClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.pubsublite.v1.CursorClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CursorClient",
+          "fullName": "google.cloud.pubsublite.v1.CursorClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_CursorService_ListPartitionCursors_sync",
+      "title": "pubsublite ListPartitionCursors Sample",
+      "description": "ListPartitionCursors returns all committed cursor information for a subscription.",
+      "file": "CursorClient/ListPartitionCursors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPartitionCursors",
+        "fullName": "google.cloud.pubsublite.v1.CursorClient.ListPartitionCursors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.ListPartitionCursorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PartitionCursorIterator",
+        "client": {
+          "shortName": "CursorClient",
+          "fullName": "google.cloud.pubsublite.v1.CursorClient"
+        },
+        "method": {
+          "shortName": "ListPartitionCursors",
+          "fullName": "google.cloud.pubsublite.v1.CursorService.ListPartitionCursors",
+          "service": {
+            "shortName": "CursorService",
+            "fullName": "google.cloud.pubsublite.v1.CursorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_CursorService_StreamingCommitCursor_sync",
+      "title": "pubsublite StreamingCommitCursor Sample",
+      "description": "StreamingCommitCursor establishes a stream with the server for managing committed cursors.",
+      "file": "CursorClient/StreamingCommitCursor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "StreamingCommitCursor",
+        "fullName": "google.cloud.pubsublite.v1.CursorClient.StreamingCommitCursor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "pubsublitepb.CursorService_StreamingCommitCursorClient",
+        "client": {
+          "shortName": "CursorClient",
+          "fullName": "google.cloud.pubsublite.v1.CursorClient"
+        },
+        "method": {
+          "shortName": "StreamingCommitCursor",
+          "fullName": "google.cloud.pubsublite.v1.CursorService.StreamingCommitCursor",
+          "service": {
+            "shortName": "CursorService",
+            "fullName": "google.cloud.pubsublite.v1.CursorService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PartitionAssignmentService_AssignPartitions_sync",
+      "title": "pubsublite AssignPartitions Sample",
+      "description": "AssignPartitions assign partitions for this client to handle for the specified subscription.\n\nThe client must send an InitialPartitionAssignmentRequest first.\nThe server will then send at most one unacknowledged PartitionAssignment\noutstanding on the stream at a time.\nThe client should send a PartitionAssignmentAck after updating the\npartitions it is connected to to reflect the new assignment.",
+      "file": "PartitionAssignmentClient/AssignPartitions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AssignPartitions",
+        "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient.AssignPartitions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "pubsublitepb.PartitionAssignmentService_AssignPartitionsClient",
+        "client": {
+          "shortName": "PartitionAssignmentClient",
+          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient"
+        },
+        "method": {
+          "shortName": "AssignPartitions",
+          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService.AssignPartitions",
+          "service": {
+            "shortName": "PartitionAssignmentService",
+            "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PartitionAssignmentService_CancelOperation_sync",
+      "title": "pubsublite CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "PartitionAssignmentClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PartitionAssignmentClient",
+          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PartitionAssignmentService_DeleteOperation_sync",
+      "title": "pubsublite DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "PartitionAssignmentClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PartitionAssignmentClient",
+          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PartitionAssignmentService_GetOperation_sync",
+      "title": "pubsublite GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "PartitionAssignmentClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "PartitionAssignmentClient",
+          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PartitionAssignmentService_ListOperations_sync",
+      "title": "pubsublite ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "PartitionAssignmentClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "PartitionAssignmentClient",
+          "fullName": "google.cloud.pubsublite.v1.PartitionAssignmentClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PublisherService_CancelOperation_sync",
+      "title": "pubsublite CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "PublisherClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.pubsublite.v1.PublisherClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.cloud.pubsublite.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PublisherService_DeleteOperation_sync",
+      "title": "pubsublite DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "PublisherClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.pubsublite.v1.PublisherClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.cloud.pubsublite.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PublisherService_GetOperation_sync",
+      "title": "pubsublite GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "PublisherClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.pubsublite.v1.PublisherClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.cloud.pubsublite.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PublisherService_ListOperations_sync",
+      "title": "pubsublite ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "PublisherClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.pubsublite.v1.PublisherClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.cloud.pubsublite.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_PublisherService_Publish_sync",
+      "title": "pubsublite Publish Sample",
+      "description": "Publish establishes a stream with the server for publishing messages. Once the\nstream is initialized, the client publishes messages by sending publish\nrequests on the stream. The server responds with a PublishResponse for each\nPublishRequest sent by the client, in the same order that the requests\nwere sent. Note that multiple PublishRequests can be in flight\nsimultaneously, but they will be processed by the server in the order that\nthey are sent by the client on a given stream.",
+      "file": "PublisherClient/Publish/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Publish",
+        "fullName": "google.cloud.pubsublite.v1.PublisherClient.Publish",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "pubsublitepb.PublisherService_PublishClient",
+        "client": {
+          "shortName": "PublisherClient",
+          "fullName": "google.cloud.pubsublite.v1.PublisherClient"
+        },
+        "method": {
+          "shortName": "Publish",
+          "fullName": "google.cloud.pubsublite.v1.PublisherService.Publish",
+          "service": {
+            "shortName": "PublisherService",
+            "fullName": "google.cloud.pubsublite.v1.PublisherService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_SubscriberService_CancelOperation_sync",
+      "title": "pubsublite CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "SubscriberClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.pubsublite.v1.SubscriberClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.cloud.pubsublite.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_SubscriberService_DeleteOperation_sync",
+      "title": "pubsublite DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "SubscriberClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.pubsublite.v1.SubscriberClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.cloud.pubsublite.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_SubscriberService_GetOperation_sync",
+      "title": "pubsublite GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SubscriberClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.pubsublite.v1.SubscriberClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.cloud.pubsublite.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_SubscriberService_ListOperations_sync",
+      "title": "pubsublite ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SubscriberClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.pubsublite.v1.SubscriberClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.cloud.pubsublite.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_SubscriberService_Subscribe_sync",
+      "title": "pubsublite Subscribe Sample",
+      "description": "Subscribe establishes a stream with the server for receiving messages.",
+      "file": "SubscriberClient/Subscribe/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Subscribe",
+        "fullName": "google.cloud.pubsublite.v1.SubscriberClient.Subscribe",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "pubsublitepb.SubscriberService_SubscribeClient",
+        "client": {
+          "shortName": "SubscriberClient",
+          "fullName": "google.cloud.pubsublite.v1.SubscriberClient"
+        },
+        "method": {
+          "shortName": "Subscribe",
+          "fullName": "google.cloud.pubsublite.v1.SubscriberService.Subscribe",
+          "service": {
+            "shortName": "SubscriberService",
+            "fullName": "google.cloud.pubsublite.v1.SubscriberService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_TopicStatsService_CancelOperation_sync",
+      "title": "pubsublite CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "TopicStatsClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.pubsublite.v1.TopicStatsClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TopicStatsClient",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_TopicStatsService_ComputeHeadCursor_sync",
+      "title": "pubsublite ComputeHeadCursor Sample",
+      "description": "ComputeHeadCursor compute the head cursor for the partition.\nThe head cursor's offset is guaranteed to be less than or equal to all\nmessages which have not yet been acknowledged as published, and\ngreater than the offset of any message whose publish has already\nbeen acknowledged. It is zero if there have never been messages in the\npartition.",
+      "file": "TopicStatsClient/ComputeHeadCursor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ComputeHeadCursor",
+        "fullName": "google.cloud.pubsublite.v1.TopicStatsClient.ComputeHeadCursor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.ComputeHeadCursorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.ComputeHeadCursorResponse",
+        "client": {
+          "shortName": "TopicStatsClient",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
+        },
+        "method": {
+          "shortName": "ComputeHeadCursor",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsService.ComputeHeadCursor",
+          "service": {
+            "shortName": "TopicStatsService",
+            "fullName": "google.cloud.pubsublite.v1.TopicStatsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_TopicStatsService_ComputeMessageStats_sync",
+      "title": "pubsublite ComputeMessageStats Sample",
+      "description": "ComputeMessageStats compute statistics about a range of messages in a given topic and\npartition.",
+      "file": "TopicStatsClient/ComputeMessageStats/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ComputeMessageStats",
+        "fullName": "google.cloud.pubsublite.v1.TopicStatsClient.ComputeMessageStats",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.ComputeMessageStatsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.ComputeMessageStatsResponse",
+        "client": {
+          "shortName": "TopicStatsClient",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
+        },
+        "method": {
+          "shortName": "ComputeMessageStats",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsService.ComputeMessageStats",
+          "service": {
+            "shortName": "TopicStatsService",
+            "fullName": "google.cloud.pubsublite.v1.TopicStatsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_TopicStatsService_ComputeTimeCursor_sync",
+      "title": "pubsublite ComputeTimeCursor Sample",
+      "description": "ComputeTimeCursor compute the corresponding cursor for a publish or event time in a topic\npartition.",
+      "file": "TopicStatsClient/ComputeTimeCursor/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ComputeTimeCursor",
+        "fullName": "google.cloud.pubsublite.v1.TopicStatsClient.ComputeTimeCursor",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "pubsublitepb.ComputeTimeCursorRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*pubsublitepb.ComputeTimeCursorResponse",
+        "client": {
+          "shortName": "TopicStatsClient",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
+        },
+        "method": {
+          "shortName": "ComputeTimeCursor",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsService.ComputeTimeCursor",
+          "service": {
+            "shortName": "TopicStatsService",
+            "fullName": "google.cloud.pubsublite.v1.TopicStatsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_TopicStatsService_DeleteOperation_sync",
+      "title": "pubsublite DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "TopicStatsClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.pubsublite.v1.TopicStatsClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TopicStatsClient",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_TopicStatsService_GetOperation_sync",
+      "title": "pubsublite GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "TopicStatsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.pubsublite.v1.TopicStatsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "TopicStatsClient",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "pubsublite_v1_generated_TopicStatsService_ListOperations_sync",
+      "title": "pubsublite ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "TopicStatsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.pubsublite.v1.TopicStatsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "TopicStatsClient",
+          "fullName": "google.cloud.pubsublite.v1.TopicStatsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

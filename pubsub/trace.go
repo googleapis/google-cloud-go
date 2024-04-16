@@ -92,6 +92,14 @@ var (
 	// OutstandingBytes is a measure of the number of bytes all outstanding messages held by the client take up.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	OutstandingBytes = stats.Int64(statsPrefix+"outstanding_bytes", "Number of outstanding bytes", stats.UnitDimensionless)
+
+	// PublisherOutstandingMessages is a measure of the number of published outstanding messages held by the client before they are processed.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	PublisherOutstandingMessages = stats.Int64(statsPrefix+"publisher_outstanding_messages", "Number of outstanding publish messages", stats.UnitDimensionless)
+
+	// PublisherOutstandingBytes is a measure of the number of bytes all outstanding publish messages held by the client take up.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	PublisherOutstandingBytes = stats.Int64(statsPrefix+"publisher_outstanding_bytes", "Number of outstanding publish bytes", stats.UnitDimensionless)
 )
 
 var (
@@ -146,11 +154,21 @@ var (
 	// OutstandingBytesView is the last value of OutstandingBytes
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	OutstandingBytesView *view.View
+
+	// PublisherOutstandingMessagesView is the last value of OutstandingMessages
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	PublisherOutstandingMessagesView *view.View
+
+	// PublisherOutstandingBytesView is the last value of OutstandingBytes
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	PublisherOutstandingBytesView *view.View
 )
 
 func init() {
 	PublishedMessagesView = createCountView(stats.Measure(PublishedMessages), keyTopic, keyStatus, keyError)
 	PublishLatencyView = createDistView(PublishLatency, keyTopic, keyStatus, keyError)
+	PublisherOutstandingMessagesView = createLastValueView(PublisherOutstandingMessages, keyTopic)
+	PublisherOutstandingBytesView = createLastValueView(PublisherOutstandingBytes, keyTopic)
 	PullCountView = createCountView(PullCount, keySubscription)
 	AckCountView = createCountView(AckCount, keySubscription)
 	NackCountView = createCountView(NackCount, keySubscription)
@@ -166,6 +184,8 @@ func init() {
 	DefaultPublishViews = []*view.View{
 		PublishedMessagesView,
 		PublishLatencyView,
+		PublisherOutstandingMessagesView,
+		PublisherOutstandingBytesView,
 	}
 
 	DefaultSubscribeViews = []*view.View{

@@ -1,0 +1,63 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.commerce.consumer.procurement.v1",
+  "libraryPackage": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+  "services": {
+    "ConsumerProcurementService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ConsumerProcurementClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetOrder": {
+              "methods": [
+                "GetOrder"
+              ]
+            },
+            "ListOrders": {
+              "methods": [
+                "ListOrders"
+              ]
+            },
+            "PlaceOrder": {
+              "methods": [
+                "PlaceOrder"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ConsumerProcurementClient",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetOrder": {
+              "methods": [
+                "GetOrder"
+              ]
+            },
+            "ListOrders": {
+              "methods": [
+                "ListOrders"
+              ]
+            },
+            "PlaceOrder": {
+              "methods": [
+                "PlaceOrder"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -23,9 +23,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc/codes"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 // A Key can be either a Cloud Spanner row's primary key or a secondary index
@@ -83,9 +83,7 @@ func keyPartValue(part interface{}) (pb *proto3.Value, err error) {
 		pb, _, err = encodeValue(int64(v))
 	case uint32:
 		pb, _, err = encodeValue(int64(v))
-	case float32:
-		pb, _, err = encodeValue(float64(v))
-	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate, big.Rat, NullNumeric:
+	case int64, float64, float32, NullInt64, NullFloat64, NullFloat32, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate, big.Rat, NullNumeric:
 		pb, _, err = encodeValue(v)
 	case Encoder:
 		part, err = v.EncodeSpanner()
@@ -235,7 +233,7 @@ const (
 // the following range returns all events for user "Bob" that occurred in the
 // year 2015:
 //
-// 	spanner.KeyRange{
+//	spanner.KeyRange{
 //		Start: spanner.Key{"Bob", "2015-01-01"},
 //		End:   spanner.Key{"Bob", "2015-12-31"},
 //		Kind:  ClosedClosed,

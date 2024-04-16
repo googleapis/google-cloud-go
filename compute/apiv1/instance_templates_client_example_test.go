@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewInstanceTemplatesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,8 +41,50 @@ func ExampleNewInstanceTemplatesRESTClient() {
 	_ = c
 }
 
+func ExampleInstanceTemplatesClient_AggregatedList() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewInstanceTemplatesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.AggregatedListInstanceTemplatesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListInstanceTemplatesRequest.
+	}
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.InstanceTemplateAggregatedList)
+	}
+}
+
 func ExampleInstanceTemplatesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +93,7 @@ func ExampleInstanceTemplatesClient_Delete() {
 
 	req := &computepb.DeleteInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstanceTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteInstanceTemplateRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -61,6 +108,11 @@ func ExampleInstanceTemplatesClient_Delete() {
 
 func ExampleInstanceTemplatesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +121,7 @@ func ExampleInstanceTemplatesClient_Get() {
 
 	req := &computepb.GetInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInstanceTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetInstanceTemplateRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,6 +133,11 @@ func ExampleInstanceTemplatesClient_Get() {
 
 func ExampleInstanceTemplatesClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,7 +146,7 @@ func ExampleInstanceTemplatesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyInstanceTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyInstanceTemplateRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -101,6 +158,11 @@ func ExampleInstanceTemplatesClient_GetIamPolicy() {
 
 func ExampleInstanceTemplatesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,7 +171,7 @@ func ExampleInstanceTemplatesClient_Insert() {
 
 	req := &computepb.InsertInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInstanceTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertInstanceTemplateRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -124,6 +186,11 @@ func ExampleInstanceTemplatesClient_Insert() {
 
 func ExampleInstanceTemplatesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +199,7 @@ func ExampleInstanceTemplatesClient_List() {
 
 	req := &computepb.ListInstanceTemplatesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstanceTemplatesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListInstanceTemplatesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -145,11 +212,22 @@ func ExampleInstanceTemplatesClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.InstanceTemplateList)
 	}
 }
 
 func ExampleInstanceTemplatesClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,7 +236,7 @@ func ExampleInstanceTemplatesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyInstanceTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyInstanceTemplateRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -170,6 +248,11 @@ func ExampleInstanceTemplatesClient_SetIamPolicy() {
 
 func ExampleInstanceTemplatesClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstanceTemplatesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -178,7 +261,7 @@ func ExampleInstanceTemplatesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsInstanceTemplateRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsInstanceTemplateRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsInstanceTemplateRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

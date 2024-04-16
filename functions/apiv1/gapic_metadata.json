@@ -45,9 +45,99 @@
                 "GetIamPolicy"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "ListFunctions": {
               "methods": [
                 "ListFunctions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFunction": {
+              "methods": [
+                "UpdateFunction"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudFunctionsClient",
+          "rpcs": {
+            "CallFunction": {
+              "methods": [
+                "CallFunction"
+              ]
+            },
+            "CreateFunction": {
+              "methods": [
+                "CreateFunction"
+              ]
+            },
+            "DeleteFunction": {
+              "methods": [
+                "DeleteFunction"
+              ]
+            },
+            "GenerateDownloadUrl": {
+              "methods": [
+                "GenerateDownloadUrl"
+              ]
+            },
+            "GenerateUploadUrl": {
+              "methods": [
+                "GenerateUploadUrl"
+              ]
+            },
+            "GetFunction": {
+              "methods": [
+                "GetFunction"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListFunctions": {
+              "methods": [
+                "ListFunctions"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "SetIamPolicy": {

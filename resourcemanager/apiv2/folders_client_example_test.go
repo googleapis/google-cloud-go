@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,14 +19,19 @@ package resourcemanager_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	resourcemanager "cloud.google.com/go/resourcemanager/apiv2"
+	resourcemanagerpb "cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb"
 	"google.golang.org/api/iterator"
-	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v2"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 func ExampleNewFoldersClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -37,80 +42,30 @@ func ExampleNewFoldersClient() {
 	_ = c
 }
 
-func ExampleFoldersClient_ListFolders() {
+func ExampleNewFoldersRESTClient() {
 	ctx := context.Background()
-	c, err := resourcemanager.NewFoldersClient(ctx)
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewFoldersRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &resourcemanagerpb.ListFoldersRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#ListFoldersRequest.
-	}
-	it := c.ListFolders(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleFoldersClient_SearchFolders() {
-	ctx := context.Background()
-	c, err := resourcemanager.NewFoldersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &resourcemanagerpb.SearchFoldersRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#SearchFoldersRequest.
-	}
-	it := c.SearchFolders(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleFoldersClient_GetFolder() {
-	ctx := context.Background()
-	c, err := resourcemanager.NewFoldersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &resourcemanagerpb.GetFolderRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#GetFolderRequest.
-	}
-	resp, err := c.GetFolder(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
+	// TODO: Use client.
+	_ = c
 }
 
 func ExampleFoldersClient_CreateFolder() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -119,7 +74,7 @@ func ExampleFoldersClient_CreateFolder() {
 
 	req := &resourcemanagerpb.CreateFolderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#CreateFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#CreateFolderRequest.
 	}
 	op, err := c.CreateFolder(ctx, req)
 	if err != nil {
@@ -134,19 +89,24 @@ func ExampleFoldersClient_CreateFolder() {
 	_ = resp
 }
 
-func ExampleFoldersClient_UpdateFolder() {
+func ExampleFoldersClient_DeleteFolder() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &resourcemanagerpb.UpdateFolderRequest{
+	req := &resourcemanagerpb.DeleteFolderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#UpdateFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#DeleteFolderRequest.
 	}
-	resp, err := c.UpdateFolder(ctx, req)
+	resp, err := c.DeleteFolder(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -154,8 +114,100 @@ func ExampleFoldersClient_UpdateFolder() {
 	_ = resp
 }
 
+func ExampleFoldersClient_GetFolder() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewFoldersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &resourcemanagerpb.GetFolderRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#GetFolderRequest.
+	}
+	resp, err := c.GetFolder(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFoldersClient_GetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewFoldersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.GetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFoldersClient_ListFolders() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewFoldersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &resourcemanagerpb.ListFoldersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#ListFoldersRequest.
+	}
+	it := c.ListFolders(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*resourcemanagerpb.ListFoldersResponse)
+	}
+}
+
 func ExampleFoldersClient_MoveFolder() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -164,7 +216,7 @@ func ExampleFoldersClient_MoveFolder() {
 
 	req := &resourcemanagerpb.MoveFolderRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#MoveFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#MoveFolderRequest.
 	}
 	op, err := c.MoveFolder(ctx, req)
 	if err != nil {
@@ -179,68 +231,50 @@ func ExampleFoldersClient_MoveFolder() {
 	_ = resp
 }
 
-func ExampleFoldersClient_DeleteFolder() {
+func ExampleFoldersClient_SearchFolders() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &resourcemanagerpb.DeleteFolderRequest{
+	req := &resourcemanagerpb.SearchFoldersRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#DeleteFolderRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#SearchFoldersRequest.
 	}
-	resp, err := c.DeleteFolder(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
+	it := c.SearchFolders(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 
-func ExampleFoldersClient_UndeleteFolder() {
-	ctx := context.Background()
-	c, err := resourcemanager.NewFoldersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*resourcemanagerpb.SearchFoldersResponse)
 	}
-	defer c.Close()
-
-	req := &resourcemanagerpb.UndeleteFolderRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/resourcemanager/v2#UndeleteFolderRequest.
-	}
-	resp, err := c.UndeleteFolder(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleFoldersClient_GetIamPolicy() {
-	ctx := context.Background()
-	c, err := resourcemanager.NewFoldersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &iampb.GetIamPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
-	}
-	resp, err := c.GetIamPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleFoldersClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -249,7 +283,7 @@ func ExampleFoldersClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -261,6 +295,11 @@ func ExampleFoldersClient_SetIamPolicy() {
 
 func ExampleFoldersClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -269,9 +308,59 @@ func ExampleFoldersClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFoldersClient_UndeleteFolder() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewFoldersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &resourcemanagerpb.UndeleteFolderRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#UndeleteFolderRequest.
+	}
+	resp, err := c.UndeleteFolder(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFoldersClient_UpdateFolder() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := resourcemanager.NewFoldersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &resourcemanagerpb.UpdateFolderRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2/resourcemanagerpb#UpdateFolderRequest.
+	}
+	resp, err := c.UpdateFolder(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

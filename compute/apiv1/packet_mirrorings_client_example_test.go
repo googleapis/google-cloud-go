@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewPacketMirroringsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPacketMirroringsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewPacketMirroringsRESTClient() {
 
 func ExamplePacketMirroringsClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPacketMirroringsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExamplePacketMirroringsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListPacketMirroringsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListPacketMirroringsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListPacketMirroringsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -59,11 +69,22 @@ func ExamplePacketMirroringsClient_AggregatedList() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.PacketMirroringAggregatedList)
 	}
 }
 
 func ExamplePacketMirroringsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPacketMirroringsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +93,7 @@ func ExamplePacketMirroringsClient_Delete() {
 
 	req := &computepb.DeletePacketMirroringRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeletePacketMirroringRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeletePacketMirroringRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -87,6 +108,11 @@ func ExamplePacketMirroringsClient_Delete() {
 
 func ExamplePacketMirroringsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPacketMirroringsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -95,7 +121,7 @@ func ExamplePacketMirroringsClient_Get() {
 
 	req := &computepb.GetPacketMirroringRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetPacketMirroringRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetPacketMirroringRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -107,6 +133,11 @@ func ExamplePacketMirroringsClient_Get() {
 
 func ExamplePacketMirroringsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPacketMirroringsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -115,7 +146,7 @@ func ExamplePacketMirroringsClient_Insert() {
 
 	req := &computepb.InsertPacketMirroringRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertPacketMirroringRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertPacketMirroringRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -130,6 +161,11 @@ func ExamplePacketMirroringsClient_Insert() {
 
 func ExamplePacketMirroringsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPacketMirroringsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,7 +174,7 @@ func ExamplePacketMirroringsClient_List() {
 
 	req := &computepb.ListPacketMirroringsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPacketMirroringsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListPacketMirroringsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -151,11 +187,22 @@ func ExamplePacketMirroringsClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.PacketMirroringList)
 	}
 }
 
 func ExamplePacketMirroringsClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPacketMirroringsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -164,7 +211,7 @@ func ExamplePacketMirroringsClient_Patch() {
 
 	req := &computepb.PatchPacketMirroringRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchPacketMirroringRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchPacketMirroringRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -179,6 +226,11 @@ func ExamplePacketMirroringsClient_Patch() {
 
 func ExamplePacketMirroringsClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewPacketMirroringsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -187,7 +239,7 @@ func ExamplePacketMirroringsClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsPacketMirroringRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsPacketMirroringRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsPacketMirroringRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

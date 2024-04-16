@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	monitoringpb "cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"google.golang.org/api/iterator"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
 func ExampleNewAlertPolicyClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,8 +41,86 @@ func ExampleNewAlertPolicyClient() {
 	_ = c
 }
 
+func ExampleAlertPolicyClient_CreateAlertPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewAlertPolicyClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.CreateAlertPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#CreateAlertPolicyRequest.
+	}
+	resp, err := c.CreateAlertPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAlertPolicyClient_DeleteAlertPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewAlertPolicyClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.DeleteAlertPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#DeleteAlertPolicyRequest.
+	}
+	err = c.DeleteAlertPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAlertPolicyClient_GetAlertPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := monitoring.NewAlertPolicyClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &monitoringpb.GetAlertPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#GetAlertPolicyRequest.
+	}
+	resp, err := c.GetAlertPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleAlertPolicyClient_ListAlertPolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +129,7 @@ func ExampleAlertPolicyClient_ListAlertPolicies() {
 
 	req := &monitoringpb.ListAlertPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#ListAlertPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#ListAlertPoliciesRequest.
 	}
 	it := c.ListAlertPolicies(ctx, req)
 	for {
@@ -59,69 +142,22 @@ func ExampleAlertPolicyClient_ListAlertPolicies() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
 
-func ExampleAlertPolicyClient_GetAlertPolicy() {
-	ctx := context.Background()
-	c, err := monitoring.NewAlertPolicyClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.GetAlertPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#GetAlertPolicyRequest.
-	}
-	resp, err := c.GetAlertPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAlertPolicyClient_CreateAlertPolicy() {
-	ctx := context.Background()
-	c, err := monitoring.NewAlertPolicyClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.CreateAlertPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#CreateAlertPolicyRequest.
-	}
-	resp, err := c.CreateAlertPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAlertPolicyClient_DeleteAlertPolicy() {
-	ctx := context.Background()
-	c, err := monitoring.NewAlertPolicyClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &monitoringpb.DeleteAlertPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#DeleteAlertPolicyRequest.
-	}
-	err = c.DeleteAlertPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*monitoringpb.ListAlertPoliciesResponse)
 	}
 }
 
 func ExampleAlertPolicyClient_UpdateAlertPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -130,7 +166,7 @@ func ExampleAlertPolicyClient_UpdateAlertPolicy() {
 
 	req := &monitoringpb.UpdateAlertPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/monitoring/v3#UpdateAlertPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2/monitoringpb#UpdateAlertPolicyRequest.
 	}
 	resp, err := c.UpdateAlertPolicy(ctx, req)
 	if err != nil {

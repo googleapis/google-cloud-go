@@ -27,17 +27,26 @@ import (
 type LimitExceededBehavior int
 
 const (
-	// FlowControlBlock signals to wait until the request can be made without exceeding the limit.
-	FlowControlBlock LimitExceededBehavior = iota
 	// FlowControlIgnore disables flow control.
-	FlowControlIgnore
+	FlowControlIgnore LimitExceededBehavior = iota
+	// FlowControlBlock signals to wait until the request can be made without exceeding the limit.
+	FlowControlBlock
 	// FlowControlSignalError signals an error to the caller of acquire.
 	FlowControlSignalError
 )
 
+// flowControllerPurpose indicates whether a flowController is for a topic or a
+// subscription.
+type flowControllerPurpose int
+
+const (
+	flowControllerPurposeSubscription flowControllerPurpose = iota
+	flowControllerPurposeTopic
+)
+
 // FlowControlSettings controls flow control for messages while publishing or subscribing.
 type FlowControlSettings struct {
-	// MaxOutstandingMessages is the maximum number of bufered messages to be published.
+	// MaxOutstandingMessages is the maximum number of buffered messages to be published.
 	// If less than or equal to zero, this is disabled.
 	MaxOutstandingMessages int
 
@@ -47,7 +56,7 @@ type FlowControlSettings struct {
 
 	// LimitExceededBehavior configures the behavior when trying to publish
 	// additional messages while the flow controller is full. The available options
-	// include Block (default), Ignore (disable), and SignalError (publish
+	// are Ignore (disable, default), Block, and SignalError (publish
 	// results will return an error).
 	LimitExceededBehavior LimitExceededBehavior
 }
@@ -73,6 +82,7 @@ type flowController struct {
 	// Number of outstanding bytes remaining. Atomic.
 	bytesRemaining int64
 	limitBehavior  LimitExceededBehavior
+	purpose        flowControllerPurpose
 }
 
 // newFlowController creates a new flowController that ensures no more than
@@ -93,6 +103,18 @@ func newFlowController(fc FlowControlSettings) flowController {
 	if fc.MaxOutstandingBytes > 0 {
 		f.semSize = semaphore.NewWeighted(int64(fc.MaxOutstandingBytes))
 	}
+	return f
+}
+
+func newTopicFlowController(fc FlowControlSettings) flowController {
+	f := newFlowController(fc)
+	f.purpose = flowControllerPurposeTopic
+	return f
+}
+
+func newSubscriptionFlowController(fc FlowControlSettings) flowController {
+	f := newFlowController(fc)
+	f.purpose = flowControllerPurposeSubscription
 	return f
 }
 
@@ -135,13 +157,15 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 			}
 		}
 	}
+
 	if f.semCount != nil {
 		outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
-		recordStat(ctx, OutstandingMessages, outstandingMessages)
+		f.recordOutstandingMessages(ctx, outstandingMessages)
 	}
+
 	if f.semSize != nil {
 		outstandingBytes := atomic.AddInt64(&f.bytesRemaining, f.bound(size))
-		recordStat(ctx, OutstandingBytes, outstandingBytes)
+		f.recordOutstandingBytes(ctx, outstandingBytes)
 	}
 	return nil
 }
@@ -154,12 +178,12 @@ func (f *flowController) release(ctx context.Context, size int) {
 
 	if f.semCount != nil {
 		outstandingMessages := atomic.AddInt64(&f.countRemaining, -1)
-		recordStat(ctx, OutstandingMessages, outstandingMessages)
+		f.recordOutstandingMessages(ctx, outstandingMessages)
 		f.semCount.Release(1)
 	}
 	if f.semSize != nil {
 		outstandingBytes := atomic.AddInt64(&f.bytesRemaining, -1*f.bound(size))
-		recordStat(ctx, OutstandingBytes, outstandingBytes)
+		f.recordOutstandingBytes(ctx, outstandingBytes)
 		f.semSize.Release(f.bound(size))
 	}
 }
@@ -175,4 +199,22 @@ func (f *flowController) bound(size int) int64 {
 // if maxCount is 0, this will always return 0.
 func (f *flowController) count() int {
 	return int(atomic.LoadInt64(&f.countRemaining))
+}
+
+func (f *flowController) recordOutstandingMessages(ctx context.Context, n int64) {
+	if f.purpose == flowControllerPurposeTopic {
+		recordStat(ctx, PublisherOutstandingMessages, n)
+		return
+	}
+
+	recordStat(ctx, OutstandingMessages, n)
+}
+
+func (f *flowController) recordOutstandingBytes(ctx context.Context, n int64) {
+	if f.purpose == flowControllerPurposeTopic {
+		recordStat(ctx, PublisherOutstandingBytes, n)
+		return
+	}
+
+	recordStat(ctx, OutstandingBytes, n)
 }

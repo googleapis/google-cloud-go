@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,18 +17,25 @@
 package vision
 
 import (
+	"bytes"
 	"context"
+	"fmt"
+	"io"
 	"math"
+	"net/http"
+	"net/url"
 	"time"
 
+	visionpb "cloud.google.com/go/vision/v2/apiv1p1beta1/visionpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newImageAnnotatorClientHook clientHook
@@ -41,7 +48,9 @@ type ImageAnnotatorCallOptions struct {
 func defaultImageAnnotatorGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("vision.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("vision.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("vision.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -53,6 +62,7 @@ func defaultImageAnnotatorGRPCClientOptions() []option.ClientOption {
 func defaultImageAnnotatorCallOptions() *ImageAnnotatorCallOptions {
 	return &ImageAnnotatorCallOptions{
 		BatchAnnotateImages: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -67,7 +77,24 @@ func defaultImageAnnotatorCallOptions() *ImageAnnotatorCallOptions {
 	}
 }
 
-// internalImageAnnotatorClient is an interface that defines the methods availaible from Cloud Vision API.
+func defaultImageAnnotatorRESTCallOptions() *ImageAnnotatorCallOptions {
+	return &ImageAnnotatorCallOptions{
+		BatchAnnotateImages: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+	}
+}
+
+// internalImageAnnotatorClient is an interface that defines the methods available from Cloud Vision API.
 type internalImageAnnotatorClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -106,7 +133,8 @@ func (c *ImageAnnotatorClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ImageAnnotatorClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -123,9 +151,6 @@ type imageAnnotatorGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ImageAnnotatorClient
 	CallOptions **ImageAnnotatorCallOptions
 
@@ -133,7 +158,7 @@ type imageAnnotatorGRPCClient struct {
 	imageAnnotatorClient visionpb.ImageAnnotatorClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewImageAnnotatorClient creates a new image annotator client based on gRPC.
@@ -152,11 +177,6 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -165,7 +185,6 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 
 	c := &imageAnnotatorGRPCClient{
 		connPool:             connPool,
-		disableDeadlines:     disableDeadlines,
 		imageAnnotatorClient: visionpb.NewImageAnnotatorClient(connPool),
 		CallOptions:          &client.CallOptions,
 	}
@@ -178,7 +197,8 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *imageAnnotatorGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -187,9 +207,9 @@ func (c *imageAnnotatorGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *imageAnnotatorGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -198,13 +218,80 @@ func (c *imageAnnotatorGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *imageAnnotatorGRPCClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type imageAnnotatorRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing ImageAnnotatorClient
+	CallOptions **ImageAnnotatorCallOptions
+}
+
+// NewImageAnnotatorRESTClient creates a new image annotator rest client.
+//
+// Service that performs Google Cloud Vision API detection tasks over client
+// images, such as face, landmark, logo, label, and text detection. The
+// ImageAnnotator service returns detected entities from the images.
+func NewImageAnnotatorRESTClient(ctx context.Context, opts ...option.ClientOption) (*ImageAnnotatorClient, error) {
+	clientOpts := append(defaultImageAnnotatorRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
 	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+
+	callOpts := defaultImageAnnotatorRESTCallOptions()
+	c := &imageAnnotatorRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &ImageAnnotatorClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultImageAnnotatorRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://vision.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://vision.UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint("https://vision.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://vision.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *imageAnnotatorRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *imageAnnotatorRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *imageAnnotatorRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *imageAnnotatorGRPCClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).BatchAnnotateImages[0:len((*c.CallOptions).BatchAnnotateImages):len((*c.CallOptions).BatchAnnotateImages)], opts...)
 	var resp *visionpb.BatchAnnotateImagesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -214,6 +301,69 @@ func (c *imageAnnotatorGRPCClient) BatchAnnotateImages(ctx context.Context, req 
 	}, opts...)
 	if err != nil {
 		return nil, err
+	}
+	return resp, nil
+}
+
+// BatchAnnotateImages run image detection and annotation for a batch of images.
+func (c *imageAnnotatorRESTClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1p1beta1/images:annotate")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).BatchAnnotateImages[0:len((*c.CallOptions).BatchAnnotateImages):len((*c.CallOptions).BatchAnnotateImages)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &visionpb.BatchAnnotateImagesResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
 	return resp, nil
 }

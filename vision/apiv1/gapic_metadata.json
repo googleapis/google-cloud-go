@@ -3,7 +3,7 @@
   "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
   "language": "go",
   "protoPackage": "google.cloud.vision.v1",
-  "libraryPackage": "cloud.google.com/go/vision/apiv1",
+  "libraryPackage": "cloud.google.com/go/vision/v2/apiv1",
   "services": {
     "ImageAnnotator": {
       "clients": {
@@ -28,6 +28,41 @@
             "BatchAnnotateImages": {
               "methods": [
                 "BatchAnnotateImages"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ImageAnnotatorClient",
+          "rpcs": {
+            "AsyncBatchAnnotateFiles": {
+              "methods": [
+                "AsyncBatchAnnotateFiles"
+              ]
+            },
+            "AsyncBatchAnnotateImages": {
+              "methods": [
+                "AsyncBatchAnnotateImages"
+              ]
+            },
+            "BatchAnnotateFiles": {
+              "methods": [
+                "BatchAnnotateFiles"
+              ]
+            },
+            "BatchAnnotateImages": {
+              "methods": [
+                "BatchAnnotateImages"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             }
           }
@@ -72,6 +107,116 @@
             "DeleteReferenceImage": {
               "methods": [
                 "DeleteReferenceImage"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProduct": {
+              "methods": [
+                "GetProduct"
+              ]
+            },
+            "GetProductSet": {
+              "methods": [
+                "GetProductSet"
+              ]
+            },
+            "GetReferenceImage": {
+              "methods": [
+                "GetReferenceImage"
+              ]
+            },
+            "ImportProductSets": {
+              "methods": [
+                "ImportProductSets"
+              ]
+            },
+            "ListProductSets": {
+              "methods": [
+                "ListProductSets"
+              ]
+            },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            },
+            "ListProductsInProductSet": {
+              "methods": [
+                "ListProductsInProductSet"
+              ]
+            },
+            "ListReferenceImages": {
+              "methods": [
+                "ListReferenceImages"
+              ]
+            },
+            "PurgeProducts": {
+              "methods": [
+                "PurgeProducts"
+              ]
+            },
+            "RemoveProductFromProductSet": {
+              "methods": [
+                "RemoveProductFromProductSet"
+              ]
+            },
+            "UpdateProduct": {
+              "methods": [
+                "UpdateProduct"
+              ]
+            },
+            "UpdateProductSet": {
+              "methods": [
+                "UpdateProductSet"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ProductSearchClient",
+          "rpcs": {
+            "AddProductToProductSet": {
+              "methods": [
+                "AddProductToProductSet"
+              ]
+            },
+            "CreateProduct": {
+              "methods": [
+                "CreateProduct"
+              ]
+            },
+            "CreateProductSet": {
+              "methods": [
+                "CreateProductSet"
+              ]
+            },
+            "CreateReferenceImage": {
+              "methods": [
+                "CreateReferenceImage"
+              ]
+            },
+            "DeleteProduct": {
+              "methods": [
+                "DeleteProduct"
+              ]
+            },
+            "DeleteProductSet": {
+              "methods": [
+                "DeleteProductSet"
+              ]
+            },
+            "DeleteReferenceImage": {
+              "methods": [
+                "DeleteReferenceImage"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetProduct": {

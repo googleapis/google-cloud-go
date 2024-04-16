@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewHealthChecksRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewHealthChecksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewHealthChecksRESTClient() {
 
 func ExampleHealthChecksClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewHealthChecksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleHealthChecksClient_AggregatedList() {
 
 	req := &computepb.AggregatedListHealthChecksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListHealthChecksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListHealthChecksRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -59,11 +69,22 @@ func ExampleHealthChecksClient_AggregatedList() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.HealthChecksAggregatedList)
 	}
 }
 
 func ExampleHealthChecksClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewHealthChecksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +93,7 @@ func ExampleHealthChecksClient_Delete() {
 
 	req := &computepb.DeleteHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteHealthCheckRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -87,6 +108,11 @@ func ExampleHealthChecksClient_Delete() {
 
 func ExampleHealthChecksClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewHealthChecksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -95,7 +121,7 @@ func ExampleHealthChecksClient_Get() {
 
 	req := &computepb.GetHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetHealthCheckRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -107,6 +133,11 @@ func ExampleHealthChecksClient_Get() {
 
 func ExampleHealthChecksClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewHealthChecksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -115,7 +146,7 @@ func ExampleHealthChecksClient_Insert() {
 
 	req := &computepb.InsertHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertHealthCheckRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -130,6 +161,11 @@ func ExampleHealthChecksClient_Insert() {
 
 func ExampleHealthChecksClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewHealthChecksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,7 +174,7 @@ func ExampleHealthChecksClient_List() {
 
 	req := &computepb.ListHealthChecksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListHealthChecksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListHealthChecksRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -151,11 +187,22 @@ func ExampleHealthChecksClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.HealthCheckList)
 	}
 }
 
 func ExampleHealthChecksClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewHealthChecksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -164,7 +211,7 @@ func ExampleHealthChecksClient_Patch() {
 
 	req := &computepb.PatchHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchHealthCheckRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -179,6 +226,11 @@ func ExampleHealthChecksClient_Patch() {
 
 func ExampleHealthChecksClient_Update() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewHealthChecksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -187,7 +239,7 @@ func ExampleHealthChecksClient_Update() {
 
 	req := &computepb.UpdateHealthCheckRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateHealthCheckRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateHealthCheckRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {

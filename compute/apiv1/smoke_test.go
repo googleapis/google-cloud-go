@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,11 +26,6 @@ import (
 	"time"
 
 	"google.golang.org/api/option"
-
-	"cloud.google.com/go/internal"
-	"github.com/googleapis/gax-go/v2"
-
-	"github.com/google/go-cmp/cmp"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -437,71 +432,6 @@ func TestPaginationMapResponseMaxRes(t *testing.T) {
 	}
 }
 
-func TestCapitalLetter(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping smoke test in short mode")
-	}
-	ctx := context.Background()
-	c, err := NewFirewallsRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	space := uid.NewSpace("gogapic", nil)
-	name := space.New()
-	allowed := []*computepb.Allowed{
-		{
-			IPProtocol: proto.String("tcp"),
-			Ports: []string{
-				"80",
-			},
-		},
-	}
-	res := &computepb.Firewall{
-		SourceRanges: []string{
-			"0.0.0.0/0",
-		},
-		Name:    proto.String(name),
-		Allowed: allowed,
-	}
-	req := &computepb.InsertFirewallRequest{
-		Project:          projectId,
-		FirewallResource: res,
-	}
-	insert, err := c.Insert(ctx, req)
-	if err != nil {
-		t.Fatal(err)
-	}
-	err = insert.Wait(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
-		defer cancel()
-		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
-			_, err = c.Delete(timeoutCtx,
-				&computepb.DeleteFirewallRequest{
-					Project:  projectId,
-					Firewall: name,
-				})
-			return err == nil, err
-		})
-		if err != nil {
-			t.Error(err)
-		}
-	}()
-	fetched, err := c.Get(ctx, &computepb.GetFirewallRequest{
-		Project:  projectId,
-		Firewall: name,
-	})
-	if err != nil {
-		t.Error(err)
-	}
-	if diff := cmp.Diff(fetched.GetAllowed(), allowed, cmp.Comparer(proto.Equal)); diff != "" {
-		t.Fatalf("got(-),want(+):\n%s", diff)
-	}
-}
-
 func TestHeaders(t *testing.T) {
 	ctx := context.Background()
 
@@ -637,11 +567,7 @@ func TestInstanceGroupResize(t *testing.T) {
 		if err != nil {
 			t.Error(err)
 		}
-		err = internal.Retry(timeoutCtx, gax.Backoff{}, func() (stop bool, err error) {
-			err = deleteOp.Wait(ctx)
-			return deleteOp.Done(), err
-		})
-		if err != nil {
+		if err := deleteOp.Wait(ctx); err != nil {
 			t.Error(err)
 		}
 	}()

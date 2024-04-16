@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewServiceAttachmentsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewServiceAttachmentsRESTClient() {
 
 func ExampleServiceAttachmentsClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleServiceAttachmentsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListServiceAttachmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListServiceAttachmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListServiceAttachmentsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -59,11 +69,22 @@ func ExampleServiceAttachmentsClient_AggregatedList() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.ServiceAttachmentAggregatedList)
 	}
 }
 
 func ExampleServiceAttachmentsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -72,7 +93,7 @@ func ExampleServiceAttachmentsClient_Delete() {
 
 	req := &computepb.DeleteServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteServiceAttachmentRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -87,6 +108,11 @@ func ExampleServiceAttachmentsClient_Delete() {
 
 func ExampleServiceAttachmentsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -95,7 +121,7 @@ func ExampleServiceAttachmentsClient_Get() {
 
 	req := &computepb.GetServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetServiceAttachmentRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -107,6 +133,11 @@ func ExampleServiceAttachmentsClient_Get() {
 
 func ExampleServiceAttachmentsClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -115,7 +146,7 @@ func ExampleServiceAttachmentsClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyServiceAttachmentRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -127,6 +158,11 @@ func ExampleServiceAttachmentsClient_GetIamPolicy() {
 
 func ExampleServiceAttachmentsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -135,7 +171,7 @@ func ExampleServiceAttachmentsClient_Insert() {
 
 	req := &computepb.InsertServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertServiceAttachmentRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -150,6 +186,11 @@ func ExampleServiceAttachmentsClient_Insert() {
 
 func ExampleServiceAttachmentsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,7 +199,7 @@ func ExampleServiceAttachmentsClient_List() {
 
 	req := &computepb.ListServiceAttachmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListServiceAttachmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListServiceAttachmentsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -171,11 +212,22 @@ func ExampleServiceAttachmentsClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.ServiceAttachmentList)
 	}
 }
 
 func ExampleServiceAttachmentsClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -184,7 +236,7 @@ func ExampleServiceAttachmentsClient_Patch() {
 
 	req := &computepb.PatchServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchServiceAttachmentRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -199,6 +251,11 @@ func ExampleServiceAttachmentsClient_Patch() {
 
 func ExampleServiceAttachmentsClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -207,7 +264,7 @@ func ExampleServiceAttachmentsClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyServiceAttachmentRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -219,6 +276,11 @@ func ExampleServiceAttachmentsClient_SetIamPolicy() {
 
 func ExampleServiceAttachmentsClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewServiceAttachmentsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -227,7 +289,7 @@ func ExampleServiceAttachmentsClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsServiceAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsServiceAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsServiceAttachmentRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {

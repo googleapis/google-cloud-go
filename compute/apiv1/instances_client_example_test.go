@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewInstancesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewInstancesRESTClient() {
 
 func ExampleInstancesClient_AddAccessConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleInstancesClient_AddAccessConfig() {
 
 	req := &computepb.AddAccessConfigInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddAccessConfigInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddAccessConfigInstanceRequest.
 	}
 	op, err := c.AddAccessConfig(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleInstancesClient_AddAccessConfig() {
 
 func ExampleInstancesClient_AddResourcePolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleInstancesClient_AddResourcePolicies() {
 
 	req := &computepb.AddResourcePoliciesInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddResourcePoliciesInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddResourcePoliciesInstanceRequest.
 	}
 	op, err := c.AddResourcePolicies(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleInstancesClient_AddResourcePolicies() {
 
 func ExampleInstancesClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleInstancesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListInstancesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -105,11 +125,22 @@ func ExampleInstancesClient_AggregatedList() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.InstanceAggregatedList)
 	}
 }
 
 func ExampleInstancesClient_AttachDisk() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,7 +149,7 @@ func ExampleInstancesClient_AttachDisk() {
 
 	req := &computepb.AttachDiskInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AttachDiskInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AttachDiskInstanceRequest.
 	}
 	op, err := c.AttachDisk(ctx, req)
 	if err != nil {
@@ -133,6 +164,11 @@ func ExampleInstancesClient_AttachDisk() {
 
 func ExampleInstancesClient_BulkInsert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -141,7 +177,7 @@ func ExampleInstancesClient_BulkInsert() {
 
 	req := &computepb.BulkInsertInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#BulkInsertInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#BulkInsertInstanceRequest.
 	}
 	op, err := c.BulkInsert(ctx, req)
 	if err != nil {
@@ -156,6 +192,11 @@ func ExampleInstancesClient_BulkInsert() {
 
 func ExampleInstancesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -164,7 +205,7 @@ func ExampleInstancesClient_Delete() {
 
 	req := &computepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteInstanceRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -179,6 +220,11 @@ func ExampleInstancesClient_Delete() {
 
 func ExampleInstancesClient_DeleteAccessConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -187,7 +233,7 @@ func ExampleInstancesClient_DeleteAccessConfig() {
 
 	req := &computepb.DeleteAccessConfigInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteAccessConfigInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteAccessConfigInstanceRequest.
 	}
 	op, err := c.DeleteAccessConfig(ctx, req)
 	if err != nil {
@@ -202,6 +248,11 @@ func ExampleInstancesClient_DeleteAccessConfig() {
 
 func ExampleInstancesClient_DetachDisk() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -210,7 +261,7 @@ func ExampleInstancesClient_DetachDisk() {
 
 	req := &computepb.DetachDiskInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DetachDiskInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DetachDiskInstanceRequest.
 	}
 	op, err := c.DetachDisk(ctx, req)
 	if err != nil {
@@ -225,6 +276,11 @@ func ExampleInstancesClient_DetachDisk() {
 
 func ExampleInstancesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -233,7 +289,7 @@ func ExampleInstancesClient_Get() {
 
 	req := &computepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetInstanceRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -245,6 +301,11 @@ func ExampleInstancesClient_Get() {
 
 func ExampleInstancesClient_GetEffectiveFirewalls() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -253,7 +314,7 @@ func ExampleInstancesClient_GetEffectiveFirewalls() {
 
 	req := &computepb.GetEffectiveFirewallsInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetEffectiveFirewallsInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetEffectiveFirewallsInstanceRequest.
 	}
 	resp, err := c.GetEffectiveFirewalls(ctx, req)
 	if err != nil {
@@ -265,6 +326,11 @@ func ExampleInstancesClient_GetEffectiveFirewalls() {
 
 func ExampleInstancesClient_GetGuestAttributes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -273,7 +339,7 @@ func ExampleInstancesClient_GetGuestAttributes() {
 
 	req := &computepb.GetGuestAttributesInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetGuestAttributesInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetGuestAttributesInstanceRequest.
 	}
 	resp, err := c.GetGuestAttributes(ctx, req)
 	if err != nil {
@@ -285,6 +351,11 @@ func ExampleInstancesClient_GetGuestAttributes() {
 
 func ExampleInstancesClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -293,7 +364,7 @@ func ExampleInstancesClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyInstanceRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -305,6 +376,11 @@ func ExampleInstancesClient_GetIamPolicy() {
 
 func ExampleInstancesClient_GetScreenshot() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -313,7 +389,7 @@ func ExampleInstancesClient_GetScreenshot() {
 
 	req := &computepb.GetScreenshotInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetScreenshotInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetScreenshotInstanceRequest.
 	}
 	resp, err := c.GetScreenshot(ctx, req)
 	if err != nil {
@@ -325,6 +401,11 @@ func ExampleInstancesClient_GetScreenshot() {
 
 func ExampleInstancesClient_GetSerialPortOutput() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -333,7 +414,7 @@ func ExampleInstancesClient_GetSerialPortOutput() {
 
 	req := &computepb.GetSerialPortOutputInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSerialPortOutputInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetSerialPortOutputInstanceRequest.
 	}
 	resp, err := c.GetSerialPortOutput(ctx, req)
 	if err != nil {
@@ -345,6 +426,11 @@ func ExampleInstancesClient_GetSerialPortOutput() {
 
 func ExampleInstancesClient_GetShieldedInstanceIdentity() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -353,7 +439,7 @@ func ExampleInstancesClient_GetShieldedInstanceIdentity() {
 
 	req := &computepb.GetShieldedInstanceIdentityInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetShieldedInstanceIdentityInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetShieldedInstanceIdentityInstanceRequest.
 	}
 	resp, err := c.GetShieldedInstanceIdentity(ctx, req)
 	if err != nil {
@@ -365,6 +451,11 @@ func ExampleInstancesClient_GetShieldedInstanceIdentity() {
 
 func ExampleInstancesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -373,7 +464,7 @@ func ExampleInstancesClient_Insert() {
 
 	req := &computepb.InsertInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertInstanceRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -388,6 +479,11 @@ func ExampleInstancesClient_Insert() {
 
 func ExampleInstancesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -396,7 +492,7 @@ func ExampleInstancesClient_List() {
 
 	req := &computepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListInstancesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -409,11 +505,22 @@ func ExampleInstancesClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.InstanceList)
 	}
 }
 
 func ExampleInstancesClient_ListReferrers() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -422,7 +529,7 @@ func ExampleInstancesClient_ListReferrers() {
 
 	req := &computepb.ListReferrersInstancesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListReferrersInstancesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListReferrersInstancesRequest.
 	}
 	it := c.ListReferrers(ctx, req)
 	for {
@@ -435,11 +542,50 @@ func ExampleInstancesClient_ListReferrers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.InstanceListReferrers)
+	}
+}
+
+func ExampleInstancesClient_PerformMaintenance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.PerformMaintenanceInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PerformMaintenanceInstanceRequest.
+	}
+	op, err := c.PerformMaintenance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
 func ExampleInstancesClient_RemoveResourcePolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -448,7 +594,7 @@ func ExampleInstancesClient_RemoveResourcePolicies() {
 
 	req := &computepb.RemoveResourcePoliciesInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveResourcePoliciesInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemoveResourcePoliciesInstanceRequest.
 	}
 	op, err := c.RemoveResourcePolicies(ctx, req)
 	if err != nil {
@@ -463,6 +609,11 @@ func ExampleInstancesClient_RemoveResourcePolicies() {
 
 func ExampleInstancesClient_Reset() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -471,7 +622,7 @@ func ExampleInstancesClient_Reset() {
 
 	req := &computepb.ResetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResetInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ResetInstanceRequest.
 	}
 	op, err := c.Reset(ctx, req)
 	if err != nil {
@@ -486,6 +637,11 @@ func ExampleInstancesClient_Reset() {
 
 func ExampleInstancesClient_Resume() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -494,7 +650,7 @@ func ExampleInstancesClient_Resume() {
 
 	req := &computepb.ResumeInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResumeInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ResumeInstanceRequest.
 	}
 	op, err := c.Resume(ctx, req)
 	if err != nil {
@@ -509,6 +665,11 @@ func ExampleInstancesClient_Resume() {
 
 func ExampleInstancesClient_SendDiagnosticInterrupt() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -517,7 +678,7 @@ func ExampleInstancesClient_SendDiagnosticInterrupt() {
 
 	req := &computepb.SendDiagnosticInterruptInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SendDiagnosticInterruptInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SendDiagnosticInterruptInstanceRequest.
 	}
 	resp, err := c.SendDiagnosticInterrupt(ctx, req)
 	if err != nil {
@@ -529,6 +690,11 @@ func ExampleInstancesClient_SendDiagnosticInterrupt() {
 
 func ExampleInstancesClient_SetDeletionProtection() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -537,7 +703,7 @@ func ExampleInstancesClient_SetDeletionProtection() {
 
 	req := &computepb.SetDeletionProtectionInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetDeletionProtectionInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetDeletionProtectionInstanceRequest.
 	}
 	op, err := c.SetDeletionProtection(ctx, req)
 	if err != nil {
@@ -552,6 +718,11 @@ func ExampleInstancesClient_SetDeletionProtection() {
 
 func ExampleInstancesClient_SetDiskAutoDelete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -560,7 +731,7 @@ func ExampleInstancesClient_SetDiskAutoDelete() {
 
 	req := &computepb.SetDiskAutoDeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetDiskAutoDeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetDiskAutoDeleteInstanceRequest.
 	}
 	op, err := c.SetDiskAutoDelete(ctx, req)
 	if err != nil {
@@ -575,6 +746,11 @@ func ExampleInstancesClient_SetDiskAutoDelete() {
 
 func ExampleInstancesClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -583,7 +759,7 @@ func ExampleInstancesClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyInstanceRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -595,6 +771,11 @@ func ExampleInstancesClient_SetIamPolicy() {
 
 func ExampleInstancesClient_SetLabels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -603,7 +784,7 @@ func ExampleInstancesClient_SetLabels() {
 
 	req := &computepb.SetLabelsInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsInstanceRequest.
 	}
 	op, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -618,6 +799,11 @@ func ExampleInstancesClient_SetLabels() {
 
 func ExampleInstancesClient_SetMachineResources() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -626,7 +812,7 @@ func ExampleInstancesClient_SetMachineResources() {
 
 	req := &computepb.SetMachineResourcesInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMachineResourcesInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetMachineResourcesInstanceRequest.
 	}
 	op, err := c.SetMachineResources(ctx, req)
 	if err != nil {
@@ -641,6 +827,11 @@ func ExampleInstancesClient_SetMachineResources() {
 
 func ExampleInstancesClient_SetMachineType() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -649,7 +840,7 @@ func ExampleInstancesClient_SetMachineType() {
 
 	req := &computepb.SetMachineTypeInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMachineTypeInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetMachineTypeInstanceRequest.
 	}
 	op, err := c.SetMachineType(ctx, req)
 	if err != nil {
@@ -664,6 +855,11 @@ func ExampleInstancesClient_SetMachineType() {
 
 func ExampleInstancesClient_SetMetadata() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -672,7 +868,7 @@ func ExampleInstancesClient_SetMetadata() {
 
 	req := &computepb.SetMetadataInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMetadataInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetMetadataInstanceRequest.
 	}
 	op, err := c.SetMetadata(ctx, req)
 	if err != nil {
@@ -687,6 +883,11 @@ func ExampleInstancesClient_SetMetadata() {
 
 func ExampleInstancesClient_SetMinCpuPlatform() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -695,7 +896,7 @@ func ExampleInstancesClient_SetMinCpuPlatform() {
 
 	req := &computepb.SetMinCpuPlatformInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetMinCpuPlatformInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetMinCpuPlatformInstanceRequest.
 	}
 	op, err := c.SetMinCpuPlatform(ctx, req)
 	if err != nil {
@@ -708,8 +909,41 @@ func ExampleInstancesClient_SetMinCpuPlatform() {
 	}
 }
 
+func ExampleInstancesClient_SetName() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetNameInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetNameInstanceRequest.
+	}
+	op, err := c.SetName(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleInstancesClient_SetScheduling() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -718,7 +952,7 @@ func ExampleInstancesClient_SetScheduling() {
 
 	req := &computepb.SetSchedulingInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSchedulingInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetSchedulingInstanceRequest.
 	}
 	op, err := c.SetScheduling(ctx, req)
 	if err != nil {
@@ -731,8 +965,41 @@ func ExampleInstancesClient_SetScheduling() {
 	}
 }
 
+func ExampleInstancesClient_SetSecurityPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewInstancesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetSecurityPolicyInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetSecurityPolicyInstanceRequest.
+	}
+	op, err := c.SetSecurityPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleInstancesClient_SetServiceAccount() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -741,7 +1008,7 @@ func ExampleInstancesClient_SetServiceAccount() {
 
 	req := &computepb.SetServiceAccountInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetServiceAccountInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetServiceAccountInstanceRequest.
 	}
 	op, err := c.SetServiceAccount(ctx, req)
 	if err != nil {
@@ -756,6 +1023,11 @@ func ExampleInstancesClient_SetServiceAccount() {
 
 func ExampleInstancesClient_SetShieldedInstanceIntegrityPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -764,7 +1036,7 @@ func ExampleInstancesClient_SetShieldedInstanceIntegrityPolicy() {
 
 	req := &computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetShieldedInstanceIntegrityPolicyInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetShieldedInstanceIntegrityPolicyInstanceRequest.
 	}
 	op, err := c.SetShieldedInstanceIntegrityPolicy(ctx, req)
 	if err != nil {
@@ -779,6 +1051,11 @@ func ExampleInstancesClient_SetShieldedInstanceIntegrityPolicy() {
 
 func ExampleInstancesClient_SetTags() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -787,7 +1064,7 @@ func ExampleInstancesClient_SetTags() {
 
 	req := &computepb.SetTagsInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetTagsInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetTagsInstanceRequest.
 	}
 	op, err := c.SetTags(ctx, req)
 	if err != nil {
@@ -802,6 +1079,11 @@ func ExampleInstancesClient_SetTags() {
 
 func ExampleInstancesClient_SimulateMaintenanceEvent() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -810,7 +1092,7 @@ func ExampleInstancesClient_SimulateMaintenanceEvent() {
 
 	req := &computepb.SimulateMaintenanceEventInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SimulateMaintenanceEventInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SimulateMaintenanceEventInstanceRequest.
 	}
 	op, err := c.SimulateMaintenanceEvent(ctx, req)
 	if err != nil {
@@ -825,6 +1107,11 @@ func ExampleInstancesClient_SimulateMaintenanceEvent() {
 
 func ExampleInstancesClient_Start() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -833,7 +1120,7 @@ func ExampleInstancesClient_Start() {
 
 	req := &computepb.StartInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StartInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#StartInstanceRequest.
 	}
 	op, err := c.Start(ctx, req)
 	if err != nil {
@@ -848,6 +1135,11 @@ func ExampleInstancesClient_Start() {
 
 func ExampleInstancesClient_StartWithEncryptionKey() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -856,7 +1148,7 @@ func ExampleInstancesClient_StartWithEncryptionKey() {
 
 	req := &computepb.StartWithEncryptionKeyInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StartWithEncryptionKeyInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#StartWithEncryptionKeyInstanceRequest.
 	}
 	op, err := c.StartWithEncryptionKey(ctx, req)
 	if err != nil {
@@ -871,6 +1163,11 @@ func ExampleInstancesClient_StartWithEncryptionKey() {
 
 func ExampleInstancesClient_Stop() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -879,7 +1176,7 @@ func ExampleInstancesClient_Stop() {
 
 	req := &computepb.StopInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#StopInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#StopInstanceRequest.
 	}
 	op, err := c.Stop(ctx, req)
 	if err != nil {
@@ -894,6 +1191,11 @@ func ExampleInstancesClient_Stop() {
 
 func ExampleInstancesClient_Suspend() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -902,7 +1204,7 @@ func ExampleInstancesClient_Suspend() {
 
 	req := &computepb.SuspendInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SuspendInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SuspendInstanceRequest.
 	}
 	op, err := c.Suspend(ctx, req)
 	if err != nil {
@@ -917,6 +1219,11 @@ func ExampleInstancesClient_Suspend() {
 
 func ExampleInstancesClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -925,7 +1232,7 @@ func ExampleInstancesClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsInstanceRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -937,6 +1244,11 @@ func ExampleInstancesClient_TestIamPermissions() {
 
 func ExampleInstancesClient_Update() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -945,7 +1257,7 @@ func ExampleInstancesClient_Update() {
 
 	req := &computepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateInstanceRequest.
 	}
 	op, err := c.Update(ctx, req)
 	if err != nil {
@@ -960,6 +1272,11 @@ func ExampleInstancesClient_Update() {
 
 func ExampleInstancesClient_UpdateAccessConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -968,7 +1285,7 @@ func ExampleInstancesClient_UpdateAccessConfig() {
 
 	req := &computepb.UpdateAccessConfigInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateAccessConfigInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateAccessConfigInstanceRequest.
 	}
 	op, err := c.UpdateAccessConfig(ctx, req)
 	if err != nil {
@@ -983,6 +1300,11 @@ func ExampleInstancesClient_UpdateAccessConfig() {
 
 func ExampleInstancesClient_UpdateDisplayDevice() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -991,7 +1313,7 @@ func ExampleInstancesClient_UpdateDisplayDevice() {
 
 	req := &computepb.UpdateDisplayDeviceInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateDisplayDeviceInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateDisplayDeviceInstanceRequest.
 	}
 	op, err := c.UpdateDisplayDevice(ctx, req)
 	if err != nil {
@@ -1006,6 +1328,11 @@ func ExampleInstancesClient_UpdateDisplayDevice() {
 
 func ExampleInstancesClient_UpdateNetworkInterface() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1014,7 +1341,7 @@ func ExampleInstancesClient_UpdateNetworkInterface() {
 
 	req := &computepb.UpdateNetworkInterfaceInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateNetworkInterfaceInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateNetworkInterfaceInstanceRequest.
 	}
 	op, err := c.UpdateNetworkInterface(ctx, req)
 	if err != nil {
@@ -1029,6 +1356,11 @@ func ExampleInstancesClient_UpdateNetworkInterface() {
 
 func ExampleInstancesClient_UpdateShieldedInstanceConfig() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInstancesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -1037,7 +1369,7 @@ func ExampleInstancesClient_UpdateShieldedInstanceConfig() {
 
 	req := &computepb.UpdateShieldedInstanceConfigInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdateShieldedInstanceConfigInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateShieldedInstanceConfigInstanceRequest.
 	}
 	op, err := c.UpdateShieldedInstanceConfig(ctx, req)
 	if err != nil {

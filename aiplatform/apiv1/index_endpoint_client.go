@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,19 +21,19 @@ import (
 	"fmt"
 	"math"
 	"net/url"
-	"time"
 
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -49,12 +49,24 @@ type IndexEndpointCallOptions struct {
 	DeployIndex         []gax.CallOption
 	UndeployIndex       []gax.CallOption
 	MutateDeployedIndex []gax.CallOption
+	GetLocation         []gax.CallOption
+	ListLocations       []gax.CallOption
+	GetIamPolicy        []gax.CallOption
+	SetIamPolicy        []gax.CallOption
+	TestIamPermissions  []gax.CallOption
+	CancelOperation     []gax.CallOption
+	DeleteOperation     []gax.CallOption
+	GetOperation        []gax.CallOption
+	ListOperations      []gax.CallOption
+	WaitOperation       []gax.CallOption
 }
 
 func defaultIndexEndpointGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -73,10 +85,20 @@ func defaultIndexEndpointCallOptions() *IndexEndpointCallOptions {
 		DeployIndex:         []gax.CallOption{},
 		UndeployIndex:       []gax.CallOption{},
 		MutateDeployedIndex: []gax.CallOption{},
+		GetLocation:         []gax.CallOption{},
+		ListLocations:       []gax.CallOption{},
+		GetIamPolicy:        []gax.CallOption{},
+		SetIamPolicy:        []gax.CallOption{},
+		TestIamPermissions:  []gax.CallOption{},
+		CancelOperation:     []gax.CallOption{},
+		DeleteOperation:     []gax.CallOption{},
+		GetOperation:        []gax.CallOption{},
+		ListOperations:      []gax.CallOption{},
+		WaitOperation:       []gax.CallOption{},
 	}
 }
 
-// internalIndexEndpointClient is an interface that defines the methods availaible from Vertex AI API.
+// internalIndexEndpointClient is an interface that defines the methods available from Vertex AI API.
 type internalIndexEndpointClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -94,6 +116,16 @@ type internalIndexEndpointClient interface {
 	UndeployIndexOperation(name string) *UndeployIndexOperation
 	MutateDeployedIndex(context.Context, *aiplatformpb.MutateDeployedIndexRequest, ...gax.CallOption) (*MutateDeployedIndexOperation, error)
 	MutateDeployedIndexOperation(name string) *MutateDeployedIndexOperation
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
+	WaitOperation(context.Context, *longrunningpb.WaitOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // IndexEndpointClient is a client for interacting with Vertex AI API.
@@ -130,7 +162,8 @@ func (c *IndexEndpointClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *IndexEndpointClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -208,15 +241,73 @@ func (c *IndexEndpointClient) MutateDeployedIndexOperation(name string) *MutateD
 	return c.internalClient.MutateDeployedIndexOperation(name)
 }
 
+// GetLocation gets information about a location.
+func (c *IndexEndpointClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *IndexEndpointClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *IndexEndpointClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *IndexEndpointClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *IndexEndpointClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *IndexEndpointClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *IndexEndpointClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *IndexEndpointClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *IndexEndpointClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
+// WaitOperation is a utility method from google.longrunning.Operations.
+func (c *IndexEndpointClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.WaitOperation(ctx, req, opts...)
+}
+
 // indexEndpointGRPCClient is a client for interacting with Vertex AI API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type indexEndpointGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing IndexEndpointClient
 	CallOptions **IndexEndpointCallOptions
@@ -229,8 +320,14 @@ type indexEndpointGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
+	iamPolicyClient iampb.IAMPolicyClient
+
+	locationsClient locationpb.LocationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewIndexEndpointClient creates a new index endpoint service client based on gRPC.
@@ -247,11 +344,6 @@ func NewIndexEndpointClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -260,9 +352,11 @@ func NewIndexEndpointClient(ctx context.Context, opts ...option.ClientOption) (*
 
 	c := &indexEndpointGRPCClient{
 		connPool:            connPool,
-		disableDeadlines:    disableDeadlines,
 		indexEndpointClient: aiplatformpb.NewIndexEndpointServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		operationsClient:    longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:     iampb.NewIAMPolicyClient(connPool),
+		locationsClient:     locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -284,7 +378,8 @@ func NewIndexEndpointClient(ctx context.Context, opts ...option.ClientOption) (*
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *indexEndpointGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -293,9 +388,9 @@ func (c *indexEndpointGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *indexEndpointGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -305,9 +400,10 @@ func (c *indexEndpointGRPCClient) Close() error {
 }
 
 func (c *indexEndpointGRPCClient) CreateIndexEndpoint(ctx context.Context, req *aiplatformpb.CreateIndexEndpointRequest, opts ...gax.CallOption) (*CreateIndexEndpointOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateIndexEndpoint[0:len((*c.CallOptions).CreateIndexEndpoint):len((*c.CallOptions).CreateIndexEndpoint)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -324,9 +420,10 @@ func (c *indexEndpointGRPCClient) CreateIndexEndpoint(ctx context.Context, req *
 }
 
 func (c *indexEndpointGRPCClient) GetIndexEndpoint(ctx context.Context, req *aiplatformpb.GetIndexEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIndexEndpoint[0:len((*c.CallOptions).GetIndexEndpoint):len((*c.CallOptions).GetIndexEndpoint)], opts...)
 	var resp *aiplatformpb.IndexEndpoint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -341,9 +438,10 @@ func (c *indexEndpointGRPCClient) GetIndexEndpoint(ctx context.Context, req *aip
 }
 
 func (c *indexEndpointGRPCClient) ListIndexEndpoints(ctx context.Context, req *aiplatformpb.ListIndexEndpointsRequest, opts ...gax.CallOption) *IndexEndpointIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListIndexEndpoints[0:len((*c.CallOptions).ListIndexEndpoints):len((*c.CallOptions).ListIndexEndpoints)], opts...)
 	it := &IndexEndpointIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListIndexEndpointsRequest)
@@ -386,9 +484,10 @@ func (c *indexEndpointGRPCClient) ListIndexEndpoints(ctx context.Context, req *a
 }
 
 func (c *indexEndpointGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *aiplatformpb.UpdateIndexEndpointRequest, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint.name", url.QueryEscape(req.GetIndexEndpoint().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint.name", url.QueryEscape(req.GetIndexEndpoint().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateIndexEndpoint[0:len((*c.CallOptions).UpdateIndexEndpoint):len((*c.CallOptions).UpdateIndexEndpoint)], opts...)
 	var resp *aiplatformpb.IndexEndpoint
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -403,9 +502,10 @@ func (c *indexEndpointGRPCClient) UpdateIndexEndpoint(ctx context.Context, req *
 }
 
 func (c *indexEndpointGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *aiplatformpb.DeleteIndexEndpointRequest, opts ...gax.CallOption) (*DeleteIndexEndpointOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteIndexEndpoint[0:len((*c.CallOptions).DeleteIndexEndpoint):len((*c.CallOptions).DeleteIndexEndpoint)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -422,9 +522,10 @@ func (c *indexEndpointGRPCClient) DeleteIndexEndpoint(ctx context.Context, req *
 }
 
 func (c *indexEndpointGRPCClient) DeployIndex(ctx context.Context, req *aiplatformpb.DeployIndexRequest, opts ...gax.CallOption) (*DeployIndexOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeployIndex[0:len((*c.CallOptions).DeployIndex):len((*c.CallOptions).DeployIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -441,9 +542,10 @@ func (c *indexEndpointGRPCClient) DeployIndex(ctx context.Context, req *aiplatfo
 }
 
 func (c *indexEndpointGRPCClient) UndeployIndex(ctx context.Context, req *aiplatformpb.UndeployIndexRequest, opts ...gax.CallOption) (*UndeployIndexOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UndeployIndex[0:len((*c.CallOptions).UndeployIndex):len((*c.CallOptions).UndeployIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -460,9 +562,10 @@ func (c *indexEndpointGRPCClient) UndeployIndex(ctx context.Context, req *aiplat
 }
 
 func (c *indexEndpointGRPCClient) MutateDeployedIndex(ctx context.Context, req *aiplatformpb.MutateDeployedIndexRequest, opts ...gax.CallOption) (*MutateDeployedIndexOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "index_endpoint", url.QueryEscape(req.GetIndexEndpoint()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).MutateDeployedIndex[0:len((*c.CallOptions).MutateDeployedIndex):len((*c.CallOptions).MutateDeployedIndex)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -478,9 +581,232 @@ func (c *indexEndpointGRPCClient) MutateDeployedIndex(ctx context.Context, req *
 	}, nil
 }
 
-// CreateIndexEndpointOperation manages a long-running operation from CreateIndexEndpoint.
-type CreateIndexEndpointOperation struct {
-	lro *longrunning.Operation
+func (c *indexEndpointGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *indexEndpointGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *indexEndpointGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *indexEndpointGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *indexEndpointGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *indexEndpointGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *indexEndpointGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *indexEndpointGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *indexEndpointGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *indexEndpointGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateIndexEndpointOperation returns a new CreateIndexEndpointOperation from a given name.
@@ -491,123 +817,12 @@ func (c *indexEndpointGRPCClient) CreateIndexEndpointOperation(name string) *Cre
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateIndexEndpointOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
-	var resp aiplatformpb.IndexEndpoint
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateIndexEndpointOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.IndexEndpoint, error) {
-	var resp aiplatformpb.IndexEndpoint
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateIndexEndpointOperation) Metadata() (*aiplatformpb.CreateIndexEndpointOperationMetadata, error) {
-	var meta aiplatformpb.CreateIndexEndpointOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateIndexEndpointOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateIndexEndpointOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteIndexEndpointOperation manages a long-running operation from DeleteIndexEndpoint.
-type DeleteIndexEndpointOperation struct {
-	lro *longrunning.Operation
-}
-
 // DeleteIndexEndpointOperation returns a new DeleteIndexEndpointOperation from a given name.
 // The name must be that of a previously created DeleteIndexEndpointOperation, possibly from a different process.
 func (c *indexEndpointGRPCClient) DeleteIndexEndpointOperation(name string) *DeleteIndexEndpointOperation {
 	return &DeleteIndexEndpointOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteIndexEndpointOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteIndexEndpointOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteIndexEndpointOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
-	var meta aiplatformpb.DeleteOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteIndexEndpointOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteIndexEndpointOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeployIndexOperation manages a long-running operation from DeployIndex.
-type DeployIndexOperation struct {
-	lro *longrunning.Operation
 }
 
 // DeployIndexOperation returns a new DeployIndexOperation from a given name.
@@ -618,67 +833,6 @@ func (c *indexEndpointGRPCClient) DeployIndexOperation(name string) *DeployIndex
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeployIndexOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeployIndexResponse, error) {
-	var resp aiplatformpb.DeployIndexResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeployIndexOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.DeployIndexResponse, error) {
-	var resp aiplatformpb.DeployIndexResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeployIndexOperation) Metadata() (*aiplatformpb.DeployIndexOperationMetadata, error) {
-	var meta aiplatformpb.DeployIndexOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeployIndexOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeployIndexOperation) Name() string {
-	return op.lro.Name()
-}
-
-// MutateDeployedIndexOperation manages a long-running operation from MutateDeployedIndex.
-type MutateDeployedIndexOperation struct {
-	lro *longrunning.Operation
-}
-
 // MutateDeployedIndexOperation returns a new MutateDeployedIndexOperation from a given name.
 // The name must be that of a previously created MutateDeployedIndexOperation, possibly from a different process.
 func (c *indexEndpointGRPCClient) MutateDeployedIndexOperation(name string) *MutateDeployedIndexOperation {
@@ -687,174 +841,10 @@ func (c *indexEndpointGRPCClient) MutateDeployedIndexOperation(name string) *Mut
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *MutateDeployedIndexOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.MutateDeployedIndexResponse, error) {
-	var resp aiplatformpb.MutateDeployedIndexResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *MutateDeployedIndexOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.MutateDeployedIndexResponse, error) {
-	var resp aiplatformpb.MutateDeployedIndexResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *MutateDeployedIndexOperation) Metadata() (*aiplatformpb.MutateDeployedIndexOperationMetadata, error) {
-	var meta aiplatformpb.MutateDeployedIndexOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *MutateDeployedIndexOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *MutateDeployedIndexOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UndeployIndexOperation manages a long-running operation from UndeployIndex.
-type UndeployIndexOperation struct {
-	lro *longrunning.Operation
-}
-
 // UndeployIndexOperation returns a new UndeployIndexOperation from a given name.
 // The name must be that of a previously created UndeployIndexOperation, possibly from a different process.
 func (c *indexEndpointGRPCClient) UndeployIndexOperation(name string) *UndeployIndexOperation {
 	return &UndeployIndexOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UndeployIndexOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.UndeployIndexResponse, error) {
-	var resp aiplatformpb.UndeployIndexResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UndeployIndexOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.UndeployIndexResponse, error) {
-	var resp aiplatformpb.UndeployIndexResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UndeployIndexOperation) Metadata() (*aiplatformpb.UndeployIndexOperationMetadata, error) {
-	var meta aiplatformpb.UndeployIndexOperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UndeployIndexOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UndeployIndexOperation) Name() string {
-	return op.lro.Name()
-}
-
-// IndexEndpointIterator manages a stream of *aiplatformpb.IndexEndpoint.
-type IndexEndpointIterator struct {
-	items    []*aiplatformpb.IndexEndpoint
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.IndexEndpoint, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *IndexEndpointIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *IndexEndpointIterator) Next() (*aiplatformpb.IndexEndpoint, error) {
-	var item *aiplatformpb.IndexEndpoint
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *IndexEndpointIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *IndexEndpointIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

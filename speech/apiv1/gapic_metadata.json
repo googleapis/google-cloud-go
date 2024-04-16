@@ -5,11 +5,185 @@
   "protoPackage": "google.cloud.speech.v1",
   "libraryPackage": "cloud.google.com/go/speech/apiv1",
   "services": {
+    "Adaptation": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AdaptationClient",
+          "rpcs": {
+            "CreateCustomClass": {
+              "methods": [
+                "CreateCustomClass"
+              ]
+            },
+            "CreatePhraseSet": {
+              "methods": [
+                "CreatePhraseSet"
+              ]
+            },
+            "DeleteCustomClass": {
+              "methods": [
+                "DeleteCustomClass"
+              ]
+            },
+            "DeletePhraseSet": {
+              "methods": [
+                "DeletePhraseSet"
+              ]
+            },
+            "GetCustomClass": {
+              "methods": [
+                "GetCustomClass"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPhraseSet": {
+              "methods": [
+                "GetPhraseSet"
+              ]
+            },
+            "ListCustomClasses": {
+              "methods": [
+                "ListCustomClasses"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPhraseSet": {
+              "methods": [
+                "ListPhraseSet"
+              ]
+            },
+            "UpdateCustomClass": {
+              "methods": [
+                "UpdateCustomClass"
+              ]
+            },
+            "UpdatePhraseSet": {
+              "methods": [
+                "UpdatePhraseSet"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "AdaptationClient",
+          "rpcs": {
+            "CreateCustomClass": {
+              "methods": [
+                "CreateCustomClass"
+              ]
+            },
+            "CreatePhraseSet": {
+              "methods": [
+                "CreatePhraseSet"
+              ]
+            },
+            "DeleteCustomClass": {
+              "methods": [
+                "DeleteCustomClass"
+              ]
+            },
+            "DeletePhraseSet": {
+              "methods": [
+                "DeletePhraseSet"
+              ]
+            },
+            "GetCustomClass": {
+              "methods": [
+                "GetCustomClass"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPhraseSet": {
+              "methods": [
+                "GetPhraseSet"
+              ]
+            },
+            "ListCustomClasses": {
+              "methods": [
+                "ListCustomClasses"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPhraseSet": {
+              "methods": [
+                "ListPhraseSet"
+              ]
+            },
+            "UpdateCustomClass": {
+              "methods": [
+                "UpdateCustomClass"
+              ]
+            },
+            "UpdatePhraseSet": {
+              "methods": [
+                "UpdatePhraseSet"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Speech": {
       "clients": {
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "LongRunningRecognize": {
+              "methods": [
+                "LongRunningRecognize"
+              ]
+            },
+            "Recognize": {
+              "methods": [
+                "Recognize"
+              ]
+            },
+            "StreamingRecognize": {
+              "methods": [
+                "StreamingRecognize"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "LongRunningRecognize": {
               "methods": [
                 "LongRunningRecognize"

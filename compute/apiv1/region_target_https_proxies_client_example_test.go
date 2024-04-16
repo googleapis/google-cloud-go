@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionTargetHttpsProxiesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewRegionTargetHttpsProxiesRESTClient() {
 
 func ExampleRegionTargetHttpsProxiesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleRegionTargetHttpsProxiesClient_Delete() {
 
 	req := &computepb.DeleteRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteRegionTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteRegionTargetHttpsProxyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleRegionTargetHttpsProxiesClient_Delete() {
 
 func ExampleRegionTargetHttpsProxiesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleRegionTargetHttpsProxiesClient_Get() {
 
 	req := &computepb.GetRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionTargetHttpsProxyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,6 +96,11 @@ func ExampleRegionTargetHttpsProxiesClient_Get() {
 
 func ExampleRegionTargetHttpsProxiesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,7 +109,7 @@ func ExampleRegionTargetHttpsProxiesClient_Insert() {
 
 	req := &computepb.InsertRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertRegionTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertRegionTargetHttpsProxyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -104,6 +124,11 @@ func ExampleRegionTargetHttpsProxiesClient_Insert() {
 
 func ExampleRegionTargetHttpsProxiesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +137,7 @@ func ExampleRegionTargetHttpsProxiesClient_List() {
 
 	req := &computepb.ListRegionTargetHttpsProxiesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionTargetHttpsProxiesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionTargetHttpsProxiesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -125,11 +150,50 @@ func ExampleRegionTargetHttpsProxiesClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.TargetHttpsProxyList)
+	}
+}
+
+func ExampleRegionTargetHttpsProxiesClient_Patch() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.PatchRegionTargetHttpsProxyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchRegionTargetHttpsProxyRequest.
+	}
+	op, err := c.Patch(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
 func ExampleRegionTargetHttpsProxiesClient_SetSslCertificates() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -138,7 +202,7 @@ func ExampleRegionTargetHttpsProxiesClient_SetSslCertificates() {
 
 	req := &computepb.SetSslCertificatesRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetSslCertificatesRegionTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetSslCertificatesRegionTargetHttpsProxyRequest.
 	}
 	op, err := c.SetSslCertificates(ctx, req)
 	if err != nil {
@@ -153,6 +217,11 @@ func ExampleRegionTargetHttpsProxiesClient_SetSslCertificates() {
 
 func ExampleRegionTargetHttpsProxiesClient_SetUrlMap() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewRegionTargetHttpsProxiesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -161,7 +230,7 @@ func ExampleRegionTargetHttpsProxiesClient_SetUrlMap() {
 
 	req := &computepb.SetUrlMapRegionTargetHttpsProxyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetUrlMapRegionTargetHttpsProxyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetUrlMapRegionTargetHttpsProxyRequest.
 	}
 	op, err := c.SetUrlMap(ctx, req)
 	if err != nil {

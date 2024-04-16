@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "update-paths: ArrayUnion with data",
-      "comment": "A key with ArrayUnion is removed from the data in the update \noperation. Instead it appears in a separate Transform operation.",
+      "comment": "A key with ArrayUnion is removed from the fields in the update \noperation. Instead it appears in update transforms.",
       "updatePaths": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "fieldPaths": [
@@ -38,31 +38,26 @@
                   "a"
                 ]
               },
+              "updateTransforms": [
+                {
+                  "fieldPath": "b",
+                  "appendMissingElements": {
+                    "values": [
+                      {
+                        "integerValue": "1"
+                      },
+                      {
+                        "integerValue": "2"
+                      },
+                      {
+                        "integerValue": "3"
+                      }
+                    ]
+                  }
+                }
+              ],
               "currentDocument": {
                 "exists": true
-              }
-            },
-            {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
-                  {
-                    "fieldPath": "b",
-                    "appendMissingElements": {
-                      "values": [
-                        {
-                          "integerValue": "1"
-                        },
-                        {
-                          "integerValue": "2"
-                        },
-                        {
-                          "integerValue": "3"
-                        }
-                      ]
-                    }
-                  }
-                ]
               }
             }
           ]

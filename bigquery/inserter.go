@@ -177,12 +177,13 @@ func (u *Inserter) putMulti(ctx context.Context, src []ValueSaver) error {
 	if req == nil {
 		return nil
 	}
-	call := u.t.c.bqs.Tabledata.InsertAll(u.t.ProjectID, u.t.DatasetID, u.t.TableID, req)
-	call = call.Context(ctx)
+	call := u.t.c.bqs.Tabledata.InsertAll(u.t.ProjectID, u.t.DatasetID, u.t.TableID, req).Context(ctx)
 	setClientHeader(call.Header())
 	var res *bq.TableDataInsertAllResponse
 	err = runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.tabledata.insertAll")
 		res, err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,15 +23,15 @@ import (
 	"net/url"
 	"time"
 
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -39,16 +39,27 @@ var newCatalogClientHook clientHook
 
 // CatalogCallOptions contains the retry settings for each method of CatalogClient.
 type CatalogCallOptions struct {
-	ListCatalogs     []gax.CallOption
-	UpdateCatalog    []gax.CallOption
-	SetDefaultBranch []gax.CallOption
-	GetDefaultBranch []gax.CallOption
+	ListCatalogs            []gax.CallOption
+	UpdateCatalog           []gax.CallOption
+	SetDefaultBranch        []gax.CallOption
+	GetDefaultBranch        []gax.CallOption
+	GetCompletionConfig     []gax.CallOption
+	UpdateCompletionConfig  []gax.CallOption
+	GetAttributesConfig     []gax.CallOption
+	UpdateAttributesConfig  []gax.CallOption
+	AddCatalogAttribute     []gax.CallOption
+	RemoveCatalogAttribute  []gax.CallOption
+	ReplaceCatalogAttribute []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
 }
 
 func defaultCatalogGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -60,6 +71,7 @@ func defaultCatalogGRPCClientOptions() []option.ClientOption {
 func defaultCatalogCallOptions() *CatalogCallOptions {
 	return &CatalogCallOptions{
 		ListCatalogs: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -72,6 +84,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 			}),
 		},
 		UpdateCatalog: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -84,6 +97,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 			}),
 		},
 		SetDefaultBranch: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -96,6 +110,7 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 			}),
 		},
 		GetDefaultBranch: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -107,10 +122,115 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 				})
 			}),
 		},
+		GetCompletionConfig: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateCompletionConfig: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAttributesConfig: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateAttributesConfig: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AddCatalogAttribute: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RemoveCatalogAttribute: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ReplaceCatalogAttribute: []gax.CallOption{
+			gax.WithTimeout(5000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        5000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetOperation: []gax.CallOption{},
+		ListOperations: []gax.CallOption{
+			gax.WithTimeout(300000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        300000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
-// internalCatalogClient is an interface that defines the methods availaible from Retail API.
+// internalCatalogClient is an interface that defines the methods available from Retail API.
 type internalCatalogClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -119,6 +239,15 @@ type internalCatalogClient interface {
 	UpdateCatalog(context.Context, *retailpb.UpdateCatalogRequest, ...gax.CallOption) (*retailpb.Catalog, error)
 	SetDefaultBranch(context.Context, *retailpb.SetDefaultBranchRequest, ...gax.CallOption) error
 	GetDefaultBranch(context.Context, *retailpb.GetDefaultBranchRequest, ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error)
+	GetCompletionConfig(context.Context, *retailpb.GetCompletionConfigRequest, ...gax.CallOption) (*retailpb.CompletionConfig, error)
+	UpdateCompletionConfig(context.Context, *retailpb.UpdateCompletionConfigRequest, ...gax.CallOption) (*retailpb.CompletionConfig, error)
+	GetAttributesConfig(context.Context, *retailpb.GetAttributesConfigRequest, ...gax.CallOption) (*retailpb.AttributesConfig, error)
+	UpdateAttributesConfig(context.Context, *retailpb.UpdateAttributesConfigRequest, ...gax.CallOption) (*retailpb.AttributesConfig, error)
+	AddCatalogAttribute(context.Context, *retailpb.AddCatalogAttributeRequest, ...gax.CallOption) (*retailpb.AttributesConfig, error)
+	RemoveCatalogAttribute(context.Context, *retailpb.RemoveCatalogAttributeRequest, ...gax.CallOption) (*retailpb.AttributesConfig, error)
+	ReplaceCatalogAttribute(context.Context, *retailpb.ReplaceCatalogAttributeRequest, ...gax.CallOption) (*retailpb.AttributesConfig, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // CatalogClient is a client for interacting with Retail API.
@@ -150,7 +279,8 @@ func (c *CatalogClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CatalogClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -194,17 +324,13 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 //
 // More specifically:
 //
-//   PredictionService will only return product IDs from branch {newBranch}.
+//	PredictionService will only return product IDs from branch {newBranch}.
 //
-//   SearchService will only return product IDs from branch {newBranch}
-//   (if branch is not explicitly set).
+//	SearchService will only return product IDs from branch {newBranch}
+//	(if branch is not explicitly set).
 //
-//   UserEventService will only join events with products from branch
-//   {newBranch}.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please submit a form here (at https://cloud.google.com/contact) to contact
-// cloud sales if you are interested in using Retail Search.
+//	UserEventService will only join events with products from branch
+//	{newBranch}.
 func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
 	return c.internalClient.SetDefaultBranch(ctx, req, opts...)
 }
@@ -212,12 +338,77 @@ func (c *CatalogClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetD
 // GetDefaultBranch get which branch is currently default branch set by
 // CatalogService.SetDefaultBranch
 // method under a specified parent catalog.
-//
-// This feature is only available for users who have Retail Search enabled.
-// Please submit a form here (at https://cloud.google.com/contact) to contact
-// cloud sales if you are interested in using Retail Search.
 func (c *CatalogClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
 	return c.internalClient.GetDefaultBranch(ctx, req, opts...)
+}
+
+// GetCompletionConfig gets a CompletionConfig.
+func (c *CatalogClient) GetCompletionConfig(ctx context.Context, req *retailpb.GetCompletionConfigRequest, opts ...gax.CallOption) (*retailpb.CompletionConfig, error) {
+	return c.internalClient.GetCompletionConfig(ctx, req, opts...)
+}
+
+// UpdateCompletionConfig updates the CompletionConfigs.
+func (c *CatalogClient) UpdateCompletionConfig(ctx context.Context, req *retailpb.UpdateCompletionConfigRequest, opts ...gax.CallOption) (*retailpb.CompletionConfig, error) {
+	return c.internalClient.UpdateCompletionConfig(ctx, req, opts...)
+}
+
+// GetAttributesConfig gets an AttributesConfig.
+func (c *CatalogClient) GetAttributesConfig(ctx context.Context, req *retailpb.GetAttributesConfigRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	return c.internalClient.GetAttributesConfig(ctx, req, opts...)
+}
+
+// UpdateAttributesConfig updates the AttributesConfig.
+//
+// The catalog attributes in the request will be updated in the catalog, or
+// inserted if they do not exist. Existing catalog attributes not included in
+// the request will remain unchanged. Attributes that are assigned to
+// products, but do not exist at the catalog level, are always included in the
+// response. The product attribute is assigned default values for missing
+// catalog attribute fields, e.g., searchable and dynamic facetable options.
+func (c *CatalogClient) UpdateAttributesConfig(ctx context.Context, req *retailpb.UpdateAttributesConfigRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	return c.internalClient.UpdateAttributesConfig(ctx, req, opts...)
+}
+
+// AddCatalogAttribute adds the specified
+// CatalogAttribute to the
+// AttributesConfig.
+//
+// If the CatalogAttribute to add
+// already exists, an ALREADY_EXISTS error is returned.
+func (c *CatalogClient) AddCatalogAttribute(ctx context.Context, req *retailpb.AddCatalogAttributeRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	return c.internalClient.AddCatalogAttribute(ctx, req, opts...)
+}
+
+// RemoveCatalogAttribute removes the specified
+// CatalogAttribute from the
+// AttributesConfig.
+//
+// If the CatalogAttribute to
+// remove does not exist, a NOT_FOUND error is returned.
+func (c *CatalogClient) RemoveCatalogAttribute(ctx context.Context, req *retailpb.RemoveCatalogAttributeRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	return c.internalClient.RemoveCatalogAttribute(ctx, req, opts...)
+}
+
+// ReplaceCatalogAttribute replaces the specified
+// CatalogAttribute in the
+// AttributesConfig by updating the
+// catalog attribute with the same
+// CatalogAttribute.key.
+//
+// If the CatalogAttribute to
+// replace does not exist, a NOT_FOUND error is returned.
+func (c *CatalogClient) ReplaceCatalogAttribute(ctx context.Context, req *retailpb.ReplaceCatalogAttributeRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	return c.internalClient.ReplaceCatalogAttribute(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *CatalogClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *CatalogClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // catalogGRPCClient is a client for interacting with Retail API over gRPC transport.
@@ -227,17 +418,16 @@ type catalogGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing CatalogClient
 	CallOptions **CatalogCallOptions
 
 	// The gRPC API client.
 	catalogClient retailpb.CatalogServiceClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewCatalogClient creates a new catalog service client based on gRPC.
@@ -254,11 +444,6 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -267,9 +452,9 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 
 	c := &catalogGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		catalogClient:    retailpb.NewCatalogServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -280,7 +465,8 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -289,9 +475,9 @@ func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -301,9 +487,10 @@ func (c *catalogGRPCClient) Close() error {
 }
 
 func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.ListCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListCatalogs[0:len((*c.CallOptions).ListCatalogs):len((*c.CallOptions).ListCatalogs)], opts...)
 	it := &CatalogIterator{}
 	req = proto.Clone(req).(*retailpb.ListCatalogsRequest)
@@ -346,14 +533,10 @@ func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.List
 }
 
 func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateCatalogRequest, opts ...gax.CallOption) (*retailpb.Catalog, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog.name", url.QueryEscape(req.GetCatalog().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "catalog.name", url.QueryEscape(req.GetCatalog().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateCatalog[0:len((*c.CallOptions).UpdateCatalog):len((*c.CallOptions).UpdateCatalog)], opts...)
 	var resp *retailpb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -368,14 +551,10 @@ func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.Upd
 }
 
 func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.SetDefaultBranchRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetDefaultBranch[0:len((*c.CallOptions).SetDefaultBranch):len((*c.CallOptions).SetDefaultBranch)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -386,14 +565,10 @@ func (c *catalogGRPCClient) SetDefaultBranch(ctx context.Context, req *retailpb.
 }
 
 func (c *catalogGRPCClient) GetDefaultBranch(ctx context.Context, req *retailpb.GetDefaultBranchRequest, opts ...gax.CallOption) (*retailpb.GetDefaultBranchResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "catalog", url.QueryEscape(req.GetCatalog()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDefaultBranch[0:len((*c.CallOptions).GetDefaultBranch):len((*c.CallOptions).GetDefaultBranch)], opts...)
 	var resp *retailpb.GetDefaultBranchResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -407,49 +582,192 @@ func (c *catalogGRPCClient) GetDefaultBranch(ctx context.Context, req *retailpb.
 	return resp, nil
 }
 
-// CatalogIterator manages a stream of *retailpb.Catalog.
-type CatalogIterator struct {
-	items    []*retailpb.Catalog
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
+func (c *catalogGRPCClient) GetCompletionConfig(ctx context.Context, req *retailpb.GetCompletionConfigRequest, opts ...gax.CallOption) (*retailpb.CompletionConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*retailpb.Catalog, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CatalogIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CatalogIterator) Next() (*retailpb.Catalog, error) {
-	var item *retailpb.Catalog
-	if err := it.nextFunc(); err != nil {
-		return item, err
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetCompletionConfig[0:len((*c.CallOptions).GetCompletionConfig):len((*c.CallOptions).GetCompletionConfig)], opts...)
+	var resp *retailpb.CompletionConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.catalogClient.GetCompletionConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
+	return resp, nil
 }
 
-func (it *CatalogIterator) bufLen() int {
-	return len(it.items)
+func (c *catalogGRPCClient) UpdateCompletionConfig(ctx context.Context, req *retailpb.UpdateCompletionConfigRequest, opts ...gax.CallOption) (*retailpb.CompletionConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "completion_config.name", url.QueryEscape(req.GetCompletionConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCompletionConfig[0:len((*c.CallOptions).UpdateCompletionConfig):len((*c.CallOptions).UpdateCompletionConfig)], opts...)
+	var resp *retailpb.CompletionConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.catalogClient.UpdateCompletionConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
-func (it *CatalogIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
+func (c *catalogGRPCClient) GetAttributesConfig(ctx context.Context, req *retailpb.GetAttributesConfigRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAttributesConfig[0:len((*c.CallOptions).GetAttributesConfig):len((*c.CallOptions).GetAttributesConfig)], opts...)
+	var resp *retailpb.AttributesConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.catalogClient.GetAttributesConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) UpdateAttributesConfig(ctx context.Context, req *retailpb.UpdateAttributesConfigRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config.name", url.QueryEscape(req.GetAttributesConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateAttributesConfig[0:len((*c.CallOptions).UpdateAttributesConfig):len((*c.CallOptions).UpdateAttributesConfig)], opts...)
+	var resp *retailpb.AttributesConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.catalogClient.UpdateAttributesConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) AddCatalogAttribute(ctx context.Context, req *retailpb.AddCatalogAttributeRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AddCatalogAttribute[0:len((*c.CallOptions).AddCatalogAttribute):len((*c.CallOptions).AddCatalogAttribute)], opts...)
+	var resp *retailpb.AttributesConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.catalogClient.AddCatalogAttribute(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) RemoveCatalogAttribute(ctx context.Context, req *retailpb.RemoveCatalogAttributeRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RemoveCatalogAttribute[0:len((*c.CallOptions).RemoveCatalogAttribute):len((*c.CallOptions).RemoveCatalogAttribute)], opts...)
+	var resp *retailpb.AttributesConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.catalogClient.RemoveCatalogAttribute(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) ReplaceCatalogAttribute(ctx context.Context, req *retailpb.ReplaceCatalogAttributeRequest, opts ...gax.CallOption) (*retailpb.AttributesConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attributes_config", url.QueryEscape(req.GetAttributesConfig()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ReplaceCatalogAttribute[0:len((*c.CallOptions).ReplaceCatalogAttribute):len((*c.CallOptions).ReplaceCatalogAttribute)], opts...)
+	var resp *retailpb.AttributesConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.catalogClient.ReplaceCatalogAttribute(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *catalogGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,34 @@ import (
 	"context"
 
 	publishing "cloud.google.com/go/eventarc/publishing/apiv1"
-	publisherpb "google.golang.org/genproto/googleapis/cloud/eventarc/publishing/v1"
+	publishingpb "cloud.google.com/go/eventarc/publishing/apiv1/publishingpb"
 )
 
 func ExampleNewPublisherClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := publishing.NewPublisherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleNewPublisherRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := publishing.NewPublisherRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -37,17 +59,47 @@ func ExampleNewPublisherClient() {
 
 func ExamplePublisherClient_PublishChannelConnectionEvents() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := publishing.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &publisherpb.PublishChannelConnectionEventsRequest{
+	req := &publishingpb.PublishChannelConnectionEventsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/eventarc/publishing/v1#PublishChannelConnectionEventsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/publishing/apiv1/publishingpb#PublishChannelConnectionEventsRequest.
 	}
 	resp, err := c.PublishChannelConnectionEvents(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePublisherClient_PublishEvents() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := publishing.NewPublisherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &publishingpb.PublishEventsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/eventarc/publishing/apiv1/publishingpb#PublishEventsRequest.
+	}
+	resp, err := c.PublishEvents(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,24 +17,29 @@
 package channel
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	channelpb "cloud.google.com/go/channel/apiv1/channelpb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -42,47 +47,67 @@ var newCloudChannelClientHook clientHook
 
 // CloudChannelCallOptions contains the retry settings for each method of CloudChannelClient.
 type CloudChannelCallOptions struct {
-	ListCustomers                   []gax.CallOption
-	GetCustomer                     []gax.CallOption
-	CheckCloudIdentityAccountsExist []gax.CallOption
-	CreateCustomer                  []gax.CallOption
-	UpdateCustomer                  []gax.CallOption
-	DeleteCustomer                  []gax.CallOption
-	ImportCustomer                  []gax.CallOption
-	ProvisionCloudIdentity          []gax.CallOption
-	ListEntitlements                []gax.CallOption
-	ListTransferableSkus            []gax.CallOption
-	ListTransferableOffers          []gax.CallOption
-	GetEntitlement                  []gax.CallOption
-	CreateEntitlement               []gax.CallOption
-	ChangeParameters                []gax.CallOption
-	ChangeRenewalSettings           []gax.CallOption
-	ChangeOffer                     []gax.CallOption
-	StartPaidService                []gax.CallOption
-	SuspendEntitlement              []gax.CallOption
-	CancelEntitlement               []gax.CallOption
-	ActivateEntitlement             []gax.CallOption
-	TransferEntitlements            []gax.CallOption
-	TransferEntitlementsToGoogle    []gax.CallOption
-	ListChannelPartnerLinks         []gax.CallOption
-	GetChannelPartnerLink           []gax.CallOption
-	CreateChannelPartnerLink        []gax.CallOption
-	UpdateChannelPartnerLink        []gax.CallOption
-	LookupOffer                     []gax.CallOption
-	ListProducts                    []gax.CallOption
-	ListSkus                        []gax.CallOption
-	ListOffers                      []gax.CallOption
-	ListPurchasableSkus             []gax.CallOption
-	ListPurchasableOffers           []gax.CallOption
-	RegisterSubscriber              []gax.CallOption
-	UnregisterSubscriber            []gax.CallOption
-	ListSubscribers                 []gax.CallOption
+	ListCustomers                       []gax.CallOption
+	GetCustomer                         []gax.CallOption
+	CheckCloudIdentityAccountsExist     []gax.CallOption
+	CreateCustomer                      []gax.CallOption
+	UpdateCustomer                      []gax.CallOption
+	DeleteCustomer                      []gax.CallOption
+	ImportCustomer                      []gax.CallOption
+	ProvisionCloudIdentity              []gax.CallOption
+	ListEntitlements                    []gax.CallOption
+	ListTransferableSkus                []gax.CallOption
+	ListTransferableOffers              []gax.CallOption
+	GetEntitlement                      []gax.CallOption
+	CreateEntitlement                   []gax.CallOption
+	ChangeParameters                    []gax.CallOption
+	ChangeRenewalSettings               []gax.CallOption
+	ChangeOffer                         []gax.CallOption
+	StartPaidService                    []gax.CallOption
+	SuspendEntitlement                  []gax.CallOption
+	CancelEntitlement                   []gax.CallOption
+	ActivateEntitlement                 []gax.CallOption
+	TransferEntitlements                []gax.CallOption
+	TransferEntitlementsToGoogle        []gax.CallOption
+	ListChannelPartnerLinks             []gax.CallOption
+	GetChannelPartnerLink               []gax.CallOption
+	CreateChannelPartnerLink            []gax.CallOption
+	UpdateChannelPartnerLink            []gax.CallOption
+	GetCustomerRepricingConfig          []gax.CallOption
+	ListCustomerRepricingConfigs        []gax.CallOption
+	CreateCustomerRepricingConfig       []gax.CallOption
+	UpdateCustomerRepricingConfig       []gax.CallOption
+	DeleteCustomerRepricingConfig       []gax.CallOption
+	GetChannelPartnerRepricingConfig    []gax.CallOption
+	ListChannelPartnerRepricingConfigs  []gax.CallOption
+	CreateChannelPartnerRepricingConfig []gax.CallOption
+	UpdateChannelPartnerRepricingConfig []gax.CallOption
+	DeleteChannelPartnerRepricingConfig []gax.CallOption
+	ListSkuGroups                       []gax.CallOption
+	ListSkuGroupBillableSkus            []gax.CallOption
+	LookupOffer                         []gax.CallOption
+	ListProducts                        []gax.CallOption
+	ListSkus                            []gax.CallOption
+	ListOffers                          []gax.CallOption
+	ListPurchasableSkus                 []gax.CallOption
+	ListPurchasableOffers               []gax.CallOption
+	QueryEligibleBillingAccounts        []gax.CallOption
+	RegisterSubscriber                  []gax.CallOption
+	UnregisterSubscriber                []gax.CallOption
+	ListSubscribers                     []gax.CallOption
+	ListEntitlementChanges              []gax.CallOption
+	CancelOperation                     []gax.CallOption
+	DeleteOperation                     []gax.CallOption
+	GetOperation                        []gax.CallOption
+	ListOperations                      []gax.CallOption
 }
 
 func defaultCloudChannelGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudchannel.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudchannel.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudchannel.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudchannel.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -94,6 +119,7 @@ func defaultCloudChannelGRPCClientOptions() []option.ClientOption {
 func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 	return &CloudChannelCallOptions{
 		ListCustomers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -105,6 +131,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -116,6 +143,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CheckCloudIdentityAccountsExist: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -127,6 +155,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -138,6 +167,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -149,6 +179,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		DeleteCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -160,6 +191,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ImportCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -170,8 +202,11 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 				})
 			}),
 		},
-		ProvisionCloudIdentity: []gax.CallOption{},
+		ProvisionCloudIdentity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListEntitlements: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -183,6 +218,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListTransferableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -194,6 +230,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListTransferableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -205,6 +242,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -215,17 +253,38 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 				})
 			}),
 		},
-		CreateEntitlement:            []gax.CallOption{},
-		ChangeParameters:             []gax.CallOption{},
-		ChangeRenewalSettings:        []gax.CallOption{},
-		ChangeOffer:                  []gax.CallOption{},
-		StartPaidService:             []gax.CallOption{},
-		SuspendEntitlement:           []gax.CallOption{},
-		CancelEntitlement:            []gax.CallOption{},
-		ActivateEntitlement:          []gax.CallOption{},
-		TransferEntitlements:         []gax.CallOption{},
-		TransferEntitlementsToGoogle: []gax.CallOption{},
+		CreateEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeParameters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeRenewalSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeOffer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartPaidService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SuspendEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ActivateEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TransferEntitlements: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TransferEntitlementsToGoogle: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListChannelPartnerLinks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -237,6 +296,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		GetChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -248,6 +308,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		CreateChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -259,6 +320,151 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UpdateChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListCustomerRepricingConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListChannelPartnerRepricingConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSkuGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSkuGroupBillableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -270,6 +476,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		LookupOffer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -281,6 +488,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListProducts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -292,6 +500,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -303,6 +512,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -314,6 +524,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListPurchasableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -325,6 +536,19 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListPurchasableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		QueryEligibleBillingAccounts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -336,6 +560,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		RegisterSubscriber: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -347,6 +572,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		UnregisterSubscriber: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -358,6 +584,7 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListSubscribers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -368,10 +595,486 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 				})
 			}),
 		},
+		ListEntitlementChanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
 	}
 }
 
-// internalCloudChannelClient is an interface that defines the methods availaible from Cloud Channel API.
+func defaultCloudChannelRESTCallOptions() *CloudChannelCallOptions {
+	return &CloudChannelCallOptions{
+		ListCustomers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CheckCloudIdentityAccountsExist: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ImportCustomer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ProvisionCloudIdentity: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListEntitlements: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListTransferableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListTransferableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeParameters: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeRenewalSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ChangeOffer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		StartPaidService: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SuspendEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CancelEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ActivateEntitlement: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TransferEntitlements: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TransferEntitlementsToGoogle: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		ListChannelPartnerLinks: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateChannelPartnerLink: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListCustomerRepricingConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteCustomerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListChannelPartnerRepricingConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CreateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteChannelPartnerRepricingConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSkuGroups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSkuGroupBillableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		LookupOffer: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListProducts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListPurchasableSkus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListPurchasableOffers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		QueryEligibleBillingAccounts: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		RegisterSubscriber: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UnregisterSubscriber: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSubscribers: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListEntitlementChanges: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		CancelOperation: []gax.CallOption{},
+		DeleteOperation: []gax.CallOption{},
+		GetOperation:    []gax.CallOption{},
+		ListOperations:  []gax.CallOption{},
+	}
+}
+
+// internalCloudChannelClient is an interface that defines the methods available from Cloud Channel API.
 type internalCloudChannelClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -413,15 +1116,33 @@ type internalCloudChannelClient interface {
 	GetChannelPartnerLink(context.Context, *channelpb.GetChannelPartnerLinkRequest, ...gax.CallOption) (*channelpb.ChannelPartnerLink, error)
 	CreateChannelPartnerLink(context.Context, *channelpb.CreateChannelPartnerLinkRequest, ...gax.CallOption) (*channelpb.ChannelPartnerLink, error)
 	UpdateChannelPartnerLink(context.Context, *channelpb.UpdateChannelPartnerLinkRequest, ...gax.CallOption) (*channelpb.ChannelPartnerLink, error)
+	GetCustomerRepricingConfig(context.Context, *channelpb.GetCustomerRepricingConfigRequest, ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error)
+	ListCustomerRepricingConfigs(context.Context, *channelpb.ListCustomerRepricingConfigsRequest, ...gax.CallOption) *CustomerRepricingConfigIterator
+	CreateCustomerRepricingConfig(context.Context, *channelpb.CreateCustomerRepricingConfigRequest, ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error)
+	UpdateCustomerRepricingConfig(context.Context, *channelpb.UpdateCustomerRepricingConfigRequest, ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error)
+	DeleteCustomerRepricingConfig(context.Context, *channelpb.DeleteCustomerRepricingConfigRequest, ...gax.CallOption) error
+	GetChannelPartnerRepricingConfig(context.Context, *channelpb.GetChannelPartnerRepricingConfigRequest, ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error)
+	ListChannelPartnerRepricingConfigs(context.Context, *channelpb.ListChannelPartnerRepricingConfigsRequest, ...gax.CallOption) *ChannelPartnerRepricingConfigIterator
+	CreateChannelPartnerRepricingConfig(context.Context, *channelpb.CreateChannelPartnerRepricingConfigRequest, ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error)
+	UpdateChannelPartnerRepricingConfig(context.Context, *channelpb.UpdateChannelPartnerRepricingConfigRequest, ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error)
+	DeleteChannelPartnerRepricingConfig(context.Context, *channelpb.DeleteChannelPartnerRepricingConfigRequest, ...gax.CallOption) error
+	ListSkuGroups(context.Context, *channelpb.ListSkuGroupsRequest, ...gax.CallOption) *SkuGroupIterator
+	ListSkuGroupBillableSkus(context.Context, *channelpb.ListSkuGroupBillableSkusRequest, ...gax.CallOption) *BillableSkuIterator
 	LookupOffer(context.Context, *channelpb.LookupOfferRequest, ...gax.CallOption) (*channelpb.Offer, error)
 	ListProducts(context.Context, *channelpb.ListProductsRequest, ...gax.CallOption) *ProductIterator
 	ListSkus(context.Context, *channelpb.ListSkusRequest, ...gax.CallOption) *SkuIterator
 	ListOffers(context.Context, *channelpb.ListOffersRequest, ...gax.CallOption) *OfferIterator
 	ListPurchasableSkus(context.Context, *channelpb.ListPurchasableSkusRequest, ...gax.CallOption) *PurchasableSkuIterator
 	ListPurchasableOffers(context.Context, *channelpb.ListPurchasableOffersRequest, ...gax.CallOption) *PurchasableOfferIterator
+	QueryEligibleBillingAccounts(context.Context, *channelpb.QueryEligibleBillingAccountsRequest, ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error)
 	RegisterSubscriber(context.Context, *channelpb.RegisterSubscriberRequest, ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error)
 	UnregisterSubscriber(context.Context, *channelpb.UnregisterSubscriberRequest, ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error)
 	ListSubscribers(context.Context, *channelpb.ListSubscribersRequest, ...gax.CallOption) *StringIterator
+	ListEntitlementChanges(context.Context, *channelpb.ListEntitlementChangesRequest, ...gax.CallOption) *EntitlementChangeIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // CloudChannelClient is a client for interacting with Cloud Channel API.
@@ -441,15 +1162,16 @@ type internalCloudChannelClient interface {
 //
 // CloudChannelService exposes the following resources:
 //
-//   Customers: An entity—usually an enterprise—managed by a reseller or
-//   distributor.
+//	Customers: An entity-usually an
+//	enterprise-managed by a reseller or distributor.
 //
-//   Entitlements: An entity that provides a customer with the means to use
-//   a service. Entitlements are created or updated as a result of a successful
-//   fulfillment.
+//	Entitlements: An entity that
+//	provides a customer with the means to use a service. Entitlements are created
+//	or updated as a result of a successful fulfillment.
 //
-//   ChannelPartnerLinks: An entity that identifies links between
-//   distributors and their indirect resellers in a channel.
+//	ChannelPartnerLinks: An
+//	entity that identifies links between distributors and their indirect
+//	resellers in a channel.
 type CloudChannelClient struct {
 	// The internal transport-dependent client.
 	internalClient internalCloudChannelClient
@@ -480,7 +1202,8 @@ func (c *CloudChannelClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *CloudChannelClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -489,28 +1212,30 @@ func (c *CloudChannelClient) Connection() *grpc.ClientConn {
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
-// List of Customers, or an empty list if there are no customers.
+// List of Customers, or an empty list if
+// there are no customers.
 func (c *CloudChannelClient) ListCustomers(ctx context.Context, req *channelpb.ListCustomersRequest, opts ...gax.CallOption) *CustomerIterator {
 	return c.internalClient.ListCustomers(ctx, req, opts...)
 }
 
-// GetCustomer returns the requested Customer resource.
+// GetCustomer returns the requested Customer
+// resource.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The customer resource doesn’t exist. Usually the result of an
-//   invalid name parameter.
+//	NOT_FOUND: The customer resource doesn’t exist. Usually the result of an
+//	invalid name parameter.
 //
 // Return value:
 // The Customer resource.
@@ -523,36 +1248,44 @@ func (c *CloudChannelClient) GetCustomer(ctx context.Context, req *channelpb.Get
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   INVALID_VALUE: Invalid domain value in the request.
+//	INVALID_VALUE: Invalid domain value in the request.
 //
 // Return value:
-// A list of CloudIdentityCustomerAccount resources for the domain (may be
-// empty)
+// A list of
+// CloudIdentityCustomerAccount
+// resources for the domain (may be empty)
 //
 // Note: in the v1alpha1 version of the API, a NOT_FOUND error returns if
-// no CloudIdentityCustomerAccount resources match the domain.
+// no
+// CloudIdentityCustomerAccount
+// resources match the domain.
 func (c *CloudChannelClient) CheckCloudIdentityAccountsExist(ctx context.Context, req *channelpb.CheckCloudIdentityAccountsExistRequest, opts ...gax.CallOption) (*channelpb.CheckCloudIdentityAccountsExistResponse, error) {
 	return c.internalClient.CheckCloudIdentityAccountsExist(ctx, req, opts...)
 }
 
-// CreateCustomer creates a new Customer resource under the reseller or distributor
-// account.
+// CreateCustomer creates a new Customer resource under
+// the reseller or distributor account.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED:
 //
-//   INVALID_ARGUMENT:
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
 //
-//     Required request parameters are missing or invalid.
+//	  You are not authorized to create a customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
-//     Domain field value doesn’t match the primary email domain.
+//	INVALID_ARGUMENT:
+//
+//	  Required request parameters are missing or invalid.
+//
+//	  Domain field value doesn’t match the primary email domain.
 //
 // Return value:
 // The newly created Customer resource.
@@ -560,17 +1293,18 @@ func (c *CloudChannelClient) CreateCustomer(ctx context.Context, req *channelpb.
 	return c.internalClient.CreateCustomer(ctx, req, opts...)
 }
 
-// UpdateCustomer updates an existing Customer resource for the reseller or
-// distributor.
+// UpdateCustomer updates an existing Customer resource
+// for the reseller or distributor.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: No Customer resource found for the name in the request.
+//	NOT_FOUND: No Customer resource found
+//	for the name in the request.
 //
 // Return value:
 // The updated Customer resource.
@@ -582,35 +1316,41 @@ func (c *CloudChannelClient) UpdateCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The account making the request does not own
-//   this customer.
+//	PERMISSION_DENIED: The account making the request does not own
+//	this customer.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   FAILED_PRECONDITION: The customer has existing entitlements.
+//	FAILED_PRECONDITION: The customer has existing entitlements.
 //
-//   NOT_FOUND: No Customer resource found for the name in the request.
+//	NOT_FOUND: No Customer resource found
+//	for the name in the request.
 func (c *CloudChannelClient) DeleteCustomer(ctx context.Context, req *channelpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteCustomer(ctx, req, opts...)
 }
 
-// ImportCustomer imports a Customer from the Cloud Identity associated with the provided
-// Cloud Identity ID or domain before a TransferEntitlements call. If a
-// linked Customer already exists and overwrite_if_exists is true, it will
-// update that Customer’s data.
+// ImportCustomer imports a Customer from the Cloud
+// Identity associated with the provided Cloud Identity ID or domain before a
+// TransferEntitlements call. If a linked Customer already exists and
+// overwrite_if_exists is true, it will update that Customer’s data.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED:
 //
-//   NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required parameters are missing, or the auth_token is
-//   expired or invalid.
+//	  You are not authorized to import the customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
-//   ALREADY_EXISTS: A customer already exists and has conflicting critical
-//   fields. Requires an overwrite.
+//	NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
+//
+//	INVALID_ARGUMENT: Required parameters are missing, or the auth_token is
+//	expired or invalid.
+//
+//	ALREADY_EXISTS: A customer already exists and has conflicting critical
+//	fields. Requires an overwrite.
 //
 // Return value:
 // The Customer.
@@ -623,20 +1363,25 @@ func (c *CloudChannelClient) ImportCustomer(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	  The customer doesn’t belong to the reseller.
 //
-//   NOT_FOUND: The customer was not found.
+//	  You are not authorized to provision cloud identity id. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
-//   ALREADY_EXISTS: The customer’s primary email already exists. Retry
-//   after changing the customer’s primary contact email.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	NOT_FOUND: The customer was not found.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	ALREADY_EXISTS: The customer’s primary email already exists. Retry
+//	after changing the customer’s primary contact email.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -654,22 +1399,24 @@ func (c *CloudChannelClient) ProvisionCloudIdentityOperation(name string) *Provi
 	return c.internalClient.ProvisionCloudIdentityOperation(name)
 }
 
-// ListEntitlements lists Entitlements belonging to a customer.
+// ListEntitlements lists Entitlements belonging to a
+// customer.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
-// A list of the customer’s Entitlements.
+// A list of the customer’s
+// Entitlements.
 func (c *CloudChannelClient) ListEntitlements(ctx context.Context, req *channelpb.ListEntitlementsRequest, opts ...gax.CallOption) *EntitlementIterator {
 	return c.internalClient.ListEntitlements(ctx, req, opts...)
 }
 
-// ListTransferableSkus list TransferableSkus of a customer based on the Cloud Identity ID or
-// Customer Name in the request.
+// ListTransferableSkus list TransferableSkus of a
+// customer based on the Cloud Identity ID or Customer Name in the request.
 //
 // Use this method to list the entitlements information of an
 // unowned customer. You should provide the customer’s
@@ -677,25 +1424,26 @@ func (c *CloudChannelClient) ListEntitlements(ctx context.Context, req *channelp
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED:
+//	PERMISSION_DENIED:
 //
-//     The customer doesn’t belong to the reseller and has no auth token.
+//	  The customer doesn’t belong to the reseller and has no auth token.
 //
-//     The supplied auth token is invalid.
+//	  The supplied auth token is invalid.
 //
-//     The reseller account making the request is different
-//     from the reseller account in the query.
+//	  The reseller account making the request is different
+//	  from the reseller account in the query.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
-// A list of the customer’s TransferableSku.
+// A list of the customer’s
+// TransferableSku.
 func (c *CloudChannelClient) ListTransferableSkus(ctx context.Context, req *channelpb.ListTransferableSkusRequest, opts ...gax.CallOption) *TransferableSkuIterator {
 	return c.internalClient.ListTransferableSkus(ctx, req, opts...)
 }
 
-// ListTransferableOffers list TransferableOffers of a customer based on Cloud Identity ID or
-// Customer Name in the request.
+// ListTransferableOffers list TransferableOffers of a
+// customer based on Cloud Identity ID or Customer Name in the request.
 //
 // Use this method when a reseller gets the entitlement information of an
 // unowned customer. The reseller should provide the customer’s
@@ -703,32 +1451,38 @@ func (c *CloudChannelClient) ListTransferableSkus(ctx context.Context, req *chan
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED:
+//	PERMISSION_DENIED:
 //
-//     The customer doesn’t belong to the reseller and has no auth token.
+//	  The customer doesn’t belong to the reseller and has no auth token.
 //
-//     The supplied auth token is invalid.
+//	  The customer provided incorrect reseller information when generating
+//	  auth token.
 //
-//     The reseller account making the request is different
-//     from the reseller account in the query.
+//	  The reseller account making the request is different
+//	  from the reseller account in the query.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
-// List of TransferableOffer for the given customer and SKU.
+// List of TransferableOffer for
+// the given customer and SKU.
 func (c *CloudChannelClient) ListTransferableOffers(ctx context.Context, req *channelpb.ListTransferableOffersRequest, opts ...gax.CallOption) *TransferableOfferIterator {
 	return c.internalClient.ListTransferableOffers(ctx, req, opts...)
 }
 
-// GetEntitlement returns the requested Entitlement resource.
+// GetEntitlement returns the requested Entitlement
+// resource.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The customer entitlement was not found.
+//	NOT_FOUND: The customer entitlement was not found.
 //
 // Return value:
 // The requested Entitlement resource.
@@ -740,47 +1494,52 @@ func (c *CloudChannelClient) GetEntitlement(ctx context.Context, req *channelpb.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
 //
-//   INVALID_ARGUMENT:
+//	  The customer doesn’t belong to the reseller.
 //
-//     Required request parameters are missing or invalid.
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
-//     There is already a customer entitlement for a SKU from the same
-//     product family.
+//	INVALID_ARGUMENT:
 //
-//   INVALID_VALUE: Make sure the OfferId is valid. If it is, contact
-//   Google Channel support for further troubleshooting.
+//	  Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The customer or offer resource was not found.
+//	  There is already a customer entitlement for a SKU from the same
+//	  product family.
 //
-//   ALREADY_EXISTS:
+//	INVALID_VALUE: Make sure the OfferId is valid. If it is, contact
+//	Google Channel support for further troubleshooting.
 //
-//     The SKU was already purchased for the customer.
+//	NOT_FOUND: The customer or offer resource was not found.
 //
-//     The customer’s primary email already exists. Retry
-//     after changing the customer’s primary contact email.
+//	ALREADY_EXISTS:
 //
-//   CONDITION_NOT_MET or FAILED_PRECONDITION:
+//	  The SKU was already purchased for the customer.
 //
-//     The domain required for purchasing a SKU has not been verified.
+//	  The customer’s primary email already exists. Retry
+//	  after changing the customer’s primary contact email.
 //
-//     A pre-requisite SKU required to purchase an Add-On SKU is missing.
-//     For example, Google Workspace Business Starter is required to purchase
-//     Vault or Drive.
+//	CONDITION_NOT_MET or FAILED_PRECONDITION:
 //
-//     (Developer accounts only) Reseller and resold domain must meet the
-//     following naming requirements:
+//	  The domain required for purchasing a SKU has not been verified.
 //
-//       Domain names must start with goog-test.
+//	  A pre-requisite SKU required to purchase an Add-On SKU is missing.
+//	  For example, Google Workspace Business Starter is required to purchase
+//	  Vault or Drive.
 //
-//       Domain names must include the reseller domain.
+//	  (Developer accounts only) Reseller and resold domain must meet the
+//	  following naming requirements:
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	    Domain names must start with goog-test.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	    Domain names must include the reseller domain.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -805,19 +1564,19 @@ func (c *CloudChannelClient) CreateEntitlementOperation(name string) *CreateEnti
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
-//   For example, the number of seats being changed is greater than the allowed
-//   number of max seats, or decreasing seats for a commitment based plan.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	For example, the number of seats being changed is greater than the allowed
+//	number of max seats, or decreasing seats for a commitment based plan.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -842,20 +1601,20 @@ func (c *CloudChannelClient) ChangeParametersOperation(name string) *ChangeParam
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   NOT_COMMITMENT_PLAN: Renewal Settings are only applicable for a
-//   commitment plan. Can’t enable or disable renewals for non-commitment plans.
+//	NOT_COMMITMENT_PLAN: Renewal Settings are only applicable for a
+//	commitment plan. Can’t enable or disable renewals for non-commitment plans.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -880,17 +1639,17 @@ func (c *CloudChannelClient) ChangeRenewalSettingsOperation(name string) *Change
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Offer or Entitlement resource not found.
+//	NOT_FOUND: Offer or Entitlement resource not found.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -916,20 +1675,20 @@ func (c *CloudChannelClient) ChangeOfferOperation(name string) *ChangeOfferOpera
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   FAILED_PRECONDITION/NOT_IN_TRIAL: This method only works for
-//   entitlement on trial plans.
+//	FAILED_PRECONDITION/NOT_IN_TRIAL: This method only works for
+//	entitlement on trial plans.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -953,19 +1712,19 @@ func (c *CloudChannelClient) StartPaidServiceOperation(name string) *StartPaidSe
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   NOT_ACTIVE: Entitlement is not active.
+//	NOT_ACTIVE: Entitlement is not active.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -989,24 +1748,24 @@ func (c *CloudChannelClient) SuspendEntitlementOperation(name string) *SuspendEn
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   FAILED_PRECONDITION: There are Google Cloud projects linked to the
-//   Google Cloud entitlement’s Cloud Billing subaccount.
+//	FAILED_PRECONDITION: There are Google Cloud projects linked to the
+//	Google Cloud entitlement’s Cloud Billing subaccount.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   DELETION_TYPE_NOT_ALLOWED: Cancel is only allowed for Google Workspace
-//   add-ons, or entitlements for Google Cloud’s development platform.
+//	DELETION_TYPE_NOT_ALLOWED: Cancel is only allowed for Google Workspace
+//	add-ons, or entitlements for Google Cloud’s development platform.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1033,24 +1792,24 @@ func (c *CloudChannelClient) CancelEntitlementOperation(name string) *CancelEnti
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement resource not found.
+//	NOT_FOUND: Entitlement resource not found.
 //
-//   SUSPENSION_NOT_RESELLER_INITIATED: Can only activate reseller-initiated
-//   suspensions and entitlements that have accepted the TOS.
+//	SUSPENSION_NOT_RESELLER_INITIATED: Can only activate reseller-initiated
+//	suspensions and entitlements that have accepted the TOS.
 //
-//   NOT_SUSPENDED: Can only activate suspended entitlements not in an ACTIVE
-//   state.
+//	NOT_SUSPENDED: Can only activate suspended entitlements not in an ACTIVE
+//	state.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1072,36 +1831,41 @@ func (c *CloudChannelClient) ActivateEntitlementOperation(name string) *Activate
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED:
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	  The customer doesn’t belong to the reseller.
 //
-//   NOT_FOUND: The customer or offer resource was not found.
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
 //
-//   ALREADY_EXISTS: The SKU was already transferred for the customer.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   CONDITION_NOT_MET or FAILED_PRECONDITION:
+//	NOT_FOUND: The customer or offer resource was not found.
 //
-//     The SKU requires domain verification to transfer, but the domain is
-//     not verified.
+//	ALREADY_EXISTS: The SKU was already transferred for the customer.
 //
-//     An Add-On SKU (example, Vault or Drive) is missing the
-//     pre-requisite SKU (example, G Suite Basic).
+//	CONDITION_NOT_MET or FAILED_PRECONDITION:
 //
-//     (Developer accounts only) Reseller and resold domain must meet the
-//     following naming requirements:
+//	  The SKU requires domain verification to transfer, but the domain is
+//	  not verified.
 //
-//       Domain names must start with goog-test.
+//	  An Add-On SKU (example, Vault or Drive) is missing the
+//	  pre-requisite SKU (example, G Suite Basic).
 //
-//       Domain names must include the reseller domain.
+//	  (Developer accounts only) Reseller and resold domain must meet the
+//	  following naming requirements:
 //
-//     Specify all transferring entitlements.
+//	    Domain names must start with goog-test.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	    Domain names must include the reseller domain.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	  Specify all transferring entitlements.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1123,34 +1887,34 @@ func (c *CloudChannelClient) TransferEntitlementsOperation(name string) *Transfe
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The customer or offer resource was not found.
+//	NOT_FOUND: The customer or offer resource was not found.
 //
-//   ALREADY_EXISTS: The SKU was already transferred for the customer.
+//	ALREADY_EXISTS: The SKU was already transferred for the customer.
 //
-//   CONDITION_NOT_MET or FAILED_PRECONDITION:
+//	CONDITION_NOT_MET or FAILED_PRECONDITION:
 //
-//     The SKU requires domain verification to transfer, but the domain is
-//     not verified.
+//	  The SKU requires domain verification to transfer, but the domain is
+//	  not verified.
 //
-//     An Add-On SKU (example, Vault or Drive) is missing the
-//     pre-requisite SKU (example, G Suite Basic).
+//	  An Add-On SKU (example, Vault or Drive) is missing the
+//	  pre-requisite SKU (example, G Suite Basic).
 //
-//     (Developer accounts only) Reseller and resold domain must meet the
-//     following naming requirements:
+//	  (Developer accounts only) Reseller and resold domain must meet the
+//	  following naming requirements:
 //
-//       Domain names must start with goog-test.
+//	    Domain names must start with goog-test.
 //
-//       Domain names must include the reseller domain.
+//	    Domain names must include the reseller domain.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The ID of a long-running operation.
@@ -1169,37 +1933,40 @@ func (c *CloudChannelClient) TransferEntitlementsToGoogleOperation(name string) 
 	return c.internalClient.TransferEntitlementsToGoogleOperation(name)
 }
 
-// ListChannelPartnerLinks list ChannelPartnerLinks belonging to a distributor.
-// You must be a distributor to call this method.
+// ListChannelPartnerLinks list ChannelPartnerLinks
+// belonging to a distributor. You must be a distributor to call this method.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
 // Return value:
-// The list of the distributor account’s ChannelPartnerLink resources.
+// The list of the distributor account’s
+// ChannelPartnerLink resources.
 func (c *CloudChannelClient) ListChannelPartnerLinks(ctx context.Context, req *channelpb.ListChannelPartnerLinksRequest, opts ...gax.CallOption) *ChannelPartnerLinkIterator {
 	return c.internalClient.ListChannelPartnerLinks(ctx, req, opts...)
 }
 
-// GetChannelPartnerLink returns the requested ChannelPartnerLink resource.
+// GetChannelPartnerLink returns the requested
+// ChannelPartnerLink resource.
 // You must be a distributor to call this method.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: ChannelPartnerLink resource not found because of an
-//   invalid channel partner link name.
+//	NOT_FOUND: ChannelPartnerLink resource not found because of an
+//	invalid channel partner link name.
 //
 // Return value:
-// The ChannelPartnerLink resource.
+// The ChannelPartnerLink
+// resource.
 func (c *CloudChannelClient) GetChannelPartnerLink(ctx context.Context, req *channelpb.GetChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
 	return c.internalClient.GetChannelPartnerLink(ctx, req, opts...)
 }
@@ -1213,24 +1980,25 @@ func (c *CloudChannelClient) GetChannelPartnerLink(ctx context.Context, req *cha
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   ALREADY_EXISTS: The ChannelPartnerLink sent in the request already
-//   exists.
+//	ALREADY_EXISTS: The ChannelPartnerLink sent in the request already
+//	exists.
 //
-//   NOT_FOUND: No Cloud Identity customer exists for provided domain.
+//	NOT_FOUND: No Cloud Identity customer exists for provided domain.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
-// The new ChannelPartnerLink resource.
+// The new ChannelPartnerLink
+// resource.
 func (c *CloudChannelClient) CreateChannelPartnerLink(ctx context.Context, req *channelpb.CreateChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
 	return c.internalClient.CreateChannelPartnerLink(ctx, req, opts...)
 }
@@ -1241,41 +2009,433 @@ func (c *CloudChannelClient) CreateChannelPartnerLink(ctx context.Context, req *
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request is different
-//   from the reseller account in the API request.
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
 //
-//   INVALID_ARGUMENT:
+//	INVALID_ARGUMENT:
 //
-//     Required request parameters are missing or invalid.
+//	  Required request parameters are missing or invalid.
 //
-//     Link state cannot change from invited to active or suspended.
+//	  Link state cannot change from invited to active or suspended.
 //
-//     Cannot send reseller_cloud_identity_id, invite_url, or name in update
-//     mask.
+//	  Cannot send reseller_cloud_identity_id, invite_url, or name in update
+//	  mask.
 //
-//   NOT_FOUND: ChannelPartnerLink resource not found.
+//	NOT_FOUND: ChannelPartnerLink resource not found.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
-// The updated ChannelPartnerLink resource.
+// The updated
+// ChannelPartnerLink resource.
 func (c *CloudChannelClient) UpdateChannelPartnerLink(ctx context.Context, req *channelpb.UpdateChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
 	return c.internalClient.UpdateChannelPartnerLink(ctx, req, opts...)
+}
+
+// GetCustomerRepricingConfig gets information about how a Reseller modifies their bill before sending
+// it to a Customer.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	NOT_FOUND: The
+//	CustomerRepricingConfig
+//	was not found.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the
+// CustomerRepricingConfig
+// resource, otherwise returns an error.
+func (c *CloudChannelClient) GetCustomerRepricingConfig(ctx context.Context, req *channelpb.GetCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	return c.internalClient.GetCustomerRepricingConfig(ctx, req, opts...)
+}
+
+// ListCustomerRepricingConfigs lists information about how a Reseller modifies their bill before sending
+// it to a Customer.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	NOT_FOUND: The
+//	CustomerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the
+// CustomerRepricingConfig
+// resources. The data for each resource is displayed in the ascending order
+// of:
+//
+//	Customer ID
+//
+//	RepricingConfig.EntitlementGranularity.entitlement
+//
+//	RepricingConfig.effective_invoice_month
+//
+//	CustomerRepricingConfig.update_time
+//
+// If unsuccessful, returns an error.
+func (c *CloudChannelClient) ListCustomerRepricingConfigs(ctx context.Context, req *channelpb.ListCustomerRepricingConfigsRequest, opts ...gax.CallOption) *CustomerRepricingConfigIterator {
+	return c.internalClient.ListCustomerRepricingConfigs(ctx, req, opts...)
+}
+
+// CreateCustomerRepricingConfig creates a CustomerRepricingConfig. Call this method to set modifications
+// for a specific customer’s bill. You can only create configs if the
+// RepricingConfig.effective_invoice_month
+// is a future month. If needed, you can create a config for the current
+// month, with some restrictions.
+//
+// When creating a config for a future month, make sure there are no existing
+// configs for that
+// RepricingConfig.effective_invoice_month.
+//
+// The following restrictions are for creating configs in the current month.
+//
+//	This functionality is reserved for recovering from an erroneous config,
+//	and should not be used for regular business cases.
+//
+//	The new config will not modify exports used with other configs.
+//	Changes to the config may be immediate, but may take up to 24 hours.
+//
+//	There is a limit of ten configs for any
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
+//	RepricingConfig.effective_invoice_month.
+//
+//	The contained
+//	CustomerRepricingConfig.repricing_config
+//	value must be different from the value used in the current config for a
+//	RepricingConfig.EntitlementGranularity.entitlement.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
+//
+//	NOT_FOUND: The
+//	CustomerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated
+// CustomerRepricingConfig
+// resource, otherwise returns an error.
+func (c *CloudChannelClient) CreateCustomerRepricingConfig(ctx context.Context, req *channelpb.CreateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	return c.internalClient.CreateCustomerRepricingConfig(ctx, req, opts...)
+}
+
+// UpdateCustomerRepricingConfig updates a CustomerRepricingConfig. Call this method to set modifications
+// for a specific customer’s bill. This method overwrites the existing
+// CustomerRepricingConfig.
+//
+// You can only update configs if the
+// RepricingConfig.effective_invoice_month
+// is a future month. To make changes to configs for the current month, use
+// CreateCustomerRepricingConfig,
+// taking note of its restrictions. You cannot update the
+// RepricingConfig.effective_invoice_month.
+//
+// When updating a config in the future:
+//
+//	This config must already exist.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
+//
+//	NOT_FOUND: The
+//	CustomerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated
+// CustomerRepricingConfig
+// resource, otherwise returns an error.
+func (c *CloudChannelClient) UpdateCustomerRepricingConfig(ctx context.Context, req *channelpb.UpdateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	return c.internalClient.UpdateCustomerRepricingConfig(ctx, req, opts...)
+}
+
+// DeleteCustomerRepricingConfig deletes the given
+// CustomerRepricingConfig
+// permanently. You can only delete configs if their
+// RepricingConfig.effective_invoice_month
+// is set to a date after the current month.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The account making the request does not own
+//	this customer.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	FAILED_PRECONDITION: The
+//	CustomerRepricingConfig
+//	is active or in the past.
+//
+//	NOT_FOUND: No
+//	CustomerRepricingConfig
+//	found for the name in the request.
+func (c *CloudChannelClient) DeleteCustomerRepricingConfig(ctx context.Context, req *channelpb.DeleteCustomerRepricingConfigRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteCustomerRepricingConfig(ctx, req, opts...)
+}
+
+// GetChannelPartnerRepricingConfig gets information about how a Distributor modifies their bill before sending
+// it to a ChannelPartner.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	NOT_FOUND: The
+//	ChannelPartnerRepricingConfig
+//	was not found.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the
+// ChannelPartnerRepricingConfig
+// resource, otherwise returns an error.
+func (c *CloudChannelClient) GetChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.GetChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	return c.internalClient.GetChannelPartnerRepricingConfig(ctx, req, opts...)
+}
+
+// ListChannelPartnerRepricingConfigs lists information about how a Reseller modifies their bill before sending
+// it to a ChannelPartner.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	NOT_FOUND: The
+//	ChannelPartnerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the
+// ChannelPartnerRepricingConfig
+// resources. The data for each resource is displayed in the ascending order
+// of:
+//
+//	Channel Partner ID
+//
+//	RepricingConfig.effective_invoice_month
+//
+//	ChannelPartnerRepricingConfig.update_time
+//
+// If unsuccessful, returns an error.
+func (c *CloudChannelClient) ListChannelPartnerRepricingConfigs(ctx context.Context, req *channelpb.ListChannelPartnerRepricingConfigsRequest, opts ...gax.CallOption) *ChannelPartnerRepricingConfigIterator {
+	return c.internalClient.ListChannelPartnerRepricingConfigs(ctx, req, opts...)
+}
+
+// CreateChannelPartnerRepricingConfig creates a ChannelPartnerRepricingConfig. Call this method to set
+// modifications for a specific ChannelPartner’s bill. You can only create
+// configs if the
+// RepricingConfig.effective_invoice_month
+// is a future month. If needed, you can create a config for the current
+// month, with some restrictions.
+//
+// When creating a config for a future month, make sure there are no existing
+// configs for that
+// RepricingConfig.effective_invoice_month.
+//
+// The following restrictions are for creating configs in the current month.
+//
+//	This functionality is reserved for recovering from an erroneous config,
+//	and should not be used for regular business cases.
+//
+//	The new config will not modify exports used with other configs.
+//	Changes to the config may be immediate, but may take up to 24 hours.
+//
+//	There is a limit of ten configs for any ChannelPartner or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
+//	RepricingConfig.effective_invoice_month.
+//
+//	The contained
+//	ChannelPartnerRepricingConfig.repricing_config
+//	value must be different from the value used in the current config for a
+//	ChannelPartner.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
+//
+//	NOT_FOUND: The
+//	ChannelPartnerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated
+// ChannelPartnerRepricingConfig
+// resource, otherwise returns an error.
+func (c *CloudChannelClient) CreateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.CreateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	return c.internalClient.CreateChannelPartnerRepricingConfig(ctx, req, opts...)
+}
+
+// UpdateChannelPartnerRepricingConfig updates a ChannelPartnerRepricingConfig. Call this method to set
+// modifications for a specific ChannelPartner’s bill. This method overwrites
+// the existing CustomerRepricingConfig.
+//
+// You can only update configs if the
+// RepricingConfig.effective_invoice_month
+// is a future month. To make changes to configs for the current month, use
+// CreateChannelPartnerRepricingConfig,
+// taking note of its restrictions. You cannot update the
+// RepricingConfig.effective_invoice_month.
+//
+// When updating a config in the future:
+//
+//	This config must already exist.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
+//
+//	NOT_FOUND: The
+//	ChannelPartnerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated
+// ChannelPartnerRepricingConfig
+// resource, otherwise returns an error.
+func (c *CloudChannelClient) UpdateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.UpdateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	return c.internalClient.UpdateChannelPartnerRepricingConfig(ctx, req, opts...)
+}
+
+// DeleteChannelPartnerRepricingConfig deletes the given
+// ChannelPartnerRepricingConfig
+// permanently. You can only delete configs if their
+// RepricingConfig.effective_invoice_month
+// is set to a date after the current month.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The account making the request does not own
+//	this customer.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	FAILED_PRECONDITION: The
+//	ChannelPartnerRepricingConfig
+//	is active or in the past.
+//
+//	NOT_FOUND: No
+//	ChannelPartnerRepricingConfig
+//	found for the name in the request.
+func (c *CloudChannelClient) DeleteChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.DeleteChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteChannelPartnerRepricingConfig(ctx, req, opts...)
+}
+
+// ListSkuGroups lists the Rebilling supported SKU groups the account is authorized to
+// sell.
+// Reference: https://cloud.google.com/skus/sku-groups (at https://cloud.google.com/skus/sku-groups)
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different, or the account doesn’t exist.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the SkuGroup resources.
+// The data for each resource is displayed in the alphabetical order of SKU
+// group display name.
+// The data for each resource is displayed in the ascending order of
+// SkuGroup.display_name
+//
+// If unsuccessful, returns an error.
+func (c *CloudChannelClient) ListSkuGroups(ctx context.Context, req *channelpb.ListSkuGroupsRequest, opts ...gax.CallOption) *SkuGroupIterator {
+	return c.internalClient.ListSkuGroups(ctx, req, opts...)
+}
+
+// ListSkuGroupBillableSkus lists the Billable SKUs in a given SKU group.
+//
+// Possible error codes:
+// PERMISSION_DENIED: If the account making the request and the account
+// being queried for are different, or the account doesn’t exist.
+// INVALID_ARGUMENT: Missing or invalid required parameters in the
+// request.
+// INTERNAL: Any non-user error related to technical issue in the
+// backend. In this case, contact cloud channel support.
+//
+// Return Value:
+// If successful, the BillableSku
+// resources. The data for each resource is displayed in the ascending order
+// of:
+//
+//	BillableSku.service_display_name
+//
+//	BillableSku.sku_display_name
+//
+// If unsuccessful, returns an error.
+func (c *CloudChannelClient) ListSkuGroupBillableSkus(ctx context.Context, req *channelpb.ListSkuGroupBillableSkusRequest, opts ...gax.CallOption) *BillableSkuIterator {
+	return c.internalClient.ListSkuGroupBillableSkus(ctx, req, opts...)
 }
 
 // LookupOffer returns the requested Offer resource.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The entitlement doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The entitlement doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: Entitlement or offer was not found.
+//	NOT_FOUND: Entitlement or offer was not found.
 //
 // Return value:
 // The Offer resource.
@@ -1287,7 +2447,7 @@ func (c *CloudChannelClient) LookupOffer(ctx context.Context, req *channelpb.Loo
 //
 // Possible error codes:
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListProducts(ctx context.Context, req *channelpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
 	return c.internalClient.ListProducts(ctx, req, opts...)
 }
@@ -1296,7 +2456,7 @@ func (c *CloudChannelClient) ListProducts(ctx context.Context, req *channelpb.Li
 //
 // Possible error codes:
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListSkus(ctx context.Context, req *channelpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
 	return c.internalClient.ListSkus(ctx, req, opts...)
 }
@@ -1305,58 +2465,81 @@ func (c *CloudChannelClient) ListSkus(ctx context.Context, req *channelpb.ListSk
 //
 // Possible error codes:
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListOffers(ctx context.Context, req *channelpb.ListOffersRequest, opts ...gax.CallOption) *OfferIterator {
 	return c.internalClient.ListOffers(ctx, req, opts...)
 }
 
 // ListPurchasableSkus lists the following:
 //
-//   SKUs that you can purchase for a customer
+//	SKUs that you can purchase for a customer
 //
-//   SKUs that you can upgrade or downgrade for an entitlement.
+//	SKUs that you can upgrade or downgrade for an entitlement.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListPurchasableSkus(ctx context.Context, req *channelpb.ListPurchasableSkusRequest, opts ...gax.CallOption) *PurchasableSkuIterator {
 	return c.internalClient.ListPurchasableSkus(ctx, req, opts...)
 }
 
 // ListPurchasableOffers lists the following:
 //
-//   Offers that you can purchase for a customer.
+//	Offers that you can purchase for a customer.
 //
-//   Offers that you can change for an entitlement.
+//	Offers that you can change for an entitlement.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The customer doesn’t belong to the reseller
+//	PERMISSION_DENIED:
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	  The customer doesn’t belong to the reseller
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 func (c *CloudChannelClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
 	return c.internalClient.ListPurchasableOffers(ctx, req, opts...)
 }
 
-// RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
-// topic for this Channel Services account. After you create a
-// subscriber, you get the events through SubscriberEvent
+// QueryEligibleBillingAccounts lists the billing accounts that are eligible to purchase particular SKUs
+// for a given customer.
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request and the
-//   provided reseller account are different, or the impersonated user
-//   is not a super admin.
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+// Return value:
+// Based on the provided list of SKUs, returns a list of SKU groups that must
+// be purchased using the same billing account and the billing accounts
+// eligible to purchase each SKU group.
+func (c *CloudChannelClient) QueryEligibleBillingAccounts(ctx context.Context, req *channelpb.QueryEligibleBillingAccountsRequest, opts ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error) {
+	return c.internalClient.QueryEligibleBillingAccounts(ctx, req, opts...)
+}
+
+// RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
+// topic for this Channel Services account. After you create a
+// subscriber, you get the events through
+// SubscriberEvent
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different, or the impersonated user
+//	is not a super admin.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The topic name with the registered service email address.
@@ -1371,19 +2554,19 @@ func (c *CloudChannelClient) RegisterSubscriber(ctx context.Context, req *channe
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request and the
-//   provided reseller account are different, or the impersonated user
-//   is not a super admin.
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different, or the impersonated user
+//	is not a super admin.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The topic resource doesn’t exist.
+//	NOT_FOUND: The topic resource doesn’t exist.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // The topic name that unregistered the service email address.
@@ -1398,24 +2581,68 @@ func (c *CloudChannelClient) UnregisterSubscriber(ctx context.Context, req *chan
 //
 // Possible error codes:
 //
-//   PERMISSION_DENIED: The reseller account making the request and the
-//   provided reseller account are different, or the impersonated user
-//   is not a super admin.
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different, or the impersonated user
+//	is not a super admin.
 //
-//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
 //
-//   NOT_FOUND: The topic resource doesn’t exist.
+//	NOT_FOUND: The topic resource doesn’t exist.
 //
-//   INTERNAL: Any non-user error related to a technical issue in the
-//   backend. Contact Cloud Channel support.
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
 //
-//   UNKNOWN: Any non-user error related to a technical issue in the backend.
-//   Contact Cloud Channel support.
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
 //
 // Return value:
 // A list of service email addresses.
 func (c *CloudChannelClient) ListSubscribers(ctx context.Context, req *channelpb.ListSubscribersRequest, opts ...gax.CallOption) *StringIterator {
 	return c.internalClient.ListSubscribers(ctx, req, opts...)
+}
+
+// ListEntitlementChanges list entitlement history.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required fields in the request.
+//
+//	NOT_FOUND: The parent resource doesn’t exist. Usually the result of an
+//	invalid name parameter.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the backend.
+//	In this case, contact CloudChannel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	In this case, contact Cloud Channel support.
+//
+// Return value:
+// List of EntitlementChanges.
+func (c *CloudChannelClient) ListEntitlementChanges(ctx context.Context, req *channelpb.ListEntitlementChangesRequest, opts ...gax.CallOption) *EntitlementChangeIterator {
+	return c.internalClient.ListEntitlementChanges(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *CloudChannelClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *CloudChannelClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *CloudChannelClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *CloudChannelClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // cloudChannelGRPCClient is a client for interacting with Cloud Channel API over gRPC transport.
@@ -1424,9 +2651,6 @@ func (c *CloudChannelClient) ListSubscribers(ctx context.Context, req *channelpb
 type cloudChannelGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing CloudChannelClient
 	CallOptions **CloudChannelCallOptions
@@ -1439,8 +2663,10 @@ type cloudChannelGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewCloudChannelClient creates a new cloud channel service client based on gRPC.
@@ -1460,15 +2686,16 @@ type cloudChannelGRPCClient struct {
 //
 // CloudChannelService exposes the following resources:
 //
-//   Customers: An entity—usually an enterprise—managed by a reseller or
-//   distributor.
+//	Customers: An entity-usually an
+//	enterprise-managed by a reseller or distributor.
 //
-//   Entitlements: An entity that provides a customer with the means to use
-//   a service. Entitlements are created or updated as a result of a successful
-//   fulfillment.
+//	Entitlements: An entity that
+//	provides a customer with the means to use a service. Entitlements are created
+//	or updated as a result of a successful fulfillment.
 //
-//   ChannelPartnerLinks: An entity that identifies links between
-//   distributors and their indirect resellers in a channel.
+//	ChannelPartnerLinks: An
+//	entity that identifies links between distributors and their indirect
+//	resellers in a channel.
 func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*CloudChannelClient, error) {
 	clientOpts := defaultCloudChannelGRPCClientOptions()
 	if newCloudChannelClientHook != nil {
@@ -1479,11 +2706,6 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -1492,9 +2714,9 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 
 	c := &cloudChannelGRPCClient{
 		connPool:           connPool,
-		disableDeadlines:   disableDeadlines,
 		cloudChannelClient: channelpb.NewCloudChannelServiceClient(connPool),
 		CallOptions:        &client.CallOptions,
+		operationsClient:   longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -1516,7 +2738,8 @@ func NewCloudChannelClient(ctx context.Context, opts ...option.ClientOption) (*C
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *cloudChannelGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -1525,9 +2748,9 @@ func (c *cloudChannelGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *cloudChannelGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1536,10 +2759,119 @@ func (c *cloudChannelGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channelpb.ListCustomersRequest, opts ...gax.CallOption) *CustomerIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type cloudChannelRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing CloudChannelClient
+	CallOptions **CloudChannelCallOptions
+}
+
+// NewCloudChannelRESTClient creates a new cloud channel service rest client.
+//
+// CloudChannelService lets Google cloud resellers and distributors manage
+// their customers, channel partners, entitlements, and reports.
+//
+// Using this service:
+//
+// Resellers and distributors can manage a customer entity.
+//
+// Distributors can register an authorized reseller in their channel and
+// provide them with delegated admin access.
+//
+// Resellers and distributors can manage customer entitlements.
+//
+// CloudChannelService exposes the following resources:
+//
+//	Customers: An entity-usually an
+//	enterprise-managed by a reseller or distributor.
+//
+//	Entitlements: An entity that
+//	provides a customer with the means to use a service. Entitlements are created
+//	or updated as a result of a successful fulfillment.
+//
+//	ChannelPartnerLinks: An
+//	entity that identifies links between distributors and their indirect
+//	resellers in a channel.
+func NewCloudChannelRESTClient(ctx context.Context, opts ...option.ClientOption) (*CloudChannelClient, error) {
+	clientOpts := append(defaultCloudChannelRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultCloudChannelRESTCallOptions()
+	c := &cloudChannelRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &CloudChannelClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultCloudChannelRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://cloudchannel.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudchannel.UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint("https://cloudchannel.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://cloudchannel.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *cloudChannelRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *cloudChannelRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *cloudChannelRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channelpb.ListCustomersRequest, opts ...gax.CallOption) *CustomerIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListCustomers[0:len((*c.CallOptions).ListCustomers):len((*c.CallOptions).ListCustomers)], opts...)
 	it := &CustomerIterator{}
 	req = proto.Clone(req).(*channelpb.ListCustomersRequest)
@@ -1582,14 +2914,10 @@ func (c *cloudChannelGRPCClient) ListCustomers(ctx context.Context, req *channel
 }
 
 func (c *cloudChannelGRPCClient) GetCustomer(ctx context.Context, req *channelpb.GetCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetCustomer[0:len((*c.CallOptions).GetCustomer):len((*c.CallOptions).GetCustomer)], opts...)
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1604,14 +2932,10 @@ func (c *cloudChannelGRPCClient) GetCustomer(ctx context.Context, req *channelpb
 }
 
 func (c *cloudChannelGRPCClient) CheckCloudIdentityAccountsExist(ctx context.Context, req *channelpb.CheckCloudIdentityAccountsExistRequest, opts ...gax.CallOption) (*channelpb.CheckCloudIdentityAccountsExistResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CheckCloudIdentityAccountsExist[0:len((*c.CallOptions).CheckCloudIdentityAccountsExist):len((*c.CallOptions).CheckCloudIdentityAccountsExist)], opts...)
 	var resp *channelpb.CheckCloudIdentityAccountsExistResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1626,14 +2950,10 @@ func (c *cloudChannelGRPCClient) CheckCloudIdentityAccountsExist(ctx context.Con
 }
 
 func (c *cloudChannelGRPCClient) CreateCustomer(ctx context.Context, req *channelpb.CreateCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateCustomer[0:len((*c.CallOptions).CreateCustomer):len((*c.CallOptions).CreateCustomer)], opts...)
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1648,14 +2968,10 @@ func (c *cloudChannelGRPCClient) CreateCustomer(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) UpdateCustomer(ctx context.Context, req *channelpb.UpdateCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer.name", url.QueryEscape(req.GetCustomer().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer.name", url.QueryEscape(req.GetCustomer().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateCustomer[0:len((*c.CallOptions).UpdateCustomer):len((*c.CallOptions).UpdateCustomer)], opts...)
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1670,14 +2986,10 @@ func (c *cloudChannelGRPCClient) UpdateCustomer(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channelpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteCustomer[0:len((*c.CallOptions).DeleteCustomer):len((*c.CallOptions).DeleteCustomer)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1688,14 +3000,10 @@ func (c *cloudChannelGRPCClient) DeleteCustomer(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) ImportCustomer(ctx context.Context, req *channelpb.ImportCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ImportCustomer[0:len((*c.CallOptions).ImportCustomer):len((*c.CallOptions).ImportCustomer)], opts...)
 	var resp *channelpb.Customer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1710,14 +3018,10 @@ func (c *cloudChannelGRPCClient) ImportCustomer(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req *channelpb.ProvisionCloudIdentityRequest, opts ...gax.CallOption) (*ProvisionCloudIdentityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ProvisionCloudIdentity[0:len((*c.CallOptions).ProvisionCloudIdentity):len((*c.CallOptions).ProvisionCloudIdentity)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1734,9 +3038,10 @@ func (c *cloudChannelGRPCClient) ProvisionCloudIdentity(ctx context.Context, req
 }
 
 func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *channelpb.ListEntitlementsRequest, opts ...gax.CallOption) *EntitlementIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListEntitlements[0:len((*c.CallOptions).ListEntitlements):len((*c.CallOptions).ListEntitlements)], opts...)
 	it := &EntitlementIterator{}
 	req = proto.Clone(req).(*channelpb.ListEntitlementsRequest)
@@ -1779,9 +3084,10 @@ func (c *cloudChannelGRPCClient) ListEntitlements(ctx context.Context, req *chan
 }
 
 func (c *cloudChannelGRPCClient) ListTransferableSkus(ctx context.Context, req *channelpb.ListTransferableSkusRequest, opts ...gax.CallOption) *TransferableSkuIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListTransferableSkus[0:len((*c.CallOptions).ListTransferableSkus):len((*c.CallOptions).ListTransferableSkus)], opts...)
 	it := &TransferableSkuIterator{}
 	req = proto.Clone(req).(*channelpb.ListTransferableSkusRequest)
@@ -1824,9 +3130,10 @@ func (c *cloudChannelGRPCClient) ListTransferableSkus(ctx context.Context, req *
 }
 
 func (c *cloudChannelGRPCClient) ListTransferableOffers(ctx context.Context, req *channelpb.ListTransferableOffersRequest, opts ...gax.CallOption) *TransferableOfferIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListTransferableOffers[0:len((*c.CallOptions).ListTransferableOffers):len((*c.CallOptions).ListTransferableOffers)], opts...)
 	it := &TransferableOfferIterator{}
 	req = proto.Clone(req).(*channelpb.ListTransferableOffersRequest)
@@ -1869,14 +3176,10 @@ func (c *cloudChannelGRPCClient) ListTransferableOffers(ctx context.Context, req
 }
 
 func (c *cloudChannelGRPCClient) GetEntitlement(ctx context.Context, req *channelpb.GetEntitlementRequest, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetEntitlement[0:len((*c.CallOptions).GetEntitlement):len((*c.CallOptions).GetEntitlement)], opts...)
 	var resp *channelpb.Entitlement
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1891,14 +3194,10 @@ func (c *cloudChannelGRPCClient) GetEntitlement(ctx context.Context, req *channe
 }
 
 func (c *cloudChannelGRPCClient) CreateEntitlement(ctx context.Context, req *channelpb.CreateEntitlementRequest, opts ...gax.CallOption) (*CreateEntitlementOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateEntitlement[0:len((*c.CallOptions).CreateEntitlement):len((*c.CallOptions).CreateEntitlement)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1915,14 +3214,10 @@ func (c *cloudChannelGRPCClient) CreateEntitlement(ctx context.Context, req *cha
 }
 
 func (c *cloudChannelGRPCClient) ChangeParameters(ctx context.Context, req *channelpb.ChangeParametersRequest, opts ...gax.CallOption) (*ChangeParametersOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ChangeParameters[0:len((*c.CallOptions).ChangeParameters):len((*c.CallOptions).ChangeParameters)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1939,14 +3234,10 @@ func (c *cloudChannelGRPCClient) ChangeParameters(ctx context.Context, req *chan
 }
 
 func (c *cloudChannelGRPCClient) ChangeRenewalSettings(ctx context.Context, req *channelpb.ChangeRenewalSettingsRequest, opts ...gax.CallOption) (*ChangeRenewalSettingsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ChangeRenewalSettings[0:len((*c.CallOptions).ChangeRenewalSettings):len((*c.CallOptions).ChangeRenewalSettings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1963,14 +3254,10 @@ func (c *cloudChannelGRPCClient) ChangeRenewalSettings(ctx context.Context, req 
 }
 
 func (c *cloudChannelGRPCClient) ChangeOffer(ctx context.Context, req *channelpb.ChangeOfferRequest, opts ...gax.CallOption) (*ChangeOfferOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ChangeOffer[0:len((*c.CallOptions).ChangeOffer):len((*c.CallOptions).ChangeOffer)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1987,14 +3274,10 @@ func (c *cloudChannelGRPCClient) ChangeOffer(ctx context.Context, req *channelpb
 }
 
 func (c *cloudChannelGRPCClient) StartPaidService(ctx context.Context, req *channelpb.StartPaidServiceRequest, opts ...gax.CallOption) (*StartPaidServiceOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StartPaidService[0:len((*c.CallOptions).StartPaidService):len((*c.CallOptions).StartPaidService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2011,14 +3294,10 @@ func (c *cloudChannelGRPCClient) StartPaidService(ctx context.Context, req *chan
 }
 
 func (c *cloudChannelGRPCClient) SuspendEntitlement(ctx context.Context, req *channelpb.SuspendEntitlementRequest, opts ...gax.CallOption) (*SuspendEntitlementOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SuspendEntitlement[0:len((*c.CallOptions).SuspendEntitlement):len((*c.CallOptions).SuspendEntitlement)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2035,14 +3314,10 @@ func (c *cloudChannelGRPCClient) SuspendEntitlement(ctx context.Context, req *ch
 }
 
 func (c *cloudChannelGRPCClient) CancelEntitlement(ctx context.Context, req *channelpb.CancelEntitlementRequest, opts ...gax.CallOption) (*CancelEntitlementOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CancelEntitlement[0:len((*c.CallOptions).CancelEntitlement):len((*c.CallOptions).CancelEntitlement)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2059,14 +3334,10 @@ func (c *cloudChannelGRPCClient) CancelEntitlement(ctx context.Context, req *cha
 }
 
 func (c *cloudChannelGRPCClient) ActivateEntitlement(ctx context.Context, req *channelpb.ActivateEntitlementRequest, opts ...gax.CallOption) (*ActivateEntitlementOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ActivateEntitlement[0:len((*c.CallOptions).ActivateEntitlement):len((*c.CallOptions).ActivateEntitlement)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2083,14 +3354,10 @@ func (c *cloudChannelGRPCClient) ActivateEntitlement(ctx context.Context, req *c
 }
 
 func (c *cloudChannelGRPCClient) TransferEntitlements(ctx context.Context, req *channelpb.TransferEntitlementsRequest, opts ...gax.CallOption) (*TransferEntitlementsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TransferEntitlements[0:len((*c.CallOptions).TransferEntitlements):len((*c.CallOptions).TransferEntitlements)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2107,14 +3374,10 @@ func (c *cloudChannelGRPCClient) TransferEntitlements(ctx context.Context, req *
 }
 
 func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogle(ctx context.Context, req *channelpb.TransferEntitlementsToGoogleRequest, opts ...gax.CallOption) (*TransferEntitlementsToGoogleOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TransferEntitlementsToGoogle[0:len((*c.CallOptions).TransferEntitlementsToGoogle):len((*c.CallOptions).TransferEntitlementsToGoogle)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2131,9 +3394,10 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogle(ctx context.Contex
 }
 
 func (c *cloudChannelGRPCClient) ListChannelPartnerLinks(ctx context.Context, req *channelpb.ListChannelPartnerLinksRequest, opts ...gax.CallOption) *ChannelPartnerLinkIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListChannelPartnerLinks[0:len((*c.CallOptions).ListChannelPartnerLinks):len((*c.CallOptions).ListChannelPartnerLinks)], opts...)
 	it := &ChannelPartnerLinkIterator{}
 	req = proto.Clone(req).(*channelpb.ListChannelPartnerLinksRequest)
@@ -2176,14 +3440,10 @@ func (c *cloudChannelGRPCClient) ListChannelPartnerLinks(ctx context.Context, re
 }
 
 func (c *cloudChannelGRPCClient) GetChannelPartnerLink(ctx context.Context, req *channelpb.GetChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetChannelPartnerLink[0:len((*c.CallOptions).GetChannelPartnerLink):len((*c.CallOptions).GetChannelPartnerLink)], opts...)
 	var resp *channelpb.ChannelPartnerLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2198,14 +3458,10 @@ func (c *cloudChannelGRPCClient) GetChannelPartnerLink(ctx context.Context, req 
 }
 
 func (c *cloudChannelGRPCClient) CreateChannelPartnerLink(ctx context.Context, req *channelpb.CreateChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateChannelPartnerLink[0:len((*c.CallOptions).CreateChannelPartnerLink):len((*c.CallOptions).CreateChannelPartnerLink)], opts...)
 	var resp *channelpb.ChannelPartnerLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2220,14 +3476,10 @@ func (c *cloudChannelGRPCClient) CreateChannelPartnerLink(ctx context.Context, r
 }
 
 func (c *cloudChannelGRPCClient) UpdateChannelPartnerLink(ctx context.Context, req *channelpb.UpdateChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateChannelPartnerLink[0:len((*c.CallOptions).UpdateChannelPartnerLink):len((*c.CallOptions).UpdateChannelPartnerLink)], opts...)
 	var resp *channelpb.ChannelPartnerLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2241,15 +3493,331 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerLink(ctx context.Context, r
 	return resp, nil
 }
 
-func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb.LookupOfferRequest, opts ...gax.CallOption) (*channelpb.Offer, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entitlement", url.QueryEscape(req.GetEntitlement())))
+func (c *cloudChannelGRPCClient) GetCustomerRepricingConfig(ctx context.Context, req *channelpb.GetCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetCustomerRepricingConfig[0:len((*c.CallOptions).GetCustomerRepricingConfig):len((*c.CallOptions).GetCustomerRepricingConfig)], opts...)
+	var resp *channelpb.CustomerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.GetCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) ListCustomerRepricingConfigs(ctx context.Context, req *channelpb.ListCustomerRepricingConfigsRequest, opts ...gax.CallOption) *CustomerRepricingConfigIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListCustomerRepricingConfigs[0:len((*c.CallOptions).ListCustomerRepricingConfigs):len((*c.CallOptions).ListCustomerRepricingConfigs)], opts...)
+	it := &CustomerRepricingConfigIterator{}
+	req = proto.Clone(req).(*channelpb.ListCustomerRepricingConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.CustomerRepricingConfig, string, error) {
+		resp := &channelpb.ListCustomerRepricingConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListCustomerRepricingConfigs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCustomerRepricingConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) CreateCustomerRepricingConfig(ctx context.Context, req *channelpb.CreateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCustomerRepricingConfig[0:len((*c.CallOptions).CreateCustomerRepricingConfig):len((*c.CallOptions).CreateCustomerRepricingConfig)], opts...)
+	var resp *channelpb.CustomerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.CreateCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) UpdateCustomerRepricingConfig(ctx context.Context, req *channelpb.UpdateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer_repricing_config.name", url.QueryEscape(req.GetCustomerRepricingConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCustomerRepricingConfig[0:len((*c.CallOptions).UpdateCustomerRepricingConfig):len((*c.CallOptions).UpdateCustomerRepricingConfig)], opts...)
+	var resp *channelpb.CustomerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.UpdateCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) DeleteCustomerRepricingConfig(ctx context.Context, req *channelpb.DeleteCustomerRepricingConfigRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteCustomerRepricingConfig[0:len((*c.CallOptions).DeleteCustomerRepricingConfig):len((*c.CallOptions).DeleteCustomerRepricingConfig)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.cloudChannelClient.DeleteCustomerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *cloudChannelGRPCClient) GetChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.GetChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetChannelPartnerRepricingConfig[0:len((*c.CallOptions).GetChannelPartnerRepricingConfig):len((*c.CallOptions).GetChannelPartnerRepricingConfig)], opts...)
+	var resp *channelpb.ChannelPartnerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.GetChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) ListChannelPartnerRepricingConfigs(ctx context.Context, req *channelpb.ListChannelPartnerRepricingConfigsRequest, opts ...gax.CallOption) *ChannelPartnerRepricingConfigIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListChannelPartnerRepricingConfigs[0:len((*c.CallOptions).ListChannelPartnerRepricingConfigs):len((*c.CallOptions).ListChannelPartnerRepricingConfigs)], opts...)
+	it := &ChannelPartnerRepricingConfigIterator{}
+	req = proto.Clone(req).(*channelpb.ListChannelPartnerRepricingConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.ChannelPartnerRepricingConfig, string, error) {
+		resp := &channelpb.ListChannelPartnerRepricingConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListChannelPartnerRepricingConfigs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetChannelPartnerRepricingConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) CreateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.CreateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateChannelPartnerRepricingConfig[0:len((*c.CallOptions).CreateChannelPartnerRepricingConfig):len((*c.CallOptions).CreateChannelPartnerRepricingConfig)], opts...)
+	var resp *channelpb.ChannelPartnerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.CreateChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) UpdateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.UpdateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "channel_partner_repricing_config.name", url.QueryEscape(req.GetChannelPartnerRepricingConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateChannelPartnerRepricingConfig[0:len((*c.CallOptions).UpdateChannelPartnerRepricingConfig):len((*c.CallOptions).UpdateChannelPartnerRepricingConfig)], opts...)
+	var resp *channelpb.ChannelPartnerRepricingConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.UpdateChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) DeleteChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.DeleteChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteChannelPartnerRepricingConfig[0:len((*c.CallOptions).DeleteChannelPartnerRepricingConfig):len((*c.CallOptions).DeleteChannelPartnerRepricingConfig)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.cloudChannelClient.DeleteChannelPartnerRepricingConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *cloudChannelGRPCClient) ListSkuGroups(ctx context.Context, req *channelpb.ListSkuGroupsRequest, opts ...gax.CallOption) *SkuGroupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSkuGroups[0:len((*c.CallOptions).ListSkuGroups):len((*c.CallOptions).ListSkuGroups)], opts...)
+	it := &SkuGroupIterator{}
+	req = proto.Clone(req).(*channelpb.ListSkuGroupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.SkuGroup, string, error) {
+		resp := &channelpb.ListSkuGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListSkuGroups(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSkuGroups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) ListSkuGroupBillableSkus(ctx context.Context, req *channelpb.ListSkuGroupBillableSkusRequest, opts ...gax.CallOption) *BillableSkuIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSkuGroupBillableSkus[0:len((*c.CallOptions).ListSkuGroupBillableSkus):len((*c.CallOptions).ListSkuGroupBillableSkus)], opts...)
+	it := &BillableSkuIterator{}
+	req = proto.Clone(req).(*channelpb.ListSkuGroupBillableSkusRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.BillableSku, string, error) {
+		resp := &channelpb.ListSkuGroupBillableSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListSkuGroupBillableSkus(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBillableSkus(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb.LookupOfferRequest, opts ...gax.CallOption) (*channelpb.Offer, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entitlement", url.QueryEscape(req.GetEntitlement()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).LookupOffer[0:len((*c.CallOptions).LookupOffer):len((*c.CallOptions).LookupOffer)], opts...)
 	var resp *channelpb.Offer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2264,7 +3832,7 @@ func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb
 }
 
 func (c *cloudChannelGRPCClient) ListProducts(ctx context.Context, req *channelpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ListProducts[0:len((*c.CallOptions).ListProducts):len((*c.CallOptions).ListProducts)], opts...)
 	it := &ProductIterator{}
 	req = proto.Clone(req).(*channelpb.ListProductsRequest)
@@ -2307,9 +3875,10 @@ func (c *cloudChannelGRPCClient) ListProducts(ctx context.Context, req *channelp
 }
 
 func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListSkus[0:len((*c.CallOptions).ListSkus):len((*c.CallOptions).ListSkus)], opts...)
 	it := &SkuIterator{}
 	req = proto.Clone(req).(*channelpb.ListSkusRequest)
@@ -2352,9 +3921,10 @@ func (c *cloudChannelGRPCClient) ListSkus(ctx context.Context, req *channelpb.Li
 }
 
 func (c *cloudChannelGRPCClient) ListOffers(ctx context.Context, req *channelpb.ListOffersRequest, opts ...gax.CallOption) *OfferIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOffers[0:len((*c.CallOptions).ListOffers):len((*c.CallOptions).ListOffers)], opts...)
 	it := &OfferIterator{}
 	req = proto.Clone(req).(*channelpb.ListOffersRequest)
@@ -2397,9 +3967,10 @@ func (c *cloudChannelGRPCClient) ListOffers(ctx context.Context, req *channelpb.
 }
 
 func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *channelpb.ListPurchasableSkusRequest, opts ...gax.CallOption) *PurchasableSkuIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListPurchasableSkus[0:len((*c.CallOptions).ListPurchasableSkus):len((*c.CallOptions).ListPurchasableSkus)], opts...)
 	it := &PurchasableSkuIterator{}
 	req = proto.Clone(req).(*channelpb.ListPurchasableSkusRequest)
@@ -2442,9 +4013,10 @@ func (c *cloudChannelGRPCClient) ListPurchasableSkus(ctx context.Context, req *c
 }
 
 func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListPurchasableOffers[0:len((*c.CallOptions).ListPurchasableOffers):len((*c.CallOptions).ListPurchasableOffers)], opts...)
 	it := &PurchasableOfferIterator{}
 	req = proto.Clone(req).(*channelpb.ListPurchasableOffersRequest)
@@ -2486,15 +4058,29 @@ func (c *cloudChannelGRPCClient) ListPurchasableOffers(ctx context.Context, req 
 	return it
 }
 
-func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *channelpb.RegisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
+func (c *cloudChannelGRPCClient) QueryEligibleBillingAccounts(ctx context.Context, req *channelpb.QueryEligibleBillingAccountsRequest, opts ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).QueryEligibleBillingAccounts[0:len((*c.CallOptions).QueryEligibleBillingAccounts):len((*c.CallOptions).QueryEligibleBillingAccounts)], opts...)
+	var resp *channelpb.QueryEligibleBillingAccountsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.QueryEligibleBillingAccounts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *channelpb.RegisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RegisterSubscriber[0:len((*c.CallOptions).RegisterSubscriber):len((*c.CallOptions).RegisterSubscriber)], opts...)
 	var resp *channelpb.RegisterSubscriberResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2509,14 +4095,10 @@ func (c *cloudChannelGRPCClient) RegisterSubscriber(ctx context.Context, req *ch
 }
 
 func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *channelpb.UnregisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UnregisterSubscriber[0:len((*c.CallOptions).UnregisterSubscriber):len((*c.CallOptions).UnregisterSubscriber)], opts...)
 	var resp *channelpb.UnregisterSubscriberResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2531,9 +4113,10 @@ func (c *cloudChannelGRPCClient) UnregisterSubscriber(ctx context.Context, req *
 }
 
 func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *channelpb.ListSubscribersRequest, opts ...gax.CallOption) *StringIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListSubscribers[0:len((*c.CallOptions).ListSubscribers):len((*c.CallOptions).ListSubscribers)], opts...)
 	it := &StringIterator{}
 	req = proto.Clone(req).(*channelpb.ListSubscribersRequest)
@@ -2575,9 +4158,5096 @@ func (c *cloudChannelGRPCClient) ListSubscribers(ctx context.Context, req *chann
 	return it
 }
 
-// ActivateEntitlementOperation manages a long-running operation from ActivateEntitlement.
-type ActivateEntitlementOperation struct {
-	lro *longrunning.Operation
+func (c *cloudChannelGRPCClient) ListEntitlementChanges(ctx context.Context, req *channelpb.ListEntitlementChangesRequest, opts ...gax.CallOption) *EntitlementChangeIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListEntitlementChanges[0:len((*c.CallOptions).ListEntitlementChanges):len((*c.CallOptions).ListEntitlementChanges)], opts...)
+	it := &EntitlementChangeIterator{}
+	req = proto.Clone(req).(*channelpb.ListEntitlementChangesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.EntitlementChange, string, error) {
+		resp := &channelpb.ListEntitlementChangesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListEntitlementChanges(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntitlementChanges(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *cloudChannelGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *cloudChannelGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *cloudChannelGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListCustomers list Customers.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// List of Customers, or an empty list if
+// there are no customers.
+func (c *cloudChannelRESTClient) ListCustomers(ctx context.Context, req *channelpb.ListCustomersRequest, opts ...gax.CallOption) *CustomerIterator {
+	it := &CustomerIterator{}
+	req = proto.Clone(req).(*channelpb.ListCustomersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Customer, string, error) {
+		resp := &channelpb.ListCustomersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/customers", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetCustomers(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetCustomer returns the requested Customer
+// resource.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: The customer resource doesn’t exist. Usually the result of an
+//	invalid name parameter.
+//
+// Return value:
+// The Customer resource.
+func (c *cloudChannelRESTClient) GetCustomer(ctx context.Context, req *channelpb.GetCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetCustomer[0:len((*c.CallOptions).GetCustomer):len((*c.CallOptions).GetCustomer)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.Customer{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CheckCloudIdentityAccountsExist confirms the existence of Cloud Identity accounts based on the domain and
+// if the Cloud Identity accounts are owned by the reseller.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	INVALID_VALUE: Invalid domain value in the request.
+//
+// Return value:
+// A list of
+// CloudIdentityCustomerAccount
+// resources for the domain (may be empty)
+//
+// Note: in the v1alpha1 version of the API, a NOT_FOUND error returns if
+// no
+// CloudIdentityCustomerAccount
+// resources match the domain.
+func (c *cloudChannelRESTClient) CheckCloudIdentityAccountsExist(ctx context.Context, req *channelpb.CheckCloudIdentityAccountsExistRequest, opts ...gax.CallOption) (*channelpb.CheckCloudIdentityAccountsExistResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:checkCloudIdentityAccountsExist", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CheckCloudIdentityAccountsExist[0:len((*c.CallOptions).CheckCloudIdentityAccountsExist):len((*c.CallOptions).CheckCloudIdentityAccountsExist)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.CheckCloudIdentityAccountsExistResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateCustomer creates a new Customer resource under
+// the reseller or distributor account.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to create a customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
+//	INVALID_ARGUMENT:
+//
+//	  Required request parameters are missing or invalid.
+//
+//	  Domain field value doesn’t match the primary email domain.
+//
+// Return value:
+// The newly created Customer resource.
+func (c *cloudChannelRESTClient) CreateCustomer(ctx context.Context, req *channelpb.CreateCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCustomer()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/customers", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCustomer[0:len((*c.CallOptions).CreateCustomer):len((*c.CallOptions).CreateCustomer)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.Customer{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateCustomer updates an existing Customer resource
+// for the reseller or distributor.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: No Customer resource found
+//	for the name in the request.
+//
+// Return value:
+// The updated Customer resource.
+func (c *cloudChannelRESTClient) UpdateCustomer(ctx context.Context, req *channelpb.UpdateCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCustomer()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCustomer().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer.name", url.QueryEscape(req.GetCustomer().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCustomer[0:len((*c.CallOptions).UpdateCustomer):len((*c.CallOptions).UpdateCustomer)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.Customer{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteCustomer deletes the given Customer permanently.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The account making the request does not own
+//	this customer.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	FAILED_PRECONDITION: The customer has existing entitlements.
+//
+//	NOT_FOUND: No Customer resource found
+//	for the name in the request.
+func (c *cloudChannelRESTClient) DeleteCustomer(ctx context.Context, req *channelpb.DeleteCustomerRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// ImportCustomer imports a Customer from the Cloud
+// Identity associated with the provided Cloud Identity ID or domain before a
+// TransferEntitlements call. If a linked Customer already exists and
+// overwrite_if_exists is true, it will update that Customer’s data.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED:
+//
+//	  The reseller account making the request is different from the
+//	  reseller account in the API request.
+//
+//	  You are not authorized to import the customer. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
+//	NOT_FOUND: Cloud Identity doesn’t exist or was deleted.
+//
+//	INVALID_ARGUMENT: Required parameters are missing, or the auth_token is
+//	expired or invalid.
+//
+//	ALREADY_EXISTS: A customer already exists and has conflicting critical
+//	fields. Requires an overwrite.
+//
+// Return value:
+// The Customer.
+func (c *cloudChannelRESTClient) ImportCustomer(ctx context.Context, req *channelpb.ImportCustomerRequest, opts ...gax.CallOption) (*channelpb.Customer, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/customers:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ImportCustomer[0:len((*c.CallOptions).ImportCustomer):len((*c.CallOptions).ImportCustomer)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.Customer{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ProvisionCloudIdentity creates a Cloud Identity for the given customer using the customer’s
+// information, or the information provided here.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  You are not authorized to provision cloud identity id. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: The customer was not found.
+//
+//	ALREADY_EXISTS: The customer’s primary email already exists. Retry
+//	after changing the customer’s primary contact email.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The Operation metadata contains an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) ProvisionCloudIdentity(ctx context.Context, req *channelpb.ProvisionCloudIdentityRequest, opts ...gax.CallOption) (*ProvisionCloudIdentityOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:provisionCloudIdentity", req.GetCustomer())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ProvisionCloudIdentityOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListEntitlements lists Entitlements belonging to a
+// customer.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// A list of the customer’s
+// Entitlements.
+func (c *cloudChannelRESTClient) ListEntitlements(ctx context.Context, req *channelpb.ListEntitlementsRequest, opts ...gax.CallOption) *EntitlementIterator {
+	it := &EntitlementIterator{}
+	req = proto.Clone(req).(*channelpb.ListEntitlementsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Entitlement, string, error) {
+		resp := &channelpb.ListEntitlementsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/entitlements", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEntitlements(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListTransferableSkus list TransferableSkus of a
+// customer based on the Cloud Identity ID or Customer Name in the request.
+//
+// Use this method to list the entitlements information of an
+// unowned customer. You should provide the customer’s
+// Cloud Identity ID or Customer Name.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller and has no auth token.
+//
+//	  The supplied auth token is invalid.
+//
+//	  The reseller account making the request is different
+//	  from the reseller account in the query.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// A list of the customer’s
+// TransferableSku.
+func (c *cloudChannelRESTClient) ListTransferableSkus(ctx context.Context, req *channelpb.ListTransferableSkusRequest, opts ...gax.CallOption) *TransferableSkuIterator {
+	it := &TransferableSkuIterator{}
+	req = proto.Clone(req).(*channelpb.ListTransferableSkusRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.TransferableSku, string, error) {
+		resp := &channelpb.ListTransferableSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listTransferableSkus", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTransferableSkus(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListTransferableOffers list TransferableOffers of a
+// customer based on Cloud Identity ID or Customer Name in the request.
+//
+// Use this method when a reseller gets the entitlement information of an
+// unowned customer. The reseller should provide the customer’s
+// Cloud Identity ID or Customer Name.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller and has no auth token.
+//
+//	  The customer provided incorrect reseller information when generating
+//	  auth token.
+//
+//	  The reseller account making the request is different
+//	  from the reseller account in the query.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// List of TransferableOffer for
+// the given customer and SKU.
+func (c *cloudChannelRESTClient) ListTransferableOffers(ctx context.Context, req *channelpb.ListTransferableOffersRequest, opts ...gax.CallOption) *TransferableOfferIterator {
+	it := &TransferableOfferIterator{}
+	req = proto.Clone(req).(*channelpb.ListTransferableOffersRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.TransferableOffer, string, error) {
+		resp := &channelpb.ListTransferableOffersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listTransferableOffers", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTransferableOffers(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetEntitlement returns the requested Entitlement
+// resource.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: The customer entitlement was not found.
+//
+// Return value:
+// The requested Entitlement resource.
+func (c *cloudChannelRESTClient) GetEntitlement(ctx context.Context, req *channelpb.GetEntitlementRequest, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetEntitlement[0:len((*c.CallOptions).GetEntitlement):len((*c.CallOptions).GetEntitlement)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.Entitlement{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateEntitlement creates an entitlement for a customer.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
+//	INVALID_ARGUMENT:
+//
+//	  Required request parameters are missing or invalid.
+//
+//	  There is already a customer entitlement for a SKU from the same
+//	  product family.
+//
+//	INVALID_VALUE: Make sure the OfferId is valid. If it is, contact
+//	Google Channel support for further troubleshooting.
+//
+//	NOT_FOUND: The customer or offer resource was not found.
+//
+//	ALREADY_EXISTS:
+//
+//	  The SKU was already purchased for the customer.
+//
+//	  The customer’s primary email already exists. Retry
+//	  after changing the customer’s primary contact email.
+//
+//	CONDITION_NOT_MET or FAILED_PRECONDITION:
+//
+//	  The domain required for purchasing a SKU has not been verified.
+//
+//	  A pre-requisite SKU required to purchase an Add-On SKU is missing.
+//	  For example, Google Workspace Business Starter is required to purchase
+//	  Vault or Drive.
+//
+//	  (Developer accounts only) Reseller and resold domain must meet the
+//	  following naming requirements:
+//
+//	    Domain names must start with goog-test.
+//
+//	    Domain names must include the reseller domain.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) CreateEntitlement(ctx context.Context, req *channelpb.CreateEntitlementRequest, opts ...gax.CallOption) (*CreateEntitlementOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/entitlements", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateEntitlementOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ChangeParameters change parameters of the entitlement.
+//
+// An entitlement update is a long-running operation and it updates the
+// entitlement as a result of fulfillment.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//	For example, the number of seats being changed is greater than the allowed
+//	number of max seats, or decreasing seats for a commitment based plan.
+//
+//	NOT_FOUND: Entitlement resource not found.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) ChangeParameters(ctx context.Context, req *channelpb.ChangeParametersRequest, opts ...gax.CallOption) (*ChangeParametersOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:changeParameters", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ChangeParametersOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ChangeRenewalSettings updates the renewal settings for an existing customer entitlement.
+//
+// An entitlement update is a long-running operation and it updates the
+// entitlement as a result of fulfillment.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: Entitlement resource not found.
+//
+//	NOT_COMMITMENT_PLAN: Renewal Settings are only applicable for a
+//	commitment plan. Can’t enable or disable renewals for non-commitment plans.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) ChangeRenewalSettings(ctx context.Context, req *channelpb.ChangeRenewalSettingsRequest, opts ...gax.CallOption) (*ChangeRenewalSettingsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:changeRenewalSettings", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ChangeRenewalSettingsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ChangeOffer updates the Offer for an existing customer entitlement.
+//
+// An entitlement update is a long-running operation and it updates the
+// entitlement as a result of fulfillment.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: Offer or Entitlement resource not found.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) ChangeOffer(ctx context.Context, req *channelpb.ChangeOfferRequest, opts ...gax.CallOption) (*ChangeOfferOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:changeOffer", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ChangeOfferOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// StartPaidService starts paid service for a trial entitlement.
+//
+// Starts paid service for a trial entitlement immediately. This method is
+// only applicable if a plan is set up for a trial entitlement but has some
+// trial days remaining.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: Entitlement resource not found.
+//
+//	FAILED_PRECONDITION/NOT_IN_TRIAL: This method only works for
+//	entitlement on trial plans.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) StartPaidService(ctx context.Context, req *channelpb.StartPaidServiceRequest, opts ...gax.CallOption) (*StartPaidServiceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:startPaidService", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &StartPaidServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SuspendEntitlement suspends a previously fulfilled entitlement.
+//
+// An entitlement suspension is a long-running operation.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: Entitlement resource not found.
+//
+//	NOT_ACTIVE: Entitlement is not active.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) SuspendEntitlement(ctx context.Context, req *channelpb.SuspendEntitlementRequest, opts ...gax.CallOption) (*SuspendEntitlementOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:suspend", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &SuspendEntitlementOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CancelEntitlement cancels a previously fulfilled entitlement.
+//
+// An entitlement cancellation is a long-running operation.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	FAILED_PRECONDITION: There are Google Cloud projects linked to the
+//	Google Cloud entitlement’s Cloud Billing subaccount.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: Entitlement resource not found.
+//
+//	DELETION_TYPE_NOT_ALLOWED: Cancel is only allowed for Google Workspace
+//	add-ons, or entitlements for Google Cloud’s development platform.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The response will contain
+// google.protobuf.Empty on success. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) CancelEntitlement(ctx context.Context, req *channelpb.CancelEntitlementRequest, opts ...gax.CallOption) (*CancelEntitlementOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CancelEntitlementOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ActivateEntitlement activates a previously suspended entitlement. Entitlements suspended for
+// pending ToS acceptance can’t be activated using this method.
+//
+// An entitlement activation is a long-running operation and it updates
+// the state of the customer entitlement.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: Entitlement resource not found.
+//
+//	SUSPENSION_NOT_RESELLER_INITIATED: Can only activate reseller-initiated
+//	suspensions and entitlements that have accepted the TOS.
+//
+//	NOT_SUSPENDED: Can only activate suspended entitlements not in an ACTIVE
+//	state.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) ActivateEntitlement(ctx context.Context, req *channelpb.ActivateEntitlementRequest, opts ...gax.CallOption) (*ActivateEntitlementOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:activate", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &ActivateEntitlementOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// TransferEntitlements transfers customer entitlements to new reseller.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller.
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: The customer or offer resource was not found.
+//
+//	ALREADY_EXISTS: The SKU was already transferred for the customer.
+//
+//	CONDITION_NOT_MET or FAILED_PRECONDITION:
+//
+//	  The SKU requires domain verification to transfer, but the domain is
+//	  not verified.
+//
+//	  An Add-On SKU (example, Vault or Drive) is missing the
+//	  pre-requisite SKU (example, G Suite Basic).
+//
+//	  (Developer accounts only) Reseller and resold domain must meet the
+//	  following naming requirements:
+//
+//	    Domain names must start with goog-test.
+//
+//	    Domain names must include the reseller domain.
+//
+//	  Specify all transferring entitlements.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) TransferEntitlements(ctx context.Context, req *channelpb.TransferEntitlementsRequest, opts ...gax.CallOption) (*TransferEntitlementsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:transferEntitlements", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &TransferEntitlementsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// TransferEntitlementsToGoogle transfers customer entitlements from their current reseller to Google.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: The customer or offer resource was not found.
+//
+//	ALREADY_EXISTS: The SKU was already transferred for the customer.
+//
+//	CONDITION_NOT_MET or FAILED_PRECONDITION:
+//
+//	  The SKU requires domain verification to transfer, but the domain is
+//	  not verified.
+//
+//	  An Add-On SKU (example, Vault or Drive) is missing the
+//	  pre-requisite SKU (example, G Suite Basic).
+//
+//	  (Developer accounts only) Reseller and resold domain must meet the
+//	  following naming requirements:
+//
+//	    Domain names must start with goog-test.
+//
+//	    Domain names must include the reseller domain.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The ID of a long-running operation.
+//
+// To get the results of the operation, call the GetOperation method of
+// CloudChannelOperationsService. The response will contain
+// google.protobuf.Empty on success. The Operation metadata will contain an
+// instance of OperationMetadata.
+func (c *cloudChannelRESTClient) TransferEntitlementsToGoogle(ctx context.Context, req *channelpb.TransferEntitlementsToGoogleRequest, opts ...gax.CallOption) (*TransferEntitlementsToGoogleOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:transferEntitlementsToGoogle", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &TransferEntitlementsToGoogleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ListChannelPartnerLinks list ChannelPartnerLinks
+// belonging to a distributor. You must be a distributor to call this method.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// The list of the distributor account’s
+// ChannelPartnerLink resources.
+func (c *cloudChannelRESTClient) ListChannelPartnerLinks(ctx context.Context, req *channelpb.ListChannelPartnerLinksRequest, opts ...gax.CallOption) *ChannelPartnerLinkIterator {
+	it := &ChannelPartnerLinkIterator{}
+	req = proto.Clone(req).(*channelpb.ListChannelPartnerLinksRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.ChannelPartnerLink, string, error) {
+		resp := &channelpb.ListChannelPartnerLinksResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/channelPartnerLinks", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetView() != 0 {
+			params.Add("view", fmt.Sprintf("%v", req.GetView()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetChannelPartnerLinks(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetChannelPartnerLink returns the requested
+// ChannelPartnerLink resource.
+// You must be a distributor to call this method.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: ChannelPartnerLink resource not found because of an
+//	invalid channel partner link name.
+//
+// Return value:
+// The ChannelPartnerLink
+// resource.
+func (c *cloudChannelRESTClient) GetChannelPartnerLink(ctx context.Context, req *channelpb.GetChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetView() != 0 {
+		params.Add("view", fmt.Sprintf("%v", req.GetView()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetChannelPartnerLink[0:len((*c.CallOptions).GetChannelPartnerLink):len((*c.CallOptions).GetChannelPartnerLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.ChannelPartnerLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateChannelPartnerLink initiates a channel partner link between a distributor and a reseller, or
+// between resellers in an n-tier reseller channel.
+// Invited partners need to follow the invite_link_uri provided in the
+// response to accept. After accepting the invitation, a link is set up
+// between the two parties.
+// You must be a distributor to call this method.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	ALREADY_EXISTS: The ChannelPartnerLink sent in the request already
+//	exists.
+//
+//	NOT_FOUND: No Cloud Identity customer exists for provided domain.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The new ChannelPartnerLink
+// resource.
+func (c *cloudChannelRESTClient) CreateChannelPartnerLink(ctx context.Context, req *channelpb.CreateChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetChannelPartnerLink()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/channelPartnerLinks", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateChannelPartnerLink[0:len((*c.CallOptions).CreateChannelPartnerLink):len((*c.CallOptions).CreateChannelPartnerLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.ChannelPartnerLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateChannelPartnerLink updates a channel partner link. Distributors call this method to change a
+// link’s status. For example, to suspend a partner link.
+// You must be a distributor to call this method.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request is different
+//	from the reseller account in the API request.
+//
+//	INVALID_ARGUMENT:
+//
+//	  Required request parameters are missing or invalid.
+//
+//	  Link state cannot change from invited to active or suspended.
+//
+//	  Cannot send reseller_cloud_identity_id, invite_url, or name in update
+//	  mask.
+//
+//	NOT_FOUND: ChannelPartnerLink resource not found.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The updated
+// ChannelPartnerLink resource.
+func (c *cloudChannelRESTClient) UpdateChannelPartnerLink(ctx context.Context, req *channelpb.UpdateChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateChannelPartnerLink[0:len((*c.CallOptions).UpdateChannelPartnerLink):len((*c.CallOptions).UpdateChannelPartnerLink)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.ChannelPartnerLink{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetCustomerRepricingConfig gets information about how a Reseller modifies their bill before sending
+// it to a Customer.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	NOT_FOUND: The
+//	CustomerRepricingConfig
+//	was not found.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the
+// CustomerRepricingConfig
+// resource, otherwise returns an error.
+func (c *cloudChannelRESTClient) GetCustomerRepricingConfig(ctx context.Context, req *channelpb.GetCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetCustomerRepricingConfig[0:len((*c.CallOptions).GetCustomerRepricingConfig):len((*c.CallOptions).GetCustomerRepricingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.CustomerRepricingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListCustomerRepricingConfigs lists information about how a Reseller modifies their bill before sending
+// it to a Customer.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	NOT_FOUND: The
+//	CustomerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the
+// CustomerRepricingConfig
+// resources. The data for each resource is displayed in the ascending order
+// of:
+//
+//	Customer ID
+//
+//	RepricingConfig.EntitlementGranularity.entitlement
+//
+//	RepricingConfig.effective_invoice_month
+//
+//	CustomerRepricingConfig.update_time
+//
+// If unsuccessful, returns an error.
+func (c *cloudChannelRESTClient) ListCustomerRepricingConfigs(ctx context.Context, req *channelpb.ListCustomerRepricingConfigsRequest, opts ...gax.CallOption) *CustomerRepricingConfigIterator {
+	it := &CustomerRepricingConfigIterator{}
+	req = proto.Clone(req).(*channelpb.ListCustomerRepricingConfigsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.CustomerRepricingConfig, string, error) {
+		resp := &channelpb.ListCustomerRepricingConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/customerRepricingConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetCustomerRepricingConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateCustomerRepricingConfig creates a CustomerRepricingConfig. Call this method to set modifications
+// for a specific customer’s bill. You can only create configs if the
+// RepricingConfig.effective_invoice_month
+// is a future month. If needed, you can create a config for the current
+// month, with some restrictions.
+//
+// When creating a config for a future month, make sure there are no existing
+// configs for that
+// RepricingConfig.effective_invoice_month.
+//
+// The following restrictions are for creating configs in the current month.
+//
+//	This functionality is reserved for recovering from an erroneous config,
+//	and should not be used for regular business cases.
+//
+//	The new config will not modify exports used with other configs.
+//	Changes to the config may be immediate, but may take up to 24 hours.
+//
+//	There is a limit of ten configs for any
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
+//	RepricingConfig.effective_invoice_month.
+//
+//	The contained
+//	CustomerRepricingConfig.repricing_config
+//	value must be different from the value used in the current config for a
+//	RepricingConfig.EntitlementGranularity.entitlement.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
+//
+//	NOT_FOUND: The
+//	CustomerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated
+// CustomerRepricingConfig
+// resource, otherwise returns an error.
+func (c *cloudChannelRESTClient) CreateCustomerRepricingConfig(ctx context.Context, req *channelpb.CreateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCustomerRepricingConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/customerRepricingConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateCustomerRepricingConfig[0:len((*c.CallOptions).CreateCustomerRepricingConfig):len((*c.CallOptions).CreateCustomerRepricingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.CustomerRepricingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateCustomerRepricingConfig updates a CustomerRepricingConfig. Call this method to set modifications
+// for a specific customer’s bill. This method overwrites the existing
+// CustomerRepricingConfig.
+//
+// You can only update configs if the
+// RepricingConfig.effective_invoice_month
+// is a future month. To make changes to configs for the current month, use
+// CreateCustomerRepricingConfig,
+// taking note of its restrictions. You cannot update the
+// RepricingConfig.effective_invoice_month.
+//
+// When updating a config in the future:
+//
+//	This config must already exist.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
+//
+//	NOT_FOUND: The
+//	CustomerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated
+// CustomerRepricingConfig
+// resource, otherwise returns an error.
+func (c *cloudChannelRESTClient) UpdateCustomerRepricingConfig(ctx context.Context, req *channelpb.UpdateCustomerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.CustomerRepricingConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetCustomerRepricingConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetCustomerRepricingConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer_repricing_config.name", url.QueryEscape(req.GetCustomerRepricingConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateCustomerRepricingConfig[0:len((*c.CallOptions).UpdateCustomerRepricingConfig):len((*c.CallOptions).UpdateCustomerRepricingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.CustomerRepricingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteCustomerRepricingConfig deletes the given
+// CustomerRepricingConfig
+// permanently. You can only delete configs if their
+// RepricingConfig.effective_invoice_month
+// is set to a date after the current month.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The account making the request does not own
+//	this customer.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	FAILED_PRECONDITION: The
+//	CustomerRepricingConfig
+//	is active or in the past.
+//
+//	NOT_FOUND: No
+//	CustomerRepricingConfig
+//	found for the name in the request.
+func (c *cloudChannelRESTClient) DeleteCustomerRepricingConfig(ctx context.Context, req *channelpb.DeleteCustomerRepricingConfigRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetChannelPartnerRepricingConfig gets information about how a Distributor modifies their bill before sending
+// it to a ChannelPartner.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	NOT_FOUND: The
+//	ChannelPartnerRepricingConfig
+//	was not found.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the
+// ChannelPartnerRepricingConfig
+// resource, otherwise returns an error.
+func (c *cloudChannelRESTClient) GetChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.GetChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetChannelPartnerRepricingConfig[0:len((*c.CallOptions).GetChannelPartnerRepricingConfig):len((*c.CallOptions).GetChannelPartnerRepricingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.ChannelPartnerRepricingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListChannelPartnerRepricingConfigs lists information about how a Reseller modifies their bill before sending
+// it to a ChannelPartner.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	NOT_FOUND: The
+//	ChannelPartnerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the
+// ChannelPartnerRepricingConfig
+// resources. The data for each resource is displayed in the ascending order
+// of:
+//
+//	Channel Partner ID
+//
+//	RepricingConfig.effective_invoice_month
+//
+//	ChannelPartnerRepricingConfig.update_time
+//
+// If unsuccessful, returns an error.
+func (c *cloudChannelRESTClient) ListChannelPartnerRepricingConfigs(ctx context.Context, req *channelpb.ListChannelPartnerRepricingConfigsRequest, opts ...gax.CallOption) *ChannelPartnerRepricingConfigIterator {
+	it := &ChannelPartnerRepricingConfigIterator{}
+	req = proto.Clone(req).(*channelpb.ListChannelPartnerRepricingConfigsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.ChannelPartnerRepricingConfig, string, error) {
+		resp := &channelpb.ListChannelPartnerRepricingConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/channelPartnerRepricingConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetChannelPartnerRepricingConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateChannelPartnerRepricingConfig creates a ChannelPartnerRepricingConfig. Call this method to set
+// modifications for a specific ChannelPartner’s bill. You can only create
+// configs if the
+// RepricingConfig.effective_invoice_month
+// is a future month. If needed, you can create a config for the current
+// month, with some restrictions.
+//
+// When creating a config for a future month, make sure there are no existing
+// configs for that
+// RepricingConfig.effective_invoice_month.
+//
+// The following restrictions are for creating configs in the current month.
+//
+//	This functionality is reserved for recovering from an erroneous config,
+//	and should not be used for regular business cases.
+//
+//	The new config will not modify exports used with other configs.
+//	Changes to the config may be immediate, but may take up to 24 hours.
+//
+//	There is a limit of ten configs for any ChannelPartner or
+//	RepricingConfig.EntitlementGranularity.entitlement,
+//	for any
+//	RepricingConfig.effective_invoice_month.
+//
+//	The contained
+//	ChannelPartnerRepricingConfig.repricing_config
+//	value must be different from the value used in the current config for a
+//	ChannelPartner.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
+//
+//	NOT_FOUND: The
+//	ChannelPartnerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated
+// ChannelPartnerRepricingConfig
+// resource, otherwise returns an error.
+func (c *cloudChannelRESTClient) CreateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.CreateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetChannelPartnerRepricingConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/channelPartnerRepricingConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateChannelPartnerRepricingConfig[0:len((*c.CallOptions).CreateChannelPartnerRepricingConfig):len((*c.CallOptions).CreateChannelPartnerRepricingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.ChannelPartnerRepricingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateChannelPartnerRepricingConfig updates a ChannelPartnerRepricingConfig. Call this method to set
+// modifications for a specific ChannelPartner’s bill. This method overwrites
+// the existing CustomerRepricingConfig.
+//
+// You can only update configs if the
+// RepricingConfig.effective_invoice_month
+// is a future month. To make changes to configs for the current month, use
+// CreateChannelPartnerRepricingConfig,
+// taking note of its restrictions. You cannot update the
+// RepricingConfig.effective_invoice_month.
+//
+// When updating a config in the future:
+//
+//	This config must already exist.
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required parameters in the
+//	request. Also displays if the updated config is for the current month or
+//	past months.
+//
+//	NOT_FOUND: The
+//	ChannelPartnerRepricingConfig
+//	specified does not exist or is not associated with the given account.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the updated
+// ChannelPartnerRepricingConfig
+// resource, otherwise returns an error.
+func (c *cloudChannelRESTClient) UpdateChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.UpdateChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerRepricingConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetChannelPartnerRepricingConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetChannelPartnerRepricingConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "channel_partner_repricing_config.name", url.QueryEscape(req.GetChannelPartnerRepricingConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateChannelPartnerRepricingConfig[0:len((*c.CallOptions).UpdateChannelPartnerRepricingConfig):len((*c.CallOptions).UpdateChannelPartnerRepricingConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.ChannelPartnerRepricingConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteChannelPartnerRepricingConfig deletes the given
+// ChannelPartnerRepricingConfig
+// permanently. You can only delete configs if their
+// RepricingConfig.effective_invoice_month
+// is set to a date after the current month.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The account making the request does not own
+//	this customer.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	FAILED_PRECONDITION: The
+//	ChannelPartnerRepricingConfig
+//	is active or in the past.
+//
+//	NOT_FOUND: No
+//	ChannelPartnerRepricingConfig
+//	found for the name in the request.
+func (c *cloudChannelRESTClient) DeleteChannelPartnerRepricingConfig(ctx context.Context, req *channelpb.DeleteChannelPartnerRepricingConfigRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// ListSkuGroups lists the Rebilling supported SKU groups the account is authorized to
+// sell.
+// Reference: https://cloud.google.com/skus/sku-groups (at https://cloud.google.com/skus/sku-groups)
+//
+// Possible Error Codes:
+//
+//	PERMISSION_DENIED: If the account making the request and the account
+//	being queried are different, or the account doesn’t exist.
+//
+//	INTERNAL: Any non-user error related to technical issues in the
+//	backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// If successful, the SkuGroup resources.
+// The data for each resource is displayed in the alphabetical order of SKU
+// group display name.
+// The data for each resource is displayed in the ascending order of
+// SkuGroup.display_name
+//
+// If unsuccessful, returns an error.
+func (c *cloudChannelRESTClient) ListSkuGroups(ctx context.Context, req *channelpb.ListSkuGroupsRequest, opts ...gax.CallOption) *SkuGroupIterator {
+	it := &SkuGroupIterator{}
+	req = proto.Clone(req).(*channelpb.ListSkuGroupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.SkuGroup, string, error) {
+		resp := &channelpb.ListSkuGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/skuGroups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSkuGroups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListSkuGroupBillableSkus lists the Billable SKUs in a given SKU group.
+//
+// Possible error codes:
+// PERMISSION_DENIED: If the account making the request and the account
+// being queried for are different, or the account doesn’t exist.
+// INVALID_ARGUMENT: Missing or invalid required parameters in the
+// request.
+// INTERNAL: Any non-user error related to technical issue in the
+// backend. In this case, contact cloud channel support.
+//
+// Return Value:
+// If successful, the BillableSku
+// resources. The data for each resource is displayed in the ascending order
+// of:
+//
+//	BillableSku.service_display_name
+//
+//	BillableSku.sku_display_name
+//
+// If unsuccessful, returns an error.
+func (c *cloudChannelRESTClient) ListSkuGroupBillableSkus(ctx context.Context, req *channelpb.ListSkuGroupBillableSkusRequest, opts ...gax.CallOption) *BillableSkuIterator {
+	it := &BillableSkuIterator{}
+	req = proto.Clone(req).(*channelpb.ListSkuGroupBillableSkusRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.BillableSku, string, error) {
+		resp := &channelpb.ListSkuGroupBillableSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/billableSkus", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBillableSkus(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// LookupOffer returns the requested Offer resource.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The entitlement doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: Entitlement or offer was not found.
+//
+// Return value:
+// The Offer resource.
+func (c *cloudChannelRESTClient) LookupOffer(ctx context.Context, req *channelpb.LookupOfferRequest, opts ...gax.CallOption) (*channelpb.Offer, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:lookupOffer", req.GetEntitlement())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entitlement", url.QueryEscape(req.GetEntitlement()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).LookupOffer[0:len((*c.CallOptions).LookupOffer):len((*c.CallOptions).LookupOffer)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.Offer{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListProducts lists the Products the reseller is authorized to sell.
+//
+// Possible error codes:
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+func (c *cloudChannelRESTClient) ListProducts(ctx context.Context, req *channelpb.ListProductsRequest, opts ...gax.CallOption) *ProductIterator {
+	it := &ProductIterator{}
+	req = proto.Clone(req).(*channelpb.ListProductsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Product, string, error) {
+		resp := &channelpb.ListProductsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/products")
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		params.Add("account", fmt.Sprintf("%v", req.GetAccount()))
+		if req.GetLanguageCode() != "" {
+			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetProducts(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListSkus lists the SKUs for a product the reseller is authorized to sell.
+//
+// Possible error codes:
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+func (c *cloudChannelRESTClient) ListSkus(ctx context.Context, req *channelpb.ListSkusRequest, opts ...gax.CallOption) *SkuIterator {
+	it := &SkuIterator{}
+	req = proto.Clone(req).(*channelpb.ListSkusRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Sku, string, error) {
+		resp := &channelpb.ListSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/skus", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		params.Add("account", fmt.Sprintf("%v", req.GetAccount()))
+		if req.GetLanguageCode() != "" {
+			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSkus(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListOffers lists the Offers the reseller can sell.
+//
+// Possible error codes:
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+func (c *cloudChannelRESTClient) ListOffers(ctx context.Context, req *channelpb.ListOffersRequest, opts ...gax.CallOption) *OfferIterator {
+	it := &OfferIterator{}
+	req = proto.Clone(req).(*channelpb.ListOffersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.Offer, string, error) {
+		resp := &channelpb.ListOffersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/offers", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetLanguageCode() != "" {
+			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetShowFutureOffers() {
+			params.Add("showFutureOffers", fmt.Sprintf("%v", req.GetShowFutureOffers()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOffers(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListPurchasableSkus lists the following:
+//
+//	SKUs that you can purchase for a customer
+//
+//	SKUs that you can upgrade or downgrade for an entitlement.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+func (c *cloudChannelRESTClient) ListPurchasableSkus(ctx context.Context, req *channelpb.ListPurchasableSkusRequest, opts ...gax.CallOption) *PurchasableSkuIterator {
+	it := &PurchasableSkuIterator{}
+	req = proto.Clone(req).(*channelpb.ListPurchasableSkusRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.PurchasableSku, string, error) {
+		resp := &channelpb.ListPurchasableSkusResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listPurchasableSkus", req.GetCustomer())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		params.Add("changeOfferPurchase.changeType", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetChangeType()))
+		params.Add("changeOfferPurchase.entitlement", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetEntitlement()))
+		params.Add("createEntitlementPurchase.product", fmt.Sprintf("%v", req.GetCreateEntitlementPurchase().GetProduct()))
+		if req.GetLanguageCode() != "" {
+			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPurchasableSkus(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListPurchasableOffers lists the following:
+//
+//	Offers that you can purchase for a customer.
+//
+//	Offers that you can change for an entitlement.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED:
+//
+//	  The customer doesn’t belong to the reseller
+//
+//	  The reseller is not authorized to transact on this Product. See
+//	  https://support.google.com/channelservices/answer/9759265 (at https://support.google.com/channelservices/answer/9759265)
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+func (c *cloudChannelRESTClient) ListPurchasableOffers(ctx context.Context, req *channelpb.ListPurchasableOffersRequest, opts ...gax.CallOption) *PurchasableOfferIterator {
+	it := &PurchasableOfferIterator{}
+	req = proto.Clone(req).(*channelpb.ListPurchasableOffersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.PurchasableOffer, string, error) {
+		resp := &channelpb.ListPurchasableOffersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listPurchasableOffers", req.GetCustomer())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetChangeOfferPurchase().GetBillingAccount() != "" {
+			params.Add("changeOfferPurchase.billingAccount", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetBillingAccount()))
+		}
+		params.Add("changeOfferPurchase.entitlement", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetEntitlement()))
+		if req.GetChangeOfferPurchase().GetNewSku() != "" {
+			params.Add("changeOfferPurchase.newSku", fmt.Sprintf("%v", req.GetChangeOfferPurchase().GetNewSku()))
+		}
+		if req.GetCreateEntitlementPurchase().GetBillingAccount() != "" {
+			params.Add("createEntitlementPurchase.billingAccount", fmt.Sprintf("%v", req.GetCreateEntitlementPurchase().GetBillingAccount()))
+		}
+		params.Add("createEntitlementPurchase.sku", fmt.Sprintf("%v", req.GetCreateEntitlementPurchase().GetSku()))
+		if req.GetLanguageCode() != "" {
+			params.Add("languageCode", fmt.Sprintf("%v", req.GetLanguageCode()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetPurchasableOffers(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// QueryEligibleBillingAccounts lists the billing accounts that are eligible to purchase particular SKUs
+// for a given customer.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The customer doesn’t belong to the reseller.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+// Return value:
+// Based on the provided list of SKUs, returns a list of SKU groups that must
+// be purchased using the same billing account and the billing accounts
+// eligible to purchase each SKU group.
+func (c *cloudChannelRESTClient) QueryEligibleBillingAccounts(ctx context.Context, req *channelpb.QueryEligibleBillingAccountsRequest, opts ...gax.CallOption) (*channelpb.QueryEligibleBillingAccountsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:queryEligibleBillingAccounts", req.GetCustomer())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetSkus(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("skus", fmt.Sprintf("%v", item))
+		}
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "customer", url.QueryEscape(req.GetCustomer()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).QueryEligibleBillingAccounts[0:len((*c.CallOptions).QueryEligibleBillingAccounts):len((*c.CallOptions).QueryEligibleBillingAccounts)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.QueryEligibleBillingAccountsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
+// topic for this Channel Services account. After you create a
+// subscriber, you get the events through
+// SubscriberEvent
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different, or the impersonated user
+//	is not a super admin.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The topic name with the registered service email address.
+func (c *cloudChannelRESTClient) RegisterSubscriber(ctx context.Context, req *channelpb.RegisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:register", req.GetAccount())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RegisterSubscriber[0:len((*c.CallOptions).RegisterSubscriber):len((*c.CallOptions).RegisterSubscriber)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.RegisterSubscriberResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UnregisterSubscriber unregisters a service account with subscriber privileges on the Cloud
+// Pub/Sub topic created for this Channel Services account. If there are no
+// service accounts left with subscriber privileges, this deletes the topic.
+// You can call ListSubscribers to check for these accounts.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different, or the impersonated user
+//	is not a super admin.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: The topic resource doesn’t exist.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// The topic name that unregistered the service email address.
+// Returns a success response if the service email address wasn’t registered
+// with the topic.
+func (c *cloudChannelRESTClient) UnregisterSubscriber(ctx context.Context, req *channelpb.UnregisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:unregister", req.GetAccount())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UnregisterSubscriber[0:len((*c.CallOptions).UnregisterSubscriber):len((*c.CallOptions).UnregisterSubscriber)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &channelpb.UnregisterSubscriberResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSubscribers lists service accounts with subscriber privileges on the Cloud Pub/Sub
+// topic created for this Channel Services account.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different, or the impersonated user
+//	is not a super admin.
+//
+//	INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//	NOT_FOUND: The topic resource doesn’t exist.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the
+//	backend. Contact Cloud Channel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	Contact Cloud Channel support.
+//
+// Return value:
+// A list of service email addresses.
+func (c *cloudChannelRESTClient) ListSubscribers(ctx context.Context, req *channelpb.ListSubscribersRequest, opts ...gax.CallOption) *StringIterator {
+	it := &StringIterator{}
+	req = proto.Clone(req).(*channelpb.ListSubscribersRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
+		resp := &channelpb.ListSubscribersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listSubscribers", req.GetAccount())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetServiceAccounts(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListEntitlementChanges list entitlement history.
+//
+// Possible error codes:
+//
+//	PERMISSION_DENIED: The reseller account making the request and the
+//	provided reseller account are different.
+//
+//	INVALID_ARGUMENT: Missing or invalid required fields in the request.
+//
+//	NOT_FOUND: The parent resource doesn’t exist. Usually the result of an
+//	invalid name parameter.
+//
+//	INTERNAL: Any non-user error related to a technical issue in the backend.
+//	In this case, contact CloudChannel support.
+//
+//	UNKNOWN: Any non-user error related to a technical issue in the backend.
+//	In this case, contact Cloud Channel support.
+//
+// Return value:
+// List of EntitlementChanges.
+func (c *cloudChannelRESTClient) ListEntitlementChanges(ctx context.Context, req *channelpb.ListEntitlementChangesRequest, opts ...gax.CallOption) *EntitlementChangeIterator {
+	it := &EntitlementChangeIterator{}
+	req = proto.Clone(req).(*channelpb.ListEntitlementChangesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*channelpb.EntitlementChange, string, error) {
+		resp := &channelpb.ListEntitlementChangesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:listEntitlementChanges", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEntitlementChanges(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *cloudChannelRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *cloudChannelRESTClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *cloudChannelRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *cloudChannelRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // ActivateEntitlementOperation returns a new ActivateEntitlementOperation from a given name.
@@ -2588,65 +9258,14 @@ func (c *cloudChannelGRPCClient) ActivateEntitlementOperation(name string) *Acti
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ActivateEntitlementOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// ActivateEntitlementOperation returns a new ActivateEntitlementOperation from a given name.
+// The name must be that of a previously created ActivateEntitlementOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) ActivateEntitlementOperation(name string) *ActivateEntitlementOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ActivateEntitlementOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ActivateEntitlementOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ActivateEntitlementOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ActivateEntitlementOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ActivateEntitlementOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CancelEntitlementOperation manages a long-running operation from CancelEntitlement.
-type CancelEntitlementOperation struct {
-	lro *longrunning.Operation
 }
 
 // CancelEntitlementOperation returns a new CancelEntitlementOperation from a given name.
@@ -2657,54 +9276,14 @@ func (c *cloudChannelGRPCClient) CancelEntitlementOperation(name string) *Cancel
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CancelEntitlementOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CancelEntitlementOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CancelEntitlementOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// CancelEntitlementOperation returns a new CancelEntitlementOperation from a given name.
+// The name must be that of a previously created CancelEntitlementOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) CancelEntitlementOperation(name string) *CancelEntitlementOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CancelEntitlementOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CancelEntitlementOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CancelEntitlementOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ChangeOfferOperation manages a long-running operation from ChangeOffer.
-type ChangeOfferOperation struct {
-	lro *longrunning.Operation
 }
 
 // ChangeOfferOperation returns a new ChangeOfferOperation from a given name.
@@ -2715,65 +9294,14 @@ func (c *cloudChannelGRPCClient) ChangeOfferOperation(name string) *ChangeOfferO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ChangeOfferOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// ChangeOfferOperation returns a new ChangeOfferOperation from a given name.
+// The name must be that of a previously created ChangeOfferOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) ChangeOfferOperation(name string) *ChangeOfferOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ChangeOfferOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ChangeOfferOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ChangeOfferOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ChangeOfferOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ChangeOfferOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ChangeParametersOperation manages a long-running operation from ChangeParameters.
-type ChangeParametersOperation struct {
-	lro *longrunning.Operation
 }
 
 // ChangeParametersOperation returns a new ChangeParametersOperation from a given name.
@@ -2784,65 +9312,14 @@ func (c *cloudChannelGRPCClient) ChangeParametersOperation(name string) *ChangeP
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ChangeParametersOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// ChangeParametersOperation returns a new ChangeParametersOperation from a given name.
+// The name must be that of a previously created ChangeParametersOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) ChangeParametersOperation(name string) *ChangeParametersOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ChangeParametersOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ChangeParametersOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ChangeParametersOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ChangeParametersOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ChangeParametersOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ChangeRenewalSettingsOperation manages a long-running operation from ChangeRenewalSettings.
-type ChangeRenewalSettingsOperation struct {
-	lro *longrunning.Operation
 }
 
 // ChangeRenewalSettingsOperation returns a new ChangeRenewalSettingsOperation from a given name.
@@ -2853,65 +9330,14 @@ func (c *cloudChannelGRPCClient) ChangeRenewalSettingsOperation(name string) *Ch
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ChangeRenewalSettingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// ChangeRenewalSettingsOperation returns a new ChangeRenewalSettingsOperation from a given name.
+// The name must be that of a previously created ChangeRenewalSettingsOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) ChangeRenewalSettingsOperation(name string) *ChangeRenewalSettingsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ChangeRenewalSettingsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ChangeRenewalSettingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ChangeRenewalSettingsOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ChangeRenewalSettingsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ChangeRenewalSettingsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateEntitlementOperation manages a long-running operation from CreateEntitlement.
-type CreateEntitlementOperation struct {
-	lro *longrunning.Operation
 }
 
 // CreateEntitlementOperation returns a new CreateEntitlementOperation from a given name.
@@ -2922,65 +9348,14 @@ func (c *cloudChannelGRPCClient) CreateEntitlementOperation(name string) *Create
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateEntitlementOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// CreateEntitlementOperation returns a new CreateEntitlementOperation from a given name.
+// The name must be that of a previously created CreateEntitlementOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) CreateEntitlementOperation(name string) *CreateEntitlementOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateEntitlementOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateEntitlementOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateEntitlementOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateEntitlementOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateEntitlementOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ProvisionCloudIdentityOperation manages a long-running operation from ProvisionCloudIdentity.
-type ProvisionCloudIdentityOperation struct {
-	lro *longrunning.Operation
 }
 
 // ProvisionCloudIdentityOperation returns a new ProvisionCloudIdentityOperation from a given name.
@@ -2991,65 +9366,14 @@ func (c *cloudChannelGRPCClient) ProvisionCloudIdentityOperation(name string) *P
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ProvisionCloudIdentityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	var resp channelpb.Customer
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// ProvisionCloudIdentityOperation returns a new ProvisionCloudIdentityOperation from a given name.
+// The name must be that of a previously created ProvisionCloudIdentityOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) ProvisionCloudIdentityOperation(name string) *ProvisionCloudIdentityOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &ProvisionCloudIdentityOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ProvisionCloudIdentityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Customer, error) {
-	var resp channelpb.Customer
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ProvisionCloudIdentityOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ProvisionCloudIdentityOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ProvisionCloudIdentityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StartPaidServiceOperation manages a long-running operation from StartPaidService.
-type StartPaidServiceOperation struct {
-	lro *longrunning.Operation
 }
 
 // StartPaidServiceOperation returns a new StartPaidServiceOperation from a given name.
@@ -3060,65 +9384,14 @@ func (c *cloudChannelGRPCClient) StartPaidServiceOperation(name string) *StartPa
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *StartPaidServiceOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// StartPaidServiceOperation returns a new StartPaidServiceOperation from a given name.
+// The name must be that of a previously created StartPaidServiceOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) StartPaidServiceOperation(name string) *StartPaidServiceOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StartPaidServiceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *StartPaidServiceOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *StartPaidServiceOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *StartPaidServiceOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *StartPaidServiceOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SuspendEntitlementOperation manages a long-running operation from SuspendEntitlement.
-type SuspendEntitlementOperation struct {
-	lro *longrunning.Operation
 }
 
 // SuspendEntitlementOperation returns a new SuspendEntitlementOperation from a given name.
@@ -3129,65 +9402,14 @@ func (c *cloudChannelGRPCClient) SuspendEntitlementOperation(name string) *Suspe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SuspendEntitlementOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// SuspendEntitlementOperation returns a new SuspendEntitlementOperation from a given name.
+// The name must be that of a previously created SuspendEntitlementOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) SuspendEntitlementOperation(name string) *SuspendEntitlementOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &SuspendEntitlementOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SuspendEntitlementOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.Entitlement, error) {
-	var resp channelpb.Entitlement
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SuspendEntitlementOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SuspendEntitlementOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SuspendEntitlementOperation) Name() string {
-	return op.lro.Name()
-}
-
-// TransferEntitlementsOperation manages a long-running operation from TransferEntitlements.
-type TransferEntitlementsOperation struct {
-	lro *longrunning.Operation
 }
 
 // TransferEntitlementsOperation returns a new TransferEntitlementsOperation from a given name.
@@ -3198,65 +9420,14 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsOperation(name string) *Tra
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *TransferEntitlementsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*channelpb.TransferEntitlementsResponse, error) {
-	var resp channelpb.TransferEntitlementsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// TransferEntitlementsOperation returns a new TransferEntitlementsOperation from a given name.
+// The name must be that of a previously created TransferEntitlementsOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) TransferEntitlementsOperation(name string) *TransferEntitlementsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &TransferEntitlementsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *TransferEntitlementsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*channelpb.TransferEntitlementsResponse, error) {
-	var resp channelpb.TransferEntitlementsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *TransferEntitlementsOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *TransferEntitlementsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *TransferEntitlementsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// TransferEntitlementsToGoogleOperation manages a long-running operation from TransferEntitlementsToGoogle.
-type TransferEntitlementsToGoogleOperation struct {
-	lro *longrunning.Operation
 }
 
 // TransferEntitlementsToGoogleOperation returns a new TransferEntitlementsToGoogleOperation from a given name.
@@ -3267,564 +9438,12 @@ func (c *cloudChannelGRPCClient) TransferEntitlementsToGoogleOperation(name stri
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *TransferEntitlementsToGoogleOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *TransferEntitlementsToGoogleOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *TransferEntitlementsToGoogleOperation) Metadata() (*channelpb.OperationMetadata, error) {
-	var meta channelpb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
+// TransferEntitlementsToGoogleOperation returns a new TransferEntitlementsToGoogleOperation from a given name.
+// The name must be that of a previously created TransferEntitlementsToGoogleOperation, possibly from a different process.
+func (c *cloudChannelRESTClient) TransferEntitlementsToGoogleOperation(name string) *TransferEntitlementsToGoogleOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &TransferEntitlementsToGoogleOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *TransferEntitlementsToGoogleOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *TransferEntitlementsToGoogleOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ChannelPartnerLinkIterator manages a stream of *channelpb.ChannelPartnerLink.
-type ChannelPartnerLinkIterator struct {
-	items    []*channelpb.ChannelPartnerLink
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.ChannelPartnerLink, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ChannelPartnerLinkIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ChannelPartnerLinkIterator) Next() (*channelpb.ChannelPartnerLink, error) {
-	var item *channelpb.ChannelPartnerLink
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ChannelPartnerLinkIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ChannelPartnerLinkIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// CustomerIterator manages a stream of *channelpb.Customer.
-type CustomerIterator struct {
-	items    []*channelpb.Customer
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Customer, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CustomerIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CustomerIterator) Next() (*channelpb.Customer, error) {
-	var item *channelpb.Customer
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CustomerIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CustomerIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// EntitlementIterator manages a stream of *channelpb.Entitlement.
-type EntitlementIterator struct {
-	items    []*channelpb.Entitlement
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Entitlement, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *EntitlementIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *EntitlementIterator) Next() (*channelpb.Entitlement, error) {
-	var item *channelpb.Entitlement
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *EntitlementIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *EntitlementIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// OfferIterator manages a stream of *channelpb.Offer.
-type OfferIterator struct {
-	items    []*channelpb.Offer
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Offer, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *OfferIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *OfferIterator) Next() (*channelpb.Offer, error) {
-	var item *channelpb.Offer
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *OfferIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *OfferIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ProductIterator manages a stream of *channelpb.Product.
-type ProductIterator struct {
-	items    []*channelpb.Product
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Product, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ProductIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ProductIterator) Next() (*channelpb.Product, error) {
-	var item *channelpb.Product
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ProductIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ProductIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PurchasableOfferIterator manages a stream of *channelpb.PurchasableOffer.
-type PurchasableOfferIterator struct {
-	items    []*channelpb.PurchasableOffer
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.PurchasableOffer, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PurchasableOfferIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PurchasableOfferIterator) Next() (*channelpb.PurchasableOffer, error) {
-	var item *channelpb.PurchasableOffer
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PurchasableOfferIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PurchasableOfferIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// PurchasableSkuIterator manages a stream of *channelpb.PurchasableSku.
-type PurchasableSkuIterator struct {
-	items    []*channelpb.PurchasableSku
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.PurchasableSku, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *PurchasableSkuIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *PurchasableSkuIterator) Next() (*channelpb.PurchasableSku, error) {
-	var item *channelpb.PurchasableSku
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *PurchasableSkuIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *PurchasableSkuIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SkuIterator manages a stream of *channelpb.Sku.
-type SkuIterator struct {
-	items    []*channelpb.Sku
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.Sku, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SkuIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SkuIterator) Next() (*channelpb.Sku, error) {
-	var item *channelpb.Sku
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SkuIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SkuIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// StringIterator manages a stream of string.
-type StringIterator struct {
-	items    []string
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StringIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StringIterator) Next() (string, error) {
-	var item string
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StringIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StringIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TransferableOfferIterator manages a stream of *channelpb.TransferableOffer.
-type TransferableOfferIterator struct {
-	items    []*channelpb.TransferableOffer
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.TransferableOffer, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TransferableOfferIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TransferableOfferIterator) Next() (*channelpb.TransferableOffer, error) {
-	var item *channelpb.TransferableOffer
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TransferableOfferIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TransferableOfferIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TransferableSkuIterator manages a stream of *channelpb.TransferableSku.
-type TransferableSkuIterator struct {
-	items    []*channelpb.TransferableSku
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*channelpb.TransferableSku, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TransferableSkuIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TransferableSkuIterator) Next() (*channelpb.TransferableSku, error) {
-	var item *channelpb.TransferableSku
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TransferableSkuIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TransferableSkuIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

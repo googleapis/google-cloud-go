@@ -38,12 +38,19 @@ func buildSQL(x interface{ addSQL(*strings.Builder) }) string {
 }
 
 func (ct CreateTable) SQL() string {
-	str := "CREATE TABLE " + ct.Name.SQL() + " (\n"
+	str := "CREATE TABLE "
+	if ct.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ct.Name.SQL() + " (\n"
 	for _, c := range ct.Columns {
 		str += "  " + c.SQL() + ",\n"
 	}
 	for _, tc := range ct.Constraints {
 		str += "  " + tc.SQL() + ",\n"
+	}
+	if len(ct.Synonym) > 0 {
+		str += "  SYNONYM(" + ct.Synonym.SQL() + "),\n"
 	}
 	str += ") PRIMARY KEY("
 	for i, c := range ct.PrimaryKey {
@@ -70,7 +77,11 @@ func (ci CreateIndex) SQL() string {
 	if ci.NullFiltered {
 		str += " NULL_FILTERED"
 	}
-	str += " INDEX " + ci.Name.SQL() + " ON " + ci.Table.SQL() + "("
+	str += " INDEX "
+	if ci.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ci.Name.SQL() + " ON " + ci.Table.SQL() + "("
 	for i, c := range ci.Columns {
 		if i > 0 {
 			str += ", "
@@ -92,20 +103,185 @@ func (cv CreateView) SQL() string {
 	if cv.OrReplace {
 		str += " OR REPLACE"
 	}
-	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY INVOKER AS " + cv.Query.SQL()
+	str += " VIEW " + cv.Name.SQL() + " SQL SECURITY " + cv.SecurityType.SQL() + " AS " + cv.Query.SQL()
+	return str
+}
+
+func (st SecurityType) SQL() string {
+	switch st {
+	case Invoker:
+		return "INVOKER"
+	case Definer:
+		return "DEFINER"
+	}
+	panic("unknown SecurityType")
+}
+
+func (cr CreateRole) SQL() string {
+	return "CREATE ROLE " + cr.Name.SQL()
+}
+
+func (cs CreateChangeStream) SQL() string {
+	str := "CREATE CHANGE STREAM "
+	str += cs.Name.SQL()
+	if cs.WatchAllTables {
+		str += " FOR ALL"
+	} else {
+		for i, table := range cs.Watch {
+			if i == 0 {
+				str += " FOR "
+			} else {
+				str += ", "
+			}
+			str += table.SQL()
+		}
+	}
+	if cs.Options != (ChangeStreamOptions{}) {
+		str += " " + cs.Options.SQL()
+	}
+
+	return str
+}
+
+func (w WatchDef) SQL() string {
+	str := w.Table.SQL()
+	if !w.WatchAllCols {
+		str += "("
+		for i, c := range w.Columns {
+			if i > 0 {
+				str += ", "
+			}
+			str += c.SQL()
+		}
+		str += ")"
+	}
 	return str
 }
 
 func (dt DropTable) SQL() string {
-	return "DROP TABLE " + dt.Name.SQL()
+	str := "DROP TABLE "
+	if dt.IfExists {
+		str += "IF EXISTS "
+	}
+	str += dt.Name.SQL()
+	return str
 }
 
 func (di DropIndex) SQL() string {
-	return "DROP INDEX " + di.Name.SQL()
+	str := "DROP INDEX "
+	if di.IfExists {
+		str += "IF EXISTS "
+	}
+	str += di.Name.SQL()
+	return str
 }
 
 func (dv DropView) SQL() string {
 	return "DROP VIEW " + dv.Name.SQL()
+}
+
+func (dr DropRole) SQL() string {
+	return "DROP ROLE " + dr.Name.SQL()
+}
+
+func (gr GrantRole) SQL() string {
+	sql := "GRANT "
+	if gr.Privileges != nil {
+		for i, priv := range gr.Privileges {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += priv.Type.SQL()
+			if priv.Columns != nil {
+				sql += "(" + idList(priv.Columns, ", ") + ")"
+			}
+		}
+		sql += " ON TABLE " + idList(gr.TableNames, ", ")
+	} else if len(gr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(gr.TvfNames, ", ")
+	} else if len(gr.ViewNames) > 0 {
+		sql += "SELECT ON VIEW " + idList(gr.ViewNames, ", ")
+	} else if len(gr.ChangeStreamNames) > 0 {
+		sql += "SELECT ON CHANGE STREAM " + idList(gr.ChangeStreamNames, ", ")
+	} else {
+		sql += "ROLE " + idList(gr.GrantRoleNames, ", ")
+	}
+	sql += " TO ROLE " + idList(gr.ToRoleNames, ", ")
+	return sql
+}
+
+func (rr RevokeRole) SQL() string {
+	sql := "REVOKE "
+	if rr.Privileges != nil {
+		for i, priv := range rr.Privileges {
+			if i > 0 {
+				sql += ", "
+			}
+			sql += priv.Type.SQL()
+			if priv.Columns != nil {
+				sql += "(" + idList(priv.Columns, ", ") + ")"
+			}
+		}
+		sql += " ON TABLE " + idList(rr.TableNames, ", ")
+	} else if len(rr.TvfNames) > 0 {
+		sql += "EXECUTE ON TABLE FUNCTION " + idList(rr.TvfNames, ", ")
+	} else if len(rr.ViewNames) > 0 {
+		sql += "SELECT ON VIEW " + idList(rr.ViewNames, ", ")
+	} else if len(rr.ChangeStreamNames) > 0 {
+		sql += "SELECT ON CHANGE STREAM " + idList(rr.ChangeStreamNames, ", ")
+	} else {
+		sql += "ROLE " + idList(rr.RevokeRoleNames, ", ")
+	}
+	sql += " FROM ROLE " + idList(rr.FromRoleNames, ", ")
+	return sql
+}
+
+func (dc DropChangeStream) SQL() string {
+	return "DROP CHANGE STREAM " + dc.Name.SQL()
+}
+
+func (acs AlterChangeStream) SQL() string {
+	return "ALTER CHANGE STREAM " + acs.Name.SQL() + " " + acs.Alteration.SQL()
+}
+
+func (scsw AlterWatch) SQL() string {
+	str := "SET FOR "
+	if scsw.WatchAllTables {
+		return str + "ALL"
+	}
+	for i, table := range scsw.Watch {
+		if i > 0 {
+			str += ", "
+		}
+		str += table.SQL()
+	}
+	return str
+}
+
+func (ao AlterChangeStreamOptions) SQL() string {
+	return "SET " + ao.Options.SQL()
+}
+
+func (dcsw DropChangeStreamWatch) SQL() string {
+	return "DROP FOR ALL"
+}
+
+func (cso ChangeStreamOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if cso.RetentionPeriod != nil {
+		hasOpt = true
+		str += fmt.Sprintf("retention_period='%s'", *cso.RetentionPeriod)
+	}
+	if cso.ValueCaptureType != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("value_capture_type='%s'", *cso.ValueCaptureType)
+	}
+	str += ")"
+	return str
 }
 
 func (at AlterTable) SQL() string {
@@ -113,7 +289,12 @@ func (at AlterTable) SQL() string {
 }
 
 func (ac AddColumn) SQL() string {
-	return "ADD COLUMN " + ac.Def.SQL()
+	str := "ADD COLUMN "
+	if ac.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	str += ac.Def.SQL()
+	return str
 }
 
 func (dc DropColumn) SQL() string {
@@ -126,6 +307,22 @@ func (ac AddConstraint) SQL() string {
 
 func (dc DropConstraint) SQL() string {
 	return "DROP CONSTRAINT " + dc.Name.SQL()
+}
+
+func (rt RenameTo) SQL() string {
+	str := "RENAME TO " + rt.ToName.SQL()
+	if len(rt.Synonym) > 0 {
+		str += ", ADD SYNONYM " + rt.Synonym.SQL()
+	}
+	return str
+}
+
+func (as AddSynonym) SQL() string {
+	return "ADD SYNONYM " + as.Name.SQL()
+}
+
+func (ds DropSynonym) SQL() string {
+	return "DROP SYNONYM " + ds.Name.SQL()
 }
 
 func (sod SetOnDelete) SQL() string {
@@ -157,10 +354,14 @@ func (rrdp ReplaceRowDeletionPolicy) SQL() string {
 func (drdp DropRowDeletionPolicy) SQL() string {
 	return "DROP ROW DELETION POLICY"
 }
+
 func (sct SetColumnType) SQL() string {
 	str := sct.Type.SQL()
 	if sct.NotNull {
 		str += " NOT NULL"
+	}
+	if sct.Default != nil {
+		str += " DEFAULT (" + sct.Default.SQL() + ")"
 	}
 	return str
 }
@@ -168,6 +369,14 @@ func (sct SetColumnType) SQL() string {
 func (sco SetColumnOptions) SQL() string {
 	// TODO: not clear what to do for no options.
 	return "SET " + sco.Options.SQL()
+}
+
+func (sd SetDefault) SQL() string {
+	return "SET DEFAULT (" + sd.Default.SQL() + ")"
+}
+
+func (dp DropDefault) SQL() string {
+	return "DROP DEFAULT"
 }
 
 func (co ColumnOptions) SQL() string {
@@ -180,6 +389,17 @@ func (co ColumnOptions) SQL() string {
 		}
 	}
 	str += ")"
+	return str
+}
+
+func (rt RenameTable) SQL() string {
+	str := "RENAME TABLE "
+	for i, op := range rt.TableRenameOps {
+		if i > 0 {
+			str += ", "
+		}
+		str += op.FromName.SQL() + " TO " + op.ToName.SQL()
+	}
 	return str
 }
 
@@ -200,6 +420,17 @@ func (do DatabaseOptions) SQL() string {
 			str += "optimizer_version=null"
 		} else {
 			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
+		}
+	}
+	if do.OptimizerStatisticsPackage != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.OptimizerStatisticsPackage == "" {
+			str += "optimizer_statistics_package=null"
+		} else {
+			str += fmt.Sprintf("optimizer_statistics_package='%s'", *do.OptimizerStatisticsPackage)
 		}
 	}
 	if do.VersionRetentionPeriod != nil {
@@ -224,8 +455,103 @@ func (do DatabaseOptions) SQL() string {
 			str += "enable_key_visualizer=null"
 		}
 	}
+	if do.DefaultLeader != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		if *do.DefaultLeader == "" {
+			str += "default_leader=null"
+		} else {
+			str += fmt.Sprintf("default_leader='%s'", *do.DefaultLeader)
+		}
+	}
 	str += ")"
 	return str
+}
+
+func (as AlterStatistics) SQL() string {
+	return "ALTER STATISTICS " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sso SetStatisticsOptions) SQL() string {
+	return "SET " + sso.Options.SQL()
+}
+
+func (sa StatisticsOptions) SQL() string {
+	str := "OPTIONS ("
+	if sa.AllowGC != nil {
+		str += fmt.Sprintf("allow_gc=%v", *sa.AllowGC)
+	}
+	str += ")"
+	return str
+}
+
+func (ai AlterIndex) SQL() string {
+	return "ALTER INDEX " + ai.Name.SQL() + " " + ai.Alteration.SQL()
+}
+
+func (asc AddStoredColumn) SQL() string {
+	return "ADD STORED COLUMN " + asc.Name.SQL()
+}
+
+func (dsc DropStoredColumn) SQL() string {
+	return "DROP STORED COLUMN " + dsc.Name.SQL()
+}
+
+func (cs CreateSequence) SQL() string {
+	str := "CREATE SEQUENCE "
+	if cs.IfNotExists {
+		str += "IF NOT EXISTS "
+	}
+	return str + cs.Name.SQL() + " " + cs.Options.SQL()
+}
+
+func (as AlterSequence) SQL() string {
+	return "ALTER SEQUENCE " + as.Name.SQL() + " " + as.Alteration.SQL()
+}
+
+func (sa SetSequenceOptions) SQL() string {
+	return "SET " + sa.Options.SQL()
+}
+
+func (so SequenceOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if so.SequenceKind != nil {
+		hasOpt = true
+		str += fmt.Sprintf("sequence_kind='%s'", *so.SequenceKind)
+	}
+	if so.SkipRangeMin != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("skip_range_min=%v", *so.SkipRangeMin)
+	}
+	if so.SkipRangeMax != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("skip_range_max=%v", *so.SkipRangeMax)
+	}
+	if so.StartWithCounter != nil {
+		if hasOpt {
+			str += ", "
+		}
+		hasOpt = true
+		str += fmt.Sprintf("start_with_counter=%v", *so.StartWithCounter)
+	}
+	return str + ")"
+}
+
+func (do DropSequence) SQL() string {
+	str := "DROP SEQUENCE "
+	if do.IfExists {
+		str += "IF EXISTS "
+	}
+	return str + do.Name.SQL()
 }
 
 func (d *Delete) SQL() string {
@@ -249,10 +575,45 @@ func (u *Update) SQL() string {
 	return str
 }
 
+func (i *Insert) SQL() string {
+	str := "INSERT INTO " + i.Table.SQL() + " ("
+	for i, column := range i.Columns {
+		if i > 0 {
+			str += ", "
+		}
+		str += column.SQL()
+	}
+	str += ") "
+	str += i.Input.SQL()
+	return str
+}
+
+func (v Values) SQL() string {
+	str := "VALUES "
+	for j, values := range v {
+		if j > 0 {
+			str += ", "
+		}
+		str += "("
+
+		for k, value := range values {
+			if k > 0 {
+				str += ", "
+			}
+			str += value.SQL()
+		}
+		str += ")"
+	}
+	return str
+}
+
 func (cd ColumnDef) SQL() string {
 	str := cd.Name.SQL() + " " + cd.Type.SQL()
 	if cd.NotNull {
 		str += " NOT NULL"
+	}
+	if cd.Default != nil {
+		str += " DEFAULT (" + cd.Default.SQL() + ")"
 	}
 	if cd.Generated != nil {
 		str += " AS (" + cd.Generated.SQL() + ") STORED"
@@ -280,6 +641,7 @@ func (fk ForeignKey) SQL() string {
 	str := "FOREIGN KEY (" + idList(fk.Columns, ", ")
 	str += ") REFERENCES " + fk.RefTable.SQL() + " ("
 	str += idList(fk.RefColumns, ", ") + ")"
+	str += " ON DELETE " + fk.OnDelete.SQL()
 	return str
 }
 
@@ -328,6 +690,19 @@ func (tb TypeBase) SQL() string {
 	panic("unknown TypeBase")
 }
 
+func (pt PrivilegeType) SQL() string {
+	switch pt {
+	case PrivilegeTypeSelect:
+		return "SELECT"
+	case PrivilegeTypeInsert:
+		return "INSERT"
+	case PrivilegeTypeUpdate:
+		return "UPDATE"
+	case PrivilegeTypeDelete:
+		return "DELETE"
+	}
+	panic("unknown PrivilegeType")
+}
 func (kp KeyPart) SQL() string {
 	str := kp.Column.SQL()
 	if kp.Desc {
@@ -578,7 +953,27 @@ func (f Func) SQL() string { return buildSQL(f) }
 func (f Func) addSQL(sb *strings.Builder) {
 	sb.WriteString(f.Name)
 	sb.WriteString("(")
+	if f.Distinct {
+		sb.WriteString("DISTINCT ")
+	}
 	addExprList(sb, f.Args, ", ")
+	switch f.NullsHandling {
+	case RespectNulls:
+		sb.WriteString(" RESPECT NULLS")
+	case IgnoreNulls:
+		sb.WriteString(" IGNORE NULLS")
+	}
+	if ah := f.Having; ah != nil {
+		sb.WriteString(" HAVING")
+		switch ah.Condition {
+		case HavingMax:
+			sb.WriteString(" MAX")
+		case HavingMin:
+			sb.WriteString(" MIN")
+		}
+		sb.WriteString(" ")
+		sb.WriteString(ah.Expr.SQL())
+	}
 	sb.WriteString(")")
 }
 
@@ -601,6 +996,21 @@ func (aze AtTimeZoneExpr) addSQL(sb *strings.Builder) {
 	aze.Expr.addSQL(sb)
 	sb.WriteString(" AT TIME ZONE ")
 	sb.WriteString(aze.Zone)
+}
+
+func (ie IntervalExpr) SQL() string { return buildSQL(ie) }
+func (ie IntervalExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString("INTERVAL")
+	sb.WriteString(" ")
+	ie.Expr.addSQL(sb)
+	sb.WriteString(" ")
+	sb.WriteString(ie.DatePart)
+}
+
+func (se SequenceExpr) SQL() string { return buildSQL(se) }
+func (se SequenceExpr) addSQL(sb *strings.Builder) {
+	sb.WriteString("SEQUENCE ")
+	sb.WriteString(se.Name.SQL())
 }
 
 func idList(l []ID, join string) string {
@@ -654,7 +1064,8 @@ func (id ID) addSQL(sb *strings.Builder) {
 
 	// TODO: If there are non-letters/numbers/underscores then this also needs quoting.
 
-	if IsKeyword(string(id)) {
+	// Naming Convention: Must be enclosed in backticks (`) if it's a reserved keyword or contains a hyphen.
+	if IsKeyword(string(id)) || strings.Contains(string(id), "-") {
 		// TODO: Escaping may be needed here.
 		sb.WriteString("`")
 		sb.WriteString(string(id))
@@ -669,6 +1080,62 @@ func (p Param) SQL() string { return buildSQL(p) }
 func (p Param) addSQL(sb *strings.Builder) {
 	sb.WriteString("@")
 	sb.WriteString(string(p))
+}
+
+func (c Case) SQL() string { return buildSQL(c) }
+func (c Case) addSQL(sb *strings.Builder) {
+	sb.WriteString("CASE ")
+	if c.Expr != nil {
+		fmt.Fprintf(sb, "%s ", c.Expr.SQL())
+	}
+	for _, w := range c.WhenClauses {
+		fmt.Fprintf(sb, "WHEN %s THEN %s ", w.Cond.SQL(), w.Result.SQL())
+	}
+	if c.ElseResult != nil {
+		fmt.Fprintf(sb, "ELSE %s ", c.ElseResult.SQL())
+	}
+	sb.WriteString("END")
+}
+
+func (c Coalesce) SQL() string { return buildSQL(c) }
+func (c Coalesce) addSQL(sb *strings.Builder) {
+	sb.WriteString("COALESCE(")
+	for i, expr := range c.ExprList {
+		if i > 0 {
+			sb.WriteString(", ")
+		}
+		expr.addSQL(sb)
+	}
+	sb.WriteString(")")
+}
+
+func (i If) SQL() string { return buildSQL(i) }
+func (i If) addSQL(sb *strings.Builder) {
+	sb.WriteString("IF(")
+	i.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	i.TrueResult.addSQL(sb)
+	sb.WriteString(", ")
+	i.ElseResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (in IfNull) SQL() string { return buildSQL(in) }
+func (in IfNull) addSQL(sb *strings.Builder) {
+	sb.WriteString("IFNULL(")
+	in.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	in.NullResult.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (ni NullIf) SQL() string { return buildSQL(ni) }
+func (ni NullIf) addSQL(sb *strings.Builder) {
+	sb.WriteString("NULLIF(")
+	ni.Expr.addSQL(sb)
+	sb.WriteString(", ")
+	ni.ExprToMatch.addSQL(sb)
+	sb.WriteString(")")
 }
 
 func (b BoolLiteral) SQL() string { return buildSQL(b) }
@@ -707,5 +1174,10 @@ func (dl DateLiteral) addSQL(sb *strings.Builder) {
 
 func (tl TimestampLiteral) SQL() string { return buildSQL(tl) }
 func (tl TimestampLiteral) addSQL(sb *strings.Builder) {
-	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000 -07:00"))
+	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000-07:00"))
+}
+
+func (jl JSONLiteral) SQL() string { return buildSQL(jl) }
+func (jl JSONLiteral) addSQL(sb *strings.Builder) {
+	fmt.Fprintf(sb, "JSON '%s'", jl)
 }

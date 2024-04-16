@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@ import (
 	"math"
 	"time"
 
+	agentendpointpb "cloud.google.com/go/osconfig/agentendpoint/apiv1beta/agentendpointpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 )
 
 var newClientHook clientHook
@@ -46,7 +45,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("osconfig.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("osconfig.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("osconfig.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://osconfig.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -73,6 +74,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		StartNextTask: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -84,6 +86,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ReportTaskProgress: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -95,6 +98,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ReportTaskComplete: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -106,6 +110,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		LookupEffectiveGuestPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -117,6 +122,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		RegisterAgent: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -130,7 +136,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from OS Config API.
+// internalClient is an interface that defines the methods available from OS Config API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -172,7 +178,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -216,9 +223,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -226,7 +230,7 @@ type gRPCClient struct {
 	client agentendpointpb.AgentEndpointServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new agent endpoint service client based on gRPC.
@@ -243,11 +247,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -255,10 +254,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           agentendpointpb.NewAgentEndpointServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      agentendpointpb.NewAgentEndpointServiceClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -269,7 +267,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -278,9 +277,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -290,7 +289,8 @@ func (c *gRPCClient) Close() error {
 }
 
 func (c *gRPCClient) ReceiveTaskNotification(ctx context.Context, req *agentendpointpb.ReceiveTaskNotificationRequest, opts ...gax.CallOption) (agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).ReceiveTaskNotification[0:len((*c.CallOptions).ReceiveTaskNotification):len((*c.CallOptions).ReceiveTaskNotification)], opts...)
 	var resp agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -304,12 +304,7 @@ func (c *gRPCClient) ReceiveTaskNotification(ctx context.Context, req *agentendp
 }
 
 func (c *gRPCClient) StartNextTask(ctx context.Context, req *agentendpointpb.StartNextTaskRequest, opts ...gax.CallOption) (*agentendpointpb.StartNextTaskResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).StartNextTask[0:len((*c.CallOptions).StartNextTask):len((*c.CallOptions).StartNextTask)], opts...)
 	var resp *agentendpointpb.StartNextTaskResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -324,12 +319,7 @@ func (c *gRPCClient) StartNextTask(ctx context.Context, req *agentendpointpb.Sta
 }
 
 func (c *gRPCClient) ReportTaskProgress(ctx context.Context, req *agentendpointpb.ReportTaskProgressRequest, opts ...gax.CallOption) (*agentendpointpb.ReportTaskProgressResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ReportTaskProgress[0:len((*c.CallOptions).ReportTaskProgress):len((*c.CallOptions).ReportTaskProgress)], opts...)
 	var resp *agentendpointpb.ReportTaskProgressResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -344,12 +334,7 @@ func (c *gRPCClient) ReportTaskProgress(ctx context.Context, req *agentendpointp
 }
 
 func (c *gRPCClient) ReportTaskComplete(ctx context.Context, req *agentendpointpb.ReportTaskCompleteRequest, opts ...gax.CallOption) (*agentendpointpb.ReportTaskCompleteResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).ReportTaskComplete[0:len((*c.CallOptions).ReportTaskComplete):len((*c.CallOptions).ReportTaskComplete)], opts...)
 	var resp *agentendpointpb.ReportTaskCompleteResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -364,12 +349,7 @@ func (c *gRPCClient) ReportTaskComplete(ctx context.Context, req *agentendpointp
 }
 
 func (c *gRPCClient) LookupEffectiveGuestPolicy(ctx context.Context, req *agentendpointpb.LookupEffectiveGuestPolicyRequest, opts ...gax.CallOption) (*agentendpointpb.EffectiveGuestPolicy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).LookupEffectiveGuestPolicy[0:len((*c.CallOptions).LookupEffectiveGuestPolicy):len((*c.CallOptions).LookupEffectiveGuestPolicy)], opts...)
 	var resp *agentendpointpb.EffectiveGuestPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -384,12 +364,7 @@ func (c *gRPCClient) LookupEffectiveGuestPolicy(ctx context.Context, req *agente
 }
 
 func (c *gRPCClient) RegisterAgent(ctx context.Context, req *agentendpointpb.RegisterAgentRequest, opts ...gax.CallOption) (*agentendpointpb.RegisterAgentResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
 	opts = append((*c.CallOptions).RegisterAgent[0:len((*c.CallOptions).RegisterAgent):len((*c.CallOptions).RegisterAgent)], opts...)
 	var resp *agentendpointpb.RegisterAgentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

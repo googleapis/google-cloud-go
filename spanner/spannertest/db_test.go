@@ -29,7 +29,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	structpb "github.com/golang/protobuf/ptypes/struct"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
@@ -669,5 +669,103 @@ func TestKeyRange(t *testing.T) {
 				t.Errorf("keyRange %v includes %v", test.kr, pk)
 			}
 		}
+	}
+}
+
+func TestForeignKeyAddAndAlterConstraint(t *testing.T) {
+	sql := `CREATE TABLE Orders (
+	  OrderID INT64 NOT NULL,
+	  CustomerID INT64 NOT NULL,
+	  Quantity INT64 NOT NULL,
+	  ProductID INT64 NOT NULL,
+	  CONSTRAINT FK_CustomerOrder FOREIGN KEY (CustomerID) REFERENCES Customers (CustomerID)
+	) PRIMARY KEY (OrderID);
+	ALTER TABLE Orders DROP CONSTRAINT FK_CustomerOrder;`
+	var db database
+
+	ddl, err := spansql.ParseDDL("filename", sql)
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+	for _, stmt := range ddl.List {
+		if st := db.ApplyDDL(stmt); st.Code() != codes.OK {
+			t.Fatalf("ApplyDDL failed: %v", st)
+		}
+	}
+
+	altersql := `CREATE TABLE Orders (
+	  OrderID INT64 NOT NULL,
+	  CustomerID INT64 NOT NULL,
+	  Quantity INT64 NOT NULL,
+	  ProductID INT64 NOT NULL,
+		CONSTRAINT FK_ProductOrder FOREIGN KEY (ProductID) REFERENCES Product (ProductID)
+	) PRIMARY KEY (OrderID);
+	ALTER TABLE Orders ADD CONSTRAINT FK_CustomerOrder FOREIGN KEY (CustomerID) REFERENCES Customers (CustomerID);
+	ALTER TABLE Orders DROP CONSTRAINT FK_ProductOrder;`
+	var db1 database
+
+	ddl1, err1 := spansql.ParseDDL("filename", altersql)
+	if err1 != nil {
+		t.Fatalf("%s: Bad DDL", err1)
+	}
+	for _, stmt := range ddl1.List {
+		if st := db1.ApplyDDL(stmt); st.Code() != codes.OK {
+			t.Fatalf("ApplyDDL failed: %v", st)
+		}
+	}
+}
+
+func TestAddBackQuoteForHypen(t *testing.T) {
+	ddl, err := spansql.ParseDDL("filename", "ALTER DATABASE `test-db` SET OPTIONS (optimizer_version=4, version_retention_period = '7d', enable_key_visualizer=true)")
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+
+	got := ddl.List[0].SQL()
+	want := "ALTER DATABASE `test-db` SET OPTIONS (optimizer_version=4, version_retention_period='7d', enable_key_visualizer=true)"
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
+	}
+}
+
+func TestCreateAndManageChangeStream(t *testing.T) {
+	// Testing Create Change Stream
+	ddl, err := spansql.ParseDDL("filename", "CREATE CHANGE STREAM SingerAlbumStream FOR Singers(FirstName, LastName), Albums OPTIONS (retention_period = '36h')")
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+
+	got := ddl.List[0].SQL()
+	want := "CREATE CHANGE STREAM SingerAlbumStream FOR Singers(FirstName, LastName), Albums OPTIONS (retention_period='36h')"
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
+	}
+
+	// Testing Alter Change Stream Options
+	ddl, err = spansql.ParseDDL("filename", "ALTER CHANGE STREAM SingerAlbumStream SET OPTIONS (retention_period = '20h')")
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+
+	got = ddl.List[0].SQL()
+	want = "ALTER CHANGE STREAM SingerAlbumStream SET OPTIONS (retention_period='20h')"
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
+	}
+
+	// Testing Drop Change Stream Options
+	ddl, err = spansql.ParseDDL("filename", "DROP CHANGE STREAM SingerAlbumStream")
+	if err != nil {
+		t.Fatalf("%s: Bad DDL", err)
+	}
+
+	got = ddl.List[0].SQL()
+	want = "DROP CHANGE STREAM SingerAlbumStream"
+
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("Generated SQL statement incorrect.\n got %v\nwant %v", got, want)
 	}
 }

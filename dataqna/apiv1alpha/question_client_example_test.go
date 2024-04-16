@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,16 @@ import (
 	"context"
 
 	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
-	dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
+	dataqnapb "cloud.google.com/go/dataqna/apiv1alpha/dataqnapb"
 )
 
 func ExampleNewQuestionClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -35,28 +40,30 @@ func ExampleNewQuestionClient() {
 	_ = c
 }
 
-func ExampleQuestionClient_GetQuestion() {
+func ExampleNewQuestionRESTClient() {
 	ctx := context.Background()
-	c, err := dataqna.NewQuestionClient(ctx)
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataqna.NewQuestionRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &dataqnapb.GetQuestionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#GetQuestionRequest.
-	}
-	resp, err := c.GetQuestion(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
+	// TODO: Use client.
+	_ = c
 }
 
 func ExampleQuestionClient_CreateQuestion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -65,7 +72,7 @@ func ExampleQuestionClient_CreateQuestion() {
 
 	req := &dataqnapb.CreateQuestionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#CreateQuestionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#CreateQuestionRequest.
 	}
 	resp, err := c.CreateQuestion(ctx, req)
 	if err != nil {
@@ -77,6 +84,11 @@ func ExampleQuestionClient_CreateQuestion() {
 
 func ExampleQuestionClient_ExecuteQuestion() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,7 +97,7 @@ func ExampleQuestionClient_ExecuteQuestion() {
 
 	req := &dataqnapb.ExecuteQuestionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#ExecuteQuestionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#ExecuteQuestionRequest.
 	}
 	resp, err := c.ExecuteQuestion(ctx, req)
 	if err != nil {
@@ -95,8 +107,38 @@ func ExampleQuestionClient_ExecuteQuestion() {
 	_ = resp
 }
 
+func ExampleQuestionClient_GetQuestion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dataqna.NewQuestionClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dataqnapb.GetQuestionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#GetQuestionRequest.
+	}
+	resp, err := c.GetQuestion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleQuestionClient_GetUserFeedback() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -105,7 +147,7 @@ func ExampleQuestionClient_GetUserFeedback() {
 
 	req := &dataqnapb.GetUserFeedbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#GetUserFeedbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#GetUserFeedbackRequest.
 	}
 	resp, err := c.GetUserFeedback(ctx, req)
 	if err != nil {
@@ -117,6 +159,11 @@ func ExampleQuestionClient_GetUserFeedback() {
 
 func ExampleQuestionClient_UpdateUserFeedback() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -125,7 +172,7 @@ func ExampleQuestionClient_UpdateUserFeedback() {
 
 	req := &dataqnapb.UpdateUserFeedbackRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha#UpdateUserFeedbackRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha/dataqnapb#UpdateUserFeedbackRequest.
 	}
 	resp, err := c.UpdateUserFeedback(ctx, req)
 	if err != nil {

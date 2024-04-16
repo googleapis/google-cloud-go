@@ -49,6 +49,10 @@ type CollectionRef struct {
 
 	// Use the methods of Query on a CollectionRef to create and run queries.
 	Query
+
+	// readSettings specifies constraints for reading documents in the collection
+	// e.g. read time
+	readSettings *readSettings
 }
 
 func newTopLevelCollRef(c *Client, dbPath, id string) *CollectionRef {
@@ -64,6 +68,7 @@ func newTopLevelCollRef(c *Client, dbPath, id string) *CollectionRef {
 			path:         dbPath + "/documents/" + id,
 			parentPath:   dbPath + "/documents",
 		},
+		readSettings: &readSettings{},
 	}
 }
 
@@ -82,6 +87,7 @@ func newCollRefWithParent(c *Client, parent *DocumentRef, id string) *Collection
 			path:         parent.Path + "/" + id,
 			parentPath:   parent.Path,
 		},
+		readSettings: &readSettings{},
 	}
 }
 
@@ -121,7 +127,7 @@ func (c *CollectionRef) Add(ctx context.Context, data interface{}) (*DocumentRef
 // missing documents. A missing document is a document that does not exist but has
 // sub-documents.
 func (c *CollectionRef) DocumentRefs(ctx context.Context) *DocumentRefIterator {
-	return newDocumentRefIterator(ctx, c, nil)
+	return newDocumentRefIterator(ctx, c, nil, c.readSettings)
 }
 
 const alphanum = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
@@ -135,4 +141,13 @@ func uniqueID() string {
 		b[i] = alphanum[int(byt)%len(alphanum)]
 	}
 	return string(b)
+}
+
+// WithReadOptions specifies constraints for accessing documents from the database,
+// e.g. at what time snapshot to read the documents.
+func (c *CollectionRef) WithReadOptions(opts ...ReadOption) *CollectionRef {
+	for _, ro := range opts {
+		ro.apply(c.readSettings)
+	}
+	return c
 }

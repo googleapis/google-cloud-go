@@ -124,6 +124,10 @@ type TableMetadata struct {
 	// given snapshot table.
 	SnapshotDefinition *SnapshotDefinition
 
+	// CloneDefinition contains additional information about the provenance of a
+	// given cloned table.
+	CloneDefinition *CloneDefinition
+
 	// Contains information regarding this table's streaming buffer, if one is
 	// present. This field will be nil if the table is not being streamed to or if
 	// there is no data in the streaming buffer.
@@ -132,6 +136,126 @@ type TableMetadata struct {
 	// ETag is the ETag obtained when reading metadata. Pass it to Table.Update to
 	// ensure that the metadata hasn't changed since it was read.
 	ETag string
+
+	// Defines the default collation specification of new STRING fields
+	// in the table. During table creation or update, if a STRING field is added
+	// to this table without explicit collation specified, then the table inherits
+	// the table default collation. A change to this field affects only fields
+	// added afterwards, and does not alter the existing fields.
+	// The following values are supported:
+	//   - 'und:ci': undetermined locale, case insensitive.
+	//   - '': empty string. Default to case-sensitive behavior.
+	// More information: https://cloud.google.com/bigquery/docs/reference/standard-sql/collation-concepts
+	DefaultCollation string
+
+	// TableConstraints contains table primary and foreign keys constraints.
+	// Present only if the table has primary or foreign keys.
+	TableConstraints *TableConstraints
+
+	// The tags associated with this table. Tag
+	// keys are globally unique. See additional information on tags
+	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
+	// An object containing a list of "key": value pairs. The key is the
+	// namespaced friendly name of the tag key, e.g. "12345/environment"
+	// where 12345 is parent id. The value is the friendly short name of the
+	// tag value, e.g. "production".
+	ResourceTags map[string]string
+}
+
+// TableConstraints defines the primary key and foreign key of a table.
+type TableConstraints struct {
+	// PrimaryKey constraint on a table's columns.
+	// Present only if the table has a primary key.
+	// The primary key is not enforced.
+	PrimaryKey *PrimaryKey
+
+	// ForeignKeys represent a list of foreign keys constraints.
+	// Foreign keys are not enforced.
+	ForeignKeys []*ForeignKey
+}
+
+// PrimaryKey represents the primary key constraint on a table's columns.
+type PrimaryKey struct {
+	// Columns that compose the primary key constraint.
+	Columns []string
+}
+
+func (pk *PrimaryKey) toBQ() *bq.TableConstraintsPrimaryKey {
+	return &bq.TableConstraintsPrimaryKey{
+		Columns: pk.Columns,
+	}
+}
+
+func bqToPrimaryKey(tc *bq.TableConstraints) *PrimaryKey {
+	if tc.PrimaryKey == nil {
+		return nil
+	}
+	return &PrimaryKey{
+		Columns: tc.PrimaryKey.Columns,
+	}
+}
+
+// ForeignKey represents a foreign key constraint on a table's columns.
+type ForeignKey struct {
+	// Foreign key constraint name.
+	Name string
+
+	// Table that holds the primary key and is referenced by this foreign key.
+	ReferencedTable *Table
+
+	// Columns that compose the foreign key.
+	ColumnReferences []*ColumnReference
+}
+
+func (fk *ForeignKey) toBQ() *bq.TableConstraintsForeignKeys {
+	colRefs := []*bq.TableConstraintsForeignKeysColumnReferences{}
+	for _, colRef := range fk.ColumnReferences {
+		colRefs = append(colRefs, colRef.toBQ())
+	}
+	return &bq.TableConstraintsForeignKeys{
+		Name: fk.Name,
+		ReferencedTable: &bq.TableConstraintsForeignKeysReferencedTable{
+			DatasetId: fk.ReferencedTable.DatasetID,
+			ProjectId: fk.ReferencedTable.ProjectID,
+			TableId:   fk.ReferencedTable.TableID,
+		},
+		ColumnReferences: colRefs,
+	}
+}
+
+func bqToForeignKeys(tc *bq.TableConstraints, c *Client) []*ForeignKey {
+	fks := []*ForeignKey{}
+	for _, fk := range tc.ForeignKeys {
+		colRefs := []*ColumnReference{}
+		for _, colRef := range fk.ColumnReferences {
+			colRefs = append(colRefs, &ColumnReference{
+				ReferencedColumn:  colRef.ReferencedColumn,
+				ReferencingColumn: colRef.ReferencingColumn,
+			})
+		}
+		fks = append(fks, &ForeignKey{
+			Name:             fk.Name,
+			ReferencedTable:  c.DatasetInProject(fk.ReferencedTable.ProjectId, fk.ReferencedTable.DatasetId).Table(fk.ReferencedTable.TableId),
+			ColumnReferences: colRefs,
+		})
+	}
+	return fks
+}
+
+// ColumnReference represents the pair of the foreign key column and primary key column.
+type ColumnReference struct {
+	// ReferencingColumn is the column in the current table that composes the foreign key.
+	ReferencingColumn string
+	// ReferencedColumn is the column in the primary key of the foreign table that
+	// is referenced by the ReferencingColumn.
+	ReferencedColumn string
+}
+
+func (colRef *ColumnReference) toBQ() *bq.TableConstraintsForeignKeysColumnReferences {
+	return &bq.TableConstraintsForeignKeysColumnReferences{
+		ReferencedColumn:  colRef.ReferencedColumn,
+		ReferencingColumn: colRef.ReferencingColumn,
+	}
 }
 
 // TableCreateDisposition specifies the circumstances under which destination table will be created.
@@ -202,19 +326,33 @@ type MaterializedViewDefinition struct {
 	// RefreshInterval defines the maximum frequency, in millisecond precision,
 	// at which this this materialized view will be refreshed.
 	RefreshInterval time.Duration
+
+	// AllowNonIncrementalDefinition for materialized view definition.
+	// The default value is false.
+	AllowNonIncrementalDefinition bool
+
+	// MaxStaleness of data that could be returned when materialized
+	// view is queried.
+	MaxStaleness *IntervalValue
 }
 
 func (mvd *MaterializedViewDefinition) toBQ() *bq.MaterializedViewDefinition {
 	if mvd == nil {
 		return nil
 	}
+	maxStaleness := ""
+	if mvd.MaxStaleness != nil {
+		maxStaleness = mvd.MaxStaleness.String()
+	}
 	return &bq.MaterializedViewDefinition{
-		EnableRefresh:     mvd.EnableRefresh,
-		Query:             mvd.Query,
-		LastRefreshTime:   mvd.LastRefreshTime.UnixNano() / 1e6,
-		RefreshIntervalMs: int64(mvd.RefreshInterval) / 1e6,
+		EnableRefresh:                 mvd.EnableRefresh,
+		Query:                         mvd.Query,
+		LastRefreshTime:               mvd.LastRefreshTime.UnixNano() / 1e6,
+		RefreshIntervalMs:             int64(mvd.RefreshInterval) / 1e6,
+		AllowNonIncrementalDefinition: mvd.AllowNonIncrementalDefinition,
+		MaxStaleness:                  maxStaleness,
 		// force sending the bool in all cases due to how Go handles false.
-		ForceSendFields: []string{"EnableRefresh"},
+		ForceSendFields: []string{"EnableRefresh", "AllowNonIncrementalDefinition"},
 	}
 }
 
@@ -222,11 +360,17 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 	if q == nil {
 		return nil
 	}
+	var maxStaleness *IntervalValue
+	if q.MaxStaleness != "" {
+		maxStaleness, _ = ParseInterval(q.MaxStaleness)
+	}
 	return &MaterializedViewDefinition{
-		EnableRefresh:   q.EnableRefresh,
-		Query:           q.Query,
-		LastRefreshTime: unixMillisToTime(q.LastRefreshTime),
-		RefreshInterval: time.Duration(q.RefreshIntervalMs) * time.Millisecond,
+		EnableRefresh:                 q.EnableRefresh,
+		Query:                         q.Query,
+		LastRefreshTime:               unixMillisToTime(q.LastRefreshTime),
+		RefreshInterval:               time.Duration(q.RefreshIntervalMs) * time.Millisecond,
+		AllowNonIncrementalDefinition: q.AllowNonIncrementalDefinition,
+		MaxStaleness:                  maxStaleness,
 	}
 }
 
@@ -264,6 +408,42 @@ func bqToSnapshotDefinition(q *bq.SnapshotDefinition, c *Client) *SnapshotDefini
 		sd.SnapshotTime = t
 	}
 	return sd
+}
+
+// CloneDefinition provides metadata related to the origin of a clone.
+type CloneDefinition struct {
+
+	// BaseTableReference describes the ID of the table that this clone
+	// came from.
+	BaseTableReference *Table
+
+	// CloneTime indicates when the base table was cloned.
+	CloneTime time.Time
+}
+
+func (cd *CloneDefinition) toBQ() *bq.CloneDefinition {
+	if cd == nil {
+		return nil
+	}
+	return &bq.CloneDefinition{
+		BaseTableReference: cd.BaseTableReference.toBQ(),
+		CloneTime:          cd.CloneTime.Format(time.RFC3339),
+	}
+}
+
+func bqToCloneDefinition(q *bq.CloneDefinition, c *Client) *CloneDefinition {
+	if q == nil {
+		return nil
+	}
+	cd := &CloneDefinition{
+		BaseTableReference: bqToTable(q.BaseTableReference, c),
+	}
+	// It's possible we could fail to populate CloneTime if we fail to parse
+	// the backend representation.
+	if t, err := time.Parse(time.RFC3339, q.CloneTime); err == nil {
+		cd.CloneTime = t
+	}
+	return cd
 }
 
 // TimePartitioningType defines the interval used to partition managed data.
@@ -537,10 +717,15 @@ func (t *Table) Create(ctx context.Context, tm *TableMetadata) (err error) {
 		DatasetId: t.DatasetID,
 		TableId:   t.TableID,
 	}
+
 	req := t.c.bqs.Tables.Insert(t.ProjectID, t.DatasetID, table).Context(ctx)
 	setClientHeader(req.Header())
-	_, err = req.Do()
-	return err
+	return runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.tables.insert")
+		_, err = req.Do()
+		trace.EndSpan(ctx, err)
+		return err
+	})
 }
 
 func (tm *TableMetadata) toBQ() (*bq.Table, error) {
@@ -577,6 +762,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	t.Clustering = tm.Clustering.toBQ()
 	t.RequirePartitionFilter = tm.RequirePartitionFilter
 	t.SnapshotDefinition = tm.SnapshotDefinition.toBQ()
+	t.CloneDefinition = tm.CloneDefinition.toBQ()
 
 	if !validExpiration(tm.ExpirationTime) {
 		return nil, fmt.Errorf("invalid expiration time: %v.\n"+
@@ -617,25 +803,89 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	if tm.ETag != "" {
 		return nil, errors.New("cannot set ETag on create")
 	}
+	t.DefaultCollation = string(tm.DefaultCollation)
+
+	if tm.TableConstraints != nil {
+		t.TableConstraints = &bq.TableConstraints{}
+		if tm.TableConstraints.PrimaryKey != nil {
+			t.TableConstraints.PrimaryKey = tm.TableConstraints.PrimaryKey.toBQ()
+		}
+		if len(tm.TableConstraints.ForeignKeys) > 0 {
+			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.TableConstraints.ForeignKeys))
+			for i, fk := range tm.TableConstraints.ForeignKeys {
+				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
+			}
+		}
+	}
+	if tm.ResourceTags != nil {
+		t.ResourceTags = make(map[string]string)
+		for k, v := range tm.ResourceTags {
+			t.ResourceTags[k] = v
+		}
+	}
 	return t, nil
 }
 
+// We use this for the option pattern rather than exposing the underlying
+// discovery type directly.
+type tableGetCall struct {
+	call *bq.TablesGetCall
+}
+
+// TableMetadataOption allow requests to alter requests for table metadata.
+type TableMetadataOption func(*tableGetCall)
+
+// TableMetadataView specifies which details about a table are desired.
+type TableMetadataView string
+
+const (
+	// BasicMetadataView populates basic table information including schema partitioning,
+	// but does not contain storage statistics like number or rows or bytes.  This is a more
+	// efficient view to use for large tables or higher metadata query rates.
+	BasicMetadataView TableMetadataView = "BASIC"
+
+	// FullMetadataView returns all table information, including storage statistics.  It currently
+	// returns the same information as StorageStatsMetadataView, but may include additional information
+	// in the future.
+	FullMetadataView TableMetadataView = "FULL"
+
+	// StorageStatsMetadataView includes all information from the basic view, and includes storage statistics.  It currently
+	StorageStatsMetadataView TableMetadataView = "STORAGE_STATS"
+)
+
+// WithMetadataView is used to customize what details are returned when interrogating a
+// table via the Metadata() call.  Generally this is used to limit data returned for performance
+// reasons (such as large tables that take time computing storage statistics).
+func WithMetadataView(tmv TableMetadataView) TableMetadataOption {
+	return func(tgc *tableGetCall) {
+		tgc.call.View(string(tmv))
+	}
+}
+
 // Metadata fetches the metadata for the table.
-func (t *Table) Metadata(ctx context.Context) (md *TableMetadata, err error) {
+func (t *Table) Metadata(ctx context.Context, opts ...TableMetadataOption) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	req := t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
-	setClientHeader(req.Header())
-	var table *bq.Table
-	err = runWithRetry(ctx, func() (err error) {
-		table, err = req.Do()
+	tgc := &tableGetCall{
+		call: t.c.bqs.Tables.Get(t.ProjectID, t.DatasetID, t.TableID).Context(ctx),
+	}
+
+	for _, o := range opts {
+		o(tgc)
+	}
+
+	setClientHeader(tgc.call.Header())
+	var res *bq.Table
+	if err := runWithRetry(ctx, func() (err error) {
+		sCtx := trace.StartSpan(ctx, "bigquery.tables.get")
+		res, err = tgc.call.Do()
+		trace.EndSpan(sCtx, err)
 		return err
-	})
-	if err != nil {
+	}); err != nil {
 		return nil, err
 	}
-	return bqToTableMetadata(table, t.c)
+	return bqToTableMetadata(res, t.c)
 }
 
 func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
@@ -653,9 +903,11 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		CreationTime:           unixMillisToTime(t.CreationTime),
 		LastModifiedTime:       unixMillisToTime(int64(t.LastModifiedTime)),
 		ETag:                   t.Etag,
+		DefaultCollation:       t.DefaultCollation,
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
 		SnapshotDefinition:     bqToSnapshotDefinition(t.SnapshotDefinition, c),
+		CloneDefinition:        bqToCloneDefinition(t.CloneDefinition, c),
 	}
 	if t.MaterializedView != nil {
 		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)
@@ -684,6 +936,18 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 		}
 		md.ExternalDataConfig = edc
 	}
+	if t.TableConstraints != nil {
+		md.TableConstraints = &TableConstraints{
+			PrimaryKey:  bqToPrimaryKey(t.TableConstraints),
+			ForeignKeys: bqToForeignKeys(t.TableConstraints, c),
+		}
+	}
+	if t.ResourceTags != nil {
+		md.ResourceTags = make(map[string]string)
+		for k, v := range t.ResourceTags {
+			md.ResourceTags[k] = v
+		}
+	}
 	return md, nil
 }
 
@@ -696,7 +960,9 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 	setClientHeader(call.Header())
 
 	return runWithRetry(ctx, func() (err error) {
+		ctx = trace.StartSpan(ctx, "bigquery.tables.delete")
 		err = call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	})
 }
@@ -707,14 +973,37 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
+	if t.c.isStorageReadAvailable() {
+		it, err := newStorageRowIteratorFromTable(ctx, t, false)
+		if err == nil {
+			return it
+		}
+	}
 	return newRowIterator(ctx, &rowSource{t: t}, pf)
 }
 
 // NeverExpire is a sentinel value used to remove a table'e expiration time.
 var NeverExpire = time.Time{}.Add(-1)
 
+// We use this for the option pattern rather than exposing the underlying
+// discovery type directly.
+type tablePatchCall struct {
+	call *bq.TablesPatchCall
+}
+
+// TableUpdateOption allow requests to update table metadata.
+type TableUpdateOption func(*tablePatchCall)
+
+// WithAutoDetectSchema governs whether the schema autodetection occurs as part of the table update.
+// This is relevant in cases like external tables where schema is detected from the source data.
+func WithAutoDetectSchema(b bool) TableUpdateOption {
+	return func(tpc *tablePatchCall) {
+		tpc.call.AutodetectSchema(b)
+	}
+}
+
 // Update modifies specific Table metadata fields.
-func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string) (md *TableMetadata, err error) {
+func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag string, opts ...TableUpdateOption) (md *TableMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Update")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -722,14 +1011,24 @@ func (t *Table) Update(ctx context.Context, tm TableMetadataToUpdate, etag strin
 	if err != nil {
 		return nil, err
 	}
-	call := t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx)
-	setClientHeader(call.Header())
+
+	tpc := &tablePatchCall{
+		call: t.c.bqs.Tables.Patch(t.ProjectID, t.DatasetID, t.TableID, bqt).Context(ctx),
+	}
+
+	for _, o := range opts {
+		o(tpc)
+	}
+
+	setClientHeader(tpc.call.Header())
 	if etag != "" {
-		call.Header().Set("If-Match", etag)
+		tpc.call.Header().Set("If-Match", etag)
 	}
 	var res *bq.Table
 	if err := runWithRetry(ctx, func() (err error) {
-		res, err = call.Do()
+		ctx = trace.StartSpan(ctx, "bigquery.tables.patch")
+		res, err = tpc.call.Do()
+		trace.EndSpan(ctx, err)
 		return err
 	}); err != nil {
 		return nil, err
@@ -761,6 +1060,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	}
 	if tm.EncryptionConfig != nil {
 		t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
+	}
+	if tm.ExternalDataConfig != nil {
+		cfg := tm.ExternalDataConfig.toBQ()
+		t.ExternalDataConfiguration = &cfg
 	}
 
 	if tm.Clustering != nil {
@@ -799,6 +1102,32 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		}
 		t.View.UseLegacySql = optional.ToBool(tm.UseLegacySQL)
 		t.View.ForceSendFields = append(t.View.ForceSendFields, "UseLegacySql")
+	}
+	if tm.DefaultCollation != nil {
+		t.DefaultCollation = optional.ToString(tm.DefaultCollation)
+		forceSend("DefaultCollation")
+	}
+	if tm.TableConstraints != nil {
+		t.TableConstraints = &bq.TableConstraints{}
+		if tm.TableConstraints.PrimaryKey != nil {
+			t.TableConstraints.PrimaryKey = tm.TableConstraints.PrimaryKey.toBQ()
+			t.TableConstraints.PrimaryKey.ForceSendFields = append(t.TableConstraints.PrimaryKey.ForceSendFields, "Columns")
+			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "PrimaryKey")
+		}
+		if tm.TableConstraints.ForeignKeys != nil {
+			t.TableConstraints.ForeignKeys = make([]*bq.TableConstraintsForeignKeys, len(tm.TableConstraints.ForeignKeys))
+			for i, fk := range tm.TableConstraints.ForeignKeys {
+				t.TableConstraints.ForeignKeys[i] = fk.toBQ()
+			}
+			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "ForeignKeys")
+		}
+	}
+	if tm.ResourceTags != nil {
+		t.ResourceTags = make(map[string]string)
+		for k, v := range tm.ResourceTags {
+			t.ResourceTags[k] = v
+		}
+		forceSend("ResourceTags")
 	}
 	labels, forces, nulls := tm.update()
 	t.Labels = labels
@@ -848,6 +1177,10 @@ type TableMetadataToUpdate struct {
 	// set ExpirationTime to NeverExpire. The zero value is ignored.
 	ExpirationTime time.Time
 
+	// ExternalDataConfig controls the definition of a table defined against
+	// an external source, such as one based on files in Google Cloud Storage.
+	ExternalDataConfig *ExternalDataConfig
+
 	// The query to use for a view.
 	ViewQuery optional.String
 
@@ -868,6 +1201,23 @@ type TableMetadataToUpdate struct {
 	// RequirePartitionFilter governs whether the table enforces partition
 	// elimination when referenced in a query.
 	RequirePartitionFilter optional.Bool
+
+	// Defines the default collation specification of new STRING fields
+	// in the table.
+	DefaultCollation optional.String
+
+	// TableConstraints allows modification of table constraints
+	// such as primary and foreign keys.
+	TableConstraints *TableConstraints
+
+	// The tags associated with this table. Tag
+	// keys are globally unique. See additional information on tags
+	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
+	// An object containing a list of "key": value pairs. The key is the
+	// namespaced friendly name of the tag key, e.g. "12345/environment"
+	// where 12345 is parent id. The value is the friendly short name of the
+	// tag value, e.g. "production".
+	ResourceTags map[string]string
 
 	labelUpdater
 }

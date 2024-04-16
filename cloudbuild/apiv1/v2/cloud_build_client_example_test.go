@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	cloudbuild "cloud.google.com/go/cloudbuild/apiv1/v2"
+	cloudbuildpb "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb"
 	"google.golang.org/api/iterator"
-	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,124 +41,30 @@ func ExampleNewClient() {
 	_ = c
 }
 
-func ExampleClient_CreateBuild() {
+func ExampleNewRESTClient() {
 	ctx := context.Background()
-	c, err := cloudbuild.NewClient(ctx)
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &cloudbuildpb.CreateBuildRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateBuildRequest.
-	}
-	op, err := c.CreateBuild(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_GetBuild() {
-	ctx := context.Background()
-	c, err := cloudbuild.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.GetBuildRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#GetBuildRequest.
-	}
-	resp, err := c.GetBuild(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListBuilds() {
-	ctx := context.Background()
-	c, err := cloudbuild.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.ListBuildsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListBuildsRequest.
-	}
-	it := c.ListBuilds(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_CancelBuild() {
-	ctx := context.Background()
-	c, err := cloudbuild.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.CancelBuildRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CancelBuildRequest.
-	}
-	resp, err := c.CancelBuild(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_RetryBuild() {
-	ctx := context.Background()
-	c, err := cloudbuild.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.RetryBuildRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#RetryBuildRequest.
-	}
-	op, err := c.RetryBuild(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
+	// TODO: Use client.
+	_ = c
 }
 
 func ExampleClient_ApproveBuild() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -162,7 +73,7 @@ func ExampleClient_ApproveBuild() {
 
 	req := &cloudbuildpb.ApproveBuildRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ApproveBuildRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#ApproveBuildRequest.
 	}
 	op, err := c.ApproveBuild(ctx, req)
 	if err != nil {
@@ -177,19 +88,24 @@ func ExampleClient_ApproveBuild() {
 	_ = resp
 }
 
-func ExampleClient_CreateBuildTrigger() {
+func ExampleClient_CancelBuild() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &cloudbuildpb.CreateBuildTriggerRequest{
+	req := &cloudbuildpb.CancelBuildRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateBuildTriggerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#CancelBuildRequest.
 	}
-	resp, err := c.CreateBuildTrigger(ctx, req)
+	resp, err := c.CancelBuild(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -197,103 +113,24 @@ func ExampleClient_CreateBuildTrigger() {
 	_ = resp
 }
 
-func ExampleClient_GetBuildTrigger() {
+func ExampleClient_CreateBuild() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &cloudbuildpb.GetBuildTriggerRequest{
+	req := &cloudbuildpb.CreateBuildRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#GetBuildTriggerRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#CreateBuildRequest.
 	}
-	resp, err := c.GetBuildTrigger(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListBuildTriggers() {
-	ctx := context.Background()
-	c, err := cloudbuild.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.ListBuildTriggersRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListBuildTriggersRequest.
-	}
-	it := c.ListBuildTriggers(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_DeleteBuildTrigger() {
-	ctx := context.Background()
-	c, err := cloudbuild.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.DeleteBuildTriggerRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#DeleteBuildTriggerRequest.
-	}
-	err = c.DeleteBuildTrigger(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_UpdateBuildTrigger() {
-	ctx := context.Background()
-	c, err := cloudbuild.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.UpdateBuildTriggerRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#UpdateBuildTriggerRequest.
-	}
-	resp, err := c.UpdateBuildTrigger(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_RunBuildTrigger() {
-	ctx := context.Background()
-	c, err := cloudbuild.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &cloudbuildpb.RunBuildTriggerRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#RunBuildTriggerRequest.
-	}
-	op, err := c.RunBuildTrigger(ctx, req)
+	op, err := c.CreateBuild(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -306,19 +143,24 @@ func ExampleClient_RunBuildTrigger() {
 	_ = resp
 }
 
-func ExampleClient_ReceiveTriggerWebhook() {
+func ExampleClient_CreateBuildTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &cloudbuildpb.ReceiveTriggerWebhookRequest{
+	req := &cloudbuildpb.CreateBuildTriggerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ReceiveTriggerWebhookRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#CreateBuildTriggerRequest.
 	}
-	resp, err := c.ReceiveTriggerWebhook(ctx, req)
+	resp, err := c.CreateBuildTrigger(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -328,6 +170,11 @@ func ExampleClient_ReceiveTriggerWebhook() {
 
 func ExampleClient_CreateWorkerPool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -336,7 +183,7 @@ func ExampleClient_CreateWorkerPool() {
 
 	req := &cloudbuildpb.CreateWorkerPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#CreateWorkerPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#CreateWorkerPoolRequest.
 	}
 	op, err := c.CreateWorkerPool(ctx, req)
 	if err != nil {
@@ -351,28 +198,36 @@ func ExampleClient_CreateWorkerPool() {
 	_ = resp
 }
 
-func ExampleClient_GetWorkerPool() {
+func ExampleClient_DeleteBuildTrigger() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &cloudbuildpb.GetWorkerPoolRequest{
+	req := &cloudbuildpb.DeleteBuildTriggerRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#GetWorkerPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#DeleteBuildTriggerRequest.
 	}
-	resp, err := c.GetWorkerPool(ctx, req)
+	err = c.DeleteBuildTrigger(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleClient_DeleteWorkerPool() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -381,7 +236,7 @@ func ExampleClient_DeleteWorkerPool() {
 
 	req := &cloudbuildpb.DeleteWorkerPoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#DeleteWorkerPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#DeleteWorkerPoolRequest.
 	}
 	op, err := c.DeleteWorkerPool(ctx, req)
 	if err != nil {
@@ -394,24 +249,24 @@ func ExampleClient_DeleteWorkerPool() {
 	}
 }
 
-func ExampleClient_UpdateWorkerPool() {
+func ExampleClient_GetBuild() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &cloudbuildpb.UpdateWorkerPoolRequest{
+	req := &cloudbuildpb.GetBuildRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#UpdateWorkerPoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#GetBuildRequest.
 	}
-	op, err := c.UpdateWorkerPool(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.GetBuild(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -419,8 +274,137 @@ func ExampleClient_UpdateWorkerPool() {
 	_ = resp
 }
 
+func ExampleClient_GetBuildTrigger() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.GetBuildTriggerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#GetBuildTriggerRequest.
+	}
+	resp, err := c.GetBuildTrigger(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetWorkerPool() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.GetWorkerPoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#GetWorkerPoolRequest.
+	}
+	resp, err := c.GetWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListBuildTriggers() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.ListBuildTriggersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#ListBuildTriggersRequest.
+	}
+	it := c.ListBuildTriggers(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*cloudbuildpb.ListBuildTriggersResponse)
+	}
+}
+
+func ExampleClient_ListBuilds() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.ListBuildsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#ListBuildsRequest.
+	}
+	it := c.ListBuilds(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*cloudbuildpb.ListBuildsResponse)
+	}
+}
+
 func ExampleClient_ListWorkerPools() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -429,7 +413,7 @@ func ExampleClient_ListWorkerPools() {
 
 	req := &cloudbuildpb.ListWorkerPoolsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/devtools/cloudbuild/v1#ListWorkerPoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#ListWorkerPoolsRequest.
 	}
 	it := c.ListWorkerPools(ctx, req)
 	for {
@@ -442,5 +426,151 @@ func ExampleClient_ListWorkerPools() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*cloudbuildpb.ListWorkerPoolsResponse)
 	}
+}
+
+func ExampleClient_ReceiveTriggerWebhook() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.ReceiveTriggerWebhookRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#ReceiveTriggerWebhookRequest.
+	}
+	resp, err := c.ReceiveTriggerWebhook(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RetryBuild() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.RetryBuildRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#RetryBuildRequest.
+	}
+	op, err := c.RetryBuild(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RunBuildTrigger() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.RunBuildTriggerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#RunBuildTriggerRequest.
+	}
+	op, err := c.RunBuildTrigger(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateBuildTrigger() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.UpdateBuildTriggerRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#UpdateBuildTriggerRequest.
+	}
+	resp, err := c.UpdateBuildTrigger(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateWorkerPool() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cloudbuildpb.UpdateWorkerPoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb#UpdateWorkerPoolRequest.
+	}
+	op, err := c.UpdateWorkerPool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

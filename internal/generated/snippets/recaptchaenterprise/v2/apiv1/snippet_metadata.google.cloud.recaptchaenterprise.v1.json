@@ -1,0 +1,887 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
+    "version": "$VERSION",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.recaptchaenterprise.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_AnnotateAssessment_sync",
+      "title": "recaptchaenterprise AnnotateAssessment Sample",
+      "description": "AnnotateAssessment annotates a previously created Assessment to provide additional information\non whether the event turned out to be authentic or fraudulent.",
+      "file": "Client/AnnotateAssessment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnnotateAssessment",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.AnnotateAssessment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.AnnotateAssessmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.AnnotateAssessmentResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "AnnotateAssessment",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.AnnotateAssessment",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_CreateAssessment_sync",
+      "title": "recaptchaenterprise CreateAssessment Sample",
+      "description": "CreateAssessment creates an Assessment of the likelihood an event is legitimate.",
+      "file": "Client/CreateAssessment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAssessment",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.CreateAssessment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.CreateAssessmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.Assessment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateAssessment",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateAssessment",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_CreateFirewallPolicy_sync",
+      "title": "recaptchaenterprise CreateFirewallPolicy Sample",
+      "description": "CreateFirewallPolicy creates a new FirewallPolicy, specifying conditions at which reCAPTCHA\nEnterprise actions can be executed.\nA project may have a maximum of 1000 policies.",
+      "file": "Client/CreateFirewallPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFirewallPolicy",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.CreateFirewallPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.CreateFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.FirewallPolicy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateFirewallPolicy",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateFirewallPolicy",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_CreateKey_sync",
+      "title": "recaptchaenterprise CreateKey Sample",
+      "description": "CreateKey creates a new reCAPTCHA Enterprise key.",
+      "file": "Client/CreateKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateKey",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.CreateKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.CreateKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.Key",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateKey",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.CreateKey",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_DeleteFirewallPolicy_sync",
+      "title": "recaptchaenterprise DeleteFirewallPolicy Sample",
+      "description": "DeleteFirewallPolicy deletes the specified firewall policy.",
+      "file": "Client/DeleteFirewallPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFirewallPolicy",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.DeleteFirewallPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.DeleteFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteFirewallPolicy",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteFirewallPolicy",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_DeleteKey_sync",
+      "title": "recaptchaenterprise DeleteKey Sample",
+      "description": "DeleteKey deletes the specified key.",
+      "file": "Client/DeleteKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteKey",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.DeleteKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.DeleteKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteKey",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.DeleteKey",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_GetFirewallPolicy_sync",
+      "title": "recaptchaenterprise GetFirewallPolicy Sample",
+      "description": "GetFirewallPolicy returns the specified firewall policy.",
+      "file": "Client/GetFirewallPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFirewallPolicy",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.GetFirewallPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.GetFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.FirewallPolicy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "GetFirewallPolicy",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetFirewallPolicy",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_GetKey_sync",
+      "title": "recaptchaenterprise GetKey Sample",
+      "description": "GetKey returns the specified key.",
+      "file": "Client/GetKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetKey",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.GetKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.GetKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.Key",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "GetKey",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetKey",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_GetMetrics_sync",
+      "title": "recaptchaenterprise GetMetrics Sample",
+      "description": "GetMetrics get some aggregated metrics for a Key. This data can be used to build\ndashboards.",
+      "file": "Client/GetMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMetrics",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.GetMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.GetMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.Metrics",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "GetMetrics",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetMetrics",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_ListFirewallPolicies_sync",
+      "title": "recaptchaenterprise ListFirewallPolicies Sample",
+      "description": "ListFirewallPolicies returns the list of all firewall policies that belong to a project.",
+      "file": "Client/ListFirewallPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFirewallPolicies",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.ListFirewallPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.ListFirewallPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FirewallPolicyIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "ListFirewallPolicies",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListFirewallPolicies",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_ListKeys_sync",
+      "title": "recaptchaenterprise ListKeys Sample",
+      "description": "ListKeys returns the list of all keys that belong to a project.",
+      "file": "Client/ListKeys/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListKeys",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.ListKeys",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.ListKeysRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "KeyIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "ListKeys",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListKeys",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_ListRelatedAccountGroupMemberships_sync",
+      "title": "recaptchaenterprise ListRelatedAccountGroupMemberships Sample",
+      "description": "ListRelatedAccountGroupMemberships get memberships in a group of related accounts.",
+      "file": "Client/ListRelatedAccountGroupMemberships/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRelatedAccountGroupMemberships",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.ListRelatedAccountGroupMemberships",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RelatedAccountGroupMembershipIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRelatedAccountGroupMemberships",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroupMemberships",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_ListRelatedAccountGroups_sync",
+      "title": "recaptchaenterprise ListRelatedAccountGroups Sample",
+      "description": "ListRelatedAccountGroups list groups of related accounts.",
+      "file": "Client/ListRelatedAccountGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRelatedAccountGroups",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.ListRelatedAccountGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.ListRelatedAccountGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RelatedAccountGroupIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRelatedAccountGroups",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ListRelatedAccountGroups",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_MigrateKey_sync",
+      "title": "recaptchaenterprise MigrateKey Sample",
+      "description": "MigrateKey migrates an existing key from reCAPTCHA to reCAPTCHA Enterprise.\nOnce a key is migrated, it can be used from either product. SiteVerify\nrequests are billed as CreateAssessment calls. You must be\nauthenticated as one of the current owners of the reCAPTCHA Key, and\nyour user must have the reCAPTCHA Enterprise Admin IAM role in the\ndestination project.",
+      "file": "Client/MigrateKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "MigrateKey",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.MigrateKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.MigrateKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.Key",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "MigrateKey",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.MigrateKey",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_ReorderFirewallPolicies_sync",
+      "title": "recaptchaenterprise ReorderFirewallPolicies Sample",
+      "description": "ReorderFirewallPolicies reorders all firewall policies.",
+      "file": "Client/ReorderFirewallPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReorderFirewallPolicies",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.ReorderFirewallPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.ReorderFirewallPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.ReorderFirewallPoliciesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "ReorderFirewallPolicies",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.ReorderFirewallPolicies",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_RetrieveLegacySecretKey_sync",
+      "title": "recaptchaenterprise RetrieveLegacySecretKey Sample",
+      "description": "RetrieveLegacySecretKey returns the secret key related to the specified public key.\nYou must use the legacy secret key only in a 3rd party integration with\nlegacy reCAPTCHA.",
+      "file": "Client/RetrieveLegacySecretKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveLegacySecretKey",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.RetrieveLegacySecretKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.RetrieveLegacySecretKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.RetrieveLegacySecretKeyResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "RetrieveLegacySecretKey",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.RetrieveLegacySecretKey",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_SearchRelatedAccountGroupMemberships_sync",
+      "title": "recaptchaenterprise SearchRelatedAccountGroupMemberships Sample",
+      "description": "SearchRelatedAccountGroupMemberships search group memberships related to a given account.",
+      "file": "Client/SearchRelatedAccountGroupMemberships/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchRelatedAccountGroupMemberships",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.SearchRelatedAccountGroupMemberships",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RelatedAccountGroupMembershipIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "SearchRelatedAccountGroupMemberships",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.SearchRelatedAccountGroupMemberships",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_UpdateFirewallPolicy_sync",
+      "title": "recaptchaenterprise UpdateFirewallPolicy Sample",
+      "description": "UpdateFirewallPolicy updates the specified firewall policy.",
+      "file": "Client/UpdateFirewallPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateFirewallPolicy",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.UpdateFirewallPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.UpdateFirewallPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.FirewallPolicy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateFirewallPolicy",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateFirewallPolicy",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_UpdateKey_sync",
+      "title": "recaptchaenterprise UpdateKey Sample",
+      "description": "UpdateKey updates the specified key.",
+      "file": "Client/UpdateKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateKey",
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.UpdateKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "recaptchaenterprisepb.UpdateKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.Key",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateKey",
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdateKey",
+          "service": {
+            "shortName": "RecaptchaEnterpriseService",
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -91,6 +91,14 @@ var (
 				{Name: "value", Type: bigquery.StringFieldType, Repeated: true},
 			},
 		},
+		{
+			// range is a compound representation, but not quite a struct.
+			Name: "range_type",
+			Type: bigquery.RangeFieldType,
+			RangeElementType: &bigquery.RangeElementType{
+				Type: bigquery.TimestampFieldType,
+			},
+		},
 	}
 
 	// We currently follow proto2 rules here, hence the well known types getting treated as records.
@@ -111,6 +119,223 @@ var (
 			Schema: bigquery.Schema{
 				{Name: "value", Type: bigquery.StringFieldType},
 			},
+		},
+	}
+
+	ExternalEnumMessageSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "msg_a",
+			Type: bigquery.RecordFieldType,
+			Schema: bigquery.Schema{
+				{Name: "foo", Type: bigquery.StringFieldType},
+				{Name: "bar", Type: bigquery.IntegerFieldType},
+			},
+		},
+		{
+			Name: "msg_b",
+			Type: bigquery.RecordFieldType,
+			Schema: bigquery.Schema{
+				{Name: "baz", Type: bigquery.IntegerFieldType},
+			},
+		},
+	}
+
+	ValidationBaseSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "double_field",
+			Type: bigquery.FloatFieldType,
+		},
+		{
+			Name: "float_field",
+			Type: bigquery.FloatFieldType,
+		},
+		{
+			Name: "int32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "int64_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "uint32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "sint32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "sint64_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "fixed32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "sfixed32_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "sfixed64_field",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "bool_field",
+			Type: bigquery.BooleanFieldType,
+		},
+		{
+			Name: "string_field",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "bytes_field",
+			Type: bigquery.BytesFieldType,
+		},
+		{
+			Name: "enum_field",
+			Type: bigquery.IntegerFieldType,
+		},
+	}
+
+	ValidationRepeatedSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "id",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name:     "double_repeated",
+			Type:     bigquery.FloatFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "float_repeated",
+			Type:     bigquery.FloatFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "int32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "int64_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "uint32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "sint32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "sint64_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "fixed32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "sfixed32_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "sfixed64_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "bool_repeated",
+			Type:     bigquery.BooleanFieldType,
+			Repeated: true,
+		},
+		{
+			Name:     "enum_repeated",
+			Type:     bigquery.IntegerFieldType,
+			Repeated: true,
+		},
+	}
+
+	ValidationColumnAnnotations bigquery.Schema = bigquery.Schema{
+		{
+			Name: "first",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "second",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "特別コラム",
+			Type: bigquery.StringFieldType,
+		},
+	}
+
+	ExampleEmployeeSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "id",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name: "username",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "given_name",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:     "departments",
+			Type:     bigquery.StringFieldType,
+			Repeated: true,
+		},
+		{
+			Name: "salary",
+			Type: bigquery.IntegerFieldType,
+		},
+	}
+
+	DefaultValueSchema bigquery.Schema = bigquery.Schema{
+		{
+			Name: "id",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name: "strcol",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:                   "strcol_withdef",
+			Type:                   bigquery.StringFieldType,
+			DefaultValueExpression: "\"defaultvalue\"",
+		},
+		{
+			Name: "intcol",
+			Type: bigquery.IntegerFieldType,
+		},
+		{
+			Name:                   "intcol_withdef",
+			Type:                   bigquery.IntegerFieldType,
+			DefaultValueExpression: "-99",
+		},
+		{
+			Name: "otherstr",
+			Type: bigquery.StringFieldType,
+		},
+		{
+			Name:                   "otherstr_withdef",
+			Type:                   bigquery.StringFieldType,
+			DefaultValueExpression: "\"otherval\"",
 		},
 	}
 )

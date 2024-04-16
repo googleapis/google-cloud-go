@@ -2,7 +2,7 @@
   "tests": [
     {
       "description": "update: ArrayUnion alone",
-      "comment": "If the only values in the input are ArrayUnion, then no\nupdate operation should be produced.",
+      "comment": "If the only values in the input are ArrayUnion, then no\nupdate mask should be produced in update operation.",
       "update": {
         "docRefPath": "projects/projectID/databases/(default)/documents/C/d",
         "jsonData": "{\"a\": [\"ArrayUnion\", 1, 2, 3]}",
@@ -10,27 +10,27 @@
           "database": "projects/projectID/databases/(default)",
           "writes": [
             {
-              "transform": {
-                "document": "projects/projectID/databases/(default)/documents/C/d",
-                "fieldTransforms": [
-                  {
-                    "fieldPath": "a",
-                    "appendMissingElements": {
-                      "values": [
-                        {
-                          "integerValue": "1"
-                        },
-                        {
-                          "integerValue": "2"
-                        },
-                        {
-                          "integerValue": "3"
-                        }
-                      ]
-                    }
-                  }
-                ]
+              "update": {
+                "name": "projects/projectID/databases/(default)/documents/C/d"
               },
+              "updateTransforms": [
+                {
+                  "fieldPath": "a",
+                  "appendMissingElements": {
+                    "values": [
+                      {
+                        "integerValue": "1"
+                      },
+                      {
+                        "integerValue": "2"
+                      },
+                      {
+                        "integerValue": "3"
+                      }
+                    ]
+                  }
+                }
+              ],
               "currentDocument": {
                 "exists": true
               }

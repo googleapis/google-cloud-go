@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	appengine "cloud.google.com/go/appengine/apiv1"
+	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"google.golang.org/api/iterator"
-	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
 func ExampleNewServicesClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewServicesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,8 +41,83 @@ func ExampleNewServicesClient() {
 	_ = c
 }
 
+func ExampleNewServicesRESTClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := appengine.NewServicesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	// TODO: Use client.
+	_ = c
+}
+
+func ExampleServicesClient_DeleteService() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := appengine.NewServicesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &appenginepb.DeleteServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#DeleteServiceRequest.
+	}
+	op, err := c.DeleteService(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleServicesClient_GetService() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := appengine.NewServicesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &appenginepb.GetServiceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#GetServiceRequest.
+	}
+	resp, err := c.GetService(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleServicesClient_ListServices() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewServicesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +126,7 @@ func ExampleServicesClient_ListServices() {
 
 	req := &appenginepb.ListServicesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#ListServicesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#ListServicesRequest.
 	}
 	it := c.ListServices(ctx, req)
 	for {
@@ -59,31 +139,22 @@ func ExampleServicesClient_ListServices() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
 
-func ExampleServicesClient_GetService() {
-	ctx := context.Background()
-	c, err := appengine.NewServicesClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*appenginepb.ListServicesResponse)
 	}
-	defer c.Close()
-
-	req := &appenginepb.GetServiceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#GetServiceRequest.
-	}
-	resp, err := c.GetService(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleServicesClient_UpdateService() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := appengine.NewServicesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +163,7 @@ func ExampleServicesClient_UpdateService() {
 
 	req := &appenginepb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#UpdateServiceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/appengine/apiv1/appenginepb#UpdateServiceRequest.
 	}
 	op, err := c.UpdateService(ctx, req)
 	if err != nil {
@@ -105,27 +176,4 @@ func ExampleServicesClient_UpdateService() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleServicesClient_DeleteService() {
-	ctx := context.Background()
-	c, err := appengine.NewServicesClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &appenginepb.DeleteServiceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/appengine/v1#DeleteServiceRequest.
-	}
-	op, err := c.DeleteService(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }

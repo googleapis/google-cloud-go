@@ -61,7 +61,7 @@ func VerifyKeyOrdering(publishData, receiveData []OrderedKeyMsg) error {
 			return fmt.Errorf("saw key %s, but we never published this key", k)
 		}
 
-		if diff := cmp.Diff(pb, rd); diff != "" {
+		if diff := cmp.Diff(rd, pb); diff != "" {
 			return fmt.Errorf("%s: got -, want +\n\t%s", k, diff)
 		}
 	}

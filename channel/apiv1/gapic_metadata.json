@@ -5,6 +5,90 @@
   "protoPackage": "google.cloud.channel.v1",
   "libraryPackage": "cloud.google.com/go/channel/apiv1",
   "services": {
+    "CloudChannelReportsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudChannelReportsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FetchReportResults": {
+              "methods": [
+                "FetchReportResults"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReports": {
+              "methods": [
+                "ListReports"
+              ]
+            },
+            "RunReportJob": {
+              "methods": [
+                "RunReportJob"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudChannelReportsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "FetchReportResults": {
+              "methods": [
+                "FetchReportResults"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReports": {
+              "methods": [
+                "ListReports"
+              ]
+            },
+            "RunReportJob": {
+              "methods": [
+                "RunReportJob"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CloudChannelService": {
       "clients": {
         "grpc": {
@@ -18,6 +102,11 @@
             "CancelEntitlement": {
               "methods": [
                 "CancelEntitlement"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
               ]
             },
             "ChangeOffer": {
@@ -45,9 +134,19 @@
                 "CreateChannelPartnerLink"
               ]
             },
+            "CreateChannelPartnerRepricingConfig": {
+              "methods": [
+                "CreateChannelPartnerRepricingConfig"
+              ]
+            },
             "CreateCustomer": {
               "methods": [
                 "CreateCustomer"
+              ]
+            },
+            "CreateCustomerRepricingConfig": {
+              "methods": [
+                "CreateCustomerRepricingConfig"
               ]
             },
             "CreateEntitlement": {
@@ -55,9 +154,24 @@
                 "CreateEntitlement"
               ]
             },
+            "DeleteChannelPartnerRepricingConfig": {
+              "methods": [
+                "DeleteChannelPartnerRepricingConfig"
+              ]
+            },
             "DeleteCustomer": {
               "methods": [
                 "DeleteCustomer"
+              ]
+            },
+            "DeleteCustomerRepricingConfig": {
+              "methods": [
+                "DeleteCustomerRepricingConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
               ]
             },
             "GetChannelPartnerLink": {
@@ -65,14 +179,29 @@
                 "GetChannelPartnerLink"
               ]
             },
+            "GetChannelPartnerRepricingConfig": {
+              "methods": [
+                "GetChannelPartnerRepricingConfig"
+              ]
+            },
             "GetCustomer": {
               "methods": [
                 "GetCustomer"
               ]
             },
+            "GetCustomerRepricingConfig": {
+              "methods": [
+                "GetCustomerRepricingConfig"
+              ]
+            },
             "GetEntitlement": {
               "methods": [
                 "GetEntitlement"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ImportCustomer": {
@@ -85,9 +214,24 @@
                 "ListChannelPartnerLinks"
               ]
             },
+            "ListChannelPartnerRepricingConfigs": {
+              "methods": [
+                "ListChannelPartnerRepricingConfigs"
+              ]
+            },
+            "ListCustomerRepricingConfigs": {
+              "methods": [
+                "ListCustomerRepricingConfigs"
+              ]
+            },
             "ListCustomers": {
               "methods": [
                 "ListCustomers"
+              ]
+            },
+            "ListEntitlementChanges": {
+              "methods": [
+                "ListEntitlementChanges"
               ]
             },
             "ListEntitlements": {
@@ -98,6 +242,11 @@
             "ListOffers": {
               "methods": [
                 "ListOffers"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListProducts": {
@@ -113,6 +262,16 @@
             "ListPurchasableSkus": {
               "methods": [
                 "ListPurchasableSkus"
+              ]
+            },
+            "ListSkuGroupBillableSkus": {
+              "methods": [
+                "ListSkuGroupBillableSkus"
+              ]
+            },
+            "ListSkuGroups": {
+              "methods": [
+                "ListSkuGroups"
               ]
             },
             "ListSkus": {
@@ -143,6 +302,11 @@
             "ProvisionCloudIdentity": {
               "methods": [
                 "ProvisionCloudIdentity"
+              ]
+            },
+            "QueryEligibleBillingAccounts": {
+              "methods": [
+                "QueryEligibleBillingAccounts"
               ]
             },
             "RegisterSubscriber": {
@@ -180,9 +344,289 @@
                 "UpdateChannelPartnerLink"
               ]
             },
+            "UpdateChannelPartnerRepricingConfig": {
+              "methods": [
+                "UpdateChannelPartnerRepricingConfig"
+              ]
+            },
             "UpdateCustomer": {
               "methods": [
                 "UpdateCustomer"
+              ]
+            },
+            "UpdateCustomerRepricingConfig": {
+              "methods": [
+                "UpdateCustomerRepricingConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudChannelClient",
+          "rpcs": {
+            "ActivateEntitlement": {
+              "methods": [
+                "ActivateEntitlement"
+              ]
+            },
+            "CancelEntitlement": {
+              "methods": [
+                "CancelEntitlement"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ChangeOffer": {
+              "methods": [
+                "ChangeOffer"
+              ]
+            },
+            "ChangeParameters": {
+              "methods": [
+                "ChangeParameters"
+              ]
+            },
+            "ChangeRenewalSettings": {
+              "methods": [
+                "ChangeRenewalSettings"
+              ]
+            },
+            "CheckCloudIdentityAccountsExist": {
+              "methods": [
+                "CheckCloudIdentityAccountsExist"
+              ]
+            },
+            "CreateChannelPartnerLink": {
+              "methods": [
+                "CreateChannelPartnerLink"
+              ]
+            },
+            "CreateChannelPartnerRepricingConfig": {
+              "methods": [
+                "CreateChannelPartnerRepricingConfig"
+              ]
+            },
+            "CreateCustomer": {
+              "methods": [
+                "CreateCustomer"
+              ]
+            },
+            "CreateCustomerRepricingConfig": {
+              "methods": [
+                "CreateCustomerRepricingConfig"
+              ]
+            },
+            "CreateEntitlement": {
+              "methods": [
+                "CreateEntitlement"
+              ]
+            },
+            "DeleteChannelPartnerRepricingConfig": {
+              "methods": [
+                "DeleteChannelPartnerRepricingConfig"
+              ]
+            },
+            "DeleteCustomer": {
+              "methods": [
+                "DeleteCustomer"
+              ]
+            },
+            "DeleteCustomerRepricingConfig": {
+              "methods": [
+                "DeleteCustomerRepricingConfig"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetChannelPartnerLink": {
+              "methods": [
+                "GetChannelPartnerLink"
+              ]
+            },
+            "GetChannelPartnerRepricingConfig": {
+              "methods": [
+                "GetChannelPartnerRepricingConfig"
+              ]
+            },
+            "GetCustomer": {
+              "methods": [
+                "GetCustomer"
+              ]
+            },
+            "GetCustomerRepricingConfig": {
+              "methods": [
+                "GetCustomerRepricingConfig"
+              ]
+            },
+            "GetEntitlement": {
+              "methods": [
+                "GetEntitlement"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportCustomer": {
+              "methods": [
+                "ImportCustomer"
+              ]
+            },
+            "ListChannelPartnerLinks": {
+              "methods": [
+                "ListChannelPartnerLinks"
+              ]
+            },
+            "ListChannelPartnerRepricingConfigs": {
+              "methods": [
+                "ListChannelPartnerRepricingConfigs"
+              ]
+            },
+            "ListCustomerRepricingConfigs": {
+              "methods": [
+                "ListCustomerRepricingConfigs"
+              ]
+            },
+            "ListCustomers": {
+              "methods": [
+                "ListCustomers"
+              ]
+            },
+            "ListEntitlementChanges": {
+              "methods": [
+                "ListEntitlementChanges"
+              ]
+            },
+            "ListEntitlements": {
+              "methods": [
+                "ListEntitlements"
+              ]
+            },
+            "ListOffers": {
+              "methods": [
+                "ListOffers"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            },
+            "ListPurchasableOffers": {
+              "methods": [
+                "ListPurchasableOffers"
+              ]
+            },
+            "ListPurchasableSkus": {
+              "methods": [
+                "ListPurchasableSkus"
+              ]
+            },
+            "ListSkuGroupBillableSkus": {
+              "methods": [
+                "ListSkuGroupBillableSkus"
+              ]
+            },
+            "ListSkuGroups": {
+              "methods": [
+                "ListSkuGroups"
+              ]
+            },
+            "ListSkus": {
+              "methods": [
+                "ListSkus"
+              ]
+            },
+            "ListSubscribers": {
+              "methods": [
+                "ListSubscribers"
+              ]
+            },
+            "ListTransferableOffers": {
+              "methods": [
+                "ListTransferableOffers"
+              ]
+            },
+            "ListTransferableSkus": {
+              "methods": [
+                "ListTransferableSkus"
+              ]
+            },
+            "LookupOffer": {
+              "methods": [
+                "LookupOffer"
+              ]
+            },
+            "ProvisionCloudIdentity": {
+              "methods": [
+                "ProvisionCloudIdentity"
+              ]
+            },
+            "QueryEligibleBillingAccounts": {
+              "methods": [
+                "QueryEligibleBillingAccounts"
+              ]
+            },
+            "RegisterSubscriber": {
+              "methods": [
+                "RegisterSubscriber"
+              ]
+            },
+            "StartPaidService": {
+              "methods": [
+                "StartPaidService"
+              ]
+            },
+            "SuspendEntitlement": {
+              "methods": [
+                "SuspendEntitlement"
+              ]
+            },
+            "TransferEntitlements": {
+              "methods": [
+                "TransferEntitlements"
+              ]
+            },
+            "TransferEntitlementsToGoogle": {
+              "methods": [
+                "TransferEntitlementsToGoogle"
+              ]
+            },
+            "UnregisterSubscriber": {
+              "methods": [
+                "UnregisterSubscriber"
+              ]
+            },
+            "UpdateChannelPartnerLink": {
+              "methods": [
+                "UpdateChannelPartnerLink"
+              ]
+            },
+            "UpdateChannelPartnerRepricingConfig": {
+              "methods": [
+                "UpdateChannelPartnerRepricingConfig"
+              ]
+            },
+            "UpdateCustomer": {
+              "methods": [
+                "UpdateCustomer"
+              ]
+            },
+            "UpdateCustomerRepricingConfig": {
+              "methods": [
+                "UpdateCustomerRepricingConfig"
               ]
             }
           }

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -42,26 +42,115 @@ var newRegionDisksClientHook clientHook
 
 // RegionDisksCallOptions contains the retry settings for each method of RegionDisksClient.
 type RegionDisksCallOptions struct {
-	AddResourcePolicies    []gax.CallOption
-	CreateSnapshot         []gax.CallOption
-	Delete                 []gax.CallOption
-	Get                    []gax.CallOption
-	GetIamPolicy           []gax.CallOption
-	Insert                 []gax.CallOption
-	List                   []gax.CallOption
-	RemoveResourcePolicies []gax.CallOption
-	Resize                 []gax.CallOption
-	SetIamPolicy           []gax.CallOption
-	SetLabels              []gax.CallOption
-	TestIamPermissions     []gax.CallOption
+	AddResourcePolicies       []gax.CallOption
+	BulkInsert                []gax.CallOption
+	CreateSnapshot            []gax.CallOption
+	Delete                    []gax.CallOption
+	Get                       []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	Insert                    []gax.CallOption
+	List                      []gax.CallOption
+	RemoveResourcePolicies    []gax.CallOption
+	Resize                    []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	SetLabels                 []gax.CallOption
+	StartAsyncReplication     []gax.CallOption
+	StopAsyncReplication      []gax.CallOption
+	StopGroupAsyncReplication []gax.CallOption
+	TestIamPermissions        []gax.CallOption
+	Update                    []gax.CallOption
 }
 
-// internalRegionDisksClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultRegionDisksRESTCallOptions() *RegionDisksCallOptions {
+	return &RegionDisksCallOptions{
+		AddResourcePolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		BulkInsert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CreateSnapshot: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		RemoveResourcePolicies: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Resize: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetLabels: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		StartAsyncReplication: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		StopAsyncReplication: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		StopGroupAsyncReplication: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Update: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+	}
+}
+
+// internalRegionDisksClient is an interface that defines the methods available from Google Compute Engine API.
 type internalRegionDisksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	AddResourcePolicies(context.Context, *computepb.AddResourcePoliciesRegionDiskRequest, ...gax.CallOption) (*Operation, error)
+	BulkInsert(context.Context, *computepb.BulkInsertRegionDiskRequest, ...gax.CallOption) (*Operation, error)
 	CreateSnapshot(context.Context, *computepb.CreateSnapshotRegionDiskRequest, ...gax.CallOption) (*Operation, error)
 	Delete(context.Context, *computepb.DeleteRegionDiskRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetRegionDiskRequest, ...gax.CallOption) (*computepb.Disk, error)
@@ -72,7 +161,11 @@ type internalRegionDisksClient interface {
 	Resize(context.Context, *computepb.ResizeRegionDiskRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyRegionDiskRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetLabels(context.Context, *computepb.SetLabelsRegionDiskRequest, ...gax.CallOption) (*Operation, error)
+	StartAsyncReplication(context.Context, *computepb.StartAsyncReplicationRegionDiskRequest, ...gax.CallOption) (*Operation, error)
+	StopAsyncReplication(context.Context, *computepb.StopAsyncReplicationRegionDiskRequest, ...gax.CallOption) (*Operation, error)
+	StopGroupAsyncReplication(context.Context, *computepb.StopGroupAsyncReplicationRegionDiskRequest, ...gax.CallOption) (*Operation, error)
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionDiskRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
+	Update(context.Context, *computepb.UpdateRegionDiskRequest, ...gax.CallOption) (*Operation, error)
 }
 
 // RegionDisksClient is a client for interacting with Google Compute Engine API.
@@ -104,7 +197,8 @@ func (c *RegionDisksClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *RegionDisksClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -112,6 +206,11 @@ func (c *RegionDisksClient) Connection() *grpc.ClientConn {
 // AddResourcePolicies adds existing resource policies to a regional disk. You can only add one policy which will be applied to this disk for scheduling snapshot creation.
 func (c *RegionDisksClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
+}
+
+// BulkInsert bulk create a set of disks.
+func (c *RegionDisksClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.BulkInsert(ctx, req, opts...)
 }
 
 // CreateSnapshot creates a snapshot of a specified persistent disk. For regular snapshot creation, consider using snapshots.insert instead, as that method supports more features, such as creating snapshots in a project different from the source disk project.
@@ -164,9 +263,29 @@ func (c *RegionDisksClient) SetLabels(ctx context.Context, req *computepb.SetLab
 	return c.internalClient.SetLabels(ctx, req, opts...)
 }
 
+// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+func (c *RegionDisksClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.StartAsyncReplication(ctx, req, opts...)
+}
+
+// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+func (c *RegionDisksClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.StopAsyncReplication(ctx, req, opts...)
+}
+
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+func (c *RegionDisksClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.StopGroupAsyncReplication(ctx, req, opts...)
+}
+
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *RegionDisksClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsRegionDiskRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// Update update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+func (c *RegionDisksClient) Update(ctx context.Context, req *computepb.UpdateRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.Update(ctx, req, opts...)
 }
 
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -180,8 +299,11 @@ type regionDisksRESTClient struct {
 	// operationClient is used to call the operation-specific management service.
 	operationClient *RegionOperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing RegionDisksClient
+	CallOptions **RegionDisksCallOptions
 }
 
 // NewRegionDisksRESTClient creates a new region disks rest client.
@@ -194,9 +316,11 @@ func NewRegionDisksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		return nil, err
 	}
 
+	callOpts := defaultRegionDisksRESTCallOptions()
 	c := &regionDisksRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -210,13 +334,15 @@ func NewRegionDisksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 	}
 	c.operationClient = opC
 
-	return &RegionDisksClient{internalClient: c, CallOptions: &RegionDisksCallOptions{}}, nil
+	return &RegionDisksClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultRegionDisksRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -226,9 +352,9 @@ func defaultRegionDisksRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *regionDisksRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -244,7 +370,7 @@ func (c *regionDisksRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *regionDisksRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -258,7 +384,10 @@ func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *co
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/addResourcePolicies", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -269,10 +398,18 @@ func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *co
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AddResourcePolicies[0:len((*c.CallOptions).AddResourcePolicies):len((*c.CallOptions).AddResourcePolicies)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -290,13 +427,90 @@ func (c *regionDisksRESTClient) AddResourcePolicies(ctx context.Context, req *co
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
+// BulkInsert bulk create a set of disks.
+func (c *regionDisksRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetBulkInsertDiskResourceResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/bulkInsert", req.GetProject(), req.GetRegion())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).BulkInsert[0:len((*c.CallOptions).BulkInsert):len((*c.CallOptions).BulkInsert)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil
@@ -324,7 +538,10 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/createSnapshot", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -335,10 +552,18 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSnapshot[0:len((*c.CallOptions).CreateSnapshot):len((*c.CallOptions).CreateSnapshot)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -356,13 +581,13 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -383,7 +608,10 @@ func (c *regionDisksRESTClient) CreateSnapshot(ctx context.Context, req *compute
 
 // Delete deletes the specified regional persistent disk. Deleting a regional disk removes all the replicas of its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
 func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -394,10 +622,18 @@ func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -415,13 +651,13 @@ func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -442,14 +678,25 @@ func (c *regionDisksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 // Get returns a specified regional persistent disk.
 func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegionDiskRequest, opts ...gax.CallOption) (*computepb.Disk, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Disk{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -467,13 +714,13 @@ func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegio
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -486,7 +733,10 @@ func (c *regionDisksRESTClient) Get(ctx context.Context, req *computepb.GetRegio
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyRegionDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
@@ -497,10 +747,18 @@ func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -518,13 +776,13 @@ func (c *regionDisksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -544,7 +802,10 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks", req.GetProject(), req.GetRegion())
 
 	params := url.Values{}
@@ -558,10 +819,18 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -579,13 +848,13 @@ func (c *regionDisksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -619,7 +888,10 @@ func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListReg
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks", req.GetProject(), req.GetRegion())
 
 		params := url.Values{}
@@ -642,8 +914,12 @@ func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListReg
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -660,13 +936,13 @@ func (c *regionDisksRESTClient) List(ctx context.Context, req *computepb.ListReg
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -703,7 +979,10 @@ func (c *regionDisksRESTClient) RemoveResourcePolicies(ctx context.Context, req 
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/removeResourcePolicies", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -714,10 +993,18 @@ func (c *regionDisksRESTClient) RemoveResourcePolicies(ctx context.Context, req 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).RemoveResourcePolicies[0:len((*c.CallOptions).RemoveResourcePolicies):len((*c.CallOptions).RemoveResourcePolicies)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -735,13 +1022,13 @@ func (c *regionDisksRESTClient) RemoveResourcePolicies(ctx context.Context, req 
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -769,7 +1056,10 @@ func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.Resiz
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/resize", req.GetProject(), req.GetRegion(), req.GetDisk())
 
 	params := url.Values{}
@@ -780,10 +1070,18 @@ func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.Resiz
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Resize[0:len((*c.CallOptions).Resize):len((*c.CallOptions).Resize)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -801,13 +1099,13 @@ func (c *regionDisksRESTClient) Resize(ctx context.Context, req *computepb.Resiz
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -835,14 +1133,25 @@ func (c *regionDisksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/setIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Policy{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -860,13 +1169,13 @@ func (c *regionDisksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -886,7 +1195,10 @@ func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/setLabels", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	params := url.Values{}
@@ -897,10 +1209,18 @@ func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetLabels[0:len((*c.CallOptions).SetLabels):len((*c.CallOptions).SetLabels)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -918,13 +1238,237 @@ func (c *regionDisksRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
+// StartAsyncReplication starts asynchronous replication. Must be invoked on the primary disk.
+func (c *regionDisksRESTClient) StartAsyncReplication(ctx context.Context, req *computepb.StartAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetRegionDisksStartAsyncReplicationRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/startAsyncReplication", req.GetProject(), req.GetRegion(), req.GetDisk())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).StartAsyncReplication[0:len((*c.CallOptions).StartAsyncReplication):len((*c.CallOptions).StartAsyncReplication)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
+// StopAsyncReplication stops asynchronous replication. Can be invoked either on the primary or on the secondary disk.
+func (c *regionDisksRESTClient) StopAsyncReplication(ctx context.Context, req *computepb.StopAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/stopAsyncReplication", req.GetProject(), req.GetRegion(), req.GetDisk())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).StopAsyncReplication[0:len((*c.CallOptions).StopAsyncReplication):len((*c.CallOptions).StopAsyncReplication)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
+}
+
+// StopGroupAsyncReplication stops asynchronous replication for a consistency group of disks. Can be invoked either in the primary or secondary scope.
+func (c *regionDisksRESTClient) StopGroupAsyncReplication(ctx context.Context, req *computepb.StopGroupAsyncReplicationRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetDisksStopGroupAsyncReplicationResourceResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/stopGroupAsyncReplication", req.GetProject(), req.GetRegion())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).StopGroupAsyncReplication[0:len((*c.CallOptions).StopGroupAsyncReplication):len((*c.CallOptions).StopGroupAsyncReplication)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil
@@ -952,14 +1496,25 @@ func (c *regionDisksRESTClient) TestIamPermissions(ctx context.Context, req *com
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v/testIamPermissions", req.GetProject(), req.GetRegion(), req.GetResource())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.TestPermissionsResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -977,13 +1532,13 @@ func (c *regionDisksRESTClient) TestIamPermissions(ctx context.Context, req *com
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -992,4 +1547,87 @@ func (c *regionDisksRESTClient) TestIamPermissions(ctx context.Context, req *com
 		return nil, e
 	}
 	return resp, nil
+}
+
+// Update update the specified disk with the data included in the request. Update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: user_license.
+func (c *regionDisksRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionDiskRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetDiskResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/disks/%v", req.GetProject(), req.GetRegion(), req.GetDisk())
+
+	params := url.Values{}
+	if req != nil && req.Paths != nil {
+		params.Add("paths", fmt.Sprintf("%v", req.GetPaths()))
+	}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req != nil && req.UpdateMask != nil {
+		params.Add("updateMask", fmt.Sprintf("%v", req.GetUpdateMask()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()), "disk", url.QueryEscape(req.GetDisk()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&regionOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			region:  req.GetRegion(),
+		},
+	}
+	return op, nil
 }

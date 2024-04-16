@@ -9,8 +9,14 @@
         "accesscontextmanager": {
             "component": "accesscontextmanager"
         },
-        "aiplatform": {
-            "component": "aiplatform"
+        "advisorynotifications": {
+            "component": "advisorynotifications"
+        },
+        "ai": {
+            "component": "ai"
+        },
+        "alloydb": {
+            "component": "alloydb"
         },
         "analytics": {
             "component": "analytics"
@@ -21,8 +27,20 @@
         "apigeeconnect": {
             "component": "apigeeconnect"
         },
+        "apigeeregistry": {
+            "component": "apigeeregistry"
+        },
+        "apikeys": {
+            "component": "apikeys"
+        },
         "appengine": {
             "component": "appengine"
+        },
+        "apphub": {
+            "component": "apphub"
+        },
+        "apps": {
+            "component": "apps"
         },
         "area120": {
             "component": "area120"
@@ -39,11 +57,26 @@
         "automl": {
             "component": "automl"
         },
+        "backupdr": {
+            "component": "backupdr"
+        },
+        "baremetalsolution": {
+            "component": "baremetalsolution"
+        },
+        "batch": {
+            "component": "batch"
+        },
+        "beyondcorp": {
+            "component": "beyondcorp"
+        },
         "billing": {
             "component": "billing"
         },
         "binaryauthorization": {
             "component": "binaryauthorization"
+        },
+        "certificatemanager": {
+            "component": "certificatemanager"
         },
         "channel": {
             "component": "channel"
@@ -51,14 +84,35 @@
         "cloudbuild": {
             "component": "cloudbuild"
         },
+        "cloudcontrolspartner": {
+            "component": "cloudcontrolspartner"
+        },
         "clouddms": {
             "component": "clouddms"
+        },
+        "cloudprofiler": {
+            "component": "cloudprofiler"
+        },
+        "cloudquotas": {
+            "component": "cloudquotas"
         },
         "cloudtasks": {
             "component": "cloudtasks"
         },
+        "commerce": {
+            "component": "commerce"
+        },
         "compute": {
             "component": "compute"
+        },
+        "compute/metadata": {
+            "component": "compute/metadata"
+        },
+        "confidentialcomputing": {
+            "component": "confidentialcomputing"
+        },
+        "config": {
+            "component": "config"
         },
         "contactcenterinsights": {
             "component": "contactcenterinsights"
@@ -74,6 +128,9 @@
         },
         "dataflow": {
             "component": "dataflow"
+        },
+        "dataform": {
+            "component": "dataform"
         },
         "datafusion": {
             "component": "datafusion"
@@ -99,6 +156,9 @@
         "dialogflow": {
             "component": "dialogflow"
         },
+        "discoveryengine": {
+            "component": "discoveryengine"
+        },
         "dlp": {
             "component": "dlp"
         },
@@ -107,6 +167,12 @@
         },
         "domains": {
             "component": "domains"
+        },
+        "edgecontainer": {
+            "component": "edgecontainer"
+        },
+        "edgenetwork": {
+            "component": "edgenetwork"
         },
         "essentialcontacts": {
             "component": "essentialcontacts"
@@ -120,14 +186,17 @@
         "functions": {
             "component": "functions"
         },
-        "gaming": {
-            "component": "gaming"
+        "gkebackup": {
+            "component": "gkebackup"
         },
         "gkeconnect": {
             "component": "gkeconnect"
         },
         "gkehub": {
             "component": "gkehub"
+        },
+        "gkemulticloud": {
+            "component": "gkemulticloud"
         },
         "grafeas": {
             "component": "grafeas"
@@ -156,8 +225,14 @@
         "lifesciences": {
             "component": "lifesciences"
         },
+        "longrunning": {
+            "component": "longrunning"
+        },
         "managedidentities": {
             "component": "managedidentities"
+        },
+        "maps": {
+            "component": "maps"
         },
         "mediatranslation": {
             "component": "mediatranslation"
@@ -168,8 +243,14 @@
         "metastore": {
             "component": "metastore"
         },
+        "migrationcenter": {
+            "component": "migrationcenter"
+        },
         "monitoring": {
             "component": "monitoring"
+        },
+        "netapp": {
+            "component": "netapp"
         },
         "networkconnectivity": {
             "component": "networkconnectivity"
@@ -183,6 +264,9 @@
         "notebooks": {
             "component": "notebooks"
         },
+        "optimization": {
+            "component": "optimization"
+        },
         "orchestration": {
             "component": "orchestration"
         },
@@ -195,14 +279,23 @@
         "oslogin": {
             "component": "oslogin"
         },
+        "parallelstore": {
+            "component": "parallelstore"
+        },
         "phishingprotection": {
             "component": "phishingprotection"
+        },
+        "policysimulator": {
+            "component": "policysimulator"
         },
         "policytroubleshooter": {
             "component": "policytroubleshooter"
         },
         "privatecatalog": {
             "component": "privatecatalog"
+        },
+        "rapidmigrationassessment": {
+            "component": "rapidmigrationassessment"
         },
         "recaptchaenterprise": {
             "component": "recaptchaenterprise"
@@ -225,11 +318,17 @@
         "retail": {
             "component": "retail"
         },
+        "run": {
+            "component": "run"
+        },
         "scheduler": {
             "component": "scheduler"
         },
         "secretmanager": {
             "component": "secretmanager"
+        },
+        "securesourcemanager": {
+            "component": "securesourcemanager"
         },
         "security": {
             "component": "security"
@@ -237,11 +336,20 @@
         "securitycenter": {
             "component": "securitycenter"
         },
+        "securitycentermanagement": {
+            "component": "securitycentermanagement"
+        },
+        "securityposture": {
+            "component": "securityposture"
+        },
         "servicecontrol": {
             "component": "servicecontrol"
         },
         "servicedirectory": {
             "component": "servicedirectory"
+        },
+        "servicehealth": {
+            "component": "servicehealth"
         },
         "servicemanagement": {
             "component": "servicemanagement"
@@ -252,14 +360,29 @@
         "shell": {
             "component": "shell"
         },
+        "shopping": {
+            "component": "shopping"
+        },
+        "spanner/test/opentelemetry/test": {
+            "component": "spanner/test/opentelemetry/test"
+        },
         "speech": {
             "component": "speech"
+        },
+        "storageinsights": {
+            "component": "storageinsights"
         },
         "storagetransfer": {
             "component": "storagetransfer"
         },
+        "support": {
+            "component": "support"
+        },
         "talent": {
             "component": "talent"
+        },
+        "telcoautomation": {
+            "component": "telcoautomation"
         },
         "texttospeech": {
             "component": "texttospeech"
@@ -282,8 +405,14 @@
         "vision": {
             "component": "vision"
         },
+        "visionai": {
+            "component": "visionai"
+        },
         "vmmigration": {
             "component": "vmmigration"
+        },
+        "vmwareengine": {
+            "component": "vmwareengine"
         },
         "vpcaccess": {
             "component": "vpcaccess"
@@ -296,6 +425,12 @@
         },
         "workflows": {
             "component": "workflows"
+        },
+        "workstations": {
+            "component": "workstations"
         }
-    }
+    },
+    "plugins": [
+        "sentence-case"
+    ]
 }

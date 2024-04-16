@@ -16,6 +16,7 @@ package rpcreplay
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/binary"
 	"errors"
@@ -27,13 +28,13 @@ import (
 	"sync"
 
 	pb "cloud.google.com/go/rpcreplay/proto/rpcreplay"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/any"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
 )
 
 // A Recorder records RPCs for later playback.
@@ -136,7 +137,7 @@ func (r *Recorder) interceptUnary(ctx context.Context, method string, req, res i
 	// without recording the response.
 	if _, ok := status.FromError(ierr); !ok {
 		r.mu.Lock()
-		r.err = fmt.Errorf("saw non-status error in %s response: %v (%T)", method, ierr, ierr)
+		r.err = fmt.Errorf("saw non-status error in %s response: %w (%T)", method, ierr, ierr)
 		r.mu.Unlock()
 		return ierr
 	}
@@ -580,7 +581,11 @@ func FprintReader(w io.Writer, r io.Reader) error {
 		switch {
 		case e.msg.msg != nil:
 			fmt.Fprintf(w, ", message:\n")
-			if err := proto.MarshalText(w, e.msg.msg); err != nil {
+			b, err := prototext.Marshal(e.msg.msg)
+			if err != nil {
+				return err
+			}
+			if _, err := io.Copy(w, bytes.NewReader(b)); err != nil {
 				return err
 			}
 		case e.msg.err != nil:
@@ -678,16 +683,16 @@ func writeEntry(w io.Writer, e *entry) error {
 	if e.msg.err != nil && e.msg.err != io.EOF {
 		s, ok := status.FromError(e.msg.err)
 		if !ok {
-			return fmt.Errorf("rpcreplay: error %v is not a Status", e.msg.err)
+			return fmt.Errorf("rpcreplay: error %w is not a Status", e.msg.err)
 		}
 		m = s.Proto()
 	} else {
 		m = e.msg.msg
 	}
-	var a *any.Any
+	var a *anypb.Any
 	var err error
 	if m != nil {
-		a, err = ptypes.MarshalAny(m)
+		a, err = anypb.New(m)
 		if err != nil {
 			return err
 		}
@@ -720,14 +725,19 @@ func readEntry(r io.Reader) (*entry, error) {
 	}
 	var msg message
 	if pe.Message != nil {
-		var any ptypes.DynamicAny
-		if err := ptypes.UnmarshalAny(pe.Message, &any); err != nil {
-			return nil, err
-		}
 		if pe.IsError {
-			msg.err = status.ErrorProto(any.Message.(*spb.Status))
+			s := &spb.Status{}
+			err := anypb.UnmarshalTo(pe.Message, s, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
+			if err != nil {
+				return nil, err
+			}
+			msg.err = status.ErrorProto(s)
 		} else {
-			msg.msg = any.Message
+			m, err := anypb.UnmarshalNew(pe.Message, proto.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true})
+			if err != nil {
+				return nil, err
+			}
+			msg.msg = m
 		}
 	} else if pe.IsError {
 		msg.err = io.EOF

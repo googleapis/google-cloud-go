@@ -26,8 +26,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/sync/errgroup"
 
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (

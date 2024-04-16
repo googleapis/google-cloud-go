@@ -20,7 +20,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"time"
 
@@ -58,16 +57,10 @@ func genBot(ctx context.Context, c botConfig) error {
 	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "open"); err != nil {
 		return err
 	} else if pr != nil {
-		return fmt.Errorf("there is already a re-generation in progress")
-	}
-	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "open"); err != nil {
-		return err
-	} else if pr != nil {
-		if err := updateGocloudPR(ctx, githubClient, pr); err != nil {
-			return err
-		}
+		log.Println("there is already a re-generation in progress")
 		return nil
 	}
+
 	log.Println("checking if a pull request was already opened and merged today")
 	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "closed"); err != nil {
 		return err
@@ -75,13 +68,6 @@ func genBot(ctx context.Context, c botConfig) error {
 		log.Println("skipping generation, already created and merged a go-genproto PR today")
 		return nil
 	}
-	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "closed"); err != nil {
-		return err
-	} else if pr != nil && hasCreatedPRToday(pr.Created) {
-		log.Println("skipping generation, already created and merged a google-cloud-go PR today")
-		return nil
-	}
-
 	return generate(ctx, githubClient, c.forceAll)
 }
 

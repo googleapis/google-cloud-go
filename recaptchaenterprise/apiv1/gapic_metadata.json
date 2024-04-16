@@ -3,7 +3,7 @@
   "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
   "language": "go",
   "protoPackage": "google.cloud.recaptchaenterprise.v1",
-  "libraryPackage": "cloud.google.com/go/recaptchaenterprise/apiv1",
+  "libraryPackage": "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
   "services": {
     "RecaptchaEnterpriseService": {
       "clients": {
@@ -20,14 +20,29 @@
                 "CreateAssessment"
               ]
             },
+            "CreateFirewallPolicy": {
+              "methods": [
+                "CreateFirewallPolicy"
+              ]
+            },
             "CreateKey": {
               "methods": [
                 "CreateKey"
               ]
             },
+            "DeleteFirewallPolicy": {
+              "methods": [
+                "DeleteFirewallPolicy"
+              ]
+            },
             "DeleteKey": {
               "methods": [
                 "DeleteKey"
+              ]
+            },
+            "GetFirewallPolicy": {
+              "methods": [
+                "GetFirewallPolicy"
               ]
             },
             "GetKey": {
@@ -38,6 +53,11 @@
             "GetMetrics": {
               "methods": [
                 "GetMetrics"
+              ]
+            },
+            "ListFirewallPolicies": {
+              "methods": [
+                "ListFirewallPolicies"
               ]
             },
             "ListKeys": {
@@ -60,9 +80,24 @@
                 "MigrateKey"
               ]
             },
+            "ReorderFirewallPolicies": {
+              "methods": [
+                "ReorderFirewallPolicies"
+              ]
+            },
+            "RetrieveLegacySecretKey": {
+              "methods": [
+                "RetrieveLegacySecretKey"
+              ]
+            },
             "SearchRelatedAccountGroupMemberships": {
               "methods": [
                 "SearchRelatedAccountGroupMemberships"
+              ]
+            },
+            "UpdateFirewallPolicy": {
+              "methods": [
+                "UpdateFirewallPolicy"
               ]
             },
             "UpdateKey": {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	redis "cloud.google.com/go/redis/apiv1beta1"
+	redispb "cloud.google.com/go/redis/apiv1beta1/redispb"
 	"google.golang.org/api/iterator"
-	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
 )
 
 func ExampleNewCloudRedisClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,74 +41,30 @@ func ExampleNewCloudRedisClient() {
 	_ = c
 }
 
-func ExampleCloudRedisClient_ListInstances() {
+func ExampleNewCloudRedisRESTClient() {
 	ctx := context.Background()
-	c, err := redis.NewCloudRedisClient(ctx)
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := redis.NewCloudRedisRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &redispb.ListInstancesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#ListInstancesRequest.
-	}
-	it := c.ListInstances(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleCloudRedisClient_GetInstance() {
-	ctx := context.Background()
-	c, err := redis.NewCloudRedisClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &redispb.GetInstanceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#GetInstanceRequest.
-	}
-	resp, err := c.GetInstance(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCloudRedisClient_GetInstanceAuthString() {
-	ctx := context.Background()
-	c, err := redis.NewCloudRedisClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &redispb.GetInstanceAuthStringRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#GetInstanceAuthStringRequest.
-	}
-	resp, err := c.GetInstanceAuthString(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
+	// TODO: Use client.
+	_ = c
 }
 
 func ExampleCloudRedisClient_CreateInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +73,7 @@ func ExampleCloudRedisClient_CreateInstance() {
 
 	req := &redispb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#CreateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#CreateInstanceRequest.
 	}
 	op, err := c.CreateInstance(ctx, req)
 	if err != nil {
@@ -127,83 +88,41 @@ func ExampleCloudRedisClient_CreateInstance() {
 	_ = resp
 }
 
-func ExampleCloudRedisClient_UpdateInstance() {
+func ExampleCloudRedisClient_DeleteInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &redispb.UpdateInstanceRequest{
+	req := &redispb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#UpdateInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#DeleteInstanceRequest.
 	}
-	op, err := c.UpdateInstance(ctx, req)
+	op, err := c.DeleteInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCloudRedisClient_UpgradeInstance() {
-	ctx := context.Background()
-	c, err := redis.NewCloudRedisClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &redispb.UpgradeInstanceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#UpgradeInstanceRequest.
-	}
-	op, err := c.UpgradeInstance(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCloudRedisClient_ImportInstance() {
-	ctx := context.Background()
-	c, err := redis.NewCloudRedisClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &redispb.ImportInstanceRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#ImportInstanceRequest.
-	}
-	op, err := c.ImportInstance(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleCloudRedisClient_ExportInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -212,7 +131,7 @@ func ExampleCloudRedisClient_ExportInstance() {
 
 	req := &redispb.ExportInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#ExportInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#ExportInstanceRequest.
 	}
 	op, err := c.ExportInstance(ctx, req)
 	if err != nil {
@@ -229,6 +148,11 @@ func ExampleCloudRedisClient_ExportInstance() {
 
 func ExampleCloudRedisClient_FailoverInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -237,7 +161,7 @@ func ExampleCloudRedisClient_FailoverInstance() {
 
 	req := &redispb.FailoverInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#FailoverInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#FailoverInstanceRequest.
 	}
 	op, err := c.FailoverInstance(ctx, req)
 	if err != nil {
@@ -252,31 +176,130 @@ func ExampleCloudRedisClient_FailoverInstance() {
 	_ = resp
 }
 
-func ExampleCloudRedisClient_DeleteInstance() {
+func ExampleCloudRedisClient_GetInstance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &redispb.DeleteInstanceRequest{
+	req := &redispb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#DeleteInstanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#GetInstanceRequest.
 	}
-	op, err := c.DeleteInstance(ctx, req)
+	resp, err := c.GetInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudRedisClient_GetInstanceAuthString() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &redispb.GetInstanceAuthStringRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#GetInstanceAuthStringRequest.
+	}
+	resp, err := c.GetInstanceAuthString(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudRedisClient_ImportInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &redispb.ImportInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#ImportInstanceRequest.
+	}
+	op, err := c.ImportInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	err = op.Wait(ctx)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudRedisClient_ListInstances() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &redispb.ListInstancesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#ListInstancesRequest.
+	}
+	it := c.ListInstances(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*redispb.ListInstancesResponse)
 	}
 }
 
 func ExampleCloudRedisClient_RescheduleMaintenance() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -285,9 +308,69 @@ func ExampleCloudRedisClient_RescheduleMaintenance() {
 
 	req := &redispb.RescheduleMaintenanceRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/redis/v1beta1#RescheduleMaintenanceRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#RescheduleMaintenanceRequest.
 	}
 	op, err := c.RescheduleMaintenance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudRedisClient_UpdateInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &redispb.UpdateInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#UpdateInstanceRequest.
+	}
+	op, err := c.UpdateInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudRedisClient_UpgradeInstance() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &redispb.UpgradeInstanceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1/redispb#UpgradeInstanceRequest.
+	}
+	op, err := c.UpgradeInstance(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

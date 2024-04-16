@@ -17,23 +17,23 @@ package spanner
 import (
 	"context"
 	"fmt"
-	"math"
 	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 // Check that stats are being exported.
 func TestOCStats(t *testing.T) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter()
 	defer te.Unregister()
 
@@ -50,6 +50,7 @@ func TestOCStats(t *testing.T) {
 }
 
 func TestOCStats_SessionPool(t *testing.T) {
+	skipForPGTest(t)
 	DisableGfeLatencyAndHeaderMissingCountViews()
 	for _, test := range []struct {
 		name    string
@@ -95,6 +96,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 }
 
 func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
+	DisableGfeLatencyAndHeaderMissingCountViews()
 	te := testutil.NewTestExporter(v)
 	defer te.Unregister()
 
@@ -153,12 +155,12 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig})
 	defer teardown()
 	// Wait for the session pool initialization to finish.
-	expectedWrites := uint64(math.Floor(float64(DefaultSessionPoolConfig.MinOpened) * DefaultSessionPoolConfig.WriteSessions))
+	expectedWrites := uint64(0)
 	expectedReads := DefaultSessionPoolConfig.MinOpened - expectedWrites
 	waitFor(t, func() error {
 		client.idleSessions.mu.Lock()
 		defer client.idleSessions.mu.Unlock()
-		if client.idleSessions.numReads == expectedReads && client.idleSessions.numWrites == expectedWrites {
+		if client.idleSessions.numSessions == expectedReads {
 			return nil
 		}
 		return waitErr
@@ -169,7 +171,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	waitFor(t, func() error {
 		select {
 		case stat := <-te.Stats:
-			if len(stat.Rows) >= 4 {
+			if len(stat.Rows) >= 2 {
 				return nil
 			}
 		}
@@ -181,7 +183,7 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	case stat := <-te.Stats:
 		// There are 4 types for this metric, so we should see at least four
 		// rows.
-		if len(stat.Rows) < 4 {
+		if len(stat.Rows) < 2 {
 			t.Fatal("No enough metrics are exported")
 		}
 		if got, want := stat.View.Measure.Name(), statsPrefix+"num_sessions_in_pool"; got != want {
@@ -197,12 +199,8 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 			got := fmt.Sprintf("%v", data.Value)
 			var want string
 			switch m[tagKeyType] {
-			case "num_write_prepared_sessions":
-				want = "20"
-			case "num_read_sessions":
-				want = "80"
-			case "num_sessions_being_prepared":
-				want = "0"
+			case "num_sessions":
+				want = "100"
 			case "num_in_use_sessions":
 				want = "0"
 			default:
@@ -306,7 +304,6 @@ func TestOCStats_GFE_Latency(t *testing.T) {
 		}
 		if err != nil {
 			t.Fatal(err.Error())
-			break
 		}
 	}
 

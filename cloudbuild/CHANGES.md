@@ -1,5 +1,161 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.15.1...cloudbuild/v1.16.0) (2024-03-14)
+
+
+### Features
+
+* **cloudbuild:** Add Bitbucket Data Center Config and Bitbucket Cloud config for Cloud Build Repositories ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.15.0...cloudbuild/v1.15.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.3...cloudbuild/v1.15.0) (2023-11-09)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add optional field "SourceFetcher" to choose source fetcher tool ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.2...cloudbuild/v1.14.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.1...cloudbuild/v1.14.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.0...cloudbuild/v1.14.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.13.0...cloudbuild/v1.14.0) (2023-08-08)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add update_mask to UpdateBuildTriggerRequest proto ([#8358](https://github.com/googleapis/google-cloud-go/issues/8358)) ([58b5851](https://github.com/googleapis/google-cloud-go/commit/58b5851b3f38aeeefcdb3507e29b9a02ccfb1bba))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.12.0...cloudbuild/v1.13.0) (2023-07-26)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add automap_substitutions flag to use substitutions as envs in Cloud Build ([327e101](https://github.com/googleapis/google-cloud-go/commit/327e10188a2e22dd7b7e6c12a8cf66729f65974c))
+* **cloudbuild/apiv1:** Add git_file_source and git_repo_source to build_trigger ([7cb7f66](https://github.com/googleapis/google-cloud-go/commit/7cb7f66f0646617c27aa9a9b4fe38b9f368eb3bb))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.11.0...cloudbuild/v1.12.0) (2023-07-24)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add repositoryevent to buildtrigger ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Add routing information in Cloud Build GRPC clients ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Added e2-medium machine type ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+* **cloudbuild/apiv1:** Update third party clodubuild.proto library to include git_source ([eca3c90](https://github.com/googleapis/google-cloud-go/commit/eca3c9070cd96a50fa857a6c016e35a98dbea5e7))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.1...cloudbuild/v1.11.0) (2023-07-10)
+
+
+### Features
+
+* **cloudbuild:** Add GitLabConfig and fetchGitRefs for Cloud Build Repositories ([a3ec3cf](https://github.com/googleapis/google-cloud-go/commit/a3ec3cf858c7d9154338ac4cd8a9a068dc7a7f4d))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.10.0...cloudbuild/v1.10.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **cloudbuild:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.9.1...cloudbuild/v1.10.0) (2023-05-30)
+
+
+### Features
+
+* **cloudbuild:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.9.0...cloudbuild/v1.9.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.8.0...cloudbuild/v1.9.0) (2023-03-22)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add DefaultLogsBucketBehavior to BuildOptions ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+
+### Bug Fixes
+
+* **cloudbuild:** Change java package of Cloud Build v2 ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+* **cloudbuild:** Change java package of Cloud Build v2 ([00fff3a](https://github.com/googleapis/google-cloud-go/commit/00fff3a58bed31274ab39af575876dab91d708c9))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.7.0...cloudbuild/v1.8.0) (2023-03-15)
+
+
+### Features
+
+* **cloudbuild:** Update iam and longrunning deps ([91a1f78](https://github.com/googleapis/google-cloud-go/commit/91a1f784a109da70f63b96414bba8a9b4254cddd))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.6.0...cloudbuild/v1.7.0) (2023-03-01)
+
+
+### Features
+
+* **cloudbuild:** Start generating apiv2 ([#7505](https://github.com/googleapis/google-cloud-go/issues/7505)) ([6fb3398](https://github.com/googleapis/google-cloud-go/commit/6fb339836920ab4196390814b03636f93e7c3676))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.5.0...cloudbuild/v1.6.0) (2023-01-04)
+
+
+### Features
+
+* **cloudbuild:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.4.0...cloudbuild/v1.5.0) (2022-11-09)
+
+
+### Features
+
+* **cloudbuild/apiv1:** Add allow_failure, exit_code, and allow_exit_code to BuildStep message ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+* **cloudbuild/apiv1:** Integration of Cloud Build with Artifact Registry ([9c5d6c8](https://github.com/googleapis/google-cloud-go/commit/9c5d6c857b9deece4663d37fc6c834fd758b98ca))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.3.0...cloudbuild/v1.4.0) (2022-11-03)
+
+
+### Features
+
+* **cloudbuild:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.2.0...cloudbuild/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **cloudbuild:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.1.0...cloudbuild/v1.2.0) (2022-02-23)
 
 
@@ -31,3 +187,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out cloudbuild as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

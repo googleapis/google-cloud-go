@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewInterconnectsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInterconnectsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewInterconnectsRESTClient() {
 
 func ExampleInterconnectsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInterconnectsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleInterconnectsClient_Delete() {
 
 	req := &computepb.DeleteInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteInterconnectRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleInterconnectsClient_Delete() {
 
 func ExampleInterconnectsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInterconnectsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleInterconnectsClient_Get() {
 
 	req := &computepb.GetInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetInterconnectRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,6 +96,11 @@ func ExampleInterconnectsClient_Get() {
 
 func ExampleInterconnectsClient_GetDiagnostics() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInterconnectsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -89,7 +109,7 @@ func ExampleInterconnectsClient_GetDiagnostics() {
 
 	req := &computepb.GetDiagnosticsInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetDiagnosticsInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetDiagnosticsInterconnectRequest.
 	}
 	resp, err := c.GetDiagnostics(ctx, req)
 	if err != nil {
@@ -99,8 +119,38 @@ func ExampleInterconnectsClient_GetDiagnostics() {
 	_ = resp
 }
 
+func ExampleInterconnectsClient_GetMacsecConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewInterconnectsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.GetMacsecConfigInterconnectRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetMacsecConfigInterconnectRequest.
+	}
+	resp, err := c.GetMacsecConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleInterconnectsClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInterconnectsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -109,7 +159,7 @@ func ExampleInterconnectsClient_Insert() {
 
 	req := &computepb.InsertInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertInterconnectRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -124,6 +174,11 @@ func ExampleInterconnectsClient_Insert() {
 
 func ExampleInterconnectsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInterconnectsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +187,7 @@ func ExampleInterconnectsClient_List() {
 
 	req := &computepb.ListInterconnectsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInterconnectsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListInterconnectsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -145,11 +200,22 @@ func ExampleInterconnectsClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.InterconnectList)
 	}
 }
 
 func ExampleInterconnectsClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewInterconnectsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,9 +224,37 @@ func ExampleInterconnectsClient_Patch() {
 
 	req := &computepb.PatchInterconnectRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchInterconnectRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchInterconnectRequest.
 	}
 	op, err := c.Patch(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleInterconnectsClient_SetLabels() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewInterconnectsRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetLabelsInterconnectRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsInterconnectRequest.
+	}
+	op, err := c.SetLabels(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

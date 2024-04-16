@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,19 +21,19 @@ import (
 	"fmt"
 	"math"
 	"net/url"
-	"time"
 
+	aiplatformpb "cloud.google.com/go/aiplatform/apiv1/aiplatformpb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	aiplatformpb "google.golang.org/genproto/googleapis/cloud/aiplatform/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -56,12 +56,24 @@ type VizierCallOptions struct {
 	CheckTrialEarlyStoppingState []gax.CallOption
 	StopTrial                    []gax.CallOption
 	ListOptimalTrials            []gax.CallOption
+	GetLocation                  []gax.CallOption
+	ListLocations                []gax.CallOption
+	GetIamPolicy                 []gax.CallOption
+	SetIamPolicy                 []gax.CallOption
+	TestIamPermissions           []gax.CallOption
+	CancelOperation              []gax.CallOption
+	DeleteOperation              []gax.CallOption
+	GetOperation                 []gax.CallOption
+	ListOperations               []gax.CallOption
+	WaitOperation                []gax.CallOption
 }
 
 func defaultVizierGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -87,10 +99,20 @@ func defaultVizierCallOptions() *VizierCallOptions {
 		CheckTrialEarlyStoppingState: []gax.CallOption{},
 		StopTrial:                    []gax.CallOption{},
 		ListOptimalTrials:            []gax.CallOption{},
+		GetLocation:                  []gax.CallOption{},
+		ListLocations:                []gax.CallOption{},
+		GetIamPolicy:                 []gax.CallOption{},
+		SetIamPolicy:                 []gax.CallOption{},
+		TestIamPermissions:           []gax.CallOption{},
+		CancelOperation:              []gax.CallOption{},
+		DeleteOperation:              []gax.CallOption{},
+		GetOperation:                 []gax.CallOption{},
+		ListOperations:               []gax.CallOption{},
+		WaitOperation:                []gax.CallOption{},
 	}
 }
 
-// internalVizierClient is an interface that defines the methods availaible from Vertex AI API.
+// internalVizierClient is an interface that defines the methods available from Vertex AI API.
 type internalVizierClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -112,6 +134,16 @@ type internalVizierClient interface {
 	CheckTrialEarlyStoppingStateOperation(name string) *CheckTrialEarlyStoppingStateOperation
 	StopTrial(context.Context, *aiplatformpb.StopTrialRequest, ...gax.CallOption) (*aiplatformpb.Trial, error)
 	ListOptimalTrials(context.Context, *aiplatformpb.ListOptimalTrialsRequest, ...gax.CallOption) (*aiplatformpb.ListOptimalTrialsResponse, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
+	WaitOperation(context.Context, *longrunningpb.WaitOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // VizierClient is a client for interacting with Vertex AI API.
@@ -152,7 +184,8 @@ func (c *VizierClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *VizierClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -188,7 +221,8 @@ func (c *VizierClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lookup
 // suggested by Vertex AI Vizier. Returns a long-running
 // operation associated with the generation of Trial suggestions.
 // When this long-running operation succeeds, it will contain
-// a SuggestTrialsResponse.
+// a
+// SuggestTrialsResponse.
 func (c *VizierClient) SuggestTrials(ctx context.Context, req *aiplatformpb.SuggestTrialsRequest, opts ...gax.CallOption) (*SuggestTrialsOperation, error) {
 	return c.internalClient.SuggestTrials(ctx, req, opts...)
 }
@@ -257,15 +291,73 @@ func (c *VizierClient) ListOptimalTrials(ctx context.Context, req *aiplatformpb.
 	return c.internalClient.ListOptimalTrials(ctx, req, opts...)
 }
 
+// GetLocation gets information about a location.
+func (c *VizierClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *VizierClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *VizierClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *VizierClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *VizierClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *VizierClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *VizierClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *VizierClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *VizierClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
+// WaitOperation is a utility method from google.longrunning.Operations.
+func (c *VizierClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.WaitOperation(ctx, req, opts...)
+}
+
 // vizierGRPCClient is a client for interacting with Vertex AI API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type vizierGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing VizierClient
 	CallOptions **VizierCallOptions
@@ -278,8 +370,14 @@ type vizierGRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
+	iamPolicyClient iampb.IAMPolicyClient
+
+	locationsClient locationpb.LocationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewVizierClient creates a new vizier service client based on gRPC.
@@ -300,11 +398,6 @@ func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -313,9 +406,11 @@ func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierC
 
 	c := &vizierGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		vizierClient:     aiplatformpb.NewVizierServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -337,7 +432,8 @@ func NewVizierClient(ctx context.Context, opts ...option.ClientOption) (*VizierC
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *vizierGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -346,9 +442,9 @@ func (c *vizierGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *vizierGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -358,9 +454,10 @@ func (c *vizierGRPCClient) Close() error {
 }
 
 func (c *vizierGRPCClient) CreateStudy(ctx context.Context, req *aiplatformpb.CreateStudyRequest, opts ...gax.CallOption) (*aiplatformpb.Study, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateStudy[0:len((*c.CallOptions).CreateStudy):len((*c.CallOptions).CreateStudy)], opts...)
 	var resp *aiplatformpb.Study
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -375,9 +472,10 @@ func (c *vizierGRPCClient) CreateStudy(ctx context.Context, req *aiplatformpb.Cr
 }
 
 func (c *vizierGRPCClient) GetStudy(ctx context.Context, req *aiplatformpb.GetStudyRequest, opts ...gax.CallOption) (*aiplatformpb.Study, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetStudy[0:len((*c.CallOptions).GetStudy):len((*c.CallOptions).GetStudy)], opts...)
 	var resp *aiplatformpb.Study
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -392,9 +490,10 @@ func (c *vizierGRPCClient) GetStudy(ctx context.Context, req *aiplatformpb.GetSt
 }
 
 func (c *vizierGRPCClient) ListStudies(ctx context.Context, req *aiplatformpb.ListStudiesRequest, opts ...gax.CallOption) *StudyIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListStudies[0:len((*c.CallOptions).ListStudies):len((*c.CallOptions).ListStudies)], opts...)
 	it := &StudyIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListStudiesRequest)
@@ -437,9 +536,10 @@ func (c *vizierGRPCClient) ListStudies(ctx context.Context, req *aiplatformpb.Li
 }
 
 func (c *vizierGRPCClient) DeleteStudy(ctx context.Context, req *aiplatformpb.DeleteStudyRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteStudy[0:len((*c.CallOptions).DeleteStudy):len((*c.CallOptions).DeleteStudy)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -450,9 +550,10 @@ func (c *vizierGRPCClient) DeleteStudy(ctx context.Context, req *aiplatformpb.De
 }
 
 func (c *vizierGRPCClient) LookupStudy(ctx context.Context, req *aiplatformpb.LookupStudyRequest, opts ...gax.CallOption) (*aiplatformpb.Study, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).LookupStudy[0:len((*c.CallOptions).LookupStudy):len((*c.CallOptions).LookupStudy)], opts...)
 	var resp *aiplatformpb.Study
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -467,9 +568,10 @@ func (c *vizierGRPCClient) LookupStudy(ctx context.Context, req *aiplatformpb.Lo
 }
 
 func (c *vizierGRPCClient) SuggestTrials(ctx context.Context, req *aiplatformpb.SuggestTrialsRequest, opts ...gax.CallOption) (*SuggestTrialsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SuggestTrials[0:len((*c.CallOptions).SuggestTrials):len((*c.CallOptions).SuggestTrials)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -486,9 +588,10 @@ func (c *vizierGRPCClient) SuggestTrials(ctx context.Context, req *aiplatformpb.
 }
 
 func (c *vizierGRPCClient) CreateTrial(ctx context.Context, req *aiplatformpb.CreateTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateTrial[0:len((*c.CallOptions).CreateTrial):len((*c.CallOptions).CreateTrial)], opts...)
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -503,9 +606,10 @@ func (c *vizierGRPCClient) CreateTrial(ctx context.Context, req *aiplatformpb.Cr
 }
 
 func (c *vizierGRPCClient) GetTrial(ctx context.Context, req *aiplatformpb.GetTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetTrial[0:len((*c.CallOptions).GetTrial):len((*c.CallOptions).GetTrial)], opts...)
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -520,9 +624,10 @@ func (c *vizierGRPCClient) GetTrial(ctx context.Context, req *aiplatformpb.GetTr
 }
 
 func (c *vizierGRPCClient) ListTrials(ctx context.Context, req *aiplatformpb.ListTrialsRequest, opts ...gax.CallOption) *TrialIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListTrials[0:len((*c.CallOptions).ListTrials):len((*c.CallOptions).ListTrials)], opts...)
 	it := &TrialIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListTrialsRequest)
@@ -565,9 +670,10 @@ func (c *vizierGRPCClient) ListTrials(ctx context.Context, req *aiplatformpb.Lis
 }
 
 func (c *vizierGRPCClient) AddTrialMeasurement(ctx context.Context, req *aiplatformpb.AddTrialMeasurementRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "trial_name", url.QueryEscape(req.GetTrialName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "trial_name", url.QueryEscape(req.GetTrialName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).AddTrialMeasurement[0:len((*c.CallOptions).AddTrialMeasurement):len((*c.CallOptions).AddTrialMeasurement)], opts...)
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -582,9 +688,10 @@ func (c *vizierGRPCClient) AddTrialMeasurement(ctx context.Context, req *aiplatf
 }
 
 func (c *vizierGRPCClient) CompleteTrial(ctx context.Context, req *aiplatformpb.CompleteTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CompleteTrial[0:len((*c.CallOptions).CompleteTrial):len((*c.CallOptions).CompleteTrial)], opts...)
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -599,9 +706,10 @@ func (c *vizierGRPCClient) CompleteTrial(ctx context.Context, req *aiplatformpb.
 }
 
 func (c *vizierGRPCClient) DeleteTrial(ctx context.Context, req *aiplatformpb.DeleteTrialRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteTrial[0:len((*c.CallOptions).DeleteTrial):len((*c.CallOptions).DeleteTrial)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -612,9 +720,10 @@ func (c *vizierGRPCClient) DeleteTrial(ctx context.Context, req *aiplatformpb.De
 }
 
 func (c *vizierGRPCClient) CheckTrialEarlyStoppingState(ctx context.Context, req *aiplatformpb.CheckTrialEarlyStoppingStateRequest, opts ...gax.CallOption) (*CheckTrialEarlyStoppingStateOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "trial_name", url.QueryEscape(req.GetTrialName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "trial_name", url.QueryEscape(req.GetTrialName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CheckTrialEarlyStoppingState[0:len((*c.CallOptions).CheckTrialEarlyStoppingState):len((*c.CallOptions).CheckTrialEarlyStoppingState)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -631,9 +740,10 @@ func (c *vizierGRPCClient) CheckTrialEarlyStoppingState(ctx context.Context, req
 }
 
 func (c *vizierGRPCClient) StopTrial(ctx context.Context, req *aiplatformpb.StopTrialRequest, opts ...gax.CallOption) (*aiplatformpb.Trial, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).StopTrial[0:len((*c.CallOptions).StopTrial):len((*c.CallOptions).StopTrial)], opts...)
 	var resp *aiplatformpb.Trial
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -648,9 +758,10 @@ func (c *vizierGRPCClient) StopTrial(ctx context.Context, req *aiplatformpb.Stop
 }
 
 func (c *vizierGRPCClient) ListOptimalTrials(ctx context.Context, req *aiplatformpb.ListOptimalTrialsRequest, opts ...gax.CallOption) (*aiplatformpb.ListOptimalTrialsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListOptimalTrials[0:len((*c.CallOptions).ListOptimalTrials):len((*c.CallOptions).ListOptimalTrials)], opts...)
 	var resp *aiplatformpb.ListOptimalTrialsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -664,9 +775,232 @@ func (c *vizierGRPCClient) ListOptimalTrials(ctx context.Context, req *aiplatfor
 	return resp, nil
 }
 
-// CheckTrialEarlyStoppingStateOperation manages a long-running operation from CheckTrialEarlyStoppingState.
-type CheckTrialEarlyStoppingStateOperation struct {
-	lro *longrunning.Operation
+func (c *vizierGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.locationsClient.GetLocation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vizierGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.locationsClient.ListLocations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *vizierGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vizierGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vizierGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vizierGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *vizierGRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *vizierGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vizierGRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *vizierGRPCClient) WaitOperation(ctx context.Context, req *longrunningpb.WaitOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.WaitOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CheckTrialEarlyStoppingStateOperation returns a new CheckTrialEarlyStoppingStateOperation from a given name.
@@ -677,221 +1011,10 @@ func (c *vizierGRPCClient) CheckTrialEarlyStoppingStateOperation(name string) *C
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CheckTrialEarlyStoppingStateOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.CheckTrialEarlyStoppingStateResponse, error) {
-	var resp aiplatformpb.CheckTrialEarlyStoppingStateResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CheckTrialEarlyStoppingStateOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.CheckTrialEarlyStoppingStateResponse, error) {
-	var resp aiplatformpb.CheckTrialEarlyStoppingStateResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CheckTrialEarlyStoppingStateOperation) Metadata() (*aiplatformpb.CheckTrialEarlyStoppingStateMetatdata, error) {
-	var meta aiplatformpb.CheckTrialEarlyStoppingStateMetatdata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CheckTrialEarlyStoppingStateOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CheckTrialEarlyStoppingStateOperation) Name() string {
-	return op.lro.Name()
-}
-
-// SuggestTrialsOperation manages a long-running operation from SuggestTrials.
-type SuggestTrialsOperation struct {
-	lro *longrunning.Operation
-}
-
 // SuggestTrialsOperation returns a new SuggestTrialsOperation from a given name.
 // The name must be that of a previously created SuggestTrialsOperation, possibly from a different process.
 func (c *vizierGRPCClient) SuggestTrialsOperation(name string) *SuggestTrialsOperation {
 	return &SuggestTrialsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *SuggestTrialsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.SuggestTrialsResponse, error) {
-	var resp aiplatformpb.SuggestTrialsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *SuggestTrialsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*aiplatformpb.SuggestTrialsResponse, error) {
-	var resp aiplatformpb.SuggestTrialsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *SuggestTrialsOperation) Metadata() (*aiplatformpb.SuggestTrialsMetadata, error) {
-	var meta aiplatformpb.SuggestTrialsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *SuggestTrialsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *SuggestTrialsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// StudyIterator manages a stream of *aiplatformpb.Study.
-type StudyIterator struct {
-	items    []*aiplatformpb.Study
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Study, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *StudyIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *StudyIterator) Next() (*aiplatformpb.Study, error) {
-	var item *aiplatformpb.Study
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *StudyIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *StudyIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// TrialIterator manages a stream of *aiplatformpb.Trial.
-type TrialIterator struct {
-	items    []*aiplatformpb.Trial
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.Trial, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *TrialIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *TrialIterator) Next() (*aiplatformpb.Trial, error) {
-	var item *aiplatformpb.Trial
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *TrialIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *TrialIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

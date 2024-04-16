@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,26 +17,31 @@
 package recommendationengine
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	httptransport "google.golang.org/api/transport/http"
 	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
-	recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 )
 
 var newUserEventClientHook clientHook
@@ -53,10 +58,12 @@ type UserEventCallOptions struct {
 func defaultUserEventGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recommendationengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("recommendationengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("recommendationengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recommendationengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
-		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -65,6 +72,7 @@ func defaultUserEventGRPCClientOptions() []option.ClientOption {
 func defaultUserEventCallOptions() *UserEventCallOptions {
 	return &UserEventCallOptions{
 		WriteUserEvent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -77,6 +85,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 			}),
 		},
 		CollectUserEvent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -89,6 +98,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 			}),
 		},
 		ListUserEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -101,6 +111,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 			}),
 		},
 		PurgeUserEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -113,6 +124,7 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 			}),
 		},
 		ImportUserEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -127,7 +139,72 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 	}
 }
 
-// internalUserEventClient is an interface that defines the methods availaible from Recommendations AI.
+func defaultUserEventRESTCallOptions() *UserEventCallOptions {
+	return &UserEventCallOptions{
+		WriteUserEvent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		CollectUserEvent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ListUserEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		PurgeUserEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		ImportUserEvents: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+	}
+}
+
+// internalUserEventClient is an interface that defines the methods available from Recommendations AI.
 type internalUserEventClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -175,7 +252,8 @@ func (c *UserEventClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *UserEventClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -237,9 +315,6 @@ type userEventGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing UserEventClient
 	CallOptions **UserEventCallOptions
 
@@ -252,7 +327,7 @@ type userEventGRPCClient struct {
 	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewUserEventClient creates a new user event service client based on gRPC.
@@ -269,11 +344,6 @@ func NewUserEventClient(ctx context.Context, opts ...option.ClientOption) (*User
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -281,10 +351,9 @@ func NewUserEventClient(ctx context.Context, opts ...option.ClientOption) (*User
 	client := UserEventClient{CallOptions: defaultUserEventCallOptions()}
 
 	c := &userEventGRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		userEventClient:  recommendationenginepb.NewUserEventServiceClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:        connPool,
+		userEventClient: recommendationenginepb.NewUserEventServiceClient(connPool),
+		CallOptions:     &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -306,7 +375,8 @@ func NewUserEventClient(ctx context.Context, opts ...option.ClientOption) (*User
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *userEventGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -315,9 +385,9 @@ func (c *userEventGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *userEventGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -326,14 +396,96 @@ func (c *userEventGRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *userEventGRPCClient) WriteUserEvent(ctx context.Context, req *recommendationenginepb.WriteUserEventRequest, opts ...gax.CallOption) (*recommendationenginepb.UserEvent, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type userEventRESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing UserEventClient
+	CallOptions **UserEventCallOptions
+}
+
+// NewUserEventRESTClient creates a new user event service rest client.
+//
+// Service for ingesting end user actions on the customer website.
+func NewUserEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*UserEventClient, error) {
+	clientOpts := append(defaultUserEventRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+
+	callOpts := defaultUserEventRESTCallOptions()
+	c := &userEventRESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &UserEventClient{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultUserEventRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://recommendationengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://recommendationengine.UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint("https://recommendationengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://recommendationengine.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *userEventRESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *userEventRESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *userEventRESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *userEventGRPCClient) WriteUserEvent(ctx context.Context, req *recommendationenginepb.WriteUserEventRequest, opts ...gax.CallOption) (*recommendationenginepb.UserEvent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).WriteUserEvent[0:len((*c.CallOptions).WriteUserEvent):len((*c.CallOptions).WriteUserEvent)], opts...)
 	var resp *recommendationenginepb.UserEvent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -348,13 +500,10 @@ func (c *userEventGRPCClient) WriteUserEvent(ctx context.Context, req *recommend
 }
 
 func (c *userEventGRPCClient) CollectUserEvent(ctx context.Context, req *recommendationenginepb.CollectUserEventRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CollectUserEvent[0:len((*c.CallOptions).CollectUserEvent):len((*c.CallOptions).CollectUserEvent)], opts...)
 	var resp *httpbodypb.HttpBody
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -369,17 +518,21 @@ func (c *userEventGRPCClient) CollectUserEvent(ctx context.Context, req *recomme
 }
 
 func (c *userEventGRPCClient) ListUserEvents(ctx context.Context, req *recommendationenginepb.ListUserEventsRequest, opts ...gax.CallOption) *UserEventIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListUserEvents[0:len((*c.CallOptions).ListUserEvents):len((*c.CallOptions).ListUserEvents)], opts...)
 	it := &UserEventIterator{}
 	req = proto.Clone(req).(*recommendationenginepb.ListUserEventsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.UserEvent, string, error) {
-		var resp *recommendationenginepb.ListUserEventsResponse
-		req.PageToken = pageToken
+		resp := &recommendationenginepb.ListUserEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
 		if pageSize > math.MaxInt32 {
 			req.PageSize = math.MaxInt32
-		} else {
+		} else if pageSize != 0 {
 			req.PageSize = int32(pageSize)
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -402,20 +555,19 @@ func (c *userEventGRPCClient) ListUserEvents(ctx context.Context, req *recommend
 		it.items = append(it.items, items...)
 		return nextPageToken, nil
 	}
+
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
+
 	return it
 }
 
 func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *recommendationenginepb.PurgeUserEventsRequest, opts ...gax.CallOption) (*PurgeUserEventsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).PurgeUserEvents[0:len((*c.CallOptions).PurgeUserEvents):len((*c.CallOptions).PurgeUserEvents)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -432,13 +584,10 @@ func (c *userEventGRPCClient) PurgeUserEvents(ctx context.Context, req *recommen
 }
 
 func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *recommendationenginepb.ImportUserEventsRequest, opts ...gax.CallOption) (*ImportUserEventsOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ImportUserEvents[0:len((*c.CallOptions).ImportUserEvents):len((*c.CallOptions).ImportUserEvents)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -454,9 +603,383 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *recomme
 	}, nil
 }
 
-// ImportUserEventsOperation manages a long-running operation from ImportUserEvents.
-type ImportUserEventsOperation struct {
-	lro *longrunning.Operation
+// WriteUserEvent writes a single user event.
+func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *recommendationenginepb.WriteUserEventRequest, opts ...gax.CallOption) (*recommendationenginepb.UserEvent, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetUserEvent()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents:write", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).WriteUserEvent[0:len((*c.CallOptions).WriteUserEvent):len((*c.CallOptions).WriteUserEvent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &recommendationenginepb.UserEvent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CollectUserEvent writes a single user event from the browser. This uses a GET request to
+// due to browser restriction of POST-ing to a 3rd party domain.
+//
+// This method is used only by the Recommendations AI JavaScript pixel.
+// Users should not call this method directly.
+func (c *userEventRESTClient) CollectUserEvent(ctx context.Context, req *recommendationenginepb.CollectUserEventRequest, opts ...gax.CallOption) (*httpbodypb.HttpBody, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents:collect", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetEts() != 0 {
+		params.Add("ets", fmt.Sprintf("%v", req.GetEts()))
+	}
+	if req.GetUri() != "" {
+		params.Add("uri", fmt.Sprintf("%v", req.GetUri()))
+	}
+	params.Add("userEvent", fmt.Sprintf("%v", req.GetUserEvent()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CollectUserEvent[0:len((*c.CallOptions).CollectUserEvent):len((*c.CallOptions).CollectUserEvent)], opts...)
+	resp := &httpbodypb.HttpBody{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		resp.Data = buf
+		if headers := httpRsp.Header; len(headers["Content-Type"]) > 0 {
+			resp.ContentType = headers["Content-Type"][0]
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListUserEvents gets a list of user events within a time range, with potential filtering.
+func (c *userEventRESTClient) ListUserEvents(ctx context.Context, req *recommendationenginepb.ListUserEventsRequest, opts ...gax.CallOption) *UserEventIterator {
+	it := &UserEventIterator{}
+	req = proto.Clone(req).(*recommendationenginepb.ListUserEventsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.UserEvent, string, error) {
+		resp := &recommendationenginepb.ListUserEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetUserEvents(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// PurgeUserEvents deletes permanently all user events specified by the filter provided.
+// Depending on the number of events specified by the filter, this operation
+// could take hours or days to complete. To test a filter, use the list
+// command first.
+func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *recommendationenginepb.PurgeUserEventsRequest, opts ...gax.CallOption) (*PurgeUserEventsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents:purge", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &PurgeUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ImportUserEvents bulk import of User events. Request processing might be
+// synchronous. Events that already exist are skipped.
+// Use this method for backfilling historical user events.
+//
+// Operation.response is of type ImportResponse. Note that it is
+// possible for a subset of the items to be successfully inserted.
+// Operation.metadata is of type ImportMetadata.
+func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *recommendationenginepb.ImportUserEventsRequest, opts ...gax.CallOption) (*ImportUserEventsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/userEvents:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta1/%s", resp.GetName())
+	return &ImportUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
 }
 
 // ImportUserEventsOperation returns a new ImportUserEventsOperation from a given name.
@@ -467,65 +990,14 @@ func (c *userEventGRPCClient) ImportUserEventsOperation(name string) *ImportUser
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ImportUserEventsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*recommendationenginepb.ImportUserEventsResponse, error) {
-	var resp recommendationenginepb.ImportUserEventsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// ImportUserEventsOperation returns a new ImportUserEventsOperation from a given name.
+// The name must be that of a previously created ImportUserEventsOperation, possibly from a different process.
+func (c *userEventRESTClient) ImportUserEventsOperation(name string) *ImportUserEventsOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &ImportUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ImportUserEventsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*recommendationenginepb.ImportUserEventsResponse, error) {
-	var resp recommendationenginepb.ImportUserEventsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ImportUserEventsOperation) Metadata() (*recommendationenginepb.ImportMetadata, error) {
-	var meta recommendationenginepb.ImportMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ImportUserEventsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ImportUserEventsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// PurgeUserEventsOperation manages a long-running operation from PurgeUserEvents.
-type PurgeUserEventsOperation struct {
-	lro *longrunning.Operation
 }
 
 // PurgeUserEventsOperation returns a new PurgeUserEventsOperation from a given name.
@@ -536,105 +1008,12 @@ func (c *userEventGRPCClient) PurgeUserEventsOperation(name string) *PurgeUserEv
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *PurgeUserEventsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*recommendationenginepb.PurgeUserEventsResponse, error) {
-	var resp recommendationenginepb.PurgeUserEventsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// PurgeUserEventsOperation returns a new PurgeUserEventsOperation from a given name.
+// The name must be that of a previously created PurgeUserEventsOperation, possibly from a different process.
+func (c *userEventRESTClient) PurgeUserEventsOperation(name string) *PurgeUserEventsOperation {
+	override := fmt.Sprintf("/v1beta1/%s", name)
+	return &PurgeUserEventsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *PurgeUserEventsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*recommendationenginepb.PurgeUserEventsResponse, error) {
-	var resp recommendationenginepb.PurgeUserEventsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *PurgeUserEventsOperation) Metadata() (*recommendationenginepb.PurgeUserEventsMetadata, error) {
-	var meta recommendationenginepb.PurgeUserEventsMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *PurgeUserEventsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *PurgeUserEventsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UserEventIterator manages a stream of *recommendationenginepb.UserEvent.
-type UserEventIterator struct {
-	items    []*recommendationenginepb.UserEvent
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*recommendationenginepb.UserEvent, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *UserEventIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *UserEventIterator) Next() (*recommendationenginepb.UserEvent, error) {
-	var item *recommendationenginepb.UserEvent
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *UserEventIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *UserEventIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

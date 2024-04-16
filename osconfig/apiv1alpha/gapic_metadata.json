@@ -81,6 +81,81 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "OsConfigZonalClient",
+          "rpcs": {
+            "CreateOSPolicyAssignment": {
+              "methods": [
+                "CreateOSPolicyAssignment"
+              ]
+            },
+            "DeleteOSPolicyAssignment": {
+              "methods": [
+                "DeleteOSPolicyAssignment"
+              ]
+            },
+            "GetInstanceOSPoliciesCompliance": {
+              "methods": [
+                "GetInstanceOSPoliciesCompliance"
+              ]
+            },
+            "GetInventory": {
+              "methods": [
+                "GetInventory"
+              ]
+            },
+            "GetOSPolicyAssignment": {
+              "methods": [
+                "GetOSPolicyAssignment"
+              ]
+            },
+            "GetOSPolicyAssignmentReport": {
+              "methods": [
+                "GetOSPolicyAssignmentReport"
+              ]
+            },
+            "GetVulnerabilityReport": {
+              "methods": [
+                "GetVulnerabilityReport"
+              ]
+            },
+            "ListInstanceOSPoliciesCompliances": {
+              "methods": [
+                "ListInstanceOSPoliciesCompliances"
+              ]
+            },
+            "ListInventories": {
+              "methods": [
+                "ListInventories"
+              ]
+            },
+            "ListOSPolicyAssignmentReports": {
+              "methods": [
+                "ListOSPolicyAssignmentReports"
+              ]
+            },
+            "ListOSPolicyAssignmentRevisions": {
+              "methods": [
+                "ListOSPolicyAssignmentRevisions"
+              ]
+            },
+            "ListOSPolicyAssignments": {
+              "methods": [
+                "ListOSPolicyAssignments"
+              ]
+            },
+            "ListVulnerabilityReports": {
+              "methods": [
+                "ListVulnerabilityReports"
+              ]
+            },
+            "UpdateOSPolicyAssignment": {
+              "methods": [
+                "UpdateOSPolicyAssignment"
+              ]
+            }
+          }
         }
       }
     }

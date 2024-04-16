@@ -15,6 +15,7 @@ package pscompat
 
 import (
 	"context"
+	"runtime"
 	"sync"
 
 	"cloud.google.com/go/pubsub"
@@ -22,22 +23,26 @@ import (
 	"google.golang.org/api/option"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 var (
-	// ErrOverflow is set for a PublishResult when publish buffers overflow.
-	// Use errors.Is for comparing errors.
+	// ErrOverflow is set for a PublishResult when publish buffers overflow. This
+	// can occur when backends are unavailable or the actual publish throughput
+	// of clients exceeds the allocated publish throughput for the Pub/Sub Lite
+	// topic. Use errors.Is for comparing errors.
 	ErrOverflow = wire.ErrOverflow
 
 	// ErrOversizedMessage is set for a PublishResult when a published message
-	// exceeds MaxPublishRequestBytes. Use errors.Is for comparing errors.
+	// exceeds MaxPublishRequestBytes. Publishing this message will never succeed.
+	// Use errors.Is for comparing errors.
 	ErrOversizedMessage = wire.ErrOversizedMessage
 
 	// ErrPublisherStopped is set for a PublishResult when a message cannot be
 	// published because the publisher client has stopped or is in the process of
-	// stopping. PublisherClient.Error() returns the error that caused the
-	// publisher client to terminate (if any). Use errors.Is for comparing errors.
+	// stopping. It may be stopping due to a fatal error. PublisherClient.Error()
+	// returns the error that caused the publisher client to terminate (if any).
+	// Use errors.Is for comparing errors.
 	ErrPublisherStopped = wire.ErrServiceStopped
 
 	// ErrBackendUnavailable indicates that the backend service has been
@@ -49,6 +54,11 @@ var (
 
 // PublisherClient is a Pub/Sub Lite client to publish messages to a given
 // topic. A PublisherClient is safe to use from multiple goroutines.
+//
+// PublisherClients are expected to be long-lived and used for the duration of
+// the application, rather than for publishing small batches of messages. Stop
+// must be called to release resources when a PublisherClient is no longer
+// required.
 //
 // See https://cloud.google.com/pubsub/lite/docs/publishing for more information
 // about publishing.
@@ -64,6 +74,9 @@ type PublisherClient struct {
 // NewPublisherClient creates a new Pub/Sub Lite publisher client to publish
 // messages to a given topic, using DefaultPublishSettings. A valid topic path
 // has the format: "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID".
+//
+// Stop must be called to release resources when a PublisherClient is no longer
+// required.
 func NewPublisherClient(ctx context.Context, topic string, opts ...option.ClientOption) (*PublisherClient, error) {
 	return NewPublisherClientWithSettings(ctx, topic, DefaultPublishSettings, opts...)
 }
@@ -72,6 +85,9 @@ func NewPublisherClient(ctx context.Context, topic string, opts ...option.Client
 // publish messages to a given topic, using the specified PublishSettings. A
 // valid topic path has the format:
 // "projects/PROJECT_ID/locations/LOCATION/topics/TOPIC_ID".
+//
+// Stop must be called to release resources when a PublisherClient is no longer
+// required.
 func NewPublisherClientWithSettings(ctx context.Context, topic string, settings PublishSettings, opts ...option.ClientOption) (*PublisherClient, error) {
 	topicPath, err := wire.ParseTopicPath(topic)
 	if err != nil {
@@ -90,7 +106,16 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 	if err := wirePub.WaitStarted(); err != nil {
 		return nil, err
 	}
-	return &PublisherClient{settings: settings, wirePub: wirePub}, nil
+	publisher := &PublisherClient{settings: settings, wirePub: wirePub}
+
+	// Mitigation for Stop not being called when the publisher client is no longer
+	// used. Users must still call Stop to promptly shut down the publisher, as
+	// finalizers run after an arbitrary amount of time.
+	runtime.SetFinalizer(publisher, func(p *PublisherClient) {
+		// TODO: Log a warning.
+		go p.wirePub.Stop()
+	})
+	return publisher, nil
 }
 
 // Publish publishes `msg` to the topic asynchronously. Messages are batched and
@@ -99,9 +124,10 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 // Publish returns a non-nil PublishResult which will be ready when the
 // message has been sent (or has failed to be sent) to the server. Retryable
 // errors are automatically handled. If a PublishResult returns an error, this
-// indicates that the publisher client encountered a fatal error and has
-// permanently terminated. After the fatal error has been resolved, a new
-// publisher client instance must be created to republish failed messages.
+// indicates that the publisher client encountered a fatal error and can no
+// longer be used. Fatal errors should be manually inspected and the cause
+// resolved. A new publisher client instance must be created to republish failed
+// messages.
 //
 // Once Stop() has been called or the publisher client has failed permanently
 // due to an error, future calls to Publish will immediately return a
@@ -126,6 +152,7 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 			ipubsub.SetPublishResult(result, "", err)
 		}
 	})
+	runtime.KeepAlive(p) // Delay finalizers up to this point
 	return result
 }
 
@@ -133,6 +160,7 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 // Returns once all outstanding messages have been sent or have failed to be
 // sent. Stop should be called when the client is no longer required.
 func (p *PublisherClient) Stop() {
+	runtime.SetFinalizer(p, nil)
 	p.wirePub.Stop()
 	p.wirePub.WaitStopped()
 }

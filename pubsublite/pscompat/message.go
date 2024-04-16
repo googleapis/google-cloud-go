@@ -21,23 +21,23 @@ import (
 	"strings"
 
 	"cloud.google.com/go/pubsub"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/proto"
 
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// Message transforms and event timestamp encoding mirrors the Java client
-// library implementation:
-// https://github.com/googleapis/java-pubsublite/blob/master/google-cloud-pubsublite/src/main/java/com/google/cloud/pubsublite/cloudpubsub/MessageTransforms.java
-const eventTimestampAttributeKey = "x-goog-pubsublite-event-time-timestamp-proto"
+// EventTimeAttributeKey is the key of the attribute whose value is an encoded
+// Timestamp proto. The value will be used to set the event time property of a
+// Pub/Sub Lite message.
+const EventTimeAttributeKey = "x-goog-pubsublite-event-time-timestamp-proto"
 
 var errInvalidMessage = errors.New("pubsublite: invalid received message")
 
-// Encodes a timestamp in a way that it will be interpreted as an event time if
-// published on a message with an attribute named eventTimestampAttributeKey.
-func encodeEventTimestamp(eventTime *tspb.Timestamp) (string, error) {
+// EncodeEventTimeAttribute encodes a timestamp in a way that it will be
+// interpreted as an event time if published on a message with an attribute
+// named EventTimeAttributeKey.
+func EncodeEventTimeAttribute(eventTime *tspb.Timestamp) (string, error) {
 	bytes, err := proto.Marshal(eventTime)
 	if err != nil {
 		return "", err
@@ -45,8 +45,9 @@ func encodeEventTimestamp(eventTime *tspb.Timestamp) (string, error) {
 	return base64.StdEncoding.EncodeToString(bytes), nil
 }
 
-// Decodes a timestamp encoded with encodeEventTimestamp.
-func decodeEventTimestamp(value string) (*tspb.Timestamp, error) {
+// DecodeEventTimeAttribute decodes a timestamp that was encoded with
+// EncodeEventTimeAttribute.
+func DecodeEventTimeAttribute(value string) (*tspb.Timestamp, error) {
 	bytes, err := base64.StdEncoding.DecodeString(value)
 	if err != nil {
 		return nil, err
@@ -76,8 +77,8 @@ func transformPublishedMessage(from *pubsub.Message, to *pb.PubSubMessage, extra
 	if len(from.Attributes) > 0 {
 		to.Attributes = make(map[string]*pb.AttributeValues)
 		for key, value := range from.Attributes {
-			if key == eventTimestampAttributeKey {
-				eventpb, err := decodeEventTimestamp(value)
+			if key == EventTimeAttributeKey {
+				eventpb, err := DecodeEventTimeAttribute(value)
 				if err != nil {
 					return err
 				}
@@ -98,13 +99,13 @@ func transformReceivedMessage(from *pb.SequencedMessage, to *pubsub.Message) err
 		return errInvalidMessage
 	}
 
-	var err error
 	msg := from.GetMessage()
 
 	if from.GetPublishTime() != nil {
-		if to.PublishTime, err = ptypes.Timestamp(from.GetPublishTime()); err != nil {
+		if err := from.GetPublishTime().CheckValid(); err != nil {
 			return fmt.Errorf("%s: %s", errInvalidMessage.Error(), err)
 		}
+		to.PublishTime = from.GetPublishTime().AsTime()
 	}
 	if len(msg.GetKey()) > 0 {
 		to.OrderingKey = string(msg.GetKey())
@@ -113,15 +114,15 @@ func transformReceivedMessage(from *pb.SequencedMessage, to *pubsub.Message) err
 	to.Attributes = make(map[string]string)
 
 	if msg.EventTime != nil {
-		val, err := encodeEventTimestamp(msg.EventTime)
+		val, err := EncodeEventTimeAttribute(msg.EventTime)
 		if err != nil {
 			return fmt.Errorf("%s: %s", errInvalidMessage.Error(), err)
 		}
-		to.Attributes[eventTimestampAttributeKey] = val
+		to.Attributes[EventTimeAttributeKey] = val
 	}
 	for key, values := range msg.Attributes {
-		if key == eventTimestampAttributeKey {
-			return fmt.Errorf("%s: attribute with reserved key %q exists in API message", errInvalidMessage.Error(), eventTimestampAttributeKey)
+		if key == EventTimeAttributeKey {
+			return fmt.Errorf("%s: attribute with reserved key %q exists in API message", errInvalidMessage.Error(), EventTimeAttributeKey)
 		}
 		if len(values.Values) > 1 {
 			return fmt.Errorf("%s: cannot transform API message with multiple values for attribute with key %q", errInvalidMessage.Error(), key)
@@ -138,6 +139,13 @@ type MessageMetadata struct {
 	Partition int
 
 	// The offset the message was assigned.
+	//
+	// If this MessageMetadata was returned for a publish result and publish
+	// idempotence was enabled, the offset may be -1 when the message was
+	// identified as a duplicate of an already successfully published message,
+	// but the server did not have sufficient information to return the message's
+	// offset at publish time. Messages received by subscribers will always have
+	// the correct offset.
 	Offset int64
 }
 
@@ -153,11 +161,10 @@ func ParseMessageMetadata(id string) (*MessageMetadata, error) {
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
 	}
-
-	partition, pErr := strconv.ParseInt(parts[0], 10, 64)
+	partition, pErr := strconv.Atoi(parts[0])
 	offset, oErr := strconv.ParseInt(parts[1], 10, 64)
 	if pErr != nil || oErr != nil {
 		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
 	}
-	return &MessageMetadata{Partition: int(partition), Offset: offset}, nil
+	return &MessageMetadata{Partition: partition, Offset: offset}, nil
 }

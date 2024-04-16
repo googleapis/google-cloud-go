@@ -21,10 +21,10 @@ import (
 	"testing"
 	"time"
 
+	pb "cloud.google.com/go/errorreporting/apiv1beta1/errorreportingpb"
 	"cloud.google.com/go/internal/testutil"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
 type fakeReportErrorsClient struct {

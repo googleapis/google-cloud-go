@@ -28,6 +28,10 @@ func (ce *conversionError) Error() string {
 	return fmt.Sprintf("conversion error in location %q: %v", ce.Location, ce.Details)
 }
 
+func (ce *conversionError) Unwrap() error {
+	return ce.Details
+}
+
 func newConversionError(loc string, err error) *conversionError {
 	return &conversionError{
 		Location: loc,

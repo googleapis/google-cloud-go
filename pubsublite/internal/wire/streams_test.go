@@ -22,13 +22,12 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsublite/internal/test"
-	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 const streamTestTimeout = 30 * time.Second
@@ -38,6 +37,7 @@ var errInvalidInitialResponse = errors.New("invalid initial response")
 // testStreamHandler is a simplified publisher service that owns a
 // retryableStream.
 type testStreamHandler struct {
+	CancelCtx  context.CancelFunc
 	Topic      topicPartition
 	InitialReq *pb.PublishRequest
 	Stream     *retryableStream
@@ -49,7 +49,7 @@ type testStreamHandler struct {
 }
 
 func newTestStreamHandler(t *testing.T, connectTimeout, idleTimeout time.Duration) *testStreamHandler {
-	ctx := context.Background()
+	ctx, cancel := context.WithCancel(context.Background())
 	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
@@ -57,8 +57,9 @@ func newTestStreamHandler(t *testing.T, connectTimeout, idleTimeout time.Duratio
 
 	topic := topicPartition{Path: "path/to/topic", Partition: 1}
 	sh := &testStreamHandler{
+		CancelCtx:  cancel,
 		Topic:      topic,
-		InitialReq: initPubReq(topic),
+		InitialReq: initPubReq(topic, nil),
 		t:          t,
 		statuses:   make(chan streamStatus, 3),
 		responses:  make(chan interface{}, 1),
@@ -226,7 +227,7 @@ func TestRetryableStreamConnectRetries(t *testing.T) {
 	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream1)
 
 	stream2 := test.NewRPCVerifier(t)
-	stream2.Push(pub.InitialReq, nil, status.Error(codes.Internal, "internal"))
+	stream2.Push(pub.InitialReq, nil, status.Error(codes.Canceled, "canceled"))
 	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream2)
 
 	// Third stream should succeed.
@@ -248,6 +249,40 @@ func TestRetryableStreamConnectRetries(t *testing.T) {
 	pub.Stream.Stop()
 	if got, want := pub.NextStatus(), streamTerminated; got != want {
 		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+}
+
+func TestRetryableStreamContextCanceledNotRetried(t *testing.T) {
+	pub := newTestStreamHandler(t, streamTestTimeout, streamTestTimeout)
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(pub.InitialReq, initPubResp(), nil)
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	pub.Stream.Start()
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamConnected; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+
+	// Cancelling the parent context will cause the current gRPC stream to fail
+	// with a retryable Canceled error.
+	pub.CancelCtx()
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	// Reconnection then fails.
+	if got, want := pub.NextStatus(), streamTerminated; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if gotErr, wantErr := pub.Stream.Error(), context.Canceled; !test.ErrorEqual(gotErr, wantErr) {
+		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, wantErr)
 	}
 }
 
@@ -310,7 +345,7 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 	if pub.Stream.currentStream() != nil {
 		t.Error("Client stream should be nil")
 	}
-	if gotErr := pub.Stream.Error(); !xerrors.Is(gotErr, ErrBackendUnavailable) {
+	if gotErr := pub.Stream.Error(); !test.ErrorEqual(gotErr, ErrBackendUnavailable) {
 		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, ErrBackendUnavailable)
 	}
 }
@@ -357,8 +392,8 @@ func TestRetryableStreamInitTimeout(t *testing.T) {
 
 func TestRetryableStreamSendReceive(t *testing.T) {
 	pub := newTestStreamHandler(t, streamTestTimeout, streamTestTimeout)
-	req := msgPubReq(&pb.PubSubMessage{Data: []byte("msg")})
-	wantResp := msgPubResp(5)
+	req := msgPubReq(0, &pb.PubSubMessage{Data: []byte("msg")})
+	wantResp := msgPubResp(cursorRange(5, 0, 2))
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
@@ -483,8 +518,8 @@ func TestRetryableStreamDisconnectedWithResetSignal(t *testing.T) {
 
 func TestRetryableStreamIdleStreamDetection(t *testing.T) {
 	pub := newTestStreamHandler(t, streamTestTimeout, 50*time.Millisecond)
-	req := msgPubReq(&pb.PubSubMessage{Data: []byte("msg")})
-	wantResp := msgPubResp(5)
+	req := msgPubReq(0, &pb.PubSubMessage{Data: []byte("msg")})
+	wantResp := msgPubResp(cursorRange(5, 0, 2))
 
 	verifiers := test.NewVerifiers(t)
 

@@ -20,9 +20,9 @@ import (
 	"testing"
 	"time"
 
-	ts "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/genproto/googleapis/type/latlng"
+	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type testStruct1 struct {

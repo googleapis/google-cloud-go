@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewZoneOperationsRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewZoneOperationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewZoneOperationsRESTClient() {
 
 func ExampleZoneOperationsClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewZoneOperationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleZoneOperationsClient_Delete() {
 
 	req := &computepb.DeleteZoneOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteZoneOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteZoneOperationRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -58,6 +68,11 @@ func ExampleZoneOperationsClient_Delete() {
 
 func ExampleZoneOperationsClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewZoneOperationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -66,7 +81,7 @@ func ExampleZoneOperationsClient_Get() {
 
 	req := &computepb.GetZoneOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetZoneOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetZoneOperationRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -78,6 +93,11 @@ func ExampleZoneOperationsClient_Get() {
 
 func ExampleZoneOperationsClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewZoneOperationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -86,7 +106,7 @@ func ExampleZoneOperationsClient_List() {
 
 	req := &computepb.ListZoneOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListZoneOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListZoneOperationsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -99,11 +119,22 @@ func ExampleZoneOperationsClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.OperationList)
 	}
 }
 
 func ExampleZoneOperationsClient_Wait() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewZoneOperationsRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +143,7 @@ func ExampleZoneOperationsClient_Wait() {
 
 	req := &computepb.WaitZoneOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#WaitZoneOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#WaitZoneOperationRequest.
 	}
 	resp, err := c.Wait(ctx, req)
 	if err != nil {

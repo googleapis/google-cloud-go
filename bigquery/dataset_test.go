@@ -24,6 +24,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	bq "google.golang.org/api/bigquery/v2"
 	itest "google.golang.org/api/iterator/testing"
 )
@@ -310,6 +311,7 @@ func TestDatasets(t *testing.T) {
 }
 
 func TestDatasetToBQ(t *testing.T) {
+	testClient := &Client{projectID: "p"}
 	for _, test := range []struct {
 		in   *DatasetMetadata
 		want *bq.Dataset
@@ -317,33 +319,65 @@ func TestDatasetToBQ(t *testing.T) {
 		{nil, &bq.Dataset{}},
 		{&DatasetMetadata{Name: "name"}, &bq.Dataset{FriendlyName: "name"}},
 		{&DatasetMetadata{
-			Name:                   "name",
-			Description:            "desc",
-			DefaultTableExpiration: time.Hour,
+			Name:                       "name",
+			Description:                "desc",
+			DefaultTableExpiration:     time.Hour,
+			MaxTimeTravel:              time.Duration(181 * time.Minute),
+			DefaultPartitionExpiration: 24 * time.Hour,
 			DefaultEncryptionConfig: &EncryptionConfig{
 				KMSKeyName: "some_key",
 			},
-			Location: "EU",
-			Labels:   map[string]string{"x": "y"},
-			Access:   []*AccessEntry{{Role: OwnerRole, Entity: "example.com", EntityType: DomainEntity}},
-		}, &bq.Dataset{
-			FriendlyName:             "name",
-			Description:              "desc",
-			DefaultTableExpirationMs: 60 * 60 * 1000,
-			DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
-				KmsKeyName: "some_key",
+			ExternalDatasetReference: &ExternalDatasetReference{
+				Connection:     "conn",
+				ExternalSource: "external_src",
 			},
 			Location: "EU",
 			Labels:   map[string]string{"x": "y"},
-			Access:   []*bq.DatasetAccess{{Role: "OWNER", Domain: "example.com"}},
+			Access: []*AccessEntry{
+				{Role: OwnerRole, Entity: "example.com", EntityType: DomainEntity},
+				{
+					EntityType: DatasetEntity,
+					Dataset: &DatasetAccessEntry{
+						Dataset:     testClient.Dataset("otherdataset"),
+						TargetTypes: []string{"VIEWS"},
+					},
+				},
+			},
+		}, &bq.Dataset{
+			FriendlyName:                 "name",
+			Description:                  "desc",
+			DefaultTableExpirationMs:     60 * 60 * 1000,
+			MaxTimeTravelHours:           3,
+			DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
+			DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
+				KmsKeyName: "some_key",
+			},
+			ExternalDatasetReference: &bq.ExternalDatasetReference{
+				Connection:     "conn",
+				ExternalSource: "external_src",
+			},
+			Location: "EU",
+			Labels:   map[string]string{"x": "y"},
+			Access: []*bq.DatasetAccess{
+				{Role: "OWNER", Domain: "example.com"},
+				{
+					Dataset: &bq.DatasetAccessEntry{
+						Dataset: &bq.DatasetReference{
+							ProjectId: "p",
+							DatasetId: "otherdataset",
+						},
+						TargetTypes: []string{"VIEWS"},
+					},
+				},
+			},
 		}},
 	} {
 		got, err := test.in.toBQ()
 		if err != nil {
 			t.Fatal(err)
 		}
-		if !testutil.Equal(got, test.want) {
-			t.Errorf("%v:\ngot  %+v\nwant %+v", test.in, got, test.want)
+		if diff := testutil.Diff(got, test.want, cmp.AllowUnexported(Dataset{})); diff != "" {
+			t.Errorf("got=-, want=+:\n%s", diff)
 		}
 	}
 
@@ -362,60 +396,105 @@ func TestDatasetToBQ(t *testing.T) {
 }
 
 func TestBQToDatasetMetadata(t *testing.T) {
+	testClient := &Client{projectID: "p"}
 	cTime := time.Date(2017, 1, 26, 0, 0, 0, 0, time.Local)
 	cMillis := cTime.UnixNano() / 1e6
 	mTime := time.Date(2017, 10, 31, 0, 0, 0, 0, time.Local)
 	mMillis := mTime.UnixNano() / 1e6
 	q := &bq.Dataset{
-		CreationTime:             cMillis,
-		LastModifiedTime:         mMillis,
-		FriendlyName:             "name",
-		Description:              "desc",
-		DefaultTableExpirationMs: 60 * 60 * 1000,
+		CreationTime:                 cMillis,
+		LastModifiedTime:             mMillis,
+		FriendlyName:                 "name",
+		Description:                  "desc",
+		DefaultTableExpirationMs:     60 * 60 * 1000,
+		MaxTimeTravelHours:           3,
+		DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName: "some_key",
+		},
+		ExternalDatasetReference: &bq.ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
 		},
 		Location: "EU",
 		Labels:   map[string]string{"x": "y"},
 		Access: []*bq.DatasetAccess{
 			{Role: "READER", UserByEmail: "joe@example.com"},
 			{Role: "WRITER", GroupByEmail: "users@example.com"},
+			{
+				Dataset: &bq.DatasetAccessEntry{
+					Dataset: &bq.DatasetReference{
+						ProjectId: "p",
+						DatasetId: "otherdataset",
+					},
+					TargetTypes: []string{"VIEWS"},
+				},
+			},
+		},
+		Tags: []*bq.DatasetTags{
+			{TagKey: "tag1", TagValue: "value1"},
+			{TagKey: "tag2", TagValue: "value2"},
 		},
 		Etag: "etag",
 	}
 	want := &DatasetMetadata{
-		CreationTime:           cTime,
-		LastModifiedTime:       mTime,
-		Name:                   "name",
-		Description:            "desc",
-		DefaultTableExpiration: time.Hour,
+		CreationTime:               cTime,
+		LastModifiedTime:           mTime,
+		Name:                       "name",
+		Description:                "desc",
+		DefaultTableExpiration:     time.Hour,
+		MaxTimeTravel:              time.Duration(3 * time.Hour),
+		DefaultPartitionExpiration: 24 * time.Hour,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
 		},
-		Location: "EU",
-		Labels:   map[string]string{"x": "y"},
+		ExternalDatasetReference: &ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
+		},
+		StorageBillingModel: LogicalStorageBillingModel,
+		Location:            "EU",
+		Labels:              map[string]string{"x": "y"},
 		Access: []*AccessEntry{
 			{Role: ReaderRole, Entity: "joe@example.com", EntityType: UserEmailEntity},
 			{Role: WriterRole, Entity: "users@example.com", EntityType: GroupEmailEntity},
+			{
+				EntityType: DatasetEntity,
+				Dataset: &DatasetAccessEntry{
+					Dataset:     testClient.Dataset("otherdataset"),
+					TargetTypes: []string{"VIEWS"},
+				},
+			},
+		},
+		Tags: []*DatasetTag{
+			{TagKey: "tag1", TagValue: "value1"},
+			{TagKey: "tag2", TagValue: "value2"},
 		},
 		ETag: "etag",
 	}
-	got, err := bqToDatasetMetadata(q)
+	got, err := bqToDatasetMetadata(q, client)
 	if err != nil {
 		t.Fatal(err)
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := testutil.Diff(got, want, cmpopts.IgnoreUnexported(Dataset{})); diff != "" {
 		t.Errorf("-got, +want:\n%s", diff)
 	}
 }
 
 func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 	dm := DatasetMetadataToUpdate{
-		Description:            "desc",
-		Name:                   "name",
-		DefaultTableExpiration: time.Hour,
+		Description:                "desc",
+		Name:                       "name",
+		DefaultTableExpiration:     time.Hour,
+		DefaultPartitionExpiration: 24 * time.Hour,
+		MaxTimeTravel:              time.Duration(181 * time.Minute),
+		StorageBillingModel:        PhysicalStorageBillingModel,
 		DefaultEncryptionConfig: &EncryptionConfig{
 			KMSKeyName: "some_key",
+		},
+		ExternalDatasetReference: &ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
 		},
 	}
 	dm.SetLabel("label", "value")
@@ -426,15 +505,22 @@ func TestDatasetMetadataToUpdateToBQ(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := &bq.Dataset{
-		Description:              "desc",
-		FriendlyName:             "name",
-		DefaultTableExpirationMs: 60 * 60 * 1000,
+		Description:                  "desc",
+		FriendlyName:                 "name",
+		DefaultTableExpirationMs:     60 * 60 * 1000,
+		MaxTimeTravelHours:           3,
+		DefaultPartitionExpirationMs: 24 * 60 * 60 * 1000,
+		StorageBillingModel:          string(PhysicalStorageBillingModel),
 		DefaultEncryptionConfiguration: &bq.EncryptionConfiguration{
 			KmsKeyName:      "some_key",
 			ForceSendFields: []string{"KmsKeyName"},
 		},
+		ExternalDatasetReference: &bq.ExternalDatasetReference{
+			Connection:     "conn",
+			ExternalSource: "external_src",
+		},
 		Labels:          map[string]string{"label": "value"},
-		ForceSendFields: []string{"Description", "FriendlyName"},
+		ForceSendFields: []string{"Description", "FriendlyName", "ExternalDatasetReference", "StorageBillingModel"},
 		NullFields:      []string{"Labels.del"},
 	}
 	if diff := testutil.Diff(got, want); diff != "" {

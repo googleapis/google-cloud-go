@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -23,15 +23,14 @@ import (
 	"net/url"
 	"time"
 
+	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	apigeeconnectpb "google.golang.org/genproto/googleapis/cloud/apigeeconnect/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -45,7 +44,9 @@ type ConnectionCallOptions struct {
 func defaultConnectionGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("apigeeconnect.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("apigeeconnect.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("apigeeconnect.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://apigeeconnect.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -57,6 +58,7 @@ func defaultConnectionGRPCClientOptions() []option.ClientOption {
 func defaultConnectionCallOptions() *ConnectionCallOptions {
 	return &ConnectionCallOptions{
 		ListConnections: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -71,7 +73,7 @@ func defaultConnectionCallOptions() *ConnectionCallOptions {
 	}
 }
 
-// internalConnectionClient is an interface that defines the methods availaible from Apigee Connect API.
+// internalConnectionClient is an interface that defines the methods available from Apigee Connect API.
 type internalConnectionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,7 +110,8 @@ func (c *ConnectionClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *ConnectionClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -126,9 +129,6 @@ type connectionGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing ConnectionClient
 	CallOptions **ConnectionCallOptions
 
@@ -136,7 +136,7 @@ type connectionGRPCClient struct {
 	connectionClient apigeeconnectpb.ConnectionServiceClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewConnectionClient creates a new connection service client based on gRPC.
@@ -153,11 +153,6 @@ func NewConnectionClient(ctx context.Context, opts ...option.ClientOption) (*Con
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -166,7 +161,6 @@ func NewConnectionClient(ctx context.Context, opts ...option.ClientOption) (*Con
 
 	c := &connectionGRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		connectionClient: apigeeconnectpb.NewConnectionServiceClient(connPool),
 		CallOptions:      &client.CallOptions,
 	}
@@ -179,7 +173,8 @@ func NewConnectionClient(ctx context.Context, opts ...option.ClientOption) (*Con
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *connectionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -188,9 +183,9 @@ func (c *connectionGRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *connectionGRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -200,9 +195,10 @@ func (c *connectionGRPCClient) Close() error {
 }
 
 func (c *connectionGRPCClient) ListConnections(ctx context.Context, req *apigeeconnectpb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListConnections[0:len((*c.CallOptions).ListConnections):len((*c.CallOptions).ListConnections)], opts...)
 	it := &ConnectionIterator{}
 	req = proto.Clone(req).(*apigeeconnectpb.ListConnectionsRequest)
@@ -242,51 +238,4 @@ func (c *connectionGRPCClient) ListConnections(ctx context.Context, req *apigeec
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
-}
-
-// ConnectionIterator manages a stream of *apigeeconnectpb.Connection.
-type ConnectionIterator struct {
-	items    []*apigeeconnectpb.Connection
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*apigeeconnectpb.Connection, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ConnectionIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ConnectionIterator) Next() (*apigeeconnectpb.Connection, error) {
-	var item *apigeeconnectpb.Connection
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ConnectionIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ConnectionIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

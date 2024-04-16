@@ -19,14 +19,14 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
+	"cloud.google.com/go/bigquery/internal"
+	"cloud.google.com/go/bigquery/storage/apiv1/storagepb"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/tag"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc"
 	grpcstatus "google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -48,9 +48,6 @@ var (
 
 	// BufferedStream is a form of checkpointed stream, that allows
 	// you to advance the offset of visible rows via Flush operations.
-	//
-	// NOTE: Buffered Streams are currently in limited preview, and as such
-	// methods like FlushRows() may yield errors for non-enrolled projects.
 	BufferedStream StreamType = "BUFFERED"
 
 	// PendingStream is a stream in which no data is made visible to
@@ -73,29 +70,26 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 
 // ManagedStream is the abstraction over a single write stream.
 type ManagedStream struct {
-	streamSettings   *streamSettings
-	schemaDescriptor *descriptorpb.DescriptorProto
-	destinationTable string
-	c                *Client
-	fc               *flowController
+	// Unique id for the managedstream instance.
+	id string
 
-	// aspects of the stream client
-	ctx         context.Context // retained context for the stream
-	cancel      context.CancelFunc
-	callOptions []gax.CallOption                                                                                // options passed when opening an append client
-	open        func(streamID string, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	// pool retains a reference to the writer's pool.  A writer is only associated to a single pool.
+	pool *connectionPool
 
-	mu          sync.Mutex
-	arc         *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
-	err         error                                     // terminal error
-	pending     chan *pendingWrite                        // writes awaiting status
-	streamSetup *sync.Once                                // handles amending the first request in a new stream
+	streamSettings *streamSettings
+	// retains the current descriptor for the stream.
+	curTemplate *versionedTemplate
+	c           *Client
+	retry       *statelessRetryer
+
+	// writer state
+	mu     sync.Mutex
+	ctx    context.Context // used for stats/instrumentation, and to check the writer is live.
+	cancel context.CancelFunc
+	err    error // retains any terminal error (writer was closed)
 }
 
-// enables testing
-type streamClientFunc func(context.Context, ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
-
-// streamSettings govern behavior of the append stream RPCs.
+// streamSettings is for capturing configuration and option information.
 type streamSettings struct {
 
 	// streamID contains the reference to the destination stream.
@@ -120,6 +114,17 @@ type streamSettings struct {
 	// dataOrigin can be set for classifying metrics generated
 	// by a stream.
 	dataOrigin string
+
+	// retains reference to the target table when resolving settings
+	destinationTable string
+
+	appendCallOptions []gax.CallOption
+
+	// enable multiplex?
+	multiplex bool
+
+	// retain a copy of the stream client func.
+	streamFunc streamClientFunc
 }
 
 func defaultStreamSettings() *streamSettings {
@@ -127,8 +132,19 @@ func defaultStreamSettings() *streamSettings {
 		streamType:          DefaultStream,
 		MaxInflightRequests: 1000,
 		MaxInflightBytes:    0,
-		TraceID:             "",
+		appendCallOptions: []gax.CallOption{
+			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10 * 1024 * 1024)),
+		},
 	}
+}
+
+// buildTraceID handles prefixing of a user-supplied trace ID with a client identifier.
+func buildTraceID(s *streamSettings) string {
+	base := fmt.Sprintf("go-managedwriter:%s", internal.Version)
+	if s != nil && s.TraceID != "" {
+		return fmt.Sprintf("%s %s", base, s.TraceID)
+	}
+	return base
 }
 
 // StreamName returns the corresponding write stream ID being managed by this writer.
@@ -151,7 +167,7 @@ func (ms *ManagedStream) FlushRows(ctx context.Context, offset int64, opts ...ga
 		},
 	}
 	resp, err := ms.c.rawClient.FlushRows(ctx, req, opts...)
-	recordStat(ms.ctx, FlushRequests, 1)
+	recordWriterStat(ms, FlushRequests, 1)
 	if err != nil {
 		return 0, err
 	}
@@ -175,195 +191,91 @@ func (ms *ManagedStream) Finalize(ctx context.Context, opts ...gax.CallOption) (
 	return resp.GetRowCount(), nil
 }
 
-// getStream returns either a valid ARC client stream or permanent error.
-//
-// Calling getStream locks the mutex.
-func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, forceReconnect bool) (*storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
-	ms.mu.Lock()
-	defer ms.mu.Unlock()
-	if ms.err != nil {
-		return nil, nil, ms.err
-	}
-	ms.err = ms.ctx.Err()
-	if ms.err != nil {
-		return nil, nil, ms.err
-	}
-
-	// Always return the retained ARC if the arg differs.
-	if arc != ms.arc && !forceReconnect {
-		return ms.arc, ms.pending, nil
-	}
-	if arc != ms.arc && forceReconnect && ms.arc != nil {
-		// In this case, we're forcing a close to apply changes to the stream
-		// that currently can't be modified on an established connection.
-		//
-		// TODO: clean this up once internal issue 205756033 is resolved.
-		(*ms.arc).CloseSend()
-	}
-
-	ms.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
-	*ms.arc, ms.pending, ms.err = ms.openWithRetry()
-	return ms.arc, ms.pending, ms.err
-}
-
-// openWithRetry is responsible for navigating the (re)opening of the underlying stream connection.
-//
-// Only getStream() should call this, and thus the calling code has the mutex lock.
-func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
-	r := defaultRetryer{}
+// appendWithRetry handles the details of adding sending an append request on a stream.  Appends are sent on a long
+// lived bidirectional network stream, with it's own managed context (ms.ctx), and there's a per-request context
+// attached to the pendingWrite.
+func (ms *ManagedStream) appendWithRetry(pw *pendingWrite, opts ...gax.CallOption) error {
 	for {
-		recordStat(ms.ctx, AppendClientOpenCount, 1)
-		streamID := ""
-		if ms.streamSettings != nil {
-			streamID = ms.streamSettings.streamID
-		}
-		arc, err := ms.open(streamID, ms.callOptions...)
-		bo, shouldRetry := r.Retry(err)
-		if err != nil && shouldRetry {
-			recordStat(ms.ctx, AppendClientOpenRetryCount, 1)
-			if err := gax.Sleep(ms.ctx, bo); err != nil {
-				return nil, nil, err
-			}
-			continue
-		}
-		if err == nil {
-			// The channel relationship with its ARC is 1:1.  If we get a new ARC, create a new pending
-			// write channel and fire up the associated receive processor.  The channel ensures that
-			// responses for a connection are processed in the same order that appends were sent.
-			depth := 1000 // default backend queue limit
-			if ms.streamSettings != nil {
-				if ms.streamSettings.MaxInflightRequests > 0 {
-					depth = ms.streamSettings.MaxInflightRequests
-				}
-			}
-			ch := make(chan *pendingWrite, depth)
-			go recvProcessor(ms.ctx, arc, ms.fc, ch)
-			// Also, replace the sync.Once for setting up a new stream, as we need to do "special" work
-			// for every new connection.
-			ms.streamSetup = new(sync.Once)
-			return arc, ch, nil
-		}
-		return arc, nil, err
-	}
-}
-
-// append handles the details of adding sending an append request on a stream.  Appends are sent on a long
-// lived bidirectional network stream, with it's own managed context (ms.ctx).  requestCtx is checked
-// for expiry to enable faster failures, it is not propagated more deeply.
-func (ms *ManagedStream) append(requestCtx context.Context, pw *pendingWrite, opts ...gax.CallOption) error {
-	var settings gax.CallSettings
-	for _, opt := range opts {
-		opt.Resolve(&settings)
-	}
-	var r gax.Retryer = &defaultRetryer{}
-	if settings.Retry != nil {
-		r = settings.Retry()
-	}
-
-	var arc *storagepb.BigQueryWrite_AppendRowsClient
-	var ch chan *pendingWrite
-	var err error
-
-	for {
-		// Don't both calling/retrying if this append's context is already expired.
-		if err = requestCtx.Err(); err != nil {
-			return err
-		}
-
-		arc, ch, err = ms.getStream(arc, pw.newSchema != nil)
+		ms.mu.Lock()
+		err := ms.err
+		ms.mu.Unlock()
 		if err != nil {
 			return err
 		}
-
-		// Resolve the special work for the first append on a stream.
-		var req *storagepb.AppendRowsRequest
-		ms.streamSetup.Do(func() {
-			reqCopy := proto.Clone(pw.request).(*storagepb.AppendRowsRequest)
-			reqCopy.WriteStream = ms.streamSettings.streamID
-			reqCopy.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
-				ProtoDescriptor: ms.schemaDescriptor,
+		conn, err := ms.pool.selectConn(pw)
+		if err != nil {
+			pw.markDone(nil, err)
+			return err
+		}
+		appendErr := conn.lockingAppend(pw)
+		if appendErr != nil {
+			// Append yielded an error.  Retry by continuing or return.
+			status := grpcstatus.Convert(appendErr)
+			if status != nil {
+				recordCtx := ms.ctx
+				if ctx, err := tag.New(ms.ctx, tag.Insert(keyError, status.Code().String())); err == nil {
+					recordCtx = ctx
+				}
+				recordStat(recordCtx, AppendRequestErrors, 1)
 			}
-			if ms.streamSettings.TraceID != "" {
-				reqCopy.TraceId = ms.streamSettings.TraceID
+			bo, shouldRetry := ms.statelessRetryer().Retry(appendErr, pw.attemptCount)
+			if shouldRetry {
+				if err := gax.Sleep(ms.ctx, bo); err != nil {
+					return err
+				}
+				continue
 			}
-			req = reqCopy
-		})
-
-		// critical section:  When we issue an append, we need to add the write to the pending channel
-		// to keep the response ordering correct.
-		ms.mu.Lock()
-		if req != nil {
-			// First append in a new connection needs properties like schema and stream name set.
-			err = (*arc).Send(req)
-		} else {
-			// Subsequent requests need no modification.
-			err = (*arc).Send(pw.request)
+			// This append cannot be retried locally.  It is not the responsibility of this function to finalize the pending
+			// write however, as that's handled by callers.
+			// Related: https://github.com/googleapis/google-cloud-go/issues/7380
+			return appendErr
 		}
-		if err == nil {
-			// Compute numRows, once we pass ownership to the channel the request may be
-			// cleared.
-			numRows := int64(len(pw.request.GetProtoRows().Rows.GetSerializedRows()))
-			ch <- pw
-			// We've passed ownership of the pending write to the channel.
-			// It's now responsible for marking the request done, we're done
-			// with the critical section.
-			ms.mu.Unlock()
-
-			// Record stats and return.
-			recordStat(ms.ctx, AppendRequests, 1)
-			recordStat(ms.ctx, AppendRequestBytes, int64(pw.reqSize))
-			recordStat(ms.ctx, AppendRequestRows, numRows)
-			return nil
-		}
-		// Unlock the mutex for error cases.
-		ms.mu.Unlock()
-
-		// Append yielded an error.  Retry by continuing or return.
-		status := grpcstatus.Convert(err)
-		if status != nil {
-			ctx, _ := tag.New(ms.ctx, tag.Insert(keyError, status.Code().String()))
-			recordStat(ctx, AppendRequestErrors, 1)
-		}
-		bo, shouldRetry := r.Retry(err)
-		if shouldRetry {
-			if err := gax.Sleep(ms.ctx, bo); err != nil {
-				return err
-			}
-			continue
-		}
-		// We've got a non-retriable error, so propagate that up. and mark the write done.
-		ms.mu.Lock()
-		ms.err = err
-		pw.markDone(NoStreamOffset, err, ms.fc)
-		ms.mu.Unlock()
-		return err
+		return nil
 	}
 }
 
 // Close closes a managed stream.
 func (ms *ManagedStream) Close() error {
 
-	var arc *storagepb.BigQueryWrite_AppendRowsClient
-
-	arc, ch, err := ms.getStream(arc, false)
-	if err != nil {
-		return err
-	}
-	if ms.arc == nil {
-		return fmt.Errorf("no stream exists")
-	}
-	err = (*arc).CloseSend()
-	if err == nil {
-		close(ch)
-	}
 	ms.mu.Lock()
-	ms.err = io.EOF
-	ms.mu.Unlock()
-	// Propagate cancellation.
+	defer ms.mu.Unlock()
+
+	var returned error
+
+	if ms.pool != nil {
+		if err := ms.pool.removeWriter(ms); err != nil {
+			returned = err
+		}
+	}
+
+	// Cancel the underlying context for the stream, we don't allow re-open.
 	if ms.cancel != nil {
 		ms.cancel()
+		ms.cancel = nil
 	}
-	return err
+
+	// For normal operation, mark the stream error as io.EOF.
+	if ms.err == nil {
+		ms.err = io.EOF
+	}
+	if returned == nil {
+		returned = ms.err
+	}
+	return returned
+}
+
+// buildRequest constructs an optimized AppendRowsRequest.
+// Offset (if specified) is applied later.
+func (ms *ManagedStream) buildRequest(data [][]byte) *storagepb.AppendRowsRequest {
+	return &storagepb.AppendRowsRequest{
+		Rows: &storagepb.AppendRowsRequest_ProtoRows{
+			ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
+				Rows: &storagepb.ProtoRows{
+					SerializedRows: data,
+				},
+			},
+		},
+	}
 }
 
 // AppendRows sends the append requests to the service, and returns a single AppendResult for tracking
@@ -374,34 +286,42 @@ func (ms *ManagedStream) Close() error {
 //
 // Use the WithOffset() AppendOption to set an explicit offset for this append.  Setting an offset for
 // a default stream is unsupported.
+//
+// The size of a single request must be less than 10 MB in size.
+// Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...AppendOption) (*AppendResult, error) {
-	pw := newPendingWrite(data)
+	// before we do anything, ensure the writer isn't closed.
+	ms.mu.Lock()
+	err := ms.err
+	ms.mu.Unlock()
+	if err != nil {
+		return nil, err
+	}
+	// Ensure we build the request and pending write with a consistent schema version.
+	curTemplate := ms.curTemplate
+	req := ms.buildRequest(data)
+	pw := newPendingWrite(ctx, ms, req, curTemplate, ms.streamSettings.streamID, ms.streamSettings.TraceID)
 	// apply AppendOption opts
 	for _, opt := range opts {
 		opt(pw)
 	}
-	// check flow control
-	if err := ms.fc.acquire(ctx, pw.reqSize); err != nil {
-		// in this case, we didn't acquire, so don't pass the flow controller reference to avoid a release.
-		pw.markDone(NoStreamOffset, err, nil)
-		return nil, err
-	}
-	// if we've received an updated schema as part of a write, propagate it to both the cached schema and
-	// populate the schema in the request.
-	if pw.newSchema != nil {
-		ms.schemaDescriptor = pw.newSchema
-		pw.request.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
-			ProtoDescriptor: pw.newSchema,
+	// Post-request fixup after options are applied.
+	if pw.reqTmpl != nil {
+		if pw.reqTmpl.tmpl != nil {
+			// MVIs must be set on each request, but _default_ MVIs persist across the stream lifetime.  Sigh.
+			pw.req.MissingValueInterpretations = pw.reqTmpl.tmpl.GetMissingValueInterpretations()
 		}
 	}
+
 	// Call the underlying append.  The stream has it's own retained context and will surface expiry on
 	// it's own, but we also need to respect any deadline for the provided context.
 	errCh := make(chan error)
 	var appendErr error
 	go func() {
 		select {
-		case errCh <- ms.append(ctx, pw):
+		case errCh <- ms.appendWithRetry(pw):
 		case <-ctx.Done():
+		case <-ms.ctx.Done():
 		}
 		close(errCh)
 	}()
@@ -414,6 +334,17 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 		// This API expresses request idempotency through offset management, so users who care to use offsets
 		// can deal with the dropped request.
 		return nil, ctx.Err()
+	case <-ms.ctx.Done():
+		// Same as the request context being done, this indicates the writer context expired.  For this case,
+		// we also attempt to close the writer.
+		ms.mu.Lock()
+		if ms.err == nil {
+			ms.err = ms.ctx.Err()
+		}
+		ms.mu.Unlock()
+		ms.Close()
+		// Don't relock to fetch the writer terminal error, as we've already ensured that the writer is closed.
+		return nil, ms.err
 	case appendErr = <-errCh:
 		if appendErr != nil {
 			return nil, appendErr
@@ -422,59 +353,40 @@ func (ms *ManagedStream) AppendRows(ctx context.Context, data [][]byte, opts ...
 	}
 }
 
-// recvProcessor is used to propagate append responses back up with the originating write requests in a goroutine.
-//
-// The receive processor only deals with a single instance of a connection/channel, and thus should never interact
-// with the mutex lock.
-func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsClient, fc *flowController, ch <-chan *pendingWrite) {
-	// TODO:  We'd like to re-send requests that are in an ambiguous state due to channel errors.  For now, we simply
-	// ensure that pending writes get acknowledged with a terminal state.
+// processRetry is responsible for evaluating and re-enqueing an append.
+// If the append is not retried, it is marked complete.
+func (ms *ManagedStream) processRetry(pw *pendingWrite, srcConn *connection, appendResp *storagepb.AppendRowsResponse, initialErr error) {
+	err := initialErr
 	for {
-		select {
-		case <-ctx.Done():
-			// Context is done, so we're not going to get further updates.  Mark all work failed with the context error.
-			for {
-				pw, ok := <-ch
-				if !ok {
-					return
-				}
-				pw.markDone(NoStreamOffset, ctx.Err(), fc)
-			}
-		case nextWrite, ok := <-ch:
-			if !ok {
-				// Channel closed, all elements processed.
-				return
-			}
-
-			// block until we get a corresponding response or err from stream.
-			resp, err := arc.Recv()
-			if err != nil {
-				nextWrite.markDone(NoStreamOffset, err, fc)
-				continue
-			}
-			recordStat(ctx, AppendResponses, 1)
-
-			// Retain the updated schema if present, for eventual presentation to the user.
-			if resp.GetUpdatedSchema() != nil {
-				nextWrite.result.updatedSchema = resp.GetUpdatedSchema()
-			}
-
-			if status := resp.GetError(); status != nil {
-				tagCtx, _ := tag.New(ctx, tag.Insert(keyError, codes.Code(status.GetCode()).String()))
-				if err != nil {
-					tagCtx = ctx
-				}
-				recordStat(tagCtx, AppendResponseErrors, 1)
-				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status), fc)
-				continue
-			}
-			success := resp.GetAppendResult()
-			off := success.GetOffset()
-			if off != nil {
-				nextWrite.markDone(off.GetValue(), nil, fc)
-			} else {
-				nextWrite.markDone(NoStreamOffset, nil, fc)
-			}
+		pause, shouldRetry := ms.statelessRetryer().Retry(err, pw.attemptCount)
+		if !shouldRetry {
+			// Should not attempt to re-append.
+			pw.markDone(appendResp, err)
+			return
 		}
+		time.Sleep(pause)
+		err = ms.appendWithRetry(pw)
+		if err != nil {
+			// Re-enqueue failed, send it through the loop again.
+			continue
+		}
+		// Break out of the loop, we were successful and the write has been
+		// re-inserted.
+		recordWriterStat(ms, AppendRetryCount, 1)
+		break
+	}
+}
+
+// returns the stateless retryer.  If one's not set (re-enqueue retries disabled),
+// it returns a retryer that only permits single attempts.
+func (ms *ManagedStream) statelessRetryer() *statelessRetryer {
+	if ms.retry != nil {
+		return ms.retry
+	}
+	if ms.pool != nil {
+		return ms.pool.defaultRetryer()
+	}
+	return &statelessRetryer{
+		maxAttempts: 1,
 	}
 }

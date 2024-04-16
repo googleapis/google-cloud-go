@@ -23,8 +23,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 // Helpers to generate protobuf values and Cloud Spanner types.
@@ -57,6 +57,14 @@ func intType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_INT64}
 }
 
+func float32Proto(n float32) *proto3.Value {
+	return &proto3.Value{Kind: &proto3.Value_NumberValue{NumberValue: float64(n)}}
+}
+
+func float32Type() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_FLOAT32}
+}
+
 func floatProto(n float64) *proto3.Value {
 	return &proto3.Value{Kind: &proto3.Value_NumberValue{NumberValue: n}}
 }
@@ -77,8 +85,16 @@ func pgNumericType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_NUMERIC, TypeAnnotation: sppb.TypeAnnotationCode_PG_NUMERIC}
 }
 
+func pgOidType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_INT64, TypeAnnotation: sppb.TypeAnnotationCode_PG_OID}
+}
+
 func jsonType() *sppb.Type {
 	return &sppb.Type{Code: sppb.TypeCode_JSON}
+}
+
+func pgJsonbType() *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_JSON, TypeAnnotation: sppb.TypeAnnotationCode_PG_JSONB}
 }
 
 func bytesProto(b []byte) *proto3.Value {

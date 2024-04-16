@@ -23,12 +23,13 @@ import (
 	"sort"
 	"strings"
 
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/empty"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type mockServer struct {
@@ -101,13 +102,14 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 				case *pb.Write_Transform:
 					sort.Sort(ByFieldPath(opTyped.Transform.FieldTransforms))
 				}
+				sort.Sort(ByFieldPath(w.UpdateTransforms))
 			}
 		}
 
 		if !proto.Equal(gotReq, ri.wantReq) {
 			return nil, fmt.Errorf("mockServer: bad request\ngot:\n%T\n%s\nwant:\n%T\n%s",
-				gotReq, proto.MarshalTextString(gotReq),
-				ri.wantReq, proto.MarshalTextString(ri.wantReq))
+				gotReq, prototext.Format(gotReq),
+				ri.wantReq, prototext.Format(ri.wantReq))
 		}
 	}
 	resp := s.resps[0]
@@ -166,6 +168,25 @@ func (s *mockServer) BatchGetDocuments(req *pb.BatchGetDocumentsRequest, bs pb.F
 	return nil
 }
 
+func (s *mockServer) ListDocuments(ctx context.Context, req *pb.ListDocumentsRequest) (*pb.ListDocumentsResponse, error) {
+	res, err := s.popRPC(req)
+	if err != nil {
+		return nil, err
+	}
+	responses := res.([]interface{})
+	for _, res := range responses {
+		switch res := res.(type) {
+		case *pb.ListDocumentsResponse:
+			return res, nil
+		case error:
+			return nil, res
+		default:
+			panic(fmt.Sprintf("bad response type in ListDocuments: %+v", res))
+		}
+	}
+	return nil, nil
+}
+
 func (s *mockServer) RunQuery(req *pb.RunQueryRequest, qs pb.Firestore_RunQueryServer) error {
 	res, err := s.popRPC(req)
 	if err != nil {
@@ -187,6 +208,27 @@ func (s *mockServer) RunQuery(req *pb.RunQueryRequest, qs pb.Firestore_RunQueryS
 	return nil
 }
 
+func (s *mockServer) RunAggregationQuery(req *pb.RunAggregationQueryRequest, qs pb.Firestore_RunAggregationQueryServer) error {
+	res, err := s.popRPC(req)
+	if err != nil {
+		return err
+	}
+	responses := res.([]interface{})
+	for _, res := range responses {
+		switch res := res.(type) {
+		case *pb.RunAggregationQueryResponse:
+			if err := qs.Send(res); err != nil {
+				return err
+			}
+		case error:
+			return res
+		default:
+			return fmt.Errorf("bad response type in RunAggregationQuery: %+v", res)
+		}
+	}
+	return nil
+}
+
 func (s *mockServer) BeginTransaction(_ context.Context, req *pb.BeginTransactionRequest) (*pb.BeginTransactionResponse, error) {
 	res, err := s.popRPC(req)
 	if err != nil {
@@ -195,12 +237,12 @@ func (s *mockServer) BeginTransaction(_ context.Context, req *pb.BeginTransactio
 	return res.(*pb.BeginTransactionResponse), nil
 }
 
-func (s *mockServer) Rollback(_ context.Context, req *pb.RollbackRequest) (*empty.Empty, error) {
+func (s *mockServer) Rollback(_ context.Context, req *pb.RollbackRequest) (*emptypb.Empty, error) {
 	res, err := s.popRPC(req)
 	if err != nil {
 		return nil, err
 	}
-	return res.(*empty.Empty), nil
+	return res.(*emptypb.Empty), nil
 }
 
 func (s *mockServer) Listen(stream pb.Firestore_ListenServer) error {
@@ -226,4 +268,12 @@ func (s *mockServer) Listen(stream pb.Firestore_ListenServer) error {
 		}
 	}
 	return nil
+}
+
+func (s *mockServer) BatchWrite(_ context.Context, req *pb.BatchWriteRequest) (*pb.BatchWriteResponse, error) {
+	res, err := s.popRPC(req)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.BatchWriteResponse), nil
 }

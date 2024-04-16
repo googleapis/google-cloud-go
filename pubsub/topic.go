@@ -28,18 +28,18 @@ import (
 	"cloud.google.com/go/internal/optional"
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	vkit "cloud.google.com/go/pubsub/apiv1"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/support/bundler"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 const (
@@ -50,6 +50,13 @@ const (
 	// MaxPublishRequestBytes is the maximum size of a single publish request
 	// in bytes, as defined by the PubSub service.
 	MaxPublishRequestBytes = 1e7
+)
+
+const (
+	// TODO: math.MaxInt was added in Go 1.17. We should use that once 1.17
+	// becomes the minimum supported version of Go.
+	intSize = 32 << (^uint(0) >> 63)
+	maxInt  = 1<<(intSize-1) - 1
 )
 
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
@@ -105,7 +112,7 @@ type PublishSettings struct {
 	// If MaxOutstandingBytes is set, that value will override BufferedByteLimit.
 	//
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
-	// Deprecated: Set `topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
+	// Deprecated: Set `Topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
 	BufferedByteLimit int
 
 	// FlowControlSettings defines publisher flow control settings.
@@ -195,6 +202,23 @@ func newTopic(c *Client, name string) *Topic {
 	}
 }
 
+// TopicState denotes the possible states for a topic.
+type TopicState int
+
+const (
+	// TopicStateUnspecified is the default value. This value is unused.
+	TopicStateUnspecified = iota
+
+	// TopicStateActive means the topic does not have any persistent errors.
+	TopicStateActive
+
+	// TopicStateIngestionResourceError means ingestion from the data source
+	// has encountered a permanent error.
+	// See the more detailed error state in the corresponding ingestion
+	// source configuration.
+	TopicStateIngestionResourceError
+)
+
 // TopicConfig describes the configuration of a topic.
 type TopicConfig struct {
 	// The fully qualified identifier for the topic, in the format "projects/<projid>/topics/<name>"
@@ -211,8 +235,7 @@ type TopicConfig struct {
 	// "projects/P/locations/L/keyRings/R/cryptoKeys/K".
 	KMSKeyName string
 
-	// Schema defines the schema settings upon topic creation. This cannot
-	// be modified after a topic has been created.
+	// Schema defines the schema settings upon topic creation.
 	SchemaSettings *SchemaSettings
 
 	// RetentionDuration configures the minimum duration to retain a message
@@ -222,10 +245,17 @@ type TopicConfig struct {
 	// timestamp](https://cloud.google.com/pubsub/docs/replay-overview#seek_to_a_time)
 	// that is up to `RetentionDuration` in the past. If this field is
 	// not set, message retention is controlled by settings on individual
-	// subscriptions. Cannot be more than 7 days or less than 10 minutes.
+	// subscriptions. Cannot be more than 31 days or less than 10 minutes.
 	//
 	// For more information, see https://cloud.google.com/pubsub/docs/replay-overview#topic_message_retention.
 	RetentionDuration optional.Duration
+
+	// State is an output-only field indicating the state of the topic.
+	State TopicState
+
+	// IngestionDataSourceSettings are settings for ingestion from a
+	// data source into this topic.
+	IngestionDataSourceSettings *IngestionDataSourceSettings
 }
 
 // String returns the printable globally unique name for the topic config.
@@ -254,11 +284,12 @@ func (tc *TopicConfig) toProto() *pb.Topic {
 		retDur = durationpb.New(optional.ToDuration(tc.RetentionDuration))
 	}
 	pbt := &pb.Topic{
-		Labels:                   tc.Labels,
-		MessageStoragePolicy:     messageStoragePolicyToProto(&tc.MessageStoragePolicy),
-		KmsKeyName:               tc.KMSKeyName,
-		SchemaSettings:           schemaSettingsToProto(tc.SchemaSettings),
-		MessageRetentionDuration: retDur,
+		Labels:                      tc.Labels,
+		MessageStoragePolicy:        messageStoragePolicyToProto(&tc.MessageStoragePolicy),
+		KmsKeyName:                  tc.KMSKeyName,
+		SchemaSettings:              schemaSettingsToProto(tc.SchemaSettings),
+		MessageRetentionDuration:    retDur,
+		IngestionDataSourceSettings: tc.IngestionDataSourceSettings.toProto(),
 	}
 	return pbt
 }
@@ -281,19 +312,32 @@ type TopicConfigToUpdate struct {
 	// and may change.
 	MessageStoragePolicy *MessageStoragePolicy
 
-	// If set to a positive duration between 10 minutes and 7 days, RetentionDuration is changed.
+	// If set to a positive duration between 10 minutes and 31 days, RetentionDuration is changed.
 	// If set to a negative value, this clears RetentionDuration from the topic.
 	// If nil, the retention duration remains unchanged.
 	RetentionDuration optional.Duration
+
+	// Schema defines the schema settings upon topic creation.
+	//
+	// Use the zero value &SchemaSettings{} to remove the schema from the topic.
+	SchemaSettings *SchemaSettings
+
+	// IngestionDataSourceSettings are settings for ingestion from a
+	// data source into this topic.
+	//
+	// Use the zero value &IngestionDataSourceSettings{} to remove the ingestion settings from the topic.
+	IngestionDataSourceSettings *IngestionDataSourceSettings
 }
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 	tc := TopicConfig{
-		name:                 pbt.Name,
-		Labels:               pbt.Labels,
-		MessageStoragePolicy: protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
-		KMSKeyName:           pbt.KmsKeyName,
-		SchemaSettings:       protoToSchemaSettings(pbt.SchemaSettings),
+		name:                        pbt.Name,
+		Labels:                      pbt.Labels,
+		MessageStoragePolicy:        protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
+		KMSKeyName:                  pbt.KmsKeyName,
+		SchemaSettings:              protoToSchemaSettings(pbt.SchemaSettings),
+		State:                       TopicState(pbt.State),
+		IngestionDataSourceSettings: protoToIngestionDataSourceSettings(pbt.IngestionDataSourceSettings),
 	}
 	if pbt.GetMessageRetentionDuration() != nil {
 		tc.RetentionDuration = pbt.GetMessageRetentionDuration().AsDuration()
@@ -353,6 +397,122 @@ func messageStoragePolicyToProto(msp *MessageStoragePolicy) *pb.MessageStoragePo
 	return &pb.MessageStoragePolicy{AllowedPersistenceRegions: msp.AllowedPersistenceRegions}
 }
 
+// IngestionDataSourceSettings enables ingestion from a data source into this topic.
+type IngestionDataSourceSettings struct {
+	Source IngestionDataSource
+}
+
+// IngestionDataSource is the kind of ingestion source to be used.
+type IngestionDataSource interface {
+	isIngestionDataSource() bool
+}
+
+// AWSKinesisState denotes the possible states for ingestion from Amazon Kinesis Data Streams.
+type AWSKinesisState int
+
+const (
+	// AWSKinesisStateUnspecified is the default value. This value is unused.
+	AWSKinesisStateUnspecified = iota
+
+	// AWSKinesisStateActive means ingestion is active.
+	AWSKinesisStateActive
+
+	// AWSKinesisStatePermissionDenied means encountering an error while consumign data from Kinesis.
+	// This can happen if:
+	//   - The provided `aws_role_arn` does not exist or does not have the
+	//     appropriate permissions attached.
+	//   - The provided `aws_role_arn` is not set up properly for Identity
+	//     Federation using `gcp_service_account`.
+	//   - The Pub/Sub SA is not granted the
+	//     `iam.serviceAccounts.getOpenIdToken` permission on
+	//     `gcp_service_account`.
+	AWSKinesisStatePermissionDenied
+
+	// AWSKinesisStatePublishPermissionDenied means permission denied encountered while publishing to the topic.
+	// This can happen due to Pub/Sub SA has not been granted the appropriate publish
+	// permissions https://cloud.google.com/pubsub/docs/access-control#pubsub.publisher
+	AWSKinesisStatePublishPermissionDenied
+
+	// AWSKinesisStateStreamNotFound means the Kinesis stream does not exist.
+	AWSKinesisStateStreamNotFound
+
+	// AWSKinesisStateConsumerNotFound means the Kinesis consumer does not exist.
+	AWSKinesisStateConsumerNotFound
+)
+
+// IngestionDataSourceAWSKinesis are ingestion settings for Amazon Kinesis Data Streams.
+type IngestionDataSourceAWSKinesis struct {
+	// State is an output-only field indicating the state of the kinesis connection.
+	State AWSKinesisState
+
+	// StreamARN is the Kinesis stream ARN to ingest data from.
+	StreamARN string
+
+	// ConsumerARn is the Kinesis consumer ARN to used for ingestion in Enhanced
+	// Fan-Out mode. The consumer must be already created and ready to be used.
+	ConsumerARN string
+
+	// AWSRoleARn is the AWS role ARN to be used for Federated Identity authentication
+	// with Kinesis. Check the Pub/Sub docs for how to set up this role and the
+	// required permissions that need to be attached to it.
+	AWSRoleARN string
+
+	// GCPServiceAccount is the GCP service account to be used for Federated Identity
+	// authentication with Kinesis (via a `AssumeRoleWithWebIdentity` call for
+	// the provided role). The `aws_role_arn` must be set up with
+	// `accounts.google.com:sub` equals to this service account number.
+	GCPServiceAccount string
+}
+
+var _ IngestionDataSource = (*IngestionDataSourceAWSKinesis)(nil)
+
+func (i *IngestionDataSourceAWSKinesis) isIngestionDataSource() bool {
+	return true
+}
+
+func protoToIngestionDataSourceSettings(pbs *pb.IngestionDataSourceSettings) *IngestionDataSourceSettings {
+	if pbs == nil {
+		return nil
+	}
+
+	s := &IngestionDataSourceSettings{}
+	if k := pbs.GetAwsKinesis(); k != nil {
+		s.Source = &IngestionDataSourceAWSKinesis{
+			State:             AWSKinesisState(k.State),
+			StreamARN:         k.GetStreamArn(),
+			ConsumerARN:       k.GetConsumerArn(),
+			AWSRoleARN:        k.GetAwsRoleArn(),
+			GCPServiceAccount: k.GetGcpServiceAccount(),
+		}
+	}
+	return s
+}
+
+func (i *IngestionDataSourceSettings) toProto() *pb.IngestionDataSourceSettings {
+	if i == nil {
+		return nil
+	}
+	// An empty/zero-valued config is treated the same as nil and clearing this setting.
+	if (IngestionDataSourceSettings{}) == *i {
+		return nil
+	}
+	pbs := &pb.IngestionDataSourceSettings{}
+	if out := i.Source; out != nil {
+		if k, ok := out.(*IngestionDataSourceAWSKinesis); ok {
+			pbs.Source = &pb.IngestionDataSourceSettings_AwsKinesis_{
+				AwsKinesis: &pb.IngestionDataSourceSettings_AwsKinesis{
+					State:             pb.IngestionDataSourceSettings_AwsKinesis_State(k.State),
+					StreamArn:         k.StreamARN,
+					ConsumerArn:       k.ConsumerARN,
+					AwsRoleArn:        k.AWSRoleARN,
+					GcpServiceAccount: k.GCPServiceAccount,
+				},
+			}
+		}
+	}
+	return pbs
+}
+
 // Config returns the TopicConfig for the topic.
 func (t *Topic) Config(ctx context.Context) (TopicConfig, error) {
 	pbt, err := t.c.pubc.GetTopic(ctx, &pb.GetTopicRequest{Topic: t.name})
@@ -395,6 +555,40 @@ func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 			pt.MessageRetentionDuration = nil
 		}
 		paths = append(paths, "message_retention_duration")
+	}
+	// Updating SchemaSettings' field masks are more complicated here
+	// since each field should be able to be independently edited, while
+	// preserving the current values for everything else. We also denote
+	// the zero value SchemaSetting to mean clearing or removing schema
+	// from the topic.
+	if cfg.SchemaSettings != nil {
+		pt.SchemaSettings = schemaSettingsToProto(cfg.SchemaSettings)
+		clearSchema := true
+		if pt.SchemaSettings.Schema != "" {
+			paths = append(paths, "schema_settings.schema")
+			clearSchema = false
+		}
+		if pt.SchemaSettings.Encoding != pb.Encoding_ENCODING_UNSPECIFIED {
+			paths = append(paths, "schema_settings.encoding")
+			clearSchema = false
+		}
+		if pt.SchemaSettings.FirstRevisionId != "" {
+			paths = append(paths, "schema_settings.first_revision_id")
+			clearSchema = false
+		}
+		if pt.SchemaSettings.LastRevisionId != "" {
+			paths = append(paths, "schema_settings.last_revision_id")
+			clearSchema = false
+		}
+		// Clear the schema if all of its values are equal to the zero value.
+		if clearSchema {
+			paths = append(paths, "schema_settings")
+			pt.SchemaSettings = nil
+		}
+	}
+	if cfg.IngestionDataSourceSettings != nil {
+		pt.IngestionDataSourceSettings = cfg.IngestionDataSourceSettings.toProto()
+		paths = append(paths, "ingestion_data_source_settings")
 	}
 	return &pb.UpdateTopicRequest{
 		Topic:      pt,
@@ -500,17 +694,21 @@ func (t *Topic) Subscriptions(ctx context.Context) *SubscriptionIterator {
 	}
 }
 
-var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
+// ErrTopicStopped indicates that topic has been stopped and further publishing will fail.
+var ErrTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 
 // A PublishResult holds the result from a call to Publish.
 //
 // Call Get to obtain the result of the Publish call. Example:
-//   // Get blocks until Publish completes or ctx is done.
-//   id, err := r.Get(ctx)
-//   if err != nil {
-//       // TODO: Handle error.
-//   }
+//
+//	// Get blocks until Publish completes or ctx is done.
+//	id, err := r.Get(ctx)
+//	if err != nil {
+//	    // TODO: Handle error.
+//	}
 type PublishResult = ipubsub.PublishResult
+
+var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering")
 
 // Publish publishes msg to the topic asynchronously. Messages are batched and
 // sent according to the topic's PublishSettings. Publish never blocks.
@@ -522,9 +720,14 @@ type PublishResult = ipubsub.PublishResult
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
+	if err != nil {
+		log.Printf("pubsub: cannot create context with tag in Publish: %v", err)
+	}
+
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		ipubsub.SetPublishResult(r, "", errTopicOrderingNotEnabled)
 		return r
 	}
 
@@ -539,9 +742,8 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
-	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
-		ipubsub.SetPublishResult(r, "", errTopicStopped)
+		ipubsub.SetPublishResult(r, "", ErrTopicStopped)
 		return r
 	}
 
@@ -550,7 +752,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		ipubsub.SetPublishResult(r, "", err)
 		return r
 	}
-	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
+	err = t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
 	if err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -628,20 +830,22 @@ func (t *Topic) initBundler() {
 	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
 	fcs := DefaultPublishSettings.FlowControlSettings
-	if t.PublishSettings.FlowControlSettings.LimitExceededBehavior != FlowControlBlock {
-		fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
-	}
+	fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
 		b := t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
 		fcs.MaxOutstandingBytes = b
-		// If MaxOutstandingBytes is set, override BufferedByteLimit.
-		t.PublishSettings.BufferedByteLimit = b
+
+		// If MaxOutstandingBytes is set, disable BufferedByteLimit by setting it to maxint.
+		// This is because there's no way to set "unlimited" for BufferedByteLimit,
+		// and simply setting it to MaxOutstandingBytes occasionally leads to issues where
+		// BufferedByteLimit is reached even though there are resources available.
+		t.PublishSettings.BufferedByteLimit = maxInt
 	}
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
 	}
 
-	t.flowController = newFlowController(fcs)
+	t.flowController = newTopicFlowController(fcs)
 
 	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
 	if t.PublishSettings.BufferedByteLimit > 0 {
@@ -652,6 +856,16 @@ func (t *Topic) initBundler() {
 	// Calculate the max limit of a single bundle. 5 comes from the number of bytes
 	// needed to be reserved for encoding the PubsubMessage repeated field.
 	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name) - 5
+}
+
+// ErrPublishingPaused is a custom error indicating that the publish paused for the specified ordering key.
+type ErrPublishingPaused struct {
+	OrderingKey string
+}
+
+func (e ErrPublishingPaused) Error() string {
+	return fmt.Sprintf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", e.OrderingKey)
+
 }
 
 func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
@@ -673,12 +887,21 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	var res *pb.PublishResponse
 	start := time.Now()
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
-		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", orderingKey)
+		err = ErrPublishingPaused{OrderingKey: orderingKey}
 	} else {
+		// Apply custom publish retryer on top of user specified retryer and
+		// default retryer.
+		opts := t.c.pubc.CallOptions.Publish
+		var settings gax.CallSettings
+		for _, opt := range opts {
+			opt.Resolve(&settings)
+		}
+		r := &publishRetryer{defaultRetryer: settings.Retry()}
 		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
-		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
+		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
+			gax.WithRetry(func() gax.Retryer { return r }))
 	}
 	end := time.Now()
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewSecurityPoliciesRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewSecurityPoliciesRESTClient() {
 
 func ExampleSecurityPoliciesClient_AddRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleSecurityPoliciesClient_AddRule() {
 
 	req := &computepb.AddRuleSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddRuleSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddRuleSecurityPolicyRequest.
 	}
 	op, err := c.AddRule(ctx, req)
 	if err != nil {
@@ -59,8 +69,50 @@ func ExampleSecurityPoliciesClient_AddRule() {
 	}
 }
 
+func ExampleSecurityPoliciesClient_AggregatedList() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.AggregatedListSecurityPoliciesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListSecurityPoliciesRequest.
+	}
+	it := c.AggregatedList(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.SecurityPoliciesAggregatedList)
+	}
+}
+
 func ExampleSecurityPoliciesClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +121,7 @@ func ExampleSecurityPoliciesClient_Delete() {
 
 	req := &computepb.DeleteSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteSecurityPolicyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,6 +136,11 @@ func ExampleSecurityPoliciesClient_Delete() {
 
 func ExampleSecurityPoliciesClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +149,7 @@ func ExampleSecurityPoliciesClient_Get() {
 
 	req := &computepb.GetSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetSecurityPolicyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -104,6 +161,11 @@ func ExampleSecurityPoliciesClient_Get() {
 
 func ExampleSecurityPoliciesClient_GetRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +174,7 @@ func ExampleSecurityPoliciesClient_GetRule() {
 
 	req := &computepb.GetRuleSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRuleSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRuleSecurityPolicyRequest.
 	}
 	resp, err := c.GetRule(ctx, req)
 	if err != nil {
@@ -124,6 +186,11 @@ func ExampleSecurityPoliciesClient_GetRule() {
 
 func ExampleSecurityPoliciesClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +199,7 @@ func ExampleSecurityPoliciesClient_Insert() {
 
 	req := &computepb.InsertSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertSecurityPolicyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -147,6 +214,11 @@ func ExampleSecurityPoliciesClient_Insert() {
 
 func ExampleSecurityPoliciesClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -155,7 +227,7 @@ func ExampleSecurityPoliciesClient_List() {
 
 	req := &computepb.ListSecurityPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListSecurityPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListSecurityPoliciesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -168,11 +240,22 @@ func ExampleSecurityPoliciesClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.SecurityPolicyList)
 	}
 }
 
 func ExampleSecurityPoliciesClient_ListPreconfiguredExpressionSets() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -181,7 +264,7 @@ func ExampleSecurityPoliciesClient_ListPreconfiguredExpressionSets() {
 
 	req := &computepb.ListPreconfiguredExpressionSetsSecurityPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPreconfiguredExpressionSetsSecurityPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListPreconfiguredExpressionSetsSecurityPoliciesRequest.
 	}
 	resp, err := c.ListPreconfiguredExpressionSets(ctx, req)
 	if err != nil {
@@ -193,6 +276,11 @@ func ExampleSecurityPoliciesClient_ListPreconfiguredExpressionSets() {
 
 func ExampleSecurityPoliciesClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -201,7 +289,7 @@ func ExampleSecurityPoliciesClient_Patch() {
 
 	req := &computepb.PatchSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchSecurityPolicyRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -216,6 +304,11 @@ func ExampleSecurityPoliciesClient_Patch() {
 
 func ExampleSecurityPoliciesClient_PatchRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -224,7 +317,7 @@ func ExampleSecurityPoliciesClient_PatchRule() {
 
 	req := &computepb.PatchRuleSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchRuleSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchRuleSecurityPolicyRequest.
 	}
 	op, err := c.PatchRule(ctx, req)
 	if err != nil {
@@ -239,6 +332,11 @@ func ExampleSecurityPoliciesClient_PatchRule() {
 
 func ExampleSecurityPoliciesClient_RemoveRule() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -247,9 +345,37 @@ func ExampleSecurityPoliciesClient_RemoveRule() {
 
 	req := &computepb.RemoveRuleSecurityPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveRuleSecurityPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemoveRuleSecurityPolicyRequest.
 	}
 	op, err := c.RemoveRule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleSecurityPoliciesClient_SetLabels() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewSecurityPoliciesRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.SetLabelsSecurityPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsSecurityPolicyRequest.
+	}
+	op, err := c.SetLabels(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -26,6 +26,26 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "WebRiskServiceV1Beta1Client",
+          "rpcs": {
+            "ComputeThreatListDiff": {
+              "methods": [
+                "ComputeThreatListDiff"
+              ]
+            },
+            "SearchHashes": {
+              "methods": [
+                "SearchHashes"
+              ]
+            },
+            "SearchUris": {
+              "methods": [
+                "SearchUris"
+              ]
+            }
+          }
         }
       }
     }

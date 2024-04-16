@@ -54,3 +54,9 @@ message GithubArchiveMessageProto3 {
     google.protobuf.StringValue other = 9;
 }
 
+message SimpleMessageProto3WithOptional {
+    // name is a simple scalar string.
+    string name = 1;
+    // value is an int64 value with optional presence.
+    optional int64 value = 2;
+}

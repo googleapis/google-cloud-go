@@ -28,6 +28,10 @@ const (
 	// publish request (containing a batch of messages) in bytes. Must be lower
 	// than the gRPC limit of 4 MiB.
 	MaxPublishRequestBytes int = 3.5 * 1024 * 1024
+
+	// MinTimeout is the minimum timeout value that can be set for publisher and
+	// subscriber settings.
+	MinTimeout = 2 * time.Minute
 )
 
 // FrameworkType is the user-facing API for Cloud Pub/Sub Lite.
@@ -51,7 +55,7 @@ type PublishSettings struct {
 	ByteThreshold int
 
 	// The maximum time that the client will attempt to establish a publish stream
-	// connection to the server. Must be > 0.
+	// connection to the server. Must be >= 2 minutes.
 	//
 	// The timeout is exceeded, the publisher will terminate with the last error
 	// that occurred while trying to reconnect. Note that if the timeout duration
@@ -73,6 +77,10 @@ type PublishSettings struct {
 	// to disable polling if the number of partitions will never update.
 	ConfigPollPeriod time.Duration
 
+	// Whether idempotence is enabled, where the server will ensure that unique
+	// messages within a single publisher session are stored only once.
+	EnableIdempotence bool
+
 	// The user-facing API type.
 	Framework FrameworkType
 }
@@ -86,6 +94,7 @@ var DefaultPublishSettings = PublishSettings{
 	// By default set to a high limit that is not likely to occur, but prevents
 	// OOM errors in clients.
 	BufferedByteLimit: 1 << 30, // 1 GiB
+	EnableIdempotence: true,
 	ConfigPollPeriod:  10 * time.Minute,
 }
 
@@ -93,8 +102,8 @@ func validatePublishSettings(settings PublishSettings) error {
 	if settings.DelayThreshold <= 0 {
 		return errors.New("pubsublite: invalid publish settings. DelayThreshold duration must be > 0")
 	}
-	if settings.Timeout <= 0 {
-		return errors.New("pubsublite: invalid publish settings. Timeout duration must be > 0")
+	if settings.Timeout < MinTimeout {
+		return errors.New("pubsublite: invalid publish settings. Timeout duration must be >= 2 minutes")
 	}
 	if settings.CountThreshold <= 0 {
 		return errors.New("pubsublite: invalid publish settings. CountThreshold must be > 0")
@@ -126,7 +135,7 @@ type ReceiveSettings struct {
 	MaxOutstandingBytes int
 
 	// The maximum time that the client will attempt to establish a subscribe
-	// stream connection to the server. Must be > 0.
+	// stream connection to the server. Must be >= 2 minutes.
 	//
 	// The timeout is exceeded, the subscriber will terminate with the last error
 	// that occurred while trying to reconnect.
@@ -156,8 +165,8 @@ func validateReceiveSettings(settings ReceiveSettings) error {
 	if settings.MaxOutstandingBytes <= 0 {
 		return errors.New("pubsublite: invalid receive settings. MaxOutstandingBytes must be > 0")
 	}
-	if settings.Timeout <= 0 {
-		return errors.New("pubsublite: invalid receive settings. Timeout duration must be > 0")
+	if settings.Timeout < MinTimeout {
+		return errors.New("pubsublite: invalid receive settings. Timeout duration must be >= 2 minutes")
 	}
 	if len(settings.Partitions) > 0 {
 		var void struct{}

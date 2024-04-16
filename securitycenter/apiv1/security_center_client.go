@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,26 +17,30 @@
 package securitycenter
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	securitycenterpb "cloud.google.com/go/securitycenter/apiv1/securitycenterpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -44,48 +48,63 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	BulkMuteFindings           []gax.CallOption
-	CreateSource               []gax.CallOption
-	CreateFinding              []gax.CallOption
-	CreateMuteConfig           []gax.CallOption
-	CreateNotificationConfig   []gax.CallOption
-	DeleteMuteConfig           []gax.CallOption
-	DeleteNotificationConfig   []gax.CallOption
-	GetBigQueryExport          []gax.CallOption
-	GetIamPolicy               []gax.CallOption
-	GetMuteConfig              []gax.CallOption
-	GetNotificationConfig      []gax.CallOption
-	GetOrganizationSettings    []gax.CallOption
-	GetSource                  []gax.CallOption
-	GroupAssets                []gax.CallOption
-	GroupFindings              []gax.CallOption
-	ListAssets                 []gax.CallOption
-	ListFindings               []gax.CallOption
-	ListMuteConfigs            []gax.CallOption
-	ListNotificationConfigs    []gax.CallOption
-	ListSources                []gax.CallOption
-	RunAssetDiscovery          []gax.CallOption
-	SetFindingState            []gax.CallOption
-	SetMute                    []gax.CallOption
-	SetIamPolicy               []gax.CallOption
-	TestIamPermissions         []gax.CallOption
-	UpdateExternalSystem       []gax.CallOption
-	UpdateFinding              []gax.CallOption
-	UpdateMuteConfig           []gax.CallOption
-	UpdateNotificationConfig   []gax.CallOption
-	UpdateOrganizationSettings []gax.CallOption
-	UpdateSource               []gax.CallOption
-	UpdateSecurityMarks        []gax.CallOption
-	CreateBigQueryExport       []gax.CallOption
-	DeleteBigQueryExport       []gax.CallOption
-	UpdateBigQueryExport       []gax.CallOption
-	ListBigQueryExports        []gax.CallOption
+	BulkMuteFindings                                   []gax.CallOption
+	CreateSecurityHealthAnalyticsCustomModule          []gax.CallOption
+	CreateSource                                       []gax.CallOption
+	CreateFinding                                      []gax.CallOption
+	CreateMuteConfig                                   []gax.CallOption
+	CreateNotificationConfig                           []gax.CallOption
+	DeleteMuteConfig                                   []gax.CallOption
+	DeleteNotificationConfig                           []gax.CallOption
+	DeleteSecurityHealthAnalyticsCustomModule          []gax.CallOption
+	GetBigQueryExport                                  []gax.CallOption
+	GetIamPolicy                                       []gax.CallOption
+	GetMuteConfig                                      []gax.CallOption
+	GetNotificationConfig                              []gax.CallOption
+	GetOrganizationSettings                            []gax.CallOption
+	GetEffectiveSecurityHealthAnalyticsCustomModule    []gax.CallOption
+	GetSecurityHealthAnalyticsCustomModule             []gax.CallOption
+	GetSource                                          []gax.CallOption
+	GroupAssets                                        []gax.CallOption
+	GroupFindings                                      []gax.CallOption
+	ListAssets                                         []gax.CallOption
+	ListDescendantSecurityHealthAnalyticsCustomModules []gax.CallOption
+	ListFindings                                       []gax.CallOption
+	ListMuteConfigs                                    []gax.CallOption
+	ListNotificationConfigs                            []gax.CallOption
+	ListEffectiveSecurityHealthAnalyticsCustomModules  []gax.CallOption
+	ListSecurityHealthAnalyticsCustomModules           []gax.CallOption
+	ListSources                                        []gax.CallOption
+	RunAssetDiscovery                                  []gax.CallOption
+	SetFindingState                                    []gax.CallOption
+	SetMute                                            []gax.CallOption
+	SetIamPolicy                                       []gax.CallOption
+	TestIamPermissions                                 []gax.CallOption
+	SimulateSecurityHealthAnalyticsCustomModule        []gax.CallOption
+	UpdateExternalSystem                               []gax.CallOption
+	UpdateFinding                                      []gax.CallOption
+	UpdateMuteConfig                                   []gax.CallOption
+	UpdateNotificationConfig                           []gax.CallOption
+	UpdateOrganizationSettings                         []gax.CallOption
+	UpdateSecurityHealthAnalyticsCustomModule          []gax.CallOption
+	UpdateSource                                       []gax.CallOption
+	UpdateSecurityMarks                                []gax.CallOption
+	CreateBigQueryExport                               []gax.CallOption
+	DeleteBigQueryExport                               []gax.CallOption
+	UpdateBigQueryExport                               []gax.CallOption
+	ListBigQueryExports                                []gax.CallOption
+	CancelOperation                                    []gax.CallOption
+	DeleteOperation                                    []gax.CallOption
+	GetOperation                                       []gax.CallOption
+	ListOperations                                     []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("securitycenter.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("securitycenter.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("securitycenter.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -96,15 +115,30 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		BulkMuteFindings:         []gax.CallOption{},
-		CreateSource:             []gax.CallOption{},
-		CreateFinding:            []gax.CallOption{},
-		CreateMuteConfig:         []gax.CallOption{},
-		CreateNotificationConfig: []gax.CallOption{},
-		DeleteMuteConfig:         []gax.CallOption{},
-		DeleteNotificationConfig: []gax.CallOption{},
-		GetBigQueryExport:        []gax.CallOption{},
+		BulkMuteFindings: []gax.CallOption{},
+		CreateSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateFinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateMuteConfig: []gax.CallOption{},
+		CreateNotificationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteMuteConfig: []gax.CallOption{},
+		DeleteNotificationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBigQueryExport: []gax.CallOption{},
 		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -118,6 +152,7 @@ func defaultCallOptions() *CallOptions {
 		},
 		GetMuteConfig: []gax.CallOption{},
 		GetNotificationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -130,6 +165,33 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetOrganizationSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetEffectiveSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -142,6 +204,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -154,6 +217,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GroupAssets: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -166,6 +230,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GroupFindings: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -178,6 +243,20 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListAssets: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListDescendantSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -190,6 +269,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListFindings: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -203,6 +283,33 @@ func defaultCallOptions() *CallOptions {
 		},
 		ListMuteConfigs: []gax.CallOption{},
 		ListNotificationConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListEffectiveSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -215,6 +322,7 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListSources: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -226,11 +334,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		RunAssetDiscovery: []gax.CallOption{},
-		SetFindingState:   []gax.CallOption{},
-		SetMute:           []gax.CallOption{},
-		SetIamPolicy:      []gax.CallOption{},
+		RunAssetDiscovery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetFindingState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetMute: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -242,45 +357,330 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateExternalSystem:       []gax.CallOption{},
-		UpdateFinding:              []gax.CallOption{},
-		UpdateMuteConfig:           []gax.CallOption{},
-		UpdateNotificationConfig:   []gax.CallOption{},
-		UpdateOrganizationSettings: []gax.CallOption{},
-		UpdateSource:               []gax.CallOption{},
-		UpdateSecurityMarks:        []gax.CallOption{},
-		CreateBigQueryExport:       []gax.CallOption{},
-		DeleteBigQueryExport:       []gax.CallOption{},
-		UpdateBigQueryExport:       []gax.CallOption{},
-		ListBigQueryExports:        []gax.CallOption{},
+		SimulateSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		UpdateExternalSystem:                        []gax.CallOption{},
+		UpdateFinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateMuteConfig: []gax.CallOption{},
+		UpdateNotificationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateOrganizationSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSecurityMarks: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
+		},
+		CreateBigQueryExport: []gax.CallOption{},
+		DeleteBigQueryExport: []gax.CallOption{},
+		UpdateBigQueryExport: []gax.CallOption{},
+		ListBigQueryExports:  []gax.CallOption{},
+		CancelOperation:      []gax.CallOption{},
+		DeleteOperation:      []gax.CallOption{},
+		GetOperation:         []gax.CallOption{},
+		ListOperations:       []gax.CallOption{},
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Security Command Center API.
+func defaultRESTCallOptions() *CallOptions {
+	return &CallOptions{
+		BulkMuteFindings: []gax.CallOption{},
+		CreateSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateFinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateMuteConfig: []gax.CallOption{},
+		CreateNotificationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteMuteConfig: []gax.CallOption{},
+		DeleteNotificationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBigQueryExport: []gax.CallOption{},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetMuteConfig: []gax.CallOption{},
+		GetNotificationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetOrganizationSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetEffectiveSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GroupAssets: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GroupFindings: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListAssets: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListDescendantSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListFindings: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListMuteConfigs: []gax.CallOption{},
+		ListNotificationConfigs: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListEffectiveSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSecurityHealthAnalyticsCustomModules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListSources: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		RunAssetDiscovery: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetFindingState: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		SetMute: []gax.CallOption{},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		SimulateSecurityHealthAnalyticsCustomModule: []gax.CallOption{},
+		UpdateExternalSystem:                        []gax.CallOption{},
+		UpdateFinding: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateMuteConfig: []gax.CallOption{},
+		UpdateNotificationConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateOrganizationSettings: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSecurityHealthAnalyticsCustomModule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSource: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateSecurityMarks: []gax.CallOption{
+			gax.WithTimeout(480000 * time.Millisecond),
+		},
+		CreateBigQueryExport: []gax.CallOption{},
+		DeleteBigQueryExport: []gax.CallOption{},
+		UpdateBigQueryExport: []gax.CallOption{},
+		ListBigQueryExports:  []gax.CallOption{},
+		CancelOperation:      []gax.CallOption{},
+		DeleteOperation:      []gax.CallOption{},
+		GetOperation:         []gax.CallOption{},
+		ListOperations:       []gax.CallOption{},
+	}
+}
+
+// internalClient is an interface that defines the methods available from Security Command Center API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	BulkMuteFindings(context.Context, *securitycenterpb.BulkMuteFindingsRequest, ...gax.CallOption) (*BulkMuteFindingsOperation, error)
 	BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperation
+	CreateSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error)
 	CreateSource(context.Context, *securitycenterpb.CreateSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
 	CreateFinding(context.Context, *securitycenterpb.CreateFindingRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
 	CreateMuteConfig(context.Context, *securitycenterpb.CreateMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	CreateNotificationConfig(context.Context, *securitycenterpb.CreateNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
 	DeleteMuteConfig(context.Context, *securitycenterpb.DeleteMuteConfigRequest, ...gax.CallOption) error
 	DeleteNotificationConfig(context.Context, *securitycenterpb.DeleteNotificationConfigRequest, ...gax.CallOption) error
+	DeleteSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) error
 	GetBigQueryExport(context.Context, *securitycenterpb.GetBigQueryExportRequest, ...gax.CallOption) (*securitycenterpb.BigQueryExport, error)
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	GetMuteConfig(context.Context, *securitycenterpb.GetMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	GetNotificationConfig(context.Context, *securitycenterpb.GetNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
 	GetOrganizationSettings(context.Context, *securitycenterpb.GetOrganizationSettingsRequest, ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error)
+	GetEffectiveSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, error)
+	GetSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error)
 	GetSource(context.Context, *securitycenterpb.GetSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
 	GroupAssets(context.Context, *securitycenterpb.GroupAssetsRequest, ...gax.CallOption) *GroupResultIterator
 	GroupFindings(context.Context, *securitycenterpb.GroupFindingsRequest, ...gax.CallOption) *GroupResultIterator
 	ListAssets(context.Context, *securitycenterpb.ListAssetsRequest, ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator
+	ListDescendantSecurityHealthAnalyticsCustomModules(context.Context, *securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator
 	ListFindings(context.Context, *securitycenterpb.ListFindingsRequest, ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator
 	ListMuteConfigs(context.Context, *securitycenterpb.ListMuteConfigsRequest, ...gax.CallOption) *MuteConfigIterator
 	ListNotificationConfigs(context.Context, *securitycenterpb.ListNotificationConfigsRequest, ...gax.CallOption) *NotificationConfigIterator
+	ListEffectiveSecurityHealthAnalyticsCustomModules(context.Context, *securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator
+	ListSecurityHealthAnalyticsCustomModules(context.Context, *securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest, ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator
 	ListSources(context.Context, *securitycenterpb.ListSourcesRequest, ...gax.CallOption) *SourceIterator
 	RunAssetDiscovery(context.Context, *securitycenterpb.RunAssetDiscoveryRequest, ...gax.CallOption) (*RunAssetDiscoveryOperation, error)
 	RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation
@@ -288,17 +688,23 @@ type internalClient interface {
 	SetMute(context.Context, *securitycenterpb.SetMuteRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	SimulateSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error)
 	UpdateExternalSystem(context.Context, *securitycenterpb.UpdateExternalSystemRequest, ...gax.CallOption) (*securitycenterpb.ExternalSystem, error)
 	UpdateFinding(context.Context, *securitycenterpb.UpdateFindingRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
 	UpdateMuteConfig(context.Context, *securitycenterpb.UpdateMuteConfigRequest, ...gax.CallOption) (*securitycenterpb.MuteConfig, error)
 	UpdateNotificationConfig(context.Context, *securitycenterpb.UpdateNotificationConfigRequest, ...gax.CallOption) (*securitycenterpb.NotificationConfig, error)
 	UpdateOrganizationSettings(context.Context, *securitycenterpb.UpdateOrganizationSettingsRequest, ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error)
+	UpdateSecurityHealthAnalyticsCustomModule(context.Context, *securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error)
 	UpdateSource(context.Context, *securitycenterpb.UpdateSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
 	UpdateSecurityMarks(context.Context, *securitycenterpb.UpdateSecurityMarksRequest, ...gax.CallOption) (*securitycenterpb.SecurityMarks, error)
 	CreateBigQueryExport(context.Context, *securitycenterpb.CreateBigQueryExportRequest, ...gax.CallOption) (*securitycenterpb.BigQueryExport, error)
 	DeleteBigQueryExport(context.Context, *securitycenterpb.DeleteBigQueryExportRequest, ...gax.CallOption) error
 	UpdateBigQueryExport(context.Context, *securitycenterpb.UpdateBigQueryExportRequest, ...gax.CallOption) (*securitycenterpb.BigQueryExport, error)
 	ListBigQueryExports(context.Context, *securitycenterpb.ListBigQueryExportsRequest, ...gax.CallOption) *BigQueryExportIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // Client is a client for interacting with Security Command Center API.
@@ -335,7 +741,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -351,6 +758,14 @@ func (c *Client) BulkMuteFindings(ctx context.Context, req *securitycenterpb.Bul
 // The name must be that of a previously created BulkMuteFindingsOperation, possibly from a different process.
 func (c *Client) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperation {
 	return c.internalClient.BulkMuteFindingsOperation(name)
+}
+
+// CreateSecurityHealthAnalyticsCustomModule creates a resident SecurityHealthAnalyticsCustomModule at the scope of the
+// given CRM parent, and also creates inherited
+// SecurityHealthAnalyticsCustomModules for all CRM descendants of the given
+// parent. These modules are enabled by default.
+func (c *Client) CreateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	return c.internalClient.CreateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
 }
 
 // CreateSource creates a source.
@@ -384,7 +799,14 @@ func (c *Client) DeleteNotificationConfig(ctx context.Context, req *securitycent
 	return c.internalClient.DeleteNotificationConfig(ctx, req, opts...)
 }
 
-// GetBigQueryExport gets a big query export.
+// DeleteSecurityHealthAnalyticsCustomModule deletes the specified SecurityHealthAnalyticsCustomModule and all of its
+// descendants in the CRM hierarchy. This method is only supported for
+// resident custom modules.
+func (c *Client) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
+}
+
+// GetBigQueryExport gets a BigQuery export.
 func (c *Client) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
 	return c.internalClient.GetBigQueryExport(ctx, req, opts...)
 }
@@ -409,6 +831,16 @@ func (c *Client) GetOrganizationSettings(ctx context.Context, req *securitycente
 	return c.internalClient.GetOrganizationSettings(ctx, req, opts...)
 }
 
+// GetEffectiveSecurityHealthAnalyticsCustomModule retrieves an EffectiveSecurityHealthAnalyticsCustomModule.
+func (c *Client) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
+	return c.internalClient.GetEffectiveSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
+}
+
+// GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.
+func (c *Client) GetSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	return c.internalClient.GetSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
+}
+
 // GetSource gets a source.
 func (c *Client) GetSource(ctx context.Context, req *securitycenterpb.GetSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	return c.internalClient.GetSource(ctx, req, opts...)
@@ -416,6 +848,8 @@ func (c *Client) GetSource(ctx context.Context, req *securitycenterpb.GetSourceR
 
 // GroupAssets filters an organization’s assets and  groups them by their specified
 // properties.
+//
+// Deprecated: GroupAssets may be removed in a future version.
 func (c *Client) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAssetsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	return c.internalClient.GroupAssets(ctx, req, opts...)
 }
@@ -432,8 +866,16 @@ func (c *Client) GroupFindings(ctx context.Context, req *securitycenterpb.GroupF
 }
 
 // ListAssets lists an organization’s assets.
+//
+// Deprecated: ListAssets may be removed in a future version.
 func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAssetsRequest, opts ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator {
 	return c.internalClient.ListAssets(ctx, req, opts...)
+}
+
+// ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under
+// the given CRM parent and all of the parent’s CRM descendants.
+func (c *Client) ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	return c.internalClient.ListDescendantSecurityHealthAnalyticsCustomModules(ctx, req, opts...)
 }
 
 // ListFindings lists an organization or source’s findings.
@@ -454,6 +896,20 @@ func (c *Client) ListNotificationConfigs(ctx context.Context, req *securitycente
 	return c.internalClient.ListNotificationConfigs(ctx, req, opts...)
 }
 
+// ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the
+// given parent. This includes resident modules defined at the scope of the
+// parent, and inherited modules, inherited from CRM ancestors.
+func (c *Client) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator {
+	return c.internalClient.ListEffectiveSecurityHealthAnalyticsCustomModules(ctx, req, opts...)
+}
+
+// ListSecurityHealthAnalyticsCustomModules returns a list of all SecurityHealthAnalyticsCustomModules for the given
+// parent. This includes resident modules defined at the scope of the parent,
+// and inherited modules, inherited from CRM ancestors.
+func (c *Client) ListSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	return c.internalClient.ListSecurityHealthAnalyticsCustomModules(ctx, req, opts...)
+}
+
 // ListSources lists all sources belonging to an organization.
 func (c *Client) ListSources(ctx context.Context, req *securitycenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
 	return c.internalClient.ListSources(ctx, req, opts...)
@@ -465,6 +921,8 @@ func (c *Client) ListSources(ctx context.Context, req *securitycenterpb.ListSour
 // This API can only be called with limited frequency for an organization. If
 // it is called too frequently the caller will receive a TOO_MANY_REQUESTS
 // error.
+//
+// Deprecated: RunAssetDiscovery may be removed in a future version.
 func (c *Client) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.RunAssetDiscoveryRequest, opts ...gax.CallOption) (*RunAssetDiscoveryOperation, error) {
 	return c.internalClient.RunAssetDiscovery(ctx, req, opts...)
 }
@@ -495,6 +953,11 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// SimulateSecurityHealthAnalyticsCustomModule simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+func (c *Client) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error) {
+	return c.internalClient.SimulateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
+}
+
 // UpdateExternalSystem updates external system. This is for a given finding.
 func (c *Client) UpdateExternalSystem(ctx context.Context, req *securitycenterpb.UpdateExternalSystemRequest, opts ...gax.CallOption) (*securitycenterpb.ExternalSystem, error) {
 	return c.internalClient.UpdateExternalSystem(ctx, req, opts...)
@@ -522,6 +985,15 @@ func (c *Client) UpdateOrganizationSettings(ctx context.Context, req *securityce
 	return c.internalClient.UpdateOrganizationSettings(ctx, req, opts...)
 }
 
+// UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based
+// on the given update mask. Updating the enablement state is supported on
+// both resident and inherited modules (though resident modules cannot have an
+// enablement state of “inherited”). Updating the display name and custom
+// config of a module is supported on resident modules only.
+func (c *Client) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	return c.internalClient.UpdateSecurityHealthAnalyticsCustomModule(ctx, req, opts...)
+}
+
 // UpdateSource updates a source.
 func (c *Client) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	return c.internalClient.UpdateSource(ctx, req, opts...)
@@ -532,12 +1004,12 @@ func (c *Client) UpdateSecurityMarks(ctx context.Context, req *securitycenterpb.
 	return c.internalClient.UpdateSecurityMarks(ctx, req, opts...)
 }
 
-// CreateBigQueryExport creates a big query export.
+// CreateBigQueryExport creates a BigQuery export.
 func (c *Client) CreateBigQueryExport(ctx context.Context, req *securitycenterpb.CreateBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
 	return c.internalClient.CreateBigQueryExport(ctx, req, opts...)
 }
 
-// DeleteBigQueryExport deletes an existing big query export.
+// DeleteBigQueryExport deletes an existing BigQuery export.
 func (c *Client) DeleteBigQueryExport(ctx context.Context, req *securitycenterpb.DeleteBigQueryExportRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteBigQueryExport(ctx, req, opts...)
 }
@@ -556,15 +1028,32 @@ func (c *Client) ListBigQueryExports(ctx context.Context, req *securitycenterpb.
 	return c.internalClient.ListBigQueryExports(ctx, req, opts...)
 }
 
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *Client) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *Client) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with Security Command Center API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -577,8 +1066,10 @@ type gRPCClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
+	operationsClient longrunningpb.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new security center client based on gRPC.
@@ -595,11 +1086,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -608,9 +1094,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 	c := &gRPCClient{
 		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
 		client:           securitycenterpb.NewSecurityCenterClient(connPool),
 		CallOptions:      &client.CallOptions,
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -632,7 +1118,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
 }
@@ -641,9 +1128,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -652,10 +1139,96 @@ func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *gRPCClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb.BulkMuteFindingsRequest, opts ...gax.CallOption) (*BulkMuteFindingsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type restClient struct {
+	// The http endpoint to connect to.
+	endpoint string
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	// The http client.
+	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+}
+
+// NewRESTClient creates a new security center rest client.
+//
+// V1 APIs for Security Center service.
+func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := append(defaultRESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultRESTCallOptions()
+	c := &restClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
+	return &Client{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultRESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://securitycenter.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://securitycenter.UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint("https://securitycenter.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *restClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *restClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *restClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *gRPCClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb.BulkMuteFindingsRequest, opts ...gax.CallOption) (*BulkMuteFindingsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).BulkMuteFindings[0:len((*c.CallOptions).BulkMuteFindings):len((*c.CallOptions).BulkMuteFindings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -671,15 +1244,29 @@ func (c *gRPCClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb
 	}, nil
 }
 
-func (c *gRPCClient) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+func (c *gRPCClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.SecurityHealthAnalyticsCustomModule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateSource[0:len((*c.CallOptions).CreateSource):len((*c.CallOptions).CreateSource)], opts...)
 	var resp *securitycenterpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -694,14 +1281,10 @@ func (c *gRPCClient) CreateSource(ctx context.Context, req *securitycenterpb.Cre
 }
 
 func (c *gRPCClient) CreateFinding(ctx context.Context, req *securitycenterpb.CreateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateFinding[0:len((*c.CallOptions).CreateFinding):len((*c.CallOptions).CreateFinding)], opts...)
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -716,9 +1299,10 @@ func (c *gRPCClient) CreateFinding(ctx context.Context, req *securitycenterpb.Cr
 }
 
 func (c *gRPCClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb.CreateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateMuteConfig[0:len((*c.CallOptions).CreateMuteConfig):len((*c.CallOptions).CreateMuteConfig)], opts...)
 	var resp *securitycenterpb.MuteConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -733,14 +1317,10 @@ func (c *gRPCClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb
 }
 
 func (c *gRPCClient) CreateNotificationConfig(ctx context.Context, req *securitycenterpb.CreateNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateNotificationConfig[0:len((*c.CallOptions).CreateNotificationConfig):len((*c.CallOptions).CreateNotificationConfig)], opts...)
 	var resp *securitycenterpb.NotificationConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -755,9 +1335,10 @@ func (c *gRPCClient) CreateNotificationConfig(ctx context.Context, req *security
 }
 
 func (c *gRPCClient) DeleteMuteConfig(ctx context.Context, req *securitycenterpb.DeleteMuteConfigRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteMuteConfig[0:len((*c.CallOptions).DeleteMuteConfig):len((*c.CallOptions).DeleteMuteConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -768,14 +1349,10 @@ func (c *gRPCClient) DeleteMuteConfig(ctx context.Context, req *securitycenterpb
 }
 
 func (c *gRPCClient) DeleteNotificationConfig(ctx context.Context, req *securitycenterpb.DeleteNotificationConfigRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteNotificationConfig[0:len((*c.CallOptions).DeleteNotificationConfig):len((*c.CallOptions).DeleteNotificationConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -785,10 +1362,25 @@ func (c *gRPCClient) DeleteNotificationConfig(ctx context.Context, req *security
 	return err
 }
 
-func (c *gRPCClient) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *gRPCClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).DeleteSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).DeleteSecurityHealthAnalyticsCustomModule)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetBigQueryExport[0:len((*c.CallOptions).GetBigQueryExport):len((*c.CallOptions).GetBigQueryExport)], opts...)
 	var resp *securitycenterpb.BigQueryExport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -803,14 +1395,10 @@ func (c *gRPCClient) GetBigQueryExport(ctx context.Context, req *securitycenterp
 }
 
 func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -825,9 +1413,10 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 }
 
 func (c *gRPCClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.GetMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetMuteConfig[0:len((*c.CallOptions).GetMuteConfig):len((*c.CallOptions).GetMuteConfig)], opts...)
 	var resp *securitycenterpb.MuteConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -842,14 +1431,10 @@ func (c *gRPCClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.Ge
 }
 
 func (c *gRPCClient) GetNotificationConfig(ctx context.Context, req *securitycenterpb.GetNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetNotificationConfig[0:len((*c.CallOptions).GetNotificationConfig):len((*c.CallOptions).GetNotificationConfig)], opts...)
 	var resp *securitycenterpb.NotificationConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -864,14 +1449,10 @@ func (c *gRPCClient) GetNotificationConfig(ctx context.Context, req *securitycen
 }
 
 func (c *gRPCClient) GetOrganizationSettings(ctx context.Context, req *securitycenterpb.GetOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetOrganizationSettings[0:len((*c.CallOptions).GetOrganizationSettings):len((*c.CallOptions).GetOrganizationSettings)], opts...)
 	var resp *securitycenterpb.OrganizationSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -885,15 +1466,47 @@ func (c *gRPCClient) GetOrganizationSettings(ctx context.Context, req *securityc
 	return resp, nil
 }
 
-func (c *gRPCClient) GetSource(ctx context.Context, req *securitycenterpb.GetSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+func (c *gRPCClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetEffectiveSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.SecurityHealthAnalyticsCustomModule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetSource(ctx context.Context, req *securitycenterpb.GetSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetSource[0:len((*c.CallOptions).GetSource):len((*c.CallOptions).GetSource)], opts...)
 	var resp *securitycenterpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -908,9 +1521,10 @@ func (c *gRPCClient) GetSource(ctx context.Context, req *securitycenterpb.GetSou
 }
 
 func (c *gRPCClient) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAssetsRequest, opts ...gax.CallOption) *GroupResultIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GroupAssets[0:len((*c.CallOptions).GroupAssets):len((*c.CallOptions).GroupAssets)], opts...)
 	it := &GroupResultIterator{}
 	req = proto.Clone(req).(*securitycenterpb.GroupAssetsRequest)
@@ -953,9 +1567,10 @@ func (c *gRPCClient) GroupAssets(ctx context.Context, req *securitycenterpb.Grou
 }
 
 func (c *gRPCClient) GroupFindings(ctx context.Context, req *securitycenterpb.GroupFindingsRequest, opts ...gax.CallOption) *GroupResultIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GroupFindings[0:len((*c.CallOptions).GroupFindings):len((*c.CallOptions).GroupFindings)], opts...)
 	it := &GroupResultIterator{}
 	req = proto.Clone(req).(*securitycenterpb.GroupFindingsRequest)
@@ -998,9 +1613,10 @@ func (c *gRPCClient) GroupFindings(ctx context.Context, req *securitycenterpb.Gr
 }
 
 func (c *gRPCClient) ListAssets(ctx context.Context, req *securitycenterpb.ListAssetsRequest, opts ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &ListAssetsResponse_ListAssetsResultIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListAssetsRequest)
@@ -1042,10 +1658,57 @@ func (c *gRPCClient) ListAssets(ctx context.Context, req *securitycenterpb.ListA
 	return it
 }
 
-func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+func (c *gRPCClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListDescendantSecurityHealthAnalyticsCustomModules[0:len((*c.CallOptions).ListDescendantSecurityHealthAnalyticsCustomModules):len((*c.CallOptions).ListDescendantSecurityHealthAnalyticsCustomModules)], opts...)
+	it := &SecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.SecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListDescendantSecurityHealthAnalyticsCustomModules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListFindings[0:len((*c.CallOptions).ListFindings):len((*c.CallOptions).ListFindings)], opts...)
 	it := &ListFindingsResponse_ListFindingsResultIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListFindingsRequest)
@@ -1088,9 +1751,10 @@ func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.Lis
 }
 
 func (c *gRPCClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.ListMuteConfigsRequest, opts ...gax.CallOption) *MuteConfigIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListMuteConfigs[0:len((*c.CallOptions).ListMuteConfigs):len((*c.CallOptions).ListMuteConfigs)], opts...)
 	it := &MuteConfigIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListMuteConfigsRequest)
@@ -1133,9 +1797,10 @@ func (c *gRPCClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.
 }
 
 func (c *gRPCClient) ListNotificationConfigs(ctx context.Context, req *securitycenterpb.ListNotificationConfigsRequest, opts ...gax.CallOption) *NotificationConfigIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListNotificationConfigs[0:len((*c.CallOptions).ListNotificationConfigs):len((*c.CallOptions).ListNotificationConfigs)], opts...)
 	it := &NotificationConfigIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListNotificationConfigsRequest)
@@ -1177,10 +1842,103 @@ func (c *gRPCClient) ListNotificationConfigs(ctx context.Context, req *securityc
 	return it
 }
 
-func (c *gRPCClient) ListSources(ctx context.Context, req *securitycenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+func (c *gRPCClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListEffectiveSecurityHealthAnalyticsCustomModules[0:len((*c.CallOptions).ListEffectiveSecurityHealthAnalyticsCustomModules):len((*c.CallOptions).ListEffectiveSecurityHealthAnalyticsCustomModules)], opts...)
+	it := &EffectiveSecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListEffectiveSecurityHealthAnalyticsCustomModules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEffectiveSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSecurityHealthAnalyticsCustomModules[0:len((*c.CallOptions).ListSecurityHealthAnalyticsCustomModules):len((*c.CallOptions).ListSecurityHealthAnalyticsCustomModules)], opts...)
+	it := &SecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.SecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListSecurityHealthAnalyticsCustomModules(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) ListSources(ctx context.Context, req *securitycenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListSources[0:len((*c.CallOptions).ListSources):len((*c.CallOptions).ListSources)], opts...)
 	it := &SourceIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListSourcesRequest)
@@ -1223,14 +1981,10 @@ func (c *gRPCClient) ListSources(ctx context.Context, req *securitycenterpb.List
 }
 
 func (c *gRPCClient) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.RunAssetDiscoveryRequest, opts ...gax.CallOption) (*RunAssetDiscoveryOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RunAssetDiscovery[0:len((*c.CallOptions).RunAssetDiscovery):len((*c.CallOptions).RunAssetDiscovery)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1247,14 +2001,10 @@ func (c *gRPCClient) RunAssetDiscovery(ctx context.Context, req *securitycenterp
 }
 
 func (c *gRPCClient) SetFindingState(ctx context.Context, req *securitycenterpb.SetFindingStateRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetFindingState[0:len((*c.CallOptions).SetFindingState):len((*c.CallOptions).SetFindingState)], opts...)
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1269,9 +2019,10 @@ func (c *gRPCClient) SetFindingState(ctx context.Context, req *securitycenterpb.
 }
 
 func (c *gRPCClient) SetMute(ctx context.Context, req *securitycenterpb.SetMuteRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetMute[0:len((*c.CallOptions).SetMute):len((*c.CallOptions).SetMute)], opts...)
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1286,14 +2037,10 @@ func (c *gRPCClient) SetMute(ctx context.Context, req *securitycenterpb.SetMuteR
 }
 
 func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1308,14 +2055,10 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 }
 
 func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1329,10 +2072,29 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	return resp, nil
 }
 
-func (c *gRPCClient) UpdateExternalSystem(ctx context.Context, req *securitycenterpb.UpdateExternalSystemRequest, opts ...gax.CallOption) (*securitycenterpb.ExternalSystem, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "external_system.name", url.QueryEscape(req.GetExternalSystem().GetName())))
+func (c *gRPCClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SimulateSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateExternalSystem(ctx context.Context, req *securitycenterpb.UpdateExternalSystemRequest, opts ...gax.CallOption) (*securitycenterpb.ExternalSystem, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "external_system.name", url.QueryEscape(req.GetExternalSystem().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateExternalSystem[0:len((*c.CallOptions).UpdateExternalSystem):len((*c.CallOptions).UpdateExternalSystem)], opts...)
 	var resp *securitycenterpb.ExternalSystem
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1347,14 +2109,10 @@ func (c *gRPCClient) UpdateExternalSystem(ctx context.Context, req *securitycent
 }
 
 func (c *gRPCClient) UpdateFinding(ctx context.Context, req *securitycenterpb.UpdateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "finding.name", url.QueryEscape(req.GetFinding().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "finding.name", url.QueryEscape(req.GetFinding().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateFinding[0:len((*c.CallOptions).UpdateFinding):len((*c.CallOptions).UpdateFinding)], opts...)
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1369,9 +2127,10 @@ func (c *gRPCClient) UpdateFinding(ctx context.Context, req *securitycenterpb.Up
 }
 
 func (c *gRPCClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb.UpdateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "mute_config.name", url.QueryEscape(req.GetMuteConfig().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "mute_config.name", url.QueryEscape(req.GetMuteConfig().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateMuteConfig[0:len((*c.CallOptions).UpdateMuteConfig):len((*c.CallOptions).UpdateMuteConfig)], opts...)
 	var resp *securitycenterpb.MuteConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1386,14 +2145,10 @@ func (c *gRPCClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb
 }
 
 func (c *gRPCClient) UpdateNotificationConfig(ctx context.Context, req *securitycenterpb.UpdateNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "notification_config.name", url.QueryEscape(req.GetNotificationConfig().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "notification_config.name", url.QueryEscape(req.GetNotificationConfig().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateNotificationConfig[0:len((*c.CallOptions).UpdateNotificationConfig):len((*c.CallOptions).UpdateNotificationConfig)], opts...)
 	var resp *securitycenterpb.NotificationConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1408,14 +2163,10 @@ func (c *gRPCClient) UpdateNotificationConfig(ctx context.Context, req *security
 }
 
 func (c *gRPCClient) UpdateOrganizationSettings(ctx context.Context, req *securitycenterpb.UpdateOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "organization_settings.name", url.QueryEscape(req.GetOrganizationSettings().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "organization_settings.name", url.QueryEscape(req.GetOrganizationSettings().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateOrganizationSettings[0:len((*c.CallOptions).UpdateOrganizationSettings):len((*c.CallOptions).UpdateOrganizationSettings)], opts...)
 	var resp *securitycenterpb.OrganizationSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1429,15 +2180,29 @@ func (c *gRPCClient) UpdateOrganizationSettings(ctx context.Context, req *securi
 	return resp, nil
 }
 
-func (c *gRPCClient) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "source.name", url.QueryEscape(req.GetSource().GetName())))
+func (c *gRPCClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "security_health_analytics_custom_module.name", url.QueryEscape(req.GetSecurityHealthAnalyticsCustomModule().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule)], opts...)
+	var resp *securitycenterpb.SecurityHealthAnalyticsCustomModule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateSecurityHealthAnalyticsCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "source.name", url.QueryEscape(req.GetSource().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateSource[0:len((*c.CallOptions).UpdateSource):len((*c.CallOptions).UpdateSource)], opts...)
 	var resp *securitycenterpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1452,14 +2217,10 @@ func (c *gRPCClient) UpdateSource(ctx context.Context, req *securitycenterpb.Upd
 }
 
 func (c *gRPCClient) UpdateSecurityMarks(ctx context.Context, req *securitycenterpb.UpdateSecurityMarksRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityMarks, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 480000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "security_marks.name", url.QueryEscape(req.GetSecurityMarks().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "security_marks.name", url.QueryEscape(req.GetSecurityMarks().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateSecurityMarks[0:len((*c.CallOptions).UpdateSecurityMarks):len((*c.CallOptions).UpdateSecurityMarks)], opts...)
 	var resp *securitycenterpb.SecurityMarks
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1474,9 +2235,10 @@ func (c *gRPCClient) UpdateSecurityMarks(ctx context.Context, req *securitycente
 }
 
 func (c *gRPCClient) CreateBigQueryExport(ctx context.Context, req *securitycenterpb.CreateBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateBigQueryExport[0:len((*c.CallOptions).CreateBigQueryExport):len((*c.CallOptions).CreateBigQueryExport)], opts...)
 	var resp *securitycenterpb.BigQueryExport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1491,9 +2253,10 @@ func (c *gRPCClient) CreateBigQueryExport(ctx context.Context, req *securitycent
 }
 
 func (c *gRPCClient) DeleteBigQueryExport(ctx context.Context, req *securitycenterpb.DeleteBigQueryExportRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteBigQueryExport[0:len((*c.CallOptions).DeleteBigQueryExport):len((*c.CallOptions).DeleteBigQueryExport)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1504,9 +2267,10 @@ func (c *gRPCClient) DeleteBigQueryExport(ctx context.Context, req *securitycent
 }
 
 func (c *gRPCClient) UpdateBigQueryExport(ctx context.Context, req *securitycenterpb.UpdateBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "big_query_export.name", url.QueryEscape(req.GetBigQueryExport().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "big_query_export.name", url.QueryEscape(req.GetBigQueryExport().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateBigQueryExport[0:len((*c.CallOptions).UpdateBigQueryExport):len((*c.CallOptions).UpdateBigQueryExport)], opts...)
 	var resp *securitycenterpb.BigQueryExport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1521,9 +2285,10 @@ func (c *gRPCClient) UpdateBigQueryExport(ctx context.Context, req *securitycent
 }
 
 func (c *gRPCClient) ListBigQueryExports(ctx context.Context, req *securitycenterpb.ListBigQueryExportsRequest, opts ...gax.CallOption) *BigQueryExportIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListBigQueryExports[0:len((*c.CallOptions).ListBigQueryExports):len((*c.CallOptions).ListBigQueryExports)], opts...)
 	it := &BigQueryExportIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListBigQueryExportsRequest)
@@ -1565,9 +2330,3612 @@ func (c *gRPCClient) ListBigQueryExports(ctx context.Context, req *securitycente
 	return it
 }
 
-// BulkMuteFindingsOperation manages a long-running operation from BulkMuteFindings.
-type BulkMuteFindingsOperation struct {
-	lro *longrunning.Operation
+func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.DeleteOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.operationsClient.ListOperations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// BulkMuteFindings kicks off an LRO to bulk mute findings for a parent based on a filter. The
+// parent can be either an organization, folder or project. The findings
+// matched by the filter will be muted after the LRO is done.
+func (c *restClient) BulkMuteFindings(ctx context.Context, req *securitycenterpb.BulkMuteFindingsRequest, opts ...gax.CallOption) (*BulkMuteFindingsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/findings:bulkMute", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &BulkMuteFindingsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateSecurityHealthAnalyticsCustomModule creates a resident SecurityHealthAnalyticsCustomModule at the scope of the
+// given CRM parent, and also creates inherited
+// SecurityHealthAnalyticsCustomModules for all CRM descendants of the given
+// parent. These modules are enabled by default.
+func (c *restClient) CreateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.CreateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSecurityHealthAnalyticsCustomModule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/customModules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).CreateSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.SecurityHealthAnalyticsCustomModule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateSource creates a source.
+func (c *restClient) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/sources", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateSource[0:len((*c.CallOptions).CreateSource):len((*c.CallOptions).CreateSource)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.Source{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateFinding creates a finding. The corresponding source must exist for finding creation
+// to succeed.
+func (c *restClient) CreateFinding(ctx context.Context, req *securitycenterpb.CreateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFinding()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/findings", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("findingId", fmt.Sprintf("%v", req.GetFindingId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateFinding[0:len((*c.CallOptions).CreateFinding):len((*c.CallOptions).CreateFinding)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.Finding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateMuteConfig creates a mute config.
+func (c *restClient) CreateMuteConfig(ctx context.Context, req *securitycenterpb.CreateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetMuteConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/muteConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("muteConfigId", fmt.Sprintf("%v", req.GetMuteConfigId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateMuteConfig[0:len((*c.CallOptions).CreateMuteConfig):len((*c.CallOptions).CreateMuteConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.MuteConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateNotificationConfig creates a notification config.
+func (c *restClient) CreateNotificationConfig(ctx context.Context, req *securitycenterpb.CreateNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetNotificationConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/notificationConfigs", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("configId", fmt.Sprintf("%v", req.GetConfigId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateNotificationConfig[0:len((*c.CallOptions).CreateNotificationConfig):len((*c.CallOptions).CreateNotificationConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.NotificationConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteMuteConfig deletes an existing mute config.
+func (c *restClient) DeleteMuteConfig(ctx context.Context, req *securitycenterpb.DeleteMuteConfigRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// DeleteNotificationConfig deletes a notification config.
+func (c *restClient) DeleteNotificationConfig(ctx context.Context, req *securitycenterpb.DeleteNotificationConfigRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// DeleteSecurityHealthAnalyticsCustomModule deletes the specified SecurityHealthAnalyticsCustomModule and all of its
+// descendants in the CRM hierarchy. This method is only supported for
+// resident custom modules.
+func (c *restClient) DeleteSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.DeleteSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetBigQueryExport gets a BigQuery export.
+func (c *restClient) GetBigQueryExport(ctx context.Context, req *securitycenterpb.GetBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBigQueryExport[0:len((*c.CallOptions).GetBigQueryExport):len((*c.CallOptions).GetBigQueryExport)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.BigQueryExport{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetIamPolicy gets the access control policy on the specified Source.
+func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetMuteConfig gets a mute config.
+func (c *restClient) GetMuteConfig(ctx context.Context, req *securitycenterpb.GetMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetMuteConfig[0:len((*c.CallOptions).GetMuteConfig):len((*c.CallOptions).GetMuteConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.MuteConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetNotificationConfig gets a notification config.
+func (c *restClient) GetNotificationConfig(ctx context.Context, req *securitycenterpb.GetNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetNotificationConfig[0:len((*c.CallOptions).GetNotificationConfig):len((*c.CallOptions).GetNotificationConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.NotificationConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetOrganizationSettings gets the settings for an organization.
+func (c *restClient) GetOrganizationSettings(ctx context.Context, req *securitycenterpb.GetOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOrganizationSettings[0:len((*c.CallOptions).GetOrganizationSettings):len((*c.CallOptions).GetOrganizationSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.OrganizationSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetEffectiveSecurityHealthAnalyticsCustomModule retrieves an EffectiveSecurityHealthAnalyticsCustomModule.
+func (c *restClient) GetEffectiveSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).GetEffectiveSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.
+func (c *restClient) GetSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.GetSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).GetSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.SecurityHealthAnalyticsCustomModule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetSource gets a source.
+func (c *restClient) GetSource(ctx context.Context, req *securitycenterpb.GetSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSource[0:len((*c.CallOptions).GetSource):len((*c.CallOptions).GetSource)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.Source{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GroupAssets filters an organization’s assets and  groups them by their specified
+// properties.
+//
+// Deprecated: GroupAssets may be removed in a future version.
+func (c *restClient) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAssetsRequest, opts ...gax.CallOption) *GroupResultIterator {
+	it := &GroupResultIterator{}
+	req = proto.Clone(req).(*securitycenterpb.GroupAssetsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
+		resp := &securitycenterpb.GroupAssetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/assets:group", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGroupByResults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GroupFindings filters an organization or source’s findings and  groups them by their
+// specified properties.
+//
+// To group across all sources provide a - as the source id.
+// Example: /v1/organizations/{organization_id}/sources/-/findings,
+// /v1/folders/{folder_id}/sources/-/findings,
+// /v1/projects/{project_id}/sources/-/findings
+func (c *restClient) GroupFindings(ctx context.Context, req *securitycenterpb.GroupFindingsRequest, opts ...gax.CallOption) *GroupResultIterator {
+	it := &GroupResultIterator{}
+	req = proto.Clone(req).(*securitycenterpb.GroupFindingsRequest)
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
+		resp := &securitycenterpb.GroupFindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/findings:group", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetGroupByResults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListAssets lists an organization’s assets.
+//
+// Deprecated: ListAssets may be removed in a future version.
+func (c *restClient) ListAssets(ctx context.Context, req *securitycenterpb.ListAssetsRequest, opts ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator {
+	it := &ListAssetsResponse_ListAssetsResultIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListAssetsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ListAssetsResponse_ListAssetsResult, string, error) {
+		resp := &securitycenterpb.ListAssetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/assets", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetCompareDuration() != nil {
+			compareDuration, err := protojson.Marshal(req.GetCompareDuration())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("compareDuration", string(compareDuration[1:len(compareDuration)-1]))
+		}
+		if req.GetFieldMask() != nil {
+			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+		}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReadTime() != nil {
+			readTime, err := protojson.Marshal(req.GetReadTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("readTime", string(readTime[1:len(readTime)-1]))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetListAssetsResults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under
+// the given CRM parent and all of the parent’s CRM descendants.
+func (c *restClient) ListDescendantSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	it := &SecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.SecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/customModules:listDescendant", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListFindings lists an organization or source’s findings.
+//
+// To list across all sources provide a - as the source id.
+// Example: /v1/organizations/{organization_id}/sources/-/findings
+func (c *restClient) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *ListFindingsResponse_ListFindingsResultIterator {
+	it := &ListFindingsResponse_ListFindingsResultIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListFindingsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ListFindingsResponse_ListFindingsResult, string, error) {
+		resp := &securitycenterpb.ListFindingsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/findings", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetCompareDuration() != nil {
+			compareDuration, err := protojson.Marshal(req.GetCompareDuration())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("compareDuration", string(compareDuration[1:len(compareDuration)-1]))
+		}
+		if req.GetFieldMask() != nil {
+			fieldMask, err := protojson.Marshal(req.GetFieldMask())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("fieldMask", string(fieldMask[1:len(fieldMask)-1]))
+		}
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReadTime() != nil {
+			readTime, err := protojson.Marshal(req.GetReadTime())
+			if err != nil {
+				return nil, "", err
+			}
+			params.Add("readTime", string(readTime[1:len(readTime)-1]))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetListFindingsResults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListMuteConfigs lists mute configs.
+func (c *restClient) ListMuteConfigs(ctx context.Context, req *securitycenterpb.ListMuteConfigsRequest, opts ...gax.CallOption) *MuteConfigIterator {
+	it := &MuteConfigIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListMuteConfigsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.MuteConfig, string, error) {
+		resp := &securitycenterpb.ListMuteConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/muteConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetMuteConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListNotificationConfigs lists notification configs.
+func (c *restClient) ListNotificationConfigs(ctx context.Context, req *securitycenterpb.ListNotificationConfigsRequest, opts ...gax.CallOption) *NotificationConfigIterator {
+	it := &NotificationConfigIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListNotificationConfigsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.NotificationConfig, string, error) {
+		resp := &securitycenterpb.ListNotificationConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/notificationConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetNotificationConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the
+// given parent. This includes resident modules defined at the scope of the
+// parent, and inherited modules, inherited from CRM ancestors.
+func (c *restClient) ListEffectiveSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *EffectiveSecurityHealthAnalyticsCustomModuleIterator {
+	it := &EffectiveSecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.EffectiveSecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/effectiveCustomModules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEffectiveSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListSecurityHealthAnalyticsCustomModules returns a list of all SecurityHealthAnalyticsCustomModules for the given
+// parent. This includes resident modules defined at the scope of the parent,
+// and inherited modules, inherited from CRM ancestors.
+func (c *restClient) ListSecurityHealthAnalyticsCustomModules(ctx context.Context, req *securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest, opts ...gax.CallOption) *SecurityHealthAnalyticsCustomModuleIterator {
+	it := &SecurityHealthAnalyticsCustomModuleIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListSecurityHealthAnalyticsCustomModulesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.SecurityHealthAnalyticsCustomModule, string, error) {
+		resp := &securitycenterpb.ListSecurityHealthAnalyticsCustomModulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/customModules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSecurityHealthAnalyticsCustomModules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListSources lists all sources belonging to an organization.
+func (c *restClient) ListSources(ctx context.Context, req *securitycenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
+	it := &SourceIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListSourcesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.Source, string, error) {
+		resp := &securitycenterpb.ListSourcesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/sources", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSources(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// RunAssetDiscovery runs asset discovery. The discovery is tracked with a long-running
+// operation.
+//
+// This API can only be called with limited frequency for an organization. If
+// it is called too frequently the caller will receive a TOO_MANY_REQUESTS
+// error.
+//
+// Deprecated: RunAssetDiscovery may be removed in a future version.
+func (c *restClient) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.RunAssetDiscoveryRequest, opts ...gax.CallOption) (*RunAssetDiscoveryOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/assets:runDiscovery", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &RunAssetDiscoveryOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// SetFindingState updates the state of a finding.
+func (c *restClient) SetFindingState(ctx context.Context, req *securitycenterpb.SetFindingStateRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setState", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetFindingState[0:len((*c.CallOptions).SetFindingState):len((*c.CallOptions).SetFindingState)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.Finding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetMute updates the mute state of a finding.
+func (c *restClient) SetMute(ctx context.Context, req *securitycenterpb.SetMuteRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setMute", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetMute[0:len((*c.CallOptions).SetMute):len((*c.CallOptions).SetMute)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.Finding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets the access control policy on the specified Source.
+func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns the permissions that a caller has on the specified source.
+func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SimulateSecurityHealthAnalyticsCustomModule simulates a given SecurityHealthAnalyticsCustomModule and Resource.
+func (c *restClient) SimulateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/customModules:simulate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).SimulateSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateExternalSystem updates external system. This is for a given finding.
+func (c *restClient) UpdateExternalSystem(ctx context.Context, req *securitycenterpb.UpdateExternalSystemRequest, opts ...gax.CallOption) (*securitycenterpb.ExternalSystem, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetExternalSystem()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetExternalSystem().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "external_system.name", url.QueryEscape(req.GetExternalSystem().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateExternalSystem[0:len((*c.CallOptions).UpdateExternalSystem):len((*c.CallOptions).UpdateExternalSystem)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.ExternalSystem{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateFinding creates or updates a finding. The corresponding source must exist for a
+// finding creation to succeed.
+func (c *restClient) UpdateFinding(ctx context.Context, req *securitycenterpb.UpdateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFinding()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFinding().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "finding.name", url.QueryEscape(req.GetFinding().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateFinding[0:len((*c.CallOptions).UpdateFinding):len((*c.CallOptions).UpdateFinding)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.Finding{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateMuteConfig updates a mute config.
+func (c *restClient) UpdateMuteConfig(ctx context.Context, req *securitycenterpb.UpdateMuteConfigRequest, opts ...gax.CallOption) (*securitycenterpb.MuteConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetMuteConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetMuteConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "mute_config.name", url.QueryEscape(req.GetMuteConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateMuteConfig[0:len((*c.CallOptions).UpdateMuteConfig):len((*c.CallOptions).UpdateMuteConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.MuteConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateNotificationConfig updates a notification config. The following update
+// fields are allowed: description, pubsub_topic, streaming_config.filter
+func (c *restClient) UpdateNotificationConfig(ctx context.Context, req *securitycenterpb.UpdateNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetNotificationConfig()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetNotificationConfig().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "notification_config.name", url.QueryEscape(req.GetNotificationConfig().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateNotificationConfig[0:len((*c.CallOptions).UpdateNotificationConfig):len((*c.CallOptions).UpdateNotificationConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.NotificationConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateOrganizationSettings updates an organization’s settings.
+func (c *restClient) UpdateOrganizationSettings(ctx context.Context, req *securitycenterpb.UpdateOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetOrganizationSettings()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOrganizationSettings().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "organization_settings.name", url.QueryEscape(req.GetOrganizationSettings().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateOrganizationSettings[0:len((*c.CallOptions).UpdateOrganizationSettings):len((*c.CallOptions).UpdateOrganizationSettings)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.OrganizationSettings{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based
+// on the given update mask. Updating the enablement state is supported on
+// both resident and inherited modules (though resident modules cannot have an
+// enablement state of “inherited”). Updating the display name and custom
+// config of a module is supported on resident modules only.
+func (c *restClient) UpdateSecurityHealthAnalyticsCustomModule(ctx context.Context, req *securitycenterpb.UpdateSecurityHealthAnalyticsCustomModuleRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityHealthAnalyticsCustomModule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSecurityHealthAnalyticsCustomModule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSecurityHealthAnalyticsCustomModule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "security_health_analytics_custom_module.name", url.QueryEscape(req.GetSecurityHealthAnalyticsCustomModule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule[0:len((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule):len((*c.CallOptions).UpdateSecurityHealthAnalyticsCustomModule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.SecurityHealthAnalyticsCustomModule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateSource updates a source.
+func (c *restClient) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSource().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "source.name", url.QueryEscape(req.GetSource().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSource[0:len((*c.CallOptions).UpdateSource):len((*c.CallOptions).UpdateSource)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.Source{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateSecurityMarks updates security marks.
+func (c *restClient) UpdateSecurityMarks(ctx context.Context, req *securitycenterpb.UpdateSecurityMarksRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityMarks, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSecurityMarks()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSecurityMarks().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetStartTime() != nil {
+		startTime, err := protojson.Marshal(req.GetStartTime())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("startTime", string(startTime[1:len(startTime)-1]))
+	}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "security_marks.name", url.QueryEscape(req.GetSecurityMarks().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSecurityMarks[0:len((*c.CallOptions).UpdateSecurityMarks):len((*c.CallOptions).UpdateSecurityMarks)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.SecurityMarks{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateBigQueryExport creates a BigQuery export.
+func (c *restClient) CreateBigQueryExport(ctx context.Context, req *securitycenterpb.CreateBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBigQueryExport()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/bigQueryExports", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("bigQueryExportId", fmt.Sprintf("%v", req.GetBigQueryExportId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBigQueryExport[0:len((*c.CallOptions).CreateBigQueryExport):len((*c.CallOptions).CreateBigQueryExport)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.BigQueryExport{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteBigQueryExport deletes an existing BigQuery export.
+func (c *restClient) DeleteBigQueryExport(ctx context.Context, req *securitycenterpb.DeleteBigQueryExportRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// UpdateBigQueryExport updates a BigQuery export.
+func (c *restClient) UpdateBigQueryExport(ctx context.Context, req *securitycenterpb.UpdateBigQueryExportRequest, opts ...gax.CallOption) (*securitycenterpb.BigQueryExport, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBigQueryExport()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBigQueryExport().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "big_query_export.name", url.QueryEscape(req.GetBigQueryExport().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBigQueryExport[0:len((*c.CallOptions).UpdateBigQueryExport):len((*c.CallOptions).UpdateBigQueryExport)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycenterpb.BigQueryExport{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBigQueryExports lists BigQuery exports. Note that when requesting BigQuery exports at a
+// given level all exports under that level are also returned e.g. if
+// requesting BigQuery exports under a folder, then all BigQuery exports
+// immediately under the folder plus the ones created under the projects
+// within the folder are returned.
+func (c *restClient) ListBigQueryExports(ctx context.Context, req *securitycenterpb.ListBigQueryExportsRequest, opts ...gax.CallOption) *BigQueryExportIterator {
+	it := &BigQueryExportIterator{}
+	req = proto.Clone(req).(*securitycenterpb.ListBigQueryExportsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.BigQueryExport, string, error) {
+		resp := &securitycenterpb.ListBigQueryExportsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/bigQueryExports", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBigQueryExports(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // BulkMuteFindingsOperation returns a new BulkMuteFindingsOperation from a given name.
@@ -1578,65 +5946,14 @@ func (c *gRPCClient) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOpe
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *BulkMuteFindingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*securitycenterpb.BulkMuteFindingsResponse, error) {
-	var resp securitycenterpb.BulkMuteFindingsResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// BulkMuteFindingsOperation returns a new BulkMuteFindingsOperation from a given name.
+// The name must be that of a previously created BulkMuteFindingsOperation, possibly from a different process.
+func (c *restClient) BulkMuteFindingsOperation(name string) *BulkMuteFindingsOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &BulkMuteFindingsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *BulkMuteFindingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*securitycenterpb.BulkMuteFindingsResponse, error) {
-	var resp securitycenterpb.BulkMuteFindingsResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *BulkMuteFindingsOperation) Metadata() (*emptypb.Empty, error) {
-	var meta emptypb.Empty
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *BulkMuteFindingsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *BulkMuteFindingsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RunAssetDiscoveryOperation manages a long-running operation from RunAssetDiscovery.
-type RunAssetDiscoveryOperation struct {
-	lro *longrunning.Operation
 }
 
 // RunAssetDiscoveryOperation returns a new RunAssetDiscoveryOperation from a given name.
@@ -1647,387 +5964,12 @@ func (c *gRPCClient) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryO
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RunAssetDiscoveryOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*securitycenterpb.RunAssetDiscoveryResponse, error) {
-	var resp securitycenterpb.RunAssetDiscoveryResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
+// RunAssetDiscoveryOperation returns a new RunAssetDiscoveryOperation from a given name.
+// The name must be that of a previously created RunAssetDiscoveryOperation, possibly from a different process.
+func (c *restClient) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RunAssetDiscoveryOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
 	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RunAssetDiscoveryOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*securitycenterpb.RunAssetDiscoveryResponse, error) {
-	var resp securitycenterpb.RunAssetDiscoveryResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RunAssetDiscoveryOperation) Metadata() (*emptypb.Empty, error) {
-	var meta emptypb.Empty
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RunAssetDiscoveryOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RunAssetDiscoveryOperation) Name() string {
-	return op.lro.Name()
-}
-
-// BigQueryExportIterator manages a stream of *securitycenterpb.BigQueryExport.
-type BigQueryExportIterator struct {
-	items    []*securitycenterpb.BigQueryExport
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.BigQueryExport, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BigQueryExportIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BigQueryExportIterator) Next() (*securitycenterpb.BigQueryExport, error) {
-	var item *securitycenterpb.BigQueryExport
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BigQueryExportIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BigQueryExportIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// GroupResultIterator manages a stream of *securitycenterpb.GroupResult.
-type GroupResultIterator struct {
-	items    []*securitycenterpb.GroupResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.GroupResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *GroupResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *GroupResultIterator) Next() (*securitycenterpb.GroupResult, error) {
-	var item *securitycenterpb.GroupResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *GroupResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *GroupResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ListAssetsResponse_ListAssetsResultIterator manages a stream of *securitycenterpb.ListAssetsResponse_ListAssetsResult.
-type ListAssetsResponse_ListAssetsResultIterator struct {
-	items    []*securitycenterpb.ListAssetsResponse_ListAssetsResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.ListAssetsResponse_ListAssetsResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ListAssetsResponse_ListAssetsResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ListAssetsResponse_ListAssetsResultIterator) Next() (*securitycenterpb.ListAssetsResponse_ListAssetsResult, error) {
-	var item *securitycenterpb.ListAssetsResponse_ListAssetsResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ListAssetsResponse_ListAssetsResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ListAssetsResponse_ListAssetsResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// ListFindingsResponse_ListFindingsResultIterator manages a stream of *securitycenterpb.ListFindingsResponse_ListFindingsResult.
-type ListFindingsResponse_ListFindingsResultIterator struct {
-	items    []*securitycenterpb.ListFindingsResponse_ListFindingsResult
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.ListFindingsResponse_ListFindingsResult, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *ListFindingsResponse_ListFindingsResultIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *ListFindingsResponse_ListFindingsResultIterator) Next() (*securitycenterpb.ListFindingsResponse_ListFindingsResult, error) {
-	var item *securitycenterpb.ListFindingsResponse_ListFindingsResult
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *ListFindingsResponse_ListFindingsResultIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *ListFindingsResponse_ListFindingsResultIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// MuteConfigIterator manages a stream of *securitycenterpb.MuteConfig.
-type MuteConfigIterator struct {
-	items    []*securitycenterpb.MuteConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.MuteConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *MuteConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *MuteConfigIterator) Next() (*securitycenterpb.MuteConfig, error) {
-	var item *securitycenterpb.MuteConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *MuteConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *MuteConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// NotificationConfigIterator manages a stream of *securitycenterpb.NotificationConfig.
-type NotificationConfigIterator struct {
-	items    []*securitycenterpb.NotificationConfig
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.NotificationConfig, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *NotificationConfigIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *NotificationConfigIterator) Next() (*securitycenterpb.NotificationConfig, error) {
-	var item *securitycenterpb.NotificationConfig
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *NotificationConfigIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *NotificationConfigIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
-}
-
-// SourceIterator manages a stream of *securitycenterpb.Source.
-type SourceIterator struct {
-	items    []*securitycenterpb.Source
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*securitycenterpb.Source, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *SourceIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *SourceIterator) Next() (*securitycenterpb.Source, error) {
-	var item *securitycenterpb.Source
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *SourceIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *SourceIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

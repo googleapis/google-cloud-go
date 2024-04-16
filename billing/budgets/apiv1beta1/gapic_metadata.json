@@ -36,6 +36,36 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "BudgetClient",
+          "rpcs": {
+            "CreateBudget": {
+              "methods": [
+                "CreateBudget"
+              ]
+            },
+            "DeleteBudget": {
+              "methods": [
+                "DeleteBudget"
+              ]
+            },
+            "GetBudget": {
+              "methods": [
+                "GetBudget"
+              ]
+            },
+            "ListBudgets": {
+              "methods": [
+                "ListBudgets"
+              ]
+            },
+            "UpdateBudget": {
+              "methods": [
+                "UpdateBudget"
+              ]
+            }
+          }
         }
       }
     }

@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestToProtoDocument(t *testing.T) {

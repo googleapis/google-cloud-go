@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewDisksRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewDisksRESTClient() {
 
 func ExampleDisksClient_AddResourcePolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleDisksClient_AddResourcePolicies() {
 
 	req := &computepb.AddResourcePoliciesDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddResourcePoliciesDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddResourcePoliciesDiskRequest.
 	}
 	op, err := c.AddResourcePolicies(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleDisksClient_AddResourcePolicies() {
 
 func ExampleDisksClient_AggregatedList() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleDisksClient_AggregatedList() {
 
 	req := &computepb.AggregatedListDisksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListDisksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListDisksRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -82,11 +97,50 @@ func ExampleDisksClient_AggregatedList() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.DiskAggregatedList)
+	}
+}
+
+func ExampleDisksClient_BulkInsert() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewDisksRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.BulkInsertDiskRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#BulkInsertDiskRequest.
+	}
+	op, err := c.BulkInsert(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
 	}
 }
 
 func ExampleDisksClient_CreateSnapshot() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -95,7 +149,7 @@ func ExampleDisksClient_CreateSnapshot() {
 
 	req := &computepb.CreateSnapshotDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#CreateSnapshotDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#CreateSnapshotDiskRequest.
 	}
 	op, err := c.CreateSnapshot(ctx, req)
 	if err != nil {
@@ -110,6 +164,11 @@ func ExampleDisksClient_CreateSnapshot() {
 
 func ExampleDisksClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -118,7 +177,7 @@ func ExampleDisksClient_Delete() {
 
 	req := &computepb.DeleteDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteDiskRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -133,6 +192,11 @@ func ExampleDisksClient_Delete() {
 
 func ExampleDisksClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -141,7 +205,7 @@ func ExampleDisksClient_Get() {
 
 	req := &computepb.GetDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetDiskRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -153,6 +217,11 @@ func ExampleDisksClient_Get() {
 
 func ExampleDisksClient_GetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -161,7 +230,7 @@ func ExampleDisksClient_GetIamPolicy() {
 
 	req := &computepb.GetIamPolicyDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetIamPolicyDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetIamPolicyDiskRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -173,6 +242,11 @@ func ExampleDisksClient_GetIamPolicy() {
 
 func ExampleDisksClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -181,7 +255,7 @@ func ExampleDisksClient_Insert() {
 
 	req := &computepb.InsertDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertDiskRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -196,6 +270,11 @@ func ExampleDisksClient_Insert() {
 
 func ExampleDisksClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -204,7 +283,7 @@ func ExampleDisksClient_List() {
 
 	req := &computepb.ListDisksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListDisksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListDisksRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -217,11 +296,22 @@ func ExampleDisksClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.DiskList)
 	}
 }
 
 func ExampleDisksClient_RemoveResourcePolicies() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -230,7 +320,7 @@ func ExampleDisksClient_RemoveResourcePolicies() {
 
 	req := &computepb.RemoveResourcePoliciesDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemoveResourcePoliciesDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemoveResourcePoliciesDiskRequest.
 	}
 	op, err := c.RemoveResourcePolicies(ctx, req)
 	if err != nil {
@@ -245,6 +335,11 @@ func ExampleDisksClient_RemoveResourcePolicies() {
 
 func ExampleDisksClient_Resize() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -253,7 +348,7 @@ func ExampleDisksClient_Resize() {
 
 	req := &computepb.ResizeDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ResizeDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ResizeDiskRequest.
 	}
 	op, err := c.Resize(ctx, req)
 	if err != nil {
@@ -268,6 +363,11 @@ func ExampleDisksClient_Resize() {
 
 func ExampleDisksClient_SetIamPolicy() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -276,7 +376,7 @@ func ExampleDisksClient_SetIamPolicy() {
 
 	req := &computepb.SetIamPolicyDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetIamPolicyDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetIamPolicyDiskRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -288,6 +388,11 @@ func ExampleDisksClient_SetIamPolicy() {
 
 func ExampleDisksClient_SetLabels() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -296,7 +401,7 @@ func ExampleDisksClient_SetLabels() {
 
 	req := &computepb.SetLabelsDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsDiskRequest.
 	}
 	op, err := c.SetLabels(ctx, req)
 	if err != nil {
@@ -309,8 +414,97 @@ func ExampleDisksClient_SetLabels() {
 	}
 }
 
+func ExampleDisksClient_StartAsyncReplication() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewDisksRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.StartAsyncReplicationDiskRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#StartAsyncReplicationDiskRequest.
+	}
+	op, err := c.StartAsyncReplication(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDisksClient_StopAsyncReplication() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewDisksRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.StopAsyncReplicationDiskRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#StopAsyncReplicationDiskRequest.
+	}
+	op, err := c.StopAsyncReplication(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDisksClient_StopGroupAsyncReplication() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewDisksRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.StopGroupAsyncReplicationDiskRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#StopGroupAsyncReplicationDiskRequest.
+	}
+	op, err := c.StopGroupAsyncReplication(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleDisksClient_TestIamPermissions() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewDisksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -319,7 +513,7 @@ func ExampleDisksClient_TestIamPermissions() {
 
 	req := &computepb.TestIamPermissionsDiskRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#TestIamPermissionsDiskRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#TestIamPermissionsDiskRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -327,4 +521,32 @@ func ExampleDisksClient_TestIamPermissions() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleDisksClient_Update() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := compute.NewDisksRESTClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &computepb.UpdateDiskRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdateDiskRequest.
+	}
+	op, err := c.Update(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }

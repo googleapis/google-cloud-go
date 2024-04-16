@@ -19,14 +19,11 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
-python3 -m pip install --upgrade pip
-# Workaround for six 1.15 incompatibility issue.
-python3 -m pip install --use-feature=2020-resolver "gcp-docuploader<2019.0.0"
-
 cd github/google-cloud-go/internal/godocfx
-go install
+go install -buildvcs=false
 cd -
 
+# Use the google-cloud-go service account to store godocfx state.
 export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
 # Keep GCLOUD_TESTS_GOLANG_PROJECT_ID in sync with continuous.sh.
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
@@ -38,16 +35,24 @@ if [[ -n "$FORCE_GENERATE_ALL" ]]; then
 elif [[ -n "$MODULE" ]]; then
   godocfx "$MODULE"
 else
-  godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go
+  godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go google.golang.org/appengine
 fi
 
+# Use the docuploader service account to upload docs.
+gcloud auth activate-service-account --key-file "$KOKORO_KEYSTORE_DIR/73713_docuploader_service_account"
+
 for f in $(find obj/api -name docs.metadata); do
-  d=$(dirname $f)
-  cd $d
-  python3 -m docuploader upload \
-    --staging-bucket docs-staging-v2 \
-    --destination-prefix docfx \
-    --credentials "$KOKORO_KEYSTORE_DIR/73713_docuploader_service_account" \
+  # Extract the module name and version from the docs.metadata file.
+  module=$(cat $f  | grep name    | sed 's/.*"\(.*\)"/\1/')
+  version=$(cat $f | grep version | sed 's/.*"\(.*\)"/\1/')
+  name="docfx-go-$module-$version.tar.gz"
+  tar_dir=$(dirname $name)
+  mkdir -p $tar_dir
+  tar \
+    --create \
+    --directory=$(dirname $f) \
+    --file=$name \
+    --gzip \
     .
-  cd -
+  gsutil cp $name gs://docs-staging-v2/$tar_dir
 done

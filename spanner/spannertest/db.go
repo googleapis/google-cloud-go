@@ -34,7 +34,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
-	structpb "github.com/golang/protobuf/ptypes/struct"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
@@ -55,12 +55,13 @@ type table struct {
 
 	// Information about the table columns.
 	// They are reordered on table creation so the primary key columns come first.
-	cols      []colInfo
-	colIndex  map[spansql.ID]int         // col name to index
-	origIndex map[spansql.ID]int         // original index of each column upon construction
-	pkCols    int                        // number of primary key columns (may be 0)
-	pkDesc    []bool                     // whether each primary key column is in descending order
-	rdw       *spansql.RowDeletionPolicy // RowDeletionPolicy of this table (may be nil)
+	cols        []colInfo
+	colIndex    map[spansql.ID]int         // col name to index
+	origIndex   map[spansql.ID]int         // original index of each column upon construction
+	pkCols      int                        // number of primary key columns (may be 0)
+	pkDesc      []bool                     // whether each primary key column is in descending order
+	constraints []constraintInfo           // constraints information of this table
+	rdw         *spansql.RowDeletionPolicy // RowDeletionPolicy of this table (may be nil)
 
 	// Rows are stored in primary key order.
 	rows []row
@@ -76,6 +77,12 @@ type colInfo struct {
 	Alias     spansql.PathExp // an alternate name for this column (result sets only)
 }
 
+// constraintInfo represents information about a constraint in a table
+type constraintInfo struct {
+	Name       spansql.ID
+	Constraint spansql.Constraint
+}
+
 // commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
 // It is accepted, but never stored.
 var commitTimestampSentinel = &struct{}{}
@@ -83,6 +90,7 @@ var commitTimestampSentinel = &struct{}{}
 // transaction records information about a running transaction.
 // This is not safe for concurrent use.
 type transaction struct {
+	id string
 	// readOnly is whether this transaction was constructed
 	// for read-only use, and should yield errors if used
 	// to perform a mutation.
@@ -95,13 +103,15 @@ type transaction struct {
 
 func (d *database) NewReadOnlyTransaction() *transaction {
 	return &transaction{
+		id:       genRandomTransaction(),
 		readOnly: true,
 	}
 }
 
 func (d *database) NewTransaction() *transaction {
 	return &transaction{
-		d: d,
+		id: genRandomTransaction(),
+		d:  d,
 	}
 }
 
@@ -157,6 +167,7 @@ func (tx *transaction) Rollback() {
 row represents a list of data elements.
 
 The mapping between Spanner types and Go types internal to this package are:
+
 	BOOL		bool
 	INT64		int64
 	FLOAT64		float64
@@ -302,6 +313,11 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 				return status.Newf(codes.InvalidArgument, "primary key column %q not in table", col)
 			}
 		}
+		for _, constraint := range stmt.Constraints {
+			if st := t.addConstraint(constraint); st.Code() != codes.OK {
+				return st
+			}
+		}
 		t.rdw = stmt.RowDeletionPolicy
 		d.tables[stmt.Name] = t
 		return nil
@@ -373,6 +389,17 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			return nil
 		case spansql.DropRowDeletionPolicy:
 			if st := t.dropRowDeletionPolicy(alt); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.AddConstraint:
+			// We do not validate if the referenced table and column exists.
+			if st := t.addConstraint(alt.Constraint); st.Code() != codes.OK {
+				return st
+			}
+			return nil
+		case spansql.DropConstraint:
+			if st := t.dropConstraint(alt); st.Code() != codes.OK {
 				return st
 			}
 			return nil
@@ -735,6 +762,24 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	return nil
 }
 
+func (t *table) addConstraint(alt spansql.TableConstraint) *status.Status {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	for _, constraint := range t.constraints {
+		if constraint.Name == alt.Name {
+			return status.Newf(codes.AlreadyExists, "constraint name %s already exists", alt.Name)
+		}
+	}
+
+	t.constraints = append(t.constraints, constraintInfo{
+		Name:       alt.Name,
+		Constraint: alt.Constraint,
+	})
+
+	return nil
+}
+
 func (t *table) dropColumn(name spansql.ID) *status.Status {
 	// Only permit dropping non-key columns that aren't part of a secondary index.
 	// We don't support indexes, so only check that it isn't part of the primary key.
@@ -877,6 +922,25 @@ func (t *table) dropRowDeletionPolicy(ard spansql.DropRowDeletionPolicy) *status
 		return status.New(codes.InvalidArgument, "table does not have a row deletion policy")
 	}
 	t.rdw = nil
+	return nil
+}
+
+func (t *table) dropConstraint(alt spansql.DropConstraint) *status.Status {
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	var ci int = -1 // index of the constraint in t.constraints: constraint index
+	for i, constraint := range t.constraints {
+		if constraint.Name == alt.Name {
+			ci = i
+		}
+	}
+
+	if ci == -1 {
+		return status.Newf(codes.InvalidArgument, "unknown constraint name %q", alt.Name)
+	}
+
+	t.constraints = append(t.constraints[:ci], t.constraints[ci+1:]...)
 	return nil
 }
 
@@ -1028,7 +1092,7 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 		if ok {
 			x, err := strconv.ParseInt(sv.StringValue, 10, 64)
 			if err != nil {
-				return nil, fmt.Errorf("bad int64 string %q: %v", sv.StringValue, err)
+				return nil, fmt.Errorf("bad int64 string %q: %w", sv.StringValue, err)
 			}
 			return x, nil
 		}
@@ -1055,7 +1119,7 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 			s := sv.StringValue
 			d, err := parseAsDate(s)
 			if err != nil {
-				return nil, fmt.Errorf("bad DATE string %q: %v", s, err)
+				return nil, fmt.Errorf("bad DATE string %q: %w", s, err)
 			}
 			return d, nil
 		}
@@ -1069,7 +1133,7 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 			}
 			t, err := parseAsTimestamp(s)
 			if err != nil {
-				return nil, fmt.Errorf("bad TIMESTAMP string %q: %v", s, err)
+				return nil, fmt.Errorf("bad TIMESTAMP string %q: %w", s, err)
 			}
 			return t, nil
 		}
@@ -1198,6 +1262,64 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 			}
 		}
 		return n, nil
+	case *spansql.Insert:
+		t, err := d.table(stmt.Table)
+		if err != nil {
+			return 0, err
+		}
+
+		t.mu.Lock()
+		defer t.mu.Unlock()
+
+		ec := evalContext{
+			cols:   t.cols,
+			params: params,
+		}
+
+		values := make(row, len(t.cols))
+		input := stmt.Input.(spansql.Values)
+		if len(input) > 0 {
+			for i := 0; i < len(input); i++ {
+				val := input[i]
+				for k, v := range val {
+					switch v := v.(type) {
+					// if spanner.Statement.Params is not empty, scratch row with ec.parameters
+					case spansql.Param:
+						values[k] = ec.params[t.cols[k].Name.SQL()].Value
+					// if nil is included in parameters, pass nil
+					case spansql.ID:
+						cutset := `""`
+						str := strings.Trim(v.SQL(), cutset)
+						if str == "nil" {
+							values[k] = nil
+						} else {
+							expr, err := ec.evalExpr(v)
+							if err != nil {
+								return 0, status.Errorf(codes.InvalidArgument, "invalid parameter format")
+							}
+							values[k] = expr
+						}
+					// if parameter is embedded in SQL as string, not in statement.Params, analyze parameters
+					default:
+						expr, err := ec.evalExpr(v)
+						if err != nil {
+							return 0, status.Errorf(codes.InvalidArgument, "invalid parameter format")
+						}
+						values[k] = expr
+					}
+				}
+			}
+		}
+
+		// pk check if the primary key already exists
+		pk := values[:t.pkCols]
+		rowNum, found := t.rowForPK(pk)
+		if found {
+			return 0, status.Errorf(codes.AlreadyExists, "row already in table")
+		}
+		t.insertRow(rowNum, values)
+
+		return 1, nil
 	}
 }
 

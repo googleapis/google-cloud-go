@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewNetworksRESTClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,6 +43,11 @@ func ExampleNewNetworksRESTClient() {
 
 func ExampleNetworksClient_AddPeering() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -46,7 +56,7 @@ func ExampleNetworksClient_AddPeering() {
 
 	req := &computepb.AddPeeringNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AddPeeringNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AddPeeringNetworkRequest.
 	}
 	op, err := c.AddPeering(ctx, req)
 	if err != nil {
@@ -61,6 +71,11 @@ func ExampleNetworksClient_AddPeering() {
 
 func ExampleNetworksClient_Delete() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -69,7 +84,7 @@ func ExampleNetworksClient_Delete() {
 
 	req := &computepb.DeleteNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteNetworkRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,6 +99,11 @@ func ExampleNetworksClient_Delete() {
 
 func ExampleNetworksClient_Get() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -92,7 +112,7 @@ func ExampleNetworksClient_Get() {
 
 	req := &computepb.GetNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetNetworkRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -104,6 +124,11 @@ func ExampleNetworksClient_Get() {
 
 func ExampleNetworksClient_GetEffectiveFirewalls() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -112,7 +137,7 @@ func ExampleNetworksClient_GetEffectiveFirewalls() {
 
 	req := &computepb.GetEffectiveFirewallsNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetEffectiveFirewallsNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetEffectiveFirewallsNetworkRequest.
 	}
 	resp, err := c.GetEffectiveFirewalls(ctx, req)
 	if err != nil {
@@ -124,6 +149,11 @@ func ExampleNetworksClient_GetEffectiveFirewalls() {
 
 func ExampleNetworksClient_Insert() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -132,7 +162,7 @@ func ExampleNetworksClient_Insert() {
 
 	req := &computepb.InsertNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertNetworkRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -147,6 +177,11 @@ func ExampleNetworksClient_Insert() {
 
 func ExampleNetworksClient_List() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -155,7 +190,7 @@ func ExampleNetworksClient_List() {
 
 	req := &computepb.ListNetworksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListNetworksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListNetworksRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -168,11 +203,22 @@ func ExampleNetworksClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.NetworkList)
 	}
 }
 
 func ExampleNetworksClient_ListPeeringRoutes() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -181,7 +227,7 @@ func ExampleNetworksClient_ListPeeringRoutes() {
 
 	req := &computepb.ListPeeringRoutesNetworksRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListPeeringRoutesNetworksRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListPeeringRoutesNetworksRequest.
 	}
 	it := c.ListPeeringRoutes(ctx, req)
 	for {
@@ -194,11 +240,22 @@ func ExampleNetworksClient_ListPeeringRoutes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.ExchangedPeeringRoutesList)
 	}
 }
 
 func ExampleNetworksClient_Patch() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -207,7 +264,7 @@ func ExampleNetworksClient_Patch() {
 
 	req := &computepb.PatchNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchNetworkRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -222,6 +279,11 @@ func ExampleNetworksClient_Patch() {
 
 func ExampleNetworksClient_RemovePeering() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -230,7 +292,7 @@ func ExampleNetworksClient_RemovePeering() {
 
 	req := &computepb.RemovePeeringNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#RemovePeeringNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#RemovePeeringNetworkRequest.
 	}
 	op, err := c.RemovePeering(ctx, req)
 	if err != nil {
@@ -245,6 +307,11 @@ func ExampleNetworksClient_RemovePeering() {
 
 func ExampleNetworksClient_SwitchToCustomMode() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -253,7 +320,7 @@ func ExampleNetworksClient_SwitchToCustomMode() {
 
 	req := &computepb.SwitchToCustomModeNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SwitchToCustomModeNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SwitchToCustomModeNetworkRequest.
 	}
 	op, err := c.SwitchToCustomMode(ctx, req)
 	if err != nil {
@@ -268,6 +335,11 @@ func ExampleNetworksClient_SwitchToCustomMode() {
 
 func ExampleNetworksClient_UpdatePeering() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := compute.NewNetworksRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -276,7 +348,7 @@ func ExampleNetworksClient_UpdatePeering() {
 
 	req := &computepb.UpdatePeeringNetworkRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#UpdatePeeringNetworkRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#UpdatePeeringNetworkRequest.
 	}
 	op, err := c.UpdatePeering(ctx, req)
 	if err != nil {

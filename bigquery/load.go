@@ -21,6 +21,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 )
 
 // LoadConfig holds the configuration for a load job.
@@ -88,6 +89,22 @@ type LoadConfig struct {
 	// Experimental: this option is experimental and may be modified or removed in future versions,
 	// regardless of any other documented package stability guarantees.
 	JobTimeout time.Duration
+
+	// When loading a table with external data, the user can provide a reference file with the table schema.
+	// This is enabled for the following formats: AVRO, PARQUET, ORC.
+	ReferenceFileSchemaURI string
+
+	// If true, creates a new session, where session id will
+	// be a server generated random id. If false, runs query with an
+	// existing session_id passed in ConnectionProperty, otherwise runs the
+	// load job in non-session mode.
+	CreateSession bool
+
+	// ConnectionProperties are optional key-values settings.
+	ConnectionProperties []*ConnectionProperty
+
+	// MediaOptions stores options for customizing media upload.
+	MediaOptions []googleapi.MediaOption
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -105,11 +122,16 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			UseAvroLogicalTypes:                l.UseAvroLogicalTypes,
 			ProjectionFields:                   l.ProjectionFields,
 			HivePartitioningOptions:            l.HivePartitioningOptions.toBQ(),
+			ReferenceFileSchemaUri:             l.ReferenceFileSchemaURI,
+			CreateSession:                      l.CreateSession,
 		},
 		JobTimeoutMs: l.JobTimeout.Milliseconds(),
 	}
 	for _, v := range l.DecimalTargetTypes {
 		config.Load.DecimalTargetTypes = append(config.Load.DecimalTargetTypes, string(v))
+	}
+	for _, v := range l.ConnectionProperties {
+		config.Load.ConnectionProperties = append(config.Load.ConnectionProperties, v.toBQ())
 	}
 	media := l.Src.populateLoadConfig(config.Load)
 	return config, media
@@ -129,12 +151,17 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		UseAvroLogicalTypes:         q.Load.UseAvroLogicalTypes,
 		ProjectionFields:            q.Load.ProjectionFields,
 		HivePartitioningOptions:     bqToHivePartitioningOptions(q.Load.HivePartitioningOptions),
+		ReferenceFileSchemaURI:      q.Load.ReferenceFileSchemaUri,
+		CreateSession:               q.Load.CreateSession,
 	}
 	if q.JobTimeoutMs > 0 {
 		lc.JobTimeout = time.Duration(q.JobTimeoutMs) * time.Millisecond
 	}
 	for _, v := range q.Load.DecimalTargetTypes {
 		lc.DecimalTargetTypes = append(lc.DecimalTargetTypes, DecimalTargetType(v))
+	}
+	for _, v := range q.Load.ConnectionProperties {
+		lc.ConnectionProperties = append(lc.ConnectionProperties, bqToConnectionProperty(v))
 	}
 	var fc *FileConfig
 	if len(q.Load.SourceUris) == 0 {
@@ -187,7 +214,7 @@ func (l *Loader) Run(ctx context.Context) (j *Job, err error) {
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	job, media := l.newJob()
-	return l.c.insertJob(ctx, job, media)
+	return l.c.insertJob(ctx, job, media, l.LoadConfig.MediaOptions...)
 }
 
 func (l *Loader) newJob() (*bq.Job, io.Reader) {

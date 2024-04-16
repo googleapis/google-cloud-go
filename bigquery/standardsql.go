@@ -26,6 +26,8 @@ type StandardSQLDataType struct {
 	// ArrayElementType indicates the type of an array's elements, when the
 	// TypeKind is ARRAY.
 	ArrayElementType *StandardSQLDataType
+	// The type of the range's elements, if TypeKind is RANGE.
+	RangeElementType *StandardSQLDataType
 	// StructType indicates the struct definition (fields), when the
 	// TypeKind is STRUCT.
 	StructType *StandardSQLStructType
@@ -60,7 +62,39 @@ func (ssdt *StandardSQLDataType) toBQ() (*bq.StandardSqlDataType, error) {
 		}
 		bqdt.StructType = dt
 	}
+	if ssdt.RangeElementType != nil {
+		dt, err := ssdt.RangeElementType.toBQ()
+		if err != nil {
+			return nil, err
+		}
+		bqdt.RangeElementType = dt
+	}
 	return bqdt, nil
+}
+
+func (ssdt StandardSQLDataType) toBQParamType() *bq.QueryParameterType {
+	if ssdt.ArrayElementType != nil {
+		return &bq.QueryParameterType{Type: "ARRAY", ArrayType: ssdt.ArrayElementType.toBQParamType()}
+	}
+	if ssdt.StructType != nil {
+		var fts []*bq.QueryParameterTypeStructTypes
+		for _, field := range ssdt.StructType.Fields {
+			fts = append(fts, &bq.QueryParameterTypeStructTypes{
+				Name: field.Name,
+				Type: field.Type.toBQParamType(),
+			})
+		}
+		return &bq.QueryParameterType{Type: "STRUCT", StructTypes: fts}
+	}
+	if ssdt.RangeElementType != nil {
+		return &bq.QueryParameterType{
+			Type: string(RangeFieldType),
+			RangeElementType: &bq.QueryParameterType{
+				Type: ssdt.RangeElementType.TypeKind,
+			},
+		}
+	}
+	return &bq.QueryParameterType{Type: ssdt.TypeKind}
 }
 
 func bqToStandardSQLDataType(bqdt *bq.StandardSqlDataType) (*StandardSQLDataType, error) {
@@ -84,6 +118,13 @@ func bqToStandardSQLDataType(bqdt *bq.StandardSqlDataType) (*StandardSQLDataType
 			return nil, err
 		}
 		ssdt.StructType = st
+	}
+	if bqdt.RangeElementType != nil {
+		st, err := bqToStandardSQLDataType(bqdt.RangeElementType)
+		if err != nil {
+			return nil, err
+		}
+		ssdt.RangeElementType = st
 	}
 	return ssdt, nil
 }
@@ -169,7 +210,7 @@ func standardSQLStructFieldsToBQ(fields []*StandardSQLField) ([]*bq.StandardSqlF
 	for _, v := range fields {
 		bqf, err := v.toBQ()
 		if err != nil {
-			return nil, fmt.Errorf("error converting struct fields: %v", err)
+			return nil, fmt.Errorf("error converting struct fields: %w", err)
 		}
 		bqFields = append(bqFields, bqf)
 	}

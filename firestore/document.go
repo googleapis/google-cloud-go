@@ -20,11 +20,10 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/golang/protobuf/ptypes"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // A DocumentSnapshot contains document data and metadata.
@@ -60,8 +59,10 @@ func (d *DocumentSnapshot) Exists() bool {
 
 // Data returns the DocumentSnapshot's fields as a map.
 // It is equivalent to
-//     var m map[string]interface{}
-//     d.DataTo(&m)
+//
+//	var m map[string]interface{}
+//	d.DataTo(&m)
+//
 // except that it returns nil if the document does not exist.
 func (d *DocumentSnapshot) Data() map[string]interface{} {
 	if !d.Exists() {
@@ -297,23 +298,20 @@ func newDocumentSnapshot(ref *DocumentRef, proto *pb.Document, c *Client, readTi
 		proto: proto,
 	}
 	if proto != nil {
-		ts, err := ptypes.Timestamp(proto.CreateTime)
-		if err != nil {
+		if err := proto.GetCreateTime().CheckValid(); err != nil {
 			return nil, err
 		}
-		d.CreateTime = ts
-		ts, err = ptypes.Timestamp(proto.UpdateTime)
-		if err != nil {
+		if err := proto.GetUpdateTime().CheckValid(); err != nil {
 			return nil, err
 		}
-		d.UpdateTime = ts
+		d.CreateTime = proto.GetCreateTime().AsTime()
+		d.UpdateTime = proto.GetUpdateTime().AsTime()
 	}
 	if readTime != nil {
-		ts, err := ptypes.Timestamp(readTime)
-		if err != nil {
+		if err := readTime.CheckValid(); err != nil {
 			return nil, err
 		}
-		d.ReadTime = ts
+		d.ReadTime = readTime.AsTime()
 	}
 	return d, nil
 }

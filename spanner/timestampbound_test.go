@@ -20,9 +20,9 @@ import (
 	"testing"
 	"time"
 
-	pbd "github.com/golang/protobuf/ptypes/duration"
-	pbt "github.com/golang/protobuf/ptypes/timestamp"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	pbd "google.golang.org/protobuf/types/known/durationpb"
+	pbt "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Test generating TimestampBound for strong reads.

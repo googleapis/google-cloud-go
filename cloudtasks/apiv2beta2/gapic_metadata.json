@@ -45,6 +45,11 @@
                 "GetIamPolicy"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetQueue": {
               "methods": [
                 "GetQueue"
@@ -58,6 +63,11 @@
             "LeaseTasks": {
               "methods": [
                 "LeaseTasks"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListQueues": {
@@ -108,6 +118,131 @@
             "UpdateQueue": {
               "methods": [
                 "UpdateQueue"
+              ]
+            },
+            "UploadQueueYaml": {
+              "methods": [
+                "UploadQueueYaml"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AcknowledgeTask": {
+              "methods": [
+                "AcknowledgeTask"
+              ]
+            },
+            "CancelLease": {
+              "methods": [
+                "CancelLease"
+              ]
+            },
+            "CreateQueue": {
+              "methods": [
+                "CreateQueue"
+              ]
+            },
+            "CreateTask": {
+              "methods": [
+                "CreateTask"
+              ]
+            },
+            "DeleteQueue": {
+              "methods": [
+                "DeleteQueue"
+              ]
+            },
+            "DeleteTask": {
+              "methods": [
+                "DeleteTask"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetQueue": {
+              "methods": [
+                "GetQueue"
+              ]
+            },
+            "GetTask": {
+              "methods": [
+                "GetTask"
+              ]
+            },
+            "LeaseTasks": {
+              "methods": [
+                "LeaseTasks"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListQueues": {
+              "methods": [
+                "ListQueues"
+              ]
+            },
+            "ListTasks": {
+              "methods": [
+                "ListTasks"
+              ]
+            },
+            "PauseQueue": {
+              "methods": [
+                "PauseQueue"
+              ]
+            },
+            "PurgeQueue": {
+              "methods": [
+                "PurgeQueue"
+              ]
+            },
+            "RenewLease": {
+              "methods": [
+                "RenewLease"
+              ]
+            },
+            "ResumeQueue": {
+              "methods": [
+                "ResumeQueue"
+              ]
+            },
+            "RunTask": {
+              "methods": [
+                "RunTask"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateQueue": {
+              "methods": [
+                "UpdateQueue"
+              ]
+            },
+            "UploadQueueYaml": {
+              "methods": [
+                "UploadQueueYaml"
               ]
             }
           }

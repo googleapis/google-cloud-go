@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,20 +20,20 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	httptransport "google.golang.org/api/transport/http"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -46,14 +46,85 @@ type BackendBucketsCallOptions struct {
 	Delete                []gax.CallOption
 	DeleteSignedUrlKey    []gax.CallOption
 	Get                   []gax.CallOption
+	GetIamPolicy          []gax.CallOption
 	Insert                []gax.CallOption
 	List                  []gax.CallOption
 	Patch                 []gax.CallOption
 	SetEdgeSecurityPolicy []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
 	Update                []gax.CallOption
 }
 
-// internalBackendBucketsClient is an interface that defines the methods availaible from Google Compute Engine API.
+func defaultBackendBucketsRESTCallOptions() *BackendBucketsCallOptions {
+	return &BackendBucketsCallOptions{
+		AddSignedUrlKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Delete: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		DeleteSignedUrlKey: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Get: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Insert: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		List: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		Patch: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetEdgeSecurityPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		SetIamPolicy: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		TestIamPermissions: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		Update: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+	}
+}
+
+// internalBackendBucketsClient is an interface that defines the methods available from Google Compute Engine API.
 type internalBackendBucketsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -62,10 +133,13 @@ type internalBackendBucketsClient interface {
 	Delete(context.Context, *computepb.DeleteBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	DeleteSignedUrlKey(context.Context, *computepb.DeleteSignedUrlKeyBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	Get(context.Context, *computepb.GetBackendBucketRequest, ...gax.CallOption) (*computepb.BackendBucket, error)
+	GetIamPolicy(context.Context, *computepb.GetIamPolicyBackendBucketRequest, ...gax.CallOption) (*computepb.Policy, error)
 	Insert(context.Context, *computepb.InsertBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListBackendBucketsRequest, ...gax.CallOption) *BackendBucketIterator
 	Patch(context.Context, *computepb.PatchBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 	SetEdgeSecurityPolicy(context.Context, *computepb.SetEdgeSecurityPolicyBackendBucketRequest, ...gax.CallOption) (*Operation, error)
+	SetIamPolicy(context.Context, *computepb.SetIamPolicyBackendBucketRequest, ...gax.CallOption) (*computepb.Policy, error)
+	TestIamPermissions(context.Context, *computepb.TestIamPermissionsBackendBucketRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 	Update(context.Context, *computepb.UpdateBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 }
 
@@ -98,7 +172,8 @@ func (c *BackendBucketsClient) setGoogleClientInfo(keyval ...string) {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: Connections are now pooled so this method does not always
+// return the same resource.
 func (c *BackendBucketsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
@@ -118,9 +193,14 @@ func (c *BackendBucketsClient) DeleteSignedUrlKey(ctx context.Context, req *comp
 	return c.internalClient.DeleteSignedUrlKey(ctx, req, opts...)
 }
 
-// Get returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request.
+// Get returns the specified BackendBucket resource.
 func (c *BackendBucketsClient) Get(ctx context.Context, req *computepb.GetBackendBucketRequest, opts ...gax.CallOption) (*computepb.BackendBucket, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+func (c *BackendBucketsClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
 }
 
 // Insert creates a BackendBucket resource in the specified project using the data included in the request.
@@ -143,6 +223,16 @@ func (c *BackendBucketsClient) SetEdgeSecurityPolicy(ctx context.Context, req *c
 	return c.internalClient.SetEdgeSecurityPolicy(ctx, req, opts...)
 }
 
+// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+func (c *BackendBucketsClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *BackendBucketsClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsBackendBucketRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
 // Update updates the specified BackendBucket resource with the data included in the request.
 func (c *BackendBucketsClient) Update(ctx context.Context, req *computepb.UpdateBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Update(ctx, req, opts...)
@@ -159,8 +249,11 @@ type backendBucketsRESTClient struct {
 	// operationClient is used to call the operation-specific management service.
 	operationClient *GlobalOperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
+
+	// Points back to the CallOptions field of the containing BackendBucketsClient
+	CallOptions **BackendBucketsCallOptions
 }
 
 // NewBackendBucketsRESTClient creates a new backend buckets rest client.
@@ -173,9 +266,11 @@ func NewBackendBucketsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		return nil, err
 	}
 
+	callOpts := defaultBackendBucketsRESTCallOptions()
 	c := &backendBucketsRESTClient{
-		endpoint:   endpoint,
-		httpClient: httpClient,
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
 	}
 	c.setGoogleClientInfo()
 
@@ -189,13 +284,15 @@ func NewBackendBucketsRESTClient(ctx context.Context, opts ...option.ClientOptio
 	}
 	c.operationClient = opC
 
-	return &BackendBucketsClient{internalClient: c, CallOptions: &BackendBucketsCallOptions{}}, nil
+	return &BackendBucketsClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultBackendBucketsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -205,9 +302,9 @@ func defaultBackendBucketsRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *backendBucketsRESTClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -223,7 +320,7 @@ func (c *backendBucketsRESTClient) Close() error {
 
 // Connection returns a connection to the API service.
 //
-// Deprecated.
+// Deprecated: This method always returns nil.
 func (c *backendBucketsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
@@ -237,7 +334,10 @@ func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *com
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v/addSignedUrlKey", req.GetProject(), req.GetBackendBucket())
 
 	params := url.Values{}
@@ -248,10 +348,18 @@ func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *com
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_bucket", url.QueryEscape(req.GetBackendBucket()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AddSignedUrlKey[0:len((*c.CallOptions).AddSignedUrlKey):len((*c.CallOptions).AddSignedUrlKey)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -269,13 +377,13 @@ func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *com
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -295,7 +403,10 @@ func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *com
 
 // Delete deletes the specified BackendBucket resource.
 func (c *backendBucketsRESTClient) Delete(ctx context.Context, req *computepb.DeleteBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v", req.GetProject(), req.GetBackendBucket())
 
 	params := url.Values{}
@@ -306,10 +417,18 @@ func (c *backendBucketsRESTClient) Delete(ctx context.Context, req *computepb.De
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_bucket", url.QueryEscape(req.GetBackendBucket()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Delete[0:len((*c.CallOptions).Delete):len((*c.CallOptions).Delete)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -327,13 +446,13 @@ func (c *backendBucketsRESTClient) Delete(ctx context.Context, req *computepb.De
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -353,7 +472,10 @@ func (c *backendBucketsRESTClient) Delete(ctx context.Context, req *computepb.De
 
 // DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend bucket.
 func (c *backendBucketsRESTClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v/deleteSignedUrlKey", req.GetProject(), req.GetBackendBucket())
 
 	params := url.Values{}
@@ -365,10 +487,18 @@ func (c *backendBucketsRESTClient) DeleteSignedUrlKey(ctx context.Context, req *
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_bucket", url.QueryEscape(req.GetBackendBucket()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteSignedUrlKey[0:len((*c.CallOptions).DeleteSignedUrlKey):len((*c.CallOptions).DeleteSignedUrlKey)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -386,13 +516,13 @@ func (c *backendBucketsRESTClient) DeleteSignedUrlKey(ctx context.Context, req *
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -410,16 +540,27 @@ func (c *backendBucketsRESTClient) DeleteSignedUrlKey(ctx context.Context, req *
 	return op, nil
 }
 
-// Get returns the specified BackendBucket resource. Gets a list of available backend buckets by making a list() request.
+// Get returns the specified BackendBucket resource.
 func (c *backendBucketsRESTClient) Get(ctx context.Context, req *computepb.GetBackendBucketRequest, opts ...gax.CallOption) (*computepb.BackendBucket, error) {
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v", req.GetProject(), req.GetBackendBucket())
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_bucket", url.QueryEscape(req.GetBackendBucket()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.BackendBucket{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
@@ -437,13 +578,75 @@ func (c *backendBucketsRESTClient) Get(ctx context.Context, req *computepb.GetBa
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
+func (c *backendBucketsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v/getIamPolicy", req.GetProject(), req.GetResource())
+
+	params := url.Values{}
+	if req != nil && req.OptionsRequestedPolicyVersion != nil {
+		params.Add("optionsRequestedPolicyVersion", fmt.Sprintf("%v", req.GetOptionsRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
 		}
 
 		return nil
@@ -463,7 +666,10 @@ func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.In
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets", req.GetProject())
 
 	params := url.Values{}
@@ -474,10 +680,18 @@ func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.In
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Insert[0:len((*c.CallOptions).Insert):len((*c.CallOptions).Insert)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -495,13 +709,13 @@ func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.In
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -534,7 +748,10 @@ func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.List
 		} else if pageSize != 0 {
 			req.MaxResults = proto.Uint32(uint32(pageSize))
 		}
-		baseUrl, _ := url.Parse(c.endpoint)
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
 		baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets", req.GetProject())
 
 		params := url.Values{}
@@ -557,8 +774,12 @@ func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.List
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
 			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 			if err != nil {
 				return err
@@ -575,13 +796,13 @@ func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.List
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -618,7 +839,10 @@ func (c *backendBucketsRESTClient) Patch(ctx context.Context, req *computepb.Pat
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v", req.GetProject(), req.GetBackendBucket())
 
 	params := url.Values{}
@@ -629,10 +853,18 @@ func (c *backendBucketsRESTClient) Patch(ctx context.Context, req *computepb.Pat
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_bucket", url.QueryEscape(req.GetBackendBucket()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Patch[0:len((*c.CallOptions).Patch):len((*c.CallOptions).Patch)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -650,13 +882,13 @@ func (c *backendBucketsRESTClient) Patch(ctx context.Context, req *computepb.Pat
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -683,7 +915,10 @@ func (c *backendBucketsRESTClient) SetEdgeSecurityPolicy(ctx context.Context, re
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v/setEdgeSecurityPolicy", req.GetProject(), req.GetBackendBucket())
 
 	params := url.Values{}
@@ -694,10 +929,18 @@ func (c *backendBucketsRESTClient) SetEdgeSecurityPolicy(ctx context.Context, re
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_bucket", url.QueryEscape(req.GetBackendBucket()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetEdgeSecurityPolicy[0:len((*c.CallOptions).SetEdgeSecurityPolicy):len((*c.CallOptions).SetEdgeSecurityPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -715,13 +958,13 @@ func (c *backendBucketsRESTClient) SetEdgeSecurityPolicy(ctx context.Context, re
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -739,6 +982,130 @@ func (c *backendBucketsRESTClient) SetEdgeSecurityPolicy(ctx context.Context, re
 	return op, nil
 }
 
+// SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
+func (c *backendBucketsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetGlobalSetPolicyRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v/setIamPolicy", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+func (c *backendBucketsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsBackendBucketRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetTestPermissionsRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v/testIamPermissions", req.GetProject(), req.GetResource())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.TestPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // Update updates the specified BackendBucket resource with the data included in the request.
 func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendBucketRequest, opts ...gax.CallOption) (*Operation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true}
@@ -748,7 +1115,10 @@ func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.Up
 		return nil, err
 	}
 
-	baseUrl, _ := url.Parse(c.endpoint)
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v", req.GetProject(), req.GetBackendBucket())
 
 	params := url.Values{}
@@ -759,10 +1129,18 @@ func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.Up
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "backend_bucket", url.QueryEscape(req.GetBackendBucket()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
 		httpReq, err := http.NewRequest("PUT", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
@@ -780,13 +1158,13 @@ func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.Up
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -802,51 +1180,4 @@ func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.Up
 		},
 	}
 	return op, nil
-}
-
-// BackendBucketIterator manages a stream of *computepb.BackendBucket.
-type BackendBucketIterator struct {
-	items    []*computepb.BackendBucket
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*computepb.BackendBucket, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *BackendBucketIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *BackendBucketIterator) Next() (*computepb.BackendBucket, error) {
-	var item *computepb.BackendBucket
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *BackendBucketIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *BackendBucketIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

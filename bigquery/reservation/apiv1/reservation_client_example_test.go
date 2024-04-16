@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import (
 	"context"
 
 	reservation "cloud.google.com/go/bigquery/reservation/apiv1"
+	reservationpb "cloud.google.com/go/bigquery/reservation/apiv1/reservationpb"
 	"google.golang.org/api/iterator"
-	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1"
 )
 
 func ExampleNewClient() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -36,256 +41,30 @@ func ExampleNewClient() {
 	_ = c
 }
 
-func ExampleClient_CreateReservation() {
+func ExampleNewRESTClient() {
 	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewRESTClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &reservationpb.CreateReservationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#CreateReservationRequest.
-	}
-	resp, err := c.CreateReservation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListReservations() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.ListReservationsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#ListReservationsRequest.
-	}
-	it := c.ListReservations(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetReservation() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.GetReservationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#GetReservationRequest.
-	}
-	resp, err := c.GetReservation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteReservation() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.DeleteReservationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#DeleteReservationRequest.
-	}
-	err = c.DeleteReservation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_UpdateReservation() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.UpdateReservationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateReservationRequest.
-	}
-	resp, err := c.UpdateReservation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateCapacityCommitment() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.CreateCapacityCommitmentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#CreateCapacityCommitmentRequest.
-	}
-	resp, err := c.CreateCapacityCommitment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_ListCapacityCommitments() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.ListCapacityCommitmentsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#ListCapacityCommitmentsRequest.
-	}
-	it := c.ListCapacityCommitments(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetCapacityCommitment() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.GetCapacityCommitmentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#GetCapacityCommitmentRequest.
-	}
-	resp, err := c.GetCapacityCommitment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteCapacityCommitment() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.DeleteCapacityCommitmentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#DeleteCapacityCommitmentRequest.
-	}
-	err = c.DeleteCapacityCommitment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_UpdateCapacityCommitment() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.UpdateCapacityCommitmentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateCapacityCommitmentRequest.
-	}
-	resp, err := c.UpdateCapacityCommitment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_SplitCapacityCommitment() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.SplitCapacityCommitmentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#SplitCapacityCommitmentRequest.
-	}
-	resp, err := c.SplitCapacityCommitment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_MergeCapacityCommitments() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.MergeCapacityCommitmentsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#MergeCapacityCommitmentsRequest.
-	}
-	resp, err := c.MergeCapacityCommitments(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
+	// TODO: Use client.
+	_ = c
 }
 
 func ExampleClient_CreateAssignment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -294,7 +73,7 @@ func ExampleClient_CreateAssignment() {
 
 	req := &reservationpb.CreateAssignmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#CreateAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#CreateAssignmentRequest.
 	}
 	resp, err := c.CreateAssignment(ctx, req)
 	if err != nil {
@@ -304,8 +83,207 @@ func ExampleClient_CreateAssignment() {
 	_ = resp
 }
 
+func ExampleClient_CreateCapacityCommitment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.CreateCapacityCommitmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#CreateCapacityCommitmentRequest.
+	}
+	resp, err := c.CreateCapacityCommitment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateReservation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.CreateReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#CreateReservationRequest.
+	}
+	resp, err := c.CreateReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteAssignment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.DeleteAssignmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#DeleteAssignmentRequest.
+	}
+	err = c.DeleteAssignment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteCapacityCommitment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.DeleteCapacityCommitmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#DeleteCapacityCommitmentRequest.
+	}
+	err = c.DeleteCapacityCommitment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteReservation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.DeleteReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#DeleteReservationRequest.
+	}
+	err = c.DeleteReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetBiReservation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.GetBiReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#GetBiReservationRequest.
+	}
+	resp, err := c.GetBiReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetCapacityCommitment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.GetCapacityCommitmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#GetCapacityCommitmentRequest.
+	}
+	resp, err := c.GetCapacityCommitment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetReservation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.GetReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#GetReservationRequest.
+	}
+	resp, err := c.GetReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListAssignments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -314,7 +292,7 @@ func ExampleClient_ListAssignments() {
 
 	req := &reservationpb.ListAssignmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#ListAssignmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#ListAssignmentsRequest.
 	}
 	it := c.ListAssignments(ctx, req)
 	for {
@@ -327,40 +305,33 @@ func ExampleClient_ListAssignments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.ListAssignmentsResponse)
 	}
 }
 
-func ExampleClient_DeleteAssignment() {
+func ExampleClient_ListCapacityCommitments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &reservationpb.DeleteAssignmentRequest{
+	req := &reservationpb.ListCapacityCommitmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#DeleteAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#ListCapacityCommitmentsRequest.
 	}
-	err = c.DeleteAssignment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_SearchAssignments() {
-	ctx := context.Background()
-	c, err := reservation.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &reservationpb.SearchAssignmentsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#SearchAssignmentsRequest.
-	}
-	it := c.SearchAssignments(ctx, req)
+	it := c.ListCapacityCommitments(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -371,11 +342,109 @@ func ExampleClient_SearchAssignments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.ListCapacityCommitmentsResponse)
 	}
+}
+
+func ExampleClient_ListReservations() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.ListReservationsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#ListReservationsRequest.
+	}
+	it := c.ListReservations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.ListReservationsResponse)
+	}
+}
+
+func ExampleClient_MergeCapacityCommitments() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.MergeCapacityCommitmentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#MergeCapacityCommitmentsRequest.
+	}
+	resp, err := c.MergeCapacityCommitments(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_MoveAssignment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.MoveAssignmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#MoveAssignmentRequest.
+	}
+	resp, err := c.MoveAssignment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_SearchAllAssignments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -384,7 +453,7 @@ func ExampleClient_SearchAllAssignments() {
 
 	req := &reservationpb.SearchAllAssignmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#SearchAllAssignmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#SearchAllAssignmentsRequest.
 	}
 	it := c.SearchAllAssignments(ctx, req)
 	for {
@@ -397,22 +466,70 @@ func ExampleClient_SearchAllAssignments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.SearchAllAssignmentsResponse)
 	}
 }
 
-func ExampleClient_MoveAssignment() {
+func ExampleClient_SearchAssignments() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &reservationpb.MoveAssignmentRequest{
+	req := &reservationpb.SearchAssignmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#MoveAssignmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#SearchAssignmentsRequest.
 	}
-	resp, err := c.MoveAssignment(ctx, req)
+	it := c.SearchAssignments(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.SearchAssignmentsResponse)
+	}
+}
+
+func ExampleClient_SplitCapacityCommitment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.SplitCapacityCommitmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#SplitCapacityCommitmentRequest.
+	}
+	resp, err := c.SplitCapacityCommitment(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -420,19 +537,24 @@ func ExampleClient_MoveAssignment() {
 	_ = resp
 }
 
-func ExampleClient_GetBiReservation() {
+func ExampleClient_UpdateAssignment() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	defer c.Close()
 
-	req := &reservationpb.GetBiReservationRequest{
+	req := &reservationpb.UpdateAssignmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#GetBiReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#UpdateAssignmentRequest.
 	}
-	resp, err := c.GetBiReservation(ctx, req)
+	resp, err := c.UpdateAssignment(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -442,6 +564,11 @@ func ExampleClient_GetBiReservation() {
 
 func ExampleClient_UpdateBiReservation() {
 	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -450,9 +577,59 @@ func ExampleClient_UpdateBiReservation() {
 
 	req := &reservationpb.UpdateBiReservationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1#UpdateBiReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#UpdateBiReservationRequest.
 	}
 	resp, err := c.UpdateBiReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateCapacityCommitment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.UpdateCapacityCommitmentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#UpdateCapacityCommitmentRequest.
+	}
+	resp, err := c.UpdateCapacityCommitment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateReservation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &reservationpb.UpdateReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/bigquery/reservation/apiv1/reservationpb#UpdateReservationRequest.
+	}
+	resp, err := c.UpdateReservation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
