@@ -85,6 +85,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
+
+	// Allow non-default service account in DirectPath.
+	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
