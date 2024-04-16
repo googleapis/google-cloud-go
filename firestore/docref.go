@@ -110,7 +110,7 @@ func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) 
 //   - float32 and float64 convert to Double.
 //   - []byte converts to Bytes.
 //   - time.Time and *ts.Timestamp convert to Timestamp. ts is the package
-//     "github.com/golang/protobuf/ptypes/timestamp".
+//     "google.golang.org/protobuf/types/known/timestamppb".
 //   - *latlng.LatLng converts to GeoPoint. latlng is the package
 //     "google.golang.org/genproto/googleapis/type/latlng". You should always use
 //     a pointer to a LatLng.

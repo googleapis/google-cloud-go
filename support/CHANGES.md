@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.0.5](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.4...support/v1.0.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **support:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.0.4](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.3...support/v1.0.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **support:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.0.3](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.2...support/v1.0.3) (2023-11-01)
 
 
@@ -59,3 +73,4 @@
 * **support:** Start generating apiv2 ([#7879](https://github.com/googleapis/google-cloud-go/issues/7879)) ([e882c64](https://github.com/googleapis/google-cloud-go/commit/e882c647e58564bc6e4265d1424df22ab0eb0e2b))
 
 ## Changes
+

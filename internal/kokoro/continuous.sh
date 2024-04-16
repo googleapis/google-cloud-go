@@ -30,6 +30,7 @@ export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_
 # doing when changing / removing the next line.
 
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
+export GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID=gcloud-golang-firestore-tests
 export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 export GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES=database-01
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
@@ -55,6 +56,7 @@ export GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES="1"
 #    gc-bt-it-cluster us-west1-b 1 SSD
 export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/dulcet-port-762/locations/us-central1/keyRings/go-integration-test-regional
 export GCLOUD_TESTS_BIGTABLE_CLUSTER="gc-bt-it-cluster"
+export GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER="gc-bt-it-cluster-02"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
 
 # TODO: Remove this env after OMG/43748 is fixed
@@ -97,7 +99,7 @@ runDirectoryTests() {
     # internal tools only expected to work with latest go version
     return
   fi
-  go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
+  GOWORK=off go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
     tee sponge_log.log
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.

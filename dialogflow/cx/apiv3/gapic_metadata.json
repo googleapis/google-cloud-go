@@ -367,6 +367,11 @@
                 "DeleteEntityType"
               ]
             },
+            "ExportEntityTypes": {
+              "methods": [
+                "ExportEntityTypes"
+              ]
+            },
             "GetEntityType": {
               "methods": [
                 "GetEntityType"
@@ -380,6 +385,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportEntityTypes": {
+              "methods": [
+                "ImportEntityTypes"
               ]
             },
             "ListEntityTypes": {
@@ -422,6 +432,11 @@
                 "DeleteEntityType"
               ]
             },
+            "ExportEntityTypes": {
+              "methods": [
+                "ExportEntityTypes"
+              ]
+            },
             "GetEntityType": {
               "methods": [
                 "GetEntityType"
@@ -435,6 +450,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportEntityTypes": {
+              "methods": [
+                "ImportEntityTypes"
               ]
             },
             "ListEntityTypes": {
@@ -907,6 +927,120 @@
             "ValidateFlow": {
               "methods": [
                 "ValidateFlow"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Generators": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GeneratorsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGenerator": {
+              "methods": [
+                "CreateGenerator"
+              ]
+            },
+            "DeleteGenerator": {
+              "methods": [
+                "DeleteGenerator"
+              ]
+            },
+            "GetGenerator": {
+              "methods": [
+                "GetGenerator"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGenerators": {
+              "methods": [
+                "ListGenerators"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGenerator": {
+              "methods": [
+                "UpdateGenerator"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GeneratorsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGenerator": {
+              "methods": [
+                "CreateGenerator"
+              ]
+            },
+            "DeleteGenerator": {
+              "methods": [
+                "DeleteGenerator"
+              ]
+            },
+            "GetGenerator": {
+              "methods": [
+                "GetGenerator"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGenerators": {
+              "methods": [
+                "ListGenerators"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateGenerator": {
+              "methods": [
+                "UpdateGenerator"
               ]
             }
           }
@@ -1434,6 +1568,11 @@
                 "MatchIntent"
               ]
             },
+            "ServerStreamingDetectIntent": {
+              "methods": [
+                "ServerStreamingDetectIntent"
+              ]
+            },
             "StreamingDetectIntent": {
               "methods": [
                 "StreamingDetectIntent"
@@ -1487,6 +1626,11 @@
             "MatchIntent": {
               "methods": [
                 "MatchIntent"
+              ]
+            },
+            "ServerStreamingDetectIntent": {
+              "methods": [
+                "ServerStreamingDetectIntent"
               ]
             },
             "StreamingDetectIntent": {

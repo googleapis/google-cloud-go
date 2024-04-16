@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.8.1...filestore/v1.8.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **filestore:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.8.0...filestore/v1.8.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **filestore:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/filestore/v1.7.4...filestore/v1.8.0) (2023-11-16)
 
 
@@ -102,3 +116,4 @@
 ## v0.1.0
 
 - feat(filestore): start generating clients
+

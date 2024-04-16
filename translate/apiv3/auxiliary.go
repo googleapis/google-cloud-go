@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -280,6 +280,147 @@ func (op *DeleteGlossaryOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteGlossaryOperation) Name() string {
 	return op.lro.Name()
+}
+
+// AdaptiveMtDatasetIterator manages a stream of *translatepb.AdaptiveMtDataset.
+type AdaptiveMtDatasetIterator struct {
+	items    []*translatepb.AdaptiveMtDataset
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*translatepb.AdaptiveMtDataset, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AdaptiveMtDatasetIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AdaptiveMtDatasetIterator) Next() (*translatepb.AdaptiveMtDataset, error) {
+	var item *translatepb.AdaptiveMtDataset
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AdaptiveMtDatasetIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AdaptiveMtDatasetIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// AdaptiveMtFileIterator manages a stream of *translatepb.AdaptiveMtFile.
+type AdaptiveMtFileIterator struct {
+	items    []*translatepb.AdaptiveMtFile
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*translatepb.AdaptiveMtFile, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AdaptiveMtFileIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AdaptiveMtFileIterator) Next() (*translatepb.AdaptiveMtFile, error) {
+	var item *translatepb.AdaptiveMtFile
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AdaptiveMtFileIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AdaptiveMtFileIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// AdaptiveMtSentenceIterator manages a stream of *translatepb.AdaptiveMtSentence.
+type AdaptiveMtSentenceIterator struct {
+	items    []*translatepb.AdaptiveMtSentence
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*translatepb.AdaptiveMtSentence, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AdaptiveMtSentenceIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AdaptiveMtSentenceIterator) Next() (*translatepb.AdaptiveMtSentence, error) {
+	var item *translatepb.AdaptiveMtSentence
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AdaptiveMtSentenceIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AdaptiveMtSentenceIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // GlossaryIterator manages a stream of *translatepb.Glossary.

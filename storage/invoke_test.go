@@ -105,7 +105,6 @@ func TestInvoke(t *testing.T) {
 			expectFinalErr:    false,
 		},
 		{
-
 			desc:              "non-idempotent retriable error retried when policy is RetryAlways",
 			count:             2,
 			initialErr:        &googleapi.Error{Code: 500},
@@ -132,7 +131,6 @@ func TestInvoke(t *testing.T) {
 			retry:             &retryConfig{policy: RetryAlways},
 			expectFinalErr:    false,
 		},
-
 		{
 			desc:              "non-retriable error retried with custom fn",
 			count:             2,
@@ -173,6 +171,65 @@ func TestInvoke(t *testing.T) {
 			},
 			expectFinalErr: false,
 		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(2)},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-idempotent retriable error not retried when policy is RetryNever with maxAttempts set",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryNever, maxAttempts: expectedAttempts(2)},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-retriable error retried with custom fn till maxAttempts",
+			count:             4,
+			initialErr:        io.ErrNoProgress,
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry: &retryConfig{
+				shouldRetry: func(err error) bool {
+					return err == io.ErrNoProgress
+				},
+				maxAttempts: expectedAttempts(2),
+			},
+			expectFinalErr: false,
+		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts-1",
+			count:             3,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
+			expectFinalErr:    true,
+		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-idempotent retriable error not retried when policy is RetryAlways with maxAttempts equals to zero",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry:             &retryConfig{maxAttempts: expectedAttempts(0), policy: RetryAlways},
+			expectFinalErr:    false,
+		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
 			counter := 0
@@ -194,15 +251,19 @@ func TestInvoke(t *testing.T) {
 				return test.finalErr
 			}
 			got := run(ctx, call, test.retry, test.isIdempotentValue)
-			if test.expectFinalErr && got != test.finalErr {
+			if test.expectFinalErr && !errors.Is(got, test.finalErr) {
 				s.Errorf("got %v, want %v", got, test.finalErr)
-			} else if !test.expectFinalErr && got != test.initialErr {
+			} else if !test.expectFinalErr && !errors.Is(got, test.initialErr) {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
 			wantAttempts := 1 + test.count
 			if !test.expectFinalErr {
 				wantAttempts = 1
 			}
+			if test.retry != nil && test.retry.maxAttempts != nil && *test.retry.maxAttempts != 0 && test.retry.policy != RetryNever {
+				wantAttempts = *test.retry.maxAttempts
+			}
+
 			wantClientHeader := strings.ReplaceAll(initialClientHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", wantAttempts))
 			if gotClientHeader != wantClientHeader {
 				t.Errorf("case %q, retry header:\ngot %v\nwant %v", test.desc, gotClientHeader, wantClientHeader)

@@ -15,6 +15,7 @@
 package internal
 
 import (
+	"context"
 	"crypto/rsa"
 	"crypto/x509"
 	"encoding/json"
@@ -24,16 +25,25 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"sync"
 	"time"
+
+	"cloud.google.com/go/compute/metadata"
 )
 
 const (
 	// TokenTypeBearer is the auth header prefix for bearer tokens.
 	TokenTypeBearer = "Bearer"
 
-	quotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"
+	// QuotaProjectEnvVar is the environment variable for setting the quota
+	// project.
+	QuotaProjectEnvVar = "GOOGLE_CLOUD_QUOTA_PROJECT"
 	projectEnvVar      = "GOOGLE_CLOUD_PROJECT"
 	maxBodySize        = 1 << 20
+
+	// DefaultUniverseDomain is the default value for universe domain.
+	// Universe domain is the default service domain for a given Cloud universe.
+	DefaultUniverseDomain = "googleapis.com"
 )
 
 // CloneDefaultClient returns a [http.Client] with some good defaults.
@@ -74,7 +84,7 @@ func GetQuotaProject(b []byte, override string) string {
 	if override != "" {
 		return override
 	}
-	if env := os.Getenv(quotaProjectEnvVar); env != "" {
+	if env := os.Getenv(QuotaProjectEnvVar); env != "" {
 		return env
 	}
 	if b == nil {
@@ -118,4 +128,57 @@ func GetProjectID(b []byte, override string) string {
 // with some overflow protection.
 func ReadAll(r io.Reader) ([]byte, error) {
 	return io.ReadAll(io.LimitReader(r, maxBodySize))
+}
+
+// StaticCredentialsProperty is a helper for creating static credentials
+// properties.
+func StaticCredentialsProperty(s string) StaticProperty {
+	return StaticProperty(s)
+}
+
+// StaticProperty always returns that value of the underlying string.
+type StaticProperty string
+
+// GetProperty loads the properly value provided the given context.
+func (p StaticProperty) GetProperty(context.Context) (string, error) {
+	return string(p), nil
+}
+
+// ComputeUniverseDomainProvider fetches the credentials universe domain from
+// the google cloud metadata service.
+type ComputeUniverseDomainProvider struct {
+	universeDomainOnce sync.Once
+	universeDomain     string
+	universeDomainErr  error
+}
+
+// GetProperty fetches the credentials universe domain from the google cloud
+// metadata service.
+func (c *ComputeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
+	c.universeDomainOnce.Do(func() {
+		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx)
+	})
+	if c.universeDomainErr != nil {
+		return "", c.universeDomainErr
+	}
+	return c.universeDomain, nil
+}
+
+// httpGetMetadataUniverseDomain is a package var for unit test substitution.
+var httpGetMetadataUniverseDomain = func(ctx context.Context) (string, error) {
+	client := metadata.NewClient(&http.Client{Timeout: time.Second})
+	// TODO(quartzmo): set ctx on request
+	return client.Get("universe/universe_domain")
+}
+
+func getMetadataUniverseDomain(ctx context.Context) (string, error) {
+	universeDomain, err := httpGetMetadataUniverseDomain(ctx)
+	if err == nil {
+		return universeDomain, nil
+	}
+	if _, ok := err.(metadata.NotDefinedError); ok {
+		// http.StatusNotFound (404)
+		return DefaultUniverseDomain, nil
+	}
+	return "", err
 }

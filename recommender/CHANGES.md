@@ -1,5 +1,26 @@
 # Changes
 
+## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.12.1...recommender/v1.12.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **recommender:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.12.0...recommender/v1.12.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **recommender:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.3...recommender/v1.12.0) (2023-12-13)
+
+
+### Features
+
+* **recommender:** Support cost_in_local_currency field in the cost projection ([3d9f556](https://github.com/googleapis/google-cloud-go/commit/3d9f55678654fe678d44f3f4a08bf26c3830b653))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.11.2...recommender/v1.11.3) (2023-11-01)
 
 
@@ -122,3 +143,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out recommender as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

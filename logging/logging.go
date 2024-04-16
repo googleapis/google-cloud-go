@@ -44,9 +44,6 @@ import (
 	vkit "cloud.google.com/go/logging/apiv2"
 	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"cloud.google.com/go/logging/internal"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
@@ -55,7 +52,10 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -84,6 +84,9 @@ const (
 	// DefaultEntryByteThreshold is the default value for the EntryByteThreshold LoggerOption.
 	DefaultEntryByteThreshold = 1 << 23 // 8MiB
 
+	// DefaultBundleByteLimit is the default value for the BundleByteLimit LoggerOption.
+	DefaultBundleByteLimit = 9437184 // 9.5 MiB
+
 	// DefaultBufferedByteLimit is the default value for the BufferedByteLimit LoggerOption.
 	DefaultBufferedByteLimit = 1 << 30 // 1GiB
 
@@ -95,6 +98,15 @@ const (
 
 	// Part of the error message when the payload contains invalid UTF-8 characters.
 	utfErrorString = "string field contains invalid UTF-8"
+
+	// DetectProjectID is a sentinel value that instructs NewClient to detect the
+	// project ID. It is given in place of the projectID argument. NewClient will
+	// use the project ID from the given credentials or the default credentials
+	// (https://developers.google.com/accounts/docs/application-default-credentials)
+	// if no credentials were provided. When providing credentials, not all
+	// options will allow NewClient to extract the project ID. Specifically a JWT
+	// does not have the project ID encoded.
+	DetectProjectID = "*detect-project-id*"
 )
 
 var (
@@ -103,8 +115,9 @@ var (
 	ErrRedirectProtoPayloadNotSupported = errors.New("printEntryToStdout: cannot find valid payload")
 
 	// For testing:
-	now                = time.Now
-	toLogEntryInternal = toLogEntryInternalImpl
+	now                    = time.Now
+	toLogEntryInternal     = toLogEntryInternalImpl
+	detectResourceInternal = detectResource
 
 	// ErrOverflow signals that the number of buffered entries for a Logger
 	// exceeds its BufferLimit.
@@ -148,8 +161,11 @@ type Client struct {
 //	billingAccounts/ACCOUNT_ID
 //	organizations/ORG_ID
 //
-// for backwards compatibility, a string with no '/' is also allowed and is interpreted
+// For backwards compatibility, a string with no '/' is also allowed and is interpreted
 // as a project ID.
+//
+// If logging.DetectProjectId is provided as the parent, the parent will be interpreted as a project
+// ID, and its value will be inferred from the environment.
 //
 // By default NewClient uses WriteScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
@@ -192,6 +208,13 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 
 func makeParent(parent string) (string, error) {
 	if !strings.ContainsRune(parent, '/') {
+		if parent == DetectProjectID {
+			resource := detectResourceInternal()
+			if resource == nil {
+				return parent, fmt.Errorf("could not determine project ID from environment")
+			}
+			parent = resource.Labels["project_id"]
+		}
 		return "projects/" + parent, nil
 	}
 	prefix := strings.Split(parent, "/")[0]
@@ -205,16 +228,13 @@ func makeParent(parent string) (string, error) {
 // authentication configuration are valid. To accomplish this, Ping writes a
 // log entry "ping" to a log named "ping".
 func (c *Client) Ping(ctx context.Context) error {
-	unixZeroTimestamp, err := ptypes.TimestampProto(time.Unix(0, 0))
-	if err != nil {
-		return err
-	}
+	unixZeroTimestamp := timestamppb.New(time.Unix(0, 0))
 	ent := &logpb.LogEntry{
 		Payload:   &logpb.LogEntry_TextPayload{TextPayload: "ping"},
 		Timestamp: unixZeroTimestamp, // Identical timestamps and insert IDs are both
 		InsertId:  "ping",            // necessary for the service to dedup these entries.
 	}
-	_, err = c.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
+	_, err := c.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:  internal.LogPath(c.parent, "ping"),
 		Resource: monitoredResource(c.parent),
 		Entries:  []*logpb.LogEntry{ent},
@@ -301,7 +321,7 @@ func (r *loggerRetryer) Retry(err error) (pause time.Duration, shouldRetry bool)
 // characters: [A-Za-z0-9]; and punctuation characters: forward-slash,
 // underscore, hyphen, and period.
 func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
-	r := detectResource()
+	r := detectResourceInternal()
 	if r == nil {
 		r = monitoredResource(c.parent)
 	}
@@ -320,6 +340,7 @@ func (c *Client) Logger(logID string, opts ...LoggerOption) *Logger {
 	l.bundler.DelayThreshold = DefaultDelayThreshold
 	l.bundler.BundleCountThreshold = DefaultEntryCountThreshold
 	l.bundler.BundleByteThreshold = DefaultEntryByteThreshold
+	l.bundler.BundleByteLimit = DefaultBundleByteLimit
 	l.bundler.BufferedByteLimit = DefaultBufferedByteLimit
 	for _, opt := range opts {
 		opt.set(l)
@@ -584,7 +605,7 @@ func fromHTTPRequest(r *HTTPRequest) (*logtypepb.HttpRequest, error) {
 		CacheLookup:                    r.CacheLookup,
 	}
 	if r.Latency != 0 {
-		pb.Latency = ptypes.DurationProto(r.Latency)
+		pb.Latency = durationpb.New(r.Latency)
 	}
 	return pb, nil
 }

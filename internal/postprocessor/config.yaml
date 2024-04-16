@@ -11,11 +11,14 @@ modules:
   - apigeeregistry
   - apikeys
   - appengine
+  - apphub
+  - apps
   - area120
   - artifactregistry
   - asset
   - assuredworkloads
   - automl
+  - backupdr
   - baremetalsolution
   - batch
   - beyondcorp
@@ -25,9 +28,12 @@ modules:
   - binaryauthorization
   - certificatemanager
   - channel
+  - chat
   - cloudbuild
+  - cloudcontrolspartner
   - clouddms
   - cloudprofiler
+  - cloudquotas
   - cloudtasks
   - commerce
   - compute
@@ -92,6 +98,7 @@ modules:
   - orgpolicy
   - osconfig
   - oslogin
+  - parallelstore
   - phishingprotection
   - policysimulator
   - policytroubleshooter
@@ -113,9 +120,11 @@ modules:
   - securesourcemanager
   - security
   - securitycenter
+  - securitycentermanagement
+  - securityposture
   - servicecontrol
   - servicedirectory
-  - serviceusage
+  - servicehealth
   - servicemanagement
   - serviceusage
   - shell
@@ -135,6 +144,7 @@ modules:
   - video
   - videointelligence
   - vision
+  - visionai
   - vmmigration
   - vmwareengine
   - vpcaccess
@@ -266,6 +276,12 @@ manual-clients:
     library-type: GAPIC_MANUAL
 
 service-configs:
+  - input-directory: google/ai/generativelanguage/v1
+    service-config: generativelanguage_v1.yaml
+    import-path: cloud.google.com/go/ai/generativelanguage/apiv1
+  - input-directory: google/ai/generativelanguage/v1beta
+    service-config: generativelanguage_v1beta.yaml
+    import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta
   - input-directory: google/ai/generativelanguage/v1beta2
     service-config: generativelanguage_v1beta2.yaml
     import-path: cloud.google.com/go/ai/generativelanguage/apiv1beta2
@@ -275,15 +291,18 @@ service-configs:
   - input-directory: google/api/apikeys/v2
     service-config: apikeys_v2.yaml
     import-path: cloud.google.com/go/apikeys/apiv2
-  - input-directory: google/api/servicecontrol/v1
-    service-config: servicecontrol.yaml
-    import-path: cloud.google.com/go/servicecontrol/apiv1
-  - input-directory: google/api/servicemanagement/v1
-    service-config: servicemanagement_v1.yaml
-    import-path: cloud.google.com/go/servicemanagement/apiv1
   - input-directory: google/appengine/v1
     service-config: appengine_v1.yaml
     import-path: cloud.google.com/go/appengine/apiv1
+  - input-directory: google/apps/events/subscriptions/v1
+    service-config: workspaceevents_v1.yaml
+    import-path: cloud.google.com/go/apps/events/subscriptions/apiv1
+  - input-directory: google/apps/meet/v2
+    service-config: meet_v2.yaml
+    import-path: cloud.google.com/go/apps/meet/apiv2
+  - input-directory: google/apps/meet/v2beta
+    service-config: meet_v2beta.yaml
+    import-path: cloud.google.com/go/apps/meet/apiv2beta
   - input-directory: google/area120/tables/v1alpha1
     service-config: area120tables_v1alpha1.yaml
     import-path: cloud.google.com/go/area120/tables/apiv1alpha1
@@ -327,6 +346,9 @@ service-configs:
   - input-directory: google/cloud/apigeeregistry/v1
     service-config: apigeeregistry_v1.yaml
     import-path: cloud.google.com/go/apigeeregistry/apiv1
+  - input-directory: google/cloud/apphub/v1
+    service-config: apphub_v1.yaml
+    import-path: cloud.google.com/go/apphub/apiv1
   - input-directory: google/cloud/asset/v1
     service-config: cloudasset_v1.yaml
     import-path: cloud.google.com/go/asset/apiv1
@@ -348,6 +370,9 @@ service-configs:
   - input-directory: google/cloud/automl/v1beta1
     service-config: automl_v1beta1.yaml
     import-path: cloud.google.com/go/automl/apiv1beta1
+  - input-directory: google/cloud/backupdr/v1
+    service-config: backupdr_v1.yaml
+    import-path: cloud.google.com/go/backupdr/apiv1
   - input-directory: google/cloud/baremetalsolution/v2
     service-config: baremetalsolution_v2.yaml
     import-path: cloud.google.com/go/baremetalsolution/apiv2
@@ -435,12 +460,24 @@ service-configs:
   - input-directory: google/cloud/channel/v1
     service-config: cloudchannel_v1.yaml
     import-path: cloud.google.com/go/channel/apiv1
+  - input-directory: google/chat/v1
+    service-config: chat_v1.yaml
+    import-path: cloud.google.com/go/chat/apiv1
+  - input-directory: google/cloud/cloudcontrolspartner/v1
+    service-config: cloudcontrolspartner_v1.yaml
+    import-path: cloud.google.com/go/cloudcontrolspartner/apiv1
+  - input-directory: google/cloud/cloudcontrolspartner/v1beta
+    service-config: cloudcontrolspartner_v1beta.yaml
+    import-path: cloud.google.com/go/cloudcontrolspartner/apiv1beta
   - input-directory: google/cloud/clouddms/v1
     service-config: datamigration_v1.yaml
     import-path: cloud.google.com/go/clouddms/apiv1
   - input-directory: google/devtools/cloudprofiler/v2
     service-config: cloudprofiler_v2.yaml
     import-path: cloud.google.com/go/cloudprofiler/apiv2
+  - input-directory: google/api/cloudquotas/v1
+    service-config: cloudquotas_v1.yaml
+    import-path: cloud.google.com/go/cloudquotas/apiv1
   - input-directory: google/cloud/commerce/consumer/procurement/v1
     service-config: cloudcommerceconsumerprocurement_v1.yaml
     import-path: cloud.google.com/go/commerce/consumer/procurement/apiv1
@@ -511,6 +548,9 @@ service-configs:
   - input-directory: google/cloud/discoveryengine/v1beta
     service-config: discoveryengine_v1beta.yaml
     import-path: cloud.google.com/go/discoveryengine/apiv1beta
+  - input-directory: google/cloud/discoveryengine/v1alpha
+    service-config: discoveryengine_v1alpha.yaml
+    import-path: cloud.google.com/go/discoveryengine/apiv1alpha
   - input-directory: google/cloud/documentai/v1
     service-config: documentai_v1.yaml
     import-path: cloud.google.com/go/documentai/apiv1
@@ -673,6 +713,9 @@ service-configs:
   - input-directory: google/cloud/oslogin/common
     service-config:
     import-path: cloud.google.com/go/oslogin/common
+  - input-directory: google/cloud/parallelstore/v1beta
+    service-config: parallelstore_v1beta.yaml
+    import-path: cloud.google.com/go/parallelstore/apiv1beta
   - input-directory: google/cloud/phishingprotection/v1beta1
     service-config: phishingprotection_v1beta1.yaml
     import-path: cloud.google.com/go/phishingprotection/apiv1beta1
@@ -750,6 +793,9 @@ service-configs:
   - input-directory: google/cloud/secretmanager/v1
     service-config: secretmanager_v1.yaml
     import-path: cloud.google.com/go/secretmanager/apiv1
+  - input-directory: google/cloud/secretmanager/v1beta2
+    service-config: secretmanager_v1beta2.yaml
+    import-path: cloud.google.com/go/secretmanager/apiv1beta2
   - input-directory: google/cloud/securesourcemanager/v1
     service-config: securesourcemanager_v1.yaml
     import-path: cloud.google.com/go/securesourcemanager/apiv1
@@ -771,21 +817,54 @@ service-configs:
   - input-directory: google/cloud/securitycenter/v1p1beta1
     service-config: securitycenter_v1p1beta1.yaml
     import-path: cloud.google.com/go/securitycenter/apiv1p1beta1
+  - input-directory: google/cloud/securitycenter/v2
+    service-config: securitycenter_v2.yaml
+    import-path: cloud.google.com/go/securitycenter/apiv2
+  - input-directory: google/cloud/securitycentermanagement/v1
+    service-config: securitycentermanagement_v1.yaml
+    import-path: cloud.google.com/go/securitycentermanagement/apiv1
+  - input-directory: google/cloud/securityposture/v1
+    service-config: securityposture_v1.yaml
+    import-path: cloud.google.com/go/securityposture/apiv1
+  - input-directory: google/api/servicecontrol/v1
+    service-config: servicecontrol.yaml
+    import-path: cloud.google.com/go/servicecontrol/apiv1
   - input-directory: google/cloud/servicedirectory/v1
     service-config: servicedirectory_v1.yaml
     import-path: cloud.google.com/go/servicedirectory/apiv1
   - input-directory: google/cloud/servicedirectory/v1beta1
     service-config: servicedirectory_v1beta1.yaml
     import-path: cloud.google.com/go/servicedirectory/apiv1beta1
+  - input-directory: google/cloud/servicehealth/v1
+    service-config: servicehealth_v1.yaml
+    import-path: cloud.google.com/go/servicehealth/apiv1
+  - input-directory: google/api/servicemanagement/v1
+    service-config: servicemanagement_v1.yaml
+    import-path: cloud.google.com/go/servicemanagement/apiv1
   - input-directory: google/api/serviceusage/v1
     service-config: serviceusage_v1.yaml
     import-path: cloud.google.com/go/serviceusage/apiv1
   - input-directory: google/cloud/shell/v1
     service-config: cloudshell_v1.yaml
     import-path: cloud.google.com/go/shell/apiv1
+  - input-directory: google/shopping/css/v1
+    service-config: css_v1.yaml
+    import-path: cloud.google.com/go/shopping/css/apiv1
+  - input-directory: google/shopping/merchant/notifications/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
+  - input-directory: google/shopping/merchant/quota/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/quota/apiv1beta
   - input-directory: google/shopping/merchant/inventories/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/inventories/apiv1beta
+  - input-directory: google/shopping/merchant/lfp/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/lfp/apiv1beta
+  - input-directory: google/shopping/merchant/reports/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/reports/apiv1beta
   - input-directory: google/shopping/type
     service-config:
     import-path: cloud.google.com/go/shopping/type
@@ -866,6 +945,9 @@ service-configs:
     service-config: vision_v1p1beta1.yaml
     import-path: cloud.google.com/go/vision/v2/apiv1p1beta1
     rel-path: /vision/apiv1p1beta1
+  - input-directory: google/cloud/visionai/v1
+    service-config: visionai_v1.yaml
+    import-path: cloud.google.com/go/visionai/apiv1
   - input-directory: google/cloud/vmmigration/v1
     service-config: vmmigration_v1.yaml
     import-path: cloud.google.com/go/vmmigration/apiv1
@@ -923,9 +1005,6 @@ service-configs:
   - input-directory: google/devtools/cloudbuild/v2
     service-config: cloudbuild_v2.yaml
     import-path: cloud.google.com/go/cloudbuild/apiv2
-  - input-directory: google/cloud/compute/v1
-    service-config: compute_v1.yaml
-    import-path: cloud.google.com/go/compute/apiv1
   - input-directory: google/cloud/confidentialcomputing/v1
     service-config: confidentialcomputing_v1.yaml
     import-path: cloud.google.com/go/confidentialcomputing/apiv1
@@ -1001,6 +1080,12 @@ service-configs:
   - input-directory: google/spanner/v1
     service-config: spanner.yaml
     import-path: cloud.google.com/go/spanner/apiv1
+  - input-directory: google/spanner/executor/v1
+    service-config: spanner_cloud_executor.yaml
+    import-path: cloud.google.com/go/spanner/executor/apiv1
+  - input-directory: google/storage/control/v2
+    service-config: storage_v2.yaml
+    import-path: cloud.google.com/go/storage/control/apiv2
   - input-directory: google/storage/v2
     service-config: storage_v2.yaml
     import-path: cloud.google.com/go/storage/internal/apiv2

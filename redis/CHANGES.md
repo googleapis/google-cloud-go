@@ -1,5 +1,19 @@
 # Changes
 
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.2...redis/v1.14.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* **redis:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.1...redis/v1.14.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **redis:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.0...redis/v1.14.1) (2023-11-01)
 
 
@@ -151,3 +165,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out redis as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

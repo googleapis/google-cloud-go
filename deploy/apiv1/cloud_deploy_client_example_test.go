@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -216,6 +216,36 @@ func ExampleCloudDeployClient_CreateAutomation() {
 	_ = resp
 }
 
+func ExampleCloudDeployClient_CreateCustomTargetType() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.CreateCustomTargetTypeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#CreateCustomTargetTypeRequest.
+	}
+	op, err := c.CreateCustomTargetType(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCloudDeployClient_CreateDeliveryPipeline() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -364,6 +394,34 @@ func ExampleCloudDeployClient_DeleteAutomation() {
 	}
 }
 
+func ExampleCloudDeployClient_DeleteCustomTargetType() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.DeleteCustomTargetTypeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#DeleteCustomTargetTypeRequest.
+	}
+	op, err := c.DeleteCustomTargetType(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleCloudDeployClient_DeleteDeliveryPipeline() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -488,6 +546,31 @@ func ExampleCloudDeployClient_GetConfig() {
 		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetConfigRequest.
 	}
 	resp, err := c.GetConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudDeployClient_GetCustomTargetType() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.GetCustomTargetTypeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#GetCustomTargetTypeRequest.
+	}
+	resp, err := c.GetCustomTargetType(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -673,6 +756,12 @@ func ExampleCloudDeployClient_ListAutomationRuns() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListAutomationRunsResponse)
 	}
 }
 
@@ -704,6 +793,49 @@ func ExampleCloudDeployClient_ListAutomations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListAutomationsResponse)
+	}
+}
+
+func ExampleCloudDeployClient_ListCustomTargetTypes() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.ListCustomTargetTypesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#ListCustomTargetTypesRequest.
+	}
+	it := c.ListCustomTargetTypes(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListCustomTargetTypesResponse)
 	}
 }
 
@@ -735,6 +867,12 @@ func ExampleCloudDeployClient_ListDeliveryPipelines() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListDeliveryPipelinesResponse)
 	}
 }
 
@@ -766,6 +904,12 @@ func ExampleCloudDeployClient_ListJobRuns() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListJobRunsResponse)
 	}
 }
 
@@ -797,6 +941,12 @@ func ExampleCloudDeployClient_ListReleases() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListReleasesResponse)
 	}
 }
 
@@ -828,6 +978,12 @@ func ExampleCloudDeployClient_ListRollouts() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListRolloutsResponse)
 	}
 }
 
@@ -859,6 +1015,12 @@ func ExampleCloudDeployClient_ListTargets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*deploypb.ListTargetsResponse)
 	}
 }
 
@@ -955,6 +1117,36 @@ func ExampleCloudDeployClient_UpdateAutomation() {
 		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#UpdateAutomationRequest.
 	}
 	op, err := c.UpdateAutomation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudDeployClient_UpdateCustomTargetType() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := deploy.NewCloudDeployClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &deploypb.UpdateCustomTargetTypeRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/deploy/apiv1/deploypb#UpdateCustomTargetTypeRequest.
+	}
+	op, err := c.UpdateCustomTargetType(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -1080,6 +1272,12 @@ func ExampleCloudDeployClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -1257,5 +1455,11 @@ func ExampleCloudDeployClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

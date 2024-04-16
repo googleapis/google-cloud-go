@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.3...policysimulator/v0.2.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **policysimulator:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.2...policysimulator/v0.2.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **policysimulator:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.1...policysimulator/v0.2.2) (2023-11-01)
 
 
@@ -36,3 +50,4 @@
 * **policysimulator:** Start generating apiv1 ([#8340](https://github.com/googleapis/google-cloud-go/issues/8340)) ([a41e5ec](https://github.com/googleapis/google-cloud-go/commit/a41e5eca56246e83670d5c0d043d7ab78db47042))
 
 ## Changes
+
