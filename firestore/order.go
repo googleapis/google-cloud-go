@@ -23,7 +23,7 @@ import (
 
 	"cloud.google.com/go/firestore/apiv1/firestorepb"
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Returns a negative number, zero, or a positive number depending on whether a is

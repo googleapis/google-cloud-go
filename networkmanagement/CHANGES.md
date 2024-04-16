@@ -1,5 +1,20 @@
 # Changes
 
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.0...networkmanagement/v1.13.1) (2024-04-15)
+
+
+### Documentation
+
+* **networkmanagement:** Update possible firewall rule actions comment ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.12.0...networkmanagement/v1.13.0) (2024-03-27)
+
+
+### Features
+
+* **networkmanagement:** Add an "unsupported" type of firewall policy rule ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+* **networkmanagement:** Add new fields and enum values related to round-trip ([f8ff971](https://github.com/googleapis/google-cloud-go/commit/f8ff971366999aefb5eb5189c6c9e2bd76a05d9e))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.11.0...networkmanagement/v1.12.0) (2024-03-25)
 
 

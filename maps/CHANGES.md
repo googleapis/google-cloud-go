@@ -2,6 +2,15 @@
 
 
 
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.1...maps/v1.7.2) (2024-04-15)
+
+
+### Documentation
+
+* **maps/places:** Fix designation of Text Search ([#9728](https://github.com/googleapis/google-cloud-go/issues/9728)) ([ce55ad6](https://github.com/googleapis/google-cloud-go/commit/ce55ad694f21cacfa608e9b9952ee31f8d566e49))
+* **maps/places:** Fix typo in PriceLevel enum ([#9669](https://github.com/googleapis/google-cloud-go/issues/9669)) ([264a6dc](https://github.com/googleapis/google-cloud-go/commit/264a6dcddbffaec987dce1dc00f6550c263d2df7))
+* **maps/routing:** Various formatting and grammar fixes for proto documentation ([cca3f47](https://github.com/googleapis/google-cloud-go/commit/cca3f47c895e7cac07d7d48ab3c4850b265a710f))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.0...maps/v1.7.1) (2024-03-14)
 
 
