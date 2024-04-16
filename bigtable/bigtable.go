@@ -173,6 +173,7 @@ func (c *Client) Open(table string) *Table {
 // ReadRows reads rows from a table. f is called for each row.
 // If f returns false, the stream is shut down and ReadRows returns.
 // f owns its argument, and f is called serially in order by row key.
+// f will be executed in the same Go routine as the caller.
 //
 // By default, the yielded rows will contain all values in all cells.
 // Use RowFilter to limit the cells returned.
