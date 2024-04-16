@@ -659,6 +659,8 @@ type TaskSpec struct {
 	ComputeResource *ComputeResource `protobuf:"bytes,3,opt,name=compute_resource,json=computeResource,proto3" json:"compute_resource,omitempty"`
 	// Maximum duration the task should run.
 	// The task will be killed and marked as FAILED if over this limit.
+	// The valid value range for max_run_duration in seconds is [0,
+	// 315576000000.999999999],
 	MaxRunDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=max_run_duration,json=maxRunDuration,proto3" json:"max_run_duration,omitempty"`
 	// Maximum number of retries on failures.
 	// The default, 0, which means never retry.
@@ -1001,13 +1003,38 @@ type Runnable_Container struct {
 	// still communicate with each other, network cannot be specified in the
 	// `container.options` field.
 	BlockExternalNetwork bool `protobuf:"varint,9,opt,name=block_external_network,json=blockExternalNetwork,proto3" json:"block_external_network,omitempty"`
-	// Optional username for logging in to a docker registry. If username
-	// matches `projects/*/secrets/*/versions/*` then Batch will read the
-	// username from the Secret Manager.
+	// Required if the container image is from a private Docker registry. The
+	// username to login to the Docker registry that contains the image.
+	//
+	// You can either specify the username directly by using plain text or
+	// specify an encrypted username by using a Secret Manager secret:
+	// `projects/*/secrets/*/versions/*`. However, using a secret is
+	// recommended for enhanced security.
+	//
+	// Caution: If you specify the username using plain text, you risk the
+	// username being exposed to any users who can view the job or its logs.
+	// To avoid this risk, specify a secret that contains the username instead.
+	//
+	// Learn more about [Secret
+	// Manager](https://cloud.google.com/secret-manager/docs/) and [using
+	// Secret Manager with
+	// Batch](https://cloud.google.com/batch/docs/create-run-job-secret-manager).
 	Username string `protobuf:"bytes,10,opt,name=username,proto3" json:"username,omitempty"`
-	// Optional password for logging in to a docker registry. If password
-	// matches `projects/*/secrets/*/versions/*` then Batch will read the
-	// password from the Secret Manager;
+	// Required if the container image is from a private Docker registry. The
+	// password to login to the Docker registry that contains the image.
+	//
+	// For security, it is strongly recommended to specify an
+	// encrypted password by using a Secret Manager secret:
+	// `projects/*/secrets/*/versions/*`.
+	//
+	// Warning: If you specify the password using plain text, you risk the
+	// password being exposed to any users who can view the job or its logs.
+	// To avoid this risk, specify a secret that contains the password instead.
+	//
+	// Learn more about [Secret
+	// Manager](https://cloud.google.com/secret-manager/docs/) and [using
+	// Secret Manager with
+	// Batch](https://cloud.google.com/batch/docs/create-run-job-secret-manager).
 	Password string `protobuf:"bytes,11,opt,name=password,proto3" json:"password,omitempty"`
 	// Optional. If set to true, this container runnable uses Image streaming.
 	//
@@ -1202,7 +1229,7 @@ type Runnable_Script_Path struct {
 	// first line of the file.(For example, to execute the script using bash,
 	// `#!/bin/bash` should be the first line of the file. To execute the
 	// script using`Python3`, `#!/usr/bin/env python3` should be the first
-	// line of the file.) Otherwise, the file will by default be excuted by
+	// line of the file.) Otherwise, the file will by default be executed by
 	// `/bin/sh`.
 	Path string `protobuf:"bytes,1,opt,name=path,proto3,oneof"`
 }
@@ -1214,7 +1241,7 @@ type Runnable_Script_Text struct {
 	// beginning of the text.(For example, to execute the script using bash,
 	// `#!/bin/bash\n` should be added. To execute the script using`Python3`,
 	// `#!/usr/bin/env python3\n` should be added.) Otherwise, the script will
-	// by default be excuted by `/bin/sh`.
+	// by default be executed by `/bin/sh`.
 	Text string `protobuf:"bytes,2,opt,name=text,proto3,oneof"`
 }
 

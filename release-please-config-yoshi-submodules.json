@@ -15,9 +15,6 @@
         "ai": {
             "component": "ai"
         },
-        "aiplatform": {
-            "component": "aiplatform"
-        },
         "alloydb": {
             "component": "alloydb"
         },
@@ -39,6 +36,9 @@
         "appengine": {
             "component": "appengine"
         },
+        "apphub": {
+            "component": "apphub"
+        },
         "apps": {
             "component": "apps"
         },
@@ -56,6 +56,9 @@
         },
         "automl": {
             "component": "automl"
+        },
+        "backupdr": {
+            "component": "backupdr"
         },
         "baremetalsolution": {
             "component": "baremetalsolution"
@@ -80,6 +83,9 @@
         },
         "cloudbuild": {
             "component": "cloudbuild"
+        },
+        "cloudcontrolspartner": {
+            "component": "cloudcontrolspartner"
         },
         "clouddms": {
             "component": "clouddms"

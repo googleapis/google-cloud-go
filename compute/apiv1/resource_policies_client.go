@@ -173,7 +173,7 @@ func (c *ResourcePoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of resource policies.
+// AggregatedList retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *ResourcePoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -305,7 +305,7 @@ func (c *resourcePoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of resource policies.
+// AggregatedList retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
 	it := &ResourcePoliciesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListResourcePoliciesRequest)

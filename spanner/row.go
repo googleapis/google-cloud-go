@@ -22,8 +22,8 @@ import (
 	"strings"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc/codes"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 // A Row is a view of a row of data returned by a Cloud Spanner read.
@@ -57,6 +57,8 @@ import (
 //	*[]int64, *[]NullInt64 - INT64 ARRAY
 //	*bool(not NULL), *NullBool - BOOL
 //	*[]bool, *[]NullBool - BOOL ARRAY
+//	*float32(not NULL), *NullFloat32 - FLOAT32
+//	*[]float32, *[]NullFloat32 - FLOAT32 ARRAY
 //	*float64(not NULL), *NullFloat64 - FLOAT64
 //	*[]float64, *[]NullFloat64 - FLOAT64 ARRAY
 //	*big.Rat(not NULL), *NullNumeric - NUMERIC
@@ -566,8 +568,8 @@ func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value
 			continue
 		}
 		if name == "" {
-			name = strings.ToLower(fieldType.Name)
+			name = fieldType.Name
 		}
-		(*fieldTagMap)[name] = sliceItem.Field(i)
+		(*fieldTagMap)[strings.ToLower(name)] = sliceItem.Field(i)
 	}
 }

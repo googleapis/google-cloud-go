@@ -143,7 +143,8 @@ type internalServingConfigClient interface {
 // ServingConfigClient is a client for interacting with Discovery Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Service for modifying ServingConfig.
+// Service for operations related to
+// ServingConfig.
 type ServingConfigClient struct {
 	// The internal transport-dependent client.
 	internalClient internalServingConfigClient
@@ -226,7 +227,8 @@ type servingConfigGRPCClient struct {
 // NewServingConfigClient creates a new serving config service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service for modifying ServingConfig.
+// Service for operations related to
+// ServingConfig.
 func NewServingConfigClient(ctx context.Context, opts ...option.ClientOption) (*ServingConfigClient, error) {
 	clientOpts := defaultServingConfigGRPCClientOptions()
 	if newServingConfigClientHook != nil {
@@ -296,7 +298,8 @@ type servingConfigRESTClient struct {
 
 // NewServingConfigRESTClient creates a new serving config service rest client.
 //
-// Service for modifying ServingConfig.
+// Service for operations related to
+// ServingConfig.
 func NewServingConfigRESTClient(ctx context.Context, opts ...option.ClientOption) (*ServingConfigClient, error) {
 	clientOpts := append(defaultServingConfigRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)

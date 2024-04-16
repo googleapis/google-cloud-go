@@ -27,6 +27,7 @@ import (
 
 var individuallyReleasedModules map[string]bool = map[string]bool{
 	".":                true,
+	"aiplatform":       true,
 	"auth":             true,
 	"auth/oauth2adapt": true,
 	"bigquery":         true,
