@@ -452,6 +452,23 @@ func TestParamType(t *testing.T) {
 		{"RangeTimestampNullValEnd", &RangeValue{End: NullTimestamp{Valid: false}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timestampParamType}},
 		{"RangeTimeEmptyStart", &RangeValue{Start: civil.Time{}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timeParamType}},
 		{"RangeDateEmptyEnd", &RangeValue{End: civil.Date{}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: dateParamType}},
+		{"RangeTimeInQPV",
+			&QueryParameterValue{
+				Type: StandardSQLDataType{
+					TypeKind: "RANGE",
+					RangeElementType: &StandardSQLDataType{
+						TypeKind: "TIME",
+					},
+				},
+				Value: &RangeValue{},
+			},
+			&bq.QueryParameterType{
+				Type: "RANGE",
+				RangeElementType: &bq.QueryParameterType{
+					Type: "TIME",
+				},
+			},
+		},
 	} {
 		t.Run(fmt.Sprintf("complex-%s", tc.name), func(t *testing.T) {
 			got, err := paramType(reflect.TypeOf(tc.val), reflect.ValueOf(tc.val))
