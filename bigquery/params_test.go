@@ -215,10 +215,13 @@ func TestParamValueRange(t *testing.T) {
 
 	tTimestamp := time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720))
 	tDate := civil.Date{Year: 2016, Month: 03, Day: 22}
-	tTime := civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}
+	tDateTime := civil.DateTime{
+		Date: civil.Date{Year: 2017, Month: 7, Day: 13},
+		Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000},
+	}
 	wTimestamp := "2016-03-22 04:22:09.000005-01:02"
 	wDate := "2016-03-22"
-	wTime := "04:05:06.789000"
+	wDateTime := "2017-07-13 04:05:06.789000"
 
 	var testCases = []struct {
 		desc string
@@ -333,18 +336,18 @@ func TestParamValueRange(t *testing.T) {
 			},
 		},
 		{
-			desc: "RangeValue civil.Time both populated",
+			desc: "RangeValue civil.DateTime both populated",
 			in: &RangeValue{
-				Start: tTime,
-				End:   tTime,
+				Start: tDateTime,
+				End:   tDateTime,
 			},
 			want: &bq.QueryParameterValue{
 				RangeValue: &bq.RangeValue{
 					Start: &bq.QueryParameterValue{
-						Value: wTime,
+						Value: wDateTime,
 					},
 					End: &bq.QueryParameterValue{
-						Value: wTime,
+						Value: wDateTime,
 					},
 				},
 			},
@@ -355,7 +358,7 @@ func TestParamValueRange(t *testing.T) {
 				Type: StandardSQLDataType{
 					TypeKind: "RANGE",
 					RangeElementType: &StandardSQLDataType{
-						TypeKind: "TIME",
+						TypeKind: "DATETIME",
 					},
 				},
 				Value: &RangeValue{},
@@ -450,14 +453,14 @@ func TestParamType(t *testing.T) {
 		{"RangeTimestampNilStart", &RangeValue{End: time.Now()}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timestampParamType}},
 		{"RangeTimestampNullValStart", &RangeValue{Start: NullTimestamp{Valid: false}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timestampParamType}},
 		{"RangeTimestampNullValEnd", &RangeValue{End: NullTimestamp{Valid: false}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timestampParamType}},
-		{"RangeTimeEmptyStart", &RangeValue{Start: civil.Time{}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: timeParamType}},
+		{"RangeDateTimeEmptyStart", &RangeValue{Start: civil.DateTime{}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: dateTimeParamType}},
 		{"RangeDateEmptyEnd", &RangeValue{End: civil.Date{}}, &bq.QueryParameterType{Type: "RANGE", RangeElementType: dateParamType}},
-		{"RangeTimeInQPV",
+		{"RangeDateTimeInQPV",
 			&QueryParameterValue{
 				Type: StandardSQLDataType{
 					TypeKind: "RANGE",
 					RangeElementType: &StandardSQLDataType{
-						TypeKind: "TIME",
+						TypeKind: "DATETIME",
 					},
 				},
 				Value: &RangeValue{},
@@ -465,7 +468,7 @@ func TestParamType(t *testing.T) {
 			&bq.QueryParameterType{
 				Type: "RANGE",
 				RangeElementType: &bq.QueryParameterType{
-					Type: "TIME",
+					Type: "DATETIME",
 				},
 			},
 		},

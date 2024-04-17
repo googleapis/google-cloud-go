@@ -16,7 +16,7 @@ package bigquery
 
 // RangeValue represents a continuous RANGE of values of a given element
 // type.  The supported element types for RANGE are currently the BigQuery
-// TIME, TIMESTAMP, and DATE types.
+// DATE, DATETIME, and TIMESTAMP, types.
 type RangeValue struct {
 	// The start value of the range.  A missing value represents an
 	// unbounded start.

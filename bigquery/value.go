@@ -1020,7 +1020,7 @@ var unboundedRangeSentinel = "UNBOUNDED"
 // The format for a range value is: "[startval, endval)"
 func convertRangeValue(val string, elementType FieldType) (Value, error) {
 	supported := false
-	for _, t := range []FieldType{DateFieldType, TimeFieldType, TimestampFieldType} {
+	for _, t := range []FieldType{DateFieldType, DateTimeFieldType, TimestampFieldType} {
 		if elementType == t {
 			supported = true
 			break
