@@ -1198,6 +1198,10 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	schema, err := InferSchema(TestStruct{})
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	// Finish declaring the ambigous range element types.
 	for idx, typ := range map[int]FieldType{
 		11: DateFieldType,
@@ -1209,10 +1213,6 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 		} else {
 			schema[idx].RangeElementType = &RangeElementType{Type: typ}
 		}
-	}
-
-	if err != nil {
-		t.Fatal(err)
 	}
 
 	ctx := context.Background()
