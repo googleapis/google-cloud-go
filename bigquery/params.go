@@ -350,10 +350,14 @@ func paramType(t reflect.Type, v reflect.Value) (*bq.QueryParameterType, error) 
 		return jsonParamType, nil
 	case typeOfRangeValue:
 		iv := v.Interface().(*RangeValue)
-		// at least one of start,end must be populated.  grab the first non-nil value.
+		// In order to autodetect a Range param correctly, at least one of start,end must be populated.
+		// Without it, users must declare typing via using QueryParameterValue.
 		element := iv.Start
 		if element == nil {
 			element = iv.End
+		}
+		if element == nil {
+			return nil, fmt.Errorf("unable to determine range element type from RangeValue without a non-nil start or end value")
 		}
 		elet, err := paramType(reflect.TypeOf(element), reflect.ValueOf(element))
 		if err != nil {

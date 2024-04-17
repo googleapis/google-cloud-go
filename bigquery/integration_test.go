@@ -1160,19 +1160,20 @@ type SubTestStruct struct {
 }
 
 type TestStruct struct {
-	Name      string
-	Bytes     []byte
-	Integer   int64
-	Float     float64
-	Boolean   bool
-	Timestamp time.Time
-	Date      civil.Date
-	Time      civil.Time
-	DateTime  civil.DateTime
-	Numeric   *big.Rat
-	Geography string
-	RangeDate *RangeValue `bigquery:"rangedate"` //TODO: remove tag when field normalization works
-
+	Name           string
+	Bytes          []byte
+	Integer        int64
+	Float          float64
+	Boolean        bool
+	Timestamp      time.Time
+	Date           civil.Date
+	Time           civil.Time
+	DateTime       civil.DateTime
+	Numeric        *big.Rat
+	Geography      string
+	RangeDate      *RangeValue `bigquery:"rangedate"` //TODO: remove tags when field normalization works
+	RangeDateTime  *RangeValue `bigquery:"rangedatetime"`
+	RangeTimestamp *RangeValue `bigquery:"rangetimestamp"`
 	StringArray    []string
 	IntegerArray   []int64
 	FloatArray     []float64
@@ -1197,12 +1198,19 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 		t.Skip("Integration tests skipped")
 	}
 	schema, err := InferSchema(TestStruct{})
-	// Finish declaring the ambigous range element type.
-	if schema[11].Type != RangeFieldType {
-		t.Fatalf("mismatch in expected RANGE element in schema")
-	} else {
-		schema[11].RangeElementType = &RangeElementType{Type: DateFieldType}
+	// Finish declaring the ambigous range element types.
+	for idx, typ := range map[int]FieldType{
+		11: DateFieldType,
+		12: DateTimeFieldType,
+		13: TimestampFieldType,
+	} {
+		if schema[idx].Type != RangeFieldType {
+			t.Fatalf("mismatch in expected RANGE element in schema field %d", idx)
+		} else {
+			schema[idx].RangeElementType = &RangeElementType{Type: typ}
+		}
 	}
+
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1222,6 +1230,14 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 	g := "POINT(-122.350220 47.649154)"
 	g2 := "POINT(-122.0836791 37.421827)"
 	rangedate := &RangeValue{Start: civil.Date{Year: 2024, Month: 04, Day: 11}}
+	rangedatetime := &RangeValue{
+		End: civil.DateTime{
+			Date: civil.Date{Year: 2024, Month: 04, Day: 11},
+			Time: civil.Time{Hour: 2, Minute: 4, Second: 6, Nanosecond: 0}},
+	}
+	rangetimestamp := &RangeValue{
+		Start: time.Date(2016, 3, 20, 15, 4, 5, 6000, time.UTC),
+	}
 
 	// Populate the table.
 	ins := table.Inserter()
@@ -1239,6 +1255,8 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			big.NewRat(57, 100),
 			g,
 			rangedate,
+			rangedatetime,
+			rangetimestamp,
 			[]string{"a", "b"},
 			[]int64{1, 2},
 			[]float64{1, 1.41},
@@ -1264,17 +1282,19 @@ func TestIntegration_InsertAndReadStructs(t *testing.T) {
 			},
 		},
 		{
-			Name:      "b",
-			Bytes:     []byte("byte2"),
-			Integer:   24,
-			Float:     4.13,
-			Boolean:   false,
-			Timestamp: ts,
-			Date:      d,
-			Time:      tm,
-			DateTime:  dtm,
-			Numeric:   big.NewRat(4499, 10000),
-			RangeDate: rangedate,
+			Name:           "b",
+			Bytes:          []byte("byte2"),
+			Integer:        24,
+			Float:          4.13,
+			Boolean:        false,
+			Timestamp:      ts,
+			Date:           d,
+			Time:           tm,
+			DateTime:       dtm,
+			Numeric:        big.NewRat(4499, 10000),
+			RangeDate:      rangedate,
+			RangeDateTime:  rangedatetime,
+			RangeTimestamp: rangetimestamp,
 		},
 	}
 	var savers []*StructSaver

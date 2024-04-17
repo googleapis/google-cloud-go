@@ -486,7 +486,7 @@ func TestParamType(t *testing.T) {
 }
 func TestParamTypeErrors(t *testing.T) {
 	for _, val := range []interface{}{
-		nil, uint(0), new([]int), make(chan int), map[int]interface{}{},
+		nil, uint(0), new([]int), make(chan int), map[int]interface{}{}, &RangeValue{},
 	} {
 		_, err := paramType(reflect.TypeOf(val), reflect.ValueOf(val))
 		if err == nil {
