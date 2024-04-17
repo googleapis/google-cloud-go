@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
@@ -33,8 +34,10 @@ import (
 )
 
 const (
-	prodAddr  = "datastore.googleapis.com:443"
-	userAgent = "gcloud-golang-datastore/20160401"
+	prodEndpointTemplate = "datastore.UNIVERSE_DOMAIN:443"
+	prodUniverseDomain   = "googleapis.com"
+	prodMtlsAddr         = "datastore.mtls.googleapis.com:443"
+	userAgent            = "gcloud-golang-datastore/20160401"
 )
 
 // ScopeDatastore grants permissions to view and/or manage datastore entities
@@ -102,7 +105,9 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 	// If the emulator is available, dial it without passing any credentials.
 	if addr := os.Getenv("DATASTORE_EMULATOR_HOST"); addr != "" {
 		o = []option.ClientOption{
-			option.WithEndpoint(addr),
+			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
+			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
+			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 		}
@@ -114,7 +119,9 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 		}
 	} else {
 		o = []option.ClientOption{
-			option.WithEndpoint(prodAddr),
+			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
+			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
+			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
 			option.WithScopes(ScopeDatastore),
 			option.WithUserAgent(userAgent),
 		}
@@ -504,10 +511,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		ReadOptions: opts,
 	}
 	resp, err := c.client.Lookup(ctx, req)
-	txnID := resp.Transaction
+
 	if err != nil {
-		return txnID, err
+		return nil, err
 	}
+	txnID := resp.Transaction
 	found := resp.Found
 	missing := resp.Missing
 	// Upper bound 1000 iterations to prevent infinite loop. This matches the max

@@ -159,7 +159,7 @@ func (SolutionType) EnumDescriptor() ([]byte, []int) {
 }
 
 // Tiers of search features. Different tiers might have different
-// pricing. To learn more, please check the pricing documentation.
+// pricing. To learn more, check the pricing documentation.
 type SearchTier int32
 
 const (

@@ -98,11 +98,12 @@ type FallbackRoutingMode int32
 const (
 	// Not used.
 	FallbackRoutingMode_FALLBACK_ROUTING_MODE_UNSPECIFIED FallbackRoutingMode = 0
-	// Indicates the `TRAFFIC_UNAWARE` [google.maps.routing.v2.RoutingPreference]
-	// was used to compute the response.
+	// Indicates the `TRAFFIC_UNAWARE`
+	// [`RoutingPreference`][google.maps.routing.v2.RoutingPreference] was used to
+	// compute the response.
 	FallbackRoutingMode_FALLBACK_TRAFFIC_UNAWARE FallbackRoutingMode = 1
 	// Indicates the `TRAFFIC_AWARE`
-	// [RoutingPreference][google.maps.routing.v2.RoutingPreference] was used to
+	// [`RoutingPreference`][google.maps.routing.v2.RoutingPreference] was used to
 	// compute the response.
 	FallbackRoutingMode_FALLBACK_TRAFFIC_AWARE FallbackRoutingMode = 2
 )

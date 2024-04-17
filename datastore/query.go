@@ -27,9 +27,9 @@ import (
 
 	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
-	wrapperspb "github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type operator string
@@ -825,13 +825,23 @@ func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{
 	return res, errFieldMismatch
 }
 
+
 // Run runs the given query in the given context
 func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
-	return c.RunWithOptions(ctx, q)
+  ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+	defer func() { trace.EndSpan(ctx, it.err) }()
+	return c.run(ctx, q)
 }
 
-// Run runs the given query in the given context with the provided options
+// RunWithOptions runs the given query in the given context with the provided options
 func (c *Client) RunWithOptions(ctx context.Context, q *Query, opts ...RunOption) *Iterator {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunWithOptions")
+	defer func() { trace.EndSpan(ctx, it.err) }()
+	return c.run(ctx, q, opts)
+}
+
+// run runs the given query in the given context with the provided options
+func (c *Client) run(ctx context.Context, q *Query, opts ...RunOption) *Iterator {
 	if q.err != nil {
 		return &Iterator{err: q.err}
 	}

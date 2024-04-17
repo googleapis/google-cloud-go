@@ -22,7 +22,6 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/fields"
-	"github.com/golang/protobuf/ptypes"
 )
 
 func setFromProtoValue(x interface{}, vproto *pb.Value, c *Client) error {
@@ -66,11 +65,10 @@ func setReflectFromProtoValue(v reflect.Value, vproto *pb.Value, c *Client) erro
 		if !ok {
 			return typeErr()
 		}
-		t, err := ptypes.Timestamp(x.TimestampValue)
-		if err != nil {
+		if err := x.TimestampValue.CheckValid(); err != nil {
 			return err
 		}
-		v.Set(reflect.ValueOf(t))
+		v.Set(reflect.ValueOf(x.TimestampValue.AsTime()))
 		return nil
 
 	case typeOfProtoTimestamp:
@@ -357,7 +355,10 @@ func createFromProtoValue(vproto *pb.Value, c *Client) (interface{}, error) {
 	case *pb.Value_DoubleValue:
 		return v.DoubleValue, nil
 	case *pb.Value_TimestampValue:
-		return ptypes.Timestamp(v.TimestampValue)
+		if err := v.TimestampValue.CheckValid(); err != nil {
+			return nil, err
+		}
+		return v.TimestampValue.AsTime(), nil
 	case *pb.Value_StringValue:
 		return v.StringValue, nil
 	case *pb.Value_BytesValue:

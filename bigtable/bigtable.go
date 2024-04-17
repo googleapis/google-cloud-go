@@ -85,9 +85,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// Set the max size to correspond to server-side limits.
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
-	// Attempts direct access to spanner service over gRPC to improve throughput,
-	// whether the attempt is allowed is totally controlled by service owner.
-	o = append(o, internaloption.EnableDirectPath(true))
+
+	// Allow non-default service account in DirectPath.
+	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
@@ -126,6 +126,22 @@ func init() {
 	for _, code := range idempotentRetryCodes {
 		isIdempotentRetryCode[code] = true
 	}
+}
+
+// Convert error to grpc status error
+func convertToGrpcStatusErr(err error) error {
+	if err != nil {
+		if errStatus, ok := status.FromError(err); ok {
+			return status.Error(errStatus.Code(), errStatus.Message())
+		}
+
+		ctxStatus := status.FromContextError(err)
+		if ctxStatus.Code() != codes.Unknown {
+			return status.Error(ctxStatus.Code(), ctxStatus.Message())
+		}
+	}
+
+	return err
 }
 
 func (c *Client) fullTableName(table string) string {
@@ -173,6 +189,7 @@ func (c *Client) Open(table string) *Table {
 // ReadRows reads rows from a table. f is called for each row.
 // If f returns false, the stream is shut down and ReadRows returns.
 // f owns its argument, and f is called serially in order by row key.
+// f will be executed in the same Go routine as the caller.
 //
 // By default, the yielded rows will contain all values in all cells.
 // Use RowFilter to limit the cells returned.
@@ -285,19 +302,7 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		return err
 	}, retryOptions...)
 
-	// Convert error to grpc status error
-	if err != nil {
-		if errStatus, ok := status.FromError(err); ok {
-			return status.Error(errStatus.Code(), errStatus.Message())
-		}
-
-		ctxStatus := status.FromContextError(err)
-		if ctxStatus.Code() != codes.Unknown {
-			return status.Error(ctxStatus.Code(), ctxStatus.Message())
-		}
-	}
-
-	return err
+	return convertToGrpcStatusErr(err)
 }
 
 // ReadRow is a convenience implementation of a single-row reader.
@@ -839,7 +844,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 		if err == nil {
 			after(res)
 		}
-		return err
+		return convertToGrpcStatusErr(err)
 	}
 
 	req := &btpb.CheckAndMutateRowRequest{
@@ -872,7 +877,7 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	if err == nil {
 		after(cmRes)
 	}
-	return err
+	return convertToGrpcStatusErr(err)
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -1259,5 +1264,5 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 		}
 		return nil
 	}, retryOptions...)
-	return sampledRowKeys, err
+	return sampledRowKeys, convertToGrpcStatusErr(err)
 }
