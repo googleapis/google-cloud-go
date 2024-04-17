@@ -376,6 +376,15 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 // Due to lack of unique native Go type for GEOGRAPHY, there is no schema
 // inference to GEOGRAPHY at this time.
 //
+// This package also provides some value types for expressing the corresponding SQL types.
+//
+// INTERVAL		*IntervalValue
+// RANGE    	*RangeValue
+//
+// In the case of RANGE types, a RANGE represents a continuous set of values of a given
+// element type (DATE, DATETIME, or TIMESTAMP).  InferSchema does not attempt to determine
+// the element type, as it uses generic Value types to denote the start/end of the range.
+//
 // Nullable fields are inferred from the NullXXX types, declared in this package:
 //
 //	STRING      NullString
@@ -496,6 +505,12 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable, json bool) (*
 		// larger precision of BIGNUMERIC need to manipulate the inferred
 		// schema.
 		return &FieldSchema{Required: !nullable, Type: NumericFieldType}, nil
+	case typeOfIntervalValue:
+		return &FieldSchema{Required: !nullable, Type: IntervalFieldType}, nil
+	case typeOfRangeValue:
+		// We can't fully infer the element type of a range without additional
+		// information, and don't set the RangeElementType when inferred.
+		return &FieldSchema{Required: !nullable, Type: RangeFieldType}, nil
 	}
 	if ft := nullableFieldType(rt); ft != "" {
 		return &FieldSchema{Required: false, Type: ft}, nil
