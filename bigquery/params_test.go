@@ -673,7 +673,7 @@ func TestIntegration_OtherParam(t *testing.T) {
 			},
 			&RangeValue{
 				Start: time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)),
-				End:   NullTimestamp{},
+				End:   nil,
 			},
 		},
 	} {
