@@ -133,6 +133,7 @@ deep-remove-regex:
   - /iam/apiv2/
   - /iam/credentials/apiv1/
   - /iap/apiv1/
+  - /identitytoolkit/apiv2/
   - /ids/apiv1/
   # START snippets
   - /internal/generated/snippets/accessapproval/apiv1/
@@ -262,6 +263,7 @@ deep-remove-regex:
   - /internal/generated/snippets/iam/apiv2/
   - /internal/generated/snippets/iam/credentials/apiv1/
   - /internal/generated/snippets/iap/apiv1/
+  - /internal/generated/snippets/identitytoolkit/apiv2/
   - /internal/generated/snippets/ids/apiv1/
   - /internal/generated/snippets/iot/apiv1/
   - /internal/generated/snippets/kms/apiv1/
@@ -840,6 +842,8 @@ deep-copy-regex:
   - source: /google/iam/credentials/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/iap/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/identitytoolkit/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/ids/v1/cloud.google.com/go
     dest: /

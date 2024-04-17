@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/auth/oauth2adapt/v0.1.0...auth/oauth2adapt/v0.2.0) (2024-04-16)
+
+
+### Features
+
+* **auth/oauth2adapt:** Add helpers for working with credentials types ([#9694](https://github.com/googleapis/google-cloud-go/issues/9694)) ([cf33b55](https://github.com/googleapis/google-cloud-go/commit/cf33b5514423a2ac5c2a323a1cd99aac34fd4233))
+
+
+### Bug Fixes
+
+* **auth/oauth2adapt:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## 0.1.0 (2023-10-19)
 
 
@@ -12,4 +24,3 @@
 ### Bug Fixes
 
 * **auth/oauth2adapt:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
-

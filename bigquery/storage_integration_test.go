@@ -37,7 +37,7 @@ func TestIntegration_StorageReadBasicTypes(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	initQueryParameterTestCases()
+	initQueryParameterTestCases(false)
 
 	for _, c := range queryParameterTestCases {
 		q := storageOptimizedClient.Query(c.query)

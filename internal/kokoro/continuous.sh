@@ -50,6 +50,7 @@ export GCLOUD_TESTS_GOLANG_AWS_ROLE_ID="arn:aws:iam::$GCLOUD_TESTS_GOLANG_AWS_AC
 export GCLOUD_TESTS_GOLANG_AUDIENCE_OIDC=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aud-oidc)
 export GCLOUD_TESTS_GOLANG_AUDIENCE_AWS=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aud-aws)
 export GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES="1"
+export GOOGLE_API_GO_EXPERIMENTAL_ENABLE_NEW_AUTH_LIB="true"
 
 # Bigtable integration tests expect an existing instance and cluster
 #  ❯ cbt createinstance gc-bt-it-instance gc-bt-it-instance \
