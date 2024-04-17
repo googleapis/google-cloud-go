@@ -2901,11 +2901,10 @@ func TestIntegration_ExportDataStatistics(t *testing.T) {
 				break
 			}
 			if err != nil {
-				t.Logf("failed to delete bucket: %v", err)
+				t.Logf("failed to iterate through bucket %q: %v", bucketName, err)
 				continue
 			}
 			err = storageClient.Bucket(bucketName).Object(obj.Name).Delete(ctx)
-			t.Logf("deleted object %s: %v", obj.Name, err)
 		}
 	}()
 
