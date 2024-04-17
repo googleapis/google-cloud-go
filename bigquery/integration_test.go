@@ -2142,17 +2142,19 @@ func TestIntegration_QuerySessionSupport(t *testing.T) {
 
 }
 
+type queryParameterTestCase struct {
+	name       string
+	query      string
+	parameters []QueryParameter
+	wantRow    []Value
+	wantConfig interface{}
+}
+
 var (
-	queryParameterTestCases = []struct {
-		name       string
-		query      string
-		parameters []QueryParameter
-		wantRow    []Value
-		wantConfig interface{}
-	}{}
+	queryParameterTestCases = []queryParameterTestCase{}
 )
 
-func initQueryParameterTestCases() {
+func initQueryParameterTestCases(includeRangeCases bool) {
 	d := civil.Date{Year: 2016, Month: 3, Day: 20}
 	tm := civil.Time{Hour: 15, Minute: 04, Second: 05, Nanosecond: 3008}
 	rtm := tm
@@ -2179,13 +2181,7 @@ func initQueryParameterTestCases() {
 		SubStructArray []ss
 	}
 
-	queryParameterTestCases = []struct {
-		name       string
-		query      string
-		parameters []QueryParameter
-		wantRow    []Value
-		wantConfig interface{}
-	}{
+	queryParameterTestCases = []queryParameterTestCase{
 		{
 			"Int64Param",
 			"SELECT @val",
@@ -2325,46 +2321,6 @@ func initQueryParameterTestCases() {
 			bigRat,
 		},
 		{
-			"RangeUnboundedEnd",
-			"SELECT @val",
-			[]QueryParameter{
-				{
-					Name: "val",
-					Value: &QueryParameterValue{
-						Type: StandardSQLDataType{
-							TypeKind: "RANGE",
-							RangeElementType: &StandardSQLDataType{
-								TypeKind: "TIMESTAMP",
-							},
-						},
-						Value: rangeTimestamp1,
-					},
-				},
-			},
-			[]Value{rangeTimestamp1},
-			rangeTimestamp1,
-		},
-		{
-			"RangeUnboundedStart",
-			"SELECT @val",
-			[]QueryParameter{
-				{
-					Name: "val",
-					Value: &QueryParameterValue{
-						Type: StandardSQLDataType{
-							TypeKind: "RANGE",
-							RangeElementType: &StandardSQLDataType{
-								TypeKind: "TIMESTAMP",
-							},
-						},
-						Value: rangeTimestamp2,
-					},
-				},
-			},
-			[]Value{rangeTimestamp2},
-			rangeTimestamp2,
-		},
-		{
 			"StringArrayExplicitParam",
 			"SELECT @val",
 			[]QueryParameter{
@@ -2492,6 +2448,51 @@ func initQueryParameterTestCases() {
 			},
 		},
 	}
+
+	if includeRangeCases {
+		queryParameterTestCases = append(queryParameterTestCases, []queryParameterTestCase{
+			{
+				"RangeUnboundedEnd",
+				"SELECT @val",
+				[]QueryParameter{
+					{
+						Name: "val",
+						Value: &QueryParameterValue{
+							Type: StandardSQLDataType{
+								TypeKind: "RANGE",
+								RangeElementType: &StandardSQLDataType{
+									TypeKind: "TIMESTAMP",
+								},
+							},
+							Value: rangeTimestamp1,
+						},
+					},
+				},
+				[]Value{rangeTimestamp1},
+				rangeTimestamp1,
+			},
+			{
+				"RangeUnboundedStart",
+				"SELECT @val",
+				[]QueryParameter{
+					{
+						Name: "val",
+						Value: &QueryParameterValue{
+							Type: StandardSQLDataType{
+								TypeKind: "RANGE",
+								RangeElementType: &StandardSQLDataType{
+									TypeKind: "TIMESTAMP",
+								},
+							},
+							Value: rangeTimestamp2,
+						},
+					},
+				},
+				[]Value{rangeTimestamp2},
+				rangeTimestamp2,
+			},
+		}...)
+	}
 }
 
 func TestIntegration_QueryParameters(t *testing.T) {
@@ -2500,7 +2501,7 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	initQueryParameterTestCases()
+	initQueryParameterTestCases(true)
 
 	for _, tc := range queryParameterTestCases {
 		t.Run(tc.name, func(t *testing.T) {
