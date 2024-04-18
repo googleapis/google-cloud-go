@@ -105,9 +105,7 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 	// If the emulator is available, dial it without passing any credentials.
 	if addr := os.Getenv("DATASTORE_EMULATOR_HOST"); addr != "" {
 		o = []option.ClientOption{
-			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
-			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
-			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
+			option.WithEndpoint(addr),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 		}
