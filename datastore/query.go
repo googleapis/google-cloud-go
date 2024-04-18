@@ -825,19 +825,18 @@ func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{
 	return res, errFieldMismatch
 }
 
-
 // Run runs the given query in the given context
-func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
-  ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+func (c *Client) Run(ctx context.Context, q *Query) (it *Iterator) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
 	defer func() { trace.EndSpan(ctx, it.err) }()
 	return c.run(ctx, q)
 }
 
 // RunWithOptions runs the given query in the given context with the provided options
-func (c *Client) RunWithOptions(ctx context.Context, q *Query, opts ...RunOption) *Iterator {
+func (c *Client) RunWithOptions(ctx context.Context, q *Query, opts ...RunOption) (it *Iterator) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunWithOptions")
 	defer func() { trace.EndSpan(ctx, it.err) }()
-	return c.run(ctx, q, opts)
+	return c.run(ctx, q, opts...)
 }
 
 // run runs the given query in the given context with the provided options
