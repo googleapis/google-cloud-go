@@ -635,6 +635,9 @@ type RunOption interface {
 }
 
 // ExplainOptions is explain options for the query.
+//
+// Query Explain feature is still in preview and not yet publicly available.
+// Pre-GA features might have limited support and can change at any time.
 type ExplainOptions struct {
 	// When false (the default), the query will be planned, returning only
 	// metrics from the planning stages.
