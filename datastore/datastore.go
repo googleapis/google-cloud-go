@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
@@ -33,8 +34,10 @@ import (
 )
 
 const (
-	prodAddr  = "datastore.googleapis.com:443"
-	userAgent = "gcloud-golang-datastore/20160401"
+	prodEndpointTemplate = "datastore.UNIVERSE_DOMAIN:443"
+	prodUniverseDomain   = "googleapis.com"
+	prodMtlsAddr         = "datastore.mtls.googleapis.com:443"
+	userAgent            = "gcloud-golang-datastore/20160401"
 )
 
 // ScopeDatastore grants permissions to view and/or manage datastore entities
@@ -114,7 +117,9 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 		}
 	} else {
 		o = []option.ClientOption{
-			option.WithEndpoint(prodAddr),
+			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
+			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
+			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
 			option.WithScopes(ScopeDatastore),
 			option.WithUserAgent(userAgent),
 		}
