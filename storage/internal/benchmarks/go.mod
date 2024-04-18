@@ -4,17 +4,17 @@ go 1.20
 
 require (
 	cloud.google.com/go/storage v1.40.0
-	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.21.0
-	github.com/cloudprober/cloudprober v0.12.8
+	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace v1.22.0
+	github.com/cloudprober/cloudprober v0.13.3
 	github.com/google/uuid v1.6.0
-	go.opentelemetry.io/contrib/detectors/gcp v1.24.0
+	go.opentelemetry.io/contrib/detectors/gcp v1.25.0
 	go.opentelemetry.io/otel v1.24.0
 	go.opentelemetry.io/otel/sdk v1.24.0
 	go.opentelemetry.io/otel/trace v1.24.0
-	golang.org/x/net v0.22.0
-	golang.org/x/sync v0.6.0
+	golang.org/x/net v0.24.0
+	golang.org/x/sync v0.7.0
 	google.golang.org/api v0.174.0
-	google.golang.org/grpc v1.63.0
+	google.golang.org/grpc v1.63.2
 	google.golang.org/protobuf v1.33.0
 )
 

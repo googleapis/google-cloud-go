@@ -1,8 +1,8 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 cloud.google.com/go v0.112.2 h1:ZaGT6LiG7dBzi6zNOvVZwacaXlmf3lRqnC4DQzqyRQw=
 cloud.google.com/go v0.112.2/go.mod h1:iEqjp//KquGIJV/m+Pk3xecgKNhV+ry+vVTsy4TbDms=
-cloud.google.com/go/aiplatform v1.66.0 h1:bbFYY4JInclG10czRFUYj2rjD+obhh3Gi9zVlyoMgEc=
-cloud.google.com/go/aiplatform v1.66.0/go.mod h1:bPQS0UjaXaTAq57UgP3XWDCtYFOIbXXpkMsl6uP4JAc=
+cloud.google.com/go/aiplatform v1.67.0 h1:YWeqD4BjYwrmY4fa+isGcw0P81lJ3dKVxbWxdBchoiU=
+cloud.google.com/go/aiplatform v1.67.0/go.mod h1:s/sJ6btBEr6bKnrNWdK9ZgHCvwbZNdP90b3DDtxxw+Y=
 cloud.google.com/go/auth v0.2.1 h1:RMl6PI2MH1Qc3CM7XNJJHGwbC4WHQppSAjL0Cvu/M/g=
 cloud.google.com/go/auth v0.2.1/go.mod h1:khQRBNrvNoHiHhV1iu2x8fSnlNbCaVHilznW5MAI5GY=
 cloud.google.com/go/auth/oauth2adapt v0.2.1 h1:VSPmMmUlT8CkIZ2PzD9AlLN+R3+D1clXMWHHa6vG/Ag=
