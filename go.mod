@@ -8,9 +8,9 @@ require (
 	github.com/google/martian/v3 v3.3.3
 	github.com/googleapis/gax-go/v2 v2.12.3
 	go.opencensus.io v0.24.0
-	go.opentelemetry.io/otel v1.24.0
-	go.opentelemetry.io/otel/sdk v1.24.0
-	go.opentelemetry.io/otel/trace v1.24.0
+	go.opentelemetry.io/otel v1.25.0
+	go.opentelemetry.io/otel/sdk v1.25.0
+	go.opentelemetry.io/otel/trace v1.25.0
 	golang.org/x/oauth2 v0.19.0
 	google.golang.org/api v0.174.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda

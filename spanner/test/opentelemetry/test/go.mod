@@ -10,9 +10,9 @@ replace (
 require (
 	cloud.google.com/go v0.112.2
 	cloud.google.com/go/spanner v1.60.0
-	go.opentelemetry.io/otel v1.24.0
-	go.opentelemetry.io/otel/sdk v1.24.0
-	go.opentelemetry.io/otel/sdk/metric v1.23.1
+	go.opentelemetry.io/otel v1.25.0
+	go.opentelemetry.io/otel/sdk v1.25.0
+	go.opentelemetry.io/otel/sdk/metric v1.25.0
 	google.golang.org/api v0.174.0
 	google.golang.org/protobuf v1.33.0
 )
