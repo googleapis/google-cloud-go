@@ -842,7 +842,7 @@ func (c *Client) RunWithOptions(ctx context.Context, q *Query, opts ...RunOption
 // run runs the given query in the given context with the provided options
 func (c *Client) run(ctx context.Context, q *Query, opts ...RunOption) *Iterator {
 	if q.err != nil {
-		return &Iterator{err: q.err}
+		return &Iterator{ctx: ctx, err: q.err}
 	}
 	t := &Iterator{
 		ctx:          ctx,
