@@ -5,7 +5,7 @@ go 1.19
 require (
 	cloud.google.com/go/translate v1.10.2
 	google.golang.org/api v0.174.0
-	google.golang.org/grpc v1.63.0
+	google.golang.org/grpc v1.63.2
 )
 
 require (
