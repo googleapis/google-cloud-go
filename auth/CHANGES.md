@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/auth/v0.2.0...auth/v0.2.1) (2024-04-18)
+
+
+### Bug Fixes
+
+* **auth:** Default gRPC token type to Bearer if not set ([#9800](https://github.com/googleapis/google-cloud-go/issues/9800)) ([5284066](https://github.com/googleapis/google-cloud-go/commit/5284066670b6fe65d79089cfe0199c9660f87fc7))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.1.1...auth/v0.2.0) (2024-04-15)
 
 ### Breaking Changes
