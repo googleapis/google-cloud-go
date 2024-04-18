@@ -17,6 +17,7 @@ package grpctransport
 import (
 	"context"
 	"errors"
+	"log"
 	"net"
 	"testing"
 
@@ -83,7 +84,7 @@ func TestDial_FailsValidation(t *testing.T) {
 			opts: &Options{
 				DisableAuthentication: true,
 				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
-					TokenProvider: staticTP("fakeToken"),
+					TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 				}),
 			},
 		},
@@ -272,6 +273,44 @@ func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
 	}
 }
 
+func TestGrpcCredentialsProvider_TokenType(t *testing.T) {
+	tests := []struct {
+		name string
+		tok  *auth.Token
+		want string
+	}{
+		{
+			name: "type set",
+			tok: &auth.Token{
+				Value: "token",
+				Type:  "Basic",
+			},
+			want: "Basic token",
+		},
+		{
+			name: "type set",
+			tok: &auth.Token{
+				Value: "token",
+			},
+			want: "Bearer token",
+		},
+	}
+	for _, tc := range tests {
+		cp := grpcCredentialsProvider{
+			creds: &auth.Credentials{
+				TokenProvider: &staticTP{tok: tc.tok},
+			},
+		}
+		m, err := cp.GetRequestMetadata(context.Background(), "")
+		if err != nil {
+			log.Fatalf("cp.GetRequestMetadata() = %v, want nil", err)
+		}
+		if got := m["authorization"]; got != tc.want {
+			t.Fatalf("got %q, want %q", got, tc.want)
+		}
+	}
+}
+
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
@@ -329,12 +368,12 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	}
 }
 
-type staticTP string
+type staticTP struct {
+	tok *auth.Token
+}
 
-func (tp staticTP) Token(context.Context) (*auth.Token, error) {
-	return &auth.Token{
-		Value: string(tp),
-	}, nil
+func (tp *staticTP) Token(context.Context) (*auth.Token, error) {
+	return tp.tok, nil
 }
 
 type fakeEchoService struct {
