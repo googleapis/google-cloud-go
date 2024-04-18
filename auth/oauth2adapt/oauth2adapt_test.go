@@ -29,12 +29,12 @@ import (
 func TestTokenProviderFromTokenSource(t *testing.T) {
 	tests := []struct {
 		name  string
-		token string
+		token *oauth2.Token
 		err   error
 	}{
 		{
 			name:  "working token",
-			token: "fakeToken",
+			token: &oauth2.Token{AccessToken: "fakeToken", TokenType: "Basic"},
 			err:   nil,
 		},
 		{
@@ -72,8 +72,11 @@ func TestTokenProviderFromTokenSource(t *testing.T) {
 				}
 				return
 			}
-			if tok.Value != tt.token {
-				t.Errorf("got %q, want %q", tok.Value, tt.token)
+			if tok.Value != tt.token.AccessToken {
+				t.Errorf("got %q, want %q", tok.Value, tt.token.AccessToken)
+			}
+			if tok.Type != tt.token.TokenType {
+				t.Errorf("got %q, want %q", tok.Type, tt.token.TokenType)
 			}
 		})
 	}
@@ -82,13 +85,16 @@ func TestTokenProviderFromTokenSource(t *testing.T) {
 func TestTokenSourceFromTokenProvider(t *testing.T) {
 	tests := []struct {
 		name  string
-		token string
+		token *auth.Token
 		err   error
 	}{
 		{
-			name:  "working token",
-			token: "fakeToken",
-			err:   nil,
+			name: "working token",
+			token: &auth.Token{
+				Value: "fakeToken",
+				Type:  "Basic",
+			},
+			err: nil,
 		},
 		{
 			name: "coverts err",
@@ -134,8 +140,11 @@ func TestTokenSourceFromTokenProvider(t *testing.T) {
 				}
 				return
 			}
-			if tok.AccessToken != tt.token {
-				t.Errorf("got %q, want %q", tok.AccessToken, tt.token)
+			if tok.AccessToken != tt.token.Value {
+				t.Errorf("got %q, want %q", tok.AccessToken, tt.token.Value)
+			}
+			if tok.TokenType != tt.token.Type {
+				t.Errorf("got %q, want %q", tok.TokenType, tt.token.Type)
 			}
 		})
 	}
@@ -145,7 +154,7 @@ func TestAuthCredentialsFromOauth2Credentials(t *testing.T) {
 	ctx := context.Background()
 	inputCreds := &google.Credentials{
 		ProjectID:   "test_project",
-		TokenSource: tokenSource{token: "token"},
+		TokenSource: tokenSource{token: &oauth2.Token{AccessToken: "token"}},
 		JSON:        []byte("json"),
 		UniverseDomainProvider: func() (string, error) {
 			return "domain", nil
@@ -197,7 +206,7 @@ func TestOauth2CredentialsFromAuthCredentials(t *testing.T) {
 		ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
 			return "project", nil
 		}),
-		TokenProvider: tokenProvider{token: "token"},
+		TokenProvider: tokenProvider{token: &auth.Token{Value: "token"}},
 		JSON:          []byte("json"),
 		UniverseDomainProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
 			return "domain", nil
@@ -244,7 +253,7 @@ func TestOauth2CredentialsFromAuthCredentials(t *testing.T) {
 }
 
 type tokenSource struct {
-	token string
+	token *oauth2.Token
 	err   error
 }
 
@@ -253,12 +262,13 @@ func (ts tokenSource) Token() (*oauth2.Token, error) {
 		return nil, ts.err
 	}
 	return &oauth2.Token{
-		AccessToken: ts.token,
+		AccessToken: ts.token.AccessToken,
+		TokenType:   ts.token.TokenType,
 	}, nil
 }
 
 type tokenProvider struct {
-	token string
+	token *auth.Token
 	err   error
 }
 
@@ -267,6 +277,7 @@ func (tp tokenProvider) Token(context.Context) (*auth.Token, error) {
 		return nil, tp.err
 	}
 	return &auth.Token{
-		Value: tp.token,
+		Value: tp.token.Value,
+		Type:  tp.token.Type,
 	}, nil
 }
