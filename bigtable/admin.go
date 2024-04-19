@@ -250,9 +250,13 @@ type AutomatedBackupPolicy struct {
 	Frequency       optional.Duration
 }
 
-var DisableAutomatedBackupPolicy = AutomatedBackupPolicy{
+var disableAutomatedBackupPolicy = AutomatedBackupPolicy{
 	RetentionPeriod: time.Duration(0),
 	Frequency:       time.Duration(0),
+}
+
+func DisableAutomatedBackupPolicy() AutomatedBackupPolicy {
+	return disableAutomatedBackupPolicy
 }
 
 // Family represents a column family with its optional GC policy and value type.
@@ -283,7 +287,7 @@ type TableConf struct {
 // CreateTable creates a new table in the instance.
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, ChangeStreamRetention: nil, DeletionProtection: None, AutomatedBackupPolicy: nil})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, ChangeStreamRetention: nil, DeletionProtection: None})
 }
 
 // CreatePresplitTable creates a new table in the instance.
@@ -292,7 +296,7 @@ func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 // spanning the key ranges: [, s1), [s1, s2), [s2, ).
 // This method may return before the table's creation is complete.
 func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string) error {
-	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, ChangeStreamRetention: nil, DeletionProtection: None, AutomatedBackupPolicy: nil})
+	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, ChangeStreamRetention: nil, DeletionProtection: None})
 }
 
 // CreateTableFromConf creates a new table in the instance from the given configuration.
@@ -317,10 +321,10 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 		tbl.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
 		tbl.ChangeStreamConfig.RetentionPeriod = durationpb.New(conf.ChangeStreamRetention.(time.Duration))
 	}
-	if conf.AutomatedBackupPolicy != nil && *conf.AutomatedBackupPolicy != DisableAutomatedBackupPolicy {
+	if conf.AutomatedBackupPolicy != nil && *conf.AutomatedBackupPolicy != disableAutomatedBackupPolicy {
 		// Create Automated Backup Policy
-		if (conf.AutomatedBackupPolicy.Frequency == nil && conf.AutomatedBackupPolicy.RetentionPeriod != nil) ||
-			(conf.AutomatedBackupPolicy.Frequency != nil && conf.AutomatedBackupPolicy.RetentionPeriod == nil) {
+		if (conf.AutomatedBackupPolicy.Frequency != nil || conf.AutomatedBackupPolicy.RetentionPeriod != nil) &&
+			!(conf.AutomatedBackupPolicy.Frequency != nil && conf.AutomatedBackupPolicy.RetentionPeriod != nil) {
 			return errors.New("both Frequency and RetentionPeriod must be specified when creating a table with an AutomatedBackupPolicy")
 		}
 		frequency := durationpb.New(conf.AutomatedBackupPolicy.Frequency.(time.Duration))
@@ -434,7 +438,7 @@ func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, ta
 
 // UpdateTableDisableAutomatedBackupPolicy updates a table to disable automated backups for table ID.
 func (ac *AdminClient) UpdateTableDisableAutomatedBackupPolicy(ctx context.Context, tableID string) error {
-	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, None, nil, &DisableAutomatedBackupPolicy})
+	return ac.updateTableWithConf(ctx, &UpdateTableConf{tableID, None, nil, &disableAutomatedBackupPolicy})
 }
 
 // UpdateTableWithAutomatedBackupPolicy updates a table to with the given table ID and automated backup policy config.
@@ -480,7 +484,7 @@ func (ac *AdminClient) updateTableWithConf(ctx context.Context, conf *UpdateTabl
 
 	if conf.automatedBackupPolicy != nil {
 		// Update Automated Backup Policy
-		if *conf.automatedBackupPolicy == DisableAutomatedBackupPolicy {
+		if *conf.automatedBackupPolicy == disableAutomatedBackupPolicy {
 			// Disable Automated Backup Policy
 			updateMask.Paths = append(updateMask.Paths, "automated_backup_policy")
 		} else if conf.automatedBackupPolicy.Frequency != nil && conf.automatedBackupPolicy.RetentionPeriod != nil {

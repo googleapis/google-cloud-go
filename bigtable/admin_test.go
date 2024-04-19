@@ -282,7 +282,7 @@ func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Disable(t *testing
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	automatedBackupPolicy := DisableAutomatedBackupPolicy
+	automatedBackupPolicy := DisableAutomatedBackupPolicy()
 	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupPolicy: &automatedBackupPolicy})
 	if err != nil {
 		t.Fatalf("CreateTableFromConf failed: %v", err)
@@ -637,7 +637,8 @@ func TestTableAdmin_UpdateTableWithConf_DisableAutomatedBackupPolicy_DisableAbp(
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	err := c.updateTableWithConf(context.Background(), &UpdateTableConf{"My-table", None, nil, &DisableAutomatedBackupPolicy})
+	automatedBackupPolicy := DisableAutomatedBackupPolicy()
+	err := c.updateTableWithConf(context.Background(), &UpdateTableConf{"My-table", None, nil, &automatedBackupPolicy})
 	if err != nil {
 		t.Fatalf("UpdateTableDisableAutomatedBackupPolicy failed: %v", err)
 	}
