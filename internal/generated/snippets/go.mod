@@ -131,7 +131,7 @@ require (
 	cloud.google.com/go/workflows v1.12.5
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.174.0
+	google.golang.org/api v0.175.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
 )
 
@@ -163,7 +163,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.2.1 // indirect
+	cloud.google.com/go/auth v0.2.2 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.1 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
