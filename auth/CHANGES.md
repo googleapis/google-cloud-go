@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/auth/v0.2.1...auth/v0.2.2) (2024-04-19)
+
+
+### Bug Fixes
+
+* **auth:** Add internal opt to skip validation on transports ([#9999](https://github.com/googleapis/google-cloud-go/issues/9999)) ([9e20ef8](https://github.com/googleapis/google-cloud-go/commit/9e20ef89f6287d6bd03b8697d5898dc43b4a77cf)), refs [#9823](https://github.com/googleapis/google-cloud-go/issues/9823)
+* **auth:** Set secure flag for gRPC conn pools ([#10002](https://github.com/googleapis/google-cloud-go/issues/10002)) ([14e3956](https://github.com/googleapis/google-cloud-go/commit/14e3956dfd736399731b5ee8d9b178ae085cf7ba)), refs [#9833](https://github.com/googleapis/google-cloud-go/issues/9833)
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/auth/v0.2.0...auth/v0.2.1) (2024-04-18)
 
 
