@@ -96,6 +96,9 @@ func (o *Options) validate() error {
 	if o == nil {
 		return errors.New("grpctransport: opts required to be non-nil")
 	}
+	if o.InternalOptions != nil && o.InternalOptions.SkipValidation {
+		return nil
+	}
 	hasCreds := o.Credentials != nil ||
 		(o.DetectOpts != nil && len(o.DetectOpts.CredentialsJSON) > 0) ||
 		(o.DetectOpts != nil && o.DetectOpts.CredentialsFile != "")
@@ -151,6 +154,8 @@ type InternalOptions struct {
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
 	DefaultScopes []string
+	// SkipValidation bypasses validation on Options.
+	SkipValidation bool
 }
 
 // Dial returns a GRPCClientConnPool that can be used to communicate with a

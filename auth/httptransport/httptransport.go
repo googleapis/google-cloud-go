@@ -74,6 +74,9 @@ func (o *Options) validate() error {
 	if o == nil {
 		return errors.New("httptransport: opts required to be non-nil")
 	}
+	if o.InternalOptions != nil && o.InternalOptions.SkipValidation {
+		return nil
+	}
 	hasCreds := o.APIKey != "" ||
 		o.Credentials != nil ||
 		(o.DetectOpts != nil && len(o.DetectOpts.CredentialsJSON) > 0) ||
@@ -131,6 +134,8 @@ type InternalOptions struct {
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
 	DefaultScopes []string
+	// SkipValidation bypasses validation on Options.
+	SkipValidation bool
 }
 
 // AddAuthorizationMiddleware adds a middleware to the provided client's
