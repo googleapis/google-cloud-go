@@ -9,7 +9,7 @@ require (
 
 require (
 	cloud.google.com/go/longrunning v0.5.5 // indirect
-	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	google.golang.org/api v0.174.0 // indirect
