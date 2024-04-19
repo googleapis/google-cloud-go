@@ -5,7 +5,7 @@ go 1.19
 require (
 	cloud.google.com/go v0.112.2
 	github.com/googleapis/gax-go/v2 v2.12.3
-	google.golang.org/api v0.174.0
+	google.golang.org/api v0.175.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
 	google.golang.org/genproto/googleapis/api v0.0.0-20240415180920-8c6c420018be
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be
@@ -14,7 +14,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.2.1 // indirect
+	cloud.google.com/go/auth v0.2.2 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.1 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -34,7 +34,7 @@ require (
 	golang.org/x/crypto v0.22.0 // indirect
 	golang.org/x/net v0.24.0 // indirect
 	golang.org/x/oauth2 v0.19.0 // indirect
-	golang.org/x/sync v0.6.0 // indirect
+	golang.org/x/sync v0.7.0 // indirect
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
