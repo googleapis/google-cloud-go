@@ -134,7 +134,8 @@ type InternalOptions struct {
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
 	DefaultScopes []string
-	// SkipValidation bypasses validation on Options.
+	// SkipValidation bypasses validation on Options. It should only be used
+	// internally for clients that needs more control over their transport.
 	SkipValidation bool
 }
 
