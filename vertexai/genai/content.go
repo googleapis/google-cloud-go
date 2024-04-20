@@ -134,3 +134,6 @@ func (c *GenerationConfig) SetTopP(x float32) { c.TopP = &x }
 
 // SetTopK sets the TopK field.
 func (c *GenerationConfig) SetTopK(x int32) { c.TopK = &x }
+
+// SetResponseMimeType sets the ResponseMimeType field.
+func (c *GenerationConfig) SetResponseMimeType(x string) { c.ResponseMimeType = x }
