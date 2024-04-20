@@ -726,7 +726,7 @@ func (c *Client) Run(ctx context.Context, q *Query) (it *Iterator) {
 // run runs the given query in the given context.
 func (c *Client) run(ctx context.Context, q *Query) *Iterator {
 	if q.err != nil {
-		return &Iterator{err: q.err}
+		return &Iterator{ctx: ctx, err: q.err}
 	}
 	t := &Iterator{
 		ctx:          ctx,
