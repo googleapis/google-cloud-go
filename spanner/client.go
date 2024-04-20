@@ -354,7 +354,7 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 		internaloption.AllowNonDefaultServiceAccount(true),
 	}
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
-		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPathXds())
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
