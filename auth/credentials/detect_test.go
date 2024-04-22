@@ -688,6 +688,15 @@ func TestDefaultCredentials_BadFiletype(t *testing.T) {
 	}
 }
 
+func TestDefaultCredentials_BadFileName(t *testing.T) {
+	if _, err := DetectDefault(&DetectOptions{
+		CredentialsFile: "a/bad/filepath",
+		Scopes:          []string{"https://www.googleapis.com/auth/cloud-platform"},
+	}); err == nil {
+		t.Fatal("got nil, want non-nil err")
+	}
+}
+
 func TestDefaultCredentials_Validate(t *testing.T) {
 	tests := []struct {
 		name string
