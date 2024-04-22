@@ -362,6 +362,54 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	return multiArgTypeInvalid, nil
 }
 
+// IgnoreFieldMismatch allows ignoring ErrFieldMismatch error while
+// reading or querying data.
+// WARNING: Ignoring ErrFieldMismatch can cause data loss
+func (c *Client) IgnoreFieldMismatch() {
+	c.readSettings.ignoreFieldMismatchErrors = true
+}
+
+func (c *Client) processFieldMismatchError(err error) error {
+	if c.readSettings == nil || !c.readSettings.ignoreFieldMismatchErrors {
+		return err
+	}
+	return ignoreFieldMismatchErrs(err)
+}
+
+func ignoreFieldMismatchErrs(err error) error {
+	if err == nil {
+		return err
+	}
+
+	multiErr, isMultiErr := err.(MultiError)
+	if isMultiErr {
+		foundErr := false
+		for i, e := range multiErr {
+			multiErr[i] = ignoreFieldMismatchErr(e)
+			if multiErr[i] != nil {
+				foundErr = true
+			}
+		}
+		if !foundErr {
+			return nil
+		}
+		return multiErr
+	}
+
+	return ignoreFieldMismatchErr(err)
+}
+
+func ignoreFieldMismatchErr(err error) error {
+	if err == nil {
+		return err
+	}
+	_, isFieldMismatchErr := err.(*ErrFieldMismatch)
+	if isFieldMismatchErr {
+		return nil
+	}
+	return err
+}
+
 // Close closes the Client. Call Close to clean up resources when done with the
 // Client.
 func (c *Client) Close() error {
@@ -401,9 +449,9 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 	// TODO: Use transaction ID returned by get
 	_, err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
-		return me[0]
+		return c.processFieldMismatchError(me[0])
 	}
-	return err
+	return c.processFieldMismatchError(err)
 }
 
 // GetMulti is a batch version of Get.
@@ -434,7 +482,7 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 
 	// TODO: Use transaction ID returned by get
 	_, err = c.get(ctx, keys, dst, opts)
-	return err
+	return c.processFieldMismatchError(err)
 }
 
 func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) ([]byte, error) {
@@ -824,7 +872,8 @@ type ReadOption interface {
 }
 
 type readSettings struct {
-	readTime time.Time
+	readTime                  time.Time
+	ignoreFieldMismatchErrors bool
 }
 
 // WithReadOptions specifies constraints for accessing documents from the database,

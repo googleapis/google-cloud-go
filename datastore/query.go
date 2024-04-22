@@ -712,7 +712,7 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 		}
 		keys = append(keys, k)
 	}
-	return keys, errFieldMismatch
+	return keys, c.processFieldMismatchError(errFieldMismatch)
 }
 
 // Run runs the given query in the given context.
@@ -906,7 +906,7 @@ func (t *Iterator) Next(dst interface{}) (k *Key, err error) {
 	if dst != nil && !t.keysOnly {
 		err = loadEntityProto(dst, e)
 	}
-	return k, err
+	return k, t.client.processFieldMismatchError(err)
 }
 
 func (t *Iterator) next() (*Key, *pb.Entity, error) {

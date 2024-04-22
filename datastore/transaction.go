@@ -324,9 +324,9 @@ func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
 	// TODO: Use transaction ID returned by get
 	_, err = t.client.get(t.ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
-		return me[0]
+		return t.client.processFieldMismatchError(me[0])
 	}
-	return err
+	return t.client.processFieldMismatchError(err)
 }
 
 // GetMulti is a batch version of Get.
@@ -343,7 +343,7 @@ func (t *Transaction) GetMulti(keys []*Key, dst interface{}) (err error) {
 
 	// TODO: Use transaction ID returned by get
 	_, err = t.client.get(t.ctx, keys, dst, opts)
-	return err
+	return t.client.processFieldMismatchError(err)
 }
 
 // Put is the transaction-specific version of the package function Put.

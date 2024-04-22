@@ -262,6 +262,116 @@ func TestIntegration_Basics(t *testing.T) {
 	}
 }
 
+type OldX struct {
+	I int
+	J int
+}
+type NewX struct {
+	I int
+}
+
+func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	client.IgnoreFieldMismatch()
+	defer client.Close()
+
+	// Save entities with an extra field
+	keysOld := []*Key{
+		NameKey("X", "x1", nil),
+		NameKey("X", "x2", nil),
+	}
+	entitiesOld := []OldX{
+		{I: 10, J: 20},
+		{I: 30, J: 40},
+	}
+	_, err := client.PutMulti(ctx, keysOld, entitiesOld)
+	if err != nil {
+		t.Fatalf("Failed to save: %v\n", err)
+	}
+
+	// Save entities without extra field
+	keysNew := []*Key{
+		NameKey("X", "x3", nil),
+	}
+	entitiesNew := []NewX{
+		{I: 50},
+	}
+	_, err = client.PutMulti(ctx, keysNew, entitiesNew)
+	if err != nil {
+		t.Fatalf("Failed to save: %v\n", err)
+	}
+
+	keys := append(keysOld, keysNew...)
+	var wants []NewX
+	for _, oldX := range entitiesOld {
+		wants = append(wants, []NewX{{I: oldX.I}}...)
+	}
+	wants = append(wants, entitiesNew...)
+
+	// FieldMismatch ignored in Next
+	query := NewQuery("X").FilterField("I", ">=", 10)
+	it := client.Run(ctx, query)
+	resIndex := 0
+	for {
+		var newX NewX
+		_, err := it.Next(&newX)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Next got: %v, want: nil\n", err)
+		}
+		if newX.I != wants[resIndex].I {
+			t.Fatalf("Next got: %v, want: %v\n", newX.I, wants[resIndex].I)
+		}
+		resIndex++
+	}
+
+	// FieldMismatch ignored in Get
+	var getX NewX
+	err = client.Get(ctx, keys[0], &getX)
+	compareIgnoreFieldMismatchResults(t, []NewX{wants[0]}, []NewX{getX}, err, "Get")
+
+	// FieldMismatch ignored in GetAll
+	var getAllX []NewX
+	_, err = client.GetAll(ctx, query, &getAllX)
+	compareIgnoreFieldMismatchResults(t, wants, getAllX, err, "GetAll")
+
+	// FieldMismatch ignored in GetMulti
+	getMultiX := make([]NewX, 3)
+	err = client.GetMulti(ctx, keys, getMultiX)
+	compareIgnoreFieldMismatchResults(t, wants, getMultiX, err, "GetMulti")
+
+	tx, err := client.NewTransaction(ctx)
+	if err != nil {
+		t.Fatalf("tx.GetMulti got: %v, want: nil\n", err)
+	}
+
+	// FieldMismatch ignored in tx.Get
+	var txGetX NewX
+	err = tx.Get(keys[0], &txGetX)
+	compareIgnoreFieldMismatchResults(t, []NewX{wants[0]}, []NewX{txGetX}, err, "tx.Get")
+
+	// FieldMismatch ignored in tx.GetMulti
+	txGetMultiX := make([]NewX, 3)
+	err = tx.GetMulti(keys, txGetMultiX)
+	compareIgnoreFieldMismatchResults(t, wants, txGetMultiX, err, "tx.GetMulti")
+
+	tx.Commit()
+
+}
+
+func compareIgnoreFieldMismatchResults(t *testing.T, wantX []NewX, gotX []NewX, err error, errPrefix string) {
+	if err != nil {
+		t.Fatalf("%v got: %v, want: nil\n", errPrefix, err)
+	}
+	for resIndex := 0; resIndex < len(wantX); resIndex++ {
+		if wantX[resIndex].I != gotX[resIndex].I {
+			t.Fatalf("%v %v: got: %v, want: %v\n", errPrefix, resIndex, wantX[resIndex].I, gotX[resIndex].I)
+		}
+	}
+}
 func TestIntegration_GetWithReadTime(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	client := newTestClient(ctx, t)
