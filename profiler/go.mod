@@ -7,10 +7,10 @@ require (
 	cloud.google.com/go/compute/metadata v0.3.0
 	cloud.google.com/go/storage v1.40.0
 	github.com/golang/mock v1.6.0
-	github.com/google/pprof v0.0.0-20240416155748-26353dc0451f
+	github.com/google/pprof v0.0.0-20240422182052-72c8669ad3e7
 	github.com/googleapis/gax-go/v2 v2.12.3
 	golang.org/x/oauth2 v0.19.0
-	google.golang.org/api v0.175.0
+	google.golang.org/api v0.176.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be
 	google.golang.org/grpc v1.63.2
