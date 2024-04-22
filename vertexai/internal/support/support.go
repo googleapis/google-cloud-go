@@ -148,7 +148,7 @@ func MapToValuePB(m any) *structpb.Value {
 	}
 }
 
-// MapFromStructPB converts a structpb.Value to any.
+// MapFromValuePB converts a structpb.Value to any.
 func MapFromValuePB(p *structpb.Value) any {
 	if p == nil {
 		return nil
