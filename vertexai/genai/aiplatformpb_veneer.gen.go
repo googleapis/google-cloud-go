@@ -504,8 +504,6 @@ type GenerationConfig struct {
 	MaxOutputTokens *int32
 	// Optional. Stop sequences.
 	StopSequences []string
-	// Optional. ResponseMimeType.
-	ResponseMimeType string
 }
 
 func (v *GenerationConfig) toProto() *pb.GenerationConfig {
@@ -519,7 +517,6 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		CandidateCount:  v.CandidateCount,
 		MaxOutputTokens: v.MaxOutputTokens,
 		StopSequences:   v.StopSequences,
-		ResponseMimeType: v.ResponseMimeType,
 	}
 }
 
@@ -534,7 +531,6 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		CandidateCount:  p.CandidateCount,
 		MaxOutputTokens: p.MaxOutputTokens,
 		StopSequences:   p.StopSequences,
-		ResponseMimeType:   p.ResponseMimeType,
 	}
 }
 
