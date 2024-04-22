@@ -648,7 +648,7 @@ type ExplainOptions struct {
 
 func (e ExplainOptions) apply(s *runQuerySettings) error {
 	if s.explainOptions != nil {
-		return errors.New("datastore: ExplainOptions can be specified can be specified only once")
+		return errors.New("datastore: ExplainOptions can be specified only once")
 	}
 	pbExplainOptions := pb.ExplainOptions{
 		Analyze: e.Analyze,
