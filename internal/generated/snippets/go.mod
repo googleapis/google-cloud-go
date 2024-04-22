@@ -131,7 +131,7 @@ require (
 	cloud.google.com/go/workflows v1.12.5
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.175.0
+	google.golang.org/api v0.176.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
 )
 

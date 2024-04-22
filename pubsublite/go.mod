@@ -11,7 +11,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.3
 	golang.org/x/oauth2 v0.19.0
 	golang.org/x/sync v0.7.0
-	google.golang.org/api v0.175.0
+	google.golang.org/api v0.176.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
 	google.golang.org/genproto/googleapis/api v0.0.0-20240415180920-8c6c420018be
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be
