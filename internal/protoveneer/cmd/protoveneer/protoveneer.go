@@ -797,6 +797,12 @@ var externalTypes = []*externalType{
 		convertTo:     "support.MapToStructPB",
 		convertFrom:   "support.MapFromStructPB",
 	},
+	{
+		qualifiedName: "any",
+		replaces:      "*structpb.Value",
+		convertTo:     "support.MapToValuePB",
+		convertFrom:   "support.MapFromValuePB",
+	},
 }
 
 var protoTypeToExternalType = map[string]*externalType{}

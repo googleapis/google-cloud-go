@@ -110,3 +110,74 @@ func MapFromStructPB(p *structpb.Struct) map[string]any {
 	}
 	return p.AsMap()
 }
+
+// MapToValuePB converts any into a structpb.Value.
+func MapToValuePB(m any) *structpb.Value {
+	if m == nil {
+		return nil
+	}
+
+	switch m := m.(type) {
+	case bool:
+		return &structpb.Value{Kind: &structpb.Value_BoolValue{BoolValue: m}}
+	case int32:
+		return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: float64(m)}}
+	case int64:
+		return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: float64(m)}}
+	case float32:
+		return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: float64(m)}}
+	case float64:
+		return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: m}}
+	case string:
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: m}}
+	case []any:
+		var values []*structpb.Value
+		for _, v := range m {
+			values = append(values, MapToValuePB(v))
+		}
+		return &structpb.Value{Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: values}}}
+	case map[string]any:
+		fields := make(map[string]*structpb.Value)
+		for k, v := range m {
+			fields[k] = MapToValuePB(v)
+		}
+		return &structpb.Value{Kind: &structpb.Value_StructValue{StructValue: &structpb.Struct{Fields: fields}}}
+	default:
+		// Unsupported type, handle as needed (e.g., return nil or error)
+		return nil // Modify as needed based on your error handling strategy
+	}
+}
+
+// MapFromStructPB converts a structpb.Value to any.
+func MapFromValuePB(p *structpb.Value) any {
+	if p == nil {
+		return nil
+	}
+
+	switch p.Kind {
+	case nil:
+		// Handle nil value (e.g., return nil or a specific value)
+		return nil // Modify as needed
+	case &structpb.Value_StringValue{}:
+		return p.GetStringValue() // Handle single string value
+	case &structpb.Value_NumberValue{}:
+		return p.GetNumberValue() // Handle single numeric value
+	case &structpb.Value_BoolValue{}:
+		return p.GetBoolValue() // Handle single boolean value
+	case &structpb.Value_ListValue{}:
+		result := make([]any, len(p.GetListValue().GetValues()))
+		for i, val := range p.GetListValue().GetValues() {
+			result[i] = MapFromValuePB(val) // Convert list elements recursively
+		}
+		return result
+	case &structpb.Value_StructValue{}:
+		result := make(map[string]any)
+		for k, v := range p.GetStructValue().GetFields() {
+			result[k] = MapFromValuePB(v) // Convert struct fields recursively
+		}
+		return result
+	default:
+		// Unsupported type, handle as needed (e.g., return nil or error)
+		return nil // Modify as needed based on your error handling strategy
+	}
+}
