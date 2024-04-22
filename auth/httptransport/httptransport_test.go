@@ -133,6 +133,27 @@ func TestNewClient_FailsValidation(t *testing.T) {
 	}
 }
 
+func TestDial_SkipValidation(t *testing.T) {
+	opts := &Options{
+		DisableAuthentication: true,
+		Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: staticTP("fakeToken"),
+		}),
+	}
+	t.Run("invalid opts", func(t *testing.T) {
+		if err := opts.validate(); err == nil {
+			t.Fatalf("opts.validate() = nil, want error")
+		}
+	})
+
+	t.Run("skip invalid opts", func(t *testing.T) {
+		opts.InternalOptions = &InternalOptions{SkipValidation: true}
+		if err := opts.validate(); err != nil {
+			t.Fatalf("opts.validate() = %v, want nil", err)
+		}
+	})
+}
+
 func TestOptions_ResolveDetectOptions(t *testing.T) {
 	tests := []struct {
 		name string
