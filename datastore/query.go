@@ -25,9 +25,9 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/trace"
-	wrapperspb "github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type operator string
@@ -371,6 +371,8 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 // Field names which contain spaces, quote marks, or operator characters
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
+// For "in" and "not-in" operator, use []interface{} as value. For instance
+// query.FilterField("Month", "in", []interface{}{1, 2, 3, 4})
 func (q *Query) FilterField(fieldName, operator string, value interface{}) *Query {
 	return q.FilterEntity(PropertyFilter{
 		FieldName: fieldName,
@@ -714,9 +716,17 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 }
 
 // Run runs the given query in the given context.
-func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
+func (c *Client) Run(ctx context.Context, q *Query) (it *Iterator) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+	defer func() { trace.EndSpan(ctx, it.err) }()
+	it = c.run(ctx, q)
+	return it
+}
+
+// run runs the given query in the given context.
+func (c *Client) run(ctx context.Context, q *Query) *Iterator {
 	if q.err != nil {
-		return &Iterator{err: q.err}
+		return &Iterator{ctx: ctx, err: q.err}
 	}
 	t := &Iterator{
 		ctx:          ctx,

@@ -367,6 +367,11 @@
                 "DeleteEntityType"
               ]
             },
+            "ExportEntityTypes": {
+              "methods": [
+                "ExportEntityTypes"
+              ]
+            },
             "GetEntityType": {
               "methods": [
                 "GetEntityType"
@@ -380,6 +385,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportEntityTypes": {
+              "methods": [
+                "ImportEntityTypes"
               ]
             },
             "ListEntityTypes": {
@@ -422,6 +432,11 @@
                 "DeleteEntityType"
               ]
             },
+            "ExportEntityTypes": {
+              "methods": [
+                "ExportEntityTypes"
+              ]
+            },
             "GetEntityType": {
               "methods": [
                 "GetEntityType"
@@ -435,6 +450,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportEntityTypes": {
+              "methods": [
+                "ImportEntityTypes"
               ]
             },
             "ListEntityTypes": {
@@ -1548,6 +1568,11 @@
                 "MatchIntent"
               ]
             },
+            "ServerStreamingDetectIntent": {
+              "methods": [
+                "ServerStreamingDetectIntent"
+              ]
+            },
             "StreamingDetectIntent": {
               "methods": [
                 "StreamingDetectIntent"
@@ -1601,6 +1626,11 @@
             "MatchIntent": {
               "methods": [
                 "MatchIntent"
+              ]
+            },
+            "ServerStreamingDetectIntent": {
+              "methods": [
+                "ServerStreamingDetectIntent"
               ]
             },
             "StreamingDetectIntent": {

@@ -1,5 +1,19 @@
 # Changes
 
+## [2.8.1](https://github.com/googleapis/google-cloud-go/compare/vision/v2.8.0...vision/v2.8.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **vision:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.7.6...vision/v2.8.0) (2024-02-09)
+
+
+### Features
+
+* **vision:** Added option for user to set labels ([#9359](https://github.com/googleapis/google-cloud-go/issues/9359)) ([2fcf55c](https://github.com/googleapis/google-cloud-go/commit/2fcf55ccb24749cf5387e707b0212bca722f2e96))
+
 ## [2.7.6](https://github.com/googleapis/google-cloud-go/compare/vision/v2.7.5...vision/v2.7.6) (2024-01-30)
 
 
@@ -135,3 +149,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out vision as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

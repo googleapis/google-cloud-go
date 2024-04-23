@@ -95,6 +95,7 @@ type GenerationConfig struct {
 	HarmCat       HarmCategory
 	FinishReason  Candidate_FinishReason
 	CitMet        *CitationMetadata
+	TopK          *float32
 }
 
 // A collection of source attributions for a piece of content.

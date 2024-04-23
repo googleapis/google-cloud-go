@@ -30,7 +30,6 @@ import (
 	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -38,6 +37,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/status"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
@@ -4120,11 +4120,19 @@ type TransactionOptionsTestCase struct {
 }
 
 func transactionOptionsTestCases() []TransactionOptionsTestCase {
+	duration, _ := time.ParseDuration("100ms")
+	otherDuration, _ := time.ParseDuration("50ms")
+
 	return []TransactionOptionsTestCase{
 		{
 			name:   "Client level",
 			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
 			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+		},
+		{
+			name:   "Client level with MaxCommitDelay",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
 		},
 		{
 			name:   "Write level",
@@ -4133,10 +4141,28 @@ func transactionOptionsTestCases() []TransactionOptionsTestCase {
 			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
 		},
 		{
+			name:   "Write level with MaxCommitDelay",
+			client: &TransactionOptions{},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "testTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+		},
+		{
 			name:   "Write level has precedence than client level",
 			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: false}, TransactionTag: "clientTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
 			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
 			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+		},
+		{
+			name:   "Write level nil MaxCommitDelay does not unset client level MaxCommitDelay",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: false, MaxCommitDelay: &duration}, TransactionTag: "clientTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+		},
+		{
+			name:   "Write level has precedence than client level MaxCommitDelay",
+			client: &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: false, MaxCommitDelay: &duration}, TransactionTag: "clientTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+			write:  &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &otherDuration}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+			want:   &TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &otherDuration}, TransactionTag: "writeTransactionTag", CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
 		},
 		{
 			name:   "Read lock mode is optimistic",
@@ -5310,5 +5336,205 @@ func TestClient_NestedReadWriteTransactionWithTag_InnerBlindWrite(t *testing.T) 
 	}
 	if g, w := requests[8].(*sppb.CommitRequest).RequestOptions.TransactionTag, "test-tag1"; g != w {
 		t.Fatalf("transaction tag mismatch\nGot:  %s\nWant: %s", g, w)
+	}
+}
+
+func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_ExecuteSqlRequest(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			return err
+		}
+		return nil
+	}, TransactionOptions{ExcludeTxnFromChangeStreams: true})
+	if err != nil {
+		t.Fatalf("Failed to execute the transaction: %s", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if !requests[1].(*sppb.ExecuteSqlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
+		t.Fatal("Transaction is not set to be excluded from change streams")
+	}
+}
+
+func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BufferWrite(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		if err := tx.BufferWrite([]*Mutation{
+			Insert("foo", []string{"col1"}, []interface{}{"key1"}),
+		}); err != nil {
+			return err
+		}
+		return nil
+	}, TransactionOptions{ExcludeTxnFromChangeStreams: true})
+	if err != nil {
+		t.Fatalf("Failed to execute the transaction: %s", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if !requests[1].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
+		t.Fatal("Transaction is not set to be excluded from change streams")
+	}
+}
+
+func TestClient_ReadWriteTransactionWithExcludeTxnFromChangeStreams_BatchUpdate(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.BatchUpdate(ctx, []Statement{NewStatement(UpdateBarSetFoo)})
+		if err != nil {
+			return err
+		}
+		return nil
+	}, TransactionOptions{ExcludeTxnFromChangeStreams: true})
+	if err != nil {
+		t.Fatalf("Failed to execute the transaction: %s", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if !requests[1].(*sppb.ExecuteBatchDmlRequest).Transaction.GetBegin().ExcludeTxnFromChangeStreams {
+		t.Fatal("Transaction is not set to be excluded from change streams")
+	}
+}
+
+func TestClient_RequestLevelDMLWithExcludeTxnFromChangeStreams_Failed(t *testing.T) {
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	// Test normal DML
+	_, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.UpdateWithOptions(ctx, Statement{SQL: UpdateBarSetFoo}, QueryOptions{ExcludeTxnFromChangeStreams: true})
+		if err != nil {
+			return err
+		}
+		return nil
+	}, TransactionOptions{ExcludeTxnFromChangeStreams: true})
+	if err == nil {
+		t.Fatalf("Missing expected exception")
+	}
+	msg := "cannot set exclude transaction from change streams for a request-level DML statement."
+	if status.Code(err) != codes.InvalidArgument || !strings.Contains(err.Error(), msg) {
+		t.Fatalf("error mismatch\nGot: %v\nWant: %v", err, msg)
+	}
+
+	// Test batch DML
+	_, err = client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.UpdateWithOptions(ctx, Statement{SQL: UpdateBarSetFoo}, QueryOptions{ExcludeTxnFromChangeStreams: true})
+		if err != nil {
+			return err
+		}
+		return nil
+	}, TransactionOptions{ExcludeTxnFromChangeStreams: true})
+	if err == nil {
+		t.Fatalf("Missing expected exception")
+	}
+	if status.Code(err) != codes.InvalidArgument || !strings.Contains(err.Error(), msg) {
+		t.Fatalf("error mismatch\nGot: %v\nWant: %v", err, msg)
+	}
+}
+
+func TestClient_ApplyExcludeTxnFromChangeStreams(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	ms := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+
+	_, err := client.Apply(context.Background(), ms, ExcludeTxnFromChangeStreams())
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if !requests[1].(*sppb.BeginTransactionRequest).Options.ExcludeTxnFromChangeStreams {
+		t.Fatal("Transaction is not set to be excluded from change streams")
+	}
+}
+
+func TestClient_ApplyAtLeastOnceExcludeTxnFromChangeStreams(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	ms := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+
+	_, err := client.Apply(context.Background(), ms, []ApplyOption{ExcludeTxnFromChangeStreams(), ApplyAtLeastOnce()}...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if !requests[1].(*sppb.CommitRequest).Transaction.(*sppb.CommitRequest_SingleUseTransaction).SingleUseTransaction.ExcludeTxnFromChangeStreams {
+		t.Fatal("Transaction is not set to be excluded from change streams")
+	}
+}
+
+func TestClient_BatchWriteExcludeTxnFromChangeStreams(t *testing.T) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	mutationGroups := []*MutationGroup{
+		{[]*Mutation{
+			{opInsertOrUpdate, "t_test", nil, []string{"key", "val"}, []interface{}{"foo1", 1}},
+		}},
+	}
+	iter := client.BatchWriteWithOptions(context.Background(), mutationGroups, BatchWriteOptions{ExcludeTxnFromChangeStreams: true})
+	responseCount := 0
+	doFunc := func(r *sppb.BatchWriteResponse) error {
+		responseCount++
+		return nil
+	}
+	if err := iter.Do(doFunc); err != nil {
+		t.Fatal(err)
+	}
+	if responseCount != len(mutationGroups) {
+		t.Fatalf("Response count mismatch.\nGot: %v\nWant:%v", responseCount, len(mutationGroups))
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BatchWriteRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+	if !requests[1].(*sppb.BatchWriteRequest).ExcludeTxnFromChangeStreams {
+		t.Fatal("Transaction is not set to be excluded from change streams")
 	}
 }

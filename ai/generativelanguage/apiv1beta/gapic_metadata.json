@@ -39,6 +39,60 @@
         }
       }
     },
+    "FileService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FileClient",
+          "rpcs": {
+            "CreateFile": {
+              "methods": [
+                "CreateFile"
+              ]
+            },
+            "DeleteFile": {
+              "methods": [
+                "DeleteFile"
+              ]
+            },
+            "GetFile": {
+              "methods": [
+                "GetFile"
+              ]
+            },
+            "ListFiles": {
+              "methods": [
+                "ListFiles"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FileClient",
+          "rpcs": {
+            "CreateFile": {
+              "methods": [
+                "CreateFile"
+              ]
+            },
+            "DeleteFile": {
+              "methods": [
+                "DeleteFile"
+              ]
+            },
+            "GetFile": {
+              "methods": [
+                "GetFile"
+              ]
+            },
+            "ListFiles": {
+              "methods": [
+                "ListFiles"
+              ]
+            }
+          }
+        }
+      }
+    },
     "GenerativeService": {
       "clients": {
         "grpc": {

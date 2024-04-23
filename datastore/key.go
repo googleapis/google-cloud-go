@@ -23,8 +23,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 // Key represents the datastore key for a stored entity.

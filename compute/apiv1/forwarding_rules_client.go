@@ -159,7 +159,7 @@ func (c *ForwardingRulesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of forwarding rules.
+// AggregatedList retrieves an aggregated list of forwarding rules. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *ForwardingRulesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListForwardingRulesRequest, opts ...gax.CallOption) *ForwardingRulesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -286,7 +286,7 @@ func (c *forwardingRulesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of forwarding rules.
+// AggregatedList retrieves an aggregated list of forwarding rules. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *forwardingRulesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListForwardingRulesRequest, opts ...gax.CallOption) *ForwardingRulesScopedListPairIterator {
 	it := &ForwardingRulesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListForwardingRulesRequest)

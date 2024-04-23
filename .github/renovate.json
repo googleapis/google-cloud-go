@@ -2,7 +2,8 @@
     "extends": [
         "config:base",
         "schedule:weekly",
-        ":disableDependencyDashboard"
+        ":disableDependencyDashboard",
+        "docker:disable"
     ],
     "semanticCommits": false,
     "postUpdateOptions": [
@@ -12,10 +13,24 @@
     "commitMessageAction": "update",
     "groupName": "deps",
     "ignoreDeps": [
+        "go.opentelemetry.io/otel",
+        "go.opentelemetry.io/otel/metric",
+        "go.opentelemetry.io/otel/sdk",
+        "go.opentelemetry.io/otel/trace",
         "google.golang.org/genproto"
     ],
     "ignorePaths": [
         "**/snippets/**"
+    ],
+    "packageRules": [
+        {
+            "matchPackageNames": [
+                "^github.com/google/go-github/v",
+                "^github.com/apache/arrow/go/v",
+                "^github.com/cloudprober/cloudprober"
+            ],
+            "enabled": false
+        }
     ],
     "force": {
         "constraints": {

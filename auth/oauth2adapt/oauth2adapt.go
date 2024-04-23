@@ -23,6 +23,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 // TokenProviderFromTokenSource converts any [golang.org/x/oauth2.TokenSource]
@@ -48,6 +49,7 @@ func (tp *tokenProviderAdapter) Token(context.Context) (*auth.Token, error) {
 	}
 	return &auth.Token{
 		Value:  tok.AccessToken,
+		Type:   tok.Type(),
 		Expiry: tok.Expiry,
 	}, nil
 }
@@ -76,8 +78,47 @@ func (ts *tokenSourceAdapter) Token() (*oauth2.Token, error) {
 	}
 	return &oauth2.Token{
 		AccessToken: tok.Value,
+		TokenType:   tok.Type,
 		Expiry:      tok.Expiry,
 	}, nil
+}
+
+// AuthCredentialsFromOauth2Credentials converts a [golang.org/x/oauth2/google.Credentials]
+// to a [cloud.google.com/go/auth.Credentials].
+func AuthCredentialsFromOauth2Credentials(creds *google.Credentials) *auth.Credentials {
+	if creds == nil {
+		return nil
+	}
+	return auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: TokenProviderFromTokenSource(creds.TokenSource),
+		JSON:          creds.JSON,
+		ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
+			return creds.ProjectID, nil
+		}),
+		UniverseDomainProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
+			return creds.GetUniverseDomain()
+		}),
+	})
+}
+
+// Oauth2CredentialsFromAuthCredentials converts a [cloud.google.com/go/auth.Credentials]
+// to a [golang.org/x/oauth2/google.Credentials].
+func Oauth2CredentialsFromAuthCredentials(creds *auth.Credentials) *google.Credentials {
+	if creds == nil {
+		return nil
+	}
+	// Throw away errors as old credentials are not request aware. Also, no
+	// network requests are currently happening for this use case.
+	projectID, _ := creds.ProjectID(context.Background())
+
+	return &google.Credentials{
+		TokenSource: TokenSourceFromTokenProvider(creds.TokenProvider),
+		ProjectID:   projectID,
+		JSON:        creds.JSON(),
+		UniverseDomainProvider: func() (string, error) {
+			return creds.UniverseDomain(context.Background())
+		},
+	}
 }
 
 type oauth2Error struct {

@@ -136,6 +136,7 @@ var generateList = []string{
 	"google.golang.org/genproto/googleapis/datastore/v1",
 	"google.golang.org/genproto/googleapis/datastore/admin/v1",
 	"google.golang.org/genproto/googleapis/datastore/admin/v1beta1",
+	"google.golang.org/genproto/googleapis/apps/card/v1",
 }
 
 // Regen regenerates the genproto repository.

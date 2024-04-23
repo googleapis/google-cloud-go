@@ -23,10 +23,10 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -791,6 +791,35 @@ func TestInvalidFilters(t *testing.T) {
 			t.Errorf("%+v: got nil, wanted error", q)
 		}
 	}
+}
+
+func TestRunErr(t *testing.T) {
+	client := &Client{
+		client: &fakeClient{
+			queryFn: func(req *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
+				fmt.Printf("received next request")
+				return fakeRunQuery(req)
+			},
+		},
+	}
+
+	type Gopher struct {
+		A int
+	}
+
+	ctx := context.Background()
+	q := NewQuery("Gopher").Filter("", 2)
+	it := client.Run(ctx, q)
+
+	var g1 Gopher
+	it.Next(&g1)
+
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("Cursor panic")
+		}
+	}()
+	it.Cursor()
 }
 
 func TestAggregationQuery(t *testing.T) {
