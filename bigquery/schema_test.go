@@ -485,10 +485,12 @@ type allBoolean struct {
 }
 
 type allTime struct {
-	Timestamp time.Time
-	Time      civil.Time
-	Date      civil.Date
-	DateTime  civil.DateTime
+	Timestamp    time.Time
+	Time         civil.Time
+	Date         civil.Date
+	DateTime     civil.DateTime
+	Interval     *IntervalValue
+	RangeGeneric *RangeValue
 }
 
 type allNumeric struct {
@@ -566,6 +568,8 @@ func TestSimpleInference(t *testing.T) {
 				reqField("Time", "TIME"),
 				reqField("Date", "DATE"),
 				reqField("DateTime", "DATETIME"),
+				reqField("Interval", "INTERVAL"),
+				reqField("RangeGeneric", "RANGE"),
 			},
 		},
 		{

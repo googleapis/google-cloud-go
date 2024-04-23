@@ -105,9 +105,7 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 	// If the emulator is available, dial it without passing any credentials.
 	if addr := os.Getenv("DATASTORE_EMULATOR_HOST"); addr != "" {
 		o = []option.ClientOption{
-			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
-			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
-			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
+			option.WithEndpoint(addr),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 		}
@@ -400,7 +398,8 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 		}
 	}
 
-	// TODO: Use transaction ID returned by get
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
 	_, err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
@@ -434,7 +433,8 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 		}
 	}
 
-	// TODO: Use transaction ID returned by get
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
 	_, err = c.get(ctx, keys, dst, opts)
 	return err
 }
