@@ -48,6 +48,8 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -605,6 +607,170 @@ func TestToLogEntry(t *testing.T) {
 			if got := e.TraceSampled; got != test.want.TraceSampled {
 				t.Errorf("TraceSampled: %+v: got %t, want %t", test.in, got, test.want.TraceSampled)
 			}
+		})
+	}
+}
+
+func TestToLogEntryOTelIntegration(t *testing.T) {
+	// Some slight modifications need to be done for testing ToLogEntry
+	// for the OpenTelemetry integration, so they are in a separate function.
+	u := &url.URL{Scheme: "http"}
+	otelTraceID, _ := trace.TraceIDFromHex(strings.Repeat("a", 32))
+	otelSpanID, _ := trace.SpanIDFromHex(strings.Repeat("f", 16))
+	otelTraceFlags := trace.FlagsSampled // tracesampled = true
+	tests := []struct {
+		name              string
+		in                logging.Entry
+		spanContextConfig trace.SpanContextConfig // default = noop span context
+		want              *logpb.LogEntry
+	}{
+		{
+			name: "Using OpenTelemetry with a valid span",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+					},
+				},
+			},
+			spanContextConfig: trace.SpanContextConfig{
+				TraceID:    otelTraceID,
+				SpanID:     otelSpanID,
+				TraceFlags: otelTraceFlags,
+			},
+			want: &logpb.LogEntry{
+				Trace:        "projects/P/traces/" + otelTraceID.String(),
+				SpanId:       otelSpanID.String(),
+				TraceSampled: otelTraceFlags.IsSampled(),
+			},
+		},
+		{
+			name: "OpenTelemetry only with a noop span",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+					},
+				},
+			},
+			want: &logpb.LogEntry{},
+		},
+		{
+			name: "Using OpenTelemetry only with a valid span + valid traceparent headers (precedence test)",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+						Header: http.Header{
+							"Traceparent": {"00-105445aa7843bc8bf206b12000100012-000000000000004a-01"},
+						},
+					},
+				},
+			},
+			spanContextConfig: trace.SpanContextConfig{
+				TraceID:    otelTraceID,
+				SpanID:     otelSpanID,
+				TraceFlags: otelTraceFlags,
+			},
+			want: &logpb.LogEntry{
+				Trace:        "projects/P/traces/" + otelTraceID.String(),
+				SpanId:       otelSpanID.String(),
+				TraceSampled: otelTraceFlags.IsSampled(),
+			},
+		},
+		{
+			name: "Using OpenTelemetry only with a valid span + valid XCTC headers (precedence test)",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+						Header: http.Header{
+							"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120000000/0000000000000bbb;o=1"},
+						},
+					},
+				},
+			},
+			spanContextConfig: trace.SpanContextConfig{
+				TraceID:    otelTraceID,
+				SpanID:     otelSpanID,
+				TraceFlags: otelTraceFlags,
+			},
+			want: &logpb.LogEntry{
+				Trace:        "projects/P/traces/" + otelTraceID.String(),
+				SpanId:       otelSpanID.String(),
+				TraceSampled: otelTraceFlags.IsSampled(),
+			},
+		},
+		{
+			name: "Using OpenTelemetry only with a noop span + valid traceparent headers (edge case)",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+						Header: http.Header{
+							"Traceparent": {"00-105445aa7843bc8bf206b12000100012-000000000000004a-01"},
+						},
+					},
+				},
+			},
+			want: &logpb.LogEntry{
+				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100012",
+				SpanId:       "000000000000004a",
+				TraceSampled: false,
+			},
+		},
+		{
+			name: "Using OpenTelemetry with a valid span + trace info set in Entry object",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+					},
+				},
+				Trace:        "abc",
+				SpanID:       "def",
+				TraceSampled: false,
+			},
+			spanContextConfig: trace.SpanContextConfig{
+				TraceID:    otelTraceID,
+				SpanID:     otelSpanID,
+				TraceFlags: otelTraceFlags,
+			},
+			want: &logpb.LogEntry{
+				Trace:        "abc",
+				SpanId:       "def",
+				TraceSampled: false,
+			},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			ctx := context.Background()
+
+			// Need to set a span context for the context so it's not a noop
+			spanContext := trace.NewSpanContext(test.spanContextConfig)
+			ctx = trace.ContextWithSpanContext(ctx, spanContext)
+			ctx, span := noop.NewTracerProvider().Tracer("test tracer").Start(ctx, "test span")
+			defer span.End()
+
+			if test.in.HTTPRequest != nil && test.in.HTTPRequest.Request != nil {
+				test.in.HTTPRequest.Request = test.in.HTTPRequest.Request.WithContext(ctx)
+			}
+
+			e, err := logging.ToLogEntry(test.in, "projects/P")
+			if err != nil {
+				t.Fatalf("Unexpected error: %+v: %v", test.in, err)
+			}
+			if got := e.Trace; got != test.want.Trace {
+				t.Errorf("TraceId: %+v: SpanContext: %+v: got %q, want %q", test.in, spanContext, got, test.want.Trace)
+			}
+			if got := e.SpanId; got != test.want.SpanId {
+				t.Errorf("SpanId: %+v: SpanContext: %+v: got %q, want %q", test.in, spanContext, got, test.want.SpanId)
+			}
+			if got := e.TraceSampled; got != test.want.TraceSampled {
+				t.Errorf("TraceSampled: %+v: SpanContext: %+v: got %t, want %t", test.in, spanContext, got, test.want.TraceSampled)
+			}
+
 		})
 	}
 }
