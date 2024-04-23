@@ -814,7 +814,7 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	if txn != nil && txn.state == transactionStateNotStarted {
-		txn.startProgress(res.Transaction)
+		txn.setToInProgress(res.Transaction)
 	}
 
 	ar = make(AggregationResult)
@@ -979,7 +979,7 @@ func (t *Iterator) nextBatch() error {
 	}
 
 	if txn != nil && txn.state == transactionStateNotStarted {
-		txn.startProgress(resp.Transaction)
+		txn.setToInProgress(resp.Transaction)
 	}
 
 	// Adjust any offset from skipped results.
