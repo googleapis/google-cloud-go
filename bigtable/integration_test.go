@@ -753,6 +753,10 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 	defer cleanup()
 
+	if !testEnv.Config().UseProd {
+		t.Skip("Skip long running tests in short mode")
+	}
+
 	ts := uid.NewSpace("ts", &uid.Options{Short: true}).New()
 	if err := adminClient.CreateColumnFamily(ctx, tableName, ts); err != nil {
 		t.Fatalf("Creating column family: %v", err)
