@@ -8,6 +8,7 @@ import (
 
 	"cloud.google.com/go/storage"
 	"cloud.google.com/go/storage/transfermanager"
+	"google.golang.org/api/iterator"
 )
 
 func main() {
@@ -24,25 +25,6 @@ func main() {
 	d, err := transfermanager.NewDownloader(client, transfermanager.WithWorkers(16))
 	if err != nil {
 		// handle error
-	}
-
-	// Create go routine to wait on & process download results.
-	// This is maybe too much to expect from users -- would making results
-	// available at the end of the job and/or a callback be preferable?
-	go func() {
-		for {
-			select {
-			case out := <- d.Output:
-				if out.Err != nil {
-					log.Printf("download of %v failed with error %v", out.Name, out.Err)
-				} else {
-					log.Printf("download of %v succeeded", out.Name)
-				}
-			case <- d.Done:
-				log.Printf("all downloads complete")
-				return
-			}
-		}()
 	}
 
 	// Sharded and/or parallelized download
@@ -85,4 +67,23 @@ func main() {
 
 	// Wait for all downloads to complete.
 	d.WaitAndClose()
+
+	// Iterate through completed downloads and process results. This can
+	// also happen async in a go routine as the downloads run.
+	it := d.Results()
+	for {
+		out, err := it.Next() // if async, blocks until next result is available.
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatalf("error getting next result: %v")
+		}
+		if out.Err != nil {
+			log.Printf("download of %v failed with error %v", out.Name, out.Err)
+		} else {
+			log.Printf("download of %v succeeded", out.Name)
+		}
+	}
+
 }

@@ -58,8 +58,8 @@ type Downloader struct {
 	config          *transferManagerConfig
 	objectInputs    []DownloadObjectInput    // Will be sent via a channel to workers
 	directoryInputs []DownloadDirectoryInput // This does obj listing/os.File calls and then converts to object inputs
-	Output          <-chan *DownloadOutput   // Application receives on this channel for completed downloads.
-	Done            <-chan bool
+	output          <-chan *DownloadOutput   // Channel for completed downloads; used to feed results iterator
+	done            <-chan bool              // Used to signal completion of all downloads.
 	// etc
 }
 
@@ -120,6 +120,11 @@ func (d *Downloader) WaitAndClose() error {
 	return nil
 }
 
+// Results returns the iterator for download outputs.
+func (d *Downloader) Results() *DownloadOutputIterator {
+	return nil
+}
+
 // DownloadOutput provides output for a single object download, including all
 // errors received while downloading object parts. If the download was successful,
 // Attrs will be populated.
@@ -127,4 +132,18 @@ type DownloadOutput struct {
 	Name  string                     // name of object
 	Err   error                      // error occurring during download. Can use multi-error in Go 1.20+ if multiple failures.
 	Attrs *storage.ReaderObjectAttrs // Attributes of downloaded object, if successful.
+}
+
+// DownloadOutputIterator allows the end user to iterate through completed
+// object downloads.
+type DownloadOutputIterator struct {
+	// unexported fields including buffered DownloadOutputs
+}
+
+// Use this to iterate through results. When complete, will return error
+// iterator.Done.
+// DownloadOutputs will be available as the downloads complete; they can
+// be iterated through asynchronously or at the end of the job.
+func (it *DownloadOutputIterator) Next() (*DownloadOutput, error) {
+	return nil, nil
 }
