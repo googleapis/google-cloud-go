@@ -224,7 +224,7 @@ func (t *Transaction) beginLaterTransaction() (err error) {
 		return err
 	}
 
-	t.startProgress(txnID)
+	t.setToInProgress(txnID)
 	return nil
 }
 
@@ -241,7 +241,7 @@ func (t *Transaction) acquireLock() func() {
 	return func() {}
 }
 
-func (t *Transaction) startProgress(id []byte) {
+func (t *Transaction) setToInProgress(id []byte) {
 	t.id = id
 	t.state = transactionStateInProgress
 }
@@ -262,7 +262,7 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 		if err != nil {
 			return nil, err
 		}
-		t.startProgress(txnID)
+		t.setToInProgress(txnID)
 	}
 
 	return t, nil
@@ -427,7 +427,7 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 	txnID, err := t.client.get(t.ctx, keys, dst, opts)
 
 	if txnID != nil && err == nil {
-		t.startProgress(txnID)
+		t.setToInProgress(txnID)
 	}
 	return err
 }
