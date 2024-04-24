@@ -44,7 +44,7 @@ func main() {
 	}
 
 	// Can set timeout on this download using context.
-	ctx, cancel = context.WithTimeout(ctx, 1*time.Minute)
+	ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
 	defer cancel()
 
 	// Add to Downloader
@@ -77,7 +77,7 @@ func main() {
 			break
 		}
 		if err != nil {
-			log.Fatalf("error getting next result: %v")
+			log.Fatalf("error getting next result: %v", err)
 		}
 		if out.Err != nil {
 			log.Printf("download of %v failed with error %v", out.Name, out.Err)
