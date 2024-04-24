@@ -78,10 +78,14 @@ type DownloadObjectInput struct {
 	Destination io.WriterAt
 
 	// Optional fields
-	Generation     *int64
-	Conditions     *storage.Conditions
-	EncryptionKey  []byte
-	Offset, Length int64 // if specified, reads only a range.
+	Generation    *int64
+	Conditions    *storage.Conditions
+	EncryptionKey []byte
+	Range         *DownloadRange // if specified, only download the given range.
+}
+
+type DownloadRange struct {
+	Offset, Length int64 // pass through to NewRangeReader.
 }
 
 // Download a single object. If it's larger than the specified part size,
