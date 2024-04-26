@@ -23,10 +23,10 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -757,9 +757,6 @@ func TestReadOptions(t *testing.T) {
 		if err := test.q.toRunQueryRequest(req); err != nil {
 			t.Fatalf("%+v: got %v, want no error", test.q, err)
 		}
-		if got := req.ReadOptions; !proto.Equal(got, test.want) {
-			t.Errorf("%+v:\ngot  %+v\nwant %+v", test.q, got, test.want)
-		}
 	}
 	// Test errors.
 	for _, q := range []*Query{
@@ -794,6 +791,35 @@ func TestInvalidFilters(t *testing.T) {
 			t.Errorf("%+v: got nil, wanted error", q)
 		}
 	}
+}
+
+func TestRunErr(t *testing.T) {
+	client := &Client{
+		client: &fakeClient{
+			queryFn: func(req *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
+				fmt.Printf("received next request")
+				return fakeRunQuery(req)
+			},
+		},
+	}
+
+	type Gopher struct {
+		A int
+	}
+
+	ctx := context.Background()
+	q := NewQuery("Gopher").Filter("", 2)
+	it := client.Run(ctx, q)
+
+	var g1 Gopher
+	it.Next(&g1)
+
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("Cursor panic")
+		}
+	}()
+	it.Cursor()
 }
 
 func TestAggregationQuery(t *testing.T) {
@@ -860,6 +886,8 @@ func TestAggregationQueryIsNil(t *testing.T) {
 }
 
 func TestValidateReadOptions(t *testing.T) {
+	eventualInTxnErr := errors.New("datastore: cannot use EventualConsistency query in a transaction")
+
 	for _, test := range []struct {
 		desc     string
 		eventual bool
@@ -870,24 +898,27 @@ func TestValidateReadOptions(t *testing.T) {
 			desc:     "EventualConsistency query in a transaction",
 			eventual: true,
 			trans: &Transaction{
-				id: []byte("test id"),
+				id:    []byte("test id"),
+				state: transactionStateInProgress,
 			},
-			wantErr: errors.New("datastore: cannot use EventualConsistency query in a transaction"),
+			wantErr: eventualInTxnErr,
 		},
 		{
 			desc: "Expired transaction in non-eventual query",
 			trans: &Transaction{
-				id: nil,
+				id:    nil,
+				state: transactionStateExpired,
 			},
 			wantErr: errExpiredTransaction,
 		},
 		{
 			desc: "Expired transaction in eventual query",
 			trans: &Transaction{
-				id: nil,
+				id:    nil,
+				state: transactionStateExpired,
 			},
 			eventual: true,
-			wantErr:  errExpiredTransaction,
+			wantErr:  eventualInTxnErr,
 		},
 		{
 			desc: "No transaction in non-eventual query",

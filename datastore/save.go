@@ -22,9 +22,9 @@ import (
 	"unicode/utf8"
 
 	"cloud.google.com/go/civil"
-	timepb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	llpb "google.golang.org/genproto/googleapis/type/latlng"
+	timepb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type saveOpts struct {

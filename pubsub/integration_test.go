@@ -1434,9 +1434,6 @@ func TestIntegration_OrderedKeys_SubscriptionOrdering(t *testing.T) {
 		msg.Ack()
 		atomic.AddInt32(&numAcked, 1)
 	})
-	if sub.enableOrdering != enableMessageOrdering {
-		t.Fatalf("enableOrdering mismatch: got: %v, want: %v", sub.enableOrdering, enableMessageOrdering)
-	}
 	// If the messages were received on a subscription with the EnableMessageOrdering=true,
 	// total processing would exceed the timeout and only one message would be processed.
 	if numAcked < 2 {

@@ -351,11 +351,10 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
-		internaloption.EnableDirectPath(true),
 		internaloption.AllowNonDefaultServiceAccount(true),
 	}
 	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
-		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPathXds())
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -684,6 +683,10 @@ type applyOption struct {
 	transactionTag string
 	// priority is the RPC priority that is used for the commit operation.
 	priority sppb.RequestOptions_Priority
+	// If excludeTxnFromChangeStreams == true, mutations from this Client.Apply
+	// will not be recorded in allowed tracking change streams with DDL option
+	// allow_txn_exclusion=true.
+	excludeTxnFromChangeStreams bool
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -722,6 +725,13 @@ func Priority(priority sppb.RequestOptions_Priority) ApplyOption {
 	}
 }
 
+// ExcludeTxnFromChangeStreams returns an ApplyOptions that sets whether to exclude recording this commit operation from allowed tracking change streams.
+func ExcludeTxnFromChangeStreams() ApplyOption {
+	return func(ao *applyOption) {
+		ao.excludeTxnFromChangeStreams = true
+	}
+}
+
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
@@ -740,10 +750,10 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	if !ao.atLeastOnce {
 		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag})
+		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
@@ -754,14 +764,20 @@ type BatchWriteOptions struct {
 
 	// The transaction tag to use for this request.
 	TransactionTag string
+
+	// If excludeTxnFromChangeStreams == true, modifications from all transactions
+	// in this batch write request will not be recorded in allowed tracking
+	// change treams with DDL option allow_txn_exclusion=true.
+	ExcludeTxnFromChangeStreams bool
 }
 
 // merge combines two BatchWriteOptions such that the input parameter will have higher
 // order of precedence.
 func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 	merged := BatchWriteOptions{
-		TransactionTag: bwo.TransactionTag,
-		Priority:       bwo.Priority,
+		TransactionTag:              bwo.TransactionTag,
+		Priority:                    bwo.Priority,
+		ExcludeTxnFromChangeStreams: bwo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 	}
 	if opts.TransactionTag != "" {
 		merged.TransactionTag = opts.TransactionTag
@@ -916,9 +932,10 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 		var md metadata.MD
 		sh.updateLastUseTime()
 		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
-			Session:        sh.getID(),
-			MutationGroups: mgsPb,
-			RequestOptions: createRequestOptions(opts.Priority, "", opts.TransactionTag),
+			Session:                     sh.getID(),
+			MutationGroups:              mgsPb,
+			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag),
+			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
 		}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 		if getGFELatencyMetricsFlag() && md != nil && c.ct != nil {
