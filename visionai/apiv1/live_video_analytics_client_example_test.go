@@ -366,6 +366,12 @@ func ExampleLiveVideoAnalyticsClient_ListAnalyses() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListAnalysesResponse)
 	}
 }
 
@@ -397,6 +403,12 @@ func ExampleLiveVideoAnalyticsClient_ListOperators() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListOperatorsResponse)
 	}
 }
 
@@ -428,6 +440,12 @@ func ExampleLiveVideoAnalyticsClient_ListProcesses() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListProcessesResponse)
 	}
 }
 
@@ -459,6 +477,12 @@ func ExampleLiveVideoAnalyticsClient_ListPublicOperators() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionaipb.ListPublicOperatorsResponse)
 	}
 }
 
@@ -676,5 +700,11 @@ func ExampleLiveVideoAnalyticsClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

@@ -709,12 +709,12 @@ func newSnapshotInfo(snapshot *btapb.Snapshot) (*SnapshotInfo, error) {
 	if err := snapshot.CreateTime.CheckValid(); err != nil {
 		return nil, fmt.Errorf("invalid createTime: %w", err)
 	}
-	createTime := snapshot.CreateTime.AsTime()
+	createTime := snapshot.GetCreateTime().AsTime()
 
 	if err := snapshot.DeleteTime.CheckValid(); err != nil {
 		return nil, fmt.Errorf("invalid deleteTime: %v", err)
 	}
-	deleteTime := snapshot.DeleteTime.AsTime()
+	deleteTime := snapshot.GetDeleteTime().AsTime()
 
 	return &SnapshotInfo{
 		Name:        name,
@@ -2066,17 +2066,17 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	if err := backup.StartTime.CheckValid(); err != nil {
 		return nil, fmt.Errorf("invalid startTime: %v", err)
 	}
-	startTime := backup.StartTime.AsTime()
+	startTime := backup.GetStartTime().AsTime()
 
 	if err := backup.EndTime.CheckValid(); err != nil {
 		return nil, fmt.Errorf("invalid endTime: %v", err)
 	}
-	endTime := backup.EndTime.AsTime()
+	endTime := backup.GetEndTime().AsTime()
 
 	if err := backup.ExpireTime.CheckValid(); err != nil {
 		return nil, fmt.Errorf("invalid expireTime: %v", err)
 	}
-	expireTime := backup.ExpireTime.AsTime()
+	expireTime := backup.GetExpireTime().AsTime()
 	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
 	bi := BackupInfo{
 		Name:           name,
