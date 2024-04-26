@@ -2225,12 +2225,10 @@ func (av AuthorizedViewConf) proto() *btapb.AuthorizedView {
 	return &avp
 }
 
-// GetSubsetView returns nil if the type of the AuthorizedView is not SubsetViewConf, otherwise it returns the pointer to the SubsetViewConf instance.
-func (av *AuthorizedViewConf) GetSubsetView() *SubsetViewConf {
-	if sv, ok := av.AuthorizedView.(*SubsetViewConf); ok {
-		return sv
-	}
-	return nil
+// FamilySubset represents a subset of a column family.
+type FamilySubset struct {
+	Qualifiers        [][]byte
+	QualifierPrefixes [][]byte
 }
 
 // SubsetViewConf contains configuration specific to an authorized view of subset view type.
@@ -2241,18 +2239,12 @@ type SubsetViewConf struct {
 
 func (*SubsetViewConf) isAuthorizedView() {}
 
-// FamilySubset represents a subset of a column family.
-type FamilySubset struct {
-	Qualifiers        [][]byte
-	QualifierPrefixes [][]byte
-}
-
 // AddRowPrefix adds a new row prefix to the subset view.
 func (s *SubsetViewConf) AddRowPrefix(prefix []byte) {
 	s.RowPrefixes = append(s.RowPrefixes, prefix)
 }
 
-func (s *SubsetViewConf) getFamilySubset(familyName string) FamilySubset {
+func (s *SubsetViewConf) getOrCreateFamilySubset(familyName string) FamilySubset {
 	if s.FamilySubsets == nil {
 		s.FamilySubsets = make(map[string]FamilySubset)
 	}
@@ -2279,14 +2271,14 @@ func (s SubsetViewConf) proto() *btapb.AuthorizedView_SubsetView {
 
 // AddFamilySubsetQualifier adds an individual column qualifier to be included in a subset view.
 func (s *SubsetViewConf) AddFamilySubsetQualifier(familyName string, qualifier []byte) {
-	fs := s.getFamilySubset(familyName)
+	fs := s.getOrCreateFamilySubset(familyName)
 	fs.Qualifiers = append(fs.Qualifiers, qualifier)
 	s.FamilySubsets[familyName] = fs
 }
 
 // AddFamilySubsetQualifierPrefix adds a prefix for column qualifiers to be included in a subset view.
 func (s *SubsetViewConf) AddFamilySubsetQualifierPrefix(familyName string, qualifierPrefix []byte) {
-	fs := s.getFamilySubset(familyName)
+	fs := s.getOrCreateFamilySubset(familyName)
 	fs.QualifierPrefixes = append(fs.QualifierPrefixes, qualifierPrefix)
 	s.FamilySubsets[familyName] = fs
 }
@@ -2296,7 +2288,7 @@ func (ac *AdminClient) CreateAuthorizedView(ctx context.Context, conf *Authorize
 	if conf.TableID == "" || conf.AuthorizedViewID == "" {
 		return errors.New("both AuthorizedViewID and TableID are required")
 	}
-	if conf.GetSubsetView() == nil {
+	if _, ok := conf.AuthorizedView.(*SubsetViewConf); !ok {
 		return errors.New("SubsetView must be specified in AuthorizedViewConf")
 	}
 
@@ -2321,14 +2313,6 @@ type AuthorizedViewInfo struct {
 
 type isAuthorizedViewInfo interface {
 	isAuthorizedViewInfo()
-}
-
-// GetSubsetView returns nil if the type of the AuthorizedView is not SubsetViewInfo, otherwise it returns the pointer to the SubsetViewInfo instance.
-func (av *AuthorizedViewInfo) GetSubsetView() *SubsetViewInfo {
-	if sv, ok := av.AuthorizedView.(*SubsetViewInfo); ok {
-		return sv
-	}
-	return nil
 }
 
 // SubsetViewInfo contains read-only SubsetView metadata.
@@ -2431,7 +2415,7 @@ func (ac *AdminClient) UpdateAuthorizedView(ctx context.Context, conf UpdateAuth
 	if conf.AuthorizedViewConf.DeletionProtection != None {
 		updateMask.Paths = append(updateMask.Paths, "deletion_protection")
 	}
-	if sv := conf.AuthorizedViewConf.GetSubsetView(); sv != nil {
+	if _, ok := conf.AuthorizedViewConf.AuthorizedView.(*SubsetViewConf); ok {
 		updateMask.Paths = append(updateMask.Paths, "subset_view")
 	}
 	req := &btapb.UpdateAuthorizedViewRequest{

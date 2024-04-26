@@ -3564,7 +3564,7 @@ func TestIntegration_AdminAuthorizedView(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Getting authorized view: %v", err)
 	}
-	if got, want := avInfo.GetSubsetView(), authorizedViewConf.GetSubsetView(); cmp.Equal(got, want) {
+	if got, want := avInfo.AuthorizedView.(*SubsetViewInfo), authorizedViewConf.AuthorizedView.(*SubsetViewConf); cmp.Equal(got, want) {
 		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
 	}
 
@@ -3595,7 +3595,7 @@ func TestIntegration_AdminAuthorizedView(t *testing.T) {
 		t.Errorf("AuthorizedView deletion protection: %v, want: %v", got, want)
 	}
 	// Check that the subset_view field doesn't change
-	if got, want := avInfo.GetSubsetView(), authorizedViewConf.GetSubsetView(); cmp.Equal(got, want) {
+	if got, want := avInfo.AuthorizedView.(*SubsetViewInfo), authorizedViewConf.AuthorizedView.(*SubsetViewConf); cmp.Equal(got, want) {
 		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
 	}
 
