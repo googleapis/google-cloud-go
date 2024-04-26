@@ -1595,7 +1595,7 @@ func TestBucketSignedURL_Endpoint_Emulator_Host(t *testing.T) {
 
 			var opts []option.ClientOption
 			if test.endpoint != nil {
-				opts = append(opts, option.WithEndpoint(*test.endpoint))
+				opts = append(opts, option.WithEndpoint(*test.endpoint), option.WithoutAuthentication())
 			}
 			c, err := NewClient(context.Background(), opts...)
 			if err != nil {
