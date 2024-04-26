@@ -243,7 +243,8 @@ type TableAutomatedBackupConfig interface {
 }
 
 // Defines an automated backup policy for a table.
-// Use Nil to disable Automated Backups.
+// Use nil TableAutomatedBackupPolicy to disable Automated Backups on a table.
+// Use nil for a specific field to ignore that field when updating the policy on a table.
 type TableAutomatedBackupPolicy struct {
 	// Required. How long the automated backups should be retained. The only
 	// supported value at this time is 3 days.
