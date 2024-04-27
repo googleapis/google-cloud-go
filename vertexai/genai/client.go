@@ -103,11 +103,11 @@ const defaultMaxOutputTokens = 2048
 // name is a string model name like "gemini-1.0.-pro".
 // See https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versioning
 // for details on model naming and versioning.
-func (c *Client) GenerativeModel(name string) *GenerativeModel {
+func (c *Client) GenerativeModel(name string, publisher string) *GenerativeModel {
 	return &GenerativeModel{
 		c:        c,
 		name:     name,
-		fullName: fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/%s", c.projectID, c.location, name),
+		fullName: fmt.Sprintf("projects/%s/locations/%s/publishers/%s/models/%s", c.projectID, c.location, publisher, name),
 	}
 }
 
