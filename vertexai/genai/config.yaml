@@ -56,7 +56,8 @@ types:
       fields:
         MimeType:
           name: MIMEType
-      docVerb: contains
+      doc: 'contains binary data like images. Use [Text] for text.'
+      removeOtherDoc: true
 
     FileData:
       fields:

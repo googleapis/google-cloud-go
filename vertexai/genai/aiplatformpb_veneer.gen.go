@@ -24,10 +24,7 @@ import (
 	"cloud.google.com/go/vertexai/internal/support"
 )
 
-// Blob contains content blob.
-//
-// It's preferred to send as [text][google.cloud.aiplatform.v1beta1.Part.text]
-// directly rather than raw bytes.
+// Blob contains binary data like images. Use [Text] for text.
 type Blob struct {
 	// Required. The IANA standard MIME type of the source data.
 	MIMEType string
