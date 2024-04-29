@@ -18,10 +18,12 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"cloud.google.com/go/vertexai/genai"
 
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 // Your GCP project
