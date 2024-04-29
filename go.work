@@ -33,6 +33,7 @@ use (
 	./binaryauthorization
 	./certificatemanager
 	./channel
+	./chat
 	./cloudbuild
 	./cloudcontrolspartner
 	./clouddms
@@ -79,6 +80,7 @@ use (
 	./gsuiteaddons
 	./iam
 	./iap
+	./identitytoolkit
 	./ids
 	./internal/actions
 	./internal/aliasfix
