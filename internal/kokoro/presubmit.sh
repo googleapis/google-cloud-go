@@ -78,7 +78,7 @@ runPresubmitTests() {
 }
 
 SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/main...$KOKORO_GIT_COMMIT_google_cloud_go |
-  grep -Ev '(\.md$|^\.github)' || true)
+  grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' || true)
 
 if [ -z $SIGNIFICANT_CHANGES ]; then
   echo "No changes detected, skipping tests"

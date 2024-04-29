@@ -22,8 +22,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
-	pbt "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/googleapis/gax-go/v2"
+	pbt "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
