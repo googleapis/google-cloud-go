@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -3534,7 +3535,7 @@ func (c *readTensorboardBlobDataRESTClient) Trailer() metadata.MD {
 
 func (c *readTensorboardBlobDataRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *readTensorboardBlobDataRESTClient) Context() context.Context {
@@ -3543,12 +3544,12 @@ func (c *readTensorboardBlobDataRESTClient) Context() context.Context {
 
 func (c *readTensorboardBlobDataRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *readTensorboardBlobDataRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // WriteTensorboardExperimentData write time series data points of multiple TensorboardTimeSeries in multiple
