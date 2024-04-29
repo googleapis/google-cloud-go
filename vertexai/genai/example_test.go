@@ -18,12 +18,10 @@ import (
 	"context"
 	"fmt"
 	"log"
-	"os"
 
 	"cloud.google.com/go/vertexai/genai"
 
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 )
 
 // Your GCP project
@@ -57,7 +55,9 @@ func ExampleGenerativeModel_GenerateContent() {
 // for the complete set of configuration options.
 func ExampleGenerativeModel_GenerateContent_config() {
 	ctx := context.Background()
-	client, err := genai.NewClient(ctx, option.WithAPIKey(os.Getenv("GEMINI_API_KEY")))
+	const projectID = "YOUR PROJECT ID"
+	const location = "GCP LOCATION"
+	client, err := genai.NewClient(ctx, projectID, location)
 	if err != nil {
 		log.Fatal(err)
 	}

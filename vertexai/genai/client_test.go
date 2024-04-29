@@ -60,7 +60,6 @@ func TestLive(t *testing.T) {
 		checkMatch(t, got, `15.* cm|[1-9].* inches`)
 	})
 	t.Run("system-instructions", func(t *testing.T) {
-		t.Skip("feature not yet available")
 		model := client.GenerativeModel(*modelName)
 		model.Temperature = Ptr[float32](0)
 		model.SystemInstruction = &Content{
@@ -71,7 +70,7 @@ func TestLive(t *testing.T) {
 			t.Fatal(err)
 		}
 		got := responseString(resp)
-		checkMatch(t, got, `15.* cm|[1-9].* inches`)
+		checkMatch(t, got, `[1-9][0-9].* cm|[1-9].* inches`)
 		fmt.Println(got)
 
 	})
