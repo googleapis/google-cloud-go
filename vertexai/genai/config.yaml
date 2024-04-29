@@ -30,6 +30,13 @@ types:
       protoPrefix: SafetyRating_
       docVerb: specifies
 
+    SafetySetting_HarmBlockMethod:
+      name: HarmBlockMethod
+      protoPrefix: SafetyRating_
+      docVerb: specifies
+      valueNames:
+        SafetyRating_HARM_BLOCK_METHOD: HarmBlockMethodUnspecified
+
     Candidate_FinishReason:
       name: FinishReason
       protoPrefix: Candidate_
