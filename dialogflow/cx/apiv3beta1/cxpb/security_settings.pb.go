@@ -882,6 +882,9 @@ type SecuritySettings_RetentionWindowDays struct {
 	// for Agent Assist traffic), higher value will be ignored and use default.
 	// Setting a value higher than that has no effect. A missing value or
 	// setting to 0 also means we use default TTL.
+	// When data retention configuration is changed, it only applies to the data
+	// created after the change; the TTL of existing data created before the
+	// change stays intact.
 	RetentionWindowDays int32 `protobuf:"varint,6,opt,name=retention_window_days,json=retentionWindowDays,proto3,oneof"`
 }
 
@@ -910,6 +913,8 @@ type SecuritySettings_AudioExportSettings struct {
 	// Filename pattern for exported audio.
 	AudioExportPattern string `protobuf:"bytes,2,opt,name=audio_export_pattern,json=audioExportPattern,proto3" json:"audio_export_pattern,omitempty"`
 	// Enable audio redaction if it is true.
+	// Note that this only redacts end-user audio data;
+	// Synthesised audio from the virtual agent is not redacted.
 	EnableAudioRedaction bool `protobuf:"varint,3,opt,name=enable_audio_redaction,json=enableAudioRedaction,proto3" json:"enable_audio_redaction,omitempty"`
 	// File format for exported audio file. Currently only in telephony
 	// recordings.

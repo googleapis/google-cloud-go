@@ -209,6 +209,12 @@ func ExampleClient_ListCrawledUrls() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*websecurityscannerpb.ListCrawledUrlsResponse)
 	}
 }
 
@@ -265,6 +271,12 @@ func ExampleClient_ListFindings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*websecurityscannerpb.ListFindingsResponse)
 	}
 }
 
@@ -296,6 +308,12 @@ func ExampleClient_ListScanConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*websecurityscannerpb.ListScanConfigsResponse)
 	}
 }
 
@@ -327,6 +345,12 @@ func ExampleClient_ListScanRuns() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*websecurityscannerpb.ListScanRunsResponse)
 	}
 }
 

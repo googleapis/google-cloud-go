@@ -20,9 +20,9 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/duration"
-	"github.com/golang/protobuf/ptypes/timestamp"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func bestMomentInHistory() (*Operation, error) {
@@ -30,15 +30,12 @@ func bestMomentInHistory() (*Operation, error) {
 	if err != nil {
 		return nil, err
 	}
-	resp, err := ptypes.TimestampProto(t)
+	resp := timestamppb.New(t)
+	respAny, err := anypb.New(resp)
 	if err != nil {
 		return nil, err
 	}
-	respAny, err := ptypes.MarshalAny(resp)
-	if err != nil {
-		return nil, err
-	}
-	metaAny, err := ptypes.MarshalAny(ptypes.DurationProto(1 * time.Hour))
+	metaAny, err := anypb.New(durationpb.New(1 * time.Hour))
 	return &Operation{
 		proto: &pb.Operation{
 			Name:     "best-moment",
@@ -57,14 +54,14 @@ func ExampleOperation_Wait() {
 	if err != nil {
 		// TODO: Handle err.
 	}
-	var ts timestamp.Timestamp
+	var ts timestamppb.Timestamp
 	err = op.Wait(context.TODO(), &ts)
 	if err != nil && !op.Done() {
 		fmt.Println("failed to fetch operation status", err)
 	} else if err != nil && op.Done() {
 		fmt.Println("operation completed with error", err)
 	} else {
-		fmt.Println(ptypes.TimestampString(&ts))
+		fmt.Println(ts.AsTime().Format(time.RFC3339Nano))
 	}
 	// Output:
 	// 2009-11-10T23:00:00Z
@@ -79,18 +76,19 @@ func ExampleOperation_Metadata() {
 	// The operation might contain metadata.
 	// In this example, the metadata contains the estimated length of time
 	// the operation might take to complete.
-	var meta duration.Duration
+	var meta durationpb.Duration
 	if err := op.Metadata(&meta); err != nil {
 		// TODO: Handle err.
 	}
-	d, err := ptypes.Duration(&meta)
-	if err == ErrNoMetadata {
+	if err := meta.CheckValid(); err == ErrNoMetadata {
 		fmt.Println("no metadata")
+		return
 	} else if err != nil {
 		// TODO: Handle err.
-	} else {
-		fmt.Println(d)
+		return
 	}
+	fmt.Println(meta.AsDuration())
+
 	// Output:
 	// 1h0m0s
 }

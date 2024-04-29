@@ -607,7 +607,7 @@ func (p *parser) consumeStringContent(delim string, raw, unicode bool, name stri
 				if !(i+1 < len(p.s) && isHexDigit(p.s[i]) && isHexDigit(p.s[i+1])) {
 					return "", p.errorf("illegal escape sequence: hex escape sequence must be followed by 2 hex digits")
 				}
-				c, err := strconv.ParseUint(p.s[i:i+2], 16, 64)
+				c, err := strconv.ParseUint(p.s[i:i+2], 16, 8)
 				if err != nil {
 					return "", p.errorf("illegal escape sequence: invalid hex digits: %q: %v", p.s[i:i+2], err)
 				}
