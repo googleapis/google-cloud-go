@@ -21,8 +21,11 @@
 package servicemanagementpb
 
 import (
-	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	context "context"
+	reflect "reflect"
+	sync "sync"
+
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	serviceconfig "google.golang.org/genproto/googleapis/api/serviceconfig"
 	grpc "google.golang.org/grpc"
@@ -32,8 +35,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	anypb "google.golang.org/protobuf/types/known/anypb"
 	_ "google.golang.org/protobuf/types/known/emptypb"
-	reflect "reflect"
-	sync "sync"
 )
 
 const (
