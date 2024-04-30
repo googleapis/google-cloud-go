@@ -19,6 +19,7 @@ package dialogflow
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -1290,7 +1291,7 @@ func (c *participantsRESTClient) AnalyzeContent(ctx context.Context, req *dialog
 //
 // This method is not supported for the REST transport.
 func (c *participantsRESTClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
-	return nil, fmt.Errorf("StreamingAnalyzeContent not yet supported for REST clients")
+	return nil, errors.New("StreamingAnalyzeContent not yet supported for REST clients")
 }
 
 // SuggestArticles gets suggested articles for a participant based on specific historical

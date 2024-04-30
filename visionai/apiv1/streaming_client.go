@@ -19,6 +19,7 @@ package visionai
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -547,21 +548,21 @@ func (c *streamingGRPCClient) ListOperations(ctx context.Context, req *longrunni
 //
 // This method is not supported for the REST transport.
 func (c *streamingRESTClient) SendPackets(ctx context.Context, opts ...gax.CallOption) (visionaipb.StreamingService_SendPacketsClient, error) {
-	return nil, fmt.Errorf("SendPackets not yet supported for REST clients")
+	return nil, errors.New("SendPackets not yet supported for REST clients")
 }
 
 // ReceivePackets receive packets from the series.
 //
 // This method is not supported for the REST transport.
 func (c *streamingRESTClient) ReceivePackets(ctx context.Context, opts ...gax.CallOption) (visionaipb.StreamingService_ReceivePacketsClient, error) {
-	return nil, fmt.Errorf("ReceivePackets not yet supported for REST clients")
+	return nil, errors.New("ReceivePackets not yet supported for REST clients")
 }
 
 // ReceiveEvents receive events given the stream name.
 //
 // This method is not supported for the REST transport.
 func (c *streamingRESTClient) ReceiveEvents(ctx context.Context, opts ...gax.CallOption) (visionaipb.StreamingService_ReceiveEventsClient, error) {
-	return nil, fmt.Errorf("ReceiveEvents not yet supported for REST clients")
+	return nil, errors.New("ReceiveEvents not yet supported for REST clients")
 }
 
 // AcquireLease acquireLease acquires a lease.
