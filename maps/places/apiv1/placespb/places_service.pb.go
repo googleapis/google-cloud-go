@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,9 +22,6 @@ package placespb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	latlng "google.golang.org/genproto/googleapis/type/latlng"
@@ -33,6 +30,8 @@ import (
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -99,7 +98,9 @@ func (SearchNearbyRequest_RankPreference) EnumDescriptor() ([]byte, []int) {
 type SearchTextRequest_RankPreference int32
 
 const (
-	// RankPreference value not set. Will default to DISTANCE.
+	// For a categorical query such as "Restaurants in New York City", RELEVANCE
+	// is the default. For non-categorical queries such as "Mountain View, CA"
+	// we recommend that you leave rankPreference unset.
 	SearchTextRequest_RANK_PREFERENCE_UNSPECIFIED SearchTextRequest_RankPreference = 0
 	// Ranks results by distance.
 	SearchTextRequest_DISTANCE SearchTextRequest_RankPreference = 1
