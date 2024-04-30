@@ -6,9 +6,9 @@ require (
 	cloud.google.com/go v0.112.2
 	cloud.google.com/go/iam v1.1.7
 	cloud.google.com/go/longrunning v0.5.6
+	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.5.0
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.12.3
-	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.5.0
 	github.com/json-iterator/go v1.1.12
 	github.com/stretchr/testify v1.9.0
 	go.opencensus.io v0.24.0
@@ -41,7 +41,6 @@ require (
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/google/s2a-go v0.1.7 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
-	github.com/kr/text v0.2.0 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
