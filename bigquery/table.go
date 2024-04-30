@@ -1226,6 +1226,10 @@ type TableMetadataToUpdate struct {
 	// such as primary and foreign keys.
 	TableConstraints *TableConstraints
 
+	// MaxStaleness staleness of data that could be
+	// returned when the table (or stale MV) is queried.
+	MaxStaleness *IntervalValue
+
 	// The tags associated with this table. Tag
 	// keys are globally unique. See additional information on tags
 	// (https://cloud.google.com/iam/docs/tags-access-control#definitions).
@@ -1234,10 +1238,6 @@ type TableMetadataToUpdate struct {
 	// where 12345 is parent id. The value is the friendly short name of the
 	// tag value, e.g. "production".
 	ResourceTags map[string]string
-
-	// MaxStaleness staleness of data that could be
-	// returned when the table (or stale MV) is queried.
-	MaxStaleness *IntervalValue
 
 	labelUpdater
 }
