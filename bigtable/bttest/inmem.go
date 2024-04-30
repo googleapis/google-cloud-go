@@ -153,11 +153,10 @@ func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest)
 	s.mu.Unlock()
 
 	ct := &btapb.Table{
-		Name:                  tbl,
-		ColumnFamilies:        req.GetTable().GetColumnFamilies(),
-		Granularity:           req.GetTable().GetGranularity(),
-		DeletionProtection:    req.GetTable().GetDeletionProtection(),
-		AutomatedBackupConfig: req.GetTable().GetAutomatedBackupConfig(),
+		Name:               tbl,
+		ColumnFamilies:     req.GetTable().GetColumnFamilies(),
+		Granularity:        req.GetTable().GetGranularity(),
+		DeletionProtection: req.GetTable().GetDeletionProtection(),
 	}
 	if ct.Granularity == 0 {
 		ct.Granularity = btapb.Table_MILLIS
@@ -195,10 +194,9 @@ func (s *server) GetTable(ctx context.Context, req *btapb.GetTableRequest) (*bta
 	}
 
 	return &btapb.Table{
-		Name:                  tbl,
-		ColumnFamilies:        toColumnFamilies(tblIns.columnFamilies()),
-		DeletionProtection:    tblIns.isProtected,
-		AutomatedBackupConfig: tblIns.automatedBackupPolicyConfig,
+		Name:               tbl,
+		ColumnFamilies:     toColumnFamilies(tblIns.columnFamilies()),
+		DeletionProtection: tblIns.isProtected,
 	}, nil
 }
 
@@ -237,12 +235,6 @@ func (s *server) UpdateTable(ctx context.Context, req *btapb.UpdateTableRequest)
 	defer tbl.mu.Unlock()
 
 	tbl.isProtected = req.GetTable().GetDeletionProtection()
-
-	if req.GetTable().GetAutomatedBackupConfig() == nil {
-		tbl.automatedBackupPolicyConfig = nil
-	} else {
-		tbl.automatedBackupPolicyConfig = &btapb.Table_AutomatedBackupPolicy_{AutomatedBackupPolicy: req.GetTable().GetAutomatedBackupPolicy()}
-	}
 
 	res := &longrunning.Operation_Response{}
 	lro := &longrunning.Operation{
@@ -1398,12 +1390,11 @@ func (s *server) gcloop(done <-chan int) {
 }
 
 type table struct {
-	mu                          sync.RWMutex
-	counter                     uint64                              // increment by 1 when a new family is created
-	families                    map[string]*columnFamily            // keyed by plain family name
-	rows                        *btree.BTree                        // indexed by row key
-	isProtected                 bool                                // whether this table has deletion protection
-	automatedBackupPolicyConfig *btapb.Table_AutomatedBackupPolicy_ // automated backup policy config
+	mu          sync.RWMutex
+	counter     uint64                   // increment by 1 when a new family is created
+	families    map[string]*columnFamily // keyed by plain family name
+	rows        *btree.BTree             // indexed by row key
+	isProtected bool                     // whether this table has deletion protection
 }
 
 const btreeDegree = 16
@@ -1418,11 +1409,10 @@ func newTable(ctr *btapb.CreateTableRequest) *table {
 		}
 	}
 	return &table{
-		families:                    fams,
-		counter:                     c,
-		rows:                        btree.New(btreeDegree),
-		isProtected:                 ctr.GetTable().GetDeletionProtection(),
-		automatedBackupPolicyConfig: &btapb.Table_AutomatedBackupPolicy_{AutomatedBackupPolicy: ctr.GetTable().GetAutomatedBackupPolicy()},
+		families:    fams,
+		counter:     c,
+		rows:        btree.New(btreeDegree),
+		isProtected: ctr.GetTable().GetDeletionProtection(),
 	}
 }
 
