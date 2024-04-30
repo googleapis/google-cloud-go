@@ -21,15 +21,20 @@ import (
 	"fmt"
 	"io"
 	"math/big"
+	"net"
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/grpc_gcp"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -43,6 +48,8 @@ import (
 	. "cloud.google.com/go/spanner/internal/testutil"
 )
 
+var useGRPCgcp = strings.ToLower(os.Getenv("GCLOUD_TESTS_GOLANG_USE_GRPC_GCP")) == "true"
+
 func setupMockedTestServer(t *testing.T) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
 	return setupMockedTestServerWithConfig(t, ClientConfig{})
 }
@@ -52,6 +59,10 @@ func setupMockedTestServerWithConfig(t *testing.T, config ClientConfig) (server 
 }
 
 func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config ClientConfig, clientOptions []option.ClientOption) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
+	return setupMockedTestServerWithConfigAndGCPMultiendpointPool(t, config, clientOptions, nil)
+}
+
+func setupMockedTestServerWithConfigAndGCPMultiendpointPool(t *testing.T, config ClientConfig, clientOptions []option.ClientOption, poolCfg *grpc_gcp.ChannelPoolConfig) (server *MockedSpannerInMemTestServer, client *Client, teardown func()) {
 	grpcHeaderChecker := &itestutil.HeadersEnforcer{
 		OnFailure: t.Fatalf,
 		Checkers: []*itestutil.HeaderChecker{
@@ -91,7 +102,23 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 	opts = append(opts, clientOptions...)
 	ctx := context.Background()
 	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
-	client, err := NewClientWithConfig(ctx, formattedDatabase, config, opts...)
+	var err error
+	if useGRPCgcp {
+		gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+			GRPCgcpConfig: &grpc_gcp.ApiConfig{
+				ChannelPool: poolCfg,
+			},
+			MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+				"default": {
+					Endpoints: []string{server.ServerAddress},
+				},
+			},
+			Default: "default",
+		}
+		client, _, err = NewMultiEndpointClientWithConfig(ctx, formattedDatabase, config, gmeCfg, opts...)
+	} else {
+		client, err = NewClientWithConfig(ctx, formattedDatabase, config, opts...)
+	}
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -99,6 +126,47 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 		client.Close()
 		serverTeardown()
 	}
+}
+
+func makeClient(ctx context.Context, database string, target string, opts ...option.ClientOption) (*Client, error) {
+	if !useGRPCgcp {
+		return NewClient(ctx, database, opts...)
+	}
+	c, _, err := NewMultiEndpointClient(
+		ctx,
+		database,
+		&grpcgcp.GCPMultiEndpointOptions{
+			MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+				"default": {
+					Endpoints: []string{target},
+				},
+			},
+			Default: "default",
+		},
+		opts...,
+	)
+	return c, err
+}
+
+func makeClientWithConfig(ctx context.Context, database string, config ClientConfig, target string, opts ...option.ClientOption) (*Client, error) {
+	if !useGRPCgcp {
+		return NewClientWithConfig(ctx, database, config, opts...)
+	}
+	c, _, err := NewMultiEndpointClientWithConfig(
+		ctx,
+		database,
+		config,
+		&grpcgcp.GCPMultiEndpointOptions{
+			MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+				"default": {
+					Endpoints: []string{target},
+				},
+			},
+			Default: "default",
+		},
+		opts...,
+	)
+	return c, err
 }
 
 // Test validDatabaseName()
@@ -127,6 +195,201 @@ func TestReadOnlyTransactionClose(t *testing.T) {
 	c := &Client{}
 	tx := c.ReadOnlyTransaction()
 	tx.Close()
+}
+
+func TestClient_MultiEndpoint(t *testing.T) {
+	if !useGRPCgcp {
+		t.Skip("gRPC-GCP only test")
+	}
+	t.Parallel()
+
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServerWithAddr(t, "localhost:0")
+	defer serverTeardown()
+
+	mirrorAvailable := true
+	connCount := uint32(0)
+
+	makeMirror := func(enable *bool) string {
+		lis, err := net.Listen("tcp", "localhost:0")
+		if err != nil {
+			t.Fatal(err)
+		}
+
+		proxy := func(connA, connB net.Conn) {
+			buf := make([]byte, 1024)
+			for {
+				n, err := connA.Read(buf)
+				if !*enable || err == io.EOF {
+					connA.Close()
+					return
+				}
+				if err != nil {
+					t.Logf("error reading from conn: %v", err)
+					return
+				}
+				_, err = connB.Write(buf[:n])
+				if err != nil {
+					t.Logf("error writing to conn: %v", err)
+					return
+				}
+			}
+		}
+
+		handleConn := func(c net.Conn) {
+			if !*enable {
+				c.Close()
+				return
+			}
+
+			// Open connection to the mocked server.
+			conn, err := net.Dial("tcp", server.ServerAddress)
+			if err != nil {
+				t.Logf("cannot open connection: %v", err)
+				return
+			}
+
+			// Close connections when mirror is disabled.
+			go func() {
+				for *enable {
+					time.Sleep(time.Millisecond * 5)
+				}
+				c.Close()
+				conn.Close()
+			}()
+
+			go proxy(c, conn)
+			go proxy(conn, c)
+
+			atomic.AddUint32(&connCount, 1)
+		}
+
+		// Serve.
+		go func() {
+			for {
+				c, err := lis.Accept()
+				if err != nil {
+					t.Logf("cannot accept connection: %v", err)
+					return
+				}
+				go handleConn(c)
+			}
+		}()
+
+		return lis.Addr().String()
+	}
+
+	mirrorAddress := makeMirror(&mirrorAvailable)
+
+	stable := true
+	stableMirrorAddress := makeMirror(&stable)
+
+	// Configuring MultiEndpoint with two endpoints.
+	gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+		MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+			"default": {
+				Endpoints: []string{
+					mirrorAddress,
+					stableMirrorAddress,
+				},
+			},
+		},
+		Default: "default",
+	}
+
+	ctx := context.Background()
+	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	client, gme, err := NewMultiEndpointClient(ctx, formattedDatabase, gmeCfg, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	// Let both endpoints connect.
+	for atomic.LoadUint32(&connCount) < numChannels*2 {
+		time.Sleep(time.Millisecond * 5)
+	}
+
+	// Works via mirror.
+	err = executeSingerQueryWithTimeout(ctx, client.Single(), time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Breaking the mirror.
+	mirrorAvailable = false
+
+	// Let some time to detect breakage.
+	time.Sleep(time.Millisecond * 20)
+
+	// Should work via stable mirror.
+	err = executeSingerQueryWithTimeout(ctx, client.Single(), time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Reversing the order of endpoints.
+	gmeCfg = &grpcgcp.GCPMultiEndpointOptions{
+		MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+			"default": {
+				Endpoints: []string{
+					stableMirrorAddress,
+					mirrorAddress,
+				},
+			},
+		},
+		Default: "default",
+	}
+	if err := gme.UpdateMultiEndpoints(gmeCfg); err != nil {
+		t.Fatal(err)
+	}
+
+	// Should work in reverse order.
+	err = executeSingerQueryWithTimeout(ctx, client.Single(), time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Moving the stable endpoint to a different MultiEndpoint.
+	gmeCfg = &grpcgcp.GCPMultiEndpointOptions{
+		MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+			"default": {
+				Endpoints: []string{
+					mirrorAddress,
+				},
+			},
+			"stable": {
+				Endpoints: []string{
+					stableMirrorAddress,
+				},
+			},
+		},
+		Default: "default",
+	}
+	if err := gme.UpdateMultiEndpoints(gmeCfg); err != nil {
+		t.Fatal(err)
+	}
+
+	// Should fail as the mirror is the only endpoint and it is broken.
+	err = executeSingerQueryWithTimeout(ctx, client.Single(), time.Millisecond*100)
+	if err == nil {
+		t.Fatalf("deadline exceeded error expected, got: %v", err)
+	}
+
+	// Should work via stable MultiEndpoint.
+	stableCtx := grpcgcp.NewMEContext(ctx, "stable")
+	err = executeSingerQueryWithTimeout(stableCtx, client.Single(), time.Second)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Restoring the mirror.
+	mirrorAvailable = true
+
+	// Should work via the mirror again by default.
+	err = executeSingerQueryWithTimeout(ctx, client.Single(), time.Second*3)
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestClient_Single(t *testing.T) {
@@ -652,6 +915,12 @@ func testSingleQuery(t *testing.T, serverError error) error {
 }
 
 func executeSingerQuery(ctx context.Context, tx *ReadOnlyTransaction) error {
+	return executeSingerQueryWithRowFunc(ctx, tx, nil)
+}
+
+func executeSingerQueryWithTimeout(ctx context.Context, tx *ReadOnlyTransaction, to time.Duration) error {
+	ctx, cancel := context.WithTimeout(ctx, to)
+	defer cancel()
 	return executeSingerQueryWithRowFunc(ctx, tx, nil)
 }
 
@@ -3548,12 +3817,31 @@ func TestClient_NumChannels(t *testing.T) {
 	t.Parallel()
 
 	configuredNumChannels := 8
-	_, client, teardown := setupMockedTestServerWithConfig(
-		t,
-		ClientConfig{NumChannels: configuredNumChannels},
-	)
+	gcpPoolNumChannels := 5
+	var client *Client
+	var teardown func()
+	if useGRPCgcp {
+		_, client, teardown = setupMockedTestServerWithConfigAndGCPMultiendpointPool(
+			t,
+			ClientConfig{NumChannels: configuredNumChannels},
+			[]option.ClientOption{},
+			&grpc_gcp.ChannelPoolConfig{
+				MinSize: uint32(gcpPoolNumChannels),
+				MaxSize: uint32(gcpPoolNumChannels),
+			},
+		)
+	} else {
+		_, client, teardown = setupMockedTestServerWithConfig(
+			t,
+			ClientConfig{NumChannels: configuredNumChannels},
+		)
+	}
 	defer teardown()
-	if g, w := client.sc.connPool.Num(), configuredNumChannels; g != w {
+	w := configuredNumChannels
+	if useGRPCgcp {
+		w = gcpPoolNumChannels
+	}
+	if g := client.sc.connPool.Num(); g != w {
 		t.Fatalf("NumChannels mismatch\nGot: %v\nWant: %v", g, w)
 	}
 }
@@ -3562,13 +3850,32 @@ func TestClient_WithGRPCConnectionPool(t *testing.T) {
 	t.Parallel()
 
 	configuredConnPool := 8
-	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(
-		t,
-		ClientConfig{},
-		[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
-	)
+	gcpPoolNumChannels := 5
+	var client *Client
+	var teardown func()
+	if useGRPCgcp {
+		_, client, teardown = setupMockedTestServerWithConfigAndGCPMultiendpointPool(
+			t,
+			ClientConfig{},
+			[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
+			&grpc_gcp.ChannelPoolConfig{
+				MinSize: uint32(gcpPoolNumChannels),
+				MaxSize: uint32(gcpPoolNumChannels),
+			},
+		)
+	} else {
+		_, client, teardown = setupMockedTestServerWithConfigAndClientOptions(
+			t,
+			ClientConfig{},
+			[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
+		)
+	}
 	defer teardown()
-	if g, w := client.sc.connPool.Num(), configuredConnPool; g != w {
+	w := configuredConnPool
+	if useGRPCgcp {
+		w = gcpPoolNumChannels
+	}
+	if g := client.sc.connPool.Num(); g != w {
 		t.Fatalf("NumChannels mismatch\nGot: %v\nWant: %v", g, w)
 	}
 }
@@ -3578,13 +3885,32 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels(t *testing.T) {
 
 	configuredNumChannels := 8
 	configuredConnPool := 8
-	_, client, teardown := setupMockedTestServerWithConfigAndClientOptions(
-		t,
-		ClientConfig{NumChannels: configuredNumChannels},
-		[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
-	)
+	gcpPoolNumChannels := 5
+	var client *Client
+	var teardown func()
+	if useGRPCgcp {
+		_, client, teardown = setupMockedTestServerWithConfigAndGCPMultiendpointPool(
+			t,
+			ClientConfig{NumChannels: configuredNumChannels},
+			[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
+			&grpc_gcp.ChannelPoolConfig{
+				MaxSize: uint32(gcpPoolNumChannels),
+				MinSize: uint32(gcpPoolNumChannels),
+			},
+		)
+	} else {
+		_, client, teardown = setupMockedTestServerWithConfigAndClientOptions(
+			t,
+			ClientConfig{NumChannels: configuredNumChannels},
+			[]option.ClientOption{option.WithGRPCConnectionPool(configuredConnPool)},
+		)
+	}
 	defer teardown()
-	if g, w := client.sc.connPool.Num(), configuredConnPool; g != w {
+	w := configuredConnPool
+	if useGRPCgcp {
+		w = gcpPoolNumChannels
+	}
+	if g := client.sc.connPool.Num(); g != w {
 		t.Fatalf("NumChannels mismatch\nGot: %v\nWant: %v", g, w)
 	}
 }
@@ -3596,11 +3922,21 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	configuredNumChannels := 8
 	configuredConnPool := 16
 
-	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 	opts = append(opts, option.WithGRPCConnectionPool(configuredConnPool))
 
-	_, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{NumChannels: configuredNumChannels}, opts...)
+	config := ClientConfig{NumChannels: configuredNumChannels}
+	_, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
+	if useGRPCgcp {
+		// GCPMultiEndpoint channel pool config is preceeding default pool config.
+		// I.e., pool config is ignored when GCPMultiEndpoint is used.
+		if err != nil {
+			t.Fatalf("Error mismatch\nGot: %v\nWant: nil", err)
+		}
+		return
+	}
+
 	msg := "Connection pool mismatch:"
 	if err == nil {
 		t.Fatalf("Error mismatch\nGot: nil\nWant: %s", msg)
@@ -3620,11 +3956,12 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 func TestClient_WithCustomBatchTimeout(t *testing.T) {
 	t.Parallel()
 
-	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
 	wantBatchTimeout := time.Second * 42
-	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{BatchTimeout: wantBatchTimeout}, opts...)
+	config := ClientConfig{BatchTimeout: wantBatchTimeout}
+	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
@@ -3636,11 +3973,11 @@ func TestClient_WithCustomBatchTimeout(t *testing.T) {
 func TestClient_WithoutCustomBatchTimeout(t *testing.T) {
 	t.Parallel()
 
-	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
 	wantBatchTimeout := time.Minute
-	client, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{}, opts...)
+	client, err := makeClient(context.Background(), "projects/p/instances/i/databases/d", server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
@@ -3939,11 +4276,14 @@ func TestClient_EmulatorWithCredentialsFile(t *testing.T) {
 
 	os.Setenv("SPANNER_EMULATOR_HOST", "localhost:1234")
 
-	client, err := NewClientWithConfig(
+	opts := []option.ClientOption{
+		option.WithCredentialsFile("/path/to/key.json"),
+	}
+	client, err := makeClient(
 		context.Background(),
 		"projects/p/instances/i/databases/d",
-		ClientConfig{},
-		option.WithCredentialsFile("/path/to/key.json"),
+		"localhost:1234",
+		opts...,
 	)
 	defer client.Close()
 	if err != nil {
