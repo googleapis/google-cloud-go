@@ -5385,6 +5385,11 @@ func TestIntegration_Scopes(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_WithCreds(t *testing.T) {
+	// Skip before getting creds if running with -short
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
 	ctx := context.Background()
 
 	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
@@ -5416,6 +5421,11 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
+	// Skip before getting creds if running with -short
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
 	ctx := context.Background()
 
 	// Create another client to test the sign byte function as well
@@ -5456,6 +5466,11 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
+	// Skip before getting creds if running with -short
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
 	// By default we are authed with a token source, so don't have the context to
 	// read some of the fields from the keyfile.
 	// Here we explictly send the key to the client.

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package internal
+package bigquery
 
-// Version is the current tagged release of the library.
-const Version = "1.61.0"
+// RangeValue represents a continuous RANGE of values of a given element
+// type.  The supported element types for RANGE are currently the BigQuery
+// DATE, DATETIME, and TIMESTAMP, types.
+type RangeValue struct {
+	// The start value of the range.  A missing value represents an
+	// unbounded start.
+	Start Value `json:"start"`
+
+	// The end value of the range.  A missing value represents an
+	// unbounded end.
+	End Value `json:"end"`
+}
