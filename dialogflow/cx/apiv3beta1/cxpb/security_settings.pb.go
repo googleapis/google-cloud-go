@@ -22,9 +22,6 @@ package cxpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -148,7 +147,8 @@ type SecuritySettings_RetentionStrategy int32
 const (
 	// Retains the persisted data with Dialogflow's internal default 365d TTLs.
 	SecuritySettings_RETENTION_STRATEGY_UNSPECIFIED SecuritySettings_RetentionStrategy = 0
-	// Removes data when the conversation ends. If there is no [Conversation][]
+	// Removes data when the conversation ends. If there is no
+	// [Conversation][google.cloud.dialogflow.cx.v3beta1.Conversation]
 	// explicitly established, a default conversation ends when the
 	// corresponding Dialogflow session ends.
 	SecuritySettings_REMOVE_AFTER_CONVERSATION SecuritySettings_RetentionStrategy = 1
