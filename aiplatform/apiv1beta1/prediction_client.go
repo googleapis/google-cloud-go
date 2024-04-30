@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -1265,7 +1266,7 @@ func (c *predictionRESTClient) DirectRawPredict(ctx context.Context, req *aiplat
 //
 // This method is not supported for the REST transport.
 func (c *predictionRESTClient) StreamDirectPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamDirectPredictClient, error) {
-	return nil, fmt.Errorf("StreamDirectPredict not yet supported for REST clients")
+	return nil, errors.New("StreamDirectPredict not yet supported for REST clients")
 }
 
 // StreamDirectRawPredict perform a streaming online prediction request to a gRPC model server for
@@ -1273,7 +1274,7 @@ func (c *predictionRESTClient) StreamDirectPredict(ctx context.Context, opts ...
 //
 // This method is not supported for the REST transport.
 func (c *predictionRESTClient) StreamDirectRawPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamDirectRawPredictClient, error) {
-	return nil, fmt.Errorf("StreamDirectRawPredict not yet supported for REST clients")
+	return nil, errors.New("StreamDirectRawPredict not yet supported for REST clients")
 }
 
 // StreamingPredict perform a streaming online prediction request for Vertex first-party
@@ -1281,7 +1282,7 @@ func (c *predictionRESTClient) StreamDirectRawPredict(ctx context.Context, opts 
 //
 // This method is not supported for the REST transport.
 func (c *predictionRESTClient) StreamingPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingPredictClient, error) {
-	return nil, fmt.Errorf("StreamingPredict not yet supported for REST clients")
+	return nil, errors.New("StreamingPredict not yet supported for REST clients")
 }
 
 // ServerStreamingPredict perform a server-side streaming online prediction request for Vertex
@@ -1369,7 +1370,7 @@ func (c *serverStreamingPredictRESTClient) Trailer() metadata.MD {
 
 func (c *serverStreamingPredictRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *serverStreamingPredictRESTClient) Context() context.Context {
@@ -1378,19 +1379,19 @@ func (c *serverStreamingPredictRESTClient) Context() context.Context {
 
 func (c *serverStreamingPredictRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *serverStreamingPredictRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // StreamingRawPredict perform a streaming online prediction request through gRPC.
 //
 // This method is not supported for the REST transport.
 func (c *predictionRESTClient) StreamingRawPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingRawPredictClient, error) {
-	return nil, fmt.Errorf("StreamingRawPredict not yet supported for REST clients")
+	return nil, errors.New("StreamingRawPredict not yet supported for REST clients")
 }
 
 // Explain perform an online explanation.
@@ -1670,7 +1671,7 @@ func (c *streamGenerateContentRESTClient) Trailer() metadata.MD {
 
 func (c *streamGenerateContentRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamGenerateContentRESTClient) Context() context.Context {
@@ -1679,12 +1680,12 @@ func (c *streamGenerateContentRESTClient) Context() context.Context {
 
 func (c *streamGenerateContentRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamGenerateContentRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // ChatCompletions exposes an OpenAI-compatible endpoint for chat completions.
@@ -1772,7 +1773,7 @@ func (c *chatCompletionsRESTClient) Trailer() metadata.MD {
 
 func (c *chatCompletionsRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *chatCompletionsRESTClient) Context() context.Context {
@@ -1781,12 +1782,12 @@ func (c *chatCompletionsRESTClient) Context() context.Context {
 
 func (c *chatCompletionsRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *chatCompletionsRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // GetLocation gets information about a location.

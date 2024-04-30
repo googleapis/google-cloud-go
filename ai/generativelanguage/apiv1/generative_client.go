@@ -19,6 +19,7 @@ package generativelanguage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -766,7 +767,7 @@ func (c *streamGenerateContentRESTClient) Trailer() metadata.MD {
 
 func (c *streamGenerateContentRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamGenerateContentRESTClient) Context() context.Context {
@@ -775,12 +776,12 @@ func (c *streamGenerateContentRESTClient) Context() context.Context {
 
 func (c *streamGenerateContentRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamGenerateContentRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // EmbedContent generates an embedding from the model given an input Content.
