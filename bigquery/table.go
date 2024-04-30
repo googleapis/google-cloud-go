@@ -160,6 +160,10 @@ type TableMetadata struct {
 	// where 12345 is parent id. The value is the friendly short name of the
 	// tag value, e.g. "production".
 	ResourceTags map[string]string
+
+	// MaxStaleness of data that could be returned when materialized
+	// view is queried.
+	MaxStaleness *IntervalValue
 }
 
 // TableConstraints defines the primary key and foreign key of a table.
@@ -333,6 +337,8 @@ type MaterializedViewDefinition struct {
 
 	// MaxStaleness of data that could be returned when materialized
 	// view is queried.
+	//
+	// Deprecated: use Table level MaxStaleness.
 	MaxStaleness *IntervalValue
 }
 
@@ -817,6 +823,9 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 			}
 		}
 	}
+	if tm.MaxStaleness != nil {
+		t.MaxStaleness = tm.MaxStaleness.String()
+	}
 	if tm.ResourceTags != nil {
 		t.ResourceTags = make(map[string]string)
 		for k, v := range tm.ResourceTags {
@@ -941,6 +950,9 @@ func bqToTableMetadata(t *bq.Table, c *Client) (*TableMetadata, error) {
 			PrimaryKey:  bqToPrimaryKey(t.TableConstraints),
 			ForeignKeys: bqToForeignKeys(t.TableConstraints, c),
 		}
+	}
+	if t.MaxStaleness != "" {
+		md.MaxStaleness, _ = ParseInterval(t.MaxStaleness)
 	}
 	if t.ResourceTags != nil {
 		md.ResourceTags = make(map[string]string)
@@ -1122,6 +1134,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 			t.TableConstraints.ForceSendFields = append(t.TableConstraints.ForceSendFields, "ForeignKeys")
 		}
 	}
+	if tm.MaxStaleness != nil {
+		t.MaxStaleness = tm.MaxStaleness.String()
+		forceSend("MaxStaleness")
+	}
 	if tm.ResourceTags != nil {
 		t.ResourceTags = make(map[string]string)
 		for k, v := range tm.ResourceTags {
@@ -1218,6 +1234,10 @@ type TableMetadataToUpdate struct {
 	// where 12345 is parent id. The value is the friendly short name of the
 	// tag value, e.g. "production".
 	ResourceTags map[string]string
+
+	// MaxStaleness of data that could be returned when materialized
+	// view is queried.
+	MaxStaleness *IntervalValue
 
 	labelUpdater
 }
