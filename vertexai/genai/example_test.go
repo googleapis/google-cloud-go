@@ -51,6 +51,33 @@ func ExampleGenerativeModel_GenerateContent() {
 	printResponse(resp)
 }
 
+// This example shows how to a configure a model. See [GenerationConfig]
+// for the complete set of configuration options.
+func ExampleGenerativeModel_GenerateContent_config() {
+	ctx := context.Background()
+	const projectID = "YOUR PROJECT ID"
+	const location = "GCP LOCATION"
+	client, err := genai.NewClient(ctx, projectID, location)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+
+	model := client.GenerativeModel("gemini-1.0-pro")
+	model.SetTemperature(0.9)
+	model.SetTopP(0.5)
+	model.SetTopK(20)
+	model.SetMaxOutputTokens(100)
+	model.SystemInstruction = &genai.Content{
+		Parts: []genai.Part{genai.Text("You are Yoda from Star Wars.")},
+	}
+	resp, err := model.GenerateContent(ctx, genai.Text("What is the average size of a swallow?"))
+	if err != nil {
+		log.Fatal(err)
+	}
+	printResponse(resp)
+}
+
 func ExampleGenerativeModel_GenerateContentStream() {
 	ctx := context.Background()
 	client, err := genai.NewClient(ctx, projectID, location)
