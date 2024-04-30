@@ -424,6 +424,7 @@ func TestBatchCreateSessions_ServerReturnsLessThanRequestedSessions(t *testing.T
 }
 
 func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/10070")
 	t.Parallel()
 
 	numChannels := 4
