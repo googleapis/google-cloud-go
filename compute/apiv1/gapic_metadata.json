@@ -2145,6 +2145,11 @@
                 "Patch"
               ]
             },
+            "PerformMaintenance": {
+              "methods": [
+                "PerformMaintenance"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"

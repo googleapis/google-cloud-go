@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.25.1",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -16326,6 +16326,52 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1.NodeGroups.Patch",
+          "service": {
+            "shortName": "NodeGroups",
+            "fullName": "google.cloud.compute.v1.NodeGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NodeGroups_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance perform maintenance on a subset of nodes in the node group.",
+      "file": "NodeGroupsClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.NodeGroupsClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceNodeGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NodeGroupsClient",
+          "fullName": "google.cloud.compute.v1.NodeGroupsClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.NodeGroups.PerformMaintenance",
           "service": {
             "shortName": "NodeGroups",
             "fullName": "google.cloud.compute.v1.NodeGroups"
