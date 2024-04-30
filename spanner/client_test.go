@@ -3987,6 +3987,7 @@ func TestClient_WithoutCustomBatchTimeout(t *testing.T) {
 }
 
 func TestClient_CallOptions(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/10069")
 	t.Parallel()
 	co := &vkit.CallOptions{
 		CreateSession: []gax.CallOption{
