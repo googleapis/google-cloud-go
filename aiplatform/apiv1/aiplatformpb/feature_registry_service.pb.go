@@ -52,7 +52,7 @@ type CreateFeatureGroupRequest struct {
 
 	// Required. The resource name of the Location to create FeatureGroups.
 	// Format:
-	// `projects/{project}/locations/{location}'`
+	// `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The FeatureGroup to create.
 	FeatureGroup *FeatureGroup `protobuf:"bytes,2,opt,name=feature_group,json=featureGroup,proto3" json:"feature_group,omitempty"`

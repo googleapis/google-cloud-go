@@ -503,3 +503,5 @@ replace cloud.google.com/go/backupdr => ../../../backupdr
 replace cloud.google.com/go/chat => ../../../chat
 
 replace cloud.google.com/go/identitytoolkit => ../../../identitytoolkit
+
+replace cloud.google.com/go/streetview => ../../../streetview

@@ -381,6 +381,9 @@
         "storagetransfer": {
             "component": "storagetransfer"
         },
+        "streetview": {
+            "component": "streetview"
+        },
         "support": {
             "component": "support"
         },
