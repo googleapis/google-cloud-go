@@ -2549,6 +2549,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/streetview/publish/apiv1": {
+    "api_shortname": "streetviewpublish",
+    "distribution_name": "cloud.google.com/go/streetview/publish/apiv1",
+    "description": "Street View Publish API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/streetview/publish/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/support/apiv2": {
     "api_shortname": "cloudsupport",
     "distribution_name": "cloud.google.com/go/support/apiv2",

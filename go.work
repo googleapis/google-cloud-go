@@ -154,6 +154,7 @@ use (
 	./storage/internal/benchmarks
 	./storageinsights
 	./storagetransfer
+	./streetview
 	./support
 	./talent
 	./telcoautomation
