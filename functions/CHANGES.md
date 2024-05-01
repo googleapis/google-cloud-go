@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.1...functions/v1.16.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **functions:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.0...functions/v1.16.1) (2024-03-14)
 
 
@@ -185,4 +192,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out functions as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

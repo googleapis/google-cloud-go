@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/documentai/apiv1",
-    "version": "1.26.1",
+    "version": "1.27.0",
     "language": "GO",
     "apis": [
       {
@@ -105,7 +105,7 @@
     {
       "regionTag": "documentai_v1_generated_DocumentProcessorService_CreateProcessor_sync",
       "title": "documentai CreateProcessor Sample",
-      "description": "CreateProcessor creates a processor from the\n[ProcessorType][google.cloud.documentai.v1.ProcessorType] provided. The\nprocessor will be at `ENABLED` state by default after its creation.",
+      "description": "CreateProcessor creates a processor from the [ProcessorType][google.cloud.documentai.v1.ProcessorType] provided.\nThe processor will be at `ENABLED` state by default after its creation.",
       "file": "DocumentProcessorClient/CreateProcessor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -427,7 +427,7 @@
     {
       "regionTag": "documentai_v1_generated_DocumentProcessorService_FetchProcessorTypes_sync",
       "title": "documentai FetchProcessorTypes Sample",
-      "description": "FetchProcessorTypes fetches processor types. Note that we don't use\n[ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes]\nhere, because it isn't paginated.",
+      "description": "FetchProcessorTypes fetches processor types. Note that we don't use [ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes]\nhere, because it isn't paginated.",
       "file": "DocumentProcessorClient/FetchProcessorTypes/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1117,7 +1117,7 @@
     {
       "regionTag": "documentai_v1_generated_DocumentProcessorService_SetDefaultProcessorVersion_sync",
       "title": "documentai SetDefaultProcessorVersion Sample",
-      "description": "SetDefaultProcessorVersion set the default (active) version of a\n[Processor][google.cloud.documentai.v1.Processor] that will be used in\n[ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument]\nand\n[BatchProcessDocuments][google.cloud.documentai.v1.DocumentProcessorService.BatchProcessDocuments].",
+      "description": "SetDefaultProcessorVersion set the default (active) version of a [Processor][google.cloud.documentai.v1.Processor] that will be used in\n[ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument] and\n[BatchProcessDocuments][google.cloud.documentai.v1.DocumentProcessorService.BatchProcessDocuments].",
       "file": "DocumentProcessorClient/SetDefaultProcessorVersion/main.go",
       "language": "GO",
       "clientMethod": {

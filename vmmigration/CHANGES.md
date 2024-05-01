@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.6...vmmigration/v1.7.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **vmmigration:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **vmmigration:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.5...vmmigration/v1.7.6) (2024-03-14)
 
 
@@ -128,4 +136,3 @@
 ## v0.1.0
 
 - feat(vmmigration): start generating clients
-

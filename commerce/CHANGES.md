@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.5...commerce/v0.1.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **commerce:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.4...commerce/v0.1.5) (2024-03-14)
 
 
@@ -44,4 +51,3 @@
 * **commerce:** Start generating apiv1 ([#8322](https://github.com/googleapis/google-cloud-go/issues/8322)) ([db4f48b](https://github.com/googleapis/google-cloud-go/commit/db4f48bc9d5366f524f1fce82f2fea8094ea8c1e))
 
 ## Changes
-

@@ -659,6 +659,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/chat/apiv1": {
+    "api_shortname": "chat",
+    "distribution_name": "cloud.google.com/go/chat/apiv1",
+    "description": "Google Chat API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/chat/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/cloudbuild/apiv1/v2": {
     "api_shortname": "cloudbuild",
     "distribution_name": "cloud.google.com/go/cloudbuild/apiv1/v2",
@@ -1376,6 +1386,16 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/iap/latest/apiv1",
+    "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/identitytoolkit/apiv2": {
+    "api_shortname": "identitytoolkit",
+    "distribution_name": "cloud.google.com/go/identitytoolkit/apiv2",
+    "description": "Identity Toolkit API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/identitytoolkit/latest/apiv2",
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
@@ -2339,6 +2359,16 @@
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/shopping/merchant/conversions/apiv1beta": {
+    "api_shortname": "merchantapi",
+    "distribution_name": "cloud.google.com/go/shopping/merchant/conversions/apiv1beta",
+    "description": "Merchant API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/conversions/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/shopping/merchant/inventories/apiv1beta": {
     "api_shortname": "merchantapi",
     "distribution_name": "cloud.google.com/go/shopping/merchant/inventories/apiv1beta",
@@ -2346,6 +2376,26 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/inventories/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/shopping/merchant/lfp/apiv1beta": {
+    "api_shortname": "merchantapi",
+    "distribution_name": "cloud.google.com/go/shopping/merchant/lfp/apiv1beta",
+    "description": "Merchant API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/lfp/apiv1beta",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/shopping/merchant/notifications/apiv1beta": {
+    "api_shortname": "merchantapi",
+    "distribution_name": "cloud.google.com/go/shopping/merchant/notifications/apiv1beta",
+    "description": "Merchant API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/shopping/latest/merchant/notifications/apiv1beta",
     "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
@@ -2462,7 +2512,7 @@
   "cloud.google.com/go/storage/control/apiv2": {
     "api_shortname": "storage",
     "distribution_name": "cloud.google.com/go/storage/control/apiv2",
-    "description": "Cloud Storage API",
+    "description": "Storage Control API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/storage/latest/control/apiv2",
@@ -2497,6 +2547,16 @@
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/storagetransfer/latest/apiv1",
     "release_level": "stable",
+    "library_type": "GAPIC_AUTO"
+  },
+  "cloud.google.com/go/streetview/publish/apiv1": {
+    "api_shortname": "streetviewpublish",
+    "distribution_name": "cloud.google.com/go/streetview/publish/apiv1",
+    "description": "Street View Publish API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/streetview/latest/publish/apiv1",
+    "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/support/apiv2": {

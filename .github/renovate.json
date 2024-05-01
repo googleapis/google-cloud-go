@@ -13,6 +13,7 @@
     "commitMessageAction": "update",
     "groupName": "deps",
     "ignoreDeps": [
+        "go.opentelemetry.io/contrib/detectors/gcp",
         "go.opentelemetry.io/otel",
         "go.opentelemetry.io/otel/metric",
         "go.opentelemetry.io/otel/sdk",

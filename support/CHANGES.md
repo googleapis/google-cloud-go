@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.6](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.5...support/v1.0.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **support:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.0.5](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.4...support/v1.0.5) (2024-03-14)
 
 
@@ -73,4 +80,3 @@
 * **support:** Start generating apiv2 ([#7879](https://github.com/googleapis/google-cloud-go/issues/7879)) ([e882c64](https://github.com/googleapis/google-cloud-go/commit/e882c647e58564bc6e4265d1424df22ab0eb0e2b))
 
 ## Changes
-

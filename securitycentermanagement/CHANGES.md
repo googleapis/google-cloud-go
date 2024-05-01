@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.8](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.7...securitycentermanagement/v0.1.8) (2024-05-01)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.1.7](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.6...securitycentermanagement/v0.1.7) (2024-03-25)
 
 
@@ -58,4 +65,3 @@
 * **securitycentermanagement:** Security Center Management API ([#9068](https://github.com/googleapis/google-cloud-go/issues/9068)) ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
 
 ## Changes
-

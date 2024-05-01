@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.2.1...telcoautomation/v0.2.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **telcoautomation:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/telcoautomation/v0.2.0...telcoautomation/v0.2.1) (2024-03-14)
 
 
@@ -41,4 +48,3 @@
 * **telcoautomation:** Add telcoautomation API description ([#9019](https://github.com/googleapis/google-cloud-go/issues/9019)) ([03f9190](https://github.com/googleapis/google-cloud-go/commit/03f9190c36f69458e332d4f1b2e5edfd095899ad))
 
 ## Changes
-
