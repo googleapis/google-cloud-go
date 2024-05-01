@@ -1,4 +1,4 @@
-// Copyright 2024 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -117,8 +116,8 @@ type TuningJob struct {
 	// `projects/{project}/locations/{location}/tuningJobs/{tuning_job}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Optional. The display name of the
-	// [TunedModel][google.cloud.aiplatform.v1.Model]. The name can be up to
-	// 128 characters long and can consist of any UTF-8 characters.
+	// [TunedModel][google.cloud.aiplatform.v1.Model]. The name can be up to 128
+	// characters long and can consist of any UTF-8 characters.
 	TunedModelDisplayName string `protobuf:"bytes,2,opt,name=tuned_model_display_name,json=tunedModelDisplayName,proto3" json:"tuned_model_display_name,omitempty"`
 	// Optional. The description of the
 	// [TuningJob][google.cloud.aiplatform.v1.TuningJob].
@@ -321,7 +320,7 @@ type isTuningJob_SourceModel interface {
 }
 
 type TuningJob_BaseModel struct {
-	// Model name for tuning, e.g., "gemini-1.0-pro-002".
+	// The base model that is being tuned, e.g., "gemini-1.0-pro-002".
 	BaseModel string `protobuf:"bytes,4,opt,name=base_model,json=baseModel,proto3,oneof"`
 }
 
@@ -699,9 +698,10 @@ type SupervisedHyperParameters struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Number of training epoches for this tuning job.
+	// Optional. Number of complete passes the model makes over the entire
+	// training dataset during training.
 	EpochCount int64 `protobuf:"varint,1,opt,name=epoch_count,json=epochCount,proto3" json:"epoch_count,omitempty"`
-	// Optional. Learning rate multiplier for tuning.
+	// Optional. Multiplier for adjusting the default learning rate.
 	LearningRateMultiplier float64 `protobuf:"fixed64,2,opt,name=learning_rate_multiplier,json=learningRateMultiplier,proto3" json:"learning_rate_multiplier,omitempty"`
 	// Optional. Adapter size for tuning.
 	AdapterSize SupervisedHyperParameters_AdapterSize `protobuf:"varint,3,opt,name=adapter_size,json=adapterSize,proto3,enum=google.cloud.aiplatform.v1.SupervisedHyperParameters_AdapterSize" json:"adapter_size,omitempty"`
@@ -767,10 +767,10 @@ type SupervisedTuningSpec struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Cloud Storage path to file containing training dataset for
-	// tuning.
+	// tuning. The dataset must be formatted as a JSONL file.
 	TrainingDatasetUri string `protobuf:"bytes,1,opt,name=training_dataset_uri,json=trainingDatasetUri,proto3" json:"training_dataset_uri,omitempty"`
 	// Optional. Cloud Storage path to file containing validation dataset for
-	// tuning.
+	// tuning. The dataset must be formatted as a JSONL file.
 	ValidationDatasetUri string `protobuf:"bytes,2,opt,name=validation_dataset_uri,json=validationDatasetUri,proto3" json:"validation_dataset_uri,omitempty"`
 	// Optional. Hyperparameters for SFT.
 	HyperParameters *SupervisedHyperParameters `protobuf:"bytes,3,opt,name=hyper_parameters,json=hyperParameters,proto3" json:"hyper_parameters,omitempty"`
