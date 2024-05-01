@@ -13,6 +13,7 @@
     "commitMessageAction": "update",
     "groupName": "deps",
     "ignoreDeps": [
+        "go.opentelemetry.io/contrib/detectors/gcp",
         "go.opentelemetry.io/otel",
         "go.opentelemetry.io/otel/metric",
         "go.opentelemetry.io/otel/sdk",
@@ -24,7 +25,7 @@
     ],
     "packageRules": [
         {
-            "matchPackageNames": [
+            "matchPackagePatterns": [
                 "^github.com/google/go-github/v",
                 "^github.com/apache/arrow/go/v",
                 "^github.com/cloudprober/cloudprober"

@@ -53,6 +53,7 @@ type NodeGroupsCallOptions struct {
 	List                     []gax.CallOption
 	ListNodes                []gax.CallOption
 	Patch                    []gax.CallOption
+	PerformMaintenance       []gax.CallOption
 	SetIamPolicy             []gax.CallOption
 	SetNodeTemplate          []gax.CallOption
 	SimulateMaintenanceEvent []gax.CallOption
@@ -127,6 +128,9 @@ func defaultNodeGroupsRESTCallOptions() *NodeGroupsCallOptions {
 		Patch: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		PerformMaintenance: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		SetIamPolicy: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -157,6 +161,7 @@ type internalNodeGroupsClient interface {
 	List(context.Context, *computepb.ListNodeGroupsRequest, ...gax.CallOption) *NodeGroupIterator
 	ListNodes(context.Context, *computepb.ListNodesNodeGroupsRequest, ...gax.CallOption) *NodeGroupNodeIterator
 	Patch(context.Context, *computepb.PatchNodeGroupRequest, ...gax.CallOption) (*Operation, error)
+	PerformMaintenance(context.Context, *computepb.PerformMaintenanceNodeGroupRequest, ...gax.CallOption) (*Operation, error)
 	SetIamPolicy(context.Context, *computepb.SetIamPolicyNodeGroupRequest, ...gax.CallOption) (*computepb.Policy, error)
 	SetNodeTemplate(context.Context, *computepb.SetNodeTemplateNodeGroupRequest, ...gax.CallOption) (*Operation, error)
 	SimulateMaintenanceEvent(context.Context, *computepb.SimulateMaintenanceEventNodeGroupRequest, ...gax.CallOption) (*Operation, error)
@@ -246,6 +251,11 @@ func (c *NodeGroupsClient) ListNodes(ctx context.Context, req *computepb.ListNod
 // Patch updates the specified node group.
 func (c *NodeGroupsClient) Patch(ctx context.Context, req *computepb.PatchNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.Patch(ctx, req, opts...)
+}
+
+// PerformMaintenance perform maintenance on a subset of nodes in the node group.
+func (c *NodeGroupsClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.PerformMaintenance(ctx, req, opts...)
 }
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
@@ -1114,6 +1124,83 @@ func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNo
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
+// PerformMaintenance perform maintenance on a subset of nodes in the node group.
+func (c *nodeGroupsRESTClient) PerformMaintenance(ctx context.Context, req *computepb.PerformMaintenanceNodeGroupRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetNodeGroupsPerformMaintenanceRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/performMaintenance", req.GetProject(), req.GetZone(), req.GetNodeGroup())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "node_group", url.QueryEscape(req.GetNodeGroup()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PerformMaintenance[0:len((*c.CallOptions).PerformMaintenance):len((*c.CallOptions).PerformMaintenance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}

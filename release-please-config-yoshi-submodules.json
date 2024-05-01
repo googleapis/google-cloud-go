@@ -81,6 +81,9 @@
         "channel": {
             "component": "channel"
         },
+        "chat": {
+            "component": "chat"
+        },
         "cloudbuild": {
             "component": "cloudbuild"
         },
@@ -209,6 +212,9 @@
         },
         "iap": {
             "component": "iap"
+        },
+        "identitytoolkit": {
+            "component": "identitytoolkit"
         },
         "ids": {
             "component": "ids"
@@ -374,6 +380,9 @@
         },
         "storagetransfer": {
             "component": "storagetransfer"
+        },
+        "streetview": {
+            "component": "streetview"
         },
         "support": {
             "component": "support"

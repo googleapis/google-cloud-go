@@ -19232,6 +19232,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_NotebookService_DeleteNotebookExecutionJob_sync",
+      "title": "aiplatform DeleteNotebookExecutionJob Sample",
+      "description": "DeleteNotebookExecutionJob deletes a NotebookExecutionJob.",
+      "file": "NotebookClient/DeleteNotebookExecutionJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNotebookExecutionJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.NotebookClient.DeleteNotebookExecutionJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.DeleteNotebookExecutionJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteNotebookExecutionJobOperation",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.NotebookClient"
+        },
+        "method": {
+          "shortName": "DeleteNotebookExecutionJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.NotebookService.DeleteNotebookExecutionJob",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1beta1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_NotebookService_DeleteNotebookRuntime_sync",
       "title": "aiplatform DeleteNotebookRuntime Sample",
       "description": "DeleteNotebookRuntime deletes a NotebookRuntime.",
@@ -19461,6 +19507,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1beta1_generated_NotebookService_GetNotebookExecutionJob_sync",
+      "title": "aiplatform GetNotebookExecutionJob Sample",
+      "description": "GetNotebookExecutionJob gets a NotebookExecutionJob.",
+      "file": "NotebookClient/GetNotebookExecutionJob/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNotebookExecutionJob",
+        "fullName": "google.cloud.aiplatform.v1beta1.NotebookClient.GetNotebookExecutionJob",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.GetNotebookExecutionJobRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.NotebookExecutionJob",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.NotebookClient"
+        },
+        "method": {
+          "shortName": "GetNotebookExecutionJob",
+          "fullName": "google.cloud.aiplatform.v1beta1.NotebookService.GetNotebookExecutionJob",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1beta1.NotebookService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1beta1_generated_NotebookService_GetNotebookRuntime_sync",
       "title": "aiplatform GetNotebookRuntime Sample",
       "description": "GetNotebookRuntime gets a NotebookRuntime.",
@@ -19632,6 +19724,52 @@
           "service": {
             "shortName": "Locations",
             "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1beta1_generated_NotebookService_ListNotebookExecutionJobs_sync",
+      "title": "aiplatform ListNotebookExecutionJobs Sample",
+      "description": "ListNotebookExecutionJobs lists NotebookExecutionJobs in a Location.",
+      "file": "NotebookClient/ListNotebookExecutionJobs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNotebookExecutionJobs",
+        "fullName": "google.cloud.aiplatform.v1beta1.NotebookClient.ListNotebookExecutionJobs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.ListNotebookExecutionJobsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NotebookExecutionJobIterator",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1beta1.NotebookClient"
+        },
+        "method": {
+          "shortName": "ListNotebookExecutionJobs",
+          "fullName": "google.cloud.aiplatform.v1beta1.NotebookService.ListNotebookExecutionJobs",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1beta1.NotebookService"
           }
         }
       },

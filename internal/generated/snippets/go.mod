@@ -499,3 +499,9 @@ replace cloud.google.com/go/apphub => ../../../apphub
 replace cloud.google.com/go/cloudcontrolspartner => ../../../cloudcontrolspartner
 
 replace cloud.google.com/go/backupdr => ../../../backupdr
+
+replace cloud.google.com/go/chat => ../../../chat
+
+replace cloud.google.com/go/identitytoolkit => ../../../identitytoolkit
+
+replace cloud.google.com/go/streetview => ../../../streetview
