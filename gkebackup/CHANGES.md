@@ -2,6 +2,13 @@
 
 
 
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.4.0...gkebackup/v1.4.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **gkebackup:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.6...gkebackup/v1.4.0) (2024-03-27)
 
 
@@ -125,4 +132,3 @@
 ### Features
 
 * **gkebackup:** start generating apiv1 ([#6031](https://github.com/googleapis/google-cloud-go/issues/6031)) ([4816e84](https://github.com/googleapis/google-cloud-go/commit/4816e84076d62c0952eec0a7de80a230dc9074fe))
-
