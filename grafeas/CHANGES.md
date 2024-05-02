@@ -1,5 +1,19 @@
 # Changes
 
+## [0.3.6](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.5...grafeas/v0.3.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **grafeas:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [0.3.5](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.4...grafeas/v0.3.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **grafeas:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.3.4](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.3...grafeas/v0.3.4) (2023-11-01)
 
 

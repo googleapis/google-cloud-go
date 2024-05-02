@@ -1,5 +1,26 @@
 # Changes
 
+## [1.17.7](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.6...channel/v1.17.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **channel:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.17.6](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.5...channel/v1.17.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **channel:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.17.5](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.4...channel/v1.17.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **channel:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.3...channel/v1.17.4) (2024-01-03)
 
 

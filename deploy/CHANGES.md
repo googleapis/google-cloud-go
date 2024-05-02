@@ -1,6 +1,32 @@
 # Changes
 
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.17.2...deploy/v1.18.0) (2024-05-01)
+
+
+### Features
+
+* **deploy:** Add Skaffold remote config support for GCB repos ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **deploy:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.17.1...deploy/v1.17.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **deploy:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.17.0...deploy/v1.17.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **deploy:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.16.0...deploy/v1.17.0) (2024-01-08)
 
 

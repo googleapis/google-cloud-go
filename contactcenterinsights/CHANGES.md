@@ -1,5 +1,31 @@
 # Changes
 
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.1...contactcenterinsights/v1.13.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.0...contactcenterinsights/v1.13.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.12.1...contactcenterinsights/v1.13.0) (2024-01-30)
+
+
+### Features
+
+* **contactcenterinsights:** Add Conversation QualityMetadata ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.12.0...contactcenterinsights/v1.12.1) (2023-11-27)
 
 

@@ -506,6 +506,11 @@
                 "ListOperations"
               ]
             },
+            "SearchNearestEntities": {
+              "methods": [
+                "SearchNearestEntities"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
@@ -861,6 +866,85 @@
             "UpdateFeaturestore": {
               "methods": [
                 "UpdateFeaturestore"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "GenAiTuningService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GenAiTuningClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CancelTuningJob": {
+              "methods": [
+                "CancelTuningJob"
+              ]
+            },
+            "CreateTuningJob": {
+              "methods": [
+                "CreateTuningJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTuningJob": {
+              "methods": [
+                "GetTuningJob"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTuningJobs": {
+              "methods": [
+                "ListTuningJobs"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "WaitOperation": {
@@ -1938,11 +2022,219 @@
         }
       }
     },
+    "NotebookService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "NotebookClient",
+          "rpcs": {
+            "AssignNotebookRuntime": {
+              "methods": [
+                "AssignNotebookRuntime"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNotebookRuntimeTemplate": {
+              "methods": [
+                "CreateNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteNotebookRuntime": {
+              "methods": [
+                "DeleteNotebookRuntime"
+              ]
+            },
+            "DeleteNotebookRuntimeTemplate": {
+              "methods": [
+                "DeleteNotebookRuntimeTemplate"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetNotebookRuntime": {
+              "methods": [
+                "GetNotebookRuntime"
+              ]
+            },
+            "GetNotebookRuntimeTemplate": {
+              "methods": [
+                "GetNotebookRuntimeTemplate"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListNotebookRuntimeTemplates": {
+              "methods": [
+                "ListNotebookRuntimeTemplates"
+              ]
+            },
+            "ListNotebookRuntimes": {
+              "methods": [
+                "ListNotebookRuntimes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "StartNotebookRuntime": {
+              "methods": [
+                "StartNotebookRuntime"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpgradeNotebookRuntime": {
+              "methods": [
+                "UpgradeNotebookRuntime"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PersistentResourceService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PersistentResourceClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreatePersistentResource": {
+              "methods": [
+                "CreatePersistentResource"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePersistentResource": {
+              "methods": [
+                "DeletePersistentResource"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPersistentResource": {
+              "methods": [
+                "GetPersistentResource"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPersistentResources": {
+              "methods": [
+                "ListPersistentResources"
+              ]
+            },
+            "RebootPersistentResource": {
+              "methods": [
+                "RebootPersistentResource"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdatePersistentResource": {
+              "methods": [
+                "UpdatePersistentResource"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "PipelineService": {
       "clients": {
         "grpc": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "BatchCancelPipelineJobs": {
+              "methods": [
+                "BatchCancelPipelineJobs"
+              ]
+            },
+            "BatchDeletePipelineJobs": {
+              "methods": [
+                "BatchDeletePipelineJobs"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -2077,6 +2369,11 @@
                 "Explain"
               ]
             },
+            "GenerateContent": {
+              "methods": [
+                "GenerateContent"
+              ]
+            },
             "GetIamPolicy": {
               "methods": [
                 "GetIamPolicy"
@@ -2122,9 +2419,24 @@
                 "SetIamPolicy"
               ]
             },
+            "StreamDirectPredict": {
+              "methods": [
+                "StreamDirectPredict"
+              ]
+            },
+            "StreamDirectRawPredict": {
+              "methods": [
+                "StreamDirectRawPredict"
+              ]
+            },
             "StreamGenerateContent": {
               "methods": [
                 "StreamGenerateContent"
+              ]
+            },
+            "StreamRawPredict": {
+              "methods": [
+                "StreamRawPredict"
               ]
             },
             "StreamingPredict": {

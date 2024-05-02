@@ -68,16 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &adminpb.CreateDatabaseRequest{
+//	req := &adminpb.CreateBackupScheduleRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#CreateDatabaseRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#CreateBackupScheduleRequest.
 //	}
-//	op, err := c.CreateDatabase(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.CreateBackupSchedule(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

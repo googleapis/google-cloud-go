@@ -25,7 +25,7 @@ import (
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	pb "cloud.google.com/go/spanner/testdata/protos"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 type customKeyToString string
@@ -161,6 +161,16 @@ func TestKey(t *testing.T) {
 		},
 		{
 			k:         Key{NullFloat64{2.0, false}},
+			wantProto: listValueProto(nullProto()),
+			wantStr:   "(<null>)",
+		},
+		{
+			k:         Key{NullFloat32{3.14, true}},
+			wantProto: listValueProto(floatProto(float64(float32(3.14)))),
+			wantStr:   "(3.14)",
+		},
+		{
+			k:         Key{NullFloat32{2.0, false}},
 			wantProto: listValueProto(nullProto()),
 			wantStr:   "(<null>)",
 		},

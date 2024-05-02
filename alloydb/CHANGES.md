@@ -2,6 +2,41 @@
 
 
 
+## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.1...alloydb/v1.10.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **alloydb:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.0...alloydb/v1.10.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **alloydb:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.9.0...alloydb/v1.10.0) (2024-03-04)
+
+
+### Features
+
+* **alloydb:** Support for obtaining the public IP address of an Instance ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.8.1...alloydb/v1.9.0) (2024-02-26)
+
+
+### Features
+
+* **alloydb:** Support for obtaining the public IP address of an Instance ([#9470](https://github.com/googleapis/google-cloud-go/issues/9470)) ([c1f4bc8](https://github.com/googleapis/google-cloud-go/commit/c1f4bc8c087aa6ba7421426d5ab6b0404527db6c))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.8.0...alloydb/v1.8.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **alloydb:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.7.0...alloydb/v1.8.0) (2024-01-03)
 
 

@@ -19,10 +19,11 @@ package spanner
 import (
 	"fmt"
 	"reflect"
+	"strings"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc/codes"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
 // A Row is a view of a row of data returned by a Cloud Spanner read.
@@ -56,6 +57,8 @@ import (
 //	*[]int64, *[]NullInt64 - INT64 ARRAY
 //	*bool(not NULL), *NullBool - BOOL
 //	*[]bool, *[]NullBool - BOOL ARRAY
+//	*float32(not NULL), *NullFloat32 - FLOAT32
+//	*[]float32, *[]NullFloat32 - FLOAT32 ARRAY
 //	*float64(not NULL), *NullFloat64 - FLOAT64
 //	*[]float64, *[]NullFloat64 - FLOAT64 ARRAY
 //	*big.Rat(not NULL), *NullNumeric - NUMERIC
@@ -480,11 +483,13 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 		}
 		if !isPrimitive {
 			e := sliceItem.Elem()
-			for i, p := range pointers {
+			idx := 0
+			for _, p := range pointers {
 				if p == nil {
 					continue
 				}
-				e.Field(i).Set(reflect.ValueOf(p).Elem())
+				e.Field(idx).Set(reflect.ValueOf(p).Elem())
+				idx++
 			}
 		}
 		var elemVal reflect.Value
@@ -510,9 +515,13 @@ func structPointers(sliceItem reflect.Value, cols []*sppb.StructType_Field, leni
 	fieldTag := make(map[string]reflect.Value, len(cols))
 	initFieldTag(sliceItem, &fieldTag)
 
-	for _, colName := range cols {
+	for i, colName := range cols {
+		if colName.Name == "" {
+			return nil, errColNotFound(fmt.Sprintf("column %d", i))
+		}
+
 		var fieldVal reflect.Value
-		if v, ok := fieldTag[colName.GetName()]; ok {
+		if v, ok := fieldTag[strings.ToLower(colName.GetName())]; ok {
 			fieldVal = v
 		} else {
 			if !lenient {
@@ -548,9 +557,11 @@ func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value
 		}
 		if fieldType.Type.Kind() == reflect.Struct {
 			// found an embedded struct
-			sliceItemOfAnonymous := sliceItem.Field(i)
-			initFieldTag(sliceItemOfAnonymous, fieldTagMap)
-			continue
+			if fieldType.Anonymous {
+				sliceItemOfAnonymous := sliceItem.Field(i)
+				initFieldTag(sliceItemOfAnonymous, fieldTagMap)
+				continue
+			}
 		}
 		name, keep, _, _ := spannerTagParser(fieldType.Tag)
 		if !keep {
@@ -559,6 +570,6 @@ func initFieldTag(sliceItem reflect.Value, fieldTagMap *map[string]reflect.Value
 		if name == "" {
 			name = fieldType.Name
 		}
-		(*fieldTagMap)[name] = sliceItem.Field(i)
+		(*fieldTagMap)[strings.ToLower(name)] = sliceItem.Field(i)
 	}
 }

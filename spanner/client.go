@@ -23,17 +23,23 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strconv"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
+	grpcgcppb "github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/grpc_gcp"
 	"github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
 
@@ -104,12 +110,143 @@ type Client struct {
 	ct                   *commonTags
 	disableRouteToLeader bool
 	dro                  *sppb.DirectedReadOptions
+	otConfig             *openTelemetryConfig
 }
 
 // DatabaseName returns the full name of a database, e.g.,
 // "projects/spanner-cloud-test/instances/foo/databases/foodb".
 func (c *Client) DatabaseName() string {
 	return c.sc.database
+}
+
+// ClientID returns the id of the Client. This is not recommended for customer applications and used internally for testing.
+func (c *Client) ClientID() string {
+	return c.sc.id
+}
+
+func createGCPMultiEndpoint(cfg *grpcgcp.GCPMultiEndpointOptions, config ClientConfig, opts ...option.ClientOption) (*grpcgcp.GCPMultiEndpoint, error) {
+	if cfg.GRPCgcpConfig == nil {
+		cfg.GRPCgcpConfig = &grpcgcppb.ApiConfig{}
+	}
+	if cfg.GRPCgcpConfig.Method == nil || len(cfg.GRPCgcpConfig.Method) == 0 {
+		cfg.GRPCgcpConfig.Method = []*grpcgcppb.MethodConfig{
+			{
+				Name: []string{"/google.spanner.v1.Spanner/CreateSession"},
+				Affinity: &grpcgcppb.AffinityConfig{
+					Command:     grpcgcppb.AffinityConfig_BIND,
+					AffinityKey: "name",
+				},
+			},
+			{
+				Name: []string{"/google.spanner.v1.Spanner/BatchCreateSessions"},
+				Affinity: &grpcgcppb.AffinityConfig{
+					Command:     grpcgcppb.AffinityConfig_BIND,
+					AffinityKey: "session.name",
+				},
+			},
+			{
+				Name: []string{"/google.spanner.v1.Spanner/DeleteSession"},
+				Affinity: &grpcgcppb.AffinityConfig{
+					Command:     grpcgcppb.AffinityConfig_UNBIND,
+					AffinityKey: "name",
+				},
+			},
+			{
+				Name: []string{"/google.spanner.v1.Spanner/GetSession"},
+				Affinity: &grpcgcppb.AffinityConfig{
+					Command:     grpcgcppb.AffinityConfig_BOUND,
+					AffinityKey: "name",
+				},
+			},
+			{
+				Name: []string{
+					"/google.spanner.v1.Spanner/BeginTransaction",
+					"/google.spanner.v1.Spanner/Commit",
+					"/google.spanner.v1.Spanner/ExecuteBatchDml",
+					"/google.spanner.v1.Spanner/ExecuteSql",
+					"/google.spanner.v1.Spanner/ExecuteStreamingSql",
+					"/google.spanner.v1.Spanner/PartitionQuery",
+					"/google.spanner.v1.Spanner/PartitionRead",
+					"/google.spanner.v1.Spanner/Read",
+					"/google.spanner.v1.Spanner/Rollback",
+					"/google.spanner.v1.Spanner/StreamingRead",
+				},
+				Affinity: &grpcgcppb.AffinityConfig{
+					Command:     grpcgcppb.AffinityConfig_BOUND,
+					AffinityKey: "session",
+				},
+			},
+		}
+	}
+	// Append emulator options if SPANNER_EMULATOR_HOST has been set.
+	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
+		emulatorOpts := []option.ClientOption{
+			option.WithEndpoint(emulatorAddr),
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			option.WithoutAuthentication(),
+			internaloption.SkipDialSettingsValidation(),
+		}
+		opts = append(opts, emulatorOpts...)
+		// Replace all endpoints with emulator target.
+		for _, meo := range cfg.MultiEndpoints {
+			meo.Endpoints = []string{emulatorAddr}
+		}
+	}
+
+	// Set the number of channels to the default value if not specified.
+	if cfg.GRPCgcpConfig.GetChannelPool() == nil || cfg.GRPCgcpConfig.GetChannelPool().GetMaxSize() == 0 {
+		cfg.GRPCgcpConfig.ChannelPool = &grpcgcppb.ChannelPoolConfig{
+			MinSize: numChannels,
+			MaxSize: numChannels,
+		}
+	}
+	// Set MinSize equal to MaxSize to create all the channels beforehand.
+	cfg.GRPCgcpConfig.ChannelPool.MinSize = cfg.GRPCgcpConfig.ChannelPool.GetMaxSize()
+
+	cfg.GRPCgcpConfig.ChannelPool.BindPickStrategy = grpcgcppb.ChannelPoolConfig_ROUND_ROBIN
+
+	cfg.DialFunc = func(ctx context.Context, target string, dopts ...grpc.DialOption) (*grpc.ClientConn, error) {
+		copts := opts
+
+		for _, do := range dopts {
+			copts = append(copts, option.WithGRPCDialOption(do))
+		}
+
+		allOpts := allClientOpts(1, config.Compression, copts...)
+
+		// Overwrite endpoint and pool config.
+		allOpts = append(allOpts,
+			option.WithEndpoint(target),
+			option.WithGRPCConnectionPool(1),
+			option.WithGRPCConn(nil),
+		)
+
+		return gtransport.Dial(ctx, allOpts...)
+	}
+
+	gme, err := grpcgcp.NewGCPMultiEndpoint(cfg)
+	return gme, err
+}
+
+// To use GCPMultiEndpoint in gtransport.Dial (via gtransport.WithConnPool option)
+// we implement gtransport.ConnPool interface using this wrapper.
+type gmeWrapper struct {
+	*grpcgcp.GCPMultiEndpoint
+}
+
+// Make sure gmeWrapper implements ConnPool interface.
+var _ gtransport.ConnPool = (*gmeWrapper)(nil)
+
+func (gw *gmeWrapper) Conn() *grpc.ClientConn {
+	// GCPMultiEndpoint does not expose any ClientConn.
+	// This is safe because Cloud Spanner client doesn't use this function and instead
+	// makes calls directly using Invoke and NewStream from the grpc.ClientConnInterface
+	// which GCPMultiEndpoint implements.
+	return nil
+}
+
+func (gw *gmeWrapper) Num() int {
+	return int(gw.GCPMultiEndpoint.GCPConfig().GetChannelPool().GetMaxSize())
 }
 
 // ClientConfig has configurations for the client.
@@ -192,6 +329,23 @@ type ClientConfig struct {
 	// and ExecuteSqlRequests for the Client which indicate which replicas or regions
 	// should be used for non-transactional reads or queries.
 	DirectedReadOptions *sppb.DirectedReadOptions
+
+	OpenTelemetryMeterProvider metric.MeterProvider
+}
+
+type openTelemetryConfig struct {
+	meterProvider           metric.MeterProvider
+	attributeMap            []attribute.KeyValue
+	otMetricRegistration    metric.Registration
+	openSessionCount        metric.Int64ObservableGauge
+	maxAllowedSessionsCount metric.Int64ObservableGauge
+	sessionsCount           metric.Int64ObservableGauge
+	maxInUseSessionsCount   metric.Int64ObservableGauge
+	getSessionTimeoutsCount metric.Int64Counter
+	acquiredSessionsCount   metric.Int64Counter
+	releasedSessionsCount   metric.Int64Counter
+	gfeLatency              metric.Int64Histogram
+	gfeHeaderMissingCount   metric.Int64Counter
 }
 
 func contextWithOutgoingMetadata(ctx context.Context, md metadata.MD, disableRouteToLeader bool) context.Context {
@@ -215,6 +369,10 @@ func NewClient(ctx context.Context, database string, opts ...option.ClientOption
 // NewClientWithConfig creates a client to a database. A valid database name has
 // the form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID.
 func NewClientWithConfig(ctx context.Context, database string, config ClientConfig, opts ...option.ClientOption) (c *Client, err error) {
+	return newClientWithConfig(ctx, database, config, nil, opts...)
+}
+
+func newClientWithConfig(ctx context.Context, database string, config ClientConfig, gme *grpcgcp.GCPMultiEndpoint, opts ...option.ClientOption) (c *Client, err error) {
 	// Validate database path.
 	if err := validDatabaseName(database); err != nil {
 		return nil, err
@@ -239,15 +397,25 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.NumChannels == 0 {
 		config.NumChannels = numChannels
 	}
-	// gRPC options.
-	allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
-	pool, err := gtransport.DialPool(ctx, allOpts...)
-	if err != nil {
-		return nil, err
-	}
-	if hasNumChannelsConfig && pool.Num() != config.NumChannels {
-		pool.Close()
-		return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
+
+	var pool gtransport.ConnPool
+
+	if gme != nil {
+		// Use GCPMultiEndpoint if provided.
+		pool = &gmeWrapper{gme}
+	} else {
+		// Create gtransport ConnPool as usual if MultiEndpoint is not used.
+		// gRPC options.
+		allOpts := allClientOpts(config.NumChannels, config.Compression, opts...)
+		pool, err = gtransport.DialPool(ctx, allOpts...)
+		if err != nil {
+			return nil, err
+		}
+
+		if hasNumChannelsConfig && pool.Num() != config.NumChannels {
+			pool.Close()
+			return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
+		}
 	}
 
 	// TODO(loite): Remove as the original map cannot be changed by the user
@@ -276,8 +444,20 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
 	}
+
 	// Create a session client.
 	sc := newSessionClient(pool, database, config.UserAgent, sessionLabels, config.DatabaseRole, config.DisableRouteToLeader, md, config.BatchTimeout, config.Logger, config.CallOptions)
+
+	// Create a OpenTelemetry configuration
+	otConfig, err := createOpenTelemetryConfig(config.OpenTelemetryMeterProvider, config.Logger, sc.id, database)
+	if err != nil {
+		// The error returned here will be due to database name parsing
+		return nil, err
+	}
+	// To prevent data race in unit tests (ex: TestClient_SessionNotFound)
+	sc.mu.Lock()
+	sc.otConfig = otConfig
+	sc.mu.Unlock()
 
 	// Create a session pool.
 	config.SessionPoolConfig.sessionLabels = sessionLabels
@@ -286,6 +466,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		sc.close()
 		return nil, err
 	}
+
 	c = &Client{
 		sc:                   sc,
 		idleSessions:         sp,
@@ -298,8 +479,51 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 		ct:                   getCommonTags(sc),
 		disableRouteToLeader: config.DisableRouteToLeader,
 		dro:                  config.DirectedReadOptions,
+		otConfig:             otConfig,
 	}
 	return c, nil
+}
+
+// NewMultiEndpointClient is the same as NewMultiEndpointClientWithConfig with
+// the default client configuration.
+//
+// A valid database name has the
+// form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID.
+func NewMultiEndpointClient(ctx context.Context, database string, gmeCfg *grpcgcp.GCPMultiEndpointOptions, opts ...option.ClientOption) (*Client, *grpcgcp.GCPMultiEndpoint, error) {
+	return NewMultiEndpointClientWithConfig(ctx, database, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig, DisableRouteToLeader: false}, gmeCfg, opts...)
+}
+
+// NewMultiEndpointClientWithConfig creates a client to a database using GCPMultiEndpoint.
+//
+// The purposes of GCPMultiEndpoint are:
+//
+//   - Fallback to an alternative endpoint (host:port) when the original
+//     endpoint is completely unavailable.
+//   - Be able to route a Cloud Spanner call to a specific group of endpoints.
+//   - Be able to reconfigure endpoints in runtime.
+//
+// The GRPCgcpConfig and DialFunc in the GCPMultiEndpointOptions are optional
+// and will be configured automatically.
+//
+// For GCPMultiEndpoint the number of channels is configured via MaxSize of the
+// ChannelPool config in the GRPCgcpConfig.
+//
+// The GCPMultiEndpoint returned can be used to update the endpoints in runtime.
+//
+// A valid database name has the
+// form projects/PROJECT_ID/instances/INSTANCE_ID/databases/DATABASE_ID.
+func NewMultiEndpointClientWithConfig(ctx context.Context, database string, config ClientConfig, gmeCfg *grpcgcp.GCPMultiEndpointOptions, opts ...option.ClientOption) (c *Client, gme *grpcgcp.GCPMultiEndpoint, err error) {
+	gme, err = createGCPMultiEndpoint(gmeCfg, config, opts...)
+	if err != nil {
+		return nil, nil, err
+	}
+	// Align number of channels.
+	config.NumChannels = int(gme.GCPConfig().GetChannelPool().GetMaxSize())
+	c, err = newClientWithConfig(ctx, database, config, gme, opts...)
+	if err != nil {
+		return nil, nil, err
+	}
+	return
 }
 
 // Combines the default options from the generated client, the default options
@@ -310,8 +534,10 @@ func allClientOpts(numChannels int, compression string, userOpts ...option.Clien
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
-		internaloption.EnableDirectPath(true),
 		internaloption.AllowNonDefaultServiceAccount(true),
+	}
+	if enableDirectPathXds, _ := strconv.ParseBool(os.Getenv("GOOGLE_SPANNER_ENABLE_DIRECT_ACCESS")); enableDirectPathXds {
+		clientDefaultOpts = append(clientDefaultOpts, internaloption.EnableDirectPath(true), internaloption.EnableDirectPathXds())
 	}
 	if compression == "gzip" {
 		userOpts = append(userOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -384,6 +610,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t
 }
 
@@ -409,6 +636,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t
 }
 
@@ -479,6 +707,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t, nil
 }
 
@@ -512,6 +741,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 	return t
 }
 
@@ -616,6 +846,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.wb = []*Mutation{}
 		t.txOpts = c.txo.merge(options)
 		t.ct = c.ct
+		t.otConfig = c.otConfig
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionSelector": t.getTransactionSelector().String()},
 			"Starting transaction attempt")
@@ -635,6 +866,10 @@ type applyOption struct {
 	transactionTag string
 	// priority is the RPC priority that is used for the commit operation.
 	priority sppb.RequestOptions_Priority
+	// If excludeTxnFromChangeStreams == true, mutations from this Client.Apply
+	// will not be recorded in allowed tracking change streams with DDL option
+	// allow_txn_exclusion=true.
+	excludeTxnFromChangeStreams bool
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -673,6 +908,13 @@ func Priority(priority sppb.RequestOptions_Priority) ApplyOption {
 	}
 }
 
+// ExcludeTxnFromChangeStreams returns an ApplyOptions that sets whether to exclude recording this commit operation from allowed tracking change streams.
+func ExcludeTxnFromChangeStreams() ApplyOption {
+	return func(ao *applyOption) {
+		ao.excludeTxnFromChangeStreams = true
+	}
+}
+
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
@@ -691,10 +933,10 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	if !ao.atLeastOnce {
 		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag})
+		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag, ExcludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag, disableRouteToLeader: c.disableRouteToLeader, excludeTxnFromChangeStreams: ao.excludeTxnFromChangeStreams}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
@@ -705,14 +947,20 @@ type BatchWriteOptions struct {
 
 	// The transaction tag to use for this request.
 	TransactionTag string
+
+	// If excludeTxnFromChangeStreams == true, modifications from all transactions
+	// in this batch write request will not be recorded in allowed tracking
+	// change treams with DDL option allow_txn_exclusion=true.
+	ExcludeTxnFromChangeStreams bool
 }
 
 // merge combines two BatchWriteOptions such that the input parameter will have higher
 // order of precedence.
 func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 	merged := BatchWriteOptions{
-		TransactionTag: bwo.TransactionTag,
-		Priority:       bwo.Priority,
+		TransactionTag:              bwo.TransactionTag,
+		Priority:                    bwo.Priority,
+		ExcludeTxnFromChangeStreams: bwo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 	}
 	if opts.TransactionTag != "" {
 		merged.TransactionTag = opts.TransactionTag
@@ -867,15 +1115,19 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 		var md metadata.MD
 		sh.updateLastUseTime()
 		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
-			Session:        sh.getID(),
-			MutationGroups: mgsPb,
-			RequestOptions: createRequestOptions(opts.Priority, "", opts.TransactionTag),
+			Session:                     sh.getID(),
+			MutationGroups:              mgsPb,
+			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag),
+			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
 		}, gax.WithGRPCOptions(grpc.Header(&md)))
 
 		if getGFELatencyMetricsFlag() && md != nil && c.ct != nil {
 			if metricErr := createContextAndCaptureGFELatencyMetrics(ct, c.ct, md, "BatchWrite"); metricErr != nil {
 				trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 			}
+		}
+		if metricErr := recordGFELatencyMetricsOT(ct, md, "BatchWrite", c.otConfig); metricErr != nil {
+			trace.TracePrintf(ct, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", err)
 		}
 		return stream, rpcErr
 	}

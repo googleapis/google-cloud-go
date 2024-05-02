@@ -135,7 +135,7 @@ func (c *NetworkEdgeSecurityServicesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to the specified project.
+// AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *NetworkEdgeSecurityServicesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEdgeSecurityServicesRequest, opts ...gax.CallOption) *NetworkEdgeSecurityServicesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -247,7 +247,7 @@ func (c *networkEdgeSecurityServicesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to the specified project.
+// AggregatedList retrieves the list of all NetworkEdgeSecurityService resources available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *networkEdgeSecurityServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEdgeSecurityServicesRequest, opts ...gax.CallOption) *NetworkEdgeSecurityServicesScopedListPairIterator {
 	it := &NetworkEdgeSecurityServicesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNetworkEdgeSecurityServicesRequest)

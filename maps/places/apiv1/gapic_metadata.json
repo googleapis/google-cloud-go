@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "AutocompletePlaces": {
+              "methods": [
+                "AutocompletePlaces"
+              ]
+            },
             "GetPhotoMedia": {
               "methods": [
                 "GetPhotoMedia"
@@ -35,6 +40,11 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "AutocompletePlaces": {
+              "methods": [
+                "AutocompletePlaces"
+              ]
+            },
             "GetPhotoMedia": {
               "methods": [
                 "GetPhotoMedia"

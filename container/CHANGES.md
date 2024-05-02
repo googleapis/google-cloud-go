@@ -1,5 +1,62 @@
 # Changes
 
+## [1.35.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.35.0...container/v1.35.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **container:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.34.0...container/v1.35.0) (2024-03-27)
+
+
+### Features
+
+* **container:** Add several fields to manage state of database encryption update ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.33.1...container/v1.34.0) (2024-03-25)
+
+
+### Features
+
+* **container:** Add optional secondary_boot_disk_update_strategy field to NodePool API ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+
+## [1.33.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.33.0...container/v1.33.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **container:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.32.0...container/v1.33.0) (2024-03-07)
+
+
+### Features
+
+* **container:** Add API to enable/disable secret manager csi component on GKE clusters ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+* **container:** Add secondary boot disks field to NodePool API ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.31.0...container/v1.32.0) (2024-02-26)
+
+
+### Features
+
+* **container:** Add API to enable Provisioning Request API on existing nodepools ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.30.1...container/v1.31.0) (2024-02-09)
+
+
+### Features
+
+* **container:** Added configuration for the StatefulHA addon to the AddonsConfig ([46a5050](https://github.com/googleapis/google-cloud-go/commit/46a50502f033ff0afe2f17b5f1e9812a956e190e))
+
+## [1.30.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.30.0...container/v1.30.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **container:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.29.0...container/v1.30.0) (2024-01-22)
 
 

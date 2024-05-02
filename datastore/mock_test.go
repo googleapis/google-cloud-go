@@ -28,11 +28,12 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
 )
 
 type mockServer struct {
@@ -48,6 +49,10 @@ type reqItem struct {
 	adjust  func(gotReq proto.Message)
 }
 
+const (
+	mockProjectID = "projectID"
+)
+
 func newMock(t *testing.T) (_ *Client, _ *mockServer, _ func()) {
 	srv, cleanup, err := newMockServer()
 	if err != nil {
@@ -58,7 +63,7 @@ func newMock(t *testing.T) (_ *Client, _ *mockServer, _ func()) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	client, err := NewClient(context.Background(), "projectID", option.WithGRPCConn(conn))
+	client, err := NewClient(context.Background(), mockProjectID, option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -120,8 +125,8 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 
 		if !proto.Equal(gotReq, ri.wantReq) {
 			return nil, fmt.Errorf("mockServer: bad request\ngot:\n%T\n%s\nwant:\n%T\n%s",
-				gotReq, proto.MarshalTextString(gotReq),
-				ri.wantReq, proto.MarshalTextString(ri.wantReq))
+				prototext.Format(ri.wantReq), prototext.Format(gotReq),
+				ri.wantReq, ri.wantReq)
 		}
 	}
 	resp := s.resps[0]
@@ -151,4 +156,28 @@ func (s *mockServer) Commit(_ context.Context, in *pb.CommitRequest) (*pb.Commit
 		return nil, err
 	}
 	return res.(*pb.CommitResponse), nil
+}
+
+func (s *mockServer) BeginTransaction(ctx context.Context, in *pb.BeginTransactionRequest) (*pb.BeginTransactionResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.BeginTransactionResponse), nil
+}
+
+func (s *mockServer) RunQuery(ctx context.Context, in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.RunQueryResponse), nil
+}
+
+func (s *mockServer) RunAggregationQuery(ctx context.Context, in *pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error) {
+	res, err := s.popRPC(in)
+	if err != nil {
+		return nil, err
+	}
+	return res.(*pb.RunAggregationQueryResponse), nil
 }

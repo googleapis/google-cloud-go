@@ -444,6 +444,12 @@ func ExampleAzureClustersClient_ListAzureClients() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkemulticloudpb.ListAzureClientsResponse)
 	}
 }
 
@@ -475,6 +481,12 @@ func ExampleAzureClustersClient_ListAzureClusters() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkemulticloudpb.ListAzureClustersResponse)
 	}
 }
 
@@ -506,6 +518,12 @@ func ExampleAzureClustersClient_ListAzureNodePools() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkemulticloudpb.ListAzureNodePoolsResponse)
 	}
 }
 
@@ -668,5 +686,11 @@ func ExampleAzureClustersClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

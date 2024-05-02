@@ -1,5 +1,42 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.22.0...bigtable/v1.23.0) (2024-04-29)
+
+
+### Features
+
+* **bigtable/spanner:** Remove grpclb ([#9186](https://github.com/googleapis/google-cloud-go/issues/9186)) ([480f9a0](https://github.com/googleapis/google-cloud-go/commit/480f9a0ea8e159299dd3f909e2c0d8b5e771c580))
+* **bigtable:** Allow non-default service account in DirectPath ([#9040](https://github.com/googleapis/google-cloud-go/issues/9040)) ([c2df09c](https://github.com/googleapis/google-cloud-go/commit/c2df09c32808e7dab35ca5084e80e0b9c6c0e6f8))
+* **bigtable:** Support AuthorizedView in data and admin client ([#9515](https://github.com/googleapis/google-cloud-go/issues/9515)) ([8259645](https://github.com/googleapis/google-cloud-go/commit/8259645be0d9e635a41944788f2e65d2b52c4dbb))
+
+
+### Bug Fixes
+
+* **bigtable:** Accept nil RowSet to read all rows ([#9327](https://github.com/googleapis/google-cloud-go/issues/9327)) ([cd36506](https://github.com/googleapis/google-cloud-go/commit/cd36506d377d2d5199402a58360c23ba4ce9a3d4))
+* **bigtable:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **bigtable:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **bigtable:** Resolve DeadlineExceeded conformance test failures ([#9688](https://github.com/googleapis/google-cloud-go/issues/9688)) ([54d2990](https://github.com/googleapis/google-cloud-go/commit/54d2990c5cd66e274279a1534844e1c4018dd5f5))
+* **bigtable:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.21.0...bigtable/v1.22.0) (2024-03-11)
+
+
+### Features
+
+* **bigtable:** Add aggregate support to the bigtable emulator and client ([c250928](https://github.com/googleapis/google-cloud-go/commit/c25092892dfc55c86784f77222d2bd96e40bd2d1))
+
+
+### Bug Fixes
+
+* **bigtable/bttest:** Make table gc release memory ([#3930](https://github.com/googleapis/google-cloud-go/issues/3930)) ([7d6ff39](https://github.com/googleapis/google-cloud-go/commit/7d6ff39309de41d8847d27241ebee41a30cf5aa7))
+* **bigtable:** Allow micro seconds in filter in Bigtable emulator ([#9414](https://github.com/googleapis/google-cloud-go/issues/9414)) ([9fe6061](https://github.com/googleapis/google-cloud-go/commit/9fe60618e4b0004d23920c8c5aa25dc38c6cf68a))
+* **bigtable:** Fix deadline exceeded conformance test ([#9220](https://github.com/googleapis/google-cloud-go/issues/9220)) ([092ee0b](https://github.com/googleapis/google-cloud-go/commit/092ee0ba59267b8fb4d3f4e7727ed3ccbf81e7e7))
+
+
+### Miscellaneous Chores
+
+* **bigtable:** Release 1.22.0 ([#9547](https://github.com/googleapis/google-cloud-go/issues/9547)) ([48614ab](https://github.com/googleapis/google-cloud-go/commit/48614ab80d8b3e1da876832c88912007ad0e008b))
+
 ## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.20.0...bigtable/v1.21.0) (2023-12-04)
 
 

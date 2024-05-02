@@ -1,5 +1,31 @@
 # Changes
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.16.0...cloudbuild/v1.16.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.15.1...cloudbuild/v1.16.0) (2024-03-14)
+
+
+### Features
+
+* **cloudbuild:** Add Bitbucket Data Center Config and Bitbucket Cloud config for Cloud Build Repositories ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+
+### Bug Fixes
+
+* **cloudbuild:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.15.0...cloudbuild/v1.15.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **cloudbuild:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/cloudbuild/v1.14.3...cloudbuild/v1.15.0) (2023-11-09)
 
 

@@ -47,9 +47,7 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	pb "cloud.google.com/go/spanner/testdata/protos"
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
-	"github.com/stretchr/testify/require"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
@@ -59,6 +57,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/testing/protocmp"
 )
 
@@ -1436,7 +1435,8 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 		}
 	}
 
-	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
+	duration, _ := time.ParseDuration("100ms")
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}}
 	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		// Query Foo's balance and Bar's balance.
 		queryAccountByID := "SELECT Balance FROM Accounts WHERE AccountId = @p1"
@@ -2256,7 +2256,9 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		}
 		// cleanup
 		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-		require.NoError(t, err)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -5940,13 +5942,15 @@ func isNaN(x interface{}) bool {
 // createClient creates Cloud Spanner data client.
 func createClient(ctx context.Context, dbPath string, config ClientConfig) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
+	serverAddress := "spanner.googleapis.com:443"
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
+		serverAddress = spannerHost
 	}
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
+	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -5955,13 +5959,16 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 
 func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolConfig, role string) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
+	serverAddress := "spanner.googleapis.com:443"
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
+		serverAddress = spannerHost
 	}
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}, opts...)
+	config := ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}
+	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}

@@ -1,5 +1,33 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.0...certificatemanager/v1.8.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.6...certificatemanager/v1.8.0) (2024-03-19)
+
+
+### Features
+
+* **certificatemanager:** Added Trust Configs and DnsAuthorization.Type to Certificate Manager ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+
+## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.5...certificatemanager/v1.7.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.7.5](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.4...certificatemanager/v1.7.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.3...certificatemanager/v1.7.4) (2023-11-01)
 
 

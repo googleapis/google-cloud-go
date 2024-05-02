@@ -1,5 +1,65 @@
 # Changes
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.29.0...securitycenter/v1.30.0) (2024-05-01)
+
+
+### Features
+
+* **securitycenter:** Add cloud_armor field to finding's list of attributes ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **securitycenter:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.28.0...securitycenter/v1.29.0) (2024-04-15)
+
+
+### Features
+
+* **securitycenter:** Add Notebook field to finding's list of attributes ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+
+
+### Documentation
+
+* **securitycenter:** Fixed backtick and double quotes mismatch in security_marks.proto ([dbcdfd7](https://github.com/googleapis/google-cloud-go/commit/dbcdfd7843be16573b1683466852242a84891456))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.27.0...securitycenter/v1.28.0) (2024-03-12)
+
+
+### Features
+
+* **securitycenter:** Add security_posture, external_system.case_uri, external_system.case_priority, external_system.case_sla, external_system.case_create_time, external_system.case_close_time, and external_system.ticket_info to finding's list of attributes ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+* **securitycenter:** New client(s) ([#9562](https://github.com/googleapis/google-cloud-go/issues/9562)) ([9d6b29d](https://github.com/googleapis/google-cloud-go/commit/9d6b29d136cad2dde290b4ca1383c9382eb83b34))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.26.0...securitycenter/v1.27.0) (2024-03-04)
+
+
+### Features
+
+* **securitycenter:** Add container.create_time, vulnerability.offending_package, vulnerability.fixed_package, vulnerability.security_bulletin, vulnerability.cve.impact, vulnerability.cve.exploitation_activity, vulnerability.cve.observed_in_the_wild, v... ([#9473](https://github.com/googleapis/google-cloud-go/issues/9473)) ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.25.0...securitycenter/v1.26.0) (2024-02-26)
+
+
+### Features
+
+* **securitycenter:** Add Backup DR field to finding's list of attributes ([3814ee3](https://github.com/googleapis/google-cloud-go/commit/3814ee3f27724ad0d02688ad86030b83e0a72fd4))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.4...securitycenter/v1.25.0) (2024-02-21)
+
+
+### Features
+
+* **securitycenter:** Add application field to finding's list of attributes ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
+## [1.24.4](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.3...securitycenter/v1.24.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **securitycenter:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.24.3](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.24.2...securitycenter/v1.24.3) (2023-11-27)
 
 

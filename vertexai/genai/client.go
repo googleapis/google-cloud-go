@@ -15,7 +15,7 @@
 // To get the protoveneer tool:
 //    go install golang.org/x/exp/protoveneer/cmd/protoveneer@latest
 
-//go:generate protoveneer config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
+//go:generate protoveneer -license license.txt config.yaml ../../aiplatform/apiv1beta1/aiplatformpb
 
 // Package genai is a client for the generative VertexAI model.
 package genai
@@ -45,17 +45,29 @@ type Client struct {
 //
 // Clients should be reused instead of created as needed. The methods of Client
 // are safe for concurrent use by multiple goroutines.
+// projectID is your GCP project; location is GCP region/location per
+// https://cloud.google.com/vertex-ai/docs/general/locations
 //
-// You may configure the client by passing in options from the [google.golang.org/api/option]
-// package.
+// You may configure the client by passing in options from the
+// [google.golang.org/api/option] package. You may also use options defined in
+// this package, such as [WithREST].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
 	opts = append([]option.ClientOption{
 		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
 	}, opts...)
-	c, err := aiplatform.NewPredictionClient(ctx, opts...)
+	conf := newConfig(opts...)
+
+	var c *aiplatform.PredictionClient
+	var err error
+	if conf.withREST {
+		c, err = aiplatform.NewPredictionRESTClient(ctx, opts...)
+	} else {
+		c, err = aiplatform.NewPredictionClient(ctx, opts...)
+	}
 	if err != nil {
 		return nil, err
 	}
+
 	c.SetGoogleClientInfo("gccl", internal.Version)
 	return &Client{
 		c:         c,
@@ -81,13 +93,18 @@ type GenerativeModel struct {
 	fullName string
 
 	GenerationConfig
-	SafetySettings []*SafetySetting
-	Tools          []*Tool
+	SafetySettings    []*SafetySetting
+	Tools             []*Tool
+	ToolConfig        *ToolConfig // configuration for tools
+	SystemInstruction *Content
 }
 
 const defaultMaxOutputTokens = 2048
 
 // GenerativeModel creates a new instance of the named model.
+// name is a string model name like "gemini-1.0.-pro".
+// See https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versioning
+// for details on model naming and versioning.
 func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	return &GenerativeModel{
 		c:        c,
@@ -116,29 +133,23 @@ func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Pa
 }
 
 func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateContentRequest) (*GenerateContentResponse, error) {
-	streamClient, err := m.c.c.StreamGenerateContent(ctx, req)
-	iter := &GenerateContentResponseIterator{
-		sc:  streamClient,
-		err: err,
+	res, err := m.c.c.GenerateContent(ctx, req)
+
+	if err != nil {
+		return nil, err
 	}
-	for {
-		_, err := iter.Next()
-		if err == iterator.Done {
-			return iter.merged, nil
-		}
-		if err != nil {
-			return nil, err
-		}
-	}
+	return protoToResponse(res)
 }
 
 func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
-		Model:            m.fullName,
-		Contents:         support.TransformSlice(contents, (*Content).toProto),
-		SafetySettings:   support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
-		Tools:            support.TransformSlice(m.Tools, (*Tool).toProto),
-		GenerationConfig: m.GenerationConfig.toProto(),
+		Model:             m.fullName,
+		Contents:          support.TransformSlice(contents, (*Content).toProto),
+		SafetySettings:    support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Tools:             support.TransformSlice(m.Tools, (*Tool).toProto),
+		ToolConfig:        m.ToolConfig.toProto(),
+		GenerationConfig:  m.GenerationConfig.toProto(),
+		SystemInstruction: m.SystemInstruction.toProto(),
 	}
 }
 
@@ -289,6 +300,9 @@ func joinContent(dest, src *Content) *Content {
 	if dest == nil {
 		return src
 	}
+	if src == nil {
+		return dest
+	}
 	// Assume roles are the same.
 	dest.Parts = joinParts(dest.Parts, src.Parts)
 	return dest
@@ -321,4 +335,20 @@ func mergeTexts(in []Part) []Part {
 		}
 	}
 	return out
+}
+
+func int32pToFloat32p(x *int32) *float32 {
+	if x == nil {
+		return nil
+	}
+	f := float32(*x)
+	return &f
+}
+
+func float32pToInt32p(x *float32) *int32 {
+	if x == nil {
+		return nil
+	}
+	i := int32(*x)
+	return &i
 }
