@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v0.1.3...servicehealth/v0.1.4) (2024-05-01)
+
+
+### Bug Fixes
+
+* **servicehealth:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v0.1.2...servicehealth/v0.1.3) (2024-03-14)
 
 
@@ -30,4 +37,3 @@
 * **servicehealth:** New clients ([#9245](https://github.com/googleapis/google-cloud-go/issues/9245)) ([2868a43](https://github.com/googleapis/google-cloud-go/commit/2868a43805e87ec51bfb816ecb3289c4c0e6bc09))
 
 ## Changes
-

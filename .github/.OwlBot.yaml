@@ -370,6 +370,7 @@ deep-remove-regex:
   - /internal/generated/snippets/storage/control/apiv2/
   - /internal/generated/snippets/storageinsights/apiv1/
   - /internal/generated/snippets/storagetransfer/apiv1/
+  - /internal/generated/snippets/streetview/publish/apiv1/
   - /internal/generated/snippets/support/apiv2/
   - /internal/generated/snippets/talent/apiv4/
   - /internal/generated/snippets/talent/apiv4beta1/
@@ -511,6 +512,7 @@ deep-remove-regex:
   - /storage/internal/apiv2/
   - /storageinsights/apiv1/
   - /storagetransfer/apiv1/
+  - /streetview/publish/apiv1/
   - /support/apiv2/
   - /talent/apiv4/
   - /talent/apiv4beta1/
@@ -1072,6 +1074,8 @@ deep-copy-regex:
   - source: /google/cloud/storageinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go
+    dest: /
+  - source: /google/streetview/publish/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/support/v2/cloud.google.com/go
     dest: /
