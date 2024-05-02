@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,15 +21,14 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -264,7 +263,7 @@ type NotebookExecutionJob_DataformRepositorySource_ struct {
 }
 
 type NotebookExecutionJob_GcsNotebookSource_ struct {
-	// The GCS url pointing to the ipynb file. Format:
+	// The Cloud Storage url pointing to the ipynb file. Format:
 	// `gs://bucket/notebook_file.ipynb`
 	GcsNotebookSource *NotebookExecutionJob_GcsNotebookSource `protobuf:"bytes,4,opt,name=gcs_notebook_source,json=gcsNotebookSource,proto3,oneof"`
 }
@@ -290,7 +289,7 @@ type isNotebookExecutionJob_ExecutionSink interface {
 }
 
 type NotebookExecutionJob_GcsOutputUri struct {
-	// The GCS location to upload the result to. Format:
+	// The Cloud Storage location to upload the result to. Format:
 	// `gs://bucket-name`
 	GcsOutputUri string `protobuf:"bytes,8,opt,name=gcs_output_uri,json=gcsOutputUri,proto3,oneof"`
 }

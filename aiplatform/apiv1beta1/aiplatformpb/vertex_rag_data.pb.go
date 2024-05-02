@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -326,7 +325,7 @@ type isRagFile_RagFileSource interface {
 
 type RagFile_GcsSource struct {
 	// Output only. Google Cloud Storage location of the RagFile.
-	// It does not support wildcards in the GCS uri for now.
+	// It does not support wildcards in the Cloud Storage uri for now.
 	GcsSource *GcsSource `protobuf:"bytes,8,opt,name=gcs_source,json=gcsSource,proto3,oneof"`
 }
 

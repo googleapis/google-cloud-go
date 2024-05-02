@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,15 +22,14 @@ package aiplatformpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1519,7 +1518,7 @@ type RougeSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Supported rouge types are rougen[1-9], rougeL and rougeLsum.
+	// Optional. Supported rouge types are rougen[1-9], rougeL, and rougeLsum.
 	RougeType string `protobuf:"bytes,1,opt,name=rouge_type,json=rougeType,proto3" json:"rouge_type,omitempty"`
 	// Optional. Whether to use stemmer to compute rouge score.
 	UseStemmer bool `protobuf:"varint,2,opt,name=use_stemmer,json=useStemmer,proto3" json:"use_stemmer,omitempty"`
