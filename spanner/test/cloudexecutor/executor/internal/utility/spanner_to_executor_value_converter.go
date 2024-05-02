@@ -22,10 +22,10 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
-	proto3 "github.com/golang/protobuf/ptypes/struct"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

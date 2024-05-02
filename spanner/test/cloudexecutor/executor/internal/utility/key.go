@@ -22,7 +22,7 @@ import (
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -124,6 +124,9 @@ func executorKeyValueToCloudValue(part *executorpb.Value, typePb *spannerpb.Type
 			return v.StringValue, nil
 		}
 	case *executorpb.Value_TimestampValue:
+		if err := v.TimestampValue.CheckValid(); err != nil {
+			return nil, err
+		}
 		return v.TimestampValue.AsTime(), nil
 	case *executorpb.Value_DateDaysValue:
 		epoch := civil.DateOf(time.Date(1970, 1, 1, 0, 0, 0, 0, time.UTC))

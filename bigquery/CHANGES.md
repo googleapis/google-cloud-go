@@ -3,6 +3,85 @@
 
 
 
+## [1.61.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.60.0...bigquery/v1.61.0) (2024-04-24)
+
+
+### Features
+
+* **bigquery/storage/managedwriter/adapt:** Add RANGE support to adapt ([#9836](https://github.com/googleapis/google-cloud-go/issues/9836)) ([ae25253](https://github.com/googleapis/google-cloud-go/commit/ae252533375b21dd41a0ea13e85462bbcad291af))
+* **bigquery:** RANGE support for basic data movement ([#9762](https://github.com/googleapis/google-cloud-go/issues/9762)) ([07f0806](https://github.com/googleapis/google-cloud-go/commit/07f0806a945c2cf0fbc431b63d9c8a30ed3a22fd))
+* **bigquery:** RANGE support when reading Arrow format ([#9795](https://github.com/googleapis/google-cloud-go/issues/9795)) ([da245fa](https://github.com/googleapis/google-cloud-go/commit/da245fac5ee335e86c63bfa5f165b0ab84960847))
+* **bigquery:** RANGE type StandardSQLDataType support ([#9754](https://github.com/googleapis/google-cloud-go/issues/9754)) ([33666cf](https://github.com/googleapis/google-cloud-go/commit/33666cfeaefdebc474045894af069ca7172e836b))
+
+
+### Bug Fixes
+
+* **bigquery/datatransfer:** Mark parent/name fields with the REQUIRED field_behavior annotation ([8892943](https://github.com/googleapis/google-cloud-go/commit/8892943b169060f8ba7be227cd65680696c494a0))
+* **bigquery:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.60.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.59.1...bigquery/v1.60.0) (2024-03-27)
+
+
+### Features
+
+* **bigquery/analyticshub:** Support selective sharing on data clean room Listings ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+* **bigquery/datatransfer:** Add UnenrollDataSources API which gives users a programmatic way to unenroll data sources ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+* **bigquery/storage:** Add the RANGE type to the google.cloud.bigquery.storage.v1.TableFieldSchema ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Fix flowcontrol refund on error ([#9649](https://github.com/googleapis/google-cloud-go/issues/9649)) ([a07bf1d](https://github.com/googleapis/google-cloud-go/commit/a07bf1d463416d8a4bbfbbd7e720653962fb27d5))
+* **bigquery/storage/managedwriter:** Retry improvements ([#9642](https://github.com/googleapis/google-cloud-go/issues/9642)) ([48a9258](https://github.com/googleapis/google-cloud-go/commit/48a9258954b9be40d74656dc12fe46f2bbc19bda))
+* **bigquery:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **bigquery/datatransfer:** Update unenrollDataSources API documentation ([#9449](https://github.com/googleapis/google-cloud-go/issues/9449)) ([da644cc](https://github.com/googleapis/google-cloud-go/commit/da644ccc6f154d41b8bedf21f4c4cc8aa9ce41bf))
+* **bigquery/storage:** Mark BigQueryWrite v1beta2 as deprecated ([d130d86](https://github.com/googleapis/google-cloud-go/commit/d130d861f55d137a2803340c2e11da3589669cb8))
+
+## [1.59.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.59.0...bigquery/v1.59.1) (2024-02-12)
+
+
+### Bug Fixes
+
+* **bigquery:** Align return time.Time values to UTC ([#9411](https://github.com/googleapis/google-cloud-go/issues/9411)) ([4ac005d](https://github.com/googleapis/google-cloud-go/commit/4ac005d77f1e19981c7e1ab1cebec1302e0840ca))
+
+## [1.59.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.58.0...bigquery/v1.59.0) (2024-02-06)
+
+
+### Features
+
+* **bigquery:** Add ExportDataStatstics to QueryStatistics ([#9371](https://github.com/googleapis/google-cloud-go/issues/9371)) ([261c8d9](https://github.com/googleapis/google-cloud-go/commit/261c8d944b53ac8953ea7d771c4bb50e4078d508))
+* **bigquery:** Switch all timestamp representations to int64 usec ([#9368](https://github.com/googleapis/google-cloud-go/issues/9368)) ([8c1fb7d](https://github.com/googleapis/google-cloud-go/commit/8c1fb7d4728ebc3b21cb0d601952966dca9cd1e8))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Resolve data races ([#9360](https://github.com/googleapis/google-cloud-go/issues/9360)) ([fa31ec0](https://github.com/googleapis/google-cloud-go/commit/fa31ec0c0f04302a9713a9b1d3228bda2ba135c6))
+* **bigquery:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+* **bigquery:** Support more timestamp formats for query param ([#9236](https://github.com/googleapis/google-cloud-go/issues/9236)) ([cc98509](https://github.com/googleapis/google-cloud-go/commit/cc98509fc7961e3d3619b837d13e69f9621386e8)), refs [#9221](https://github.com/googleapis/google-cloud-go/issues/9221)
+
+## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.57.1...bigquery/v1.58.0) (2024-01-18)
+
+
+### Features
+
+* **bigquery/storage/managedwriter:** Improve schema comparison stability ([#9241](https://github.com/googleapis/google-cloud-go/issues/9241)) ([faccb68](https://github.com/googleapis/google-cloud-go/commit/faccb68deeb18ad51875042242a1141285448bbb))
+* **bigquery/storage:** Add ability to request compressed ReadRowsResponse rows ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+* **bigquery:** Add DataGovernanceType to routines ([#8990](https://github.com/googleapis/google-cloud-go/issues/8990)) ([57491ae](https://github.com/googleapis/google-cloud-go/commit/57491ae3b7bbcee2abe1064dfb4f18cb3a511265))
+* **bigquery:** Add schema support for RANGE type ([#9050](https://github.com/googleapis/google-cloud-go/issues/9050)) ([477ccee](https://github.com/googleapis/google-cloud-go/commit/477ccee8eb210a0e0f9c71513318e0fbbd08928c))
+* **bigquery:** Add support for AllowNonIncrementalDefinition and Staleness on MaterializedView ([#8673](https://github.com/googleapis/google-cloud-go/issues/8673)) ([6ec2bb2](https://github.com/googleapis/google-cloud-go/commit/6ec2bb218335acf791af859852fc6c8e9bea7a08))
+* **bigquery:** Add table resource tags support ([#9084](https://github.com/googleapis/google-cloud-go/issues/9084)) ([3569cc2](https://github.com/googleapis/google-cloud-go/commit/3569cc27b3357c3f62ccfae1670a1bf6383dee9a))
+* **bigquery:** Expose query id on row iterator if available ([#9224](https://github.com/googleapis/google-cloud-go/issues/9224)) ([bbff8ac](https://github.com/googleapis/google-cloud-go/commit/bbff8ac817fb95af219c588bdadc0ca1784c5c0c))
+
+
+### Documentation
+
+* **bigquery/storage/managedwriter:** Add documentation for ingesting JSON to a ManagedStream ([#9137](https://github.com/googleapis/google-cloud-go/issues/9137)) ([cae54ed](https://github.com/googleapis/google-cloud-go/commit/cae54ed31548e6f17f3b6bc217bb117723f04e15))
+* **bigquery:** Update package docs to show query parameterization ([#8965](https://github.com/googleapis/google-cloud-go/issues/8965)) ([cc76ab3](https://github.com/googleapis/google-cloud-go/commit/cc76ab35c25a672ed3255c0b26a99bef2cb81868))
+
 ## [1.57.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.57.0...bigquery/v1.57.1) (2023-11-01)
 
 

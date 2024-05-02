@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -91,7 +91,9 @@ type AlloyDBAdminCallOptions struct {
 func defaultAlloyDBAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("alloydb.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("alloydb.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("alloydb.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://alloydb.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -1083,7 +1085,9 @@ func NewAlloyDBAdminRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultAlloyDBAdminRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://alloydb.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://alloydb.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://alloydb.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://alloydb.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}

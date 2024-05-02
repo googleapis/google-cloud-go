@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
-	ipubsub "cloud.google.com/go/internal/pubsub"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
@@ -51,8 +50,6 @@ type Subscription struct {
 
 	mu            sync.Mutex
 	receiveActive bool
-
-	enableOrdering bool
 }
 
 // Subscription creates a reference to a subscription.
@@ -1239,8 +1236,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-	s.checkOrdering(ctx)
-
 	// TODO(hongalex): move settings check to a helper function to make it more testable
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
@@ -1389,24 +1384,22 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						return nil
 					}
 					iter.eoMu.RLock()
-					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
+					msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
-					old := ackh.doneFunc
-					msgLen := len(msg.Data)
-					ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
-						defer fc.release(ctx, msgLen)
-						old(ackID, ack, r, receiveTime)
-					}
+
 					wg.Add(1)
-					// Make sure the subscription has ordering enabled before adding to scheduler.
+					// Only schedule messages in order if an ordering key is present and the subscriber client
+					// received the ordering flag from a Streaming Pull response.
 					var key string
-					if s.enableOrdering {
+					iter.orderingMu.RLock()
+					if iter.enableOrdering {
 						key = msg.OrderingKey
 					}
-					// TODO(deklerk): Can we have a generic handler at the
-					// constructor level?
+					iter.orderingMu.RUnlock()
+					msgLen := len(msg.Data)
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						defer wg.Done()
+						defer fc.release(ctx, msgLen)
 						f(ctx2, msg.(*Message))
 					}); err != nil {
 						wg.Done()
@@ -1440,20 +1433,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}()
 
 	return group.Wait()
-}
-
-// checkOrdering calls Config to check theEnableMessageOrdering field.
-// If this call fails (e.g. because the service account doesn't have
-// the roles/viewer or roles/pubsub.viewer role) we will assume
-// EnableMessageOrdering to be true.
-// See: https://github.com/googleapis/google-cloud-go/issues/3884
-func (s *Subscription) checkOrdering(ctx context.Context) {
-	cfg, err := s.Config(ctx)
-	if err != nil {
-		s.enableOrdering = true
-	} else {
-		s.enableOrdering = cfg.EnableMessageOrdering
-	}
 }
 
 type pullOptions struct {

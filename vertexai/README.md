@@ -3,7 +3,7 @@
 [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/vertexai.svg)](https://pkg.go.dev/cloud.google.com/go/vertexai)
 
 The Vertex AI Go SDK enables developers to use Google's state-of-the-art 
-enerative AI models (like Gemini) to build AI-powered features and applications.
+generative AI models (like Gemini) to build AI-powered features and applications.
 This SDK supports use cases like:
 - Generate text from text-only input
 - Generate text from text-and-images input (multimodal)
@@ -30,6 +30,8 @@ for the Vertex AI Go SDK in the Google Cloud documentation.
 
 You can find complete documentation for the Vertex AI SDKs and the Gemini
 model in the Google Cloud documentation: https://cloud.google.com/vertex-ai/docs/generative-ai/learn/overview
+
+For a list of the supported models and their capabilities, see https://cloud.google.com/vertex-ai/docs/generative-ai/learn/model-versioning
 
 You can also find information about this SDK in the
 [Go package documentation](https://pkg.go.dev/cloud.google.com/go/vertexai).

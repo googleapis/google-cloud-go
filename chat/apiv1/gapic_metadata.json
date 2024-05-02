@@ -1,0 +1,283 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.chat.v1",
+  "libraryPackage": "cloud.google.com/go/chat/apiv1",
+  "services": {
+    "ChatService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CompleteImportSpace": {
+              "methods": [
+                "CompleteImportSpace"
+              ]
+            },
+            "CreateMembership": {
+              "methods": [
+                "CreateMembership"
+              ]
+            },
+            "CreateMessage": {
+              "methods": [
+                "CreateMessage"
+              ]
+            },
+            "CreateReaction": {
+              "methods": [
+                "CreateReaction"
+              ]
+            },
+            "CreateSpace": {
+              "methods": [
+                "CreateSpace"
+              ]
+            },
+            "DeleteMembership": {
+              "methods": [
+                "DeleteMembership"
+              ]
+            },
+            "DeleteMessage": {
+              "methods": [
+                "DeleteMessage"
+              ]
+            },
+            "DeleteReaction": {
+              "methods": [
+                "DeleteReaction"
+              ]
+            },
+            "DeleteSpace": {
+              "methods": [
+                "DeleteSpace"
+              ]
+            },
+            "FindDirectMessage": {
+              "methods": [
+                "FindDirectMessage"
+              ]
+            },
+            "GetAttachment": {
+              "methods": [
+                "GetAttachment"
+              ]
+            },
+            "GetMembership": {
+              "methods": [
+                "GetMembership"
+              ]
+            },
+            "GetMessage": {
+              "methods": [
+                "GetMessage"
+              ]
+            },
+            "GetSpace": {
+              "methods": [
+                "GetSpace"
+              ]
+            },
+            "GetSpaceReadState": {
+              "methods": [
+                "GetSpaceReadState"
+              ]
+            },
+            "GetThreadReadState": {
+              "methods": [
+                "GetThreadReadState"
+              ]
+            },
+            "ListMemberships": {
+              "methods": [
+                "ListMemberships"
+              ]
+            },
+            "ListMessages": {
+              "methods": [
+                "ListMessages"
+              ]
+            },
+            "ListReactions": {
+              "methods": [
+                "ListReactions"
+              ]
+            },
+            "ListSpaces": {
+              "methods": [
+                "ListSpaces"
+              ]
+            },
+            "SetUpSpace": {
+              "methods": [
+                "SetUpSpace"
+              ]
+            },
+            "UpdateMembership": {
+              "methods": [
+                "UpdateMembership"
+              ]
+            },
+            "UpdateMessage": {
+              "methods": [
+                "UpdateMessage"
+              ]
+            },
+            "UpdateSpace": {
+              "methods": [
+                "UpdateSpace"
+              ]
+            },
+            "UpdateSpaceReadState": {
+              "methods": [
+                "UpdateSpaceReadState"
+              ]
+            },
+            "UploadAttachment": {
+              "methods": [
+                "UploadAttachment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CompleteImportSpace": {
+              "methods": [
+                "CompleteImportSpace"
+              ]
+            },
+            "CreateMembership": {
+              "methods": [
+                "CreateMembership"
+              ]
+            },
+            "CreateMessage": {
+              "methods": [
+                "CreateMessage"
+              ]
+            },
+            "CreateReaction": {
+              "methods": [
+                "CreateReaction"
+              ]
+            },
+            "CreateSpace": {
+              "methods": [
+                "CreateSpace"
+              ]
+            },
+            "DeleteMembership": {
+              "methods": [
+                "DeleteMembership"
+              ]
+            },
+            "DeleteMessage": {
+              "methods": [
+                "DeleteMessage"
+              ]
+            },
+            "DeleteReaction": {
+              "methods": [
+                "DeleteReaction"
+              ]
+            },
+            "DeleteSpace": {
+              "methods": [
+                "DeleteSpace"
+              ]
+            },
+            "FindDirectMessage": {
+              "methods": [
+                "FindDirectMessage"
+              ]
+            },
+            "GetAttachment": {
+              "methods": [
+                "GetAttachment"
+              ]
+            },
+            "GetMembership": {
+              "methods": [
+                "GetMembership"
+              ]
+            },
+            "GetMessage": {
+              "methods": [
+                "GetMessage"
+              ]
+            },
+            "GetSpace": {
+              "methods": [
+                "GetSpace"
+              ]
+            },
+            "GetSpaceReadState": {
+              "methods": [
+                "GetSpaceReadState"
+              ]
+            },
+            "GetThreadReadState": {
+              "methods": [
+                "GetThreadReadState"
+              ]
+            },
+            "ListMemberships": {
+              "methods": [
+                "ListMemberships"
+              ]
+            },
+            "ListMessages": {
+              "methods": [
+                "ListMessages"
+              ]
+            },
+            "ListReactions": {
+              "methods": [
+                "ListReactions"
+              ]
+            },
+            "ListSpaces": {
+              "methods": [
+                "ListSpaces"
+              ]
+            },
+            "SetUpSpace": {
+              "methods": [
+                "SetUpSpace"
+              ]
+            },
+            "UpdateMembership": {
+              "methods": [
+                "UpdateMembership"
+              ]
+            },
+            "UpdateMessage": {
+              "methods": [
+                "UpdateMessage"
+              ]
+            },
+            "UpdateSpace": {
+              "methods": [
+                "UpdateSpace"
+              ]
+            },
+            "UpdateSpaceReadState": {
+              "methods": [
+                "UpdateSpaceReadState"
+              ]
+            },
+            "UploadAttachment": {
+              "methods": [
+                "UploadAttachment"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -16,18 +16,22 @@
 // (grpctransport and httptransport).
 package transport
 
-import "cloud.google.com/go/auth/detect"
+import (
+	"fmt"
+
+	"cloud.google.com/go/auth/credentials"
+)
 
 // CloneDetectOptions clones a user set detect option into some new memory that
 // we can internally manipulate before sending onto the detect package.
-func CloneDetectOptions(oldDo *detect.Options) *detect.Options {
+func CloneDetectOptions(oldDo *credentials.DetectOptions) *credentials.DetectOptions {
 	if oldDo == nil {
 		// it is valid for users not to set this, but we will need to to default
 		// some options for them in this case so return some initialized memory
 		// to work with.
-		return &detect.Options{}
+		return &credentials.DetectOptions{}
 	}
-	newDo := &detect.Options{
+	newDo := &credentials.DetectOptions{
 		// Simple types
 		Audience:          oldDo.Audience,
 		Subject:           oldDo.Subject,
@@ -36,6 +40,7 @@ func CloneDetectOptions(oldDo *detect.Options) *detect.Options {
 		STSAudience:       oldDo.STSAudience,
 		CredentialsFile:   oldDo.CredentialsFile,
 		UseSelfSignedJWT:  oldDo.UseSelfSignedJWT,
+		UniverseDomain:    oldDo.UniverseDomain,
 
 		// These fields are are pointer types that we just want to use exactly
 		// as the user set, copy the ref
@@ -54,4 +59,18 @@ func CloneDetectOptions(oldDo *detect.Options) *detect.Options {
 	}
 
 	return newDo
+}
+
+// ValidateUniverseDomain verifies that the universe domain configured for the
+// client matches the universe domain configured for the credentials.
+func ValidateUniverseDomain(clientUniverseDomain, credentialsUniverseDomain string) error {
+	if clientUniverseDomain != credentialsUniverseDomain {
+		return fmt.Errorf(
+			"the configured universe domain (%q) does not match the universe "+
+				"domain found in the credentials (%q). If you haven't configured "+
+				"the universe domain explicitly, \"googleapis.com\" is the default",
+			clientUniverseDomain,
+			credentialsUniverseDomain)
+	}
+	return nil
 }

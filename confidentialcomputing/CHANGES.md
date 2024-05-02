@@ -1,6 +1,34 @@
 # Changelog
 
 
+## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.5.0...confidentialcomputing/v1.5.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.4.2...confidentialcomputing/v1.5.0) (2024-03-27)
+
+
+### Features
+
+* **confidentialcomputing:** Add additional `TokenType` options (`TOKEN_TYPE_PKI` and `TOKEN_TYPE_LIMITED_AWS`) ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
+## [1.4.2](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.4.1...confidentialcomputing/v1.4.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.4.0...confidentialcomputing/v1.4.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.3.3...confidentialcomputing/v1.4.0) (2023-11-16)
 
 

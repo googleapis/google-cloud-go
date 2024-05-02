@@ -25,9 +25,9 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/trace"
-	wrapperspb "github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 type operator string
@@ -371,6 +371,8 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 // Field names which contain spaces, quote marks, or operator characters
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
+// For "in" and "not-in" operator, use []interface{} as value. For instance
+// query.FilterField("Month", "in", []interface{}{1, 2, 3, 4})
 func (q *Query) FilterField(fieldName, operator string, value interface{}) *Query {
 	return q.FilterEntity(PropertyFilter{
 		FieldName: fieldName,
@@ -503,7 +505,7 @@ func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
 		return err
 	}
 
-	req.ReadOptions, err = parseReadOptions(q)
+	req.ReadOptions, err = parseQueryReadOptions(q.eventual, q.trans)
 	if err != nil {
 		return err
 	}
@@ -714,9 +716,17 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 }
 
 // Run runs the given query in the given context.
-func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
+func (c *Client) Run(ctx context.Context, q *Query) (it *Iterator) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+	defer func() { trace.EndSpan(ctx, it.err) }()
+	it = c.run(ctx, q)
+	return it
+}
+
+// run runs the given query in the given context.
+func (c *Client) run(ctx context.Context, q *Query) *Iterator {
 	if q.err != nil {
-		return &Iterator{err: q.err}
+		return &Iterator{ctx: ctx, err: q.err}
 	}
 	t := &Iterator{
 		ctx:          ctx,
@@ -730,6 +740,8 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 			ProjectId:  c.dataset,
 			DatabaseId: c.databaseID,
 		},
+		trans:    q.trans,
+		eventual: q.eventual,
 	}
 
 	if q.namespace != "" {
@@ -786,7 +798,12 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	// Parse the read options.
-	req.ReadOptions, err = parseReadOptions(aq.query)
+	txn := aq.query.trans
+	if txn != nil {
+		defer txn.acquireLock()()
+	}
+
+	req.ReadOptions, err = parseQueryReadOptions(aq.query.eventual, txn)
 	if err != nil {
 		return nil, err
 	}
@@ -794,6 +811,10 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	res, err := c.client.RunAggregationQuery(ctx, req)
 	if err != nil {
 		return nil, err
+	}
+
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.setToInProgress(res.Transaction)
 	}
 
 	ar = make(AggregationResult)
@@ -808,21 +829,31 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	return ar, nil
 }
 
-// parseReadOptions translates Query read options into protobuf format.
-func parseReadOptions(q *Query) (*pb.ReadOptions, error) {
-	if t := q.trans; t != nil {
-		if t.id == nil {
-			return nil, errExpiredTransaction
-		}
-		if q.eventual {
-			return nil, errors.New("datastore: cannot use EventualConsistency query in a transaction")
-		}
-		return &pb.ReadOptions{
-			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
-		}, nil
+func validateReadOptions(eventual bool, t *Transaction) error {
+	if t == nil {
+		return nil
+	}
+	if eventual {
+		return errors.New("datastore: cannot use EventualConsistency query in a transaction")
+	}
+	if t.state == transactionStateExpired {
+		return errExpiredTransaction
+	}
+	return nil
+}
+
+// parseQueryReadOptions translates Query read options into protobuf format.
+func parseQueryReadOptions(eventual bool, t *Transaction) (*pb.ReadOptions, error) {
+	err := validateReadOptions(eventual, t)
+	if err != nil {
+		return nil, err
 	}
 
-	if q.eventual {
+	if t != nil {
+		return t.parseReadOptions()
+	}
+
+	if eventual {
 		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
 	}
 
@@ -858,6 +889,12 @@ type Iterator struct {
 	pageCursor []byte
 	// entityCursor is the compiled cursor of the next result.
 	entityCursor []byte
+
+	// trans records the transaction in which the query was run
+	trans *Transaction
+
+	// eventual records whether the query was eventual
+	eventual bool
 }
 
 // Next returns the key of the next result. When there are no more results,
@@ -924,10 +961,25 @@ func (t *Iterator) nextBatch() error {
 		q.Limit = nil
 	}
 
+	txn := t.trans
+	if txn != nil {
+		defer txn.acquireLock()()
+	}
+
+	var err error
+	t.req.ReadOptions, err = parseQueryReadOptions(t.eventual, txn)
+	if err != nil {
+		return err
+	}
+
 	// Run the query.
 	resp, err := t.client.client.RunQuery(t.ctx, t.req)
 	if err != nil {
 		return err
+	}
+
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.setToInProgress(resp.Transaction)
 	}
 
 	// Adjust any offset from skipped results.

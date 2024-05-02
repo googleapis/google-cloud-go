@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -283,6 +283,12 @@ func ExampleClient_ListDescendantEventThreatDetectionCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesResponse)
 	}
 }
 
@@ -314,6 +320,12 @@ func ExampleClient_ListDescendantSecurityHealthAnalyticsCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesResponse)
 	}
 }
 
@@ -345,6 +357,12 @@ func ExampleClient_ListEffectiveEventThreatDetectionCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesResponse)
 	}
 }
 
@@ -376,6 +394,12 @@ func ExampleClient_ListEffectiveSecurityHealthAnalyticsCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse)
 	}
 }
 
@@ -407,6 +431,12 @@ func ExampleClient_ListEventThreatDetectionCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycentermanagementpb.ListEventThreatDetectionCustomModulesResponse)
 	}
 }
 
@@ -438,6 +468,12 @@ func ExampleClient_ListSecurityHealthAnalyticsCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesResponse)
 	}
 }
 
@@ -594,5 +630,11 @@ func ExampleClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }

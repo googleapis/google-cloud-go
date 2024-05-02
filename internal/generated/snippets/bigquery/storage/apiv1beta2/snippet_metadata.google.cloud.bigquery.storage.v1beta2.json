@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/bigquery/storage/apiv1beta2",
-    "version": "1.57.1",
+    "version": "1.61.0",
     "language": "GO",
     "apis": [
       {
@@ -106,7 +106,7 @@
     {
       "regionTag": "bigquerystorage_v1beta2_generated_BigQueryWrite_AppendRows_sync",
       "title": "bigquerystorage AppendRows Sample",
-      "description": "AppendRows appends data to the given stream.\n\nIf `offset` is specified, the `offset` is checked against the end of\nstream. The server returns `OUT_OF_RANGE` in `AppendRowsResponse` if an\nattempt is made to append to an offset beyond the current end of the stream\nor `ALREADY_EXISTS` if user provids an `offset` that has already been\nwritten to. User can retry with adjusted offset within the same RPC\nstream. If `offset` is not specified, append happens at the end of the\nstream.\n\nThe response contains the offset at which the append happened. Responses\nare received in the same order in which requests are sent. There will be\none response for each successful request. If the `offset` is not set in\nresponse, it means append didn't happen due to some errors. If one request\nfails, all the subsequent requests will also fail until a success request\nis made again.\n\nIf the stream is of `PENDING` type, data will only be available for read\noperations after the stream is committed.\n\n\nThis method is not supported for the REST transport.",
+      "description": "AppendRows appends data to the given stream.\n\nIf `offset` is specified, the `offset` is checked against the end of\nstream. The server returns `OUT_OF_RANGE` in `AppendRowsResponse` if an\nattempt is made to append to an offset beyond the current end of the stream\nor `ALREADY_EXISTS` if user provids an `offset` that has already been\nwritten to. User can retry with adjusted offset within the same RPC\nstream. If `offset` is not specified, append happens at the end of the\nstream.\n\nThe response contains the offset at which the append happened. Responses\nare received in the same order in which requests are sent. There will be\none response for each successful request. If the `offset` is not set in\nresponse, it means append didn't happen due to some errors. If one request\nfails, all the subsequent requests will also fail until a success request\nis made again.\n\nIf the stream is of `PENDING` type, data will only be available for read\noperations after the stream is committed.\n\n\nThis method is not supported for the REST transport.\n\nDeprecated: AppendRows may be removed in a future version.",
       "file": "BigQueryWriteClient/AppendRows/main.go",
       "language": "GO",
       "clientMethod": {
@@ -148,7 +148,7 @@
     {
       "regionTag": "bigquerystorage_v1beta2_generated_BigQueryWrite_BatchCommitWriteStreams_sync",
       "title": "bigquerystorage BatchCommitWriteStreams Sample",
-      "description": "BatchCommitWriteStreams atomically commits a group of `PENDING` streams that belong to the same\n`parent` table.\nStreams must be finalized before commit and cannot be committed multiple\ntimes. Once a stream is committed, data in the stream becomes available\nfor read operations.",
+      "description": "BatchCommitWriteStreams atomically commits a group of `PENDING` streams that belong to the same\n`parent` table.\nStreams must be finalized before commit and cannot be committed multiple\ntimes. Once a stream is committed, data in the stream becomes available\nfor read operations.\n\n\nDeprecated: BatchCommitWriteStreams may be removed in a future version.",
       "file": "BigQueryWriteClient/BatchCommitWriteStreams/main.go",
       "language": "GO",
       "clientMethod": {
@@ -194,7 +194,7 @@
     {
       "regionTag": "bigquerystorage_v1beta2_generated_BigQueryWrite_CreateWriteStream_sync",
       "title": "bigquerystorage CreateWriteStream Sample",
-      "description": "CreateWriteStream creates a write stream to the given table.\nAdditionally, every table has a special COMMITTED stream named '_default'\nto which data can be written. This stream doesn't need to be created using\nCreateWriteStream. It is a stream that can be used simultaneously by any\nnumber of clients. Data written to this stream is considered committed as\nsoon as an acknowledgement is received.",
+      "description": "CreateWriteStream creates a write stream to the given table.\nAdditionally, every table has a special COMMITTED stream named '_default'\nto which data can be written. This stream doesn't need to be created using\nCreateWriteStream. It is a stream that can be used simultaneously by any\nnumber of clients. Data written to this stream is considered committed as\nsoon as an acknowledgement is received.\n\n\nDeprecated: CreateWriteStream may be removed in a future version.",
       "file": "BigQueryWriteClient/CreateWriteStream/main.go",
       "language": "GO",
       "clientMethod": {
@@ -240,7 +240,7 @@
     {
       "regionTag": "bigquerystorage_v1beta2_generated_BigQueryWrite_FinalizeWriteStream_sync",
       "title": "bigquerystorage FinalizeWriteStream Sample",
-      "description": "FinalizeWriteStream finalize a write stream so that no new data can be appended to the\nstream. Finalize is not supported on the '_default' stream.",
+      "description": "FinalizeWriteStream finalize a write stream so that no new data can be appended to the\nstream. Finalize is not supported on the '_default' stream.\n\n\nDeprecated: FinalizeWriteStream may be removed in a future version.",
       "file": "BigQueryWriteClient/FinalizeWriteStream/main.go",
       "language": "GO",
       "clientMethod": {
@@ -286,7 +286,7 @@
     {
       "regionTag": "bigquerystorage_v1beta2_generated_BigQueryWrite_FlushRows_sync",
       "title": "bigquerystorage FlushRows Sample",
-      "description": "FlushRows flushes rows to a BUFFERED stream.\nIf users are appending rows to BUFFERED stream, flush operation is\nrequired in order for the rows to become available for reading. A\nFlush operation flushes up to any previously flushed offset in a BUFFERED\nstream, to the offset specified in the request.\nFlush is not supported on the _default stream, since it is not BUFFERED.",
+      "description": "FlushRows flushes rows to a BUFFERED stream.\nIf users are appending rows to BUFFERED stream, flush operation is\nrequired in order for the rows to become available for reading. A\nFlush operation flushes up to any previously flushed offset in a BUFFERED\nstream, to the offset specified in the request.\nFlush is not supported on the _default stream, since it is not BUFFERED.\n\n\nDeprecated: FlushRows may be removed in a future version.",
       "file": "BigQueryWriteClient/FlushRows/main.go",
       "language": "GO",
       "clientMethod": {
@@ -332,7 +332,7 @@
     {
       "regionTag": "bigquerystorage_v1beta2_generated_BigQueryWrite_GetWriteStream_sync",
       "title": "bigquerystorage GetWriteStream Sample",
-      "description": "GetWriteStream gets a write stream.",
+      "description": "GetWriteStream gets a write stream.\n\n\nDeprecated: GetWriteStream may be removed in a future version.",
       "file": "BigQueryWriteClient/GetWriteStream/main.go",
       "language": "GO",
       "clientMethod": {

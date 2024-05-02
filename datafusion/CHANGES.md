@@ -1,5 +1,26 @@
 # Changes
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/datafusion/v1.7.6...datafusion/v1.7.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **datafusion:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/datafusion/v1.7.5...datafusion/v1.7.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **datafusion:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.7.5](https://github.com/googleapis/google-cloud-go/compare/datafusion/v1.7.4...datafusion/v1.7.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **datafusion:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/datafusion/v1.7.3...datafusion/v1.7.4) (2023-11-01)
 
 

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/places/apiv1",
-    "version": "1.6.2",
+    "version": "1.7.2",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "places_v1_generated_Places_AutocompletePlaces_sync",
+      "title": "places AutocompletePlaces Sample",
+      "description": "AutocompletePlaces returns predictions for the given input.",
+      "file": "Client/AutocompletePlaces/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AutocompletePlaces",
+        "fullName": "google.maps.places.v1.Client.AutocompletePlaces",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "placespb.AutocompletePlacesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*placespb.AutocompletePlacesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.places.v1.Client"
+        },
+        "method": {
+          "shortName": "AutocompletePlaces",
+          "fullName": "google.maps.places.v1.Places.AutocompletePlaces",
+          "service": {
+            "shortName": "Places",
+            "fullName": "google.maps.places.v1.Places"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "places_v1_generated_Places_GetPhotoMedia_sync",
       "title": "places GetPhotoMedia Sample",
@@ -60,7 +106,7 @@
     {
       "regionTag": "places_v1_generated_Places_GetPlace_sync",
       "title": "places GetPlace Sample",
-      "description": "GetPlace get place details with a place id (in a name) string.",
+      "description": "GetPlace get the details of a place based on its resource name, which is a string\nin the `places/{place_id}` format.",
       "file": "Client/GetPlace/main.go",
       "language": "GO",
       "clientMethod": {

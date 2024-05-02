@@ -52,6 +52,7 @@ const (
 	directPathIPV4Prefix      = "34.126"
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
+	prefixOfClusterResources  = "bt-c-"
 )
 
 var (
@@ -62,6 +63,7 @@ var (
 		"j§adams":     {"gwashington", "tjefferson"},
 	}
 
+	clusterUIDSpace  = uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
 	tableNameSpace   = uid.NewSpace("cbt-test", &uid.Options{Short: true})
 	myTableName      = fmt.Sprintf("mytable-%d", time.Now().Unix())
 	myOtherTableName = fmt.Sprintf("myothertable-%d", time.Now().Unix())
@@ -81,11 +83,15 @@ func populatePresidentsGraph(table *Table) error {
 	return nil
 }
 
+func generateNewInstanceName() string {
+	return fmt.Sprintf("%v%d", prefixOfInstanceResources, time.Now().Unix())
+}
+
 var instanceToCreate string
 
 func init() {
 	if runCreateInstanceTests {
-		instanceToCreate = fmt.Sprintf("bt-it-%d", time.Now().Unix())
+		instanceToCreate = generateNewInstanceName()
 	}
 }
 
@@ -127,16 +133,27 @@ func cleanup(c IntegrationTestConfig) error {
 		return err
 	}
 
-	for _, info := range instances {
-		if strings.HasPrefix(info.Name, prefixOfInstanceResources) {
-			timestamp := info.Name[len(prefixOfInstanceResources):]
+	for _, instanceInfo := range instances {
+		if strings.HasPrefix(instanceInfo.Name, prefixOfInstanceResources) {
+			timestamp := instanceInfo.Name[len(prefixOfInstanceResources):]
 			t, err := strconv.ParseInt(timestamp, 10, 64)
 			if err != nil {
 				return err
 			}
 			uT := time.Unix(t, 0)
 			if time.Now().After(uT.Add(timeUntilResourceCleanup)) {
-				iac.DeleteInstance(ctx, info.Name)
+				iac.DeleteInstance(ctx, instanceInfo.Name)
+			}
+		} else {
+			// Delete clusters created in existing instances
+			clusters, err := iac.Clusters(ctx, instanceInfo.Name)
+			if err != nil {
+				return err
+			}
+			for _, clusterInfo := range clusters {
+				if strings.HasPrefix(clusterInfo.Name, prefixOfClusterResources) {
+					iac.DeleteCluster(ctx, instanceInfo.Name, clusterInfo.Name)
+				}
 			}
 		}
 	}
@@ -1523,7 +1540,8 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1601,7 +1619,8 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1685,7 +1704,8 @@ func TestIntegration_Admin(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1850,7 +1870,12 @@ func TestIntegration_Admin(t *testing.T) {
 		if err != nil {
 			t.Fatalf("EncryptionInfo: %v", err)
 		}
-		if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
+		wantLen := 1
+		if testEnv.Config().Cluster2 != "" {
+			wantLen++
+		}
+
+		if got, want := len(encryptionInfo), wantLen; !cmp.Equal(got, want) {
 			t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
 		}
 
@@ -1877,7 +1902,8 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1915,7 +1941,8 @@ func TestIntegration_BackupIAM(t *testing.T) {
 		t.Skip("emulator doesn't support IAM Policy creation")
 	}
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -1972,6 +1999,80 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	}
 }
 
+func TestIntegration_AuthorizedViewIAM(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support IAM Policy creation")
+	}
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+
+	defer deleteTable(ctx, t, adminClient, table)
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	// Create authorized view.
+	opts := &uid.Options{Sep: '_'}
+	authorizedViewUUID := uid.NewSpace("authorizedView", opts)
+	authorizedView := authorizedViewUUID.New()
+
+	defer adminClient.DeleteAuthorizedView(ctx, table, authorizedView)
+
+	if err = adminClient.CreateAuthorizedView(ctx, &AuthorizedViewConf{
+		TableID:            table,
+		AuthorizedViewID:   authorizedView,
+		AuthorizedView:     &SubsetViewConf{},
+		DeletionProtection: Unprotected,
+	}); err != nil {
+		t.Fatalf("Creating authorizedView: %v", err)
+	}
+	iamHandle := adminClient.AuthorizedViewIAM(table, authorizedView)
+	// Get authorized view policy.
+	p, err := iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	// The resource is new, so the policy should be empty.
+	if got := p.Roles(); len(got) > 0 {
+		t.Errorf("got roles %v, want none", got)
+	}
+	// Set authorized view policy.
+	member := "domain:google.com"
+	// Add a member, set the policy, then check that the member is present.
+	p.Add(member, iam.Viewer)
+	if err = iamHandle.SetPolicy(ctx, p); err != nil {
+		t.Errorf("iamHandle.SetPolicy: %v", err)
+	}
+	p, err = iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	if got, want := p.Members(iam.Viewer), []string{member}; !testutil.Equal(got, want) {
+		t.Errorf("iamHandle.Policy: got %v, want %v", got, want)
+	}
+	// Test authorized view permissions.
+	permissions := []string{"bigtable.authorizedViews.get", "bigtable.authorizedViews.update"}
+	_, err = iamHandle.TestPermissions(ctx, permissions)
+	if err != nil {
+		t.Errorf("iamHandle.TestPermissions: %v", err)
+	}
+}
+
 func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
@@ -1989,7 +2090,8 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	}
 
 	timeout := 7 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2274,7 +2376,9 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 
 	// Create an instance admin client
 	timeout := 7 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
@@ -2370,7 +2474,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2378,7 +2483,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 	defer iAdminClient.Close()
 
-	clusterID := instanceToCreate + "-cluster"
+	clusterID := clusterUIDSpace.New()
 
 	// Create a development instance
 	conf := &InstanceConf{
@@ -2457,7 +2562,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 
 	// Now add a second cluster as the only change. The first cluster must also be provided so
 	// it is not removed.
-	clusterID2 := clusterID + "-2"
+	clusterID2 := clusterUIDSpace.New()
 	confWithClusters = &InstanceWithClustersConfig{
 		InstanceID: instanceToCreate,
 		Clusters: []ClusterConfig{
@@ -2540,7 +2645,8 @@ func TestIntegration_Autoscaling(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -2708,7 +2814,8 @@ func TestIntegration_Granularity(t *testing.T) {
 	if testEnv.Config().UseProd {
 		timeout = 5 * time.Minute
 	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -3003,9 +3110,8 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 }
 
 func createInstance(ctx context.Context, testEnv IntegrationEnv, iAdminClient *InstanceAdminClient) (string, string, error) {
-	diffInstanceId := uid.NewSpace(prefixOfInstanceResources, &uid.Options{Short: true})
-	diffInstance := diffInstanceId.New()
-	diffCluster := testEnv.Config().Cluster + "-d"
+	diffInstance := generateNewInstanceName()
+	diffCluster := clusterUIDSpace.New()
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,
 		ClusterId:    diffCluster,
@@ -3076,29 +3182,6 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	destProj1Inst1Cl1 := srcCluster             // 1st cluster in 1st instance in 1st destination project
 	destIAdminClient1 := srcIAdminClient
 
-	// Create a 2nd cluster in 1st destination project
-	clusterUID := uid.NewSpace("c-", &uid.Options{Short: true})
-	destProj1Inst1Cl2 := clusterUID.New()
-	defer func() {
-		testutil.Retry(t, 3, 2*time.Second, func(r *testutil.R) {
-			err := destIAdminClient1.DeleteCluster(ctx, destProj1Inst1, destProj1Inst1Cl2)
-			if err != nil {
-				r.Errorf("DeleteCluster: %v", err)
-			}
-		})
-	}()
-
-	err = destIAdminClient1.CreateCluster(ctx, &ClusterConfig{
-		InstanceID:  destProj1Inst1,
-		ClusterID:   destProj1Inst1Cl2,
-		Zone:        instanceToCreateZone2,
-		NumNodes:    1,
-		StorageType: SSD,
-	})
-	if err != nil {
-		t.Fatalf("CreateCluster: %v", err)
-	}
-
 	type testcase struct {
 		desc         string
 		destProject  string
@@ -3112,14 +3195,23 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 			destInstance: destProj1Inst1,
 			destCluster:  destProj1Inst1Cl1,
 		},
-		{
+	}
+
+	// testEnv.Config().Cluster2 will be non-empty if 'it.cluster2' flag is passed
+	// or 'GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER' environment variable is set
+	// Add more testcases if Cluster2 is non-empty string
+	if testEnv.Config().Cluster2 != "" {
+		testcases = append(testcases, testcase{
 			desc:         "Copy backup to same project, same instance, different cluster",
 			destProject:  destProj1,
 			destInstance: destProj1Inst1,
-			destCluster:  destProj1Inst1Cl2,
-		},
+			destCluster:  testEnv.Config().Cluster2,
+		})
 	}
 
+	// If 'it.run-create-instance-tests' flag is set while running the tests,
+	// instanceToCreate will be non-empty string.
+	// Add more testcases if instanceToCreate is non-empty string
 	if instanceToCreate != "" {
 		// Create a 2nd instance in 1st destination project
 		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, testEnv, destIAdminClient1)
@@ -3137,6 +3229,9 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 		t.Logf("WARNING: run-create-instance-tests not set, skipping tests that require instance creation")
 	}
 
+	// testEnv.Config().Project2 will be non-empty if 'it.project2' flag is passed
+	// or 'GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID' environment variable is set
+	// Add more testcases if Project2 is non-empty string
 	if testEnv.Config().Project2 != "" {
 		// Create admin client for 2nd project in test environment
 		destProj2 := testEnv.Config().Project2
@@ -3216,7 +3311,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	timeout := 15 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -3396,6 +3492,335 @@ func TestIntegration_AdminBackup(t *testing.T) {
 			t.Errorf("Backup '%v' was not deleted", backup.Name)
 			break
 		}
+	}
+}
+
+func TestIntegration_AdminAuthorizedView(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support authorizedViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create authorized view
+	authorizedViewUUID := uid.NewSpace("authorizedView-", &uid.Options{})
+	authorizedView := authorizedViewUUID.New()
+	defer adminClient.DeleteAuthorizedView(ctx, tblConf.TableID, authorizedView)
+
+	authorizedViewConf := AuthorizedViewConf{
+		TableID:          tblConf.TableID,
+		AuthorizedViewID: authorizedView,
+		AuthorizedView: &SubsetViewConf{
+			RowPrefixes: [][]byte{[]byte("r1")},
+		},
+		DeletionProtection: Protected,
+	}
+	if err = adminClient.CreateAuthorizedView(ctx, &authorizedViewConf); err != nil {
+		t.Fatalf("Creating authorized view: %v", err)
+	}
+
+	// List authorized views
+	authorizedViews, err := adminClient.AuthorizedViews(ctx, tblConf.TableID)
+	if err != nil {
+		t.Fatalf("Listing authorized views: %v", err)
+	}
+	if got, want := len(authorizedViews), 1; got != want {
+		t.Fatalf("Listing authorized views count: %d, want: != %d", got, want)
+	}
+	if got, want := authorizedViews[0], authorizedView; got != want {
+		t.Errorf("AuthorizedView Name: %s, want: %s", got, want)
+	}
+
+	// Get authorized view
+	avInfo, err := adminClient.AuthorizedViewInfo(ctx, tblConf.TableID, authorizedView)
+	if err != nil {
+		t.Fatalf("Getting authorized view: %v", err)
+	}
+	if got, want := avInfo.AuthorizedView.(*SubsetViewInfo), authorizedViewConf.AuthorizedView.(*SubsetViewConf); cmp.Equal(got, want) {
+		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
+	}
+
+	// Cannot delete the authorized view because it is deletion protected
+	if err = adminClient.DeleteAuthorizedView(ctx, tblConf.TableID, authorizedView); err == nil {
+		t.Fatalf("Expect error when deleting authorized view")
+	}
+
+	// Update authorized view
+	newAuthorizedViewConf := AuthorizedViewConf{
+		TableID:            tblConf.TableID,
+		AuthorizedViewID:   authorizedView,
+		DeletionProtection: Unprotected,
+	}
+	err = adminClient.UpdateAuthorizedView(ctx, UpdateAuthorizedViewConf{
+		AuthorizedViewConf: newAuthorizedViewConf,
+	})
+	if err != nil {
+		t.Fatalf("UpdateAuthorizedView failed: %v", err)
+	}
+
+	// Check that updated authorized view has the correct deletion protection
+	avInfo, err = adminClient.AuthorizedViewInfo(ctx, tblConf.TableID, authorizedView)
+	if err != nil {
+		t.Fatalf("Getting authorized view: %v", err)
+	}
+	if got, want := avInfo.DeletionProtection, Unprotected; got != want {
+		t.Errorf("AuthorizedView deletion protection: %v, want: %v", got, want)
+	}
+	// Check that the subset_view field doesn't change
+	if got, want := avInfo.AuthorizedView.(*SubsetViewInfo), authorizedViewConf.AuthorizedView.(*SubsetViewConf); cmp.Equal(got, want) {
+		t.Errorf("SubsetViewConf: %v, want: %v", got, want)
+	}
+
+	// Delete authorized view
+	if err = adminClient.DeleteAuthorizedView(ctx, tblConf.TableID, authorizedView); err != nil {
+		t.Fatalf("DeleteAuthorizedView: %v", err)
+	}
+
+	// Verify the authorized view was deleted.
+	authorizedViews, err = adminClient.AuthorizedViews(ctx, tblConf.TableID)
+	if err != nil {
+		t.Fatalf("Listing authorized views: %v", err)
+	}
+	if got, want := len(authorizedViews), 0; got != want {
+		t.Fatalf("Listing authorized views count: %d, want: != %d", got, want)
+	}
+}
+
+func TestIntegration_DataAuthorizedView(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support authorizedViews")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Create authorized view
+	authorizedViewUUID := uid.NewSpace("authorizedView-", &uid.Options{})
+	authorizedView := authorizedViewUUID.New()
+	defer adminClient.DeleteAuthorizedView(ctx, tblConf.TableID, authorizedView)
+
+	authorizedViewConf := AuthorizedViewConf{
+		TableID:          tblConf.TableID,
+		AuthorizedViewID: authorizedView,
+		AuthorizedView: &SubsetViewConf{
+			RowPrefixes: [][]byte{[]byte("r1")},
+			FamilySubsets: map[string]FamilySubset{
+				"fam1": {
+					QualifierPrefixes: [][]byte{[]byte("col")},
+				},
+				"fam2": {
+					Qualifiers: [][]byte{[]byte("col")},
+				},
+			},
+		},
+		DeletionProtection: Unprotected,
+	}
+	if err = adminClient.CreateAuthorizedView(ctx, &authorizedViewConf); err != nil {
+		t.Fatalf("Creating authorized view: %v", err)
+	}
+
+	client, err := testEnv.NewClient()
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+	av := client.OpenAuthorizedView(tblConf.TableID, authorizedView)
+	tbl := client.OpenTable(tblConf.TableID)
+
+	prefix1 := "r1"
+	prefix2 := "r2" // outside of the authorized view
+	mut1 := NewMutation()
+	mut1.Set("fam1", "col1", 1000, []byte("1"))
+	mut2 := NewMutation()
+	mut2.Set("fam1", "col2", 1000, []byte("1"))
+	mut3 := NewMutation()
+	mut3.Set("fam2", "column", 1000, []byte("1")) // outside of the authorized view
+
+	// Test mutation
+	if err := av.Apply(ctx, prefix1, mut1); err != nil {
+		t.Fatalf("Mutating row from an authorized view: %v", err)
+	}
+	if err := av.Apply(ctx, prefix2, mut1); err == nil {
+		t.Fatalf("Expect error when mutating a row outside of the authorized view: %v", err)
+	}
+	if err := tbl.Apply(ctx, prefix2, mut1); err != nil {
+		t.Fatalf("Mutating row from a table: %v", err)
+	}
+
+	// Test bulk mutations
+	status, err := av.ApplyBulk(ctx, []string{prefix1, prefix2, prefix1}, []*Mutation{mut2, mut2, mut3})
+	if err != nil {
+		t.Fatalf("Mutating rows from an authorized view: %v", err)
+	}
+	if status == nil {
+		t.Fatalf("Expect error for bad bulk mutation outside of the authorized view")
+	} else if status[0] != nil || status[1] == nil || status[2] == nil {
+		t.Fatalf("Expect error for bad bulk mutation outside of the authorized view")
+	}
+
+	// Test ReadRow
+	gotRow, err := av.ReadRow(ctx, "r1")
+	if err != nil {
+		t.Fatalf("Reading row from an authorized view: %v", err)
+	}
+	wantRow := Row{
+		"fam1": []ReadItem{
+			{Row: "r1", Column: "fam1:col1", Timestamp: 1000, Value: []byte("1")},
+			{Row: "r1", Column: "fam1:col2", Timestamp: 1000, Value: []byte("1")},
+		},
+	}
+	if !testutil.Equal(gotRow, wantRow) {
+		t.Fatalf("Error reading row from authorized view.\n Got %v\n Want %v", gotRow, wantRow)
+	}
+	gotRow, err = av.ReadRow(ctx, "r2")
+	if err != nil {
+		t.Fatalf("Reading row from an authorized view: %v", err)
+	}
+	if len(gotRow) != 0 {
+		t.Fatalf("Expect empty result when reading row from outside an authorized view")
+	}
+	gotRow, err = tbl.ReadRow(ctx, "r2")
+	if err != nil {
+		t.Fatalf("Reading row from a table: %v", err)
+	}
+	if len(gotRow) != 1 {
+		t.Fatalf("Invalid row count when reading from a table: %d, want: != %d", len(gotRow), 1)
+	}
+
+	// Test ReadRows
+	var elt []string
+	f := func(row Row) bool {
+		for _, ris := range row {
+			for _, ri := range ris {
+				elt = append(elt, formatReadItem(ri))
+			}
+		}
+		return true
+	}
+	if err = av.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from an authorized view: %v", err)
+	}
+	want := "r1-col1-1,r1-col2-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from authorized view.\n Got %v\n Want %v", got, want)
+	}
+	elt = nil
+	if err = tbl.ReadRows(ctx, RowRange{}, f); err != nil {
+		t.Fatalf("Reading rows from a table: %v", err)
+	}
+	want = "r1-col1-1,r1-col2-1,r2-col1-1"
+	if got := strings.Join(elt, ","); got != want {
+		t.Fatalf("Error bulk reading from table.\n Got %v\n Want %v", got, want)
+	}
+
+	// Test ReadModifyWrite
+	rmw := NewReadModifyWrite()
+	rmw.AppendValue("fam1", "col1", []byte("1"))
+	gotRow, err = av.ApplyReadModifyWrite(ctx, "r1", rmw)
+	if err != nil {
+		t.Fatalf("Applying ReadModifyWrite from an authorized view: %v", err)
+	}
+	wantRow = Row{
+		"fam1": []ReadItem{
+			{Row: "r1", Column: "fam1:col1", Value: []byte("11")},
+		},
+	}
+	// Make sure the modified cell returned by the RMW operation has a timestamp.
+	if gotRow["fam1"][0].Timestamp == 0 {
+		t.Fatalf("RMW returned cell timestamp: got %v, want > 0", gotRow["fam1"][0].Timestamp)
+	}
+	clearTimestamps(gotRow)
+	if !testutil.Equal(gotRow, wantRow) {
+		t.Fatalf("Error applying ReadModifyWrite from authorized view.\n Got %v\n Want %v", gotRow, wantRow)
+	}
+	if _, err = av.ApplyReadModifyWrite(ctx, "r2", rmw); err == nil {
+		t.Fatalf("Expect error applying ReadModifyWrite from outside an authorized view")
+	}
+
+	// Test SampleRowKeys
+	presplitTable := fmt.Sprintf("presplit-table-%d", time.Now().Unix())
+	if err := adminClient.CreatePresplitTable(ctx, presplitTable, []string{"r0", "r11", "r12", "r2"}); err != nil {
+		t.Fatal(err)
+	}
+	defer adminClient.DeleteTable(ctx, presplitTable)
+	if err := adminClient.CreateColumnFamily(ctx, presplitTable, "fam1"); err != nil {
+		t.Fatal(err)
+	}
+	defer adminClient.DeleteAuthorizedView(ctx, presplitTable, authorizedView)
+	if err = adminClient.CreateAuthorizedView(ctx, &AuthorizedViewConf{
+		TableID:          presplitTable,
+		AuthorizedViewID: authorizedView,
+		AuthorizedView: &SubsetViewConf{
+			RowPrefixes: [][]byte{[]byte("r1")},
+		},
+		DeletionProtection: Unprotected,
+	}); err != nil {
+		t.Fatalf("Creating authorized view: %v", err)
+	}
+
+	av = client.OpenAuthorizedView(presplitTable, authorizedView)
+	sampleKeys, err := av.SampleRowKeys(ctx)
+	if err != nil {
+		t.Fatalf("Sampling row keys from an authorized view: %v", err)
+	}
+	want = "r11,r12,r2"
+	if got := strings.Join(sampleKeys, ","); got != want {
+		t.Fatalf("Error sample row keys from an authorized view.\n Got %v\n Want %v", got, want)
 	}
 }
 

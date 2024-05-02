@@ -15,9 +15,6 @@
         "ai": {
             "component": "ai"
         },
-        "aiplatform": {
-            "component": "aiplatform"
-        },
         "alloydb": {
             "component": "alloydb"
         },
@@ -39,6 +36,9 @@
         "appengine": {
             "component": "appengine"
         },
+        "apphub": {
+            "component": "apphub"
+        },
         "apps": {
             "component": "apps"
         },
@@ -56,6 +56,9 @@
         },
         "automl": {
             "component": "automl"
+        },
+        "backupdr": {
+            "component": "backupdr"
         },
         "baremetalsolution": {
             "component": "baremetalsolution"
@@ -78,14 +81,23 @@
         "channel": {
             "component": "channel"
         },
+        "chat": {
+            "component": "chat"
+        },
         "cloudbuild": {
             "component": "cloudbuild"
+        },
+        "cloudcontrolspartner": {
+            "component": "cloudcontrolspartner"
         },
         "clouddms": {
             "component": "clouddms"
         },
         "cloudprofiler": {
             "component": "cloudprofiler"
+        },
+        "cloudquotas": {
+            "component": "cloudquotas"
         },
         "cloudtasks": {
             "component": "cloudtasks"
@@ -201,6 +213,9 @@
         "iap": {
             "component": "iap"
         },
+        "identitytoolkit": {
+            "component": "identitytoolkit"
+        },
         "ids": {
             "component": "ids"
         },
@@ -270,6 +285,9 @@
         "oslogin": {
             "component": "oslogin"
         },
+        "parallelstore": {
+            "component": "parallelstore"
+        },
         "phishingprotection": {
             "component": "phishingprotection"
         },
@@ -327,11 +345,17 @@
         "securitycentermanagement": {
             "component": "securitycentermanagement"
         },
+        "securityposture": {
+            "component": "securityposture"
+        },
         "servicecontrol": {
             "component": "servicecontrol"
         },
         "servicedirectory": {
             "component": "servicedirectory"
+        },
+        "servicehealth": {
+            "component": "servicehealth"
         },
         "servicemanagement": {
             "component": "servicemanagement"
@@ -353,6 +377,9 @@
         },
         "storagetransfer": {
             "component": "storagetransfer"
+        },
+        "streetview": {
+            "component": "streetview"
         },
         "support": {
             "component": "support"
@@ -383,6 +410,9 @@
         },
         "vision": {
             "component": "vision"
+        },
+        "visionai": {
+            "component": "visionai"
         },
         "vmmigration": {
             "component": "vmmigration"
