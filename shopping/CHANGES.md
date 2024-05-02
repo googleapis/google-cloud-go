@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.5.0...shopping/v0.6.0) (2024-05-01)
+
+
+### Features
+
+* **shopping:** Add `Weight` to common types for Shopping APIs to be used for accounts bundle ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **shopping:** New shopping.merchant.conversions client ([#10076](https://github.com/googleapis/google-cloud-go/issues/10076)) ([59457a3](https://github.com/googleapis/google-cloud-go/commit/59457a33731b2d9f79a4ade9e563643d5487a3c6))
+
+
+### Bug Fixes
+
+* **shopping:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.4.0...shopping/v0.5.0) (2024-04-15)
+
+
+### Features
+
+* **shopping/merchant/inventories:** Fix inventories sub-API publication by adding correct child_type in the API proto ([#9750](https://github.com/googleapis/google-cloud-go/issues/9750)) ([6a7cd4f](https://github.com/googleapis/google-cloud-go/commit/6a7cd4f70373fe7c60dcba12636a3d92617e7b66))
+* **shopping/merchant/reports:** Add click potential to Reports sub-API publication ([#9738](https://github.com/googleapis/google-cloud-go/issues/9738)) ([4d0547f](https://github.com/googleapis/google-cloud-go/commit/4d0547fc59d73cb013d35c9b52f8683a0d57af67))
+* **shopping:** New client(s) ([#9741](https://github.com/googleapis/google-cloud-go/issues/9741)) ([1b2aebd](https://github.com/googleapis/google-cloud-go/commit/1b2aebd50e78de7e39bf2ab1ea12ea02aab58717))
+* **shopping:** New clients ([#9746](https://github.com/googleapis/google-cloud-go/issues/9746)) ([cee2900](https://github.com/googleapis/google-cloud-go/commit/cee290011a43e4037ce2de24014fc60dc9a9c141))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.3.2...shopping/v0.4.0) (2024-03-27)
 
 
@@ -65,6 +88,3 @@
 * **shopping:** New clients ([#8699](https://github.com/googleapis/google-cloud-go/issues/8699)) ([0e43b40](https://github.com/googleapis/google-cloud-go/commit/0e43b40184bacac8d355ea2cfd00ebe58bd9e30b))
 
 ## Changes
-
-
-

@@ -23,10 +23,10 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/testing/protocmp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func TestFilterToProto(t *testing.T) {
@@ -420,7 +420,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 			in:   q.Offset(2).Limit(3),
 			want: &pb.StructuredQuery{
 				Offset: 2,
-				Limit:  &wrappers.Int32Value{Value: 3},
+				Limit:  &wrapperspb.Int32Value{Value: 3},
 			},
 		},
 		{
@@ -428,7 +428,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 			in:   q.Offset(2).Limit(3).Limit(4).Offset(5), // last wins
 			want: &pb.StructuredQuery{
 				Offset: 5,
-				Limit:  &wrappers.Int32Value{Value: 4},
+				Limit:  &wrapperspb.Int32Value{Value: 4},
 			},
 		},
 		{

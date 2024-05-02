@@ -28,6 +28,7 @@ modules:
   - binaryauthorization
   - certificatemanager
   - channel
+  - chat
   - cloudbuild
   - cloudcontrolspartner
   - clouddms
@@ -73,6 +74,7 @@ modules:
   - gsuiteaddons
   - iam
   - iap
+  - identitytoolkit
   - ids
   - iot
   - kms
@@ -133,6 +135,7 @@ modules:
   - storage
   - storageinsights
   - storagetransfer
+  - streetview
   - support
   - talent
   - telcoautomation
@@ -459,6 +462,9 @@ service-configs:
   - input-directory: google/cloud/channel/v1
     service-config: cloudchannel_v1.yaml
     import-path: cloud.google.com/go/channel/apiv1
+  - input-directory: google/chat/v1
+    service-config: chat_v1.yaml
+    import-path: cloud.google.com/go/chat/apiv1
   - input-directory: google/cloud/cloudcontrolspartner/v1
     service-config: cloudcontrolspartner_v1.yaml
     import-path: cloud.google.com/go/cloudcontrolspartner/apiv1
@@ -601,6 +607,9 @@ service-configs:
   - input-directory: google/cloud/iap/v1
     service-config: iap_v1.yaml
     import-path: cloud.google.com/go/iap/apiv1
+  - input-directory: google/cloud/identitytoolkit/v2
+    service-config: identitytoolkit_v2.yaml
+    import-path: cloud.google.com/go/identitytoolkit/apiv2
   - input-directory: google/cloud/ids/v1
     service-config: ids_v1.yaml
     import-path: cloud.google.com/go/ids/apiv1
@@ -846,12 +855,21 @@ service-configs:
   - input-directory: google/shopping/css/v1
     service-config: css_v1.yaml
     import-path: cloud.google.com/go/shopping/css/apiv1
+  - input-directory: google/shopping/merchant/conversions/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/conversions/apiv1beta
+  - input-directory: google/shopping/merchant/notifications/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
   - input-directory: google/shopping/merchant/quota/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/quota/apiv1beta
   - input-directory: google/shopping/merchant/inventories/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/inventories/apiv1beta
+  - input-directory: google/shopping/merchant/lfp/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/lfp/apiv1beta
   - input-directory: google/shopping/merchant/reports/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/reports/apiv1beta
@@ -922,7 +940,7 @@ service-configs:
     service-config: videointelligence_v1.yaml
     import-path: cloud.google.com/go/videointelligence/apiv1
   - input-directory: google/cloud/videointelligence/v1beta2
-    service-config: ../videointelligence_v1beta2.yaml
+    service-config: videointelligence_v1beta2.yaml
     import-path: cloud.google.com/go/videointelligence/apiv1beta2
   - input-directory: google/cloud/videointelligence/v1p3beta1
     service-config: videointelligence_v1p3beta1.yaml
@@ -1082,6 +1100,9 @@ service-configs:
   - input-directory: google/storagetransfer/v1
     service-config: storagetransfer_v1.yaml
     import-path: cloud.google.com/go/storagetransfer/apiv1
+  - input-directory: google/streetview/publish/v1
+    service-config: streetviewpublish.yaml
+    import-path: cloud.google.com/go/streetview/publish/apiv1
     # All entries below are clients that are not currently copied by owlbot. They
     # explicitly express their import path for some code gen.
   - input-directory: google/devtools/containeranalysis/v1beta1/grafeas

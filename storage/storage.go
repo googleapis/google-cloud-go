@@ -180,12 +180,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		opts = append([]option.ClientOption{
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
-			internaloption.WithDefaultEndpoint(endpoint),
+			internaloption.WithDefaultEndpointTemplate(endpoint),
 			internaloption.WithDefaultMTLSEndpoint(endpoint),
 		}, opts...)
 	}
 
-	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
+	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
@@ -232,7 +232,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 // You may configure the client by passing in options from the [google.golang.org/api/option]
 // package.
 func NewGRPCClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	opts = append(defaultGRPCOptions(), opts...)
 	tc, err := newGRPCStorageClient(ctx, withClientOptions(opts...))
 	if err != nil {
 		return nil, err
