@@ -369,6 +369,9 @@
         "shopping": {
             "component": "shopping"
         },
+        "spanner/test/opentelemetry/test": {
+            "component": "spanner/test/opentelemetry/test"
+        },
         "speech": {
             "component": "speech"
         },
