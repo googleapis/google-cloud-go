@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -641,16 +641,20 @@ type VertexRagStore struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Vertex RAG Store corpus resource name:
+	// Optional. Deprecated. Please use rag_resources instead.
 	//
-	//	`projects/{project}/locations/{location}/ragCorpora/{ragCorpus}`
-	//
-	// Currently only one corpus is allowed.
-	// In the future we may open up multiple corpora support. However, they should
-	// be from the same project and location.
+	// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1beta1/tool.proto.
 	RagCorpora []string `protobuf:"bytes,1,rep,name=rag_corpora,json=ragCorpora,proto3" json:"rag_corpora,omitempty"`
+	// Optional. The representation of the rag source. It can be used to specify
+	// corpus only or ragfiles. Currently only support one corpus or multiple
+	// files from one corpus. In the future we may open up multiple corpora
+	// support.
+	RagResources []*VertexRagStore_RagResource `protobuf:"bytes,4,rep,name=rag_resources,json=ragResources,proto3" json:"rag_resources,omitempty"`
 	// Optional. Number of top k results to return from the selected corpora.
 	SimilarityTopK *int32 `protobuf:"varint,2,opt,name=similarity_top_k,json=similarityTopK,proto3,oneof" json:"similarity_top_k,omitempty"`
+	// Optional. Only return results with vector distance smaller than the
+	// threshold.
+	VectorDistanceThreshold *float64 `protobuf:"fixed64,3,opt,name=vector_distance_threshold,json=vectorDistanceThreshold,proto3,oneof" json:"vector_distance_threshold,omitempty"`
 }
 
 func (x *VertexRagStore) Reset() {
@@ -685,6 +689,7 @@ func (*VertexRagStore) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1beta1_tool_proto_rawDescGZIP(), []int{6}
 }
 
+// Deprecated: Marked as deprecated in google/cloud/aiplatform/v1beta1/tool.proto.
 func (x *VertexRagStore) GetRagCorpora() []string {
 	if x != nil {
 		return x.RagCorpora
@@ -692,9 +697,23 @@ func (x *VertexRagStore) GetRagCorpora() []string {
 	return nil
 }
 
+func (x *VertexRagStore) GetRagResources() []*VertexRagStore_RagResource {
+	if x != nil {
+		return x.RagResources
+	}
+	return nil
+}
+
 func (x *VertexRagStore) GetSimilarityTopK() int32 {
 	if x != nil && x.SimilarityTopK != nil {
 		return *x.SimilarityTopK
+	}
+	return 0
+}
+
+func (x *VertexRagStore) GetVectorDistanceThreshold() float64 {
+	if x != nil && x.VectorDistanceThreshold != nil {
+		return *x.VectorDistanceThreshold
 	}
 	return 0
 }
@@ -969,6 +988,67 @@ func (x *ToolUseExample_ExtensionOperation) GetOperationId() string {
 	return ""
 }
 
+// The definition of the Rag resource.
+type VertexRagStore_RagResource struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Optional. RagCorpora resource name.
+	// Format:
+	// `projects/{project}/locations/{location}/ragCorpora/{rag_corpus}`
+	RagCorpus string `protobuf:"bytes,1,opt,name=rag_corpus,json=ragCorpus,proto3" json:"rag_corpus,omitempty"`
+	// Optional. rag_file_id. The files should be in the same rag_corpus set in
+	// rag_corpus field.
+	RagFileIds []string `protobuf:"bytes,2,rep,name=rag_file_ids,json=ragFileIds,proto3" json:"rag_file_ids,omitempty"`
+}
+
+func (x *VertexRagStore_RagResource) Reset() {
+	*x = VertexRagStore_RagResource{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_aiplatform_v1beta1_tool_proto_msgTypes[12]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *VertexRagStore_RagResource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*VertexRagStore_RagResource) ProtoMessage() {}
+
+func (x *VertexRagStore_RagResource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1beta1_tool_proto_msgTypes[12]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use VertexRagStore_RagResource.ProtoReflect.Descriptor instead.
+func (*VertexRagStore_RagResource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1beta1_tool_proto_rawDescGZIP(), []int{6, 0}
+}
+
+func (x *VertexRagStore_RagResource) GetRagCorpus() string {
+	if x != nil {
+		return x.RagCorpus
+	}
+	return ""
+}
+
+func (x *VertexRagStore_RagResource) GetRagFileIds() []string {
+	if x != nil {
+		return x.RagFileIds
+	}
+	return nil
+}
+
 var File_google_cloud_aiplatform_v1beta1_tool_proto protoreflect.FileDescriptor
 
 var file_google_cloud_aiplatform_v1beta1_tool_proto_rawDesc = []byte{
@@ -1084,17 +1164,38 @@ var file_google_cloud_aiplatform_v1beta1_tool_proto_rawDesc = []byte{
 	0x62, 0x75, 0x74, 0x69, 0x6f, 0x6e, 0x18, 0x03, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41,
 	0x01, 0x52, 0x12, 0x64, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62,
 	0x75, 0x74, 0x69, 0x6f, 0x6e, 0x42, 0x08, 0x0a, 0x06, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x22,
-	0xa7, 0x01, 0x0a, 0x0e, 0x56, 0x65, 0x72, 0x74, 0x65, 0x78, 0x52, 0x61, 0x67, 0x53, 0x74, 0x6f,
-	0x72, 0x65, 0x12, 0x4c, 0x0a, 0x0b, 0x72, 0x61, 0x67, 0x5f, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72,
-	0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x42, 0x2b, 0xe0, 0x41, 0x02, 0xfa, 0x41, 0x25, 0x0a,
+	0xf7, 0x03, 0x0a, 0x0e, 0x56, 0x65, 0x72, 0x74, 0x65, 0x78, 0x52, 0x61, 0x67, 0x53, 0x74, 0x6f,
+	0x72, 0x65, 0x12, 0x4e, 0x0a, 0x0b, 0x72, 0x61, 0x67, 0x5f, 0x63, 0x6f, 0x72, 0x70, 0x6f, 0x72,
+	0x61, 0x18, 0x01, 0x20, 0x03, 0x28, 0x09, 0x42, 0x2d, 0xe0, 0x41, 0x01, 0xfa, 0x41, 0x25, 0x0a,
 	0x23, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
 	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x52, 0x61, 0x67, 0x43, 0x6f,
-	0x72, 0x70, 0x75, 0x73, 0x52, 0x0a, 0x72, 0x61, 0x67, 0x43, 0x6f, 0x72, 0x70, 0x6f, 0x72, 0x61,
-	0x12, 0x32, 0x0a, 0x10, 0x73, 0x69, 0x6d, 0x69, 0x6c, 0x61, 0x72, 0x69, 0x74, 0x79, 0x5f, 0x74,
-	0x6f, 0x70, 0x5f, 0x6b, 0x18, 0x02, 0x20, 0x01, 0x28, 0x05, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x48,
-	0x00, 0x52, 0x0e, 0x73, 0x69, 0x6d, 0x69, 0x6c, 0x61, 0x72, 0x69, 0x74, 0x79, 0x54, 0x6f, 0x70,
-	0x4b, 0x88, 0x01, 0x01, 0x42, 0x13, 0x0a, 0x11, 0x5f, 0x73, 0x69, 0x6d, 0x69, 0x6c, 0x61, 0x72,
-	0x69, 0x74, 0x79, 0x5f, 0x74, 0x6f, 0x70, 0x5f, 0x6b, 0x22, 0x33, 0x0a, 0x0e, 0x56, 0x65, 0x72,
+	0x72, 0x70, 0x75, 0x73, 0x18, 0x01, 0x52, 0x0a, 0x72, 0x61, 0x67, 0x43, 0x6f, 0x72, 0x70, 0x6f,
+	0x72, 0x61, 0x12, 0x65, 0x0a, 0x0d, 0x72, 0x61, 0x67, 0x5f, 0x72, 0x65, 0x73, 0x6f, 0x75, 0x72,
+	0x63, 0x65, 0x73, 0x18, 0x04, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x3b, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66,
+	0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x62, 0x65, 0x74, 0x61, 0x31, 0x2e, 0x56, 0x65, 0x72, 0x74,
+	0x65, 0x78, 0x52, 0x61, 0x67, 0x53, 0x74, 0x6f, 0x72, 0x65, 0x2e, 0x52, 0x61, 0x67, 0x52, 0x65,
+	0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0c, 0x72, 0x61, 0x67,
+	0x52, 0x65, 0x73, 0x6f, 0x75, 0x72, 0x63, 0x65, 0x73, 0x12, 0x32, 0x0a, 0x10, 0x73, 0x69, 0x6d,
+	0x69, 0x6c, 0x61, 0x72, 0x69, 0x74, 0x79, 0x5f, 0x74, 0x6f, 0x70, 0x5f, 0x6b, 0x18, 0x02, 0x20,
+	0x01, 0x28, 0x05, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x48, 0x00, 0x52, 0x0e, 0x73, 0x69, 0x6d, 0x69,
+	0x6c, 0x61, 0x72, 0x69, 0x74, 0x79, 0x54, 0x6f, 0x70, 0x4b, 0x88, 0x01, 0x01, 0x12, 0x44, 0x0a,
+	0x19, 0x76, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x5f, 0x64, 0x69, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65,
+	0x5f, 0x74, 0x68, 0x72, 0x65, 0x73, 0x68, 0x6f, 0x6c, 0x64, 0x18, 0x03, 0x20, 0x01, 0x28, 0x01,
+	0x42, 0x03, 0xe0, 0x41, 0x01, 0x48, 0x01, 0x52, 0x17, 0x76, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x44,
+	0x69, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x54, 0x68, 0x72, 0x65, 0x73, 0x68, 0x6f, 0x6c, 0x64,
+	0x88, 0x01, 0x01, 0x1a, 0x80, 0x01, 0x0a, 0x0b, 0x52, 0x61, 0x67, 0x52, 0x65, 0x73, 0x6f, 0x75,
+	0x72, 0x63, 0x65, 0x12, 0x4a, 0x0a, 0x0a, 0x72, 0x61, 0x67, 0x5f, 0x63, 0x6f, 0x72, 0x70, 0x75,
+	0x73, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x2b, 0xe0, 0x41, 0x01, 0xfa, 0x41, 0x25, 0x0a,
+	0x23, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67,
+	0x6c, 0x65, 0x61, 0x70, 0x69, 0x73, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x52, 0x61, 0x67, 0x43, 0x6f,
+	0x72, 0x70, 0x75, 0x73, 0x52, 0x09, 0x72, 0x61, 0x67, 0x43, 0x6f, 0x72, 0x70, 0x75, 0x73, 0x12,
+	0x25, 0x0a, 0x0c, 0x72, 0x61, 0x67, 0x5f, 0x66, 0x69, 0x6c, 0x65, 0x5f, 0x69, 0x64, 0x73, 0x18,
+	0x02, 0x20, 0x03, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x0a, 0x72, 0x61, 0x67, 0x46,
+	0x69, 0x6c, 0x65, 0x49, 0x64, 0x73, 0x42, 0x13, 0x0a, 0x11, 0x5f, 0x73, 0x69, 0x6d, 0x69, 0x6c,
+	0x61, 0x72, 0x69, 0x74, 0x79, 0x5f, 0x74, 0x6f, 0x70, 0x5f, 0x6b, 0x42, 0x1c, 0x0a, 0x1a, 0x5f,
+	0x76, 0x65, 0x63, 0x74, 0x6f, 0x72, 0x5f, 0x64, 0x69, 0x73, 0x74, 0x61, 0x6e, 0x63, 0x65, 0x5f,
+	0x74, 0x68, 0x72, 0x65, 0x73, 0x68, 0x6f, 0x6c, 0x64, 0x22, 0x33, 0x0a, 0x0e, 0x56, 0x65, 0x72,
 	0x74, 0x65, 0x78, 0x41, 0x49, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68, 0x12, 0x21, 0x0a, 0x09, 0x64,
 	0x61, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x42, 0x03,
 	0xe0, 0x41, 0x02, 0x52, 0x09, 0x64, 0x61, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x22, 0x4d,
@@ -1156,7 +1257,7 @@ func file_google_cloud_aiplatform_v1beta1_tool_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_aiplatform_v1beta1_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_aiplatform_v1beta1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_google_cloud_aiplatform_v1beta1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_google_cloud_aiplatform_v1beta1_tool_proto_goTypes = []interface{}{
 	(FunctionCallingConfig_Mode)(0),           // 0: google.cloud.aiplatform.v1beta1.FunctionCallingConfig.Mode
 	(*Tool)(nil),                              // 1: google.cloud.aiplatform.v1beta1.Tool
@@ -1171,29 +1272,31 @@ var file_google_cloud_aiplatform_v1beta1_tool_proto_goTypes = []interface{}{
 	(*ToolConfig)(nil),                        // 10: google.cloud.aiplatform.v1beta1.ToolConfig
 	(*FunctionCallingConfig)(nil),             // 11: google.cloud.aiplatform.v1beta1.FunctionCallingConfig
 	(*ToolUseExample_ExtensionOperation)(nil), // 12: google.cloud.aiplatform.v1beta1.ToolUseExample.ExtensionOperation
-	(*structpb.Struct)(nil),                   // 13: google.protobuf.Struct
-	(*Schema)(nil),                            // 14: google.cloud.aiplatform.v1beta1.Schema
+	(*VertexRagStore_RagResource)(nil),        // 13: google.cloud.aiplatform.v1beta1.VertexRagStore.RagResource
+	(*structpb.Struct)(nil),                   // 14: google.protobuf.Struct
+	(*Schema)(nil),                            // 15: google.cloud.aiplatform.v1beta1.Schema
 }
 var file_google_cloud_aiplatform_v1beta1_tool_proto_depIdxs = []int32{
 	3,  // 0: google.cloud.aiplatform.v1beta1.Tool.function_declarations:type_name -> google.cloud.aiplatform.v1beta1.FunctionDeclaration
 	6,  // 1: google.cloud.aiplatform.v1beta1.Tool.retrieval:type_name -> google.cloud.aiplatform.v1beta1.Retrieval
 	9,  // 2: google.cloud.aiplatform.v1beta1.Tool.google_search_retrieval:type_name -> google.cloud.aiplatform.v1beta1.GoogleSearchRetrieval
 	12, // 3: google.cloud.aiplatform.v1beta1.ToolUseExample.extension_operation:type_name -> google.cloud.aiplatform.v1beta1.ToolUseExample.ExtensionOperation
-	13, // 4: google.cloud.aiplatform.v1beta1.ToolUseExample.request_params:type_name -> google.protobuf.Struct
-	13, // 5: google.cloud.aiplatform.v1beta1.ToolUseExample.response_params:type_name -> google.protobuf.Struct
-	14, // 6: google.cloud.aiplatform.v1beta1.FunctionDeclaration.parameters:type_name -> google.cloud.aiplatform.v1beta1.Schema
-	14, // 7: google.cloud.aiplatform.v1beta1.FunctionDeclaration.response:type_name -> google.cloud.aiplatform.v1beta1.Schema
-	13, // 8: google.cloud.aiplatform.v1beta1.FunctionCall.args:type_name -> google.protobuf.Struct
-	13, // 9: google.cloud.aiplatform.v1beta1.FunctionResponse.response:type_name -> google.protobuf.Struct
+	14, // 4: google.cloud.aiplatform.v1beta1.ToolUseExample.request_params:type_name -> google.protobuf.Struct
+	14, // 5: google.cloud.aiplatform.v1beta1.ToolUseExample.response_params:type_name -> google.protobuf.Struct
+	15, // 6: google.cloud.aiplatform.v1beta1.FunctionDeclaration.parameters:type_name -> google.cloud.aiplatform.v1beta1.Schema
+	15, // 7: google.cloud.aiplatform.v1beta1.FunctionDeclaration.response:type_name -> google.cloud.aiplatform.v1beta1.Schema
+	14, // 8: google.cloud.aiplatform.v1beta1.FunctionCall.args:type_name -> google.protobuf.Struct
+	14, // 9: google.cloud.aiplatform.v1beta1.FunctionResponse.response:type_name -> google.protobuf.Struct
 	8,  // 10: google.cloud.aiplatform.v1beta1.Retrieval.vertex_ai_search:type_name -> google.cloud.aiplatform.v1beta1.VertexAISearch
 	7,  // 11: google.cloud.aiplatform.v1beta1.Retrieval.vertex_rag_store:type_name -> google.cloud.aiplatform.v1beta1.VertexRagStore
-	11, // 12: google.cloud.aiplatform.v1beta1.ToolConfig.function_calling_config:type_name -> google.cloud.aiplatform.v1beta1.FunctionCallingConfig
-	0,  // 13: google.cloud.aiplatform.v1beta1.FunctionCallingConfig.mode:type_name -> google.cloud.aiplatform.v1beta1.FunctionCallingConfig.Mode
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	13, // 12: google.cloud.aiplatform.v1beta1.VertexRagStore.rag_resources:type_name -> google.cloud.aiplatform.v1beta1.VertexRagStore.RagResource
+	11, // 13: google.cloud.aiplatform.v1beta1.ToolConfig.function_calling_config:type_name -> google.cloud.aiplatform.v1beta1.FunctionCallingConfig
+	0,  // 14: google.cloud.aiplatform.v1beta1.FunctionCallingConfig.mode:type_name -> google.cloud.aiplatform.v1beta1.FunctionCallingConfig.Mode
+	15, // [15:15] is the sub-list for method output_type
+	15, // [15:15] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1beta1_tool_proto_init() }
@@ -1347,6 +1450,18 @@ func file_google_cloud_aiplatform_v1beta1_tool_proto_init() {
 				return nil
 			}
 		}
+		file_google_cloud_aiplatform_v1beta1_tool_proto_msgTypes[12].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*VertexRagStore_RagResource); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_google_cloud_aiplatform_v1beta1_tool_proto_msgTypes[1].OneofWrappers = []interface{}{
 		(*ToolUseExample_ExtensionOperation_)(nil),
@@ -1363,7 +1478,7 @@ func file_google_cloud_aiplatform_v1beta1_tool_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1beta1_tool_proto_rawDesc,
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
