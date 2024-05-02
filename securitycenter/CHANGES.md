@@ -1,5 +1,17 @@
 # Changes
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.29.0...securitycenter/v1.30.0) (2024-05-01)
+
+
+### Features
+
+* **securitycenter:** Add cloud_armor field to finding's list of attributes ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **securitycenter:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.28.0...securitycenter/v1.29.0) (2024-04-15)
 
 

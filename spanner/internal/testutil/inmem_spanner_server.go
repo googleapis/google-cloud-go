@@ -40,9 +40,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var (
-	// KvMeta is the Metadata for mocked KV table.
-	KvMeta = spannerpb.ResultSetMetadata{
+// KvMeta is the Metadata for mocked KV table.
+func KvMeta() *spannerpb.ResultSetMetadata {
+	return &spannerpb.ResultSetMetadata{
 		RowType: &spannerpb.StructType{
 			Fields: []*spannerpb.StructType_Field{
 				{
@@ -56,7 +56,7 @@ var (
 			},
 		},
 	}
-)
+}
 
 // StatementResultType indicates the type of result returned by a SQL
 // statement.
