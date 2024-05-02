@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -167,9 +167,9 @@ type isFeatureGroup_Source interface {
 
 type FeatureGroup_BigQuery_ struct {
 	// Indicates that features for this group come from BigQuery Table/View.
-	// By default treats the source as a sparse time series source, which is
-	// required to have an entity_id and a feature_timestamp column in the
-	// source.
+	// By default treats the source as a sparse time series source. The BigQuery
+	// source table or view must have at least one entity ID column and a column
+	// named `feature_timestamp`.
 	BigQuery *FeatureGroup_BigQuery `protobuf:"bytes,7,opt,name=big_query,json=bigQuery,proto3,oneof"`
 }
 
