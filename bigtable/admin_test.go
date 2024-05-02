@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"testing"
 	"time"
 
@@ -301,7 +302,7 @@ func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
 
 	// Check if the update fails when TableID is not provided
 	err := c.UpdateTableWithDeletionProtection(context.Background(), "", deletionProtection)
-	if fmt.Sprint(err) != "TableID is required" {
+	if !strings.Contains(fmt.Sprint(err), "TableID is required") {
 		t.Fatalf("UpdateTable failed: %v", err)
 	}
 }
@@ -597,14 +598,7 @@ func TestTableAdmin_UpdateTableWithConf_DisableAutomatedBackupPolicy_DisableAbp(
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	err := c.updateTableWithConf(
-		context.Background(),
-		&UpdateTableConf{
-			tableID:               "My-table",
-			deletionProtection:    None,
-			changeStreamRetention: nil,
-			automatedBackupConfig: nil,
-			includeInUpdateMask:   map[string]bool{automatedBackupPolicyFieldMask: true}})
+	err := c.UpdateTableDisableAutomatedBackupPolicy(context.Background(), "My-table")
 	if err != nil {
 		t.Fatalf("UpdateTableDisableAutomatedBackupPolicy failed: %v", err)
 	}
@@ -630,13 +624,7 @@ func TestTableAdmin_UpdateTableWithConf_AutomatedBackupPolicyNilFields_Invalid(t
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
-	err := c.updateTableWithConf(
-		context.Background(),
-		&UpdateTableConf{
-			tableID:               "My-table",
-			automatedBackupConfig: &TableAutomatedBackupPolicy{nil, nil},
-			includeInUpdateMask:   map[string]bool{automatedBackupPolicyFieldMask: true}})
-
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{nil, nil})
 	if err == nil {
 		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
 	}

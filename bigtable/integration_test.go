@@ -1579,11 +1579,7 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		t.Errorf("We shouldn't be able to delete the table when the deletion protection is enabled for table %v", myTableName)
 	}
 
-	updateTableConf := UpdateTableConf{
-		tableID:            myTableName,
-		deletionProtection: Unprotected,
-	}
-	if err := adminClient.updateTableWithConf(ctx, &updateTableConf); err != nil {
+	if err := adminClient.UpdateTableWithDeletionProtection(ctx, myTableName, Unprotected); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
