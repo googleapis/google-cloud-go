@@ -216,10 +216,6 @@ func getTransportConfig(opts *Options) (*transportConfig, error) {
 // A nil default source can be returned if the source does not exist. Any exceptions
 // encountered while initializing the default source will be reported as client
 // error (ex. corrupt metadata file).
-//
-// Important Note: For now, the environment variable GOOGLE_API_USE_CLIENT_CERTIFICATE
-// must be set to "true" to allow certificate to be used (including user provided
-// certificates). For details, see AIP-4114.
 func getClientCertificateSource(opts *Options) (cert.Provider, error) {
 	if !isClientCertificateEnabled() {
 		return nil, nil
@@ -230,11 +226,14 @@ func getClientCertificateSource(opts *Options) (cert.Provider, error) {
 
 }
 
+// isClientCertificateEnabled returns true by default, unless explicitly set to false via env var.
 func isClientCertificateEnabled() bool {
-	// TODO(andyrzhao): Update default to return "true" after DCA feature is fully released.
-	// error as false is a good default
-	b, _ := strconv.ParseBool(os.Getenv(googleAPIUseCertSource))
-	return b
+	if value, ok := os.LookupEnv(googleAPIUseCertSource); ok {
+		// error as false is OK
+		b, _ := strconv.ParseBool(value)
+		return b
+	}
+	return true
 }
 
 type transportConfig struct {
