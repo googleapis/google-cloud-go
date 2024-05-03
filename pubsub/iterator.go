@@ -163,6 +163,9 @@ func (it *messageIterator) stop() {
 	it.checkDrained()
 	it.mu.Unlock()
 	it.wg.Wait()
+	if it.ps != nil {
+		it.ps.cancel()
+	}
 }
 
 // checkDrained closes the drained channel if the iterator has been stopped and all
@@ -249,6 +252,9 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	}
 	// Any error here is fatal.
 	if err != nil {
+		if status.Code(err) == codes.Canceled {
+			err = io.EOF
+		}
 		return nil, it.fail(err)
 	}
 	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
