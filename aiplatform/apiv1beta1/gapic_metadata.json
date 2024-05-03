@@ -145,6 +145,11 @@
                 "UpdateDataset"
               ]
             },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -288,6 +293,11 @@
             "UpdateDataset": {
               "methods": [
                 "UpdateDataset"
+              ]
+            },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
               ]
             },
             "WaitOperation": {
@@ -3951,6 +3961,230 @@
         }
       }
     },
+    "ModelMonitoringService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ModelMonitoringClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateModelMonitor": {
+              "methods": [
+                "CreateModelMonitor"
+              ]
+            },
+            "CreateModelMonitoringJob": {
+              "methods": [
+                "CreateModelMonitoringJob"
+              ]
+            },
+            "DeleteModelMonitor": {
+              "methods": [
+                "DeleteModelMonitor"
+              ]
+            },
+            "DeleteModelMonitoringJob": {
+              "methods": [
+                "DeleteModelMonitoringJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetModelMonitor": {
+              "methods": [
+                "GetModelMonitor"
+              ]
+            },
+            "GetModelMonitoringJob": {
+              "methods": [
+                "GetModelMonitoringJob"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListModelMonitoringJobs": {
+              "methods": [
+                "ListModelMonitoringJobs"
+              ]
+            },
+            "ListModelMonitors": {
+              "methods": [
+                "ListModelMonitors"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SearchModelMonitoringAlerts": {
+              "methods": [
+                "SearchModelMonitoringAlerts"
+              ]
+            },
+            "SearchModelMonitoringStats": {
+              "methods": [
+                "SearchModelMonitoringStats"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateModelMonitor": {
+              "methods": [
+                "UpdateModelMonitor"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ModelMonitoringClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateModelMonitor": {
+              "methods": [
+                "CreateModelMonitor"
+              ]
+            },
+            "CreateModelMonitoringJob": {
+              "methods": [
+                "CreateModelMonitoringJob"
+              ]
+            },
+            "DeleteModelMonitor": {
+              "methods": [
+                "DeleteModelMonitor"
+              ]
+            },
+            "DeleteModelMonitoringJob": {
+              "methods": [
+                "DeleteModelMonitoringJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetModelMonitor": {
+              "methods": [
+                "GetModelMonitor"
+              ]
+            },
+            "GetModelMonitoringJob": {
+              "methods": [
+                "GetModelMonitoringJob"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListModelMonitoringJobs": {
+              "methods": [
+                "ListModelMonitoringJobs"
+              ]
+            },
+            "ListModelMonitors": {
+              "methods": [
+                "ListModelMonitors"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SearchModelMonitoringAlerts": {
+              "methods": [
+                "SearchModelMonitoringAlerts"
+              ]
+            },
+            "SearchModelMonitoringStats": {
+              "methods": [
+                "SearchModelMonitoringStats"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateModelMonitor": {
+              "methods": [
+                "UpdateModelMonitor"
+              ]
+            },
+            "WaitOperation": {
+              "methods": [
+                "WaitOperation"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ModelService": {
       "clients": {
         "grpc": {
@@ -4265,6 +4499,11 @@
                 "CreateNotebookRuntimeTemplate"
               ]
             },
+            "DeleteNotebookExecutionJob": {
+              "methods": [
+                "DeleteNotebookExecutionJob"
+              ]
+            },
             "DeleteNotebookRuntime": {
               "methods": [
                 "DeleteNotebookRuntime"
@@ -4290,6 +4529,11 @@
                 "GetLocation"
               ]
             },
+            "GetNotebookExecutionJob": {
+              "methods": [
+                "GetNotebookExecutionJob"
+              ]
+            },
             "GetNotebookRuntime": {
               "methods": [
                 "GetNotebookRuntime"
@@ -4308,6 +4552,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListNotebookExecutionJobs": {
+              "methods": [
+                "ListNotebookExecutionJobs"
               ]
             },
             "ListNotebookRuntimeTemplates": {
@@ -4370,6 +4619,11 @@
                 "CreateNotebookRuntimeTemplate"
               ]
             },
+            "DeleteNotebookExecutionJob": {
+              "methods": [
+                "DeleteNotebookExecutionJob"
+              ]
+            },
             "DeleteNotebookRuntime": {
               "methods": [
                 "DeleteNotebookRuntime"
@@ -4395,6 +4649,11 @@
                 "GetLocation"
               ]
             },
+            "GetNotebookExecutionJob": {
+              "methods": [
+                "GetNotebookExecutionJob"
+              ]
+            },
             "GetNotebookRuntime": {
               "methods": [
                 "GetNotebookRuntime"
@@ -4413,6 +4672,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListNotebookExecutionJobs": {
+              "methods": [
+                "ListNotebookExecutionJobs"
               ]
             },
             "ListNotebookRuntimeTemplates": {
@@ -4877,11 +5141,6 @@
                 "CancelOperation"
               ]
             },
-            "ChatCompletions": {
-              "methods": [
-                "ChatCompletions"
-              ]
-            },
             "CountTokens": {
               "methods": [
                 "CountTokens"
@@ -5000,11 +5259,6 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
-              ]
-            },
-            "ChatCompletions": {
-              "methods": [
-                "ChatCompletions"
               ]
             },
             "CountTokens": {

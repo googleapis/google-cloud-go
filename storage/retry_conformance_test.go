@@ -26,9 +26,11 @@ import (
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
+	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 )
@@ -796,6 +798,8 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 			et.Fatalf("GRPC transportClient: %v", err)
 		}
 	}
+	// Reduce backoff to get faster test execution.
+	transportClient.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
 	et.transportClient = transportClient
 }
 

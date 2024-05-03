@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.5](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.4...apigeeregistry/v0.8.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.8.4](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.3...apigeeregistry/v0.8.4) (2024-03-14)
 
 
@@ -111,4 +118,3 @@
 ### Features
 
 * **apigeeregistry:** start generating apiv1 ([#6463](https://github.com/googleapis/google-cloud-go/issues/6463)) ([55385cb](https://github.com/googleapis/google-cloud-go/commit/55385cbd1a324745b2f2f7b72b2fa33cb34c9cb5))
-

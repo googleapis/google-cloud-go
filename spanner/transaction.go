@@ -24,13 +24,13 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
@@ -115,15 +115,20 @@ type TransactionOptions struct {
 	// the transaction lock mode is used to specify a concurrency mode for the
 	// read/query operations. It works for a read/write transaction only.
 	ReadLockMode sppb.TransactionOptions_ReadWrite_ReadLockMode
+
+	// Controls whether to exclude recording modifications in current transaction
+	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true).
+	ExcludeTxnFromChangeStreams bool
 }
 
 // merge combines two TransactionOptions that the input parameter will have higher
 // order of precedence.
 func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
 	merged := TransactionOptions{
-		CommitOptions:  to.CommitOptions.merge(opts.CommitOptions),
-		TransactionTag: to.TransactionTag,
-		CommitPriority: to.CommitPriority,
+		CommitOptions:               to.CommitOptions.merge(opts.CommitOptions),
+		TransactionTag:              to.TransactionTag,
+		CommitPriority:              to.CommitPriority,
+		ExcludeTxnFromChangeStreams: to.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 	}
 	if opts.TransactionTag != "" {
 		merged.TransactionTag = opts.TransactionTag
@@ -401,18 +406,24 @@ type QueryOptions struct {
 	// QueryOptions option used to set the DirectedReadOptions for all ExecuteSqlRequests which indicate
 	// which replicas or regions should be used for executing queries.
 	DirectedReadOptions *sppb.DirectedReadOptions
+
+	// Controls whether to exclude recording modifications in current partitioned update operation
+	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true). Setting
+	// this value for any sql/dml requests other than partitioned udpate will receive an error.
+	ExcludeTxnFromChangeStreams bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:                qo.Mode,
-		Options:             &sppb.ExecuteSqlRequest_QueryOptions{},
-		RequestTag:          qo.RequestTag,
-		Priority:            qo.Priority,
-		DataBoostEnabled:    qo.DataBoostEnabled,
-		DirectedReadOptions: qo.DirectedReadOptions,
+		Mode:                        qo.Mode,
+		Options:                     &sppb.ExecuteSqlRequest_QueryOptions{},
+		RequestTag:                  qo.RequestTag,
+		Priority:                    qo.Priority,
+		DataBoostEnabled:            qo.DataBoostEnabled,
+		DirectedReadOptions:         qo.DirectedReadOptions,
+		ExcludeTxnFromChangeStreams: qo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -620,6 +631,13 @@ func errTxClosed() error {
 // errUnexpectedTxState returns error for transaction enters an unexpected state.
 func errUnexpectedTxState(ts txState) error {
 	return spannerErrorf(codes.FailedPrecondition, "unexpected transaction state: %v", ts)
+}
+
+// errExcludeRequestLevelDmlFromChangeStreams returns error for passing
+// QueryOptions.ExcludeTxnFromChangeStreams to request-level DML functions. This
+// options should only be used for partitioned update.
+func errExcludeRequestLevelDmlFromChangeStreams() error {
+	return spannerErrorf(codes.InvalidArgument, "cannot set exclude transaction from change streams for a request-level DML statement.")
 }
 
 // ReadOnlyTransaction provides a snapshot transaction with guaranteed
@@ -1104,6 +1122,10 @@ func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowC
 // the number of affected rows. The given QueryOptions will be used for the
 // execution of this statement.
 func (t *ReadWriteTransaction) UpdateWithOptions(ctx context.Context, stmt Statement, opts QueryOptions) (rowCount int64, err error) {
+	if opts.ExcludeTxnFromChangeStreams {
+		return 0, errExcludeRequestLevelDmlFromChangeStreams()
+	}
+
 	return t.update(ctx, stmt, t.qo.merge(opts))
 }
 
@@ -1176,6 +1198,9 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 // The request tag and priority given in the QueryOptions are included with the
 // RPC. Any other options that are set in the QueryOptions struct are ignored.
 func (t *ReadWriteTransaction) BatchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
+	if opts.ExcludeTxnFromChangeStreams {
+		return nil, errExcludeRequestLevelDmlFromChangeStreams()
+	}
 	return t.batchUpdateWithOptions(ctx, stmts, t.qo.merge(opts))
 }
 
@@ -1296,6 +1321,7 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 						Mode: &sppb.TransactionOptions_ReadWrite_{
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
 						},
+						ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
 					},
 				},
 			}
@@ -1355,6 +1381,7 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 						ReadLockMode: t.txOpts.ReadLockMode,
 					},
 				},
+				ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
 			},
 		},
 	}
@@ -1411,6 +1438,7 @@ func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts
 					ReadLockMode: opts.ReadLockMode,
 				},
 			},
+			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
 		},
 	})
 	if err != nil {
@@ -1778,6 +1806,10 @@ type writeOnlyTransaction struct {
 	commitPriority sppb.RequestOptions_Priority
 	// disableRouteToLeader specifies if we want to disable RW/PDML requests to be routed to leader.
 	disableRouteToLeader bool
+	// ExcludeTxnFromChangeStreams controls whether to exclude recording modifications in
+	// current transaction from the allowed tracking change streams with DDL option
+	// allow_txn_exclusion=true.
+	excludeTxnFromChangeStreams bool
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1824,6 +1856,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 						Mode: &sppb.TransactionOptions_ReadWrite_{
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
 						},
+						ExcludeTxnFromChangeStreams: t.excludeTxnFromChangeStreams,
 					},
 				},
 				Mutations:      mPb,

@@ -19,6 +19,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -714,7 +715,7 @@ func (c *bigQueryWriteRESTClient) CreateWriteStream(ctx context.Context, req *st
 //
 // Deprecated: AppendRows may be removed in a future version.
 func (c *bigQueryWriteRESTClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-	return nil, fmt.Errorf("AppendRows not yet supported for REST clients")
+	return nil, errors.New("AppendRows not yet supported for REST clients")
 }
 
 // GetWriteStream gets a write stream.

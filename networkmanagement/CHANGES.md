@@ -1,5 +1,19 @@
 # Changes
 
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.1...networkmanagement/v1.13.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **networkmanagement:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.13.0...networkmanagement/v1.13.1) (2024-04-15)
+
+
+### Documentation
+
+* **networkmanagement:** Update possible firewall rule actions comment ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/networkmanagement/v1.12.0...networkmanagement/v1.13.0) (2024-03-27)
 
 
@@ -148,4 +162,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out networkmanagement as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

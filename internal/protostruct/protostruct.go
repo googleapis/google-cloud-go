@@ -16,7 +16,7 @@
 package protostruct
 
 import (
-	pb "github.com/golang/protobuf/ptypes/struct"
+	pb "google.golang.org/protobuf/types/known/structpb"
 )
 
 // DecodeToMap converts a pb.Struct to a map from strings to Go types.

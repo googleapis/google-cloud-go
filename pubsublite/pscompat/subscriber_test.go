@@ -27,7 +27,7 @@ import (
 	"golang.org/x/sync/errgroup"
 
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
