@@ -196,6 +196,8 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	if io := opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
 		tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
+		tOpts.EnableDirectPath = io.EnableDirectPath
+		tOpts.EnableDirectPathXds = io.EnableDirectPathXds
 	}
 	transportCreds, endpoint, err := transport.GetGRPCTransportCredsAndEndpoint(tOpts)
 	if err != nil {

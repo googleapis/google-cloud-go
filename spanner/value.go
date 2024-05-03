@@ -21,6 +21,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"math"
 	"math/big"
@@ -32,7 +33,6 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/fields"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	jsoniter "github.com/json-iterator/go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/proto"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
@@ -114,7 +114,7 @@ var (
 
 	jsonNullBytes = []byte("null")
 
-	jsonProvider = jsoniter.ConfigCompatibleWithStandardLibrary
+	jsonUseNumber bool
 )
 
 // UseNumberWithJSONDecoderEncoder specifies whether Cloud Spanner JSON numbers are decoded
@@ -124,11 +124,15 @@ var (
 // NOTE 1: Calling this method affects the behavior of all clients created by this library, both existing and future instances.
 // NOTE 2: This method sets a global variable that is used by the client to encode/decode JSON numbers. Access to the global variable is not synchronized. You should only call this method when there are no goroutines encoding/decoding Cloud Spanner JSON values. It is recommended to only call this method during the initialization of your application, and preferably before you create any Cloud Spanner clients, and/or in tests when there are no queries being executed.
 func UseNumberWithJSONDecoderEncoder(useNumber bool) {
-	jsonProvider = jsoniter.Config{
-		EscapeHTML:  true,
-		SortMapKeys: true, // Sort map keys to ensure deterministic output, to be consistent with encoding.
-		UseNumber:   useNumber,
-	}.Froze()
+	jsonUseNumber = useNumber
+}
+
+func jsonUnmarshal(data []byte, v any) error {
+	dec := json.NewDecoder(bytes.NewReader(data))
+	if jsonUseNumber {
+		dec.UseNumber()
+	}
+	return dec.Decode(v)
 }
 
 // Encoder is the interface implemented by a custom type that can be encoded to
@@ -297,7 +301,7 @@ func (n *NullString) UnmarshalJSON(payload []byte) error {
 		return nil
 	}
 	var s *string
-	if err := jsonProvider.Unmarshal(payload, &s); err != nil {
+	if err := jsonUnmarshal(payload, &s); err != nil {
 		return err
 	}
 	if s != nil {
@@ -866,7 +870,7 @@ func (n NullJSON) String() string {
 	if !n.Valid {
 		return nullString
 	}
-	b, err := jsonProvider.Marshal(n.Value)
+	b, err := json.Marshal(n.Value)
 	if err != nil {
 		return fmt.Sprintf("error: %v", err)
 	}
@@ -888,7 +892,7 @@ func (n *NullJSON) UnmarshalJSON(payload []byte) error {
 		return nil
 	}
 	var v interface{}
-	err := jsonProvider.Unmarshal(payload, &v)
+	err := jsonUnmarshal(payload, &v)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %w", string(payload), err)
 	}
@@ -972,7 +976,7 @@ func (n PGJsonB) String() string {
 	if !n.Valid {
 		return nullString
 	}
-	b, err := jsonProvider.Marshal(n.Value)
+	b, err := json.Marshal(n.Value)
 	if err != nil {
 		return fmt.Sprintf("error: %v", err)
 	}
@@ -994,7 +998,7 @@ func (n *PGJsonB) UnmarshalJSON(payload []byte) error {
 		return nil
 	}
 	var v interface{}
-	err := jsonProvider.Unmarshal(payload, &v)
+	err := jsonUnmarshal(payload, &v)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %w", string(payload), err)
 	}
@@ -1007,7 +1011,7 @@ func nulljson(valid bool, v interface{}) ([]byte, error) {
 	if !valid {
 		return jsonNullBytes, nil
 	}
-	return jsonProvider.Marshal(v)
+	return json.Marshal(v)
 }
 
 // GenericColumnValue represents the generic encoded value and type of the
@@ -1714,7 +1718,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 			}
 			x := v.GetStringValue()
 			var y interface{}
-			err := jsonProvider.Unmarshal([]byte(x), &y)
+			err := jsonUnmarshal([]byte(x), &y)
 			if err != nil {
 				return err
 			}
@@ -1873,7 +1877,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		}
 		x := v.GetStringValue()
 		var y interface{}
-		err := jsonProvider.Unmarshal([]byte(x), &y)
+		err := jsonUnmarshal([]byte(x), &y)
 		if err != nil {
 			return err
 		}
@@ -2566,7 +2570,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		x := v.GetStringValue()
 		var y interface{}
-		err := jsonProvider.Unmarshal([]byte(x), &y)
+		err := jsonUnmarshal([]byte(x), &y)
 		if err != nil {
 			return err
 		}
@@ -2581,7 +2585,7 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		}
 		x := v.GetStringValue()
 		var y interface{}
-		err := jsonProvider.Unmarshal([]byte(x), &y)
+		err := jsonUnmarshal([]byte(x), &y)
 		if err != nil {
 			return err
 		}
@@ -3272,7 +3276,7 @@ func decodeNullJSONArrayToNullJSON(pb *proto3.ListValue) (*NullJSON, error) {
 	}
 	s := fmt.Sprintf("[%s]", strings.Join(strs, ","))
 	var y interface{}
-	err := jsonProvider.Unmarshal([]byte(s), &y)
+	err := jsonUnmarshal([]byte(s), &y)
 	if err != nil {
 		return nil, err
 	}
@@ -3929,7 +3933,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		pt = listType(pgNumericType())
 	case NullJSON:
 		if v.Valid {
-			b, err := jsonProvider.Marshal(v.Value)
+			b, err := json.Marshal(v.Value)
 			if err != nil {
 				return nil, nil, err
 			}
@@ -3946,7 +3950,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		pt = listType(jsonType())
 	case PGJsonB:
 		if v.Valid {
-			b, err := jsonProvider.Marshal(v.Value)
+			b, err := json.Marshal(v.Value)
 			if err != nil {
 				return nil, nil, err
 			}
