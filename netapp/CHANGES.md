@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.8](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.7...netapp/v0.2.8) (2024-05-01)
+
+
+### Bug Fixes
+
+* **netapp:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.2.7](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.6...netapp/v0.2.7) (2024-03-25)
 
 
@@ -64,4 +71,3 @@
 * **netapp:** Start generating apiv1 ([#8353](https://github.com/googleapis/google-cloud-go/issues/8353)) ([f609b3c](https://github.com/googleapis/google-cloud-go/commit/f609b3cf831fb89c45386f81d0047560120cb3f4))
 
 ## Changes
-

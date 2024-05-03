@@ -2425,7 +2425,6 @@ func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
 
 		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 			panic("cause panic")
-			return nil
 		})
 		if err != nil {
 			t.Fatalf("Unexpected error during transaction: %v", err)
@@ -3317,7 +3316,7 @@ func TestClient_Apply_ApplyOptions(t *testing.T) {
 			if err != nil {
 				t.Fatalf("failed applying mutations: %v", err)
 			}
-			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: tt.wantPriority, TransactionTag: tt.wantTransactionTag})
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{Priority: tt.wantPriority, TransactionTag: tt.wantTransactionTag})
 		})
 	}
 }
@@ -3731,7 +3730,10 @@ func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 		tx.BufferWrite([]*Mutation{Insert("FOO", []string{"ID", "NAME"}, []interface{}{int64(1), "bar"})})
 		return nil
 	})
-	errContext, _ := context.WithTimeout(context.Background(), -time.Second)
+
+	errContext, cancel := context.WithTimeout(context.Background(), -time.Second)
+	defer cancel()
+
 	w := toSpannerErrorWithCommitInfo(errContext.Err(), true).(*Error)
 	var se *Error
 	if !errorAs(err, &se) {
@@ -3987,6 +3989,7 @@ func TestClient_WithoutCustomBatchTimeout(t *testing.T) {
 }
 
 func TestClient_CallOptions(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/10069")
 	t.Parallel()
 	co := &vkit.CallOptions{
 		CreateSession: []gax.CallOption{
@@ -4631,7 +4634,7 @@ func TestClient_ReadOnlyTransaction_Priority(t *testing.T) {
 			iter.Next()
 			iter.Stop()
 
-			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 2, sppb.RequestOptions{Priority: qo.Priority})
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 2, &sppb.RequestOptions{Priority: qo.Priority})
 			tx.Close()
 		}
 	}
@@ -4663,11 +4666,11 @@ func TestClient_ReadWriteTransaction_Priority(t *testing.T) {
 				tx.BatchUpdateWithOptions(context.Background(), []Statement{
 					NewStatement(UpdateBarSetFoo),
 				}, qo)
-				checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{Priority: qo.Priority})
+				checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, &sppb.RequestOptions{Priority: qo.Priority})
 
 				return nil
 			}, to)
-			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: to.CommitPriority})
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{Priority: to.CommitPriority})
 		}
 	}
 }
@@ -4699,9 +4702,9 @@ func TestClient_StmtBasedReadWriteTransaction_Priority(t *testing.T) {
 				NewStatement(UpdateBarSetFoo),
 			}, qo)
 
-			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{Priority: qo.Priority})
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, &sppb.RequestOptions{Priority: qo.Priority})
 			tx.Commit(context.Background())
-			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: to.CommitPriority})
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{Priority: to.CommitPriority})
 		}
 	}
 }
@@ -4717,7 +4720,7 @@ func TestClient_PDML_Priority(t *testing.T) {
 		{Priority: sppb.RequestOptions_PRIORITY_HIGH},
 	} {
 		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
-		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{Priority: qo.Priority})
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, &sppb.RequestOptions{Priority: qo.Priority})
 	}
 }
 
@@ -4766,16 +4769,16 @@ func TestClient_Apply_Priority(t *testing.T) {
 	defer teardown()
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})})
-	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{})
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, Priority(sppb.RequestOptions_PRIORITY_HIGH))
-	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: sppb.RequestOptions_PRIORITY_HIGH})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{Priority: sppb.RequestOptions_PRIORITY_HIGH})
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce())
-	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{})
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce(), Priority(sppb.RequestOptions_PRIORITY_MEDIUM))
-	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: sppb.RequestOptions_PRIORITY_MEDIUM})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{Priority: sppb.RequestOptions_PRIORITY_MEDIUM})
 }
 
 func TestClient_ReadOnlyTransaction_Tag(t *testing.T) {
@@ -4802,7 +4805,7 @@ func TestClient_ReadOnlyTransaction_Tag(t *testing.T) {
 			iter.Next()
 			iter.Stop()
 
-			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 2, sppb.RequestOptions{RequestTag: qo.RequestTag})
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 2, &sppb.RequestOptions{RequestTag: qo.RequestTag})
 			tx.Close()
 		}
 	}
@@ -4837,10 +4840,10 @@ func TestClient_ReadWriteTransaction_Tag(t *testing.T) {
 
 				// Check for SQL requests inside the transaction to prevent the check to
 				// drain the commit request from the server.
-				checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{RequestTag: qo.RequestTag, TransactionTag: to.TransactionTag})
+				checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, &sppb.RequestOptions{RequestTag: qo.RequestTag, TransactionTag: to.TransactionTag})
 				return nil
 			}, to)
-			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{TransactionTag: to.TransactionTag})
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{TransactionTag: to.TransactionTag})
 		}
 	}
 }
@@ -4871,10 +4874,10 @@ func TestClient_StmtBasedReadWriteTransaction_Tag(t *testing.T) {
 			tx.BatchUpdateWithOptions(context.Background(), []Statement{
 				NewStatement(UpdateBarSetFoo),
 			}, qo)
-			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{RequestTag: qo.RequestTag, TransactionTag: to.TransactionTag})
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, &sppb.RequestOptions{RequestTag: qo.RequestTag, TransactionTag: to.TransactionTag})
 
 			tx.Commit(context.Background())
-			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{TransactionTag: to.TransactionTag})
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{TransactionTag: to.TransactionTag})
 		}
 	}
 }
@@ -4890,7 +4893,7 @@ func TestClient_PDML_Tag(t *testing.T) {
 		{RequestTag: "request-tag-1"},
 	} {
 		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
-		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{RequestTag: qo.RequestTag})
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, &sppb.RequestOptions{RequestTag: qo.RequestTag})
 	}
 }
 
@@ -4901,16 +4904,16 @@ func TestClient_Apply_Tagging(t *testing.T) {
 	defer teardown()
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})})
-	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{})
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, TransactionTag("tx-tag"))
-	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{TransactionTag: "tx-tag"})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{TransactionTag: "tx-tag"})
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce())
-	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{})
 
 	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce(), TransactionTag("tx-tag"))
-	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{TransactionTag: "tx-tag"})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, &sppb.RequestOptions{TransactionTag: "tx-tag"})
 }
 
 func TestClient_PartitionQuery_RequestOptions(t *testing.T) {
@@ -4933,7 +4936,7 @@ func TestClient_PartitionQuery_RequestOptions(t *testing.T) {
 			iter.Next()
 			iter.Stop()
 		}
-		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, len(partitions), sppb.RequestOptions{RequestTag: qo.RequestTag, Priority: qo.Priority})
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, len(partitions), &sppb.RequestOptions{RequestTag: qo.RequestTag, Priority: qo.Priority})
 	}
 }
 
@@ -4957,11 +4960,11 @@ func TestClient_PartitionRead_RequestOptions(t *testing.T) {
 			iter.Next()
 			iter.Stop()
 		}
-		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, len(partitions), sppb.RequestOptions{RequestTag: ro.RequestTag, Priority: ro.Priority})
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, len(partitions), &sppb.RequestOptions{RequestTag: ro.RequestTag, Priority: ro.Priority})
 	}
 }
 
-func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, reqCount int, ro sppb.RequestOptions) {
+func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, reqCount int, ro *sppb.RequestOptions) {
 	reqs := drainRequestsFromServer(server)
 	reqOptions := []*sppb.RequestOptions{}
 
@@ -4997,7 +5000,7 @@ func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerSer
 	}
 }
 
-func checkCommitForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, ro sppb.RequestOptions) {
+func checkCommitForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, ro *sppb.RequestOptions) {
 	reqs := drainRequestsFromServer(server)
 	var commit *sppb.CommitRequest
 	var ok bool

@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/accessapproval v1.7.6
 	cloud.google.com/go/accesscontextmanager v1.8.6
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/aiplatform v1.66.0
+	cloud.google.com/go/aiplatform v1.67.0
 	cloud.google.com/go/alloydb v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/analytics v0.23.1
 	cloud.google.com/go/apigateway v1.6.6
@@ -17,13 +17,13 @@ require (
 	cloud.google.com/go/appengine v1.8.6
 	cloud.google.com/go/area120 v0.8.6
 	cloud.google.com/go/artifactregistry v1.14.8
-	cloud.google.com/go/asset v1.18.1
+	cloud.google.com/go/asset v1.19.0
 	cloud.google.com/go/assuredworkloads v1.11.6
 	cloud.google.com/go/automl v1.13.6
 	cloud.google.com/go/baremetalsolution v1.2.5
-	cloud.google.com/go/batch v1.8.3
+	cloud.google.com/go/batch v1.8.4
 	cloud.google.com/go/beyondcorp v1.0.5
-	cloud.google.com/go/bigquery v1.60.0
+	cloud.google.com/go/bigquery v1.61.0
 	cloud.google.com/go/billing v1.18.4
 	cloud.google.com/go/binaryauthorization v1.8.2
 	cloud.google.com/go/certificatemanager v1.8.0
@@ -50,7 +50,7 @@ require (
 	cloud.google.com/go/dialogflow v1.52.0
 	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/dlp v1.12.1
-	cloud.google.com/go/documentai v1.26.1
+	cloud.google.com/go/documentai v1.27.0
 	cloud.google.com/go/domains v0.9.6
 	cloud.google.com/go/edgecontainer v1.2.0
 	cloud.google.com/go/errorreporting v0.3.0
@@ -74,13 +74,13 @@ require (
 	cloud.google.com/go/logging v1.9.0
 	cloud.google.com/go/longrunning v0.5.6
 	cloud.google.com/go/managedidentities v1.6.6
-	cloud.google.com/go/maps v1.7.1
+	cloud.google.com/go/maps v1.7.2
 	cloud.google.com/go/mediatranslation v0.8.6
 	cloud.google.com/go/memcache v1.10.6
 	cloud.google.com/go/metastore v1.13.5
-	cloud.google.com/go/monitoring v1.18.1
+	cloud.google.com/go/monitoring v1.18.2
 	cloud.google.com/go/networkconnectivity v1.14.5
-	cloud.google.com/go/networkmanagement v1.13.0
+	cloud.google.com/go/networkmanagement v1.13.1
 	cloud.google.com/go/networksecurity v0.9.6
 	cloud.google.com/go/notebooks v1.11.4
 	cloud.google.com/go/optimization v1.6.4
@@ -103,15 +103,15 @@ require (
 	cloud.google.com/go/run v1.3.6
 	cloud.google.com/go/scheduler v1.10.7
 	cloud.google.com/go/secretmanager v1.12.0
-	cloud.google.com/go/security v1.15.6
-	cloud.google.com/go/securitycenter v1.28.0
+	cloud.google.com/go/security v1.16.0
+	cloud.google.com/go/securitycenter v1.29.0
 	cloud.google.com/go/servicecontrol v1.11.1
 	cloud.google.com/go/servicedirectory v1.11.5
 	cloud.google.com/go/servicemanagement v1.8.0
 	cloud.google.com/go/serviceusage v1.6.0
 	cloud.google.com/go/shell v1.7.6
 	cloud.google.com/go/spanner v1.60.0
-	cloud.google.com/go/speech v1.22.1
+	cloud.google.com/go/speech v1.23.0
 	cloud.google.com/go/storageinsights v0.0.0
 	cloud.google.com/go/storagetransfer v1.10.5
 	cloud.google.com/go/support v0.0.0
@@ -131,8 +131,8 @@ require (
 	cloud.google.com/go/workflows v1.12.5
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.176.1
-	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
+	google.golang.org/api v0.177.0
+	google.golang.org/genproto v0.0.0-20240429193739-8cf5692501f6
 )
 
 require (
@@ -140,12 +140,14 @@ require (
 	cloud.google.com/go/apphub v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/apps v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/backupdr v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/chat v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/cloudcontrolspartner v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/cloudprofiler v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/cloudquotas v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/commerce v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/config v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/edgenetwork v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/identitytoolkit v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/migrationcenter v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/netapp v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/parallelstore v0.0.0-00010101000000-000000000000
@@ -157,9 +159,11 @@ require (
 	cloud.google.com/go/servicehealth v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/shopping v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/storage v1.40.0
+	cloud.google.com/go/streetview v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/visionai v0.0.0-00010101000000-000000000000
-	google.golang.org/genproto/googleapis/api v0.0.0-20240415180920-8c6c420018be
+	google.golang.org/genproto/googleapis/api v0.0.0-20240429193739-8cf5692501f6
+	google.golang.org/protobuf v1.34.0
 )
 
 require (
@@ -187,9 +191,8 @@ require (
 	golang.org/x/sys v0.19.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240415180920-8c6c420018be // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240429193739-8cf5692501f6 // indirect
 	google.golang.org/grpc v1.63.2 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
 )
 
 replace cloud.google.com/go/storageinsights => ../../../storageinsights
@@ -499,3 +502,9 @@ replace cloud.google.com/go/apphub => ../../../apphub
 replace cloud.google.com/go/cloudcontrolspartner => ../../../cloudcontrolspartner
 
 replace cloud.google.com/go/backupdr => ../../../backupdr
+
+replace cloud.google.com/go/chat => ../../../chat
+
+replace cloud.google.com/go/identitytoolkit => ../../../identitytoolkit
+
+replace cloud.google.com/go/streetview => ../../../streetview

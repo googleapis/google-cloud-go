@@ -183,7 +183,7 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 	}
 }
 
-// internalStorageControlClient is an interface that defines the methods available from Cloud Storage API.
+// internalStorageControlClient is an interface that defines the methods available from Storage Control API.
 type internalStorageControlClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -201,7 +201,7 @@ type internalStorageControlClient interface {
 	ListManagedFolders(context.Context, *controlpb.ListManagedFoldersRequest, ...gax.CallOption) *ManagedFolderIterator
 }
 
-// StorageControlClient is a client for interacting with Cloud Storage API.
+// StorageControlClient is a client for interacting with Storage Control API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // StorageControl service includes selected control plane operations.
@@ -241,29 +241,39 @@ func (c *StorageControlClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateFolder creates a new folder.
+// CreateFolder creates a new folder. This operation is only applicable to a hierarchical
+// namespace enabled bucket.
+// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) CreateFolder(ctx context.Context, req *controlpb.CreateFolderRequest, opts ...gax.CallOption) (*controlpb.Folder, error) {
 	return c.internalClient.CreateFolder(ctx, req, opts...)
 }
 
-// DeleteFolder permanently deletes an empty folder.
+// DeleteFolder permanently deletes an empty folder. This operation is only applicable to a
+// hierarchical namespace enabled bucket.
+// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) DeleteFolder(ctx context.Context, req *controlpb.DeleteFolderRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteFolder(ctx, req, opts...)
 }
 
-// GetFolder returns metadata for the specified folder.
+// GetFolder returns metadata for the specified folder. This operation is only
+// applicable to a hierarchical namespace enabled bucket.
+// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) GetFolder(ctx context.Context, req *controlpb.GetFolderRequest, opts ...gax.CallOption) (*controlpb.Folder, error) {
 	return c.internalClient.GetFolder(ctx, req, opts...)
 }
 
-// ListFolders retrieves a list of folders for a given bucket.
+// ListFolders retrieves a list of folders. This operation is only applicable to a
+// hierarchical namespace enabled bucket.
+// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) ListFolders(ctx context.Context, req *controlpb.ListFoldersRequest, opts ...gax.CallOption) *FolderIterator {
 	return c.internalClient.ListFolders(ctx, req, opts...)
 }
 
-// RenameFolder renames a source folder to a destination folder. During a rename, the
+// RenameFolder renames a source folder to a destination folder. This operation is only
+// applicable to a hierarchical namespace enabled bucket. During a rename, the
 // source and destination folders are locked until the long running operation
 // completes.
+// Hierarchical namespace buckets are in allowlist preview.
 func (c *StorageControlClient) RenameFolder(ctx context.Context, req *controlpb.RenameFolderRequest, opts ...gax.CallOption) (*RenameFolderOperation, error) {
 	return c.internalClient.RenameFolder(ctx, req, opts...)
 }
@@ -299,7 +309,7 @@ func (c *StorageControlClient) ListManagedFolders(ctx context.Context, req *cont
 	return c.internalClient.ListManagedFolders(ctx, req, opts...)
 }
 
-// storageControlGRPCClient is a client for interacting with Cloud Storage API over gRPC transport.
+// storageControlGRPCClient is a client for interacting with Storage Control API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type storageControlGRPCClient struct {
