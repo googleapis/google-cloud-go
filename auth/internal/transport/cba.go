@@ -61,6 +61,8 @@ type Options struct {
 	ClientCertProvider      cert.Provider
 	Client                  *http.Client
 	UniverseDomain          string
+	EnableDirectPath        bool
+	EnableDirectPathXds     bool
 }
 
 // getUniverseDomain returns the default service domain for a given Cloud
@@ -195,10 +197,7 @@ func getTransportConfig(opts *Options) (*transportConfig, error) {
 	}
 
 	s2aMTLSEndpoint := opts.DefaultMTLSEndpoint
-	// If there is endpoint override, honor it.
-	if opts.Endpoint != "" {
-		s2aMTLSEndpoint = endpoint
-	}
+
 	s2aAddress := GetS2AAddress()
 	if s2aAddress == "" {
 		return &defaultTransportConfig, nil
