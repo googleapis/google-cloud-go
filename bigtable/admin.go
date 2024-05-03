@@ -353,11 +353,11 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 		tbl.ChangeStreamConfig.RetentionPeriod = durationpb.New(conf.ChangeStreamRetention.(time.Duration))
 	}
 
-	var err error
 	if conf.AutomatedBackupConfig != nil {
-		tbl.AutomatedBackupConfig, err = toAutomatedBackupConfigProto(conf.AutomatedBackupConfig)
-		if err != nil {
+		if proto, err := toAutomatedBackupConfigProto(conf.AutomatedBackupConfig); err != nil {
 			return err
+		} else {
+			tbl.AutomatedBackupConfig = proto
 		}
 	}
 
@@ -395,7 +395,7 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 		Table:         &tbl,
 		InitialSplits: reqSplits,
 	}
-	_, err = ac.tClient.CreateTable(ctx, req)
+	_, err := ac.tClient.CreateTable(ctx, req)
 	return err
 }
 
@@ -445,7 +445,7 @@ const (
 	automatedBackupPolicyFieldMask = "automated_backup_policy"
 )
 
-func newUpdateTableRequestProto(tableID string, prefix string) (*btapb.UpdateTableRequest, error) {
+func (ac *AdminClient) newUpdateTableRequestProto(tableID string) (*btapb.UpdateTableRequest, error) {
 	if tableID == "" {
 		return nil, errors.New("TableID is required")
 	}
@@ -454,24 +454,11 @@ func newUpdateTableRequestProto(tableID string, prefix string) (*btapb.UpdateTab
 	}
 	req := &btapb.UpdateTableRequest{
 		Table: &btapb.Table{
-			Name: prefix + "/tables/" + tableID,
+			Name: ac.instancePrefix() + "/tables/" + tableID,
 		},
 		UpdateMask: updateMask,
 	}
 	return req, nil
-}
-
-// updateTable updates a table in the instance, with the given UpdateTableRequest
-func (ac *AdminClient) updateTable(ctx context.Context, tableID string, updateTableRequestLogic func(utr *btapb.UpdateTableRequest) error) error {
-	updateTableRequest, err := newUpdateTableRequestProto(tableID, ac.instancePrefix())
-	if err != nil {
-		return fmt.Errorf("error when updating table: %w", err)
-	}
-	err = updateTableRequestLogic(updateTableRequest)
-	if err != nil {
-		return fmt.Errorf("error when updating table: %w", err)
-	}
-	return ac.updateTableAndWait(ctx, updateTableRequest)
 }
 
 func (ac *AdminClient) updateTableAndWait(ctx context.Context, updateTableRequest *btapb.UpdateTableRequest) error {
@@ -494,67 +481,67 @@ func (ac *AdminClient) updateTableAndWait(ctx context.Context, updateTableReques
 
 // UpdateTableDisableChangeStream updates a table to disable change stream for table ID.
 func (ac *AdminClient) UpdateTableDisableChangeStream(ctx context.Context, tableID string) error {
-	updateTableRequestLogic := func(utr *btapb.UpdateTableRequest) error {
-		utr.UpdateMask.Paths = append(utr.UpdateMask.Paths, changeStreamRetentionFieldMask)
-		return nil
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
 	}
-
-	return ac.updateTable(ctx, tableID, updateTableRequestLogic)
+	req.UpdateMask.Paths = []string{changeStreamRetentionFieldMask}
+	return ac.updateTableAndWait(ctx, req)
 }
 
 // UpdateTableWithChangeStream updates a table to with the given table ID and change stream config.
 func (ac *AdminClient) UpdateTableWithChangeStream(ctx context.Context, tableID string, changeStreamRetention ChangeStreamRetention) error {
-	updateTableRequestLogic := func(utr *btapb.UpdateTableRequest) error {
-		utr.UpdateMask.Paths = append(utr.UpdateMask.Paths, changeStreamRetentionFieldMask+".retention_period")
-		utr.Table.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
-		utr.Table.ChangeStreamConfig.RetentionPeriod = durationpb.New(changeStreamRetention.(time.Duration))
-		return nil
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
 	}
-
-	return ac.updateTable(ctx, tableID, updateTableRequestLogic)
+	req.UpdateMask.Paths = []string{changeStreamRetentionFieldMask + ".retention_period"}
+	req.Table.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
+	req.Table.ChangeStreamConfig.RetentionPeriod = durationpb.New(changeStreamRetention.(time.Duration))
+	return ac.updateTableAndWait(ctx, req)
 }
 
 // UpdateTableWithDeletionProtection updates a table with the given table ID and deletion protection parameter.
 func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
-	updateTableRequestLogic := func(utr *btapb.UpdateTableRequest) error {
-		utr.UpdateMask.Paths = append(utr.UpdateMask.Paths, deletionProtectionFieldMask)
-		utr.Table.DeletionProtection = deletionProtection != Unprotected
-		return nil
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
 	}
-
-	return ac.updateTable(ctx, tableID, updateTableRequestLogic)
+	req.UpdateMask.Paths = []string{deletionProtectionFieldMask}
+	req.Table.DeletionProtection = deletionProtection != Unprotected
+	return ac.updateTableAndWait(ctx, req)
 }
 
 // UpdateTableDisableAutomatedBackupPolicy updates a table to disable automated backups for table ID.
 func (ac *AdminClient) UpdateTableDisableAutomatedBackupPolicy(ctx context.Context, tableID string) error {
-	updateTableRequestLogic := func(utr *btapb.UpdateTableRequest) error {
-		utr.UpdateMask.Paths = append(utr.UpdateMask.Paths, automatedBackupPolicyFieldMask)
-		return nil
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
 	}
-
-	return ac.updateTable(ctx, tableID, updateTableRequestLogic)
+	req.UpdateMask.Paths = []string{automatedBackupPolicyFieldMask}
+	return ac.updateTableAndWait(ctx, req)
 }
 
 // UpdateTableWithAutomatedBackupPolicy updates a table to with the given table ID and automated backup policy config.
 func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context, tableID string, automatedBackupPolicy TableAutomatedBackupPolicy) error {
-	updateTableRequestLogic := func(utr *btapb.UpdateTableRequest) error {
-		abc, err := toAutomatedBackupConfigProto(&automatedBackupPolicy)
-		if err != nil {
-			return err
-		}
-		if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds != 0 {
-			// Update Retention Period
-			utr.UpdateMask.Paths = append(utr.UpdateMask.Paths, automatedBackupPolicyFieldMask+".retention_period")
-		}
-		if abc.AutomatedBackupPolicy.Frequency.Seconds != 0 {
-			// Update Frequency
-			utr.UpdateMask.Paths = append(utr.UpdateMask.Paths, automatedBackupPolicyFieldMask+".frequency")
-		}
-		utr.Table.AutomatedBackupConfig = abc
-		return nil
+	req, err := ac.newUpdateTableRequestProto(tableID)
+	if err != nil {
+		return err
 	}
-
-	return ac.updateTable(ctx, tableID, updateTableRequestLogic)
+	abc, err := toAutomatedBackupConfigProto(&automatedBackupPolicy)
+	if err != nil {
+		return err
+	}
+	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds != 0 {
+		// Update Retention Period
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+".retention_period")
+	}
+	if abc.AutomatedBackupPolicy.Frequency.Seconds != 0 {
+		// Update Frequency
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+".frequency")
+	}
+	req.Table.AutomatedBackupConfig = abc
+	return ac.updateTableAndWait(ctx, req)
 }
 
 // DeleteTable deletes a table and all of its data.
