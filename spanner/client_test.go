@@ -1487,10 +1487,10 @@ func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeSho
 		t.Fatalf("Session lastUseTime times should not be equal")
 	}
 
-	if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+	if time.Since(sessionPrevLastUseTime).Milliseconds() < 400 {
 		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 	}
-	if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+	if time.Since(sessionCheckoutTime).Milliseconds() < 400 {
 		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 	}
 	// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
@@ -2000,10 +2000,10 @@ func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeSh
 			t.Fatalf("Session lastUseTime times should not be equal")
 		}
 
-		if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+		if time.Since(sessionPrevLastUseTime).Milliseconds() < 400 {
 			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 		}
-		if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+		if time.Since(sessionCheckoutTime).Milliseconds() < 400 {
 			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 		}
 		// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
