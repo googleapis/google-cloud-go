@@ -145,6 +145,11 @@
                 "UpdateDataset"
               ]
             },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -288,6 +293,11 @@
             "UpdateDataset": {
               "methods": [
                 "UpdateDataset"
+              ]
+            },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
               ]
             },
             "WaitOperation": {
@@ -5131,11 +5141,6 @@
                 "CancelOperation"
               ]
             },
-            "ChatCompletions": {
-              "methods": [
-                "ChatCompletions"
-              ]
-            },
             "CountTokens": {
               "methods": [
                 "CountTokens"
@@ -5254,11 +5259,6 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
-              ]
-            },
-            "ChatCompletions": {
-              "methods": [
-                "ChatCompletions"
               ]
             },
             "CountTokens": {
