@@ -92,7 +92,7 @@ func createBenchmarkServer(incStep uint64) (server *MockedSpannerInMemTestServer
 	return
 }
 
-func readWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- int) {
+func readWorker(client *Client, jobs <-chan int, results chan<- int) {
 	for range jobs {
 		mu.Lock()
 		d := time.Millisecond * time.Duration(rnd.Int63n(rndWaitTimeBetweenRequests))
@@ -106,7 +106,7 @@ func readWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- in
 				break
 			}
 			if err != nil {
-				b.Fatal(err)
+				panic(err)
 			}
 			row++
 			if row == 1 {
@@ -121,7 +121,7 @@ func readWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- in
 	}
 }
 
-func writeWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- int64) {
+func writeWorker(client *Client, jobs <-chan int, results chan<- int64) {
 	for range jobs {
 		mu.Lock()
 		d := time.Millisecond * time.Duration(rnd.Int63n(rndWaitTimeBetweenRequests))
@@ -135,7 +135,7 @@ func writeWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- i
 			}
 			return nil
 		}); err != nil {
-			b.Fatal(err)
+			panic(err)
 		}
 		results <- updateCount
 	}
@@ -187,7 +187,7 @@ func benchmarkClientBurstRead(b *testing.B, incStep uint64) {
 		parallel := int(sp.MaxOpened * 2)
 
 		for w := 0; w < parallel; w++ {
-			go readWorker(client, b, jobs, results)
+			go readWorker(client, jobs, results)
 		}
 		for j := 0; j < totalQueries; j++ {
 			jobs <- j
@@ -248,7 +248,7 @@ func benchmarkClientBurstWrite(b *testing.B, incStep uint64) {
 		parallel := int(sp.MaxOpened * 2)
 
 		for w := 0; w < parallel; w++ {
-			go writeWorker(client, b, jobs, results)
+			go writeWorker(client, jobs, results)
 		}
 		for j := 0; j < totalUpdates; j++ {
 			jobs <- j
@@ -314,13 +314,13 @@ func benchmarkClientBurstReadAndWrite(b *testing.B, incStep uint64) {
 		parallelReads := int(sp.MaxOpened)
 
 		for w := 0; w < parallelWrites; w++ {
-			go writeWorker(client, b, writeJobs, writeResults)
+			go writeWorker(client, writeJobs, writeResults)
 		}
 		for j := 0; j < totalUpdates; j++ {
 			writeJobs <- j
 		}
 		for w := 0; w < parallelReads; w++ {
-			go readWorker(client, b, readJobs, readResults)
+			go readWorker(client, readJobs, readResults)
 		}
 		for j := 0; j < totalQueries; j++ {
 			readJobs <- j
