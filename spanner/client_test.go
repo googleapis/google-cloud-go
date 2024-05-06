@@ -3989,7 +3989,6 @@ func TestClient_WithoutCustomBatchTimeout(t *testing.T) {
 }
 
 func TestClient_CallOptions(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/10069")
 	t.Parallel()
 	co := &vkit.CallOptions{
 		CreateSession: []gax.CallOption{
@@ -4016,7 +4015,7 @@ func TestClient_CallOptions(t *testing.T) {
 	cs := &gax.CallSettings{}
 	// This is the default retry setting.
 	c.CallOptions.CreateSession[1].Resolve(cs)
-	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14]}"; got != want {
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14 8]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}
 
