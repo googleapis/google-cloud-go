@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@
 package dlppb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -2947,6 +2946,17 @@ type StorageConfig_TimespanConfig struct {
 	// since the last time the JobTrigger executed. This will be based on the
 	// time of the execution of the last run of the JobTrigger or the timespan
 	// end_time used in the last run of the JobTrigger.
+	//
+	// **For BigQuery**
+	//
+	// Inspect jobs triggered by automatic population will scan data that is at
+	// least three hours old when the job starts. This is because streaming
+	// buffer rows are not read during inspection and reading up to the current
+	// timestamp will result in skipped rows.
+	//
+	// See the [known
+	// issue](https://cloud.google.com/sensitive-data-protection/docs/known-issues#recently-streamed-data)
+	// related to this operation.
 	EnableAutoPopulationOfTimespanConfig bool `protobuf:"varint,4,opt,name=enable_auto_population_of_timespan_config,json=enableAutoPopulationOfTimespanConfig,proto3" json:"enable_auto_population_of_timespan_config,omitempty"`
 }
 
