@@ -731,7 +731,7 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) >= s.maxSessionsReturnedByServerInTotal {
-		return nil, gstatus.Error(codes.ResourceExhausted, "No more sessions available")
+		return nil, gstatus.Error(codes.OutOfRange, "No more sessions available")
 	}
 	if sessionsToCreate > s.maxSessionsReturnedByServerPerBatchRequest {
 		sessionsToCreate = s.maxSessionsReturnedByServerPerBatchRequest
