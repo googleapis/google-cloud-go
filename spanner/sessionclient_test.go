@@ -442,7 +442,7 @@ func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
 	consumer := newTestConsumer(numSessions)
 	client.sc.batchCreateSessions(numSessions, true, consumer)
 	<-consumer.receivedAll
-	// Session creation should end with at least one RESOURCE_EXHAUSTED error.
+	// Session creation should end with at least one non-retryable error.
 	if len(consumer.errors) == 0 {
 		t.Fatalf("Error count mismatch\nGot: %d\nWant: > %d", len(consumer.errors), 0)
 	}
