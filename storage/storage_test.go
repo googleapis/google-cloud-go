@@ -1135,7 +1135,7 @@ func TestClientSetRetry(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
-			c, err := NewClient(context.Background())
+			c, err := NewClient(context.Background(), option.WithoutAuthentication())
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
 			}
@@ -1358,7 +1358,7 @@ func TestRetryer(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
 			ctx := context.Background()
-			c, err := NewClient(ctx)
+			c, err := NewClient(ctx, option.WithoutAuthentication())
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
 			}
@@ -2151,7 +2151,7 @@ func TestWithEndpoint(t *testing.T) {
 	ctx := context.Background()
 	for _, tc := range testCases {
 		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
-		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint))
+		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint), option.WithoutAuthentication())
 		if err != nil {
 			t.Fatalf("error creating client: %v", err)
 		}

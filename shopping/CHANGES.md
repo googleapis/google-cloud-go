@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.5.0...shopping/v0.6.0) (2024-05-01)
+
+
+### Features
+
+* **shopping:** Add `Weight` to common types for Shopping APIs to be used for accounts bundle ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **shopping:** New shopping.merchant.conversions client ([#10076](https://github.com/googleapis/google-cloud-go/issues/10076)) ([59457a3](https://github.com/googleapis/google-cloud-go/commit/59457a33731b2d9f79a4ade9e563643d5487a3c6))
+
+
+### Bug Fixes
+
+* **shopping:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.4.0...shopping/v0.5.0) (2024-04-15)
 
 

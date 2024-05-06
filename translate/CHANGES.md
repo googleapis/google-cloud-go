@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.2...translate/v1.10.3) (2024-05-01)
+
+
+### Bug Fixes
+
+* **translate:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.1...translate/v1.10.2) (2024-03-14)
 
 
@@ -142,4 +149,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out translate as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

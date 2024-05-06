@@ -45,7 +45,6 @@ import (
 	v1 "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
-	"github.com/stretchr/testify/require"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
@@ -587,7 +586,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 	}
 	// Calculate time difference between Cloud Spanner server and localhost to
 	// use to determine the exact staleness value to use.
-	timeDiff := maxDuration(time.Now().Sub(writes[0].ts), 0)
+	timeDiff := maxDuration(time.Since(writes[0].ts), 0)
 
 	// Test reading rows with different timestamp bounds.
 	for i, test := range []struct {
@@ -624,7 +623,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 		{
 			name: "max_staleness",
 			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
-			tb:   MaxStaleness(time.Second),
+			tb:   MaxStaleness(time.Nanosecond),
 			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[3].ts)
@@ -650,7 +649,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			skipForPG: true,
 			want:      nil,
 			// Specify a staleness which should be already before this test.
-			tb: ExactStaleness(time.Now().Sub(writes[0].ts) + timeDiff + 30*time.Second),
+			tb: ExactStaleness(time.Since(writes[0].ts) + timeDiff + 30*time.Second),
 			checkTs: func(ts time.Time) error {
 				if !ts.Before(writes[0].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be earlier than %v", ts, writes[0].ts)
@@ -2251,7 +2250,9 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		}
 		// cleanup
 		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-		require.NoError(t, err)
+		if err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -5390,13 +5391,15 @@ func isNaN(x interface{}) bool {
 // createClient creates Cloud Spanner data client.
 func createClient(ctx context.Context, dbPath string, config ClientConfig) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
+	serverAddress := "spanner.googleapis.com:443"
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
+		serverAddress = spannerHost
 	}
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
+	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -5405,13 +5408,16 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 
 func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolConfig, role string) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
+	serverAddress := "spanner.googleapis.com:443"
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
+		serverAddress = spannerHost
 	}
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}, opts...)
+	config := ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}
+	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}

@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -744,7 +745,7 @@ func (c *featureOnlineStoreRESTClient) FetchFeatureValues(ctx context.Context, r
 //
 // This method is not supported for the REST transport.
 func (c *featureOnlineStoreRESTClient) StreamingFetchFeatureValues(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error) {
-	return nil, fmt.Errorf("StreamingFetchFeatureValues not yet supported for REST clients")
+	return nil, errors.New("StreamingFetchFeatureValues not yet supported for REST clients")
 }
 
 // SearchNearestEntities search the nearest entities under a FeatureView.
