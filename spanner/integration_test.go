@@ -623,7 +623,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 		{
 			name: "max_staleness",
 			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
-			tb:   MaxStaleness(time.Second),
+			tb:   MaxStaleness(time.Nanosecond),
 			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[3].ts)
