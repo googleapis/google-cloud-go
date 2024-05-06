@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1519,7 +1519,7 @@ type RougeSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. Supported rouge types are rougen[1-9], rougeL and rougeLsum.
+	// Optional. Supported rouge types are rougen[1-9], rougeL, and rougeLsum.
 	RougeType string `protobuf:"bytes,1,opt,name=rouge_type,json=rougeType,proto3" json:"rouge_type,omitempty"`
 	// Optional. Whether to use stemmer to compute rouge score.
 	UseStemmer bool `protobuf:"varint,2,opt,name=use_stemmer,json=useStemmer,proto3" json:"use_stemmer,omitempty"`

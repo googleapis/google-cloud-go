@@ -1372,6 +1372,9 @@ func (p *parser) parseCreateView() (*CreateView, *parseError) {
 		return nil, err
 	}
 	vname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
 	if err := p.expect("SQL", "SECURITY"); err != nil {
 		return nil, err
 	}

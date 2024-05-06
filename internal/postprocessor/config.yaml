@@ -1064,6 +1064,9 @@ service-configs:
   - input-directory: google/maps/routing/v2
     service-config: routes_v2.yaml
     import-path: cloud.google.com/go/maps/routing/apiv2
+  - input-directory: google/maps/solar/v1
+    service-config: solar_v1.yaml
+    import-path: cloud.google.com/go/maps/solar/apiv1
   - input-directory: google/monitoring/dashboard/v1
     service-config: monitoring.yaml
     import-path: cloud.google.com/go/monitoring/dashboard/apiv1

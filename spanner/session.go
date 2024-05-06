@@ -746,7 +746,7 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 				element = element.Next()
 				continue
 			}
-			diff := time.Now().Sub(sh.lastUseTime)
+			diff := time.Since(sh.lastUseTime)
 			if !sh.eligibleForLongRunning && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
 				if (p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose) && !sh.isSessionLeakLogged {
 					if p.ActionOnInactiveTransaction == Warn {
