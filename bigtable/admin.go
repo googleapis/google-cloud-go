@@ -269,9 +269,6 @@ func toAutomatedBackupConfigProto(automatedBackupConfig TableAutomatedBackupConf
 }
 
 func (abp *TableAutomatedBackupPolicy) toProto() (*btapb.Table_AutomatedBackupPolicy_, error) {
-	if abp == nil {
-		return nil, nil
-	}
 	pbAutomatedBackupPolicy := &btapb.Table_AutomatedBackupPolicy{
 		RetentionPeriod: durationpb.New(0),
 		Frequency:       durationpb.New(0),
@@ -441,7 +438,7 @@ func (ac *AdminClient) CreateColumnFamilyWithConfig(ctx context.Context, table, 
 
 const (
 	deletionProtectionFieldMask    = "deletion_protection"
-	changeStreamRetentionFieldMask = "change_stream_config"
+	changeStreamConfigFieldMask    = "change_stream_config"
 	automatedBackupPolicyFieldMask = "automated_backup_policy"
 )
 
@@ -485,7 +482,7 @@ func (ac *AdminClient) UpdateTableDisableChangeStream(ctx context.Context, table
 	if err != nil {
 		return err
 	}
-	req.UpdateMask.Paths = []string{changeStreamRetentionFieldMask}
+	req.UpdateMask.Paths = []string{changeStreamConfigFieldMask}
 	return ac.updateTableAndWait(ctx, req)
 }
 
@@ -495,7 +492,7 @@ func (ac *AdminClient) UpdateTableWithChangeStream(ctx context.Context, tableID 
 	if err != nil {
 		return err
 	}
-	req.UpdateMask.Paths = []string{changeStreamRetentionFieldMask + ".retention_period"}
+	req.UpdateMask.Paths = []string{changeStreamConfigFieldMask + ".retention_period"}
 	req.Table.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
 	req.Table.ChangeStreamConfig.RetentionPeriod = durationpb.New(changeStreamRetention.(time.Duration))
 	return ac.updateTableAndWait(ctx, req)
