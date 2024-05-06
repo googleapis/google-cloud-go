@@ -592,7 +592,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 	}
 	// Calculate time difference between Cloud Spanner server and localhost to
 	// use to determine the exact staleness value to use.
-	timeDiff := maxDuration(time.Now().Sub(writes[0].ts), 0)
+	timeDiff := maxDuration(time.Since(writes[0].ts), 0)
 
 	// Test reading rows with different timestamp bounds.
 	for i, test := range []struct {
@@ -655,7 +655,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			skipForPG: true,
 			want:      nil,
 			// Specify a staleness which should be already before this test.
-			tb: ExactStaleness(time.Now().Sub(writes[0].ts) + timeDiff + 30*time.Second),
+			tb: ExactStaleness(time.Since(writes[0].ts) + timeDiff + 30*time.Second),
 			checkTs: func(ts time.Time) error {
 				if !ts.Before(writes[0].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be earlier than %v", ts, writes[0].ts)
