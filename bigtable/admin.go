@@ -556,15 +556,15 @@ type GCPolicyOption interface {
 	apply(s *gcPolicySettings)
 }
 
-type warnings struct{ ignore bool }
+type ignoreWarnings bool
 
-func (w warnings) apply(s *gcPolicySettings) {
-	s.ignoreWarnings = w.ignore
+func (w ignoreWarnings) apply(s *gcPolicySettings) {
+	s.ignoreWarnings = bool(w)
 }
 
 // IgnoreWarnings returns a gcPolicyOption that ignores safety checks when modifying the column families
 func IgnoreWarnings() GCPolicyOption {
-	return warnings{ignore: true}
+	return ignoreWarnings(true)
 }
 
 func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, policy GCPolicy, opts ...GCPolicyOption) error {
