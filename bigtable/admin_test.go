@@ -326,7 +326,7 @@ func TestTableAdmin_SetGcPolicy(t *testing.T) {
 		},
 		{
 			desc: "IgnoreWarnings: true",
-			opts: WithIgnoreWarnings(),
+			opts: IgnoreWarnings(),
 			want: true,
 		},
 	} {

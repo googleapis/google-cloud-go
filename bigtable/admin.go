@@ -556,15 +556,15 @@ type GCPolicyOption interface {
 	apply(s *gcPolicySettings)
 }
 
-type withIgnoreWarnings struct{ ignoreWarnings bool }
+type warnings struct{ ignore bool }
 
-func (w withIgnoreWarnings) apply(s *gcPolicySettings) {
-	s.ignoreWarnings = w.ignoreWarnings
+func (w warnings) apply(s *gcPolicySettings) {
+	s.ignoreWarnings = w.ignore
 }
 
-// WithIgnoreWarnings returns a gcPolicyOption that ignores safety checks when modifying the column families
-func WithIgnoreWarnings() GCPolicyOption {
-	return withIgnoreWarnings{ignoreWarnings: true}
+// IgnoreWarnings returns a gcPolicyOption that ignores safety checks when modifying the column families
+func IgnoreWarnings() GCPolicyOption {
+	return warnings{ignore: true}
 }
 
 func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, policy GCPolicy, opts ...GCPolicyOption) error {
@@ -573,7 +573,9 @@ func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, po
 
 	s := gcPolicySettings{}
 	for _, opt := range opts {
-		opt.apply(&s)
+		if opt != nil {
+			opt.apply(&s)
+		}
 	}
 	req := &btapb.ModifyColumnFamiliesRequest{
 		Name: prefix + "/tables/" + table,
