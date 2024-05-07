@@ -31,7 +31,10 @@ import (
 // to a conflict with a concurrent transaction.
 var ErrConcurrentTransaction = errors.New("datastore: concurrent transaction")
 
-var errExpiredTransaction = errors.New("datastore: transaction expired")
+var (
+	errExpiredTransaction             = errors.New("datastore: transaction expired")
+	errEventualConsistencyTransaction = errors.New("datastore: cannot use EventualConsistency query in a transaction")
+)
 
 type transactionSettings struct {
 	attempts int
@@ -228,8 +231,22 @@ func (t *Transaction) beginLaterTransaction() (err error) {
 	return nil
 }
 
-// Acquire state lock if transaction has not started
-func (t *Transaction) acquireLock() func() {
+// Acquires state lock if transaction has not started. No-op otherwise
+// The returned function unlocks the state if it was locked.
+//
+// Usage:
+//
+//	func (t *Transaction) someFunction() {
+//		...
+//		if t != nil {
+//			defer t.stateLockDeferUnlock()()
+//		}
+//		....
+//	}
+//
+// This ensures that state is locked before any of the following lines are exexcuted
+// The lock will be released after 'someFunction' ends
+func (t *Transaction) stateLockDeferUnlock() func() {
 	if t.state == transactionStateNotStarted {
 		t.stateLock.Lock()
 		// Check whether state changed while waiting to acquire lock
@@ -416,7 +433,7 @@ func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err er
 	defer func() { trace.EndSpan(t.ctx, err) }()
 
 	if t != nil {
-		defer t.acquireLock()()
+		defer t.stateLockDeferUnlock()()
 	}
 
 	opts, err := t.parseReadOptions()
