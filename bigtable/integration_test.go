@@ -1746,13 +1746,13 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
 	}
 
-	table_abp := table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	tableAbp := table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
 
-	if int64(table_abp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
+	if int64(tableAbp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
 		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
 	}
 
-	if int64(table_abp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
+	if int64(tableAbp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
 		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
 	}
 
@@ -1776,17 +1776,17 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
-	table_abp = table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	tableAbp = table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
 
 	if table.AutomatedBackupConfig == nil {
 		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
 	}
 
-	if int64(table_abp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
+	if int64(tableAbp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
 		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
 	}
 
-	if int64(table_abp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
+	if int64(tableAbp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
 		t.Errorf("Expect automated backup policy retention period to be set for table: %v has info: %v", myTableName, table)
 	}
 
@@ -1806,17 +1806,17 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
-	table_abp = table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	tableAbp = table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
 
 	if table.AutomatedBackupConfig == nil {
 		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
 	}
 
-	if int64(table_abp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
+	if int64(tableAbp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
 		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
 	}
 
-	if int64(table_abp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
+	if int64(tableAbp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
 		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
 	}
 
@@ -1836,17 +1836,17 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
-	table_abp = table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	tableAbp = table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
 
 	if table.AutomatedBackupConfig == nil {
 		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
 	}
 
-	if int64(table_abp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
+	if int64(tableAbp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
 		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
 	}
 
-	if int64(table_abp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
+	if int64(tableAbp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
 		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
 	}
 

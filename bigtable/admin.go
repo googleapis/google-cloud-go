@@ -238,11 +238,14 @@ const (
 	Unprotected
 )
 
+// TableAutomatedBackupConfig generalizes automated backup configurations.
+// Currently, the only supported type of automated backup configuration
+// is TableAutomatedBackupPolicy.
 type TableAutomatedBackupConfig interface {
 	isTableAutomatedBackupConfig()
 }
 
-// Defines an automated backup policy for a table.
+// TableAutomatedBackupPolicy defines an automated backup policy for a table.
 // Use nil TableAutomatedBackupPolicy to disable Automated Backups on a table.
 // Use nil for a specific field to ignore that field when updating the policy on a table.
 type TableAutomatedBackupPolicy struct {
@@ -351,11 +354,11 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 	}
 
 	if conf.AutomatedBackupConfig != nil {
-		if proto, err := toAutomatedBackupConfigProto(conf.AutomatedBackupConfig); err != nil {
+		proto, err := toAutomatedBackupConfigProto(conf.AutomatedBackupConfig)
+		if err != nil {
 			return err
-		} else {
-			tbl.AutomatedBackupConfig = proto
 		}
+		tbl.AutomatedBackupConfig = proto
 	}
 
 	if conf.Families != nil && conf.ColumnFamilies != nil {
