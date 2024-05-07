@@ -125,6 +125,9 @@ var (
 			}
 		}),
 	}
+	retryableInternalErrMsgs = []string{
+		"stream terminated by RST_STREAM", // Retry similar to spanner client. Special case due to https://github.com/googleapis/google-cloud-go/issues/6476
+	}
 )
 
 // bigtableRetryer extends the generic gax Retryer, but also checks
@@ -134,9 +137,17 @@ type bigtableRetryer struct {
 	gax.Backoff
 }
 
+func containsAny(str string, substrs []string) bool {
+	for _, substr := range substrs {
+		if strings.Contains(str, substr) {
+			return true
+		}
+	}
+	return false
+}
+
 func (r *bigtableRetryer) Retry(err error) (time.Duration, bool) {
-	if status.Code(err) == codes.Internal &&
-		strings.Contains(err.Error(), "stream terminated by RST_STREAM") {
+	if status.Code(err) == codes.Internal && containsAny(err.Error(), retryableInternalErrMsgs) {
 		return r.Backoff.Pause(), true
 	}
 
