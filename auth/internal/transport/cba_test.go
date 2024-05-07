@@ -249,22 +249,11 @@ func TestGetEndpointWithClientCertSource(t *testing.T) {
 
 func TestGetGRPCTransportConfigAndEndpoint(t *testing.T) {
 	testCases := []struct {
-		name          string
-		opts          *Options
-		s2ARespFn     func() (string, error)
-		mtlsEnabledFn func() bool
-		want          string
+		name      string
+		opts      *Options
+		s2ARespFn func() (string, error)
+		want      string
 	}{
-		{
-			name: "no client cert, endpoint is MTLS enabled, S2A address not empty",
-			opts: &Options{
-				DefaultMTLSEndpoint:     testMTLSEndpoint,
-				DefaultEndpointTemplate: testEndpointTemplate,
-			},
-			s2ARespFn:     validConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testMTLSEndpoint,
-		},
 		{
 			name: "has client cert",
 			opts: &Options{
@@ -272,47 +261,71 @@ func TestGetGRPCTransportConfigAndEndpoint(t *testing.T) {
 				DefaultEndpointTemplate: testEndpointTemplate,
 				ClientCertProvider:      fakeClientCertSource,
 			},
-			s2ARespFn:     validConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testMTLSEndpoint,
+			s2ARespFn: validConfigResp,
+			want:      testMTLSEndpoint,
 		},
 		{
-			name: "no client cert, endpoint is not MTLS enabled",
+			name: "no client cert, S2A address not empty",
 			opts: &Options{
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 			},
-			s2ARespFn:     validConfigResp,
-			mtlsEnabledFn: func() bool { return false },
-			want:          testRegularEndpoint,
+			s2ARespFn: validConfigResp,
+			want:      testMTLSEndpoint,
 		},
 		{
-			name: "no client cert, endpoint is MTLS enabled, S2A address empty",
+			name: "no client cert, S2A address not empty, EnableDirectPath == true",
+			opts: &Options{
+				DefaultMTLSEndpoint:     testMTLSEndpoint,
+				DefaultEndpointTemplate: testEndpointTemplate,
+				EnableDirectPath:        true,
+			},
+			s2ARespFn: validConfigResp,
+			want:      testRegularEndpoint,
+		},
+		{
+			name: "no client cert, S2A address not empty, EnableDirectPathXds == true",
+			opts: &Options{
+				DefaultMTLSEndpoint:     testMTLSEndpoint,
+				DefaultEndpointTemplate: testEndpointTemplate,
+				EnableDirectPathXds:     true,
+			},
+			s2ARespFn: validConfigResp,
+			want:      testRegularEndpoint,
+		},
+		{
+			name: "no client cert, S2A address empty",
 			opts: &Options{
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 			},
-			s2ARespFn:     invalidConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testRegularEndpoint,
+			s2ARespFn: invalidConfigResp,
+			want:      testRegularEndpoint,
 		},
 		{
-			name: "no client cert, endpoint is MTLS enabled, S2A address not empty, override endpoint",
+			name: "no client cert, S2A address not empty, override endpoint",
 			opts: &Options{
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				Endpoint:                testOverrideEndpoint,
 			},
-			s2ARespFn:     validConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testOverrideEndpoint,
+			s2ARespFn: validConfigResp,
+			want:      testOverrideEndpoint,
+		},
+		{
+			"no client cert, S2A address not empty, DefaultMTLSEndpoint not set",
+			&Options{
+				DefaultMTLSEndpoint:     "",
+				DefaultEndpointTemplate: testEndpointTemplate,
+			},
+			validConfigResp,
+			testRegularEndpoint,
 		},
 	}
 	defer setupTest(t)()
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			httpGetMetadataMTLSConfig = tc.s2ARespFn
-			mtlsEndpointEnabledForS2A = tc.mtlsEnabledFn
 			if tc.opts.ClientCertProvider != nil {
 				t.Setenv(googleAPIUseCertSource, "true")
 			} else {
@@ -330,23 +343,12 @@ func TestGetGRPCTransportConfigAndEndpoint(t *testing.T) {
 
 func TestGetHTTPTransportConfig_S2a(t *testing.T) {
 	testCases := []struct {
-		name          string
-		opts          *Options
-		s2aFn         func() (string, error)
-		mtlsEnabledFn func() bool
-		want          string
-		isDialFnNil   bool
+		name        string
+		opts        *Options
+		s2aFn       func() (string, error)
+		want        string
+		isDialFnNil bool
 	}{
-		{
-			name: "no client cert, endpoint is MTLS enabled, S2A address not empty",
-			opts: &Options{
-				DefaultMTLSEndpoint:     testMTLSEndpoint,
-				DefaultEndpointTemplate: testEndpointTemplate,
-			},
-			s2aFn:         validConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testMTLSEndpoint,
-		},
 		{
 			name: "has client cert",
 			opts: &Options{
@@ -354,43 +356,39 @@ func TestGetHTTPTransportConfig_S2a(t *testing.T) {
 				DefaultEndpointTemplate: testEndpointTemplate,
 				ClientCertProvider:      fakeClientCertSource,
 			},
-			s2aFn:         validConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testMTLSEndpoint,
-			isDialFnNil:   true,
+			s2aFn:       validConfigResp,
+			want:        testMTLSEndpoint,
+			isDialFnNil: true,
 		},
 		{
-			name: "no client cert, endpoint is not MTLS enabled",
+			name: "no client cert, S2A address not empty",
 			opts: &Options{
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 			},
-			s2aFn:         validConfigResp,
-			mtlsEnabledFn: func() bool { return false },
-			want:          testRegularEndpoint,
-			isDialFnNil:   true,
+			s2aFn: validConfigResp,
+			want:  testMTLSEndpoint,
 		},
 		{
-			name: "no client cert, endpoint is MTLS enabled, S2A address empty",
+			name: "no client cert, S2A address empty",
 			opts: &Options{
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 			},
-			s2aFn:         invalidConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testRegularEndpoint,
-			isDialFnNil:   true,
+			s2aFn:       invalidConfigResp,
+			want:        testRegularEndpoint,
+			isDialFnNil: true,
 		},
 		{
-			name: "no client cert, endpoint is MTLS enabled, S2A address not empty, override endpoint",
+			name: "no client cert, S2A address not empty, override endpoint",
 			opts: &Options{
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				Endpoint:                testOverrideEndpoint,
 			},
-			s2aFn:         validConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testOverrideEndpoint,
+			s2aFn:       validConfigResp,
+			want:        testOverrideEndpoint,
+			isDialFnNil: true,
 		},
 		{
 			name: "no client cert, S2A address not empty, but DefaultMTLSEndpoint is not set",
@@ -398,39 +396,26 @@ func TestGetHTTPTransportConfig_S2a(t *testing.T) {
 				DefaultMTLSEndpoint:     "",
 				DefaultEndpointTemplate: testEndpointTemplate,
 			},
-			s2aFn:         validConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testRegularEndpoint,
-			isDialFnNil:   true,
+			s2aFn:       validConfigResp,
+			want:        testRegularEndpoint,
+			isDialFnNil: true,
 		},
 		{
-			name: "no client cert, S2A address not empty, override endpoint is set",
-			opts: &Options{
-				DefaultMTLSEndpoint: "",
-				Endpoint:            testOverrideEndpoint,
-			},
-			s2aFn:         validConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testOverrideEndpoint,
-		},
-		{
-			name: "no client cert, endpoint is MTLS enabled, S2A address not empty, custom HTTP client",
+			name: "no client cert, S2A address not empty, custom HTTP client",
 			opts: &Options{
 				DefaultMTLSEndpoint:     testMTLSEndpoint,
 				DefaultEndpointTemplate: testEndpointTemplate,
 				Client:                  http.DefaultClient,
 			},
-			s2aFn:         validConfigResp,
-			mtlsEnabledFn: func() bool { return true },
-			want:          testRegularEndpoint,
-			isDialFnNil:   true,
+			s2aFn:       validConfigResp,
+			want:        testRegularEndpoint,
+			isDialFnNil: true,
 		},
 	}
 	defer setupTest(t)()
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			httpGetMetadataMTLSConfig = tc.s2aFn
-			mtlsEndpointEnabledForS2A = tc.mtlsEnabledFn
 			if tc.opts.ClientCertProvider != nil {
 				t.Setenv(googleAPIUseCertSource, "true")
 			} else {
@@ -450,7 +435,6 @@ func TestGetHTTPTransportConfig_S2a(t *testing.T) {
 }
 
 func setupTest(t *testing.T) func() {
-	oldDefaultMTLSEnabled := mtlsEndpointEnabledForS2A
 	oldHTTPGet := httpGetMetadataMTLSConfig
 	oldExpiry := configExpiry
 
@@ -459,7 +443,6 @@ func setupTest(t *testing.T) func() {
 
 	return func() {
 		httpGetMetadataMTLSConfig = oldHTTPGet
-		mtlsEndpointEnabledForS2A = oldDefaultMTLSEnabled
 		configExpiry = oldExpiry
 	}
 }

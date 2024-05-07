@@ -1,5 +1,12 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.19.0...asset/v1.19.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **asset:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.18.1...asset/v1.19.0) (2024-04-15)
 
 

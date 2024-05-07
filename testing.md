@@ -99,6 +99,7 @@ import (
         "google.golang.org/api/option"
         translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
         "google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func TestTranslateTextWithConcreteClient(t *testing.T) {
@@ -123,7 +124,7 @@ func TestTranslateTextWithConcreteClient(t *testing.T) {
         client, err := translate.NewTranslationClient(ctx,
                 option.WithEndpoint(fakeServerAddr),
                 option.WithoutAuthentication(),
-                option.WithGRPCDialOption(grpc.WithInsecure()),
+                option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
         )
         if err != nil {
                 t.Fatal(err)

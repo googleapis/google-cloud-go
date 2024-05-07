@@ -19,6 +19,7 @@ package visionai
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -6288,7 +6289,7 @@ func (c *warehouseRESTClient) DeleteAnnotation(ctx context.Context, req *visiona
 //
 // This method is not supported for the REST transport.
 func (c *warehouseRESTClient) IngestAsset(ctx context.Context, opts ...gax.CallOption) (visionaipb.Warehouse_IngestAssetClient, error) {
-	return nil, fmt.Errorf("IngestAsset not yet supported for REST clients")
+	return nil, errors.New("IngestAsset not yet supported for REST clients")
 }
 
 // ClipAsset generates clips for downloading. The api takes in a time range, and

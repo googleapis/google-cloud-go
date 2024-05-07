@@ -281,6 +281,7 @@ deep-remove-regex:
   - /internal/generated/snippets/maps/mapsplatformdatasets/apiv1alpha/
   - /internal/generated/snippets/maps/places/apiv1/
   - /internal/generated/snippets/maps/routing/apiv2/
+  - /internal/generated/snippets/maps/solar/apiv1/
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
   - /internal/generated/snippets/memcache/apiv1beta2/
@@ -370,6 +371,7 @@ deep-remove-regex:
   - /internal/generated/snippets/storage/control/apiv2/
   - /internal/generated/snippets/storageinsights/apiv1/
   - /internal/generated/snippets/storagetransfer/apiv1/
+  - /internal/generated/snippets/streetview/publish/apiv1/
   - /internal/generated/snippets/support/apiv2/
   - /internal/generated/snippets/talent/apiv4/
   - /internal/generated/snippets/talent/apiv4beta1/
@@ -417,6 +419,7 @@ deep-remove-regex:
   - /maps/mapsplatformdatasets/apiv1alpha/
   - /maps/places/apiv1/
   - /maps/routing/apiv2/
+  - /maps/solar/apiv1/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
@@ -511,6 +514,7 @@ deep-remove-regex:
   - /storage/internal/apiv2/
   - /storageinsights/apiv1/
   - /storagetransfer/apiv1/
+  - /streetview/publish/apiv1/
   - /support/apiv2/
   - /talent/apiv4/
   - /talent/apiv4beta1/
@@ -881,6 +885,8 @@ deep-copy-regex:
     dest: /
   - source: /google/maps/routing/v2/cloud.google.com/go
     dest: /
+  - source: /google/maps/solar/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/memcache/v1/cloud.google.com/go
@@ -1072,6 +1078,8 @@ deep-copy-regex:
   - source: /google/cloud/storageinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go
+    dest: /
+  - source: /google/streetview/publish/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/support/v2/cloud.google.com/go
     dest: /
