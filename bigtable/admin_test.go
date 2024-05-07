@@ -317,17 +317,16 @@ func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
 func TestTableAdmin_SetGcPolicy(t *testing.T) {
 	for _, test := range []struct {
 		desc string
-		opts GCPolicyOptions
+		opts GCPolicyOption
 		want bool
 	}{
 		{
 			desc: "IgnoreWarnings: false",
-			opts: GCPolicyOptions{},
 			want: false,
 		},
 		{
 			desc: "IgnoreWarnings: true",
-			opts: GCPolicyOptions{IgnoreWarnings: true},
+			opts: WithIgnoreWarnings(),
 			want: true,
 		},
 	} {
@@ -357,6 +356,7 @@ func TestTableAdmin_SetGcPolicy(t *testing.T) {
 	modColumnReq := mock.modColumnReq
 	if modColumnReq.IgnoreWarnings {
 		t.Errorf("SetGCPolicy: IgnoreWarnings should be set to false")
+	}
 }
 
 func TestTableAdmin_CreateAuthorizedView_DeletionProtection_Protected(t *testing.T) {
