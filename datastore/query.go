@@ -800,7 +800,7 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	// Parse the read options.
 	txn := aq.query.trans
 	if txn != nil {
-		defer txn.acquireLock()()
+		defer txn.stateLockDeferUnlock()()
 	}
 
 	req.ReadOptions, err = parseQueryReadOptions(aq.query.eventual, txn)
@@ -814,7 +814,7 @@ func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) 
 	}
 
 	if txn != nil && txn.state == transactionStateNotStarted {
-		txn.startProgress(res.Transaction)
+		txn.setToInProgress(res.Transaction)
 	}
 
 	ar = make(AggregationResult)
@@ -834,7 +834,7 @@ func validateReadOptions(eventual bool, t *Transaction) error {
 		return nil
 	}
 	if eventual {
-		return errors.New("datastore: cannot use EventualConsistency query in a transaction")
+		return errEventualConsistencyTransaction
 	}
 	if t.state == transactionStateExpired {
 		return errExpiredTransaction
@@ -963,7 +963,7 @@ func (t *Iterator) nextBatch() error {
 
 	txn := t.trans
 	if txn != nil {
-		defer txn.acquireLock()()
+		defer txn.stateLockDeferUnlock()()
 	}
 
 	var err error
@@ -979,7 +979,7 @@ func (t *Iterator) nextBatch() error {
 	}
 
 	if txn != nil && txn.state == transactionStateNotStarted {
-		txn.startProgress(resp.Transaction)
+		txn.setToInProgress(resp.Transaction)
 	}
 
 	// Adjust any offset from skipped results.

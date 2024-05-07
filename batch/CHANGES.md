@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.4...batch/v1.8.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **batch:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **batch:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+
+### Documentation
+
+* **batch:** Update description on allowed_locations in LocationPolicy field ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **batch:** Update description on allowed_locations in LocationPolicy field ([#9777](https://github.com/googleapis/google-cloud-go/issues/9777)) ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
 ## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.3...batch/v1.8.4) (2024-04-15)
 
 

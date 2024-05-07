@@ -19,6 +19,7 @@ package routing
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -592,7 +593,7 @@ func (c *computeRouteMatrixRESTClient) Trailer() metadata.MD {
 
 func (c *computeRouteMatrixRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *computeRouteMatrixRESTClient) Context() context.Context {
@@ -601,10 +602,10 @@ func (c *computeRouteMatrixRESTClient) Context() context.Context {
 
 func (c *computeRouteMatrixRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *computeRouteMatrixRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }

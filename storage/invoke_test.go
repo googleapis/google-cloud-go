@@ -25,7 +25,9 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
@@ -250,6 +252,11 @@ func TestInvoke(t *testing.T) {
 				}
 				return test.finalErr
 			}
+			// Use a short backoff to speed up the test.
+			if test.retry == nil {
+				test.retry = defaultRetry.clone()
+			}
+			test.retry.backoff = &gax.Backoff{Initial: time.Millisecond}
 			got := run(ctx, call, test.retry, test.isIdempotentValue)
 			if test.expectFinalErr && !errors.Is(got, test.finalErr) {
 				s.Errorf("got %v, want %v", got, test.finalErr)

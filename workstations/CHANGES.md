@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [0.5.6](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.5...workstations/v0.5.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **workstations:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.5.5](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.4...workstations/v0.5.5) (2024-03-14)
 
 
@@ -87,4 +94,3 @@
 * **workstations:** Start generating apiv1beta ([#7599](https://github.com/googleapis/google-cloud-go/issues/7599)) ([e3d6afe](https://github.com/googleapis/google-cloud-go/commit/e3d6afe79ddc4579b54934b4884891f35cc3d1a3))
 
 ## Changes
-

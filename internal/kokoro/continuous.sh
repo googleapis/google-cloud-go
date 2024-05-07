@@ -50,6 +50,7 @@ export GCLOUD_TESTS_GOLANG_AWS_ROLE_ID="arn:aws:iam::$GCLOUD_TESTS_GOLANG_AWS_AC
 export GCLOUD_TESTS_GOLANG_AUDIENCE_OIDC=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aud-oidc)
 export GCLOUD_TESTS_GOLANG_AUDIENCE_AWS=$(cat ${KOKORO_GFILE_DIR}/secret_manager/go-cloud-integration-byoid-aud-aws)
 export GOOGLE_EXTERNAL_ACCOUNT_ALLOW_EXECUTABLES="1"
+export GOOGLE_API_GO_EXPERIMENTAL_ENABLE_NEW_AUTH_LIB="true"
 
 # Bigtable integration tests expect an existing instance and cluster
 #  ❯ cbt createinstance gc-bt-it-instance gc-bt-it-instance \
@@ -103,8 +104,8 @@ runDirectoryTests() {
     tee sponge_log.log
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
-  cat sponge_log.log \
-    | go-junit-report -set-exit-code > sponge_log.xml
+  cat sponge_log.log |
+    go-junit-report -set-exit-code >sponge_log.xml
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
 }
@@ -126,11 +127,11 @@ runEmulatorTests() {
 testAllModules() {
   echo "Testing all modules"
   for i in $(find . -name go.mod); do
-    pushd "$(dirname "$i")" > /dev/null;
-      runDirectoryTests
-      # Run integration tests against an emulator.
-      runEmulatorTests
-    popd > /dev/null;
+    pushd "$(dirname "$i")" >/dev/null
+    runDirectoryTests
+    # Run integration tests against an emulator.
+    runEmulatorTests
+    popd >/dev/null
   done
 }
 
@@ -140,9 +141,9 @@ testChangedModules() {
     goDirectories="$(find "$d" -name "*.go" -printf "%h\n" | sort -u)"
     if [[ -n "$goDirectories" ]]; then
       for gd in $goDirectories; do
-        pushd "$gd" > /dev/null;
-          runDirectoryTests .
-        popd > /dev/null;
+        pushd "$gd" >/dev/null
+        runDirectoryTests .
+        popd >/dev/null
       done
     fi
   done
@@ -164,11 +165,11 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
   if [[ -n $TARGET_MODULE ]]; then
-    pushd $TARGET_MODULE > /dev/null;
-      runDirectoryTests
-    popd > /dev/null
+    pushd $TARGET_MODULE >/dev/null
+    runDirectoryTests
+    popd >/dev/null
   elif [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
-  # If PR changes affect all submodules, then run all tests.
+    # If PR changes affect all submodules, then run all tests.
     testAllModules
   else
     runDirectoryTests . # Always run base tests.
@@ -178,15 +179,15 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
 elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
   # Expected job name format: ".../nightly/[OPTIONAL_MODULE_NAME]/[OPTIONAL_JOB_NAMES...]"
   ARR=(${KOKORO_JOB_NAME//// }) # Splits job name by "/" where ARR[0] is expected to be "nightly".
-  SUBMODULE_NAME=${ARR[5]} # Gets the token after "nightly/".
+  SUBMODULE_NAME=${ARR[5]}      # Gets the token after "nightly/".
   if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]]; then
     # Only run tests in the submodule designated in the Kokoro job name.
     # Expected format example: ...google-cloud-go/nightly/logging.
     runDirectoryTests . # Always run base tests
     echo "Running tests in one submodule: $SUBMODULE_NAME"
-    pushd $SUBMODULE_NAME > /dev/null;
-      runDirectoryTests
-    popd > /dev/null
+    pushd $SUBMODULE_NAME >/dev/null
+    runDirectoryTests
+    popd >/dev/null
   else
     # Run all tests if it is a regular nightly job.
     testAllModules

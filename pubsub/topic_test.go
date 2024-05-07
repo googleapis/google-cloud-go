@@ -747,3 +747,26 @@ func TestPublishOrderingNotEnabled(t *testing.T) {
 		t.Errorf("got %v, want errTopicOrderingNotEnabled", err)
 	}
 }
+
+func TestPublishCompression(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "topic-compression")
+	defer topic.Stop()
+
+	topic.PublishSettings.EnableCompression = true
+	topic.PublishSettings.CompressionBytesThreshold = 50
+
+	const messageSizeBytes = 1000
+
+	msg := &Message{Data: bytes.Repeat([]byte{'A'}, int(messageSizeBytes))}
+	res := topic.Publish(ctx, msg)
+
+	_, err := res.Get(ctx)
+	if err != nil {
+		t.Errorf("publish result got err: %v", err)
+	}
+}

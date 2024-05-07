@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.8.6...accesscontextmanager/v1.8.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **accesscontextmanager:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/accesscontextmanager/v1.8.5...accesscontextmanager/v1.8.6) (2024-03-14)
 
 
@@ -121,4 +128,3 @@
 ## v0.1.0
 
 - feat(accesscontextmanager): start generating clients
-

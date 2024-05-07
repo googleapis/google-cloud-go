@@ -886,7 +886,7 @@ func TestAggregationQueryIsNil(t *testing.T) {
 }
 
 func TestValidateReadOptions(t *testing.T) {
-	eventualInTxnErr := errors.New("datastore: cannot use EventualConsistency query in a transaction")
+	eventualInTxnErr := errEventualConsistencyTransaction
 
 	for _, test := range []struct {
 		desc     string

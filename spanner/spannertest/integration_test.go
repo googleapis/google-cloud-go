@@ -28,8 +28,10 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"os"
 	"reflect"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -37,10 +39,13 @@ import (
 	"cloud.google.com/go/spanner"
 	dbadmin "cloud.google.com/go/spanner/admin/database/apiv1"
 	v1 "cloud.google.com/go/spanner/apiv1"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
+	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/multiendpoint"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 
 	dbadminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
@@ -49,6 +54,8 @@ import (
 )
 
 var testDBFlag = flag.String("test_db", "", "Fully-qualified database name to test against; empty means use an in-memory fake.")
+
+var useGRPCgcp = strings.ToLower(os.Getenv("GCLOUD_TESTS_GOLANG_USE_GRPC_GCP")) == "true"
 
 func dbName() string {
 	if *testDBFlag != "" {
@@ -61,11 +68,25 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v
 	// Despite the docs, this context is also used for auth,
 	// so it needs to be long-lived.
 	ctx := context.Background()
-
+	serverAddress := "spanner.googleapis.com:443"
 	if *testDBFlag != "" {
 		t.Logf("Using real Spanner DB %s", *testDBFlag)
 		dialOpt := option.WithGRPCDialOption(grpc.WithTimeout(5 * time.Second))
-		client, err := spanner.NewClient(ctx, *testDBFlag, dialOpt)
+		var client *spanner.Client
+		var err error
+		if useGRPCgcp {
+			gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+				MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+					"default": {
+						Endpoints: []string{serverAddress},
+					},
+				},
+				Default: "default",
+			}
+			client, _, err = spanner.NewMultiEndpointClient(ctx, *testDBFlag, gmeCfg, dialOpt)
+		} else {
+			client, err = spanner.NewClient(ctx, *testDBFlag, dialOpt)
+		}
 		if err != nil {
 			t.Fatalf("Connecting to %s: %v", *testDBFlag, err)
 		}
@@ -99,7 +120,31 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v
 		srv.Close()
 		t.Fatalf("Dialing in-memory fake: %v", err)
 	}
-	client, err := spanner.NewClient(ctx, dbName(), option.WithGRPCConn(conn))
+	opts := []option.ClientOption{}
+	var client *spanner.Client
+	if useGRPCgcp {
+		// We cannot provide connection to srv.Addr to GCPMultiEndpoint because it does not use WithGRPCConn option.
+		// We temporarily unset SPANNER_EMULATOR_HOST so that GCPMultiEndpoint don't override srv.Addr when connecting.
+		opts = append(opts,
+			option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+			option.WithoutAuthentication(),
+		)
+		old := os.Getenv("SPANNER_EMULATOR_HOST")
+		gmeCfg := &grpcgcp.GCPMultiEndpointOptions{
+			MultiEndpoints: map[string]*multiendpoint.MultiEndpointOptions{
+				"default": {
+					Endpoints: []string{srv.Addr},
+				},
+			},
+			Default: "default",
+		}
+		os.Setenv("SPANNER_EMULATOR_HOST", "")
+		client, _, err = spanner.NewMultiEndpointClient(ctx, dbName(), gmeCfg, opts...)
+		os.Setenv("SPANNER_EMULATOR_HOST", old)
+	} else {
+		opts = append(opts, option.WithGRPCConn(conn))
+		client, err = spanner.NewClient(ctx, dbName(), opts...)
+	}
 	if err != nil {
 		srv.Close()
 		t.Fatalf("Connecting to in-memory fake: %v", err)

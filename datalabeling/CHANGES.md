@@ -1,5 +1,12 @@
 # Changes
 
+## [0.8.7](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.8.6...datalabeling/v0.8.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **datalabeling:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.8.6](https://github.com/googleapis/google-cloud-go/compare/datalabeling/v0.8.5...datalabeling/v0.8.6) (2024-03-14)
 
 
@@ -109,4 +116,3 @@
 
 This is the first tag to carve out datalabeling as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

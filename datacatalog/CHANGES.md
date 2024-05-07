@@ -1,5 +1,13 @@
 # Changes
 
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.20.0...datacatalog/v1.20.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **datacatalog:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **datacatalog:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/datacatalog/v1.19.3...datacatalog/v1.20.0) (2024-03-14)
 
 
@@ -272,4 +280,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out datacatalog as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

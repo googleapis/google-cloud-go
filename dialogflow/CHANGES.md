@@ -1,5 +1,17 @@
 # Changes
 
+## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.52.0...dialogflow/v1.53.0) (2024-05-01)
+
+
+### Features
+
+* **dialogflow/cx:** Added Conversation History API ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **dialogflow:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.51.0...dialogflow/v1.52.0) (2024-03-27)
 
 
@@ -608,4 +620,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out dialogflow as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

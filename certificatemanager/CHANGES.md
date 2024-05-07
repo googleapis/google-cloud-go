@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.0...certificatemanager/v1.8.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.7.6...certificatemanager/v1.8.0) (2024-03-19)
 
 
@@ -230,4 +237,3 @@
 
 * **certificatemanager:** release 0.1.0 ([#5743](https://github.com/googleapis/google-cloud-go/issues/5743)) ([24a817a](https://github.com/googleapis/google-cloud-go/commit/24a817a2a75dde10bcbecf2ced8f399cb05dc011))
 * ****certificatemanager**:** release v0.1.0 ([#5758](https://github.com/googleapis/google-cloud-go/issues/5758)) ([809f4ba](https://github.com/googleapis/google-cloud-go/commit/809f4ba385e2e9ed61df8ecbb6df7b371dc10641))
-
