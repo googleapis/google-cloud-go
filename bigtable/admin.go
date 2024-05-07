@@ -296,6 +296,9 @@ type Family struct {
 	ValueType Type
 }
 
+// Unused
+type UpdateTableConf struct{}
+
 // TableConf contains all the information necessary to create a table with column families.
 type TableConf struct {
 	TableID   string
