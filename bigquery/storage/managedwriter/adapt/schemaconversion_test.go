@@ -95,6 +95,27 @@ func TestFieldConversions(t *testing.T) {
 				},
 			},
 		},
+		{
+			desc: "range type",
+			bq: &bigquery.FieldSchema{
+				Name:        "name",
+				Type:        bigquery.RangeFieldType,
+				Description: "description",
+				Required:    true,
+				RangeElementType: &bigquery.RangeElementType{
+					Type: bigquery.TimestampFieldType,
+				},
+			},
+			proto: &storagepb.TableFieldSchema{
+				Name:        "name",
+				Type:        storagepb.TableFieldSchema_RANGE,
+				Description: "description",
+				Mode:        storagepb.TableFieldSchema_REQUIRED,
+				RangeElementType: &storagepb.TableFieldSchema_FieldElementType{
+					Type: storagepb.TableFieldSchema_TIMESTAMP,
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -179,25 +200,50 @@ func TestSchemaConversion(t *testing.T) {
 				},
 			},
 		},
+		{
+			description: "range types",
+			bqSchema: bigquery.Schema{
+				{Name: "rangedate", Type: bigquery.RangeFieldType, RangeElementType: &bigquery.RangeElementType{Type: bigquery.DateFieldType}},
+				{Name: "rangedatetime", Type: bigquery.RangeFieldType, RangeElementType: &bigquery.RangeElementType{Type: bigquery.DateTimeFieldType}},
+				{Name: "rangetimestamp", Type: bigquery.RangeFieldType, RangeElementType: &bigquery.RangeElementType{Type: bigquery.TimestampFieldType}},
+			},
+			storageSchema: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "rangedate",
+						Type:             storagepb.TableFieldSchema_RANGE,
+						Mode:             storagepb.TableFieldSchema_NULLABLE,
+						RangeElementType: &storagepb.TableFieldSchema_FieldElementType{Type: storagepb.TableFieldSchema_DATE}},
+					{Name: "rangedatetime",
+						Type:             storagepb.TableFieldSchema_RANGE,
+						Mode:             storagepb.TableFieldSchema_NULLABLE,
+						RangeElementType: &storagepb.TableFieldSchema_FieldElementType{Type: storagepb.TableFieldSchema_DATETIME}},
+					{Name: "rangetimestamp",
+						Type:             storagepb.TableFieldSchema_RANGE,
+						Mode:             storagepb.TableFieldSchema_NULLABLE,
+						RangeElementType: &storagepb.TableFieldSchema_FieldElementType{Type: storagepb.TableFieldSchema_TIMESTAMP}},
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
+		t.Run(tc.description, func(t *testing.T) {
+			// BQ -> Storage
+			storageS, err := BQSchemaToStorageTableSchema(tc.bqSchema)
+			if err != nil {
+				t.Errorf("BQSchemaToStorageTableSchema(%s): %v", tc.description, err)
+			}
+			if diff := testutil.Diff(storageS, tc.storageSchema); diff != "" {
+				t.Fatalf("BQSchemaToStorageTableSchema(%s): -got, +want:\n%s", tc.description, diff)
+			}
 
-		// BQ -> Storage
-		storageS, err := BQSchemaToStorageTableSchema(tc.bqSchema)
-		if err != nil {
-			t.Errorf("BQSchemaToStorageTableSchema(%s): %v", tc.description, err)
-		}
-		if diff := testutil.Diff(storageS, tc.storageSchema); diff != "" {
-			t.Fatalf("BQSchemaToStorageTableSchema(%s): -got, +want:\n%s", tc.description, diff)
-		}
-
-		// Storage -> BQ
-		bqS, err := StorageTableSchemaToBQSchema(tc.storageSchema)
-		if err != nil {
-			t.Errorf("StorageTableSchemaToBQSchema(%s): %v", tc.description, err)
-		}
-		if diff := testutil.Diff(bqS, tc.bqSchema); diff != "" {
-			t.Fatalf("StorageTableSchemaToBQSchema(%s): -got, +want:\n%s", tc.description, diff)
-		}
+			// Storage -> BQ
+			bqS, err := StorageTableSchemaToBQSchema(tc.storageSchema)
+			if err != nil {
+				t.Errorf("StorageTableSchemaToBQSchema(%s): %v", tc.description, err)
+			}
+			if diff := testutil.Diff(bqS, tc.bqSchema); diff != "" {
+				t.Fatalf("StorageTableSchemaToBQSchema(%s): -got, +want:\n%s", tc.description, diff)
+			}
+		})
 	}
 }
