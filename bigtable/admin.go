@@ -440,6 +440,8 @@ const (
 	deletionProtectionFieldMask    = "deletion_protection"
 	changeStreamConfigFieldMask    = "change_stream_config"
 	automatedBackupPolicyFieldMask = "automated_backup_policy"
+	retentionPeriodFieldMaskPath   = ".retention_period"
+	frequencyFieldMaskPath         = ".frequency"
 )
 
 func (ac *AdminClient) newUpdateTableRequestProto(tableID string) (*btapb.UpdateTableRequest, error) {
@@ -492,7 +494,7 @@ func (ac *AdminClient) UpdateTableWithChangeStream(ctx context.Context, tableID 
 	if err != nil {
 		return err
 	}
-	req.UpdateMask.Paths = []string{changeStreamConfigFieldMask + ".retention_period"}
+	req.UpdateMask.Paths = []string{changeStreamConfigFieldMask + retentionPeriodFieldMaskPath}
 	req.Table.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
 	req.Table.ChangeStreamConfig.RetentionPeriod = durationpb.New(changeStreamRetention.(time.Duration))
 	return ac.updateTableAndWait(ctx, req)
@@ -531,11 +533,11 @@ func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context,
 	}
 	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds != 0 {
 		// Update Retention Period
-		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+".retention_period")
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+retentionPeriodFieldMaskPath)
 	}
 	if abc.AutomatedBackupPolicy.Frequency.Seconds != 0 {
 		// Update Frequency
-		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+".frequency")
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+frequencyFieldMaskPath)
 	}
 	req.Table.AutomatedBackupConfig = abc
 	return ac.updateTableAndWait(ctx, req)
