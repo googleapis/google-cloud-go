@@ -280,6 +280,7 @@ deep-remove-regex:
   - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
   - /internal/generated/snippets/maps/mapsplatformdatasets/apiv1alpha/
   - /internal/generated/snippets/maps/places/apiv1/
+  - /internal/generated/snippets/maps/routeoptimization/apiv1/
   - /internal/generated/snippets/maps/routing/apiv2/
   - /internal/generated/snippets/maps/solar/apiv1/
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
@@ -418,6 +419,7 @@ deep-remove-regex:
   - /maps/fleetengine/delivery/apiv1/
   - /maps/mapsplatformdatasets/apiv1alpha/
   - /maps/places/apiv1/
+  - /maps/routeoptimization/apiv1/
   - /maps/routing/apiv2/
   - /maps/solar/apiv1/
   - /mediatranslation/apiv1beta1/
@@ -882,6 +884,8 @@ deep-copy-regex:
   - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go
     dest: /
   - source: /google/maps/places/v1/cloud.google.com/go
+    dest: /
+  - source: /google/maps/routeoptimization/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/routing/v2/cloud.google.com/go
     dest: /
