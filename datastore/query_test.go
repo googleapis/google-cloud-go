@@ -902,7 +902,7 @@ func TestExplainOptionsApply(t *testing.T) {
 			newOptions: ExplainOptions{
 				Analyze: true,
 			},
-			wantErrMsg: "ExplainOptions can be specified can be specified only once",
+			wantErrMsg: "ExplainOptions can be specified only once",
 		},
 		{
 			desc:            "ExplainOptions specified once",
@@ -915,7 +915,7 @@ func TestExplainOptionsApply(t *testing.T) {
 		gotErr := testcase.newOptions.apply(&runQuerySettings{explainOptions: testcase.existingOptions})
 		if (gotErr == nil && testcase.wantErrMsg != "") ||
 			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
-			t.Errorf("%v: apply got: %v want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
+			t.Errorf("%v: apply got: %v want: %v", testcase.desc, gotErr.Error(), testcase.wantErrMsg)
 		}
 	}
 }
@@ -938,7 +938,7 @@ func TestNewRunQuerySettings(t *testing.T) {
 		{
 			desc:       "ExplainOptions specified multiple times",
 			opts:       []RunOption{ExplainOptions{Analyze: true}, ExplainOptions{Analyze: false}, ExplainOptions{Analyze: true}},
-			wantErrMsg: "ExplainOptions can be specified can be specified only once",
+			wantErrMsg: "ExplainOptions can be specified only once",
 		},
 	} {
 		_, gotErr := newRunQuerySettings(testcase.opts)

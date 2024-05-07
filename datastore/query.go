@@ -958,8 +958,8 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 		return ar, err
 	}
 
-  if txn != nil && txn.state == transactionStateNotStarted {
-		txn.setToInProgress(res.Transaction)
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.setToInProgress(resp.Transaction)
 	}
 
 	if req.ExplainOptions == nil || req.ExplainOptions.Analyze {
@@ -1131,13 +1131,13 @@ func (t *Iterator) nextBatch() error {
 	if txn != nil && txn.state == transactionStateNotStarted {
 		txn.setToInProgress(resp.Transaction)
 	}
-  
-  if t.req.ExplainOptions != nil && !t.req.ExplainOptions.Analyze {
+
+	if t.req.ExplainOptions != nil && !t.req.ExplainOptions.Analyze {
 		// No results to process
 		t.limit = 0
 		t.ExplainMetrics = fromPbExplainMetrics(resp.GetExplainMetrics())
 		return nil
-  }
+	}
 
 	// Adjust any offset from skipped results.
 	skip := resp.Batch.SkippedResults

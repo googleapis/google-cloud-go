@@ -1278,7 +1278,7 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 						IndexesUsed: []*map[string]interface{}{
 							{
 								"properties":  "(T ASC, I ASC, __name__ ASC)",
-								"query_scope": "Includes Ancestors",
+								"query_scope": "Includes ancestors",
 							},
 						},
 					},
@@ -1295,7 +1295,7 @@ func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
 						IndexesUsed: []*map[string]interface{}{
 							{
 								"properties":  "(T ASC, I ASC, __name__ ASC)",
-								"query_scope": "Includes Ancestors",
+								"query_scope": "Includes ancestors",
 							},
 						},
 					},
@@ -1700,7 +1700,7 @@ func getRunWithOptionsTestcases(ctx context.Context, t *testing.T, client *Clien
 					IndexesUsed: []*map[string]interface{}{
 						{
 							"properties":  "(T ASC, I ASC, __name__ ASC)",
-							"query_scope": "Includes Ancestors",
+							"query_scope": "Includes ancestors",
 						},
 					},
 				},
@@ -1723,7 +1723,7 @@ func getRunWithOptionsTestcases(ctx context.Context, t *testing.T, client *Clien
 					IndexesUsed: []*map[string]interface{}{
 						{
 							"properties":  "(T ASC, I ASC, __name__ ASC)",
-							"query_scope": "Includes Ancestors",
+							"query_scope": "Includes ancestors",
 						},
 					},
 				},
