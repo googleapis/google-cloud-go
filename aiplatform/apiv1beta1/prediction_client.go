@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -61,7 +62,6 @@ type PredictionCallOptions struct {
 	CountTokens            []gax.CallOption
 	GenerateContent        []gax.CallOption
 	StreamGenerateContent  []gax.CallOption
-	ChatCompletions        []gax.CallOption
 	GetLocation            []gax.CallOption
 	ListLocations          []gax.CallOption
 	GetIamPolicy           []gax.CallOption
@@ -107,7 +107,6 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 		CountTokens:           []gax.CallOption{},
 		GenerateContent:       []gax.CallOption{},
 		StreamGenerateContent: []gax.CallOption{},
-		ChatCompletions:       []gax.CallOption{},
 		GetLocation:           []gax.CallOption{},
 		ListLocations:         []gax.CallOption{},
 		GetIamPolicy:          []gax.CallOption{},
@@ -140,7 +139,6 @@ func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 		CountTokens:           []gax.CallOption{},
 		GenerateContent:       []gax.CallOption{},
 		StreamGenerateContent: []gax.CallOption{},
-		ChatCompletions:       []gax.CallOption{},
 		GetLocation:           []gax.CallOption{},
 		ListLocations:         []gax.CallOption{},
 		GetIamPolicy:          []gax.CallOption{},
@@ -172,7 +170,6 @@ type internalPredictionClient interface {
 	CountTokens(context.Context, *aiplatformpb.CountTokensRequest, ...gax.CallOption) (*aiplatformpb.CountTokensResponse, error)
 	GenerateContent(context.Context, *aiplatformpb.GenerateContentRequest, ...gax.CallOption) (*aiplatformpb.GenerateContentResponse, error)
 	StreamGenerateContent(context.Context, *aiplatformpb.GenerateContentRequest, ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error)
-	ChatCompletions(context.Context, *aiplatformpb.ChatCompletionsRequest, ...gax.CallOption) (aiplatformpb.PredictionService_ChatCompletionsClient, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -317,11 +314,6 @@ func (c *PredictionClient) GenerateContent(ctx context.Context, req *aiplatformp
 // StreamGenerateContent generate content with multimodal inputs with streaming support.
 func (c *PredictionClient) StreamGenerateContent(ctx context.Context, req *aiplatformpb.GenerateContentRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamGenerateContentClient, error) {
 	return c.internalClient.StreamGenerateContent(ctx, req, opts...)
-}
-
-// ChatCompletions exposes an OpenAI-compatible endpoint for chat completions.
-func (c *PredictionClient) ChatCompletions(ctx context.Context, req *aiplatformpb.ChatCompletionsRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_ChatCompletionsClient, error) {
-	return c.internalClient.ChatCompletions(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -750,24 +742,6 @@ func (c *predictionGRPCClient) StreamGenerateContent(ctx context.Context, req *a
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.predictionClient.StreamGenerateContent(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *predictionGRPCClient) ChatCompletions(ctx context.Context, req *aiplatformpb.ChatCompletionsRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_ChatCompletionsClient, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).ChatCompletions[0:len((*c.CallOptions).ChatCompletions):len((*c.CallOptions).ChatCompletions)], opts...)
-	var resp aiplatformpb.PredictionService_ChatCompletionsClient
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.predictionClient.ChatCompletions(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1265,7 +1239,7 @@ func (c *predictionRESTClient) DirectRawPredict(ctx context.Context, req *aiplat
 //
 // This method is not supported for the REST transport.
 func (c *predictionRESTClient) StreamDirectPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamDirectPredictClient, error) {
-	return nil, fmt.Errorf("StreamDirectPredict not yet supported for REST clients")
+	return nil, errors.New("StreamDirectPredict not yet supported for REST clients")
 }
 
 // StreamDirectRawPredict perform a streaming online prediction request to a gRPC model server for
@@ -1273,7 +1247,7 @@ func (c *predictionRESTClient) StreamDirectPredict(ctx context.Context, opts ...
 //
 // This method is not supported for the REST transport.
 func (c *predictionRESTClient) StreamDirectRawPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamDirectRawPredictClient, error) {
-	return nil, fmt.Errorf("StreamDirectRawPredict not yet supported for REST clients")
+	return nil, errors.New("StreamDirectRawPredict not yet supported for REST clients")
 }
 
 // StreamingPredict perform a streaming online prediction request for Vertex first-party
@@ -1281,7 +1255,7 @@ func (c *predictionRESTClient) StreamDirectRawPredict(ctx context.Context, opts 
 //
 // This method is not supported for the REST transport.
 func (c *predictionRESTClient) StreamingPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingPredictClient, error) {
-	return nil, fmt.Errorf("StreamingPredict not yet supported for REST clients")
+	return nil, errors.New("StreamingPredict not yet supported for REST clients")
 }
 
 // ServerStreamingPredict perform a server-side streaming online prediction request for Vertex
@@ -1369,7 +1343,7 @@ func (c *serverStreamingPredictRESTClient) Trailer() metadata.MD {
 
 func (c *serverStreamingPredictRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *serverStreamingPredictRESTClient) Context() context.Context {
@@ -1378,19 +1352,19 @@ func (c *serverStreamingPredictRESTClient) Context() context.Context {
 
 func (c *serverStreamingPredictRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *serverStreamingPredictRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // StreamingRawPredict perform a streaming online prediction request through gRPC.
 //
 // This method is not supported for the REST transport.
 func (c *predictionRESTClient) StreamingRawPredict(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.PredictionService_StreamingRawPredictClient, error) {
-	return nil, fmt.Errorf("StreamingRawPredict not yet supported for REST clients")
+	return nil, errors.New("StreamingRawPredict not yet supported for REST clients")
 }
 
 // Explain perform an online explanation.
@@ -1670,7 +1644,7 @@ func (c *streamGenerateContentRESTClient) Trailer() metadata.MD {
 
 func (c *streamGenerateContentRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamGenerateContentRESTClient) Context() context.Context {
@@ -1679,114 +1653,12 @@ func (c *streamGenerateContentRESTClient) Context() context.Context {
 
 func (c *streamGenerateContentRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamGenerateContentRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
-}
-
-// ChatCompletions exposes an OpenAI-compatible endpoint for chat completions.
-func (c *predictionRESTClient) ChatCompletions(ctx context.Context, req *aiplatformpb.ChatCompletionsRequest, opts ...gax.CallOption) (aiplatformpb.PredictionService_ChatCompletionsClient, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	body := req.GetHttpBody()
-	jsonReq, err := m.Marshal(body)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/chat/completions", req.GetEndpoint())
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint", url.QueryEscape(req.GetEndpoint()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	var streamClient *chatCompletionsRESTClient
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		streamClient = &chatCompletionsRESTClient{
-			ctx:    ctx,
-			md:     metadata.MD(httpRsp.Header),
-			stream: gax.NewProtoJSONStreamReader(httpRsp.Body, (&httpbodypb.HttpBody{}).ProtoReflect().Type()),
-		}
-		return nil
-	}, opts...)
-
-	return streamClient, e
-}
-
-// chatCompletionsRESTClient is the stream client used to consume the server stream created by
-// the REST implementation of ChatCompletions.
-type chatCompletionsRESTClient struct {
-	ctx    context.Context
-	md     metadata.MD
-	stream *gax.ProtoJSONStream
-}
-
-func (c *chatCompletionsRESTClient) Recv() (*httpbodypb.HttpBody, error) {
-	if err := c.ctx.Err(); err != nil {
-		defer c.stream.Close()
-		return nil, err
-	}
-	msg, err := c.stream.Recv()
-	if err != nil {
-		defer c.stream.Close()
-		return nil, err
-	}
-	res := msg.(*httpbodypb.HttpBody)
-	return res, nil
-}
-
-func (c *chatCompletionsRESTClient) Header() (metadata.MD, error) {
-	return c.md, nil
-}
-
-func (c *chatCompletionsRESTClient) Trailer() metadata.MD {
-	return c.md
-}
-
-func (c *chatCompletionsRESTClient) CloseSend() error {
-	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
-}
-
-func (c *chatCompletionsRESTClient) Context() context.Context {
-	return c.ctx
-}
-
-func (c *chatCompletionsRESTClient) SendMsg(m interface{}) error {
-	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
-}
-
-func (c *chatCompletionsRESTClient) RecvMsg(m interface{}) error {
-	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // GetLocation gets information about a location.

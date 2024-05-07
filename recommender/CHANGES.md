@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.3](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.12.2...recommender/v1.12.3) (2024-05-01)
+
+
+### Bug Fixes
+
+* **recommender:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/recommender/v1.12.1...recommender/v1.12.2) (2024-03-14)
 
 
@@ -143,4 +150,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out recommender as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

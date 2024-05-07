@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.5...migrationcenter/v0.2.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.4...migrationcenter/v0.2.5) (2024-03-14)
 
 
@@ -50,4 +57,3 @@
 * **migrationcenter:** Migration Center API ([fa91b47](https://github.com/googleapis/google-cloud-go/commit/fa91b478a55d6347f5c4fd29f2490316b2f31072))
 
 ## Changes
-

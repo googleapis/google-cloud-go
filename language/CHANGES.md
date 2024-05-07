@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.12.5](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.4...language/v1.12.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **language:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.12.4](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.3...language/v1.12.4) (2024-03-14)
 
 
