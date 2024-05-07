@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.27.0...documentai/v1.28.0) (2024-05-01)
+
+
+### Features
+
+* **documentai:** A new message `FoundationModelTuningOptions` is added ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **documentai:** Support Chunk header and footer in Doc AI external proto ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **documentai:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.26.1...documentai/v1.27.0) (2024-04-15)
 
 

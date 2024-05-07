@@ -135,6 +135,7 @@ modules:
   - storage
   - storageinsights
   - storagetransfer
+  - streetview
   - support
   - talent
   - telcoautomation
@@ -854,6 +855,9 @@ service-configs:
   - input-directory: google/shopping/css/v1
     service-config: css_v1.yaml
     import-path: cloud.google.com/go/shopping/css/apiv1
+  - input-directory: google/shopping/merchant/conversions/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/conversions/apiv1beta
   - input-directory: google/shopping/merchant/notifications/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
@@ -1060,6 +1064,9 @@ service-configs:
   - input-directory: google/maps/routing/v2
     service-config: routes_v2.yaml
     import-path: cloud.google.com/go/maps/routing/apiv2
+  - input-directory: google/maps/solar/v1
+    service-config: solar_v1.yaml
+    import-path: cloud.google.com/go/maps/solar/apiv1
   - input-directory: google/monitoring/dashboard/v1
     service-config: monitoring.yaml
     import-path: cloud.google.com/go/monitoring/dashboard/apiv1
@@ -1096,6 +1103,9 @@ service-configs:
   - input-directory: google/storagetransfer/v1
     service-config: storagetransfer_v1.yaml
     import-path: cloud.google.com/go/storagetransfer/apiv1
+  - input-directory: google/streetview/publish/v1
+    service-config: streetviewpublish.yaml
+    import-path: cloud.google.com/go/streetview/publish/apiv1
     # All entries below are clients that are not currently copied by owlbot. They
     # explicitly express their import path for some code gen.
   - input-directory: google/devtools/containeranalysis/v1beta1/grafeas

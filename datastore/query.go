@@ -507,7 +507,7 @@ func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
 		return err
 	}
 
-	req.ReadOptions, err = parseReadOptions(q.eventual, q.trans)
+	req.ReadOptions, err = parseQueryReadOptions(q.eventual, q.trans)
 	if err != nil {
 		return err
 	}
@@ -943,7 +943,12 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 	}
 
 	// Parse the read options.
-	req.ReadOptions, err = parseReadOptions(aq.query.eventual, aq.query.trans)
+	txn := aq.query.trans
+	if txn != nil {
+		defer txn.stateLockDeferUnlock()()
+	}
+
+	req.ReadOptions, err = parseQueryReadOptions(aq.query.eventual, txn)
 	if err != nil {
 		return ar, err
 	}
@@ -951,6 +956,10 @@ func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *Aggrega
 	resp, err := c.client.RunAggregationQuery(ctx, req)
 	if err != nil {
 		return ar, err
+	}
+
+  if txn != nil && txn.state == transactionStateNotStarted {
+		txn.setToInProgress(res.Transaction)
 	}
 
 	if req.ExplainOptions == nil || req.ExplainOptions.Analyze {
@@ -971,26 +980,24 @@ func validateReadOptions(eventual bool, t *Transaction) error {
 	if t == nil {
 		return nil
 	}
-	if t.id == nil {
-		return errExpiredTransaction
-	}
 	if eventual {
-		return errors.New("datastore: cannot use EventualConsistency query in a transaction")
+		return errEventualConsistencyTransaction
+	}
+	if t.state == transactionStateExpired {
+		return errExpiredTransaction
 	}
 	return nil
 }
 
-// parseReadOptions translates Query read options into protobuf format.
-func parseReadOptions(eventual bool, t *Transaction) (*pb.ReadOptions, error) {
+// parseQueryReadOptions translates Query read options into protobuf format.
+func parseQueryReadOptions(eventual bool, t *Transaction) (*pb.ReadOptions, error) {
 	err := validateReadOptions(eventual, t)
 	if err != nil {
 		return nil, err
 	}
 
 	if t != nil {
-		return &pb.ReadOptions{
-			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
-		}, nil
+		return t.parseReadOptions()
 	}
 
 	if eventual {
@@ -1034,11 +1041,9 @@ type Iterator struct {
 	ExplainMetrics *ExplainMetrics
 
 	// trans records the transaction in which the query was run
-	// Currently, this value is set but unused
 	trans *Transaction
 
 	// eventual records whether the query was eventual
-	// Currently, this value is set but unused
 	eventual bool
 }
 
@@ -1106,18 +1111,33 @@ func (t *Iterator) nextBatch() error {
 		q.Limit = nil
 	}
 
+	txn := t.trans
+	if txn != nil {
+		defer txn.stateLockDeferUnlock()()
+	}
+
+	var err error
+	t.req.ReadOptions, err = parseQueryReadOptions(t.eventual, txn)
+	if err != nil {
+		return err
+	}
+
 	// Run the query.
 	resp, err := t.client.client.RunQuery(t.ctx, t.req)
 	if err != nil {
 		return err
 	}
 
-	if t.req.ExplainOptions != nil && !t.req.ExplainOptions.Analyze {
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.setToInProgress(resp.Transaction)
+	}
+  
+  if t.req.ExplainOptions != nil && !t.req.ExplainOptions.Analyze {
 		// No results to process
 		t.limit = 0
 		t.ExplainMetrics = fromPbExplainMetrics(resp.GetExplainMetrics())
 		return nil
-	}
+  }
 
 	// Adjust any offset from skipped results.
 	skip := resp.Batch.SkippedResults

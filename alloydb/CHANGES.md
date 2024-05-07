@@ -2,6 +2,13 @@
 
 
 
+## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.1...alloydb/v1.10.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **alloydb:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.0...alloydb/v1.10.1) (2024-03-14)
 
 
@@ -155,4 +162,3 @@
 * **alloydb:** Start generating apiv1, apiv1beta, apiv1alpha ([#7503](https://github.com/googleapis/google-cloud-go/issues/7503)) ([25e8426](https://github.com/googleapis/google-cloud-go/commit/25e842659ef5c3941717827459e6524f024e5a26))
 
 ## Changes
-
