@@ -767,7 +767,7 @@ type Autoclass struct {
 	// TerminalStorageClass: The storage class that objects in the bucket
 	// eventually transition to if they are not read for a certain length of
 	// time. Valid values are NEARLINE and ARCHIVE.
-	// To modify TerminalStorageClass, Enabled should be explicitly set in conjunction.
+	// To modify TerminalStorageClass, Enabled should be set to true.
 	TerminalStorageClass string
 	// TerminalStorageClassUpdateTime represents the time of the most recent
 	// update to "TerminalStorageClass".
