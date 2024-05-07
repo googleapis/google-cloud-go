@@ -116,6 +116,11 @@ func (b *BucketHandle) DefaultObjectACL() *ACLHandle {
 	return &b.defaultObjectACL
 }
 
+// BucketName returns the name of the bucket.
+func (b *BucketHandle) BucketName() string {
+	return b.name
+}
+
 // Object returns an ObjectHandle, which provides operations on the named object.
 // This call does not perform any network operations such as fetching the object or verifying its existence.
 // Use methods on ObjectHandle to perform network operations.
