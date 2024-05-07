@@ -296,7 +296,7 @@ type Family struct {
 	ValueType Type
 }
 
-// Unused
+// UpdateTableConf is unused
 type UpdateTableConf struct{}
 
 // TableConf contains all the information necessary to create a table with column families.
