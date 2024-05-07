@@ -30,9 +30,11 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	pb "cloud.google.com/go/spanner/testdata/protos"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
@@ -278,19 +280,39 @@ func TestEncodeValue(t *testing.T) {
 	maxNumValuePtr, _ := (&big.Rat{}).SetString("99999999999999999999999999999.999999999")
 	minNumValuePtr, _ := (&big.Rat{}).SetString("-99999999999999999999999999999.999999999")
 
+	singer1ProtoEnum := pb.Genre_ROCK
+	singer1ProtoMsg := &pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singer1ProtoEnum,
+	}
+
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMsg := &pb.SingerInfo{
+		SingerId:    proto.Int64(2),
+		BirthDate:   proto.String("February"),
+		Nationality: proto.String("Country2"),
+		Genre:       &singer2ProtoEnum,
+	}
+	protoMessagefqn := "spanner.examples.music.SingerInfo"
+	protoEnumfqn := "spanner.examples.music.Genre"
+
 	var (
-		tString    = stringType()
-		tInt       = intType()
-		tBool      = boolType()
-		tFloat     = floatType()
-		tFloat32   = float32Type()
-		tBytes     = bytesType()
-		tTime      = timeType()
-		tDate      = dateType()
-		tNumeric   = numericType()
-		tJSON      = jsonType()
-		tPGNumeric = pgNumericType()
-		tPGJsonb   = pgJsonbType()
+		tString       = stringType()
+		tInt          = intType()
+		tBool         = boolType()
+		tFloat        = floatType()
+		tFloat32      = float32Type()
+		tBytes        = bytesType()
+		tTime         = timeType()
+		tDate         = dateType()
+		tNumeric      = numericType()
+		tJSON         = jsonType()
+		tPGNumeric    = pgNumericType()
+		tPGJsonb      = pgJsonbType()
+		tProtoMessage = protoMessageType(protoMessagefqn)
+		tProtoEnum    = protoEnumType(protoEnumfqn)
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -515,6 +537,32 @@ func TestEncodeValue(t *testing.T) {
 		{CustomPGJSONB{Value: msg, Valid: false}, nullProto(), tPGJsonb, "CustomPGJSONB with null"},
 		{[]CustomPGJSONB(nil), nullProto(), listType(tPGJsonb), "null []CustomPGJSONB"},
 		{[]CustomPGJSONB{{Value: msg, Valid: true}, {Value: msg, Valid: false}}, listProto(stringProto(jsonStr), nullProto()), listType(tPGJsonb), "[]CustomPGJSONB"},
+		// PROTO MESSAGE AND PROTO ENUM
+		{singer1ProtoMsg, protoMessageProto(singer1ProtoMsg), tProtoMessage, "Proto Message"},
+		{singer1ProtoEnum, protoEnumProto(singer1ProtoEnum), tProtoEnum, "Proto Enum"},
+		{(*pb.SingerInfo)(nil), nullProto(), tProtoMessage, "Proto Message with nil"},
+		{(*pb.Genre)(nil), nullProto(), tProtoEnum, "Proto Enum with nil"},
+		{NullProtoMessage{singer1ProtoMsg, true}, protoMessageProto(singer1ProtoMsg), tProtoMessage, "NullProto with value"},
+		{NullProtoEnum{singer1ProtoEnum, true}, protoEnumProto(singer1ProtoEnum), tProtoEnum, "NullEnum with value"},
+		{NullProtoMessage{(*pb.SingerInfo)(nil), true}, nullProto(), tProtoMessage, "NullProto with value nil"},
+		{NullProtoEnum{(*pb.Genre)(nil), true}, nullProto(), tProtoEnum, "NullEnum with value nil"},
+		// ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg)), listType(tProtoMessage), "Array of Proto Message"},
+		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg, nil, (*pb.SingerInfo)(nil)}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg), nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with nil values"},
+		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum)), listType(tProtoEnum), "Array of Proto Enum 1"},
+		{[]pb.Genre{singer1ProtoEnum, singer2ProtoEnum}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum)), listType(tProtoEnum), "Array of Proto Enum 2"},
+		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum, nil, (*pb.Genre)(nil)}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum), nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with nil values"},
+		{[]*pb.SingerInfo{}, listProto(), listType(tProtoMessage), "Empty Array of Proto Message"},
+		{[]*pb.SingerInfo(nil), nullProto(), listType(tProtoMessage), "Nil array of Proto Message"},
+		{[]*pb.Genre{}, listProto(), listType(tProtoEnum), "Empty Array of Proto Enum 1"},
+		{[]*pb.Genre(nil), nullProto(), listType(tProtoEnum), "Nil Array of Proto Enum 1"},
+		{[]pb.Genre{}, listProto(), listType(tProtoEnum), "Empty Array of Proto Enum 2"},
+		{[]pb.Genre(nil), nullProto(), listType(tProtoEnum), "Nil Array of Proto Enum 2"},
+		// Null elements in ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{[]*pb.SingerInfo{nil, (*pb.SingerInfo)(nil)}, listProto(nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with nil values"},
+		{[]*pb.Genre{nil, (*pb.Genre)(nil)}, listProto(nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with nil values"},
+		{[]*pb.SingerInfo{singer1ProtoMsg, singer2ProtoMsg, nil, (*pb.SingerInfo)(nil)}, listProto(protoMessageProto(singer1ProtoMsg), protoMessageProto(singer2ProtoMsg), nullProto(), nullProto()), listType(tProtoMessage), "Array of Proto Message with non-nil and nil values"},
+		{[]*pb.Genre{&singer1ProtoEnum, &singer2ProtoEnum, nil, (*pb.Genre)(nil)}, listProto(protoEnumProto(singer1ProtoEnum), protoEnumProto(singer2ProtoEnum), nullProto(), nullProto()), listType(tProtoEnum), "Array of Proto Enum with non-nil and nil values"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -557,6 +605,9 @@ func TestEncodeInvalidValues(t *testing.T) {
 		// CUSTOM NUMERIC
 		{desc: "custom numeric type with invalid scale component", in: CustomNumeric(*invalidNumPtr1), errMsg: "max scale for a numeric is 9. The requested numeric has more"},
 		{desc: "custom numeric type with invalid whole component", in: CustomNumeric(*invalidNumPtr2), errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
+		// PROTO MESSAGE AND PROTO ENUM
+		{desc: "Invalid Null Proto", in: NullProtoMessage{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"field \\\"Valid\\\" of spanner.NullProtoMessage cannot be set to false when writing data to Cloud Spanner. Use typed nil in spanner.NullProtoMessage to write null values to Cloud Spanner\""},
+		{desc: "Invalid Null Enum", in: NullProtoEnum{}, errMsg: "spanner: code = \"InvalidArgument\", desc = \"field \\\"Valid\\\" of spanner.NullProtoEnum cannot be set to false when writing data to Cloud Spanner. Use typed nil in spanner.NullProtoEnum to write null values to Cloud Spanner\""},
 	} {
 		_, _, err := encodeValue(test.in)
 		if err == nil {
@@ -1471,6 +1522,23 @@ func TestDecodeValue(t *testing.T) {
 	var dNilPtr *civil.Date
 	d2Value := d2
 
+	singerEnumValue := pb.Genre_ROCK
+	singerProtoMsg := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerEnumValue,
+	}
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMsg := pb.SingerInfo{
+		SingerId:    proto.Int64(2),
+		BirthDate:   proto.String("February"),
+		Nationality: proto.String("Country2"),
+		Genre:       &singer2ProtoEnum,
+	}
+	protoMessagefqn := "spanner.examples.music.SingerInfo"
+	protoEnumfqn := "spanner.examples.music.Genre"
+
 	for _, test := range []struct {
 		desc      string
 		proto     *proto3.Value
@@ -1899,6 +1967,28 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL array of string to CustomStructToNull", proto: nullProto(), protoType: listType(stringType()), want: customStructToNull{}},
 		// CUSTOM ARRAY
 		{desc: "decode ARRAY<INT64> to CustomArray", proto: listProto(intProto(0), intProto(6), intProto(3), intProto(5)), protoType: listType(intType()), want: customArray([4]uint8{0, 6, 3, 5})},
+		// PROTO MESSAGE AND PROTO ENUM
+		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: singerProtoMsg},
+		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
+		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{&singerProtoMsg, true}},
+		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{}},
+		{desc: "decode ENUM to NullEnum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{&singerEnumValue, true}},
+		{desc: "decode NULL to NullEnum", proto: nullProto(), protoType: protoEnumType(protoEnumfqn), want: NullProtoEnum{}},
+		// ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{desc: "decode ARRAY<PROTO<>> to []*pb.SingerInfo", proto: listProto(protoMessageProto(&singerProtoMsg), protoMessageProto(&singer2ProtoMsg)), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{&singerProtoMsg, &singer2ProtoMsg}},
+		{desc: "decode ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{&singerEnumValue, &singer2ProtoEnum}},
+		{desc: "decode ARRAY<ENUM<>> to []pb.Genre", proto: listProto(protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []pb.Genre{singerEnumValue, singer2ProtoEnum}},
+		{desc: "decode NULL to []*pb.SingerInfo", proto: nullProto(), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo(nil)},
+		{desc: "decode NULL to []*pb.Genre", proto: nullProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre(nil)},
+		{desc: "decode NULL to []pb.Genre", proto: nullProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []pb.Genre(nil)},
+		{desc: "decode empty array to []*pb.SingerInfo", proto: listProto(), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{}},
+		{desc: "decode empty array to []*pb.Genre", proto: listProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{}},
+		{desc: "decode empty array to []pb.Genre", proto: listProto(), protoType: listType(protoEnumType(protoEnumfqn)), want: []pb.Genre{}},
+		// Null elements in ARRAY OF PROTO MESSAGES AND PROTO ENUM
+		{desc: "decode ARRAY<PROTO<>> to []*pb.SingerInfo", proto: listProto(nullProto(), protoMessageProto(&singerProtoMsg), protoMessageProto(&singer2ProtoMsg)), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{nil, &singerProtoMsg, &singer2ProtoMsg}},
+		{desc: "decode all NULL elements in ARRAY<PROTO<>> to []*pb.SingerInfo", proto: listProto(nullProto(), nullProto()), protoType: listType(protoMessageType(protoMessagefqn)), want: []*pb.SingerInfo{nil, nil}},
+		{desc: "decode ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(nullProto(), protoEnumProto(pb.Genre_ROCK), protoEnumProto(pb.Genre_FOLK)), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{nil, &singerEnumValue, &singer2ProtoEnum}},
+		{desc: "decode all NULL elements in ARRAY<ENUM<>> to []*pb.Genre", proto: listProto(nullProto(), nullProto()), protoType: listType(protoEnumType(protoEnumfqn)), want: []*pb.Genre{nil, nil}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		v := gotp.Interface()
@@ -1918,6 +2008,11 @@ func TestDecodeValue(t *testing.T) {
 			nullValue.Time = time.Unix(100, 100)
 		case *NullDate:
 			nullValue.Date = civil.DateOf(time.Unix(100, 200))
+		case *NullProtoMessage:
+			nullValue.ProtoMessageVal = &pb.SingerInfo{}
+		case *NullProtoEnum:
+			var singerProtoEnumDefault pb.Genre
+			nullValue.ProtoEnumVal = &singerProtoEnumDefault
 		default:
 		}
 		err := decodeValue(test.proto, test.protoType, v)
@@ -1932,8 +2027,15 @@ func TestDecodeValue(t *testing.T) {
 			continue
 		}
 		got := reflect.Indirect(gotp).Interface()
-		if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
-			t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
+		switch v.(type) {
+		case proto.Message:
+			if diff := cmp.Diff(got, test.want, protocmp.Transform()); diff != "" {
+				t.Errorf("unexpected difference in proto message :\n%v", diff)
+			}
+		default:
+			if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomNumeric{}, CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{}, customStructToNull{})) {
+				t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
+			}
 		}
 	}
 }
@@ -2801,6 +2903,15 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 	msg := Message{"Alice", "Hello", 1294706395881547000}
 	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
 
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singerProtoMessageJSONStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
+
 	type testcase struct {
 		input  interface{}
 		expect string
@@ -2901,6 +3012,27 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 				{input: PGNumeric{}, expect: "null"},
 			},
 		},
+		{
+			"NullProtoMessage",
+			[]testcase{
+				{input: NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJSONStr},
+				{input: &NullProtoMessage{&singerProtoMessage, true}, expect: singerProtoMessageJSONStr},
+				{input: &NullProtoMessage{&singerProtoMessage, false}, expect: "null"},
+				{input: NullProtoMessage{}, expect: "null"},
+			},
+		},
+		{
+			"NullProtoEnum",
+			[]testcase{
+				{input: NullProtoEnum{singerProtoEnum, true}, expect: "3"},
+				{input: NullProtoEnum{&singerProtoEnum, true}, expect: "3"},
+				{input: &NullProtoEnum{singerProtoEnum, true}, expect: "3"},
+				{input: &NullProtoEnum{&singerProtoEnum, true}, expect: "3"},
+				{input: NullProtoEnum{singerProtoEnum, false}, expect: "null"},
+				{input: NullProtoEnum{nil, true}, expect: "null"},
+				{input: NullProtoEnum{}, expect: "null"},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -2917,6 +3049,14 @@ func TestJSONMarshal_NullTypes(t *testing.T) {
 // Test converting json strings to nullable types.
 func TestJSONUnmarshal_NullTypes(t *testing.T) {
 	jsonStr := `{"Body":"Hello","Name":"Alice","Time":1294706395881547000}`
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singerProtoMessageJSONStr := `{"singer_id":1,"birth_date":"January","nationality":"Country1","genre":3}`
 
 	type testcase struct {
 		input       []byte
@@ -3033,6 +3173,26 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 				{input: []byte(`"123.456`), got: PGNumeric{}, isNull: true, expect: nullString, expectError: true},
 			},
 		},
+		{
+			"NullProtoMessage",
+			[]testcase{
+				{input: []byte(singerProtoMessageJSONStr), got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: false, expect: singerProtoMessage.String(), expectError: false},
+				{input: []byte("null"), got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullProtoMessage{&pb.SingerInfo{}, true}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullProtoMessage{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`{invalid_json_string}`), got: NullProtoMessage{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
+		{
+			"NullProtoEnum",
+			[]testcase{
+				{input: []byte("3"), got: NullProtoEnum{&singerProtoEnum, true}, isNull: false, expect: singerProtoEnum.String(), expectError: false},
+				{input: []byte("null"), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: false},
+				{input: nil, got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(""), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
+				{input: []byte(`"hello`), got: NullProtoEnum{}, isNull: true, expect: nullString, expectError: true},
+			},
+		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			for _, tc := range test.cases {
@@ -3065,6 +3225,12 @@ func TestJSONUnmarshal_NullTypes(t *testing.T) {
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				case PGNumeric:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullProtoMessage:
+					err := json.Unmarshal(tc.input, &v)
+					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
+				case NullProtoEnum:
 					err := json.Unmarshal(tc.input, &v)
 					expectUnmarshalNullableTypes(t, err, v, tc.isNull, tc.expect, tc.expectError)
 				default:
