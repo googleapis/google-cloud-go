@@ -1,5 +1,13 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.9...kms/v1.16.0) (2024-05-08)
+
+
+### Features
+
+* **kms:** Introduce Long-Running Operations (LRO) for KMS ([3e25053](https://github.com/googleapis/google-cloud-go/commit/3e250530567ee81ed4f51a3856c5940dbec35289))
+* **kms:** Support the ED25519 asymmetric signing algorithm ([3e25053](https://github.com/googleapis/google-cloud-go/commit/3e250530567ee81ed4f51a3856c5940dbec35289))
+
 ## [1.15.9](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.8...kms/v1.15.9) (2024-05-01)
 
 
