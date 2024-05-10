@@ -22,7 +22,6 @@ import (
 func TestApply(t *testing.T) {
 	opts := []TransferManagerOption{
 		WithWorkers(3),
-		WithPartSize(2000),
 		WithPerOpTimeout(time.Hour),
 	}
 	var got transferManagerConfig
@@ -31,7 +30,6 @@ func TestApply(t *testing.T) {
 	}
 	want := transferManagerConfig{
 		numWorkers:          3,
-		partSize:            2000,
 		perOperationTimeout: time.Hour,
 	}
 

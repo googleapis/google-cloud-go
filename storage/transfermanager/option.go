@@ -24,6 +24,19 @@ type TransferManagerOption interface {
 	apply(*transferManagerConfig)
 }
 
+// WithCallbacks returns a TransferManagerOption that allows the use of callbacks
+// to process the results. If this option is set, then the results will not be
+// returned at the end.
+func WithCallbacks() TransferManagerOption {
+	return &withCallbacks{}
+}
+
+type withCallbacks struct{}
+
+func (ww withCallbacks) apply(tm *transferManagerConfig) {
+	tm.asynchronous = true
+}
+
 // WithWorkers returns a TransferManagerOption that specifies the maximum number
 // of concurrent goroutines that will be used to download or upload objects.
 // Defaults to runtime.NumCPU()/2.
@@ -37,23 +50,6 @@ type withWorkers struct {
 
 func (ww withWorkers) apply(tm *transferManagerConfig) {
 	tm.numWorkers = ww.numWorkers
-}
-
-// WithPartSize returns a TransferManagerOption that specifies the size of the
-// shards to transfer; that is, if the object is larger than this size, it will
-// be uploaded or downloaded in concurrent pieces.
-// The default is 32 MiB for downloads.
-// NOTE: Sharding is not yet implemented.
-func WithPartSize(partSize int) TransferManagerOption {
-	return &withPartSize{partSize: partSize}
-}
-
-type withPartSize struct {
-	partSize int
-}
-
-func (wps withPartSize) apply(tm *transferManagerConfig) {
-	tm.partSize = wps.partSize
 }
 
 // WithPerOpTimeout returns a TransferManagerOption that sets a timeout on each
@@ -75,19 +71,20 @@ func (wpt withPerOpTimeout) apply(tm *transferManagerConfig) {
 type transferManagerConfig struct {
 	// Workers in thread pool; default numCPU/2 based on previous benchmarks?
 	numWorkers int
-	// Size of shards to transfer; Python found 32 MiB to be good default for
-	// JSON downloads but gRPC may benefit from larger.
-	partSize int
+
 	// Timeout for a single operation (including all retries). Zero value means
 	// no timeout.
 	perOperationTimeout time.Duration
+
+	// If true, callbacks are used instead of returning results synchronously
+	// in a slice at the end.
+	asynchronous bool
 }
 
 func defaultTransferManagerConfig() *transferManagerConfig {
 	return &transferManagerConfig{
 		numWorkers:          runtime.NumCPU() / 2,
-		partSize:            32 * 1024 * 1024, // 32 MiB
-		perOperationTimeout: 0,                // no timeout
+		perOperationTimeout: 0, // no timeout
 	}
 }
 
