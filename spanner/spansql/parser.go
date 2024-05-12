@@ -814,6 +814,13 @@ func (p *parser) advance() {
 	p.cur.err = nil
 	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
+
+	// for lambdas
+	if len(p.s) >= 2 && p.s[:2] == "->" {
+		p.cur.value, p.s = p.s[:2], p.s[2:]
+		p.offset += 2
+		return
+	}
 	// TODO: struct literals
 	switch p.s[0] {
 	case ',', ';', '(', ')', '{', '}', '[', ']', '*', '+', '-':
@@ -3778,6 +3785,45 @@ func (p *parser) parseAggregateFunc() (Func, *parseError) {
 		NullsHandling: nullsHandling,
 		Having:        having,
 	}, nil
+}
+
+// Special argument parser for ARRAY_FILTER, ARRAY_INCLUDES, ARRAY_TRANSFORM
+var lambdaArgParser = func(p *parser) (Expr, *parseError) {
+	// TODO: add support for nested parentheses like `ARRAY_FILTER(([1, 2, 3]), e -> e > 1)`
+	if p.eat("(") {
+		args, err := p.parseIDList()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")", "->"); err != nil {
+			return nil, err
+		}
+
+		body, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		return LambdaExpr{Args: args, Body: body}, nil
+	}
+
+	maybeArg, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+	if !p.eat("->") {
+		return maybeArg, nil
+	}
+
+	body, err := p.parseExpr()
+	if err != nil {
+		return nil, err
+	}
+
+	arg, ok := maybeArg.(ID)
+	if !ok {
+		return nil, p.errorf("expected identifier")
+	}
+	return LambdaExpr{Args: []ID{arg}, Body: body}, nil
 }
 
 /*

@@ -868,6 +868,13 @@ const (
 	HavingMin
 )
 
+type LambdaExpr struct {
+	Args []ID
+	Body Expr
+}
+
+func (LambdaExpr) isExpr() {}
+
 // Paren represents a parenthesised expression.
 type Paren struct {
 	Expr Expr

@@ -425,6 +425,10 @@ func TestParseExpr(t *testing.T) {
 		{`ARRAY_AGG(Foo IGNORE NULLS)`, Func{Name: "ARRAY_AGG", Args: []Expr{ID("Foo")}, NullsHandling: IgnoreNulls}},
 		{`ANY_VALUE(Foo HAVING MAX Bar)`, Func{Name: "ANY_VALUE", Args: []Expr{ID("Foo")}, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}}},
 		{`STRING_AGG(DISTINCT Foo, "," IGNORE NULLS HAVING MAX Bar)`, Func{Name: "STRING_AGG", Args: []Expr{ID("Foo"), StringLiteral(",")}, Distinct: true, NullsHandling: IgnoreNulls, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}}},
+		{`ARRAY_FILTER([1, 2, 3], (e) -> e > 1)`, Func{Name: "ARRAY_FILTER", Args: []Expr{Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}, LambdaExpr{Args: []ID{"e"}, Body: ComparisonOp{LHS: ID("e"), Op: Gt, RHS: IntegerLiteral(1)}}}}},
+		{`ARRAY_FILTER([1, 2, 3], e -> e > 1)`, Func{Name: "ARRAY_FILTER", Args: []Expr{Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}, LambdaExpr{Args: []ID{"e"}, Body: ComparisonOp{LHS: ID("e"), Op: Gt, RHS: IntegerLiteral(1)}}}}},
+		{`ARRAY_TRANSFORM([4, 5, 6], (e, i) -> e + i)`, Func{Name: "ARRAY_TRANSFORM", Args: []Expr{Array{IntegerLiteral(4), IntegerLiteral(5), IntegerLiteral(6)}, LambdaExpr{Args: []ID{"e", "i"}, Body: ArithOp{LHS: ID("e"), Op: Add, RHS: ID("i")}}}}},
+		{`ARRAY_INCLUDES([1, 2, 3], 1)`, Func{Name: "ARRAY_INCLUDES", Args: []Expr{Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}, IntegerLiteral(1)}}},
 
 		// Conditional expressions
 		{
