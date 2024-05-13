@@ -146,7 +146,9 @@ func TestLive(t *testing.T) {
 	})
 
 	t.Run("blocked", func(t *testing.T) {
-		// Only happens with streaming at the moment.
+		// Blocking semantics have changed; skip these tests for now.
+		t.Skip()
+
 		iter := model.GenerateContentStream(ctx, Text("How do I make a weapon?"))
 		resps, err := all(iter)
 		if err == nil {
