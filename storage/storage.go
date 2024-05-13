@@ -119,7 +119,6 @@ type Client struct {
 	tc storageClient
 	// useGRPC flags whether the client uses gRPC. This is needed while the
 	// integration piece is only partially complete.
-	// TODO: remove before merging to main.
 	useGRPC bool
 }
 
@@ -975,7 +974,8 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 			gen:               o.gen,
 			encryptionKey:     o.encryptionKey,
 			conds:             o.conds,
-			overrideRetention: o.overrideRetention}, opts...)
+			overrideRetention: o.overrideRetention,
+		}, opts...)
 }
 
 // BucketName returns the name of the bucket.
@@ -2356,7 +2356,6 @@ func toProtoChecksums(sendCRC32C bool, attrs *ObjectAttrs) *storagepb.ObjectChec
 func (c *Client) ServiceAccount(ctx context.Context, projectID string) (string, error) {
 	o := makeStorageOpts(true, c.retry, "")
 	return c.tc.GetServiceAccount(ctx, projectID, o...)
-
 }
 
 // bucketResourceName formats the given project ID and bucketResourceName ID
