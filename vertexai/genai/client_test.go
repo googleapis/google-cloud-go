@@ -259,6 +259,10 @@ func TestLive(t *testing.T) {
 				t.Fatal(err)
 			}
 			part := res.Candidates[0].Content.Parts[0]
+			funcalls := res.Candidates[0].FunctionCalls()
+			if len(funcalls) != 1 {
+				t.Fatalf("got %d FunctionCalls, want 1", len(funcalls))
+			}
 			funcall, ok := part.(FunctionCall)
 			if !ok {
 				t.Fatalf("want FunctionCall, got %T", part)
