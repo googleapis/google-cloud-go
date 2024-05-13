@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.8.0...vertexai/v0.9.0) (2024-05-13)
+
+
+### Features
+
+* **vertexai:** Add Candidate.FunctionCalls accessor ([#10149](https://github.com/googleapis/google-cloud-go/issues/10149)) ([6c76a67](https://github.com/googleapis/google-cloud-go/commit/6c76a67af1b630e48597a352fface154fcfdacfb))
+
 ## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.7.1...vertexai/v0.8.0) (2024-05-06)
 
 
