@@ -180,12 +180,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		opts = append([]option.ClientOption{
 			option.WithoutAuthentication(),
 			internaloption.SkipDialSettingsValidation(),
-			internaloption.WithDefaultEndpoint(endpoint),
+			internaloption.WithDefaultEndpointTemplate(endpoint),
 			internaloption.WithDefaultMTLSEndpoint(endpoint),
 		}, opts...)
 	}
 
-	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
+	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)

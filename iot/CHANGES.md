@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/iot/v1.7.6...iot/v1.7.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **iot:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/iot/v1.7.5...iot/v1.7.6) (2024-03-14)
 
 
@@ -106,4 +113,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out iot as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

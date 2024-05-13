@@ -3,6 +3,22 @@
 
 
 
+## [1.61.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.60.0...bigquery/v1.61.0) (2024-04-24)
+
+
+### Features
+
+* **bigquery/storage/managedwriter/adapt:** Add RANGE support to adapt ([#9836](https://github.com/googleapis/google-cloud-go/issues/9836)) ([ae25253](https://github.com/googleapis/google-cloud-go/commit/ae252533375b21dd41a0ea13e85462bbcad291af))
+* **bigquery:** RANGE support for basic data movement ([#9762](https://github.com/googleapis/google-cloud-go/issues/9762)) ([07f0806](https://github.com/googleapis/google-cloud-go/commit/07f0806a945c2cf0fbc431b63d9c8a30ed3a22fd))
+* **bigquery:** RANGE support when reading Arrow format ([#9795](https://github.com/googleapis/google-cloud-go/issues/9795)) ([da245fa](https://github.com/googleapis/google-cloud-go/commit/da245fac5ee335e86c63bfa5f165b0ab84960847))
+* **bigquery:** RANGE type StandardSQLDataType support ([#9754](https://github.com/googleapis/google-cloud-go/issues/9754)) ([33666cf](https://github.com/googleapis/google-cloud-go/commit/33666cfeaefdebc474045894af069ca7172e836b))
+
+
+### Bug Fixes
+
+* **bigquery/datatransfer:** Mark parent/name fields with the REQUIRED field_behavior annotation ([8892943](https://github.com/googleapis/google-cloud-go/commit/8892943b169060f8ba7be227cd65680696c494a0))
+* **bigquery:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.60.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.59.1...bigquery/v1.60.0) (2024-03-27)
 
 
@@ -889,4 +905,3 @@ cloud.google.com/go.
 
 This is the first tag to carve out bigquery as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-

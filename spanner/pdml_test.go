@@ -177,5 +177,27 @@ func TestPartitionedUpdate_Tagging(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expect no errors, but got %v", err)
 	}
-	checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{RequestTag: "pdml-tag"})
+	checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, &sppb.RequestOptions{RequestTag: "pdml-tag"})
+}
+
+func TestPartitionedUpdate_ExcludeTxnFromChangeStreams(t *testing.T) {
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	_, err := client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), QueryOptions{ExcludeTxnFromChangeStreams: true})
+	if err != nil {
+		t.Fatalf("expect no errors, but got %v", err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{}}, requests); err != nil {
+		t.Fatal(err)
+	}
+
+	if !requests[1].(*sppb.BeginTransactionRequest).GetOptions().GetExcludeTxnFromChangeStreams() {
+		t.Fatal("Transaction is not set to be excluded from change streams")
+	}
 }

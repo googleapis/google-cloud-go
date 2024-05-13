@@ -145,6 +145,11 @@
                 "UpdateDataset"
               ]
             },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -288,6 +293,11 @@
             "UpdateDataset": {
               "methods": [
                 "UpdateDataset"
+              ]
+            },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
               ]
             },
             "WaitOperation": {
@@ -4489,6 +4499,11 @@
                 "CreateNotebookRuntimeTemplate"
               ]
             },
+            "DeleteNotebookExecutionJob": {
+              "methods": [
+                "DeleteNotebookExecutionJob"
+              ]
+            },
             "DeleteNotebookRuntime": {
               "methods": [
                 "DeleteNotebookRuntime"
@@ -4514,6 +4529,11 @@
                 "GetLocation"
               ]
             },
+            "GetNotebookExecutionJob": {
+              "methods": [
+                "GetNotebookExecutionJob"
+              ]
+            },
             "GetNotebookRuntime": {
               "methods": [
                 "GetNotebookRuntime"
@@ -4532,6 +4552,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListNotebookExecutionJobs": {
+              "methods": [
+                "ListNotebookExecutionJobs"
               ]
             },
             "ListNotebookRuntimeTemplates": {
@@ -4594,6 +4619,11 @@
                 "CreateNotebookRuntimeTemplate"
               ]
             },
+            "DeleteNotebookExecutionJob": {
+              "methods": [
+                "DeleteNotebookExecutionJob"
+              ]
+            },
             "DeleteNotebookRuntime": {
               "methods": [
                 "DeleteNotebookRuntime"
@@ -4619,6 +4649,11 @@
                 "GetLocation"
               ]
             },
+            "GetNotebookExecutionJob": {
+              "methods": [
+                "GetNotebookExecutionJob"
+              ]
+            },
             "GetNotebookRuntime": {
               "methods": [
                 "GetNotebookRuntime"
@@ -4637,6 +4672,11 @@
             "ListLocations": {
               "methods": [
                 "ListLocations"
+              ]
+            },
+            "ListNotebookExecutionJobs": {
+              "methods": [
+                "ListNotebookExecutionJobs"
               ]
             },
             "ListNotebookRuntimeTemplates": {
@@ -5101,11 +5141,6 @@
                 "CancelOperation"
               ]
             },
-            "ChatCompletions": {
-              "methods": [
-                "ChatCompletions"
-              ]
-            },
             "CountTokens": {
               "methods": [
                 "CountTokens"
@@ -5224,11 +5259,6 @@
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
-              ]
-            },
-            "ChatCompletions": {
-              "methods": [
-                "ChatCompletions"
               ]
             },
             "CountTokens": {

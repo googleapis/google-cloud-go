@@ -17,6 +17,7 @@ package datastore
 import (
 	"context"
 	"errors"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
@@ -30,7 +31,10 @@ import (
 // to a conflict with a concurrent transaction.
 var ErrConcurrentTransaction = errors.New("datastore: concurrent transaction")
 
-var errExpiredTransaction = errors.New("datastore: transaction expired")
+var (
+	errExpiredTransaction             = errors.New("datastore: transaction expired")
+	errEventualConsistencyTransaction = errors.New("datastore: cannot use EventualConsistency query in a transaction")
+)
 
 type transactionSettings struct {
 	attempts int
@@ -42,8 +46,6 @@ type transactionSettings struct {
 	// uses the piggybacked txn id from first read rpc call.
 	// If there are no read operations on transaction, BeginTransaction RPC call is made
 	// before rollback or commit
-	// Currently, this setting is set but unused
-	// TODO: b/291258189 - Use this setting
 	beginLater bool
 }
 
@@ -109,8 +111,6 @@ func (readOnly) apply(s *transactionSettings) {
 }
 
 // BeginLater is a TransactionOption that can be used to improve transaction performance
-// Currently, it is a no-op
-// TODO: b/291258189 - Add implementation
 var BeginLater TransactionOption
 
 type beginLater struct{}
@@ -122,7 +122,7 @@ func (beginLater) apply(s *transactionSettings) {
 type transactionState int
 
 const (
-	transactionStateNotStarted transactionState = iota // Currently unused
+	transactionStateNotStarted transactionState = iota
 	transactionStateInProgress
 	transactionStateExpired
 )
@@ -144,6 +144,7 @@ type Transaction struct {
 	pending   map[int]*PendingKey // Map from mutation index to incomplete keys pending transaction completion.
 	settings  *transactionSettings
 	state     transactionState
+	stateLock sync.Mutex
 }
 
 // NewTransaction starts a new transaction.
@@ -159,47 +160,129 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 	return c.newTransaction(ctx, newTransactionSettings(opts))
 }
 
-func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
-	req := &pb.BeginTransactionRequest{
-		ProjectId:  c.dataset,
-		DatabaseId: c.databaseID,
+func (t *Transaction) parseTransactionOptions() (*pb.TransactionOptions, string) {
+	if t.settings == nil {
+		return nil, ""
 	}
-	if s.readOnly {
-		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction")
-		defer func() { trace.EndSpan(ctx, err) }()
 
+	if t.settings.readOnly {
 		ro := &pb.TransactionOptions_ReadOnly{}
-		if !s.readTime.AsTime().IsZero() {
-			ro.ReadTime = s.readTime
+		if !t.settings.readTime.AsTime().IsZero() {
+			ro.ReadTime = t.settings.readTime
 		}
 
-		req.TransactionOptions = &pb.TransactionOptions{
+		return &pb.TransactionOptions{
 			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: ro},
-		}
-
-	} else if s.prevID != nil {
-		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction")
-		defer func() { trace.EndSpan(ctx, err) }()
-
-		req.TransactionOptions = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
-				PreviousTransaction: s.prevID,
-			}},
-		}
+		}, "cloud.google.com/go/datastore.Transaction.ReadOnlyTransaction"
 	}
-	resp, err := c.client.BeginTransaction(ctx, req)
+
+	if t.settings.prevID != nil {
+		return &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
+				PreviousTransaction: t.settings.prevID,
+			}},
+		}, "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction"
+	}
+	return nil, ""
+}
+
+// beginTransaction makes BeginTransaction rpc
+func (t *Transaction) beginTransaction() (txnID []byte, err error) {
+
+	req := &pb.BeginTransactionRequest{
+		ProjectId:  t.client.dataset,
+		DatabaseId: t.client.databaseID,
+	}
+
+	txOptionsPb, spanName := t.parseTransactionOptions()
+	if txOptionsPb != nil {
+		t.ctx = trace.StartSpan(t.ctx, spanName)
+		defer func() { trace.EndSpan(t.ctx, err) }()
+		req.TransactionOptions = txOptionsPb
+	}
+
+	resp, err := t.client.client.BeginTransaction(t.ctx, req)
 	if err != nil {
 		return nil, err
 	}
-	return &Transaction{
-		id:        resp.Transaction,
+	return resp.Transaction, nil
+}
+
+// beginLaterTransaction makes BeginTransaction rpc if transaction has not yet started
+func (t *Transaction) beginLaterTransaction() (err error) {
+	if t.state != transactionStateNotStarted {
+		return nil
+	}
+
+	// Obtain state lock since the state needs to be updated
+	// after transaction has started
+	t.stateLock.Lock()
+	defer t.stateLock.Unlock()
+	if t.state != transactionStateNotStarted {
+		return nil
+	}
+
+	txnID, err := t.beginTransaction()
+	if err != nil {
+		return err
+	}
+
+	t.setToInProgress(txnID)
+	return nil
+}
+
+// Acquires state lock if transaction has not started. No-op otherwise
+// The returned function unlocks the state if it was locked.
+//
+// Usage:
+//
+//	func (t *Transaction) someFunction() {
+//		...
+//		if t != nil {
+//			defer t.stateLockDeferUnlock()()
+//		}
+//		....
+//	}
+//
+// This ensures that state is locked before any of the following lines are exexcuted
+// The lock will be released after 'someFunction' ends
+func (t *Transaction) stateLockDeferUnlock() func() {
+	if t.state == transactionStateNotStarted {
+		t.stateLock.Lock()
+		// Check whether state changed while waiting to acquire lock
+		if t.state == transactionStateNotStarted {
+			return func() { t.stateLock.Unlock() }
+		}
+		t.stateLock.Unlock()
+	}
+	return func() {}
+}
+
+func (t *Transaction) setToInProgress(id []byte) {
+	t.id = id
+	t.state = transactionStateInProgress
+}
+
+func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
+	t := &Transaction{
+		id:        nil,
 		ctx:       ctx,
 		client:    c,
 		mutations: nil,
 		pending:   make(map[int]*PendingKey),
-		state:     transactionStateInProgress,
 		settings:  s,
-	}, nil
+	}
+
+	t.state = transactionStateNotStarted
+	if !s.beginLater {
+		txnID, err := t.beginTransaction()
+		if err != nil {
+			return nil, err
+		}
+		t.setToInProgress(txnID)
+	}
+
+	return t, nil
 }
 
 // RunInTransaction runs f in a transaction. f is invoked with a Transaction
@@ -258,6 +341,12 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 	if t.state == transactionStateExpired {
 		return nil, errExpiredTransaction
 	}
+
+	err = t.beginLaterTransaction()
+	if err != nil {
+		return nil, err
+	}
+
 	req := &pb.CommitRequest{
 		ProjectId:           t.client.dataset,
 		DatabaseId:          t.client.databaseID,
@@ -269,10 +358,11 @@ func (t *Transaction) Commit() (c *Commit, err error) {
 	if status.Code(err) == codes.Aborted {
 		return nil, ErrConcurrentTransaction
 	}
-	t.state = transactionStateExpired // mark the transaction as expired
 	if err != nil {
 		return nil, err
 	}
+
+	t.state = transactionStateExpired
 
 	c = &Commit{}
 	// Copy any newly minted keys into the returned keys.
@@ -299,12 +389,63 @@ func (t *Transaction) Rollback() (err error) {
 	if t.state == transactionStateExpired {
 		return errExpiredTransaction
 	}
-	t.state = transactionStateExpired
+
+	err = t.beginLaterTransaction()
+	if err != nil {
+		return err
+	}
+
 	_, err = t.client.client.Rollback(t.ctx, &pb.RollbackRequest{
 		ProjectId:   t.client.dataset,
 		DatabaseId:  t.client.databaseID,
 		Transaction: t.id,
 	})
+	if err != nil {
+		return err
+	}
+
+	t.state = transactionStateExpired
+	return nil
+}
+
+func (t *Transaction) parseReadOptions() (*pb.ReadOptions, error) {
+	var opts *pb.ReadOptions
+	switch t.state {
+	case transactionStateExpired:
+		return nil, errExpiredTransaction
+	case transactionStateInProgress:
+		opts = &pb.ReadOptions{
+			// Use existing transaction id for this request
+			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
+		}
+	case transactionStateNotStarted:
+		tOptionsPb, _ := t.parseTransactionOptions()
+		opts = &pb.ReadOptions{
+			// Begin a new transaction for this request
+			ConsistencyType: &pb.ReadOptions_NewTransaction{NewTransaction: tOptionsPb},
+		}
+	}
+	return opts, nil
+}
+
+func (t *Transaction) get(spanName string, keys []*Key, dst interface{}) (err error) {
+	t.ctx = trace.StartSpan(t.ctx, spanName)
+	defer func() { trace.EndSpan(t.ctx, err) }()
+
+	if t != nil {
+		defer t.stateLockDeferUnlock()()
+	}
+
+	opts, err := t.parseReadOptions()
+	if err != nil {
+		return err
+	}
+
+	txnID, err := t.client.get(t.ctx, keys, dst, opts)
+
+	if txnID != nil && err == nil {
+		t.setToInProgress(txnID)
+	}
 	return err
 }
 
@@ -314,15 +455,7 @@ func (t *Transaction) Rollback() (err error) {
 // level, another transaction cannot concurrently modify the data that is read
 // or modified by this transaction.
 func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
-	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.Get")
-	defer func() { trace.EndSpan(t.ctx, err) }()
-
-	opts := &pb.ReadOptions{
-		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
-	}
-
-	// TODO: Use transaction ID returned by get
-	_, err = t.client.get(t.ctx, []*Key{key}, []interface{}{dst}, opts)
+	err = t.get("cloud.google.com/go/datastore.Transaction.Get", []*Key{key}, []interface{}{dst})
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -331,19 +464,7 @@ func (t *Transaction) Get(key *Key, dst interface{}) (err error) {
 
 // GetMulti is a batch version of Get.
 func (t *Transaction) GetMulti(keys []*Key, dst interface{}) (err error) {
-	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/datastore.Transaction.GetMulti")
-	defer func() { trace.EndSpan(t.ctx, err) }()
-
-	if t.state == transactionStateExpired {
-		return errExpiredTransaction
-	}
-	opts := &pb.ReadOptions{
-		ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
-	}
-
-	// TODO: Use transaction ID returned by get
-	_, err = t.client.get(t.ctx, keys, dst, opts)
-	return err
+	return t.get("cloud.google.com/go/datastore.Transaction.GetMulti", keys, dst)
 }
 
 // Put is the transaction-specific version of the package function Put.

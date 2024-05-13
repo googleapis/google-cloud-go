@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.6.5](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.4...optimization/v1.6.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **optimization:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.6.4](https://github.com/googleapis/google-cloud-go/compare/optimization/v1.6.3...optimization/v1.6.4) (2024-03-14)
 
 

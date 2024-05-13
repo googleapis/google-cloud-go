@@ -1,5 +1,37 @@
 # Changelog
 
+## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.8.0...vertexai/v0.9.0) (2024-05-13)
+
+
+### Features
+
+* **vertexai:** Add Candidate.FunctionCalls accessor ([#10149](https://github.com/googleapis/google-cloud-go/issues/10149)) ([6c76a67](https://github.com/googleapis/google-cloud-go/commit/6c76a67af1b630e48597a352fface154fcfdacfb))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.7.1...vertexai/v0.8.0) (2024-05-06)
+
+
+### Features
+
+* **vertexai/genai:** Add SystemInstruction ([#9736](https://github.com/googleapis/google-cloud-go/issues/9736)) ([84e3236](https://github.com/googleapis/google-cloud-go/commit/84e3236355de8d3d018c49d64d8dffe67caaf49d))
+* **vertexai/genai:** Change TopK to int ([#9522](https://github.com/googleapis/google-cloud-go/issues/9522)) ([29d2c7d](https://github.com/googleapis/google-cloud-go/commit/29d2c7d0be85f0055f4992dc01897782b8a51bcb))
+* **vertexai/genai:** Constrained decoding ([#9731](https://github.com/googleapis/google-cloud-go/issues/9731)) ([bb84fbd](https://github.com/googleapis/google-cloud-go/commit/bb84fbd185448bdee5e848e761f094b91365e4c2))
+* **vertexai/genai:** Update to latest protos ([#9555](https://github.com/googleapis/google-cloud-go/issues/9555)) ([e078458](https://github.com/googleapis/google-cloud-go/commit/e0784583abdd40bdf7f5c0646cda369926202a63))
+
+
+### Bug Fixes
+
+* **vertexai/genai:** Check for nil content ([#10057](https://github.com/googleapis/google-cloud-go/issues/10057)) ([22e3eae](https://github.com/googleapis/google-cloud-go/commit/22e3eaee413ea314963f6f9f31d09e439be989b3))
+* **vertexai:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **vertexai:** Clarify Client.GenerativeModel documentation ([#9533](https://github.com/googleapis/google-cloud-go/issues/9533)) ([511d9b2](https://github.com/googleapis/google-cloud-go/commit/511d9b2d7055a2711b3976c319e98d7aec31121f))
+* **vertexai:** Clarify documentation of NewClient ([#9532](https://github.com/googleapis/google-cloud-go/issues/9532)) ([f1bca4c](https://github.com/googleapis/google-cloud-go/commit/f1bca4cde57239cd3c606a1566e83a7d7f5e7953))
+* **vertexai:** If GenerateContentResponse.Candidates.Content is nil will panic ([#9687](https://github.com/googleapis/google-cloud-go/issues/9687)) ([966a0c3](https://github.com/googleapis/google-cloud-go/commit/966a0c30407748b039ecff608b85754de1f3820e))
+* **vertexai:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **vertexai:** Fix typo in README ([#9690](https://github.com/googleapis/google-cloud-go/issues/9690)) ([bac84bf](https://github.com/googleapis/google-cloud-go/commit/bac84bf20bf2aef21a5bdae93792aaf13ec0349c))
+
 ## [0.7.1](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.7.0...vertexai/v0.7.1) (2024-02-08)
 
 
@@ -100,4 +132,3 @@
 ### Features
 
 * **vertexai:** Vertex AI for go ([#9095](https://github.com/googleapis/google-cloud-go/issues/9095)) ([b3b293a](https://github.com/googleapis/google-cloud-go/commit/b3b293aee06690ed734bb19c404eb6c8af893fa1))
-

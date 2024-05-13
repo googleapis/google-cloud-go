@@ -19,6 +19,7 @@ package generativelanguage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -263,6 +264,11 @@ func (c *GenerativeClient) Connection() *grpc.ClientConn {
 
 // GenerateContent generates a response from the model given an input
 // GenerateContentRequest.
+//
+// Input capabilities differ between models, including tuned models. See the
+// model guide (at https://ai.google.dev/models/gemini) and
+// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
+// details.
 func (c *GenerativeClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	return c.internalClient.GenerateContent(ctx, req, opts...)
 }
@@ -549,6 +555,11 @@ func (c *generativeGRPCClient) CountTokens(ctx context.Context, req *generativel
 
 // GenerateContent generates a response from the model given an input
 // GenerateContentRequest.
+//
+// Input capabilities differ between models, including tuned models. See the
+// model guide (at https://ai.google.dev/models/gemini) and
+// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
+// details.
 func (c *generativeRESTClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -771,7 +782,7 @@ func (c *streamGenerateContentRESTClient) Trailer() metadata.MD {
 
 func (c *streamGenerateContentRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamGenerateContentRESTClient) Context() context.Context {
@@ -780,12 +791,12 @@ func (c *streamGenerateContentRESTClient) Context() context.Context {
 
 func (c *streamGenerateContentRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamGenerateContentRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // EmbedContent generates an embedding from the model given an input Content.
