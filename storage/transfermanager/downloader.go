@@ -43,9 +43,7 @@ type Downloader struct {
 // download but is non-blocking; call Downloader.Results to process the result.
 func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectInput) {
 	input.ctx = ctx
-	d.inputsMu.Lock()
-	d.inputs = append(d.inputs, *input)
-	d.inputsMu.Unlock()
+	d.addInput(input)
 }
 
 // DownloadObject queues the download of a single object. This will initiate the
@@ -54,9 +52,7 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 func (d *Downloader) DownloadObjectWithCallback(ctx context.Context, input *DownloadObjectInput, callback func(*DownloadOutput)) {
 	input.ctx = ctx
 	input.callback = &callback
-	d.inputsMu.Lock()
-	d.inputs = append(d.inputs, *input)
-	d.inputsMu.Unlock()
+	d.addInput(input)
 }
 
 // WaitAndClose waits for all outstanding downloads to complete. The Downloader
@@ -73,9 +69,18 @@ func (d *Downloader) WaitAndClose() error {
 	return nil
 }
 
-// Results returns the iterator for download outputs.
+// Results returns all the results of the downloads completed since the last
+// time it was called. Call WaitAndClose before calling Results to wait for all
+// downloads to complete.
+// Results will not return results for downloads initiated with a callback.
 func (d *Downloader) Results() []DownloadOutput {
-	return d.results
+	d.resultsMu.Lock()
+	r := make([]DownloadOutput, len(d.results))
+	copy(r, d.results)
+	d.results = []DownloadOutput{}
+	d.resultsMu.Unlock()
+
+	return r
 }
 
 // sendInputsToWorkChan listens continuously to the inputs slice until d.done.
@@ -112,6 +117,24 @@ func (d *Downloader) drainInput() {
 	}
 }
 
+func (d *Downloader) addInput(input *DownloadObjectInput) {
+	d.inputsMu.Lock()
+	d.inputs = append(d.inputs, *input)
+	d.inputsMu.Unlock()
+}
+
+func (d *Downloader) addResult(result *DownloadOutput) {
+	d.resultsMu.Lock()
+	d.results = append(d.results, *result)
+	d.resultsMu.Unlock()
+}
+
+func (d *Downloader) error(err error) {
+	d.errorsMu.Lock()
+	d.errors = append(d.errors, err)
+	d.errorsMu.Unlock()
+}
+
 // downloadWorker continuously processes downloads until the work channel is closed.
 func (d *Downloader) downloadWorker() {
 	for {
@@ -128,18 +151,14 @@ func (d *Downloader) downloadWorker() {
 
 		// Keep track of any error that occurred.
 		if out.Err != nil {
-			d.errorsMu.Lock()
-			d.errors = append(d.errors, out.Err)
-			d.errorsMu.Unlock()
+			d.error(out.Err)
 		}
 
 		// Either execute the callback, or append to results.
 		if input.callback != nil {
 			(*input.callback)(out)
 		} else {
-			d.resultsMu.Lock()
-			d.results = append(d.results, *out)
-			d.resultsMu.Unlock()
+			d.addResult(out)
 		}
 	}
 	d.workers.Done()
@@ -204,6 +223,7 @@ type DownloadObjectInput struct {
 }
 
 // downloadShard will read a specific object into in.Destination.
+// If timeout is less than 0, no timeout is set.
 // TODO: download a single shard instead of the entire object.
 func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout time.Duration) (out *DownloadOutput) {
 	out = &DownloadOutput{Bucket: in.Bucket, Object: in.Object}
@@ -220,7 +240,7 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 	o := client.Bucket(in.Bucket).Object(in.Object)
 
 	if in.Conditions != nil {
-		o.If(*in.Conditions)
+		o = o.If(*in.Conditions)
 	}
 	if in.Generation != nil {
 		o = o.Generation(*in.Generation)
@@ -269,118 +289,3 @@ type DownloadOutput struct {
 	Err    error                      // error occurring during download
 	Attrs  *storage.ReaderObjectAttrs // attributes of downloaded object, if successful
 }
-
-// // DownloadOutputIterator allows the end user to iterate through completed
-// // object downloads.
-// type DownloadOutputIterator struct {
-// 	output <-chan *DownloadOutput
-// }
-
-// // Next iterates through results. When complete, will return the iterator.Done
-// // error. It is considered complete once WaitAndClose() has been called on the
-// // Downloader.
-// // Note that if there was an error reading an object, it will not be returned
-// // by Next - check DownloadOutput.Err instead.
-// // DownloadOutputs will be available as the downloads complete; they can
-// // be iterated through asynchronously or at the end of the job.
-// // Next will block if there are no more completed downloads (and the Downloader
-// // is not closed).
-// func (it *DownloadOutputIterator) Next() (*DownloadOutput, error) {
-// 	out, ok := <-it.output
-// 	if !ok {
-// 		return nil, iterator.Done
-// 	}
-// 	fmt.Println(out)
-// 	return out, nil
-// }
-
-// // listenForAndDelegateWork will receive from the work chan, and start goroutines
-// // to execute that work without blocking.
-// // It should be called only once.
-// func (d *Downloader) listenForAndDelegateWork1() {
-// 	for {
-// 		// Dequeue the work. Can block.
-// 		input, ok := <-d.work
-// 		if !ok {
-// 			break // no more work; exit
-// 		}
-
-// 		// Start a worker. This may block.
-// 		d.workerGroup.Go(func() error {
-// 			// Do the download.
-// 			// TODO: break down the input into smaller pieces if necessary; maybe as follows:
-// 			// Only request partSize data to begin with. If no error and we haven't finished
-// 			// reading the object, enqueue the remaining pieces of work (by sending them to d.work)
-// 			// and mark in the out var the amount of shards to wait for.
-// 			out := input.downloadShard(d.client, d.config.perOperationTimeout)
-
-// 			// Send the output to be received by Next. This could block until received
-// 			// (ie. the user calls Next), but it's okay; our worker has already returned.
-// 			// Alternatively, we could feed these to a slice that we grab from in Next.
-// 			// This would not block then, but would require synchronization of the slice.
-// 			go func() {
-// 				out := out
-// 				d.output <- out
-// 			}()
-
-// 			// We return the error here, to communicate to d.workergroup.Wait
-// 			// that there has been an error.
-// 			// Since the group does not use a shared context, this should not
-// 			// affect any of the other operations using the group.
-// 			// TO-DO: in addition to this, if we want WaitAndClose to return a
-// 			// multi err, we will need to record these errors somewhere.
-// 			// Where-ever we record those, it will need synchronization since
-// 			// this is concurrent.
-// 			return out.Err
-// 		})
-
-// 	}
-// }
-
-// // drainInput consumes everything in the inputs slice and dispatches workers.
-// // It will block if there are not enough workers to consume every input, until
-// // all inputs are dispatched to an available worker.
-// func (d *Downloader) drainInpu1t() {
-// 	fmt.Println(len(d.inputs))
-
-// 	for len(d.inputs) > 0 {
-// 		d.inputsMu.Lock()
-// 		if len(d.inputs) < 1 {
-// 			return
-// 		}
-// 		input := d.inputs[0]
-// 		d.inputs = d.inputs[1:]
-// 		d.inputsMu.Unlock()
-
-// 		// Start a worker. This may block, but only if there aren't enough workers.
-// 		d.workerGroup.Go(func() error {
-// 			// Do the download.
-// 			// TODO: break down the input into smaller pieces if necessary; maybe as follows:
-// 			// Only request partSize data to begin with. If no error and we haven't finished
-// 			// reading the object, enqueue the remaining pieces of work
-// 			// and mark in the out var the amount of shards to wait for.
-// 			out := input.downloadShard(d.client, d.config.perOperationTimeout)
-
-// 			// Either return the callback, or append to results.
-// 			if input.callback != nil {
-// 				(*input.callback)(out)
-// 			} else {
-// 				d.resultsMu.Lock()
-// 				d.results = append(d.results, *out)
-// 				fmt.Println(len(d.results))
-
-// 				d.resultsMu.Unlock()
-// 			}
-
-// 			// We return the error here, to communicate to d.workergroup.Wait
-// 			// that there has been an error.
-// 			// Since the group does not use a shared context, this should not
-// 			// affect any of the other operations using the group.
-// 			// TO-DO: in addition to this, if we want WaitAndClose to return a
-// 			// multi err, we will need to record these errors somewhere.
-// 			// Where-ever we record those, it will need synchronization since
-// 			// this is concurrent.
-// 			return out.Err
-// 		})
-// 	}
-// }
