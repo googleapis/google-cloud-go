@@ -17,7 +17,7 @@
 syntax = "proto2";
 option go_package = "cloud.google.com/go/datastore/internal/gaepb;gaepb";
 
-package appengine.v2;
+package datastore.appengine.v2;
 
 message Action{}
 
