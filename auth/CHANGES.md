@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/auth/v0.4.0...auth/v0.4.1) (2024-05-09)
+
+
+### Bug Fixes
+
+* **auth:** Don't try to detect default creds it opt configured ([#10143](https://github.com/googleapis/google-cloud-go/issues/10143)) ([804632e](https://github.com/googleapis/google-cloud-go/commit/804632e7c5b0b85ff522f7951114485e256eb5bc))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.3.0...auth/v0.4.0) (2024-05-07)
 
 
