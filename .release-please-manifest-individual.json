@@ -13,6 +13,6 @@
   "pubsub": "1.38.0",
   "pubsublite": "1.8.1",
   "spanner": "1.61.0",
-  "storage": "1.40.0",
+  "storage": "1.41.0",
   "vertexai": "0.8.0"
 }
