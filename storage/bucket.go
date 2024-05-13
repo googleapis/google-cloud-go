@@ -767,7 +767,7 @@ type Autoclass struct {
 	// TerminalStorageClass: The storage class that objects in the bucket
 	// eventually transition to if they are not read for a certain length of
 	// time. Valid values are NEARLINE and ARCHIVE.
-	// To modify TerminalStorageClass, Enabled should be set to true.
+	// To modify TerminalStorageClass, Enabled must be set to true.
 	TerminalStorageClass string
 	// TerminalStorageClassUpdateTime represents the time of the most recent
 	// update to "TerminalStorageClass".
@@ -1175,8 +1175,9 @@ type BucketAttrsToUpdate struct {
 	RPO RPO
 
 	// If set, updates the autoclass configuration of the bucket.
-	// Library users should provide the updated autoclass configuration
-	// with the enabled field explicitly set.
+	// To disable autoclass on the bucket, set to an empty &Autoclass{}.
+	// To update the configuration for Autoclass.TerminalStorageClass,
+	// Autoclass.Enabled must also be set to true.
 	// See https://cloud.google.com/storage/docs/using-autoclass for more information.
 	Autoclass *Autoclass
 
