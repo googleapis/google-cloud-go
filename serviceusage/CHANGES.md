@@ -1,5 +1,54 @@
 # Changes
 
+## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.5...serviceusage/v1.8.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **serviceusage:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.4...serviceusage/v1.8.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **serviceusage:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.3...serviceusage/v1.8.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **serviceusage:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.8.3](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.2...serviceusage/v1.8.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **serviceusage:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.1...serviceusage/v1.8.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **serviceusage:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.0...serviceusage/v1.8.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **serviceusage:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.7.1...serviceusage/v1.8.0) (2023-09-20)
+
+
+### Features
+
+* **serviceusage:** Introduce resource class serviceusage.googleapis.com/Service ([2f3bb44](https://github.com/googleapis/google-cloud-go/commit/2f3bb443e9fa6968d20806f86b391dad85970afc))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.7.0...serviceusage/v1.7.1) (2023-06-20)
 
 

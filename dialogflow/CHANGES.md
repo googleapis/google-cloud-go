@@ -1,5 +1,168 @@
 # Changes
 
+## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.52.0...dialogflow/v1.53.0) (2024-05-01)
+
+
+### Features
+
+* **dialogflow/cx:** Added Conversation History API ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **dialogflow:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.51.0...dialogflow/v1.52.0) (2024-03-27)
+
+
+### Features
+
+* **dialogflow/cx:** Added support for DataStoreConnection, DataStoreConnectionSettings ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
+## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.50.0...dialogflow/v1.51.0) (2024-03-14)
+
+
+### Features
+
+* **dialogflow:** Added text sections to the submitted summary ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.49.0...dialogflow/v1.50.0) (2024-03-12)
+
+
+### Features
+
+* **dialogflow:** Added text sections to the submitted summary ([#9538](https://github.com/googleapis/google-cloud-go/issues/9538)) ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+
+## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.2...dialogflow/v1.49.0) (2024-02-09)
+
+
+### Features
+
+* **dialogflow/cx:** A new field `opt_out_conformer_model_migration` is added to message `.google.cloud.dialogflow.cx.v3.InputAudioConfig` ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+* **dialogflow/cx:** Public preview the  Dialogflow LLM based agent ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
+## [1.48.2](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.1...dialogflow/v1.48.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dialogflow:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.48.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.0...dialogflow/v1.48.1) (2024-01-11)
+
+
+### Documentation
+
+* **dialogflow/cx:** Fix formatting due to unclosed backtick ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.47.0...dialogflow/v1.48.0) (2024-01-03)
+
+
+### Features
+
+* **dialogflow:** Add sections field to HumanAgentAssistantConfig.SuggestionQueryConfig ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+* **dialogflow:** Add sections field to HumanAgentAssistantConfig.SuggestionQueryConfig ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
+## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.46.0...dialogflow/v1.47.0) (2023-12-07)
+
+
+### Features
+
+* **dialogflow/cx:** Added Generator API ([#9062](https://github.com/googleapis/google-cloud-go/issues/9062)) ([e371f8f](https://github.com/googleapis/google-cloud-go/commit/e371f8f00ee60be27379fe363603b8cf6b43929c))
+
+## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.45.0...dialogflow/v1.46.0) (2023-11-29)
+
+
+### Features
+
+* **dialogflow/cx:** Added Generator API ([#9055](https://github.com/googleapis/google-cloud-go/issues/9055)) ([c844d8e](https://github.com/googleapis/google-cloud-go/commit/c844d8e294c188a2e9ac35dd4df081862da30510))
+
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.44.3...dialogflow/v1.45.0) (2023-11-27)
+
+
+### Features
+
+* **dialogflow/cx:** Add agent answer feedback capability ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+* **dialogflow/cx:** Add agent answer feedback capability ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.44.3](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.44.2...dialogflow/v1.44.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **dialogflow:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.44.2](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.44.1...dialogflow/v1.44.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **dialogflow:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.44.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.44.0...dialogflow/v1.44.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **dialogflow:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.44.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.43.0...dialogflow/v1.44.0) (2023-10-04)
+
+
+### Features
+
+* **dialogflow/cx:** Add support for AdvancedSettings ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+* **dialogflow/cx:** Add support for AdvancedSettings ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+* **dialogflow:** Add the enable_partial_automated_agent_reply flag ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+* **dialogflow:** Add the enable_partial_automated_agent_reply flag ([57fc1a6](https://github.com/googleapis/google-cloud-go/commit/57fc1a6de326456eb68ef25f7a305df6636ed386))
+
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.42.0...dialogflow/v1.43.0) (2023-09-11)
+
+
+### Features
+
+* **dialogflow/cx:** Added generative AI, safety/security and speech endpointing settings ([fbfaf21](https://github.com/googleapis/google-cloud-go/commit/fbfaf21c15ae8a07ab39c6036cf0cee700b5627c))
+* **dialogflow/cx:** Added generative AI, safety/security and speech endpointing settings ([#8510](https://github.com/googleapis/google-cloud-go/issues/8510)) ([15be57b](https://github.com/googleapis/google-cloud-go/commit/15be57b9264a793494cedc3966034fa20f56d7c5))
+* **dialogflow:** Added speech endpointing setting ([fbfaf21](https://github.com/googleapis/google-cloud-go/commit/fbfaf21c15ae8a07ab39c6036cf0cee700b5627c))
+* **dialogflow:** Added speech endpointing setting ([#8497](https://github.com/googleapis/google-cloud-go/issues/8497)) ([fbfaf21](https://github.com/googleapis/google-cloud-go/commit/fbfaf21c15ae8a07ab39c6036cf0cee700b5627c))
+
+
+### Bug Fixes
+
+* **dialogflow/cx:** Fix Ruby namespaces for generative AI classes ([#8538](https://github.com/googleapis/google-cloud-go/issues/8538)) ([73a958d](https://github.com/googleapis/google-cloud-go/commit/73a958d4527a721ee8d496a649dd84030a24e4e0))
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.41.0...dialogflow/v1.42.0) (2023-08-17)
+
+
+### Features
+
+* **dialogflow:** Added baseline model version used to generate the summary ([b3dbdde](https://github.com/googleapis/google-cloud-go/commit/b3dbdde48ddfa215c3c3bb110e0051fd8158f451))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.40.1...dialogflow/v1.41.0) (2023-08-14)
+
+
+### Features
+
+* **dialogflow/cx:** Added agent level route group ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **dialogflow/cx:** Added agent level route group ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+* **dialogflow:** Added baseline model version used to generate the summary ([#8397](https://github.com/googleapis/google-cloud-go/issues/8397)) ([fcb41cc](https://github.com/googleapis/google-cloud-go/commit/fcb41cc1d2435452ee78314c1b0362e3f21ae637))
+
+## [1.40.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.40.0...dialogflow/v1.40.1) (2023-08-08)
+
+
+### Documentation
+
+* **dialogflow:** Minor formatting ([#8365](https://github.com/googleapis/google-cloud-go/issues/8365)) ([e3f8c89](https://github.com/googleapis/google-cloud-go/commit/e3f8c89429a207c05fee36d5d93efe76f9e29efe))
+* **dialogflow:** Minor formatting ([#8368](https://github.com/googleapis/google-cloud-go/issues/8368)) ([a7bb94a](https://github.com/googleapis/google-cloud-go/commit/a7bb94a6e75122c93815eeeb30591249d137d77e))
+* **dialogflow:** Minor formatting ([#8376](https://github.com/googleapis/google-cloud-go/issues/8376)) ([4b68747](https://github.com/googleapis/google-cloud-go/commit/4b6874762ca3e5ebef76f72496753650cdf39523))
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.39.0...dialogflow/v1.40.0) (2023-07-18)
+
+
+### Features
+
+* **dialogflow/cx:** Added GitIntegrationSettings to the Agent ([#8244](https://github.com/googleapis/google-cloud-go/issues/8244)) ([dda1f9d](https://github.com/googleapis/google-cloud-go/commit/dda1f9dc2f5b54dca15ae05302d8cac821fe8da1))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.38.0...dialogflow/v1.39.0) (2023-07-10)
 
 

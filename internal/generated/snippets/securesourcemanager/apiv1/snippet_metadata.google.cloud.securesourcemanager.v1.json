@@ -1,0 +1,933 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/securesourcemanager/apiv1",
+    "version": "0.1.5",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.securesourcemanager.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CancelOperation_sync",
+      "title": "securesourcemanager CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateInstance_sync",
+      "title": "securesourcemanager CreateInstance Sample",
+      "description": "CreateInstance creates a new instance in a given project and location.",
+      "file": "Client/CreateInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateInstance",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CreateInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.CreateInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateInstance",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CreateInstance",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_CreateRepository_sync",
+      "title": "securesourcemanager CreateRepository Sample",
+      "description": "CreateRepository creates a new repository in a given project and location.\n\n**Host: Data Plane**",
+      "file": "Client/CreateRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRepository",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.CreateRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.CreateRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateRepositoryOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateRepository",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.CreateRepository",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteInstance_sync",
+      "title": "securesourcemanager DeleteInstance Sample",
+      "description": "DeleteInstance deletes a single instance.",
+      "file": "Client/DeleteInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteInstance",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.DeleteInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.DeleteInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteInstanceOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteInstance",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteInstance",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteOperation_sync",
+      "title": "securesourcemanager DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_DeleteRepository_sync",
+      "title": "securesourcemanager DeleteRepository Sample",
+      "description": "DeleteRepository deletes a Repository.\n\n**Host: Data Plane**",
+      "file": "Client/DeleteRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRepository",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.DeleteRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.DeleteRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteRepositoryOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteRepository",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteRepository",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetIamPolicy_sync",
+      "title": "securesourcemanager GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetIamPolicyRepo_sync",
+      "title": "securesourcemanager GetIamPolicyRepo Sample",
+      "description": "GetIamPolicyRepo get IAM policy for a repository.",
+      "file": "Client/GetIamPolicyRepo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicyRepo",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetIamPolicyRepo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetIamPolicyRepo",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetIamPolicyRepo",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetInstance_sync",
+      "title": "securesourcemanager GetInstance Sample",
+      "description": "GetInstance gets details of a single instance.",
+      "file": "Client/GetInstance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetInstance",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetInstance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.GetInstanceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securesourcemanagerpb.Instance",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetInstance",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetInstance",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetLocation_sync",
+      "title": "securesourcemanager GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetOperation_sync",
+      "title": "securesourcemanager GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_GetRepository_sync",
+      "title": "securesourcemanager GetRepository Sample",
+      "description": "GetRepository gets metadata of a repository.\n\n**Host: Data Plane**",
+      "file": "Client/GetRepository/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRepository",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.GetRepository",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.GetRepositoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securesourcemanagerpb.Repository",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetRepository",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.GetRepository",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListInstances_sync",
+      "title": "securesourcemanager ListInstances Sample",
+      "description": "ListInstances lists Instances in a given project and location.",
+      "file": "Client/ListInstances/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListInstances",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListInstances",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ListInstancesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListInstances",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListInstances",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListLocations_sync",
+      "title": "securesourcemanager ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListOperations_sync",
+      "title": "securesourcemanager ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_ListRepositories_sync",
+      "title": "securesourcemanager ListRepositories Sample",
+      "description": "ListRepositories lists Repositories in a given project and location.\n\n**Host: Data Plane**",
+      "file": "Client/ListRepositories/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRepositories",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.ListRepositories",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securesourcemanagerpb.ListRepositoriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RepositoryIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListRepositories",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.ListRepositories",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_SetIamPolicy_sync",
+      "title": "securesourcemanager SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_SetIamPolicyRepo_sync",
+      "title": "securesourcemanager SetIamPolicyRepo Sample",
+      "description": "SetIamPolicyRepo set IAM policy on a repository.",
+      "file": "Client/SetIamPolicyRepo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicyRepo",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.SetIamPolicyRepo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "SetIamPolicyRepo",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.SetIamPolicyRepo",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_TestIamPermissions_sync",
+      "title": "securesourcemanager TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_TestIamPermissionsRepo_sync",
+      "title": "securesourcemanager TestIamPermissionsRepo Sample",
+      "description": "TestIamPermissionsRepo test IAM permissions on a repository.\nIAM permission checks are not required on this method.",
+      "file": "Client/TestIamPermissionsRepo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissionsRepo",
+        "fullName": "google.cloud.securesourcemanager.v1.Client.TestIamPermissionsRepo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securesourcemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "TestIamPermissionsRepo",
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.TestIamPermissionsRepo",
+          "service": {
+            "shortName": "SecureSourceManager",
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

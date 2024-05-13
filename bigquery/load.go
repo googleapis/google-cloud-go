@@ -21,6 +21,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 )
 
 // LoadConfig holds the configuration for a load job.
@@ -101,6 +102,9 @@ type LoadConfig struct {
 
 	// ConnectionProperties are optional key-values settings.
 	ConnectionProperties []*ConnectionProperty
+
+	// MediaOptions stores options for customizing media upload.
+	MediaOptions []googleapi.MediaOption
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -210,7 +214,7 @@ func (l *Loader) Run(ctx context.Context) (j *Job, err error) {
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	job, media := l.newJob()
-	return l.c.insertJob(ctx, job, media)
+	return l.c.insertJob(ctx, job, media, l.LoadConfig.MediaOptions...)
 }
 
 func (l *Loader) newJob() (*bq.Job, io.Reader) {

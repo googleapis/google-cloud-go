@@ -1,0 +1,933 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/securityposture/apiv1",
+    "version": "0.1.3",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.securityposture.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_CancelOperation_sync",
+      "title": "securityposture CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.securityposture.v1.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_CreatePosture_sync",
+      "title": "securityposture CreatePosture Sample",
+      "description": "CreatePosture creates a new Posture resource.\nIf a Posture with the specified name already exists in the specified\norganization and location, the long running operation returns a\n[ALREADY_EXISTS][google.rpc.Code.ALREADY_EXISTS] error.",
+      "file": "Client/CreatePosture/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePosture",
+        "fullName": "google.cloud.securityposture.v1.Client.CreatePosture",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.CreatePostureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePostureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "CreatePosture",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.CreatePosture",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_CreatePostureDeployment_sync",
+      "title": "securityposture CreatePostureDeployment Sample",
+      "description": "CreatePostureDeployment creates a new PostureDeployment in a given project and location.",
+      "file": "Client/CreatePostureDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePostureDeployment",
+        "fullName": "google.cloud.securityposture.v1.Client.CreatePostureDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.CreatePostureDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreatePostureDeploymentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "CreatePostureDeployment",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.CreatePostureDeployment",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_DeleteOperation_sync",
+      "title": "securityposture DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.securityposture.v1.Client.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_DeletePosture_sync",
+      "title": "securityposture DeletePosture Sample",
+      "description": "DeletePosture deletes all the revisions of a resource.\nA posture can only be deleted when none of the revisions are deployed to\nany workload.",
+      "file": "Client/DeletePosture/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePosture",
+        "fullName": "google.cloud.securityposture.v1.Client.DeletePosture",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.DeletePostureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePostureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "DeletePosture",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.DeletePosture",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_DeletePostureDeployment_sync",
+      "title": "securityposture DeletePostureDeployment Sample",
+      "description": "DeletePostureDeployment deletes a single PostureDeployment.",
+      "file": "Client/DeletePostureDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePostureDeployment",
+        "fullName": "google.cloud.securityposture.v1.Client.DeletePostureDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.DeletePostureDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeletePostureDeploymentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "DeletePostureDeployment",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.DeletePostureDeployment",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_ExtractPosture_sync",
+      "title": "securityposture ExtractPosture Sample",
+      "description": "ExtractPosture extracts existing policies on a workload as a posture.\nIf a Posture on the given workload already exists, the long running\noperation returns a [ALREADY_EXISTS][google.rpc.Code.ALREADY_EXISTS] error.",
+      "file": "Client/ExtractPosture/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExtractPosture",
+        "fullName": "google.cloud.securityposture.v1.Client.ExtractPosture",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.ExtractPostureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExtractPostureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "ExtractPosture",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.ExtractPosture",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_GetLocation_sync",
+      "title": "securityposture GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.securityposture.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_GetOperation_sync",
+      "title": "securityposture GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.securityposture.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_GetPosture_sync",
+      "title": "securityposture GetPosture Sample",
+      "description": "GetPosture gets a posture in a given organization and location.\nUser must provide revision_id to retrieve a specific revision of the\nresource.\nNOT_FOUND error is returned if the revision_id or the Posture name does not\nexist. In case revision_id is not provided then the latest Posture revision\nby UpdateTime is returned.",
+      "file": "Client/GetPosture/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPosture",
+        "fullName": "google.cloud.securityposture.v1.Client.GetPosture",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.GetPostureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securityposturepb.Posture",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPosture",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.GetPosture",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_GetPostureDeployment_sync",
+      "title": "securityposture GetPostureDeployment Sample",
+      "description": "GetPostureDeployment gets details of a single PostureDeployment.",
+      "file": "Client/GetPostureDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPostureDeployment",
+        "fullName": "google.cloud.securityposture.v1.Client.GetPostureDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.GetPostureDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securityposturepb.PostureDeployment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPostureDeployment",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.GetPostureDeployment",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_GetPostureTemplate_sync",
+      "title": "securityposture GetPostureTemplate Sample",
+      "description": "GetPostureTemplate gets a PostureTemplate.\nUser must provide revision_id to retrieve a specific revision of the\nresource.\nNOT_FOUND error is returned if the revision_id or the PostureTemplate name\ndoes not exist. In case revision_id is not provided then the\nPostureTemplate with latest revision_id is returned.",
+      "file": "Client/GetPostureTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPostureTemplate",
+        "fullName": "google.cloud.securityposture.v1.Client.GetPostureTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.GetPostureTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securityposturepb.PostureTemplate",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "GetPostureTemplate",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.GetPostureTemplate",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_ListLocations_sync",
+      "title": "securityposture ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.securityposture.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_ListOperations_sync",
+      "title": "securityposture ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.securityposture.v1.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_ListPostureDeployments_sync",
+      "title": "securityposture ListPostureDeployments Sample",
+      "description": "ListPostureDeployments postureDeployments\nLists PostureDeployments in a given project and location.",
+      "file": "Client/ListPostureDeployments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPostureDeployments",
+        "fullName": "google.cloud.securityposture.v1.Client.ListPostureDeployments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.ListPostureDeploymentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PostureDeploymentIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPostureDeployments",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.ListPostureDeployments",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_ListPostureRevisions_sync",
+      "title": "securityposture ListPostureRevisions Sample",
+      "description": "ListPostureRevisions lists revisions of a Posture in a given organization and location.",
+      "file": "Client/ListPostureRevisions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPostureRevisions",
+        "fullName": "google.cloud.securityposture.v1.Client.ListPostureRevisions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.ListPostureRevisionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PostureIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPostureRevisions",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.ListPostureRevisions",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_ListPostureTemplates_sync",
+      "title": "securityposture ListPostureTemplates Sample",
+      "description": "ListPostureTemplates postureTemplates\nLists all the PostureTemplates available to the user.",
+      "file": "Client/ListPostureTemplates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPostureTemplates",
+        "fullName": "google.cloud.securityposture.v1.Client.ListPostureTemplates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.ListPostureTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PostureTemplateIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPostureTemplates",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.ListPostureTemplates",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_ListPostures_sync",
+      "title": "securityposture ListPostures Sample",
+      "description": "ListPostures (-- This option restricts the visibility of the API to only projects that\nwill\n(-- be labeled as `PREVIEW` or `GOOGLE_INTERNAL` by the service.\n(-- option (google.api.api_visibility).restriction =\n\"PREVIEW,GOOGLE_INTERNAL\"; Postures Lists Postures in a given organization\nand location. In case a posture has multiple revisions, the latest revision\nas per UpdateTime will be returned.",
+      "file": "Client/ListPostures/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPostures",
+        "fullName": "google.cloud.securityposture.v1.Client.ListPostures",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.ListPosturesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PostureIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPostures",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.ListPostures",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_UpdatePosture_sync",
+      "title": "securityposture UpdatePosture Sample",
+      "description": "UpdatePosture updates an existing Posture.\nA new revision of the posture will be created if the revision to be\nupdated is currently deployed on a workload.\nReturns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the\nPosture does not exist.\nReturns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag\nsupplied in the request does not match the persisted etag of the Posture.\nUpdatable fields are state, description and policy_sets.\nState update operation cannot be clubbed with update of description and\npolicy_sets.\nAn ACTIVE posture can be updated to both DRAFT or DEPRECATED states.\nPostures in DRAFT or DEPRECATED states can only be updated to ACTIVE state.",
+      "file": "Client/UpdatePosture/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePosture",
+        "fullName": "google.cloud.securityposture.v1.Client.UpdatePosture",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.UpdatePostureRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePostureOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdatePosture",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.UpdatePosture",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securityposture_v1_generated_SecurityPosture_UpdatePostureDeployment_sync",
+      "title": "securityposture UpdatePostureDeployment Sample",
+      "description": "UpdatePostureDeployment updates the parameters of a single PostureDeployment.",
+      "file": "Client/UpdatePostureDeployment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePostureDeployment",
+        "fullName": "google.cloud.securityposture.v1.Client.UpdatePostureDeployment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securityposturepb.UpdatePostureDeploymentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdatePostureDeploymentOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securityposture.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdatePostureDeployment",
+          "fullName": "google.cloud.securityposture.v1.SecurityPosture.UpdatePostureDeployment",
+          "service": {
+            "shortName": "SecurityPosture",
+            "fullName": "google.cloud.securityposture.v1.SecurityPosture"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudtasks/apiv2beta2",
-    "version": "1.11.1",
+    "version": "1.12.8",
     "language": "GO",
     "apis": [
       {
@@ -331,6 +331,52 @@
       ]
     },
     {
+      "regionTag": "cloudtasks_v2beta2_generated_CloudTasks_GetLocation_sync",
+      "title": "cloudtasks GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.tasks.v2beta2.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.tasks.v2beta2.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudtasks_v2beta2_generated_CloudTasks_GetQueue_sync",
       "title": "cloudtasks GetQueue Sample",
       "description": "GetQueue gets a queue.",
@@ -469,6 +515,52 @@
       ]
     },
     {
+      "regionTag": "cloudtasks_v2beta2_generated_CloudTasks_ListLocations_sync",
+      "title": "cloudtasks ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.tasks.v2beta2.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.tasks.v2beta2.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudtasks_v2beta2_generated_CloudTasks_ListQueues_sync",
       "title": "cloudtasks ListQueues Sample",
       "description": "ListQueues lists queues.\n\nQueues are returned in lexicographical order.",
@@ -509,7 +601,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -555,7 +647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -924,6 +1016,51 @@
         {
           "start": 18,
           "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudtasks_v2beta2_generated_CloudTasks_UploadQueueYaml_sync",
+      "title": "cloudtasks UploadQueueYaml Sample",
+      "description": "UploadQueueYaml update queue list by uploading a queue.yaml file.\n\nThe queue.yaml file is supplied in the request body as a YAML encoded\nstring. This method was added to support gcloud clients versions before\n322.0.0. New clients should use CreateQueue instead of this method.",
+      "file": "Client/UploadQueueYaml/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UploadQueueYaml",
+        "fullName": "google.cloud.tasks.v2beta2.Client.UploadQueueYaml",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudtaskspb.UploadQueueYamlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.tasks.v2beta2.Client"
+        },
+        "method": {
+          "shortName": "UploadQueueYaml",
+          "fullName": "google.cloud.tasks.v2beta2.CloudTasks.UploadQueueYaml",
+          "service": {
+            "shortName": "CloudTasks",
+            "fullName": "google.cloud.tasks.v2beta2.CloudTasks"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]

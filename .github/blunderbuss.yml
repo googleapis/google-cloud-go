@@ -24,9 +24,13 @@ assign_issues_by:
 - labels:
   - 'api: spanner'
   to:
-  - rahul2393
+  - harshachinta
 - labels:
   - 'api: logging'
   - 'api: clouderrorreporting'
   to:
-  - googleapis/api-logging
+  - googleapis/api-logging-go-reviewers
+- labels:
+  - 'api: cloudprofiler'
+  to:
+  - googleapis/api-profiler

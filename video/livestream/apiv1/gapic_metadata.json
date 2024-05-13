@@ -15,6 +15,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
             "CreateChannel": {
               "methods": [
                 "CreateChannel"
@@ -28,6 +33,11 @@
             "CreateInput": {
               "methods": [
                 "CreateInput"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
               ]
             },
             "DeleteChannel": {
@@ -48,6 +58,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
               ]
             },
             "GetChannel": {
@@ -73,6 +88,16 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetPool": {
+              "methods": [
+                "GetPool"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
               ]
             },
             "ListChannels": {
@@ -118,6 +143,11 @@
             "UpdateInput": {
               "methods": [
                 "UpdateInput"
+              ]
+            },
+            "UpdatePool": {
+              "methods": [
+                "UpdatePool"
               ]
             }
           }
@@ -130,6 +160,11 @@
                 "CancelOperation"
               ]
             },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
             "CreateChannel": {
               "methods": [
                 "CreateChannel"
@@ -143,6 +178,11 @@
             "CreateInput": {
               "methods": [
                 "CreateInput"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
               ]
             },
             "DeleteChannel": {
@@ -163,6 +203,11 @@
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
               ]
             },
             "GetChannel": {
@@ -188,6 +233,16 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetPool": {
+              "methods": [
+                "GetPool"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
               ]
             },
             "ListChannels": {
@@ -233,6 +288,11 @@
             "UpdateInput": {
               "methods": [
                 "UpdateInput"
+              ]
+            },
+            "UpdatePool": {
+              "methods": [
+                "UpdatePool"
               ]
             }
           }

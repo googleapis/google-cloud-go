@@ -1,0 +1,245 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/language/apiv2",
+    "version": "1.12.5",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.language.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "language_v2_generated_LanguageService_AnalyzeEntities_sync",
+      "title": "language AnalyzeEntities Sample",
+      "description": "AnalyzeEntities finds named entities (currently proper names and common nouns) in the text\nalong with entity types, probability, mentions for each entity, and\nother properties.",
+      "file": "Client/AnalyzeEntities/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnalyzeEntities",
+        "fullName": "google.cloud.language.v2.Client.AnalyzeEntities",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "languagepb.AnalyzeEntitiesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*languagepb.AnalyzeEntitiesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.language.v2.Client"
+        },
+        "method": {
+          "shortName": "AnalyzeEntities",
+          "fullName": "google.cloud.language.v2.LanguageService.AnalyzeEntities",
+          "service": {
+            "shortName": "LanguageService",
+            "fullName": "google.cloud.language.v2.LanguageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "language_v2_generated_LanguageService_AnalyzeSentiment_sync",
+      "title": "language AnalyzeSentiment Sample",
+      "description": "AnalyzeSentiment analyzes the sentiment of the provided text.",
+      "file": "Client/AnalyzeSentiment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnalyzeSentiment",
+        "fullName": "google.cloud.language.v2.Client.AnalyzeSentiment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "languagepb.AnalyzeSentimentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*languagepb.AnalyzeSentimentResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.language.v2.Client"
+        },
+        "method": {
+          "shortName": "AnalyzeSentiment",
+          "fullName": "google.cloud.language.v2.LanguageService.AnalyzeSentiment",
+          "service": {
+            "shortName": "LanguageService",
+            "fullName": "google.cloud.language.v2.LanguageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "language_v2_generated_LanguageService_AnnotateText_sync",
+      "title": "language AnnotateText Sample",
+      "description": "AnnotateText a convenience method that provides all features in one call.",
+      "file": "Client/AnnotateText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AnnotateText",
+        "fullName": "google.cloud.language.v2.Client.AnnotateText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "languagepb.AnnotateTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*languagepb.AnnotateTextResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.language.v2.Client"
+        },
+        "method": {
+          "shortName": "AnnotateText",
+          "fullName": "google.cloud.language.v2.LanguageService.AnnotateText",
+          "service": {
+            "shortName": "LanguageService",
+            "fullName": "google.cloud.language.v2.LanguageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "language_v2_generated_LanguageService_ClassifyText_sync",
+      "title": "language ClassifyText Sample",
+      "description": "ClassifyText classifies a document into categories.",
+      "file": "Client/ClassifyText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ClassifyText",
+        "fullName": "google.cloud.language.v2.Client.ClassifyText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "languagepb.ClassifyTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*languagepb.ClassifyTextResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.language.v2.Client"
+        },
+        "method": {
+          "shortName": "ClassifyText",
+          "fullName": "google.cloud.language.v2.LanguageService.ClassifyText",
+          "service": {
+            "shortName": "LanguageService",
+            "fullName": "google.cloud.language.v2.LanguageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "language_v2_generated_LanguageService_ModerateText_sync",
+      "title": "language ModerateText Sample",
+      "description": "ModerateText moderates a document for harmful and sensitive categories.",
+      "file": "Client/ModerateText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ModerateText",
+        "fullName": "google.cloud.language.v2.Client.ModerateText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "languagepb.ModerateTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*languagepb.ModerateTextResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.language.v2.Client"
+        },
+        "method": {
+          "shortName": "ModerateText",
+          "fullName": "google.cloud.language.v2.LanguageService.ModerateText",
+          "service": {
+            "shortName": "LanguageService",
+            "fullName": "google.cloud.language.v2.LanguageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

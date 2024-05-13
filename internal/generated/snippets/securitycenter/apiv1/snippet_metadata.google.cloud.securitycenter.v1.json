@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycenter/apiv1",
-    "version": "1.23.0",
+    "version": "1.30.0",
     "language": "GO",
     "apis": [
       {
@@ -1058,7 +1058,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1104,7 +1104,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1150,7 +1150,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1196,7 +1196,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1242,7 +1242,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1288,7 +1288,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1334,7 +1334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1380,7 +1380,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1426,7 +1426,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1472,7 +1472,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1518,7 +1518,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1564,7 +1564,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1738,6 +1738,52 @@
         "method": {
           "shortName": "SetMute",
           "fullName": "google.cloud.securitycenter.v1.SecurityCenter.SetMute",
+          "service": {
+            "shortName": "SecurityCenter",
+            "fullName": "google.cloud.securitycenter.v1.SecurityCenter"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycenter_v1_generated_SecurityCenter_SimulateSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycenter SimulateSecurityHealthAnalyticsCustomModule Sample",
+      "description": "SimulateSecurityHealthAnalyticsCustomModule simulates a given SecurityHealthAnalyticsCustomModule and Resource.",
+      "file": "Client/SimulateSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SimulateSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycenter.v1.Client.SimulateSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycenterpb.SimulateSecurityHealthAnalyticsCustomModuleResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycenter.v1.Client"
+        },
+        "method": {
+          "shortName": "SimulateSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycenter.v1.SecurityCenter.SimulateSecurityHealthAnalyticsCustomModule",
           "service": {
             "shortName": "SecurityCenter",
             "fullName": "google.cloud.securitycenter.v1.SecurityCenter"

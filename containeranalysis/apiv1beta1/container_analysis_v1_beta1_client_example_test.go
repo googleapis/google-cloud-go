@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,7 +58,7 @@ func ExampleNewContainerAnalysisV1Beta1RESTClient() {
 	_ = c
 }
 
-func ExampleContainerAnalysisV1Beta1Client_SetIamPolicy() {
+func ExampleContainerAnalysisV1Beta1Client_ExportSBOM() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -71,11 +71,36 @@ func ExampleContainerAnalysisV1Beta1Client_SetIamPolicy() {
 	}
 	defer c.Close()
 
-	req := &iampb.SetIamPolicyRequest{
+	req := &containeranalysispb.ExportSBOMRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#ExportSBOMRequest.
 	}
-	resp, err := c.SetIamPolicy(ctx, req)
+	resp, err := c.ExportSBOM(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleContainerAnalysisV1Beta1Client_GeneratePackagesSummary() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &containeranalysispb.GeneratePackagesSummaryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#GeneratePackagesSummaryRequest.
+	}
+	resp, err := c.GeneratePackagesSummary(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -108,6 +133,31 @@ func ExampleContainerAnalysisV1Beta1Client_GetIamPolicy() {
 	_ = resp
 }
 
+func ExampleContainerAnalysisV1Beta1Client_SetIamPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.SetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleContainerAnalysisV1Beta1Client_TestIamPermissions() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -126,31 +176,6 @@ func ExampleContainerAnalysisV1Beta1Client_TestIamPermissions() {
 		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleContainerAnalysisV1Beta1Client_GeneratePackagesSummary() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := containeranalysis.NewContainerAnalysisV1Beta1Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &containeranalysispb.GeneratePackagesSummaryRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1beta1/containeranalysispb#GeneratePackagesSummaryRequest.
-	}
-	resp, err := c.GeneratePackagesSummary(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

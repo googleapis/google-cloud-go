@@ -61,6 +61,10 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestErrors = stats.Int64(statsPrefix+"append_request_errors", "Number of append requests that yielded immediate error", stats.UnitDimensionless)
 
+	// AppendRequestReconnects is a measure of the number of times that sending an append request triggered reconnect.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestReconnects = stats.Int64(statsPrefix+"append_reconnections", "Number of append rows reconnections", stats.UnitDimensionless)
+
 	// AppendRequestRows is a measure of the number of append rows sent.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestRows = stats.Int64(statsPrefix+"append_rows", "Number of append rows sent", stats.UnitDimensionless)
@@ -105,6 +109,10 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestErrorsView *view.View
 
+	// AppendRequestReconnectsView is a cumulative sum of AppendRequestReconnects.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	AppendRequestReconnectsView *view.View
+
 	// AppendRequestRowsView is a cumulative sum of AppendRows.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	AppendRequestRowsView *view.View
@@ -127,12 +135,13 @@ var (
 )
 
 func init() {
-	AppendClientOpenView = createSumView(stats.Measure(AppendClientOpenCount))
+	AppendClientOpenView = createSumView(stats.Measure(AppendClientOpenCount), keyError)
 	AppendClientOpenRetryView = createSumView(stats.Measure(AppendClientOpenRetryCount))
 
 	AppendRequestsView = createSumView(stats.Measure(AppendRequests), keyStream, keyDataOrigin)
 	AppendRequestBytesView = createSumView(stats.Measure(AppendRequestBytes), keyStream, keyDataOrigin)
 	AppendRequestErrorsView = createSumView(stats.Measure(AppendRequestErrors), keyStream, keyDataOrigin, keyError)
+	AppendRequestReconnectsView = createSumView(stats.Measure(AppendRequestReconnects), keyStream, keyDataOrigin, keyError)
 	AppendRequestRowsView = createSumView(stats.Measure(AppendRequestRows), keyStream, keyDataOrigin)
 
 	AppendResponsesView = createSumView(stats.Measure(AppendResponses), keyStream, keyDataOrigin)
@@ -147,6 +156,7 @@ func init() {
 		AppendRequestsView,
 		AppendRequestBytesView,
 		AppendRequestErrorsView,
+		AppendRequestReconnectsView,
 		AppendRequestRowsView,
 
 		AppendResponsesView,

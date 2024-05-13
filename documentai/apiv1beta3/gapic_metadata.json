@@ -304,6 +304,11 @@
         "grpc": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchDeleteDocuments": {
+              "methods": [
+                "BatchDeleteDocuments"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -314,6 +319,11 @@
                 "GetDatasetSchema"
               ]
             },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -322,6 +332,16 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
+              ]
+            },
+            "ListDocuments": {
+              "methods": [
+                "ListDocuments"
               ]
             },
             "ListLocations": {
@@ -349,6 +369,11 @@
         "rest": {
           "libraryClient": "DocumentClient",
           "rpcs": {
+            "BatchDeleteDocuments": {
+              "methods": [
+                "BatchDeleteDocuments"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -359,6 +384,11 @@
                 "GetDatasetSchema"
               ]
             },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -367,6 +397,16 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
+              ]
+            },
+            "ListDocuments": {
+              "methods": [
+                "ListDocuments"
               ]
             },
             "ListLocations": {

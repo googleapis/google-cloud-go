@@ -1082,14 +1082,14 @@ func TestUpdateFilter(t *testing.T) {
 		AckDeadlineSeconds: minAckDeadlineSecs,
 		Name:               "projects/P/subscriptions/S",
 		Topic:              top.Name,
-		Filter:             "some-filter",
+		Filter:             "NOT attributes:foo",
 	})
 
 	update := &pb.Subscription{
 		AckDeadlineSeconds: sub.AckDeadlineSeconds,
 		Name:               sub.Name,
 		Topic:              top.Name,
-		Filter:             "new-filter",
+		Filter:             "NOT attributes:bar",
 	}
 
 	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
@@ -1543,6 +1543,9 @@ func TestSubscriptionPushPull(t *testing.T) {
 	// Create a push subscription.
 	pc := &pb.PushConfig{
 		PushEndpoint: "some-endpoint",
+		Wrapper: &pb.PushConfig_PubsubWrapper_{
+			PubsubWrapper: &pb.PushConfig_PubsubWrapper{},
+		},
 	}
 	got := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
 		AckDeadlineSeconds: minAckDeadlineSecs,

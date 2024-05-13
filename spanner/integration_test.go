@@ -27,8 +27,10 @@ import (
 	"math/big"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"reflect"
 	"regexp"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -41,27 +43,35 @@ import (
 	adminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
+	v1 "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
+	pb "cloud.google.com/go/spanner/testdata/protos"
+	"github.com/google/go-cmp/cmp"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/testing/protocmp"
 )
 
 const (
 	directPathIPV6Prefix = "[2001:4860:8040"
 	directPathIPV4Prefix = "34.126"
 
-	singerDDLStatements    = "SINGER_DDL_STATEMENTS"
-	simpleDDLStatements    = "SIMPLE_DDL_STATEMENTS"
-	readDDLStatements      = "READ_DDL_STATEMENTS"
-	backupDDLStatements    = "BACKUP_DDL_STATEMENTS"
-	testTableDDLStatements = "TEST_TABLE_DDL_STATEMENTS"
+	singerDDLStatements               = "SINGER_DDL_STATEMENTS"
+	simpleDDLStatements               = "SIMPLE_DDL_STATEMENTS"
+	readDDLStatements                 = "READ_DDL_STATEMENTS"
+	backupDDLStatements               = "BACKUP_DDL_STATEMENTS"
+	testTableDDLStatements            = "TEST_TABLE_DDL_STATEMENTS"
+	fkdcDDLStatements                 = "FKDC_DDL_STATEMENTS"
+	testTableBitReversedSeqStatements = "TEST_TABLE_BIT_REVERSED_SEQUENCE_STATEMENTS"
 )
 
 var (
@@ -259,20 +269,79 @@ var (
 					)`,
 	}
 
+	fkdcDBStatements = []string{
+		`CREATE TABLE Customers (
+            CustomerId INT64 NOT NULL,
+            CustomerName STRING(62) NOT NULL,
+          ) PRIMARY KEY (CustomerId)`,
+		`CREATE TABLE ShoppingCarts (
+            CartId INT64 NOT NULL,
+            CustomerId INT64 NOT NULL,
+            CustomerName STRING(62) NOT NULL,
+            CONSTRAINT FKShoppingCartsCustomerId FOREIGN KEY (CustomerId)
+            REFERENCES Customers (CustomerId) ON DELETE CASCADE
+         ) PRIMARY KEY (CartId)`,
+	}
+
+	fkdcDBPGStatements = []string{
+		`CREATE TABLE Customers (
+            CustomerId BIGINT,
+            CustomerName VARCHAR(62) NOT NULL,
+            PRIMARY KEY (CustomerId))`,
+		`CREATE TABLE ShoppingCarts (
+            CartId BIGINT,
+            CustomerId BIGINT NOT NULL,
+            CustomerName VARCHAR(62) NOT NULL,
+            CONSTRAINT "FKShoppingCartsCustomerId" FOREIGN KEY (CustomerId)
+            REFERENCES Customers (CustomerId) ON DELETE CASCADE,
+            PRIMARY KEY (CartId))`,
+	}
+
+	bitReverseSeqDBStatments = []string{
+		`CREATE SEQUENCE seqT OPTIONS (sequence_kind = "bit_reversed_positive")`,
+		`CREATE TABLE T (
+            id INT64 DEFAULT (GET_NEXT_SEQUENCE_VALUE(Sequence seqT)),
+            value INT64,
+            counter INT64 DEFAULT (GET_INTERNAL_SEQUENCE_STATE(Sequence seqT)),
+            br_id INT64 AS (BIT_REVERSE(id, true)) STORED,
+            CONSTRAINT id_gt_0 CHECK (id > 0),
+            CONSTRAINT counter_gt_br_id CHECK (counter >= br_id),
+            CONSTRAINT br_id_true CHECK (id = BIT_REVERSE(br_id, true)),
+          ) PRIMARY KEY (id)`,
+	}
+
+	bitReverseSeqDBPGStatments = []string{
+		`CREATE SEQUENCE seqT BIT_REVERSED_POSITIVE`,
+		`CREATE TABLE T (
+		  id BIGINT DEFAULT nextval('seqT'),
+		  value BIGINT,
+		  counter BIGINT DEFAULT spanner.get_internal_sequence_state('seqT'),
+		  br_id bigint GENERATED ALWAYS AS (spanner.bit_reverse(id, true)) STORED,
+		  CONSTRAINT id_gt_0 CHECK (id > 0),
+		  CONSTRAINT counter_gt_br_id CHECK (counter >= br_id),
+          CONSTRAINT br_id_true CHECK (id = spanner.bit_reverse(br_id, true)),
+		  PRIMARY KEY (id)
+		)`,
+	}
+
 	statements = map[adminpb.DatabaseDialect]map[string][]string{
 		adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL: {
-			singerDDLStatements:    singerDBStatements,
-			simpleDDLStatements:    simpleDBStatements,
-			readDDLStatements:      readDBStatements,
-			backupDDLStatements:    backupDBStatements,
-			testTableDDLStatements: readDBStatements,
+			singerDDLStatements:               singerDBStatements,
+			simpleDDLStatements:               simpleDBStatements,
+			readDDLStatements:                 readDBStatements,
+			backupDDLStatements:               backupDBStatements,
+			testTableDDLStatements:            readDBStatements,
+			fkdcDDLStatements:                 fkdcDBStatements,
+			testTableBitReversedSeqStatements: bitReverseSeqDBStatments,
 		},
 		adminpb.DatabaseDialect_POSTGRESQL: {
-			singerDDLStatements:    singerDBPGStatements,
-			simpleDDLStatements:    simpleDBPGStatements,
-			readDDLStatements:      readDBPGStatements,
-			backupDDLStatements:    backupDBPGStatements,
-			testTableDDLStatements: readDBPGStatements,
+			singerDDLStatements:               singerDBPGStatements,
+			simpleDDLStatements:               simpleDBPGStatements,
+			readDDLStatements:                 readDBPGStatements,
+			backupDDLStatements:               backupDBPGStatements,
+			testTableDDLStatements:            readDBPGStatements,
+			fkdcDDLStatements:                 fkdcDBPGStatements,
+			testTableBitReversedSeqStatements: bitReverseSeqDBPGStatments,
 		},
 	}
 
@@ -423,6 +492,7 @@ func initIntegrationTests() (cleanup func()) {
 		// Delete this test instance.
 		instanceName := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
 		deleteInstanceAndBackups(ctx, instanceName)
+
 		// Delete other test instances that may be lingering around.
 		cleanupInstances()
 		databaseAdmin.Close()
@@ -522,7 +592,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 	}
 	// Calculate time difference between Cloud Spanner server and localhost to
 	// use to determine the exact staleness value to use.
-	timeDiff := maxDuration(time.Now().Sub(writes[0].ts), 0)
+	timeDiff := maxDuration(time.Since(writes[0].ts), 0)
 
 	// Test reading rows with different timestamp bounds.
 	for i, test := range []struct {
@@ -559,7 +629,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 		{
 			name: "max_staleness",
 			want: [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}},
-			tb:   MaxStaleness(time.Second),
+			tb:   MaxStaleness(time.Nanosecond),
 			checkTs: func(ts time.Time) error {
 				if ts.Before(writes[3].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[3].ts)
@@ -585,7 +655,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			skipForPG: true,
 			want:      nil,
 			// Specify a staleness which should be already before this test.
-			tb: ExactStaleness(time.Now().Sub(writes[0].ts) + timeDiff + 30*time.Second),
+			tb: ExactStaleness(time.Since(writes[0].ts) + timeDiff + 30*time.Second),
 			checkTs: func(ts time.Time) error {
 				if !ts.Before(writes[0].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be earlier than %v", ts, writes[0].ts)
@@ -761,6 +831,141 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3)"
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		singersQuery = "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId = $1 OR  SingerId = $2 OR  SingerId = $3"
+	}
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
+		OptimizerVersion:           "1",
+		OptimizerStatisticsPackage: "latest",
+	}}
+	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
+		singersQuery,
+		map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
+	}, qo))
+
+	if err != nil {
+		t.Errorf("ReadOnlyTransaction.QueryWithOptions returns error %v, want nil", err)
+	}
+
+	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result from ReadOnlyTransaction.QueryWithOptions: %v, want %v", got, want)
+	}
+}
+
+func TestIntegration_TransactionWasStartedInDifferentSession(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	attempts := 0
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, transaction *ReadWriteTransaction) error {
+		attempts++
+		if attempts == 1 {
+			deleteTestSession(ctx, t, transaction.sh.getID())
+		}
+		if _, err := readAll(transaction.Query(ctx, NewStatement("select * from singers"))); err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempts mismatch\nGot:  %v\nWant: %v", g, w)
+	}
+}
+
+func deleteTestSession(ctx context.Context, t *testing.T, sessionName string) {
+	var opts []option.ClientOption
+	if emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST"); emulatorAddr != "" {
+		emulatorOpts := []option.ClientOption{
+			option.WithEndpoint(emulatorAddr),
+			option.WithGRPCDialOption(grpc.WithInsecure()),
+			option.WithoutAuthentication(),
+			internaloption.SkipDialSettingsValidation(),
+		}
+		opts = append(emulatorOpts, opts...)
+	}
+	gapic, err := v1.NewClient(ctx, opts...)
+	if err != nil {
+		t.Fatalf("could not create gapic client: %v", err)
+	}
+	defer gapic.Close()
+	if err := gapic.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: sessionName}); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestIntegration_BatchWrite(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	mgs := make([]*MutationGroup, len(writes))
+	// Try to write four rows through the BatchWrite API.
+	for i, w := range writes {
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		ms := make([]*Mutation, 1)
+		ms[0] = m
+		mgs[i] = &MutationGroup{Mutations: ms}
+	}
+	// Records the mutation group indexes received in the response.
+	seen := make(map[int32]int32)
+	numMutationGroups := len(mgs)
+	validate := func(res *sppb.BatchWriteResponse) error {
+		if status := status.ErrorProto(res.GetStatus()); status != nil {
+			t.Fatalf("Invalid status: %v", status)
+		}
+		if ts := res.GetCommitTimestamp(); ts == nil {
+			t.Fatal("Invalid commit timestamp")
+		}
+		for _, idx := range res.GetIndexes() {
+			if idx >= 0 && idx < int32(numMutationGroups) {
+				seen[idx]++
+			} else {
+				t.Fatalf("Index %v out of range. Expected range [%v,%v]", idx, 0, numMutationGroups-1)
+			}
+		}
+		return nil
+	}
+	iter := client.BatchWrite(ctx, mgs)
+	if err := iter.Do(validate); err != nil {
+		t.Fatal(err)
+	}
+	// Validate that each mutation group index is seen exactly once.
+	if numMutationGroups != len(seen) {
+		t.Fatalf("Expected %v indexes, got %v indexes", numMutationGroups, len(seen))
+	}
+	for idx, ct := range seen {
+		if ct != 1 {
+			t.Fatalf("Index %v seen %v times instead of exactly once", idx, ct)
+		}
+	}
+
+	// Verify the writes by reading the database.
 	singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3)"
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		singersQuery = "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId = $1 OR  SingerId = $2 OR  SingerId = $3"
@@ -1230,7 +1435,8 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 		}
 	}
 
-	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
+	duration, _ := time.ParseDuration("100ms")
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true, MaxCommitDelay: &duration}}
 	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		// Query Foo's balance and Bar's balance.
 		queryAccountByID := "SELECT Balance FROM Accounts WHERE AccountId = @p1"
@@ -1818,29 +2024,40 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	n2 := *n2p
 
 	type Message struct {
-		Name string
-		Body string
-		Time int64
+		Name       string
+		Body       string
+		Time       int64
+		FloatValue interface{}
 	}
-	msg := Message{"Alice", "Hello", 1294706395881547000}
-	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
-	var unmarshalledJSONstruct interface{}
-	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONstruct)
+	msg := Message{"Alice", "Hello", 145688415796432520, json.Number("0.39240506000000003")}
+	unmarshalledJSONStructUsingNumber := map[string]interface{}{
+		"Name":       "Alice",
+		"Body":       "Hello",
+		"Time":       json.Number("145688415796432520"),
+		"FloatValue": json.Number("0.39240506000000003"),
+	}
+	unmarshalledJSONStruct := map[string]interface{}{
+		"Name":       "Alice",
+		"Body":       "Hello",
+		"Time":       1.456884157964325e+17,
+		"FloatValue": 0.39240506,
+	}
 
 	tests := []struct {
-		col  string
-		val  interface{}
-		want interface{}
+		col                   string
+		val                   interface{}
+		wantWithDefaultConfig interface{}
+		wantWithNumber        interface{}
 	}{
 		{col: "String", val: ""},
-		{col: "String", val: "", want: NullString{"", true}},
+		{col: "String", val: "", wantWithDefaultConfig: NullString{"", true}, wantWithNumber: NullString{"", true}},
 		{col: "String", val: "foo"},
-		{col: "String", val: "foo", want: NullString{"foo", true}},
-		{col: "String", val: NullString{"bar", true}, want: "bar"},
-		{col: "String", val: NullString{"bar", false}, want: NullString{"", false}},
-		{col: "StringArray", val: []string(nil), want: []NullString(nil)},
-		{col: "StringArray", val: []string{}, want: []NullString{}},
-		{col: "StringArray", val: []string{"foo", "bar"}, want: []NullString{{"foo", true}, {"bar", true}}},
+		{col: "String", val: "foo", wantWithDefaultConfig: NullString{"foo", true}, wantWithNumber: NullString{"foo", true}},
+		{col: "String", val: NullString{"bar", true}, wantWithDefaultConfig: "bar", wantWithNumber: "bar"},
+		{col: "String", val: NullString{"bar", false}, wantWithDefaultConfig: NullString{"", false}, wantWithNumber: NullString{"", false}},
+		{col: "StringArray", val: []string(nil), wantWithDefaultConfig: []NullString(nil), wantWithNumber: []NullString(nil)},
+		{col: "StringArray", val: []string{}, wantWithDefaultConfig: []NullString{}, wantWithNumber: []NullString{}},
+		{col: "StringArray", val: []string{"foo", "bar"}, wantWithDefaultConfig: []NullString{{"foo", true}, {"bar", true}}, wantWithNumber: []NullString{{"foo", true}, {"bar", true}}},
 		{col: "StringArray", val: []NullString(nil)},
 		{col: "StringArray", val: []NullString{}},
 		{col: "StringArray", val: []NullString{{"foo", true}, {}}},
@@ -1850,32 +2067,32 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "BytesArray", val: [][]byte(nil)},
 		{col: "BytesArray", val: [][]byte{}},
 		{col: "BytesArray", val: [][]byte{{1}, {2, 3}}},
-		{col: "Int64a", val: 0, want: int64(0)},
-		{col: "Int64a", val: -1, want: int64(-1)},
-		{col: "Int64a", val: 2, want: int64(2)},
+		{col: "Int64a", val: 0, wantWithDefaultConfig: int64(0), wantWithNumber: int64(0)},
+		{col: "Int64a", val: -1, wantWithDefaultConfig: int64(-1), wantWithNumber: int64(-1)},
+		{col: "Int64a", val: 2, wantWithDefaultConfig: int64(2), wantWithNumber: int64(2)},
 		{col: "Int64a", val: int64(3)},
-		{col: "Int64a", val: 4, want: NullInt64{4, true}},
-		{col: "Int64a", val: NullInt64{5, true}, want: int64(5)},
-		{col: "Int64a", val: NullInt64{6, true}, want: int64(6)},
-		{col: "Int64a", val: NullInt64{7, false}, want: NullInt64{0, false}},
-		{col: "Int64Array", val: []int(nil), want: []NullInt64(nil)},
-		{col: "Int64Array", val: []int{}, want: []NullInt64{}},
-		{col: "Int64Array", val: []int{1, 2}, want: []NullInt64{{1, true}, {2, true}}},
-		{col: "Int64Array", val: []int64(nil), want: []NullInt64(nil)},
-		{col: "Int64Array", val: []int64{}, want: []NullInt64{}},
-		{col: "Int64Array", val: []int64{1, 2}, want: []NullInt64{{1, true}, {2, true}}},
+		{col: "Int64a", val: 4, wantWithDefaultConfig: NullInt64{4, true}, wantWithNumber: NullInt64{4, true}},
+		{col: "Int64a", val: NullInt64{5, true}, wantWithDefaultConfig: int64(5), wantWithNumber: int64(5)},
+		{col: "Int64a", val: NullInt64{6, true}, wantWithDefaultConfig: int64(6), wantWithNumber: int64(6)},
+		{col: "Int64a", val: NullInt64{7, false}, wantWithDefaultConfig: NullInt64{0, false}, wantWithNumber: NullInt64{0, false}},
+		{col: "Int64Array", val: []int(nil), wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
+		{col: "Int64Array", val: []int{}, wantWithDefaultConfig: []NullInt64{}, wantWithNumber: []NullInt64{}},
+		{col: "Int64Array", val: []int{1, 2}, wantWithDefaultConfig: []NullInt64{{1, true}, {2, true}}, wantWithNumber: []NullInt64{{1, true}, {2, true}}},
+		{col: "Int64Array", val: []int64(nil), wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
+		{col: "Int64Array", val: []int64{}, wantWithDefaultConfig: []NullInt64{}, wantWithNumber: []NullInt64{}},
+		{col: "Int64Array", val: []int64{1, 2}, wantWithDefaultConfig: []NullInt64{{1, true}, {2, true}}, wantWithNumber: []NullInt64{{1, true}, {2, true}}},
 		{col: "Int64Array", val: []NullInt64(nil)},
 		{col: "Int64Array", val: []NullInt64{}},
 		{col: "Int64Array", val: []NullInt64{{1, true}, {}}},
 		{col: "Bool", val: false},
 		{col: "Bool", val: true},
-		{col: "Bool", val: false, want: NullBool{false, true}},
-		{col: "Bool", val: true, want: NullBool{true, true}},
+		{col: "Bool", val: false, wantWithDefaultConfig: NullBool{false, true}, wantWithNumber: NullBool{false, true}},
+		{col: "Bool", val: true, wantWithDefaultConfig: NullBool{true, true}, wantWithNumber: NullBool{true, true}},
 		{col: "Bool", val: NullBool{true, true}},
 		{col: "Bool", val: NullBool{false, false}},
-		{col: "BoolArray", val: []bool(nil), want: []NullBool(nil)},
-		{col: "BoolArray", val: []bool{}, want: []NullBool{}},
-		{col: "BoolArray", val: []bool{true, false}, want: []NullBool{{true, true}, {false, true}}},
+		{col: "BoolArray", val: []bool(nil), wantWithDefaultConfig: []NullBool(nil), wantWithNumber: []NullBool(nil)},
+		{col: "BoolArray", val: []bool{}, wantWithDefaultConfig: []NullBool{}, wantWithNumber: []NullBool{}},
+		{col: "BoolArray", val: []bool{true, false}, wantWithDefaultConfig: []NullBool{{true, true}, {false, true}}, wantWithNumber: []NullBool{{true, true}, {false, true}}},
 		{col: "BoolArray", val: []NullBool(nil)},
 		{col: "BoolArray", val: []NullBool{}},
 		{col: "BoolArray", val: []NullBool{{false, true}, {true, true}, {}}},
@@ -1884,76 +2101,329 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "Float64", val: math.NaN()},
 		{col: "Float64", val: math.Inf(1)},
 		{col: "Float64", val: math.Inf(-1)},
-		{col: "Float64", val: 2.78, want: NullFloat64{2.78, true}},
-		{col: "Float64", val: NullFloat64{2.71, true}, want: 2.71},
-		{col: "Float64", val: NullFloat64{1.41, true}, want: NullFloat64{1.41, true}},
+		{col: "Float64", val: 2.78, wantWithDefaultConfig: NullFloat64{2.78, true}, wantWithNumber: NullFloat64{2.78, true}},
+		{col: "Float64", val: NullFloat64{2.71, true}, wantWithDefaultConfig: 2.71, wantWithNumber: 2.71},
+		{col: "Float64", val: NullFloat64{1.41, true}, wantWithDefaultConfig: NullFloat64{1.41, true}, wantWithNumber: NullFloat64{1.41, true}},
 		{col: "Float64", val: NullFloat64{0, false}},
-		{col: "Float64Array", val: []float64(nil), want: []NullFloat64(nil)},
-		{col: "Float64Array", val: []float64{}, want: []NullFloat64{}},
-		{col: "Float64Array", val: []float64{2.72, 3.14, math.Inf(1)}, want: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}},
+		{col: "Float64Array", val: []float64(nil), wantWithDefaultConfig: []NullFloat64(nil), wantWithNumber: []NullFloat64(nil)},
+		{col: "Float64Array", val: []float64{}, wantWithDefaultConfig: []NullFloat64{}, wantWithNumber: []NullFloat64{}},
+		{col: "Float64Array", val: []float64{2.72, 3.14, math.Inf(1)}, wantWithDefaultConfig: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}, wantWithNumber: []NullFloat64{{2.72, true}, {3.14, true}, {math.Inf(1), true}}},
 		{col: "Float64Array", val: []NullFloat64(nil)},
 		{col: "Float64Array", val: []NullFloat64{}},
 		{col: "Float64Array", val: []NullFloat64{{2.72, true}, {math.Inf(1), true}, {}}},
 		{col: "Date", val: d1},
-		{col: "Date", val: d1, want: NullDate{d1, true}},
+		{col: "Date", val: d1, wantWithDefaultConfig: NullDate{d1, true}, wantWithNumber: NullDate{d1, true}},
 		{col: "Date", val: NullDate{d1, true}},
-		{col: "Date", val: NullDate{d1, true}, want: d1},
+		{col: "Date", val: NullDate{d1, true}, wantWithDefaultConfig: d1, wantWithNumber: d1},
 		{col: "Date", val: NullDate{civil.Date{}, false}},
-		{col: "DateArray", val: []civil.Date(nil), want: []NullDate(nil)},
-		{col: "DateArray", val: []civil.Date{}, want: []NullDate{}},
-		{col: "DateArray", val: []civil.Date{d1, d2, d3}, want: []NullDate{{d1, true}, {d2, true}, {d3, true}}},
+		{col: "DateArray", val: []civil.Date(nil), wantWithDefaultConfig: []NullDate(nil), wantWithNumber: []NullDate(nil)},
+		{col: "DateArray", val: []civil.Date{}, wantWithDefaultConfig: []NullDate{}, wantWithNumber: []NullDate{}},
+		{col: "DateArray", val: []civil.Date{d1, d2, d3}, wantWithDefaultConfig: []NullDate{{d1, true}, {d2, true}, {d3, true}}, wantWithNumber: []NullDate{{d1, true}, {d2, true}, {d3, true}}},
 		{col: "Timestamp", val: t1},
-		{col: "Timestamp", val: t1, want: NullTime{t1, true}},
+		{col: "Timestamp", val: t1, wantWithDefaultConfig: NullTime{t1, true}, wantWithNumber: NullTime{t1, true}},
 		{col: "Timestamp", val: NullTime{t1, true}},
-		{col: "Timestamp", val: NullTime{t1, true}, want: t1},
+		{col: "Timestamp", val: NullTime{t1, true}, wantWithDefaultConfig: t1, wantWithNumber: t1},
 		{col: "Timestamp", val: NullTime{}},
-		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
-		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
-		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
+		{col: "TimestampArray", val: []time.Time(nil), wantWithDefaultConfig: []NullTime(nil), wantWithNumber: []NullTime(nil)},
+		{col: "TimestampArray", val: []time.Time{}, wantWithDefaultConfig: []NullTime{}, wantWithNumber: []NullTime{}},
+		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, wantWithDefaultConfig: []NullTime{{t1, true}, {t2, true}, {t3, true}}, wantWithNumber: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
 		{col: "Numeric", val: n1},
 		{col: "Numeric", val: n2},
-		{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
-		{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
-		{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
-		{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: n1, wantWithDefaultConfig: NullNumeric{n1, true}, wantWithNumber: NullNumeric{n1, true}},
+		{col: "Numeric", val: n2, wantWithDefaultConfig: NullNumeric{n2, true}, wantWithNumber: NullNumeric{n2, true}},
+		{col: "Numeric", val: NullNumeric{n1, true}, wantWithDefaultConfig: n1, wantWithNumber: n1},
+		{col: "Numeric", val: NullNumeric{n1, true}, wantWithDefaultConfig: NullNumeric{n1, true}, wantWithNumber: NullNumeric{n1, true}},
 		{col: "Numeric", val: NullNumeric{n0, false}},
-		{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
-		{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
-		{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
+		{col: "NumericArray", val: []big.Rat(nil), wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
+		{col: "NumericArray", val: []big.Rat{}, wantWithDefaultConfig: []NullNumeric{}, wantWithNumber: []NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat{n1, n2}, wantWithDefaultConfig: []NullNumeric{{n1, true}, {n2, true}}, wantWithNumber: []NullNumeric{{n1, true}, {n2, true}}},
 		{col: "NumericArray", val: []NullNumeric(nil)},
 		{col: "NumericArray", val: []NullNumeric{}},
 		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
-		{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
-		{col: "JSON", val: NullJSON{msg, false}, want: NullJSON{}},
+		{col: "JSON", val: NullJSON{msg, true}, wantWithDefaultConfig: NullJSON{unmarshalledJSONStruct, true}, wantWithNumber: NullJSON{unmarshalledJSONStructUsingNumber, true}},
+		{col: "JSON", val: NullJSON{msg, false}, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
 		{col: "JSONArray", val: []NullJSON(nil)},
 		{col: "JSONArray", val: []NullJSON{}},
-		{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
-		{col: "String", val: nil, want: NullString{}},
-		{col: "StringArray", val: nil, want: []NullString(nil)},
-		{col: "Bytes", val: nil, want: []byte(nil)},
-		{col: "BytesArray", val: nil, want: [][]byte(nil)},
-		{col: "Int64a", val: nil, want: NullInt64{}},
-		{col: "Int64Array", val: nil, want: []NullInt64(nil)},
-		{col: "Bool", val: nil, want: NullBool{}},
-		{col: "BoolArray", val: nil, want: []NullBool(nil)},
-		{col: "Float64", val: nil, want: NullFloat64{}},
-		{col: "Float64Array", val: nil, want: []NullFloat64(nil)},
-		{col: "Numeric", val: nil, want: NullNumeric{}},
-		{col: "NumericArray", val: nil, want: []NullNumeric(nil)},
-		{col: "JSON", val: nil, want: NullJSON{}},
-		{col: "JSONArray", val: nil, want: []NullJSON(nil)},
+		{col: "JSONArray", val: []NullJSON{{msg, true}, {msg, true}, {}}, wantWithDefaultConfig: []NullJSON{{unmarshalledJSONStruct, true}, {unmarshalledJSONStruct, true}, {}}, wantWithNumber: []NullJSON{{unmarshalledJSONStructUsingNumber, true}, {unmarshalledJSONStructUsingNumber, true}, {}}},
+		{col: "String", val: nil, wantWithDefaultConfig: NullString{}, wantWithNumber: NullString{}},
+		{col: "StringArray", val: nil, wantWithDefaultConfig: []NullString(nil), wantWithNumber: []NullString(nil)},
+		{col: "Bytes", val: nil, wantWithDefaultConfig: []byte(nil), wantWithNumber: []byte(nil)},
+		{col: "BytesArray", val: nil, wantWithDefaultConfig: [][]byte(nil), wantWithNumber: [][]byte(nil)},
+		{col: "Int64a", val: nil, wantWithDefaultConfig: NullInt64{}, wantWithNumber: NullInt64{}},
+		{col: "Int64Array", val: nil, wantWithDefaultConfig: []NullInt64(nil), wantWithNumber: []NullInt64(nil)},
+		{col: "Bool", val: nil, wantWithDefaultConfig: NullBool{}, wantWithNumber: NullBool{}},
+		{col: "BoolArray", val: nil, wantWithDefaultConfig: []NullBool(nil), wantWithNumber: []NullBool(nil)},
+		{col: "Float64", val: nil, wantWithDefaultConfig: NullFloat64{}, wantWithNumber: NullFloat64{}},
+		{col: "Float64Array", val: nil, wantWithDefaultConfig: []NullFloat64(nil), wantWithNumber: []NullFloat64(nil)},
+		{col: "Numeric", val: nil, wantWithDefaultConfig: NullNumeric{}, wantWithNumber: NullNumeric{}},
+		{col: "NumericArray", val: nil, wantWithDefaultConfig: []NullNumeric(nil), wantWithNumber: []NullNumeric(nil)},
+		{col: "JSON", val: nil, wantWithDefaultConfig: NullJSON{}, wantWithNumber: NullJSON{}},
+		{col: "JSONArray", val: nil, wantWithDefaultConfig: []NullJSON(nil), wantWithNumber: []NullJSON(nil)},
 	}
 
 	// See https://github.com/GoogleCloudPlatform/cloud-spanner-emulator/issues/31
 	if !isEmulatorEnvSet() {
 		tests = append(tests, []struct {
-			col  string
-			val  interface{}
-			want interface{}
+			col                   string
+			val                   interface{}
+			wantWithDefaultConfig interface{}
+			wantWithNumber        interface{}
 		}{
-			{col: "Date", val: nil, want: NullDate{}},
-			{col: "Timestamp", val: nil, want: NullTime{}},
+			{col: "Date", val: nil, wantWithDefaultConfig: NullDate{}, wantWithNumber: NullDate{}},
+			{col: "Timestamp", val: nil, wantWithDefaultConfig: NullTime{}, wantWithNumber: NullTime{}},
 		}...)
+	}
+
+	for _, withNumberConfigOption := range []bool{false, true} {
+		if withNumberConfigOption {
+			UseNumberWithJSONDecoderEncoder(withNumberConfigOption)
+			defer UseNumberWithJSONDecoderEncoder(!withNumberConfigOption)
+		}
+		// Write rows into table first using DML.
+		statements := make([]Statement, 0)
+		for i, test := range tests {
+			stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
+			// Note: We are not setting the parameter type here to ensure that it
+			// can be automatically recognized when it is actually needed.
+			stmt.Params["id"] = i
+			stmt.Params["value"] = test.val
+			statements = append(statements, stmt)
+		}
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			rowCounts, err := tx.BatchUpdate(ctx, statements)
+			if err != nil {
+				return err
+			}
+			if len(rowCounts) != len(tests) {
+				return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+			}
+			for i, c := range rowCounts {
+				if c != 1 {
+					return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("failed to insert values using DML: %v", err)
+		}
+		// Delete all the rows so we can insert them using mutations as well.
+		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+		if err != nil {
+			t.Fatalf("failed to delete all rows: %v", err)
+		}
+
+		// Verify that we can insert the rows using mutations.
+		var muts []*Mutation
+		for i, test := range tests {
+			muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
+		}
+		if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+
+		for i, test := range tests {
+			row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
+			if err != nil {
+				t.Fatalf("Unable to fetch row %v: %v", i, err)
+			}
+			verifyDirectPathRemoteAddress(t)
+			want := test.wantWithDefaultConfig
+			if withNumberConfigOption {
+				want = test.wantWithNumber
+			}
+			if want == nil {
+				want = test.val
+			}
+			gotp := reflect.New(reflect.TypeOf(want))
+			if err := row.Column(0, gotp.Interface()); err != nil {
+				t.Errorf("%v-%d: col:%v val:%#v, %v", withNumberConfigOption, i, test.col, test.val, err)
+				continue
+			}
+			got := reflect.Indirect(gotp).Interface()
+
+			// One of the test cases is checking NaN handling.  Given
+			// NaN!=NaN, we can't use reflect to test for it.
+			if isNaN(got) && isNaN(want) {
+				continue
+			}
+
+			// Check non-NaN cases.
+			if !testEqual(got, want) {
+				t.Errorf("%v-%d: col:%v val:%#v, got %#v, want %#v", withNumberConfigOption, i, test.col, test.val, got, want)
+				continue
+			}
+		}
+		// cleanup
+		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+// Test encoding/decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
+func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
+	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE PROTO BUNDLE (
+					spanner.examples.music.SingerInfo,
+					spanner.examples.music.Genre,
+				)`,
+		`CREATE TABLE Types (
+					RowID		INT64 NOT NULL,
+					Int64a		INT64,
+					Bytes		BYTES(MAX),
+					Int64Array	ARRAY<INT64>,
+					BytesArray	ARRAY<BYTES(MAX)>,
+					ProtoMessage    spanner.examples.music.SingerInfo,
+					ProtoEnum   spanner.examples.music.Genre,
+					ProtoMessageArray   ARRAY<spanner.examples.music.SingerInfo>,
+					ProtoEnumArray  ARRAY<spanner.examples.music.Genre>,
+			) PRIMARY KEY (RowID)`,
+	}
+
+	protoDescriptor := readProtoDescriptorFile()
+	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts, protoDescriptor)
+	defer cleanup()
+
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singer2ProtoEnum,
+	}
+	bytesSingerProtoMessage, _ := proto.Marshal(&singerProtoMessage)
+
+	tests := []struct {
+		col  string
+		val  interface{}
+		want interface{}
+	}{
+		// Proto Message
+		{col: "ProtoMessage", val: &singerProtoMessage, want: singerProtoMessage},
+		{col: "ProtoMessage", val: &singerProtoMessage, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: singerProtoMessage},
+		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "ProtoMessage", val: nil, want: NullProtoMessage{}},
+		// Proto Enum
+		{col: "ProtoEnum", val: pb.Genre_ROCK, want: singerProtoEnum},
+		{col: "ProtoEnum", val: pb.Genre_ROCK, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "ProtoEnum", val: NullProtoEnum{pb.Genre_ROCK, true}, want: singerProtoEnum},
+		{col: "ProtoEnum", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "ProtoEnum", val: nil, want: NullProtoEnum{}},
+		// Test Compatibility between Int64 and ProtoEnum
+		{col: "Int64a", val: pb.Genre_ROCK, want: int64(3)},
+		{col: "Int64a", val: pb.Genre_ROCK, want: singerProtoEnum},
+		{col: "Int64a", val: 3, want: singerProtoEnum},
+		{col: "Int64a", val: int64(3)},
+		{col: "ProtoEnum", val: int64(3), want: singerProtoEnum},
+		{col: "ProtoEnum", val: int64(3), want: int64(3)},
+		{col: "ProtoEnum", val: pb.Genre_ROCK, want: int64(3)},
+		{col: "ProtoEnum", val: pb.Genre_ROCK, want: singerProtoEnum},
+		// Test Compatibility between Bytes and ProtoMessage
+		{col: "Bytes", val: &singerProtoMessage, want: bytesSingerProtoMessage},
+		{col: "Bytes", val: &singerProtoMessage, want: singerProtoMessage},
+		{col: "Bytes", val: bytesSingerProtoMessage, want: singerProtoMessage},
+		{col: "Bytes", val: bytesSingerProtoMessage},
+		{col: "ProtoMessage", val: bytesSingerProtoMessage, want: singerProtoMessage},
+		{col: "ProtoMessage", val: bytesSingerProtoMessage, want: bytesSingerProtoMessage},
+		{col: "ProtoMessage", val: &singerProtoMessage, want: bytesSingerProtoMessage},
+		{col: "ProtoMessage", val: &singerProtoMessage, want: singerProtoMessage},
+		// Test Compatibility between NullInt64 and NullProtoEnum
+		{col: "Int64a", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullInt64{3, true}},
+		{col: "Int64a", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "Int64a", val: NullInt64{3, true}, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "Int64a", val: NullInt64{3, false}, want: NullProtoEnum{}},
+		{col: "ProtoEnum", val: NullInt64{3, true}, want: singerProtoEnum},
+		{col: "ProtoEnum", val: NullInt64{3, true}, want: NullProtoEnum{&singerProtoEnum, true}},
+		{col: "ProtoEnum", val: NullInt64{3, true}, want: NullInt64{3, true}},
+		{col: "ProtoEnum", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullInt64{3, true}},
+		// Test Compatibility between Bytes and NullProtoMessage
+		{col: "Bytes", val: NullProtoMessage{&singerProtoMessage, true}, want: bytesSingerProtoMessage},
+		{col: "Bytes", val: NullProtoMessage{&singerProtoMessage, true}, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "Bytes", val: bytesSingerProtoMessage, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "Bytes", val: bytesSingerProtoMessage},
+		{col: "ProtoMessage", val: bytesSingerProtoMessage, want: NullProtoMessage{&singerProtoMessage, true}},
+		{col: "ProtoMessage", val: []byte(nil), want: NullProtoMessage{}},
+		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: bytesSingerProtoMessage},
+		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: NullProtoMessage{&singerProtoMessage, true}},
+		// Array of Proto Messages : Tests insert and read operations on ARRAY<PROTO> type column
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage, &singer2ProtoMessage}},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo(nil)},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{}},
+		// Array of Proto Enum : Tests insert and read operations on ARRAY<ENUM> type column
+		// 1. Insert and Read data using Enum value array (ex: [enum1, enum2])
+		{col: "ProtoEnumArray", val: []pb.Genre{pb.Genre_ROCK, pb.Genre_FOLK}, want: []pb.Genre{singerProtoEnum, singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []pb.Genre{}},
+		{col: "ProtoEnumArray", val: []pb.Genre(nil)},
+		// 2. Insert and Read data using Enum pointer array (ex: [*enum1, *enum2])
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{}},
+		{col: "ProtoEnumArray", val: []*pb.Genre(nil)},
+		// 3. Insert data using Enum value array (ex: [enum1, enum2]), Read data using Enum pointer array (ex: [*enum1, *enum2])
+		{col: "ProtoEnumArray", val: []pb.Genre{pb.Genre_ROCK, pb.Genre_FOLK}, want: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []pb.Genre{}, want: []*pb.Genre{}},
+		{col: "ProtoEnumArray", val: []pb.Genre(nil), want: []*pb.Genre(nil)},
+		// 4. Insert data using Enum pointer array (ex: [*enum1, *enum2]), Read data using Enum value array (ex: [enum1, enum2])
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}, want: []pb.Genre{singerProtoEnum, singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{}, want: []pb.Genre{}},
+		{col: "ProtoEnumArray", val: []*pb.Genre(nil), want: []pb.Genre(nil)},
+		// Tests Compatibility between Array of Int64 and Array of ProtoEnum type
+		{col: "ProtoEnumArray", val: []int64{3, 2}, want: []pb.Genre{singerProtoEnum, singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []int64{3, 2}, want: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}},
+		{col: "ProtoEnumArray", val: []int64(nil), want: []pb.Genre(nil)},
+		{col: "ProtoEnumArray", val: []int64{}, want: []pb.Genre{}},
+		{col: "ProtoEnumArray", val: []pb.Genre{singerProtoEnum, singer2ProtoEnum}, want: []int64{3, 2}},
+		{col: "ProtoEnumArray", val: []pb.Genre{}, want: []int64{}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}, want: []int64{3, 2}},
+		{col: "ProtoEnumArray", val: []*pb.Genre(nil), want: []int64(nil)},
+		{col: "ProtoEnumArray", val: []*pb.Genre{}, want: []int64{}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum, nil}, want: []NullInt64{{3, true}, {2, true}, {}}},
+		{col: "Int64Array", val: []int64{3, 2}, want: []pb.Genre{singerProtoEnum, singer2ProtoEnum}},
+		{col: "Int64Array", val: []int64{3, 2}, want: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}},
+		{col: "Int64Array", val: []pb.Genre{singerProtoEnum, singer2ProtoEnum}, want: []int64{3, 2}},
+		{col: "Int64Array", val: []*pb.Genre{&singerProtoEnum, &singer2ProtoEnum}, want: []int64{3, 2}},
+		{col: "Int64Array", val: []pb.Genre(nil), want: []int64(nil)},
+		// Tests Compatibility between Array of Bytes and Array of ProtoMessages type
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage}, want: [][]byte{bytesSingerProtoMessage}},
+		{col: "ProtoMessageArray", val: [][]byte{bytesSingerProtoMessage}},
+		{col: "ProtoMessageArray", val: [][]byte{bytesSingerProtoMessage}, want: []*pb.SingerInfo{&singerProtoMessage}},
+		{col: "ProtoMessageArray", val: [][]byte(nil), want: []*pb.SingerInfo(nil)},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo(nil), want: [][]byte(nil)},
+		{col: "BytesArray", val: []*pb.SingerInfo{&singerProtoMessage}},
+		{col: "BytesArray", val: []*pb.SingerInfo{&singerProtoMessage}, want: [][]byte{bytesSingerProtoMessage}},
+		{col: "BytesArray", val: [][]byte{bytesSingerProtoMessage}, want: []*pb.SingerInfo{&singerProtoMessage}},
+		{col: "BytesArray", val: [][]byte(nil), want: []*pb.SingerInfo(nil)},
+		{col: "BytesArray", val: []*pb.SingerInfo(nil), want: [][]byte(nil)},
+		// Null elements in Array of Proto Messages : Tests insert and read operations on ARRAY<PROTO> type column
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{nil, nil}},
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{nil, nil, &singerProtoMessage, &singer2ProtoMessage}},
+		// Null elements in Array of Proto Enum : Tests insert and read operations on ARRAY<ENUM> type column
+		{col: "ProtoEnumArray", val: []*pb.Genre{nil, nil}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{nil, nil, &singerProtoEnum, &singer2ProtoEnum}},
+		// Tests Compatibility between Array of Bytes and Array of ProtoMessages type with null values
+		{col: "ProtoMessageArray", val: []*pb.SingerInfo{&singerProtoMessage, nil}, want: [][]byte{bytesSingerProtoMessage, nil}},
+		{col: "ProtoMessageArray", val: [][]byte{bytesSingerProtoMessage, nil}, want: []*pb.SingerInfo{&singerProtoMessage, nil}},
+		{col: "BytesArray", val: []*pb.SingerInfo{&singerProtoMessage, nil}, want: [][]byte{bytesSingerProtoMessage, nil}},
+		{col: "BytesArray", val: [][]byte{bytesSingerProtoMessage, nil}, want: []*pb.SingerInfo{&singerProtoMessage, nil}},
+		// Tests Compatibility between Array of Int64 and Array of ProtoEnum type with null values
+		{col: "ProtoEnumArray", val: []NullInt64{{3, true}, {}}, want: []*pb.Genre{&singerProtoEnum, nil}},
+		{col: "ProtoEnumArray", val: []*pb.Genre{&singerProtoEnum, nil}, want: []NullInt64{{3, true}, {}}},
+		{col: "Int64Array", val: []NullInt64{{3, true}, {}}, want: []*pb.Genre{&singerProtoEnum, nil}},
+		{col: "Int64Array", val: []*pb.Genre{&singerProtoEnum, nil}, want: []NullInt64{{3, true}, {}}},
 	}
 
 	// Write rows into table first using DML.
@@ -1966,26 +2436,9 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		stmt.Params["value"] = test.val
 		statements = append(statements, stmt)
 	}
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		rowCounts, err := tx.BatchUpdate(ctx, statements)
-		if err != nil {
-			return err
-		}
-		if len(rowCounts) != len(tests) {
-			return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
-		}
-		for i, c := range rowCounts {
-			if c != 1 {
-				return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
-			}
-		}
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("failed to insert values using DML: %v", err)
-	}
+
 	// Delete all the rows so we can insert them using mutations as well.
-	_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+	_, err := client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
 	if err != nil {
 		t.Fatalf("failed to delete all rows: %v", err)
 	}
@@ -2011,7 +2464,18 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			want = test.val
 		}
 		gotp := reflect.New(reflect.TypeOf(want))
-		if err := row.Column(0, gotp.Interface()); err != nil {
+		v := gotp.Interface()
+
+		switch nullValue := v.(type) {
+		case *NullProtoMessage:
+			nullValue.ProtoMessageVal = &pb.SingerInfo{}
+		case *NullProtoEnum:
+			var singerProtoEnumDefault pb.Genre
+			nullValue.ProtoEnumVal = &singerProtoEnumDefault
+		default:
+		}
+
+		if err := row.Column(0, v); err != nil {
 			t.Errorf("%d: col:%v val:%#v, %v", i, test.col, test.val, err)
 			continue
 		}
@@ -2023,12 +2487,286 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			continue
 		}
 
-		// Check non-NaN cases.
-		if !testEqual(got, want) {
-			t.Errorf("%d: col:%v val:%#v, got %#v, want %#v", i, test.col, test.val, got, want)
-			continue
+		switch v.(type) {
+		case proto.Message:
+			if diff := cmp.Diff(got, test.want, protocmp.Transform()); diff != "" {
+				t.Errorf("unexpected difference:\n%v", diff)
+				continue
+			}
+		default:
+			if !testEqual(got, want) {
+				t.Errorf("%d: col:%v val:%#v, got %#v, want %#v", i, test.col, test.val, got, want)
+				continue
+			}
 		}
 	}
+}
+
+// Test errors during decoding non-struct Cloud Spanner Proto or Array of Proto Column types.
+func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
+	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE PROTO BUNDLE (
+					spanner.examples.music.SingerInfo,
+					spanner.examples.music.Genre,
+				)`,
+		`CREATE TABLE Types (
+					RowID		INT64 NOT NULL,
+					Int64a		INT64,
+					Bytes		BYTES(MAX),
+					Int64Array	ARRAY<INT64>,
+					BytesArray	ARRAY<BYTES(MAX)>,
+					ProtoMessage    spanner.examples.music.SingerInfo,
+					ProtoEnum   spanner.examples.music.Genre,
+					ProtoMessageArray   ARRAY<spanner.examples.music.SingerInfo>,
+					ProtoEnumArray  ARRAY<spanner.examples.music.Genre>,
+			) PRIMARY KEY (RowID)`,
+	}
+	protoDescriptor := readProtoDescriptorFile()
+	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts, protoDescriptor)
+	defer cleanup()
+
+	protoMessageNilError := "*protos.SingerInfo cannot support NULL SQL values"
+	protoEnumNilError := "*protos.Genre cannot support NULL SQL values"
+
+	tests := []struct {
+		col       string
+		val       interface{}
+		want      interface{}
+		wantCode  codes.Code
+		errString string
+	}{
+		// Proto Message : Tests read operation on PROTO type column that has untyped/typed nil
+		{col: "ProtoMessage", val: (*pb.SingerInfo)(nil), want: pb.SingerInfo{}, wantCode: codes.InvalidArgument, errString: protoMessageNilError},
+		// Proto Enum : Tests read operation on ENUM type column that has untyped/typed nil
+		{col: "ProtoEnum", val: (*pb.Genre)(nil), want: pb.Genre_POP, wantCode: codes.InvalidArgument, errString: protoEnumNilError},
+	}
+
+	// Delete all the rows.
+	_, err := client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+	if err != nil {
+		t.Fatalf("failed to delete all rows: %v", err)
+	}
+
+	// Insert the rows using mutations.
+	var muts []*Mutation
+	for i, test := range tests {
+		muts = append(muts, InsertOrUpdate("Types", []string{"RowID", test.col}, []interface{}{i, test.val}))
+	}
+	if _, err := client.Apply(ctx, muts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	for i, test := range tests {
+		row, err := client.Single().ReadRow(ctx, "Types", []interface{}{i}, []string{test.col})
+		if err != nil {
+			t.Fatalf("Unable to fetch row %v: %v", i, err)
+		}
+		verifyDirectPathRemoteAddress(t)
+		// Create new instance of type of test.want.
+		want := test.want
+		if want == nil {
+			want = test.val
+		}
+		gotp := reflect.New(reflect.TypeOf(want))
+		v := gotp.Interface()
+
+		switch nullValue := v.(type) {
+		case *NullProtoMessage:
+			nullValue.ProtoMessageVal = &pb.SingerInfo{}
+		case *NullProtoEnum:
+			var singerProtoEnumDefault pb.Genre
+			nullValue.ProtoEnumVal = &singerProtoEnumDefault
+		default:
+		}
+		err = row.Column(0, v)
+		if err == nil {
+			t.Errorf("Column: %s, expected error %v during decoding, got %v", test.col, test.errString, err)
+			continue
+		}
+		if msg, ok := matchError(err, test.wantCode, test.errString); !ok {
+			t.Fatal(msg)
+		}
+	}
+}
+
+/*
+The schema for Table Singers and Index SingerByNationalityAndGenre for Proto column integration tests is there in the test below.
+*/
+// Test DML, Parameterized query, Primary key and Indexing on Proto columns
+func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing.T) {
+	skipEmulatorTest(t)
+	skipUnsupportedPGTest(t)
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	stmts := []string{
+		`CREATE PROTO BUNDLE (
+					spanner.examples.music.SingerInfo,
+					spanner.examples.music.Genre,
+				)`,
+		`CREATE TABLE Singers (
+				 SingerId   INT64 NOT NULL,
+				 FirstName  STRING(1024),
+				 LastName   STRING(1024),
+				 SingerInfo spanner.examples.music.SingerInfo,
+				 SingerGenre spanner.examples.music.Genre,
+				 SingerNationality STRING(1024) AS (SingerInfo.nationality) STORED,
+				) PRIMARY KEY (SingerNationality, SingerGenre)`,
+		`CREATE INDEX SingerByNationalityAndGenre ON Singers(SingerNationality, SingerGenre) STORING (SingerId, FirstName, LastName)`,
+	}
+	protoDescriptor := readProtoDescriptorFile()
+	client, _, cleanup := prepareIntegrationTestForProtoColumns(ctx, t, DefaultSessionPoolConfig, stmts, protoDescriptor)
+	defer cleanup()
+
+	singerProtoEnum := pb.Genre_ROCK
+	singerProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(1),
+		BirthDate:   proto.String("January"),
+		Nationality: proto.String("Country1"),
+		Genre:       &singerProtoEnum,
+	}
+	singer2ProtoEnum := pb.Genre_FOLK
+	singer2ProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(2),
+		BirthDate:   proto.String("February"),
+		Nationality: proto.String("Country2"),
+		Genre:       &singer2ProtoEnum,
+	}
+	singer3ProtoEnum := pb.Genre_JAZZ
+	singer3ProtoMessage := pb.SingerInfo{
+		SingerId:    proto.Int64(3),
+		BirthDate:   proto.String("March"),
+		Nationality: proto.String("Country3"),
+		Genre:       &singer3ProtoEnum,
+	}
+
+	for i, test := range []struct {
+		sql    string
+		params map[string]interface{}
+	}{
+		{sql: "INSERT INTO Singers (SingerId, FirstName, LastName, SingerInfo, SingerGenre) VALUES (@singerId, @firstName, @lastName, @singerInfo, @singerGenre)",
+			params: map[string]interface{}{
+				"singerId":    1,
+				"firstName":   "Singer1",
+				"lastName":    "Singer1",
+				"singerInfo":  &singerProtoMessage,
+				"singerGenre": singerProtoEnum,
+			},
+		}, {sql: "INSERT INTO Singers (SingerId, FirstName, LastName, SingerInfo, SingerGenre) VALUES (@singerId, @firstName, @lastName, @singerInfo, @singerGenre)",
+			params: map[string]interface{}{
+				"singerId":    2,
+				"firstName":   "Singer2",
+				"lastName":    "Singer2",
+				"singerInfo":  &singer2ProtoMessage,
+				"singerGenre": singer2ProtoEnum,
+			},
+		}, {sql: "INSERT INTO Singers (SingerId, FirstName, LastName, SingerInfo, SingerGenre) VALUES (@singerId, @firstName, @lastName, @singerInfo, @singerGenre)",
+			params: map[string]interface{}{
+				"singerId":    3,
+				"firstName":   "Singer3",
+				"lastName":    "Singer3",
+				"singerInfo":  &singer3ProtoMessage,
+				"singerGenre": singer3ProtoEnum,
+			},
+		},
+	} {
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			count, err := tx.Update(ctx, Statement{
+				SQL:    test.sql,
+				Params: test.params,
+			})
+			if err != nil {
+				return err
+			}
+			if count != 1 {
+				t.Errorf("row count: got %d, want 1", count)
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("%d: failed to insert values using DML: %v", i, err)
+		}
+	}
+
+	ro := client.ReadOnlyTransaction()
+	defer ro.Close()
+
+	for i, test := range []struct {
+		sql    string
+		params map[string]interface{}
+		want   [][]interface{}
+	}{
+		// Filter rows using Proto Enum Parameterized query
+		{sql: "SELECT SingerId, FirstName, LastName, SingerInfo, SingerGenre FROM Singers WHERE SingerGenre=@genre",
+			params: map[string]interface{}{
+				"genre": pb.Genre_FOLK,
+			},
+			want: [][]interface{}{{int64(2), "Singer2", "Singer2"}},
+		},
+		// Filter rows using Proto Message Field Parameterized query
+		{sql: "SELECT SingerId, FirstName, LastName, SingerInfo, SingerGenre FROM Singers WHERE SingerInfo.Nationality=@country",
+			params: map[string]interface{}{
+				"country": "Country3",
+			},
+			want: [][]interface{}{{int64(3), "Singer3", "Singer3"}},
+		},
+	} {
+		got, err := readAll(ro.Query(
+			ctx,
+			Statement{
+				SQL:    test.sql,
+				Params: test.params,
+			}))
+		if err != nil {
+			t.Errorf("%d: Parameterized query returns error %v, want nil", i, err)
+		}
+		if !testEqual(got, test.want) {
+			t.Errorf("%d: got unexpected result from Parameterized query: %v, want %v", i, got, test.want)
+		}
+	}
+
+	// Read all rows based on Proto Message field and Proto Enum Primary key column values
+	got, err := readAll(ro.Read(ctx, "Singers", KeySets(Key{"Country1", pb.Genre_ROCK}, Key{"Country3", pb.Genre_JAZZ}), []string{"SingerId", "FirstName", "LastName"}))
+	if err != nil {
+		t.Errorf("Reading rows from Primary key values returns error %v, want nil", err)
+	}
+	want := [][]interface{}{{int64(1), "Singer1", "Singer1"}, {int64(3), "Singer3", "Singer3"}}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result while reading rows from Primary key values: %v, want %v", got, want)
+	}
+
+	// Read rows using Index on Proto Message field and Proto Enum column
+	got, err = readAll(ro.ReadUsingIndex(ctx, "Singers", "SingerByNationalityAndGenre", KeySets(Key{"Country1", pb.Genre_ROCK}, Key{"Country2", pb.Genre_FOLK}), []string{"SingerId", "FirstName", "LastName"}))
+	if err != nil {
+		t.Errorf("ReadUsingIndex on Proto Enum column returns error %v, want nil", err)
+	}
+	// The results from ReadUsingIndex is sorted by the index rather than
+	// primary key.
+	want = [][]interface{}{{int64(1), "Singer1", "Singer1"}, {int64(2), "Singer2", "Singer2"}}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result from ReadUsingIndex on Proto Enum column: %v, want %v", got, want)
+	}
+
+	// Delete all the rows in the Singers table.
+	_, err = client.Apply(ctx, []*Mutation{Delete("Singers", AllKeys())})
+	if err != nil {
+		t.Fatalf("failed to delete all rows: %v", err)
+	}
+}
+
+// Reads Proto descriptor file that has schema of proto messages and proto enum
+func readProtoDescriptorFile() []byte {
+	protoDescriptor, err := os.ReadFile(filepath.Join("testdata", "protos", "descriptors.pb"))
+	if err != nil {
+		panic(err)
+	}
+	return protoDescriptor
 }
 
 // Test decoding Cloud Spanner STRUCT type.
@@ -3141,7 +3879,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: false}); err != nil {
+	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: true}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -3224,7 +3962,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: false}); err != nil {
+	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: true}); err != nil {
 		t.Fatal(err)
 	}
 
@@ -4317,6 +5055,212 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 }
 
+func TestIntegration_Foreign_Key_Delete_Cascade_Action(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// create table with foreign key actions
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][fkdcDDLStatements])
+	defer cleanup()
+
+	var tests = []struct {
+		name     string
+		test     func() error
+		validate func()
+		wantErr  error
+	}{
+		{
+			name: "add delete cascade constraint",
+			test: func() error {
+				constraintName := "FKShoppingCartsCustomerName"
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `"FKShoppingCartsCustomerName"`
+				}
+				addConstraintDDL := fmt.Sprintf("ALTER TABLE ShoppingCarts ADD CONSTRAINT %s FOREIGN KEY (CustomerName) REFERENCES Customers(CustomerName) ON DELETE CASCADE", constraintName)
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database:   dbPath,
+					Statements: []string{addConstraintDDL},
+				})
+				if err != nil {
+					return err
+				}
+				if err := op.Wait(ctx); err != nil {
+					return err
+				}
+				return nil
+			},
+			validate: func() {
+				constraintName := `"FKShoppingCartsCustomerName"`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `'FKShoppingCartsCustomerName'`
+				}
+				got, err := readAll(client.Single().Query(ctx, Statement{
+					fmt.Sprintf(`SELECT 1, '', DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = %s`, constraintName),
+					map[string]interface{}{}}))
+				if err != nil {
+					t.Fatalf("Expect to read the delete_rule from information_schema, got: %v", err)
+				}
+				if !testEqual(got, [][]interface{}{{int64(1), "", "CASCADE"}}) {
+					t.Error("DELETE_RULE is not CASCADE")
+				}
+			},
+		},
+		{
+			name: "drop delete cascade constraint",
+			test: func() error {
+				constraintName := "FKShoppingCartsCustomerName"
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `"FKShoppingCartsCustomerName"`
+				}
+				dropConstraintDDL := fmt.Sprintf("ALTER TABLE ShoppingCarts DROP CONSTRAINT %s", constraintName)
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database:   dbPath,
+					Statements: []string{dropConstraintDDL},
+				})
+				if err != nil {
+					return err
+				}
+				if err := op.Wait(ctx); err != nil {
+					return err
+				}
+				return nil
+			},
+			validate: func() {
+				constraintName := `"FKShoppingCartsCustomerName"`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					constraintName = `'FKShoppingCartsCustomerName'`
+				}
+				got, err := readAll(client.Single().Query(ctx, Statement{
+					fmt.Sprintf(`SELECT 1, '', DELETE_RULE FROM INFORMATION_SCHEMA.REFERENTIAL_CONSTRAINTS WHERE CONSTRAINT_NAME = %s`, constraintName),
+					map[string]interface{}{}}))
+				if err != nil {
+					t.Fatalf("Expect to read the delete_rule from information_schema, got: %v", err)
+				}
+				var want [][]interface{}
+				if !testEqual(got, want) {
+					t.Error("DELETE_RULE should be empty")
+				}
+			},
+		},
+		{
+			name: "success: insert a row in referencing table",
+			test: func() error {
+				// Populate the parent table.
+				columns := []string{"CustomerId", "CustomerName"}
+				var muts []*Mutation
+				for _, row := range [][]interface{}{
+					{1, "FKCustomer1"},
+					{2, "FKCustomer2"},
+					{3, "FKCustomer3"},
+				} {
+					muts = append(muts, Insert("Customers", columns, row))
+				}
+				if _, err := client.Apply(ctx, muts); err != nil {
+					return err
+				}
+
+				// Populate the referencing table.
+				columns = []string{"CartId", "CustomerId", "CustomerName"}
+				// Populate the parent table.
+				muts = []*Mutation{}
+				for _, row := range [][]interface{}{
+					{1, 1, "FKCustomer1"},
+					{2, 1, "FKCustomer1"},
+					{3, 2, "FKCustomer2"},
+				} {
+					muts = append(muts, Insert("ShoppingCarts", columns, row))
+				}
+				if _, err := client.Apply(ctx, muts); err != nil {
+					return err
+				}
+				return nil
+			},
+			validate: func() {},
+		},
+		{
+			name: "success: deleting a row in referenced table should delete all rows referencing it",
+			test: func() error {
+				_, err := client.Apply(ctx, []*Mutation{Delete("Customers", Key{1})})
+				return err
+			},
+			validate: func() {
+				if _, err := client.Single().ReadRow(ctx, "ShoppingCarts", Key{1}, []string{"CartId"}); err == nil {
+					t.Fatalf("expected to return not found error after deleting in referenced table")
+				}
+				if _, err := client.Single().ReadRow(ctx, "ShoppingCarts", Key{2}, []string{"CartId"}); err == nil {
+					t.Fatalf("expected to return not found error after deleting in referenced table")
+				}
+			},
+		},
+		{
+			name: "failure: conflicting insert and delete of referenced key",
+			test: func() error {
+				columns := []string{"CustomerId", "CustomerName"}
+				var muts []*Mutation
+				for _, row := range [][]interface{}{
+					{3, "FKCustomer3"},
+				} {
+					muts = append(muts, Insert("Customers", columns, row))
+				}
+				muts = append(muts, Delete("Customers", Key{3}))
+				_, err := client.Apply(ctx, muts)
+				return err
+			},
+			wantErr:  spannerErrorf(codes.FailedPrecondition, "Cannot write a value for the referenced column `Customers.CustomerId` and delete it in the same transaction."),
+			validate: func() {},
+		},
+		{
+			name: "failure: insert in child table and deleting referenced key from parent table",
+			test: func() error {
+				columns := []string{"CartId", "CustomerId", "CustomerName"}
+				// Populate the parent table.
+				muts := []*Mutation{}
+				for _, row := range [][]interface{}{
+					{4, 3, "FKCustomer3"},
+				} {
+					muts = append(muts, Insert("ShoppingCarts", columns, row))
+				}
+				muts = append(muts, Delete("Customers", Key{3}))
+				_, err := client.Apply(ctx, muts)
+				return err
+			},
+			wantErr:  spannerErrorf(codes.FailedPrecondition, "Foreign key constraint `FKShoppingCartsCustomerId` is violated on table `ShoppingCarts`. Cannot find referenced values in Customers(CustomerId)."),
+			validate: func() {},
+		},
+		{
+			name: "failure: insert a row in referencing table with reference key not present",
+			test: func() error {
+				// inset in the referencing table.
+				columns := []string{"CartId", "CustomerId", "CustomerName"}
+				muts := []*Mutation{}
+				for _, row := range [][]interface{}{
+					{1, 100, "FKCustomer1"},
+				} {
+					muts = append(muts, Insert("ShoppingCarts", columns, row))
+				}
+				if _, err := client.Apply(ctx, muts); err != nil {
+					return err
+				}
+				return nil
+			},
+			wantErr:  spannerErrorf(codes.FailedPrecondition, "Foreign key constraint `FKShoppingCartsCustomerId` is violated on table `ShoppingCarts`. Cannot find referenced values in Customers(CustomerId)."),
+			validate: func() {},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotErr := tt.test()
+			// convert the error to lower case because resource names are in lower case for PG dialect.
+			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
+				t.Errorf("FKDC error=%v, wantErr: %v", gotErr, tt.wantErr)
+			} else {
+				tt.validate()
+			}
+		})
+	}
+}
+
 func TestIntegration_GFE_Latency(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -4395,6 +5339,353 @@ func TestIntegration_GFE_Latency(t *testing.T) {
 	DisableGfeLatencyAndHeaderMissingCountViews()
 }
 
+func TestIntegration_Bit_Reversed_Sequence(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// create table with bit reverse seq options
+	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][testTableBitReversedSeqStatements])
+	defer cleanup()
+
+	returningSQL := `THEN RETURN`
+	internalStateSQL := `GET_INTERNAL_SEQUENCE_STATE(Sequence seqT)`
+	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+		returningSQL = `RETURNING`
+		internalStateSQL = `spanner.get_internal_sequence_state('seqT')`
+	}
+
+	var tests = []struct {
+		name    string
+		test    func() error
+		wantErr error
+	}{
+		{
+			name: "success: inserted rows should have auto generated keys",
+			test: func() error {
+				var (
+					values [][]interface{}
+					err    error
+				)
+				_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+					iter := tx.Query(ctx, NewStatement("INSERT INTO T (value) VALUES (100), (200), (300) "+returningSQL+" id, counter"))
+					values, err = readAllBitReversedSeqTable(iter, true)
+					return err
+				})
+				if len(values) != 3 {
+					return errors.New("expected 3 rows to be inserted")
+				}
+				counter := int64(0)
+				for i := 0; i < 3; i++ {
+					newID, newCounter := values[i][0].(int64), values[i][1].(int64)
+					if newID <= 0 {
+						return errors.New("expected id1, id2, id3 > 0")
+
+					}
+					if newCounter < counter {
+						return errors.New("expected c3 >= c2 >= c1")
+					}
+					counter = newCounter
+				}
+				iter := client.Single().Query(ctx, NewStatement("SELECT "+internalStateSQL))
+				r, err := iter.Next()
+				if err != nil {
+					return err
+				}
+				var c3 int64
+				err = r.Columns(&c3)
+				if err != nil {
+					return err
+				}
+				if c3 > counter {
+					return errors.New("expected c3 <= SELECT GET_INTERNAL_SEQUENCE_STATE(Sequence seqT)")
+				}
+				return err
+			},
+		},
+		{
+			name: "success: reduce ranges to half",
+			test: func() error {
+				ddl := `ALTER SEQUENCE seqT SET OPTIONS (
+						skip_range_min = 0,
+						skip_range_max = 4611686018427387904
+					)`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					ddl = `ALTER SEQUENCE seqT SKIP RANGE 0 4611686018427387904`
+				}
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database:   dbPath,
+					Statements: []string{ddl},
+				})
+				if err != nil {
+					return err
+				}
+				if err := op.Wait(ctx); err != nil {
+					return err
+				}
+				var values [][]interface{}
+				_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+					var v string
+					for i := 1; i <= 100; i++ {
+						v = v + " (" + strconv.Itoa(i) + ")"
+						if i != 100 {
+							v = v + ", "
+						}
+					}
+					iter := tx.Query(ctx, NewStatement("INSERT INTO T (value) VALUES "+v+" "+returningSQL+" id, counter"))
+					values, err = readAllBitReversedSeqTable(iter, true)
+					return err
+				})
+				if err != nil {
+					return err
+				}
+				if len(values) != 100 {
+					return errors.New("expected 100 rows to be inserted")
+				}
+				counter := int64(0)
+				for i := 0; i < 100; i++ {
+					newID, newCounter := values[i][0].(int64), values[i][1].(int64)
+					if newID <= 0 || newID < 4611686018427387904 {
+						return errors.New("expected d1, id2, id3, …., id100 > 4611686018427387904")
+
+					}
+					if newCounter < counter {
+						return errors.New("expected c3 >= c2 >= c1")
+					}
+					counter = newCounter
+				}
+				return err
+			},
+		},
+		{
+			name: "success: move start with counter forward",
+			test: func() error {
+				ddl := `ALTER SEQUENCE seqT SET OPTIONS (start_with_counter=10001)`
+				if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
+					ddl = `ALTER SEQUENCE seqT RESTART COUNTER WITH 10001`
+				}
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database:   dbPath,
+					Statements: []string{ddl},
+				})
+				if err != nil {
+					return err
+				}
+				if err := op.Wait(ctx); err != nil {
+					return err
+				}
+				var values [][]interface{}
+				_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+					iter := tx.Query(ctx, NewStatement("INSERT INTO T (value) VALUES (4), (5), (6) "+returningSQL+" id, br_id, counter"))
+					values, err = readAllBitReversedSeqTable(iter, false)
+					return err
+				})
+				if err != nil {
+					return err
+				}
+				if len(values) != 3 {
+					return errors.New("expected 3 rows to be inserted")
+				}
+				counter := int64(0)
+				for i := 0; i < 3; i++ {
+					newID, newBrID, newCounter := values[i][0].(int64), values[i][1].(int64), values[i][2].(int64)
+					if newID <= 0 {
+						return errors.New("expected id > 0")
+					}
+					if newBrID < 10001 {
+						return errors.New("expected br_idi >= 10001")
+					}
+					if newCounter < 10001 {
+						return errors.New("expected ci >= 10001")
+					}
+					if counter < newCounter {
+						counter = newCounter
+					}
+				}
+				iter := client.Single().Query(ctx, NewStatement("SELECT "+internalStateSQL))
+				r, err := iter.Next()
+				if err != nil {
+					return err
+				}
+				var c3 int64
+				err = r.Columns(&c3)
+				if err != nil {
+					return err
+				}
+				if c3 > counter {
+					return errors.New("expected max(ci) <= SELECT GET_INTERNAL_SEQUENCE_STATE(Sequence seqT)")
+				}
+				return err
+			},
+		},
+		{
+			name: "success: drop the sequences",
+			test: func() error {
+				op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
+					Database: dbPath,
+					Statements: []string{
+						"ALTER TABLE T ALTER COLUMN id DROP DEFAULT",
+						"ALTER TABLE T ALTER COLUMN counter DROP DEFAULT",
+						"ALTER TABLE T DROP CONSTRAINT id_gt_0",
+						"ALTER TABLE T DROP CONSTRAINT counter_gt_br_id",
+						"ALTER TABLE T DROP CONSTRAINT br_id_true",
+						"DROP SEQUENCE seqT",
+					},
+				})
+				if err != nil {
+					return err
+				}
+				if err := op.Wait(ctx); err != nil {
+					return err
+				}
+				return nil
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotErr := tt.test()
+			if gotErr != nil && strings.ToLower(gotErr.Error()) != strings.ToLower(tt.wantErr.Error()) {
+				t.Errorf("BIT REVERSED SEQUENECES error=%v, wantErr: %v", gotErr, tt.wantErr)
+			}
+		})
+	}
+}
+
+func TestIntegration_WithDirectedReadOptions_ReadOnlyTransaction(t *testing.T) {
+	t.Parallel()
+	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
+	skipUnsupportedPGTest(t)
+	skipEmulatorTest(t)
+
+	ctxTimeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	directedReadOptions := &sppb.DirectedReadOptions{
+		Replicas: &sppb.DirectedReadOptions_IncludeReplicas_{
+			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
+				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
+					{
+						Location: "us-west1",
+						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
+					},
+				},
+				AutoFailoverDisabled: true,
+			},
+		},
+	}
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	// Try to write four rows through the Apply API.
+	for i, w := range writes {
+		var err error
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
+
+	// Test DirectedReadOptions for ReadOnlyTransaction.ReadWithOptions
+	got, err := readAll(client.ReadOnlyTransaction().ReadWithOptions(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"},
+		&ReadOptions{DirectedReadOptions: directedReadOptions}))
+	if err != nil {
+		t.Errorf("DirectedReadOptions using ReadOptions returns error %v, want nil", err)
+	}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result in DirectedReadOptions test: %v, want %v", got, want)
+	}
+
+	// Test DirectedReadOptions for ReadOnlyTransaction.QueryWithOptions
+	singersQuery := "SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@p1, @p2, @p3) ORDER BY SingerId"
+	got, err = readAll(client.Single().QueryWithOptions(ctx, Statement{
+		singersQuery,
+		map[string]interface{}{"p1": int64(1), "p2": int64(3), "p3": int64(4)},
+	}, QueryOptions{DirectedReadOptions: directedReadOptions}))
+
+	if err != nil {
+		t.Errorf("DirectedReadOptions using QueryOptions returns error %v, want nil", err)
+	}
+
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result in DirectedReadOptions test: %v, want %v", got, want)
+	}
+}
+
+func TestIntegration_WithDirectedReadOptions_ReadWriteTransaction_ShouldThrowError(t *testing.T) {
+	t.Parallel()
+	// DirectedReadOptions for PG is supported, however we test only for Google SQL.
+	skipUnsupportedPGTest(t)
+	skipEmulatorTest(t)
+
+	ctxTimeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, statements[testDialect][singerDDLStatements])
+	defer cleanup()
+
+	directedReadOptions := &sppb.DirectedReadOptions{
+		Replicas: &sppb.DirectedReadOptions_IncludeReplicas_{
+			IncludeReplicas: &sppb.DirectedReadOptions_IncludeReplicas{
+				ReplicaSelections: []*sppb.DirectedReadOptions_ReplicaSelection{
+					{
+						Location: "us-west1",
+						Type:     sppb.DirectedReadOptions_ReplicaSelection_READ_ONLY,
+					},
+				},
+				AutoFailoverDisabled: true,
+			},
+		},
+	}
+
+	writes := []struct {
+		row []interface{}
+		ts  time.Time
+	}{
+		{row: []interface{}{1, "Marc", "Foo"}},
+		{row: []interface{}{2, "Tars", "Bar"}},
+		{row: []interface{}{3, "Alpha", "Beta"}},
+		{row: []interface{}{4, "Last", "End"}},
+	}
+	// Try to write four rows through the Apply API.
+	for i, w := range writes {
+		var err error
+		m := InsertOrUpdate("Singers",
+			[]string{"SingerId", "FirstName", "LastName"},
+			w.row)
+		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) (err error) {
+		_, err = readAll(tx.ReadWithOptions(ctx, "Singers", KeySets(Key{1}, Key{3}, Key{4}), []string{"SingerId", "FirstName", "LastName"}, &ReadOptions{DirectedReadOptions: directedReadOptions}))
+		return err
+	})
+	if err == nil {
+		t.Fatal("expected err, got nil")
+	}
+	if msg, ok := matchError(err, codes.InvalidArgument, "Directed reads can only be performed in a read-only transaction"); !ok {
+		t.Fatal(msg)
+	}
+}
+
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
 	return prepareDBAndClient(ctx, t, spc, statements, testDialect)
@@ -4402,6 +5693,10 @@ func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolCo
 
 func prepareIntegrationTestForPG(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
 	return prepareDBAndClient(ctx, t, spc, statements, adminpb.DatabaseDialect_POSTGRESQL)
+}
+
+func prepareIntegrationTestForProtoColumns(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, protoDescriptor []byte) (*Client, string, func()) {
+	return prepareDBAndClientForProtoColumnsDDL(ctx, t, spc, statements, testDialect, protoDescriptor)
 }
 
 func prepareDBAndClient(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, dbDialect adminpb.DatabaseDialect) (*Client, string, func()) {
@@ -4442,6 +5737,40 @@ func prepareDBAndClient(ctx context.Context, t *testing.T, spc SessionPoolConfig
 		}
 	}
 	client, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
+	if err != nil {
+		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
+	}
+	return client, dbPath, func() {
+		client.Close()
+	}
+}
+
+func prepareDBAndClientForProtoColumnsDDL(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string, dbDialect adminpb.DatabaseDialect, protoDescriptor []byte) (*Client, string, func()) {
+	if databaseAdmin == nil {
+		t.Skip("Integration tests skipped")
+	}
+	// Construct a unique test DB name.
+	dbName := dbNameSpace.New()
+
+	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
+	// Create database and tables.
+	req := &adminpb.CreateDatabaseRequest{
+		Parent:           fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
+		CreateStatement:  "CREATE DATABASE " + dbName,
+		ExtraStatements:  statements,
+		DatabaseDialect:  dbDialect,
+		ProtoDescriptors: protoDescriptor,
+	}
+
+	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, req)
+	if err != nil {
+		t.Fatalf("cannot create testing DB with Proto columns %v: %v", dbPath, err)
+	}
+	if _, err := op.Wait(ctx); err != nil {
+		t.Fatalf("cannot create testing DB with Proto columns %v: %v", dbPath, err)
+	}
+
+	client, err := createClientForProtoColumns(ctx, dbPath, spc)
 	if err != nil {
 		t.Fatalf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -4613,13 +5942,15 @@ func isNaN(x interface{}) bool {
 // createClient creates Cloud Spanner data client.
 func createClient(ctx context.Context, dbPath string, config ClientConfig) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
+	serverAddress := "spanner.googleapis.com:443"
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
+		serverAddress = spannerHost
 	}
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, config, opts...)
+	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -4628,13 +5959,32 @@ func createClient(ctx context.Context, dbPath string, config ClientConfig) (clie
 
 func createClientWithRole(ctx context.Context, dbPath string, spc SessionPoolConfig, role string) (client *Client, err error) {
 	opts := grpcHeaderChecker.CallOptions()
+	serverAddress := "spanner.googleapis.com:443"
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint(spannerHost))
+		serverAddress = spannerHost
+	}
+	if dpConfig.attemptDirectPath {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
+	}
+	config := ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}
+	client, err = makeClientWithConfig(ctx, dbPath, config, serverAddress, opts...)
+	if err != nil {
+		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
+	}
+	return client, nil
+}
+
+// createClientForProtoColumns creates Cloud Spanner data client for testing proto column feature.
+func createClientForProtoColumns(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
+	opts := grpcHeaderChecker.CallOptions()
 	if spannerHost != "" {
 		opts = append(opts, option.WithEndpoint(spannerHost))
 	}
 	if dpConfig.attemptDirectPath {
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc, DatabaseRole: role}, opts...)
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -4736,6 +6086,34 @@ func readAllAccountsTable(iter *RowIterator) ([][]interface{}, error) {
 			return nil, err
 		}
 		vals = append(vals, []interface{}{id, nickname, balance})
+	}
+}
+
+func readAllBitReversedSeqTable(iter *RowIterator, onlyIDCounter bool) ([][]interface{}, error) {
+	defer iter.Stop()
+	var vals [][]interface{}
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		var id, brID, counter int64
+		if onlyIDCounter {
+			err = row.Columns(&id, &counter)
+			if err != nil {
+				return nil, err
+			}
+			vals = append(vals, []interface{}{id, counter})
+			continue
+		}
+		err = row.Columns(&id, &brID, &counter)
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, []interface{}{id, brID, counter})
 	}
 }
 

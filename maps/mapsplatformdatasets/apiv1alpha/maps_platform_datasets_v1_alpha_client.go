@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import (
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -57,7 +56,9 @@ type MapsPlatformDatasetsV1AlphaCallOptions struct {
 func defaultMapsPlatformDatasetsV1AlphaGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("mapsplatformdatasets.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("mapsplatformdatasets.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("mapsplatformdatasets.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://mapsplatformdatasets.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -264,7 +265,7 @@ type mapsPlatformDatasetsV1AlphaGRPCClient struct {
 	mapsPlatformDatasetsV1AlphaClient mapsplatformdatasetspb.MapsPlatformDatasetsV1AlphaClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewMapsPlatformDatasetsV1AlphaClient creates a new maps platform datasets v1 alpha client based on gRPC.
@@ -313,7 +314,7 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) Connection() *grpc.ClientConn {
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -330,8 +331,8 @@ type mapsPlatformDatasetsV1AlphaRESTClient struct {
 	// The http client.
 	httpClient *http.Client
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing MapsPlatformDatasetsV1AlphaClient
 	CallOptions **MapsPlatformDatasetsV1AlphaCallOptions
@@ -361,7 +362,9 @@ func NewMapsPlatformDatasetsV1AlphaRESTClient(ctx context.Context, opts ...optio
 func defaultMapsPlatformDatasetsV1AlphaRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://mapsplatformdatasets.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://mapsplatformdatasets.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://mapsplatformdatasets.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://mapsplatformdatasets.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -373,7 +376,7 @@ func defaultMapsPlatformDatasetsV1AlphaRESTClientOptions() []option.ClientOption
 func (c *mapsPlatformDatasetsV1AlphaRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -391,9 +394,10 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) CreateDataset(ctx context.Context, req *mapsplatformdatasetspb.CreateDatasetRequest, opts ...gax.CallOption) (*mapsplatformdatasetspb.Dataset, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	var resp *mapsplatformdatasetspb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -408,9 +412,10 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) CreateDataset(ctx context.Contex
 }
 
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) UpdateDatasetMetadata(ctx context.Context, req *mapsplatformdatasetspb.UpdateDatasetMetadataRequest, opts ...gax.CallOption) (*mapsplatformdatasetspb.Dataset, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDatasetMetadata[0:len((*c.CallOptions).UpdateDatasetMetadata):len((*c.CallOptions).UpdateDatasetMetadata)], opts...)
 	var resp *mapsplatformdatasetspb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -425,9 +430,10 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) UpdateDatasetMetadata(ctx contex
 }
 
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) GetDataset(ctx context.Context, req *mapsplatformdatasetspb.GetDatasetRequest, opts ...gax.CallOption) (*mapsplatformdatasetspb.Dataset, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	var resp *mapsplatformdatasetspb.Dataset
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -442,9 +448,10 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) GetDataset(ctx context.Context, 
 }
 
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) ListDatasetVersions(ctx context.Context, req *mapsplatformdatasetspb.ListDatasetVersionsRequest, opts ...gax.CallOption) *DatasetIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDatasetVersions[0:len((*c.CallOptions).ListDatasetVersions):len((*c.CallOptions).ListDatasetVersions)], opts...)
 	it := &DatasetIterator{}
 	req = proto.Clone(req).(*mapsplatformdatasetspb.ListDatasetVersionsRequest)
@@ -487,9 +494,10 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) ListDatasetVersions(ctx context.
 }
 
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) ListDatasets(ctx context.Context, req *mapsplatformdatasetspb.ListDatasetsRequest, opts ...gax.CallOption) *DatasetIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListDatasets[0:len((*c.CallOptions).ListDatasets):len((*c.CallOptions).ListDatasets)], opts...)
 	it := &DatasetIterator{}
 	req = proto.Clone(req).(*mapsplatformdatasetspb.ListDatasetsRequest)
@@ -532,9 +540,10 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) ListDatasets(ctx context.Context
 }
 
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) DeleteDataset(ctx context.Context, req *mapsplatformdatasetspb.DeleteDatasetRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDataset[0:len((*c.CallOptions).DeleteDataset):len((*c.CallOptions).DeleteDataset)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -545,9 +554,10 @@ func (c *mapsPlatformDatasetsV1AlphaGRPCClient) DeleteDataset(ctx context.Contex
 }
 
 func (c *mapsPlatformDatasetsV1AlphaGRPCClient) DeleteDatasetVersion(ctx context.Context, req *mapsplatformdatasetspb.DeleteDatasetVersionRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteDatasetVersion[0:len((*c.CallOptions).DeleteDatasetVersion):len((*c.CallOptions).DeleteDatasetVersion)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -578,9 +588,11 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) CreateDataset(ctx context.Contex
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).CreateDataset[0:len((*c.CallOptions).CreateDataset):len((*c.CallOptions).CreateDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &mapsplatformdatasetspb.Dataset{}
@@ -650,9 +662,11 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) UpdateDatasetMetadata(ctx contex
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateDatasetMetadata[0:len((*c.CallOptions).UpdateDatasetMetadata):len((*c.CallOptions).UpdateDatasetMetadata)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &mapsplatformdatasetspb.Dataset{}
@@ -711,9 +725,11 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) GetDataset(ctx context.Context, 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetDataset[0:len((*c.CallOptions).GetDataset):len((*c.CallOptions).GetDataset)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &mapsplatformdatasetspb.Dataset{}
@@ -788,7 +804,8 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) ListDatasetVersions(ctx context.
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -876,7 +893,8 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) ListDatasets(ctx context.Context
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -949,9 +967,11 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) DeleteDataset(ctx context.Contex
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -989,9 +1009,11 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) DeleteDatasetVersion(ctx context
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1013,51 +1035,4 @@ func (c *mapsPlatformDatasetsV1AlphaRESTClient) DeleteDatasetVersion(ctx context
 		// the response code and body into a non-nil error
 		return googleapi.CheckResponse(httpRsp)
 	}, opts...)
-}
-
-// DatasetIterator manages a stream of *mapsplatformdatasetspb.Dataset.
-type DatasetIterator struct {
-	items    []*mapsplatformdatasetspb.Dataset
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*mapsplatformdatasetspb.Dataset, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *DatasetIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *DatasetIterator) Next() (*mapsplatformdatasetspb.Dataset, error) {
-	var item *mapsplatformdatasetspb.Dataset
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *DatasetIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *DatasetIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

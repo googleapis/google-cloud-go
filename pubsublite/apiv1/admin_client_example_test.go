@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,6 +42,56 @@ func ExampleNewAdminClient() {
 	_ = c
 }
 
+func ExampleAdminClient_CreateReservation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.CreateReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateReservationRequest.
+	}
+	resp, err := c.CreateReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_CreateSubscription() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.CreateSubscriptionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateSubscriptionRequest.
+	}
+	resp, err := c.CreateSubscription(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleAdminClient_CreateTopic() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -60,6 +110,125 @@ func ExampleAdminClient_CreateTopic() {
 		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateTopicRequest.
 	}
 	resp, err := c.CreateTopic(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_DeleteReservation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.DeleteReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#DeleteReservationRequest.
+	}
+	err = c.DeleteReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_DeleteSubscription() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.DeleteSubscriptionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#DeleteSubscriptionRequest.
+	}
+	err = c.DeleteSubscription(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_DeleteTopic() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.DeleteTopicRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#DeleteTopicRequest.
+	}
+	err = c.DeleteTopic(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_GetReservation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.GetReservationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#GetReservationRequest.
+	}
+	resp, err := c.GetReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_GetSubscription() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.GetSubscriptionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#GetSubscriptionRequest.
+	}
+	resp, err := c.GetSubscription(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -117,7 +286,7 @@ func ExampleAdminClient_GetTopicPartitions() {
 	_ = resp
 }
 
-func ExampleAdminClient_ListTopics() {
+func ExampleAdminClient_ListReservationTopics() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -130,11 +299,11 @@ func ExampleAdminClient_ListTopics() {
 	}
 	defer c.Close()
 
-	req := &pubsublitepb.ListTopicsRequest{
+	req := &pubsublitepb.ListReservationTopicsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListTopicsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListReservationTopicsRequest.
 	}
-	it := c.ListTopics(ctx, req)
+	it := c.ListReservationTopics(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -145,10 +314,16 @@ func ExampleAdminClient_ListTopics() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*pubsublitepb.ListReservationTopicsResponse)
 	}
 }
 
-func ExampleAdminClient_UpdateTopic() {
+func ExampleAdminClient_ListReservations() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -161,19 +336,31 @@ func ExampleAdminClient_UpdateTopic() {
 	}
 	defer c.Close()
 
-	req := &pubsublitepb.UpdateTopicRequest{
+	req := &pubsublitepb.ListReservationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#UpdateTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListReservationsRequest.
 	}
-	resp, err := c.UpdateTopic(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListReservations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*pubsublitepb.ListReservationsResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleAdminClient_DeleteTopic() {
+func ExampleAdminClient_ListSubscriptions() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -186,13 +373,27 @@ func ExampleAdminClient_DeleteTopic() {
 	}
 	defer c.Close()
 
-	req := &pubsublitepb.DeleteTopicRequest{
+	req := &pubsublitepb.ListSubscriptionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#DeleteTopicRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListSubscriptionsRequest.
 	}
-	err = c.DeleteTopic(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListSubscriptions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*pubsublitepb.ListSubscriptionsResponse)
 	}
 }
 
@@ -224,10 +425,16 @@ func ExampleAdminClient_ListTopicSubscriptions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*pubsublitepb.ListTopicSubscriptionsResponse)
 	}
 }
 
-func ExampleAdminClient_CreateSubscription() {
+func ExampleAdminClient_ListTopics() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -240,61 +447,11 @@ func ExampleAdminClient_CreateSubscription() {
 	}
 	defer c.Close()
 
-	req := &pubsublitepb.CreateSubscriptionRequest{
+	req := &pubsublitepb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateSubscriptionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListTopicsRequest.
 	}
-	resp, err := c.CreateSubscription(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAdminClient_GetSubscription() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsublite.NewAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsublitepb.GetSubscriptionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#GetSubscriptionRequest.
-	}
-	resp, err := c.GetSubscription(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAdminClient_ListSubscriptions() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsublite.NewAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsublitepb.ListSubscriptionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListSubscriptionsRequest.
-	}
-	it := c.ListSubscriptions(ctx, req)
+	it := c.ListTopics(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -305,54 +462,12 @@ func ExampleAdminClient_ListSubscriptions() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
 
-func ExampleAdminClient_UpdateSubscription() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsublite.NewAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsublitepb.UpdateSubscriptionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#UpdateSubscriptionRequest.
-	}
-	resp, err := c.UpdateSubscription(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAdminClient_DeleteSubscription() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsublite.NewAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsublitepb.DeleteSubscriptionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#DeleteSubscriptionRequest.
-	}
-	err = c.DeleteSubscription(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*pubsublitepb.ListTopicsResponse)
 	}
 }
 
@@ -386,87 +501,6 @@ func ExampleAdminClient_SeekSubscription() {
 	_ = resp
 }
 
-func ExampleAdminClient_CreateReservation() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsublite.NewAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsublitepb.CreateReservationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#CreateReservationRequest.
-	}
-	resp, err := c.CreateReservation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAdminClient_GetReservation() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsublite.NewAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsublitepb.GetReservationRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#GetReservationRequest.
-	}
-	resp, err := c.GetReservation(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAdminClient_ListReservations() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := pubsublite.NewAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &pubsublitepb.ListReservationsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListReservationsRequest.
-	}
-	it := c.ListReservations(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
 func ExampleAdminClient_UpdateReservation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -492,7 +526,7 @@ func ExampleAdminClient_UpdateReservation() {
 	_ = resp
 }
 
-func ExampleAdminClient_DeleteReservation() {
+func ExampleAdminClient_UpdateSubscription() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -505,17 +539,19 @@ func ExampleAdminClient_DeleteReservation() {
 	}
 	defer c.Close()
 
-	req := &pubsublitepb.DeleteReservationRequest{
+	req := &pubsublitepb.UpdateSubscriptionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#DeleteReservationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#UpdateSubscriptionRequest.
 	}
-	err = c.DeleteReservation(ctx, req)
+	resp, err := c.UpdateSubscription(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
-func ExampleAdminClient_ListReservationTopics() {
+func ExampleAdminClient_UpdateTopic() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -528,22 +564,16 @@ func ExampleAdminClient_ListReservationTopics() {
 	}
 	defer c.Close()
 
-	req := &pubsublitepb.ListReservationTopicsRequest{
+	req := &pubsublitepb.UpdateTopicRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#ListReservationTopicsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1/pubsublitepb#UpdateTopicRequest.
 	}
-	it := c.ListReservationTopics(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.UpdateTopic(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleAdminClient_CancelOperation() {
@@ -645,5 +675,11 @@ func ExampleAdminClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

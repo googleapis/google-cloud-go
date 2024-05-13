@@ -193,8 +193,282 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			},
 		},
 		{
+			// exercise construct of a submessage
+			description: "range types",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{
+						Name:             "rangedate",
+						Type:             storagepb.TableFieldSchema_RANGE,
+						Mode:             storagepb.TableFieldSchema_NULLABLE,
+						RangeElementType: &storagepb.TableFieldSchema_FieldElementType{Type: storagepb.TableFieldSchema_DATE},
+					},
+					{
+						Name:             "rangedatetime",
+						Type:             storagepb.TableFieldSchema_RANGE,
+						Mode:             storagepb.TableFieldSchema_NULLABLE,
+						RangeElementType: &storagepb.TableFieldSchema_FieldElementType{Type: storagepb.TableFieldSchema_DATETIME},
+					},
+					{
+						Name:             "rangetimestamp",
+						Type:             storagepb.TableFieldSchema_RANGE,
+						Mode:             storagepb.TableFieldSchema_NULLABLE,
+						RangeElementType: &storagepb.TableFieldSchema_FieldElementType{Type: storagepb.TableFieldSchema_TIMESTAMP},
+					},
+					{
+						Name:             "duplicate_rangedate",
+						Type:             storagepb.TableFieldSchema_RANGE,
+						Mode:             storagepb.TableFieldSchema_NULLABLE,
+						RangeElementType: &storagepb.TableFieldSchema_FieldElementType{Type: storagepb.TableFieldSchema_DATE},
+					},
+				},
+			},
+			wantProto2: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("rangedate"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".rangemessage_range_date"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rangedatetime"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".rangemessage_range_datetime"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rangetimestamp"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".rangemessage_range_timestamp"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("duplicate_rangedate"),
+						Number:   proto.Int32(4),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".rangemessage_range_date"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+			wantProto2Normalized: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("rangedate"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("rangemessage_range_date"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rangedatetime"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("rangemessage_range_datetime"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rangetimestamp"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("rangemessage_range_timestamp"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("duplicate_rangedate"),
+						Number:   proto.Int32(4),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("rangemessage_range_date"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("rangemessage_range_date"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("start"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+							{
+								Name:   proto.String("end"),
+								Number: proto.Int32(2),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("rangemessage_range_datetime"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("start"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+							{
+								Name:   proto.String("end"),
+								Number: proto.Int32(2),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("rangemessage_range_timestamp"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("start"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+							{
+								Name:   proto.String("end"),
+								Number: proto.Int32(2),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+				},
+			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("rangedate"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".rangemessage_range_date"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rangedatetime"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".rangemessage_range_datetime"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rangetimestamp"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".rangemessage_range_timestamp"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("duplicate_rangedate"),
+						Number:   proto.Int32(4),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".rangemessage_range_date"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
+		{
+			description: "nested-uppercase",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "recordID", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REQUIRED},
+					{
+						Name: "recordDetails",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_REPEATED,
+						Fields: []*storagepb.TableFieldSchema{
+							{Name: "key", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REQUIRED},
+							{Name: "value", Type: storagepb.TableFieldSchema_BYTES, Mode: storagepb.TableFieldSchema_NULLABLE},
+						},
+					},
+				},
+			},
+			wantProto2: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("recordID"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("recordDetails"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__recordDetails"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+			},
+			wantProto2Normalized: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("recordID"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("recordDetails"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("root__recordDetails"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("root__recordDetails"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("key"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+							{
+								Name:   proto.String("value"),
+								Number: proto.Int32(2),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+				},
+			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:   proto.String("recordID"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("recordDetails"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__recordDetails"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+					},
+				},
+			},
+		},
+		{
 			// We expect to re-use the submessage twice, as the schema contains two identical structs.
-			description: "nested w/duplicate submessage",
+			description: "nested with duplicate submessage",
 			bq: &storagepb.TableSchema{
 				Fields: []*storagepb.TableFieldSchema{
 					{Name: "curdate", Type: storagepb.TableFieldSchema_DATE, Mode: storagepb.TableFieldSchema_NULLABLE},
@@ -271,6 +545,175 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			},
 		},
 		{
+			description: "nested with reused submessage in different levels",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{
+						Name: "reused_inner_struct",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_REQUIRED,
+						Fields: []*storagepb.TableFieldSchema{
+							{
+								Name: "leaf",
+								Type: storagepb.TableFieldSchema_STRING,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+							},
+						},
+					},
+					{
+						Name: "outer_struct",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_REQUIRED,
+						Fields: []*storagepb.TableFieldSchema{
+							{
+								Name: "another_inner_struct",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+								Fields: []*storagepb.TableFieldSchema{
+									{
+										Name: "another_leaf",
+										Type: storagepb.TableFieldSchema_STRING,
+										Mode: storagepb.TableFieldSchema_REQUIRED,
+									},
+								},
+							},
+							{
+								Name: "reused_inner_struct_one",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+								Fields: []*storagepb.TableFieldSchema{
+									{
+										Name: "leaf",
+										Type: storagepb.TableFieldSchema_STRING,
+										Mode: storagepb.TableFieldSchema_REQUIRED,
+									},
+								},
+							},
+							{
+								Name: "reused_inner_struct_two",
+								Type: storagepb.TableFieldSchema_STRUCT,
+								Mode: storagepb.TableFieldSchema_REQUIRED,
+								Fields: []*storagepb.TableFieldSchema{
+									{
+										Name: "leaf",
+										Type: storagepb.TableFieldSchema_STRING,
+										Mode: storagepb.TableFieldSchema_REQUIRED,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantProto2: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("reused_inner_struct"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__reused_inner_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("outer_struct"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__outer_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+				},
+			},
+			wantProto2Normalized: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("reused_inner_struct"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("root__reused_inner_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+					{
+						Name:     proto.String("outer_struct"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String("root__outer_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("root__outer_struct"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("another_inner_struct"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__outer_struct__another_inner_struct"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+							{
+								Name:     proto.String("reused_inner_struct_one"),
+								Number:   proto.Int32(2),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__reused_inner_struct"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+							{
+								Name:     proto.String("reused_inner_struct_two"),
+								Number:   proto.Int32(3),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__reused_inner_struct"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("root__outer_struct__another_inner_struct"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("another_leaf"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("root__reused_inner_struct"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:   proto.String("leaf"),
+								Number: proto.Int32(1),
+								Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:  descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum(),
+							},
+						},
+					},
+				},
+			},
+			wantProto3: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("reused_inner_struct"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__reused_inner_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("outer_struct"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__outer_struct"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
+		{
 			description: "multiple nesting levels",
 			bq: &storagepb.TableSchema{
 				Fields: []*storagepb.TableFieldSchema{
@@ -334,6 +777,18 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				},
 				NestedType: []*descriptorpb.DescriptorProto{
 					{
+						Name: proto.String("root__outer_struct"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("inner_struct"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+								TypeName: proto.String("root__outer_struct__inner_struct"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
 						Name: proto.String("root__outer_struct__inner_struct"),
 						Field: []*descriptorpb.FieldDescriptorProto{
 							{
@@ -347,18 +802,6 @@ func TestSchemaToProtoConversion(t *testing.T) {
 								Number: proto.Int32(2),
 								Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
 								Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
-							},
-						},
-					},
-					{
-						Name: proto.String("root__outer_struct"),
-						Field: []*descriptorpb.FieldDescriptorProto{
-							{
-								Name:     proto.String("inner_struct"),
-								Number:   proto.Int32(1),
-								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-								TypeName: proto.String("root__outer_struct__inner_struct"),
-								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 							},
 						},
 					},
@@ -385,7 +828,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			},
 		},
 		{
-			description: "repeated w/packed",
+			description: "repeated with packed",
 			bq: &storagepb.TableSchema{
 				Fields: []*storagepb.TableFieldSchema{
 					{Name: "name", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_NULLABLE},
@@ -468,61 +911,63 @@ func TestSchemaToProtoConversion(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		// Proto2
-		p2d, err := StorageSchemaToProto2Descriptor(tc.bq, "root")
-		if err != nil {
-			t.Fatalf("case (%s) failed proto2 conversion: %v", tc.description, err)
-		}
-
-		// Convert to MessageDescriptor.
-		mDesc, ok := p2d.(protoreflect.MessageDescriptor)
-		if !ok {
-			t.Errorf("%s: couldn't convert proto2 to messagedescriptor", tc.description)
-		}
-		// Check the non-normalized case.
-		if tc.wantProto2 != nil {
-			gotDP := protodesc.ToDescriptorProto(mDesc)
-			if diff := cmp.Diff(gotDP, tc.wantProto2, protocmp.Transform()); diff != "" {
-				t.Errorf("%s proto2: -got, +want:\n%s", tc.description, diff)
-			}
-		}
-		// Check the normalized case.
-		if tc.wantProto2Normalized != nil {
-			gotDP, err := NormalizeDescriptor(mDesc)
+		t.Run(tc.description, func(T *testing.T) {
+			// Proto2
+			p2d, err := StorageSchemaToProto2Descriptor(tc.bq, "root")
 			if err != nil {
-				t.Errorf("failed to normalize: %v", err)
+				t.Fatalf("failed proto2 conversion: %v", err)
 			}
-			if diff := cmp.Diff(gotDP, tc.wantProto2Normalized, protocmp.Transform()); diff != "" {
-				t.Errorf("%s proto2normalized: -got, +want:\n%s", tc.description, diff)
-			}
-		}
 
-		p3d, err := StorageSchemaToProto3Descriptor(tc.bq, "root")
-		if err != nil {
-			t.Fatalf("case (%s) failed proto3 conversion: %v", tc.description, err)
-		}
-		// Convert to MessageDescriptor.
-		mDesc, ok = p3d.(protoreflect.MessageDescriptor)
-		if !ok {
-			t.Errorf("%s: couldn't convert proto3 to messagedescriptor", tc.description)
-		}
-		// Check the non-normalized case.
-		if tc.wantProto3 != nil {
-			gotDP := protodesc.ToDescriptorProto(mDesc)
-			if diff := cmp.Diff(gotDP, tc.wantProto3, protocmp.Transform()); diff != "" {
-				t.Errorf("%s proto2: -got, +want:\n%s", tc.description, diff)
+			// Convert to MessageDescriptor.
+			mDesc, ok := p2d.(protoreflect.MessageDescriptor)
+			if !ok {
+				t.Error("couldn't convert proto2 to messagedescriptor")
 			}
-		}
-		// Check the normalized case.
-		if tc.wantProto3Normalized != nil {
-			gotDP, err := NormalizeDescriptor(mDesc)
+			// Check the non-normalized case.
+			if tc.wantProto2 != nil {
+				gotDP := protodesc.ToDescriptorProto(mDesc)
+				if diff := cmp.Diff(gotDP, tc.wantProto2, protocmp.Transform()); diff != "" {
+					t.Errorf("proto2: -got, +want:\n%s", diff)
+				}
+			}
+			// Check the normalized case.
+			if tc.wantProto2Normalized != nil {
+				gotDP, err := NormalizeDescriptor(mDesc)
+				if err != nil {
+					t.Errorf("failed to normalize: %v", err)
+				}
+				if diff := cmp.Diff(gotDP, tc.wantProto2Normalized, protocmp.Transform()); diff != "" {
+					t.Errorf("proto2normalized: -got, +want:\n%s", diff)
+				}
+			}
+
+			p3d, err := StorageSchemaToProto3Descriptor(tc.bq, "root")
 			if err != nil {
-				t.Errorf("failed to normalize: %v", err)
+				t.Fatalf("failed proto3 conversion: %v", err)
 			}
-			if diff := cmp.Diff(gotDP, tc.wantProto3Normalized, protocmp.Transform()); diff != "" {
-				t.Errorf("%s proto3normalized: -got, +want:\n%s", tc.description, diff)
+			// Convert to MessageDescriptor.
+			mDesc, ok = p3d.(protoreflect.MessageDescriptor)
+			if !ok {
+				t.Error("couldn't convert proto3 to messagedescriptor")
 			}
-		}
+			// Check the non-normalized case.
+			if tc.wantProto3 != nil {
+				gotDP := protodesc.ToDescriptorProto(mDesc)
+				if diff := cmp.Diff(gotDP, tc.wantProto3, protocmp.Transform()); diff != "" {
+					t.Errorf("proto3: -got, +want:\n%s", diff)
+				}
+			}
+			// Check the normalized case.
+			if tc.wantProto3Normalized != nil {
+				gotDP, err := NormalizeDescriptor(mDesc)
+				if err != nil {
+					t.Errorf("failed to normalize: %v", err)
+				}
+				if diff := cmp.Diff(gotDP, tc.wantProto3Normalized, protocmp.Transform()); diff != "" {
+					t.Errorf("proto3normalized: -got, +want:\n%s", diff)
+				}
+			}
+		})
 	}
 }
 
@@ -783,6 +1228,14 @@ func TestNormalizeDescriptor(t *testing.T) {
 						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
 						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
+					{
+						Name:     proto.String("range_type"),
+						JsonName: proto.String("rangeType"),
+						Number:   proto.Int32(3),
+						TypeName: proto.String("testdata_RangeTypeTimestamp"),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
 				},
 				NestedType: []*descriptorpb.DescriptorProto{
 					{
@@ -807,6 +1260,25 @@ func TestNormalizeDescriptor(t *testing.T) {
 								TypeName: proto.String("testdata_InnerType"),
 								Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
 								Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("testdata_RangeTypeTimestamp"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("start"),
+								JsonName: proto.String("start"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+							{
+								Name:     proto.String("end"),
+								JsonName: proto.String("end"),
+								Number:   proto.Int32(2),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 							},
 						},
 					},
@@ -1109,28 +1581,6 @@ func TestNormalizeDescriptor(t *testing.T) {
 				},
 				NestedType: []*descriptorpb.DescriptorProto{
 					{
-						Name: proto.String("testdata_ExtEnum_E"),
-						EnumType: []*descriptorpb.EnumDescriptorProto{
-							{
-								Name: proto.String("ExtEnum"),
-								Value: []*descriptorpb.EnumValueDescriptorProto{
-									{
-										Name:   proto.String("UNDEFINED"),
-										Number: proto.Int32(0),
-									},
-									{
-										Name:   proto.String("THING"),
-										Number: proto.Int32(1),
-									},
-									{
-										Name:   proto.String("OTHER_THING"),
-										Number: proto.Int32(2),
-									},
-								},
-							},
-						},
-					},
-					{
 						Name: proto.String("testdata_EnumMsgA"),
 						Field: []*descriptorpb.FieldDescriptorProto{
 							{
@@ -1159,6 +1609,133 @@ func TestNormalizeDescriptor(t *testing.T) {
 								Number:   proto.Int32(1),
 								Type:     descriptorpb.FieldDescriptorProto_TYPE_ENUM.Enum(),
 								TypeName: proto.String("testdata_ExtEnum_E.ExtEnum"),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+						},
+					},
+					{
+						Name: proto.String("testdata_ExtEnum_E"),
+						EnumType: []*descriptorpb.EnumDescriptorProto{
+							{
+								Name: proto.String("ExtEnum"),
+								Value: []*descriptorpb.EnumValueDescriptorProto{
+									{
+										Name:   proto.String("UNDEFINED"),
+										Number: proto.Int32(0),
+									},
+									{
+										Name:   proto.String("THING"),
+										Number: proto.Int32(1),
+									},
+									{
+										Name:   proto.String("OTHER_THING"),
+										Number: proto.Int32(2),
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			description: "OutOfOrderDefinitionProto2",
+			in:          (&testdata.OutOfOrderDefinitionProto2{}).ProtoReflect().Descriptor(),
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("testdata_OutOfOrderDefinitionProto2"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("s1"),
+						JsonName: proto.String("s1"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("s2"),
+						JsonName: proto.String("s2"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("s3"),
+						JsonName: proto.String("s3"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("enum1"),
+						JsonName: proto.String("enum1"),
+						Number:   proto.Int32(4),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_ENUM.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+						TypeName: proto.String("testdata_OutOfOrderDefinitionProto2_OutOfOrderEnum_E.OutOfOrderEnum"),
+					},
+					{
+						Name:     proto.String("enum2"),
+						JsonName: proto.String("enum2"),
+						Number:   proto.Int32(5),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_ENUM.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+						TypeName: proto.String("testdata_OutOfOrderDefinitionProto2_OutOfOrderEnum_E.OutOfOrderEnum"),
+					},
+					{
+						Name:     proto.String("msg6"),
+						JsonName: proto.String("msg6"),
+						Number:   proto.Int32(6),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+						TypeName: proto.String("testdata_SimpleMessageProto2"),
+					},
+					{
+						Name:     proto.String("msg7"),
+						JsonName: proto.String("msg7"),
+						Number:   proto.Int32(7),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+						TypeName: proto.String("testdata_SimpleMessageProto2"),
+					},
+				},
+				NestedType: []*descriptorpb.DescriptorProto{
+					{
+						Name: proto.String("testdata_OutOfOrderDefinitionProto2_OutOfOrderEnum_E"),
+						EnumType: []*descriptorpb.EnumDescriptorProto{
+							{
+								Name: proto.String("OutOfOrderEnum"),
+								Value: []*descriptorpb.EnumValueDescriptorProto{
+									{
+										Name:   proto.String("E1"),
+										Number: proto.Int32(1),
+									},
+									{
+										Name:   proto.String("E2"),
+										Number: proto.Int32(2),
+									},
+									{
+										Name:   proto.String("E3"),
+										Number: proto.Int32(3),
+									},
+								},
+							},
+						},
+					},
+					{
+						Name: proto.String("testdata_SimpleMessageProto2"),
+						Field: []*descriptorpb.FieldDescriptorProto{
+							{
+								Name:     proto.String("name"),
+								JsonName: proto.String("name"),
+								Number:   proto.Int32(1),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+							},
+							{
+								Name:     proto.String("value"),
+								JsonName: proto.String("value"),
+								Number:   proto.Int32(2),
+								Type:     descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
 								Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 							},
 						},

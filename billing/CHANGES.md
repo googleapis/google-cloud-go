@@ -1,5 +1,93 @@
 # Changes
 
+## [1.18.5](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.4...billing/v1.18.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **billing:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.18.4](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.3...billing/v1.18.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **billing:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.18.3](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.2...billing/v1.18.3) (2024-02-21)
+
+
+### Documentation
+
+* **billing:** Clarify that the parent field in the CreateBillingAccountRequest must be a billing account ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
+## [1.18.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.1...billing/v1.18.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **billing:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.0...billing/v1.18.1) (2024-01-22)
+
+
+### Documentation
+
+* **billing:** Update comments ([00b9900](https://github.com/googleapis/google-cloud-go/commit/00b990061592a20a181e61faa6964b45205b76a7))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.4...billing/v1.18.0) (2023-12-07)
+
+
+### Features
+
+* **billing:** Added the MoveBillingAccount method, which allows changing which organization a billing account belongs to ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
+
+## [1.17.4](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.3...billing/v1.17.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **billing:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.2...billing/v1.17.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **billing:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.1...billing/v1.17.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **billing:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/billing/v1.17.0...billing/v1.17.1) (2023-10-04)
+
+
+### Documentation
+
+* **billing:** Update service documentation ([#8597](https://github.com/googleapis/google-cloud-go/issues/8597)) ([e36b9c6](https://github.com/googleapis/google-cloud-go/commit/e36b9c67173f40e9c4552e5f54467fc86f63d6fd))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.16.0...billing/v1.17.0) (2023-09-11)
+
+
+### Features
+
+* **billing/budgets:** Supported project-level-budgets in Public Budget API V1 ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+* **billing/budgets:** Supported project-level-budgets in Public Budget API V1Beta ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
+
+### Bug Fixes
+
+* **billing:** Fixed resource_reference for name in GetProjectBillingInfo ([ac10224](https://github.com/googleapis/google-cloud-go/commit/ac102249403e6c1604bff7c537343645c950ae13))
+
+
+### Documentation
+
+* **billing:** Update comments ([20725c8](https://github.com/googleapis/google-cloud-go/commit/20725c86c970ad24efa18c056fc3aa71dc3a4f03))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/billing/v1.15.0...billing/v1.16.0) (2023-06-20)
 
 

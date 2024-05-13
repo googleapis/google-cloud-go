@@ -19,6 +19,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -32,6 +33,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -44,8 +46,6 @@ import (
 
 // httpStorageClient is the HTTP-JSON API implementation of the transport-agnostic
 // storageClient interface.
-//
-// This is an experimental API and not intended for public use.
 type httpStorageClient struct {
 	creds    *google.Credentials
 	hc       *http.Client
@@ -58,8 +58,6 @@ type httpStorageClient struct {
 
 // newHTTPStorageClient initializes a new storageClient that uses the HTTP-JSON
 // Storage API.
-//
-// This is an experimental API and not intended for public use.
 func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageClient, error) {
 	s := initSettings(opts...)
 	o := s.clientOption
@@ -77,9 +75,10 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		// Prepend default options to avoid overriding options passed by the user.
 		o = append([]option.ClientOption{option.WithScopes(ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform"), option.WithUserAgent(userAgent)}, o...)
 
-		o = append(o, internaloption.WithDefaultEndpoint("https://storage.googleapis.com/storage/v1/"))
-		o = append(o, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
-
+		o = append(o, internaloption.WithDefaultEndpointTemplate("https://storage.UNIVERSE_DOMAIN/storage/v1/"),
+			internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"),
+			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		)
 		// Don't error out here. The user may have passed in their own HTTP
 		// client which does not auth with ADC or other common conventions.
 		c, err := transport.Creds(ctx, o...)
@@ -108,12 +107,12 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (storageCl
 		// Append the emulator host as default endpoint for the user
 		o = append([]option.ClientOption{option.WithoutAuthentication()}, o...)
 
-		o = append(o, internaloption.WithDefaultEndpoint(endpoint))
+		o = append(o, internaloption.WithDefaultEndpointTemplate(endpoint))
 		o = append(o, internaloption.WithDefaultMTLSEndpoint(endpoint))
 	}
 	s.clientOption = o
 
-	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
+	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, s.clientOption...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
@@ -151,18 +150,18 @@ func (c *httpStorageClient) GetServiceAccount(ctx context.Context, project strin
 	s := callSettings(c.settings, opts...)
 	call := c.raw.Projects.ServiceAccount.Get(project)
 	var res *raw.ServiceAccount
-	err := run(ctx, func() error {
+	err := run(ctx, func(ctx context.Context) error {
 		var err error
 		res, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	}, s.retry, s.idempotent)
 	if err != nil {
 		return "", err
 	}
 	return res.EmailAddress, nil
 }
 
-func (c *httpStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, opts ...storageOption) (*BucketAttrs, error) {
+func (c *httpStorageClient) CreateBucket(ctx context.Context, project, bucket string, attrs *BucketAttrs, enableObjectRetention *bool, opts ...storageOption) (*BucketAttrs, error) {
 	s := callSettings(c.settings, opts...)
 	var bkt *raw.Bucket
 	if attrs != nil {
@@ -184,15 +183,18 @@ func (c *httpStorageClient) CreateBucket(ctx context.Context, project, bucket st
 	if attrs != nil && attrs.PredefinedDefaultObjectACL != "" {
 		req.PredefinedDefaultObjectAcl(attrs.PredefinedDefaultObjectACL)
 	}
+	if enableObjectRetention != nil {
+		req.EnableObjectRetention(*enableObjectRetention)
+	}
 	var battrs *BucketAttrs
-	err := run(ctx, func() error {
+	err := run(ctx, func(ctx context.Context) error {
 		b, err := req.Context(ctx).Do()
 		if err != nil {
 			return err
 		}
 		battrs, err = newBucket(b)
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent)
 	return battrs, err
 }
 
@@ -213,10 +215,10 @@ func (c *httpStorageClient) ListBuckets(ctx context.Context, project string, opt
 			req.MaxResults(int64(pageSize))
 		}
 		var resp *raw.Buckets
-		err = run(it.ctx, func() error {
-			resp, err = req.Context(it.ctx).Do()
+		err = run(it.ctx, func(ctx context.Context) error {
+			resp, err = req.Context(ctx).Do()
 			return err
-		}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+		}, s.retry, s.idempotent)
 		if err != nil {
 			return "", err
 		}
@@ -251,7 +253,7 @@ func (c *httpStorageClient) DeleteBucket(ctx context.Context, bucket string, con
 		req.UserProject(s.userProject)
 	}
 
-	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	return run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 }
 
 func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds *BucketConditions, opts ...storageOption) (*BucketAttrs, error) {
@@ -267,10 +269,10 @@ func (c *httpStorageClient) GetBucket(ctx context.Context, bucket string, conds 
 	}
 
 	var resp *raw.Bucket
-	err = run(ctx, func() error {
+	err = run(ctx, func(ctx context.Context) error {
 		resp, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent)
 
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
@@ -301,10 +303,10 @@ func (c *httpStorageClient) UpdateBucket(ctx context.Context, bucket string, uat
 	}
 
 	var rawBucket *raw.Bucket
-	err = run(ctx, func() error {
+	err = run(ctx, func(ctx context.Context) error {
 		rawBucket, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent)
 	if err != nil {
 		return nil, err
 	}
@@ -320,10 +322,10 @@ func (c *httpStorageClient) LockBucketRetentionPolicy(ctx context.Context, bucke
 	}
 	req := c.raw.Buckets.LockRetentionPolicy(bucket, metageneration)
 
-	return run(ctx, func() error {
+	return run(ctx, func(ctx context.Context) error {
 		_, err := req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent)
 }
 func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Query, opts ...storageOption) *ObjectIterator {
 	s := callSettings(c.settings, opts...)
@@ -335,6 +337,9 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		req := c.raw.Objects.List(bucket)
+		if it.query.SoftDeleted {
+			req.SoftDeleted(it.query.SoftDeleted)
+		}
 		setClientHeader(req.Header())
 		projection := it.query.Projection
 		if projection == ProjectionDefault {
@@ -348,6 +353,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		req.Versions(it.query.Versions)
 		req.IncludeTrailingDelimiter(it.query.IncludeTrailingDelimiter)
 		req.MatchGlob(it.query.MatchGlob)
+		req.IncludeFoldersAsPrefixes(it.query.IncludeFoldersAsPrefixes)
 		if selection := it.query.toFieldSelection(); selection != "" {
 			req.Fields("nextPageToken", googleapi.Field(selection))
 		}
@@ -360,10 +366,10 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		}
 		var resp *raw.Objects
 		var err error
-		err = run(it.ctx, func() error {
-			resp, err = req.Context(it.ctx).Do()
+		err = run(it.ctx, func(ctx context.Context) error {
+			resp, err = req.Context(ctx).Do()
 			return err
-		}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+		}, s.retry, s.idempotent)
 		if err != nil {
 			var e *googleapi.Error
 			if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
@@ -398,7 +404,7 @@ func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	if s.userProject != "" {
 		req.UserProject(s.userProject)
 	}
-	err := run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	err := run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return ErrObjectNotExist
@@ -406,24 +412,28 @@ func (c *httpStorageClient) DeleteObject(ctx context.Context, bucket, object str
 	return err
 }
 
-func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
+func (c *httpStorageClient) GetObject(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
 	s := callSettings(c.settings, opts...)
-	req := c.raw.Objects.Get(bucket, object).Projection("full").Context(ctx)
-	if err := applyConds("Attrs", gen, conds, req); err != nil {
+	req := c.raw.Objects.Get(params.bucket, params.object).Projection("full").Context(ctx)
+	if err := applyConds("Attrs", params.gen, params.conds, req); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
 		req.UserProject(s.userProject)
 	}
-	if err := setEncryptionHeaders(req.Header(), encryptionKey, false); err != nil {
+	if err := setEncryptionHeaders(req.Header(), params.encryptionKey, false); err != nil {
 		return nil, err
 	}
+	if params.softDeleted {
+		req.SoftDeleted(params.softDeleted)
+	}
+
 	var obj *raw.Object
 	var err error
-	err = run(ctx, func() error {
+	err = run(ctx, func(ctx context.Context) error {
 		obj, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent)
 	var e *googleapi.Error
 	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -434,7 +444,8 @@ func (c *httpStorageClient) GetObject(ctx context.Context, bucket, object string
 	return newObject(obj), nil
 }
 
-func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object string, uattrs *ObjectAttrsToUpdate, gen int64, encryptionKey []byte, conds *Conditions, opts ...storageOption) (*ObjectAttrs, error) {
+func (c *httpStorageClient) UpdateObject(ctx context.Context, params *updateObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+	uattrs := params.uattrs
 	s := callSettings(c.settings, opts...)
 
 	var attrs ObjectAttrs
@@ -499,11 +510,21 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 		// we don't append to nullFields here.
 		forceSendFields = append(forceSendFields, "Acl")
 	}
-	rawObj := attrs.toRawObject(bucket)
+	if uattrs.Retention != nil {
+		// For ObjectRetention it's an error to send empty fields.
+		// Instead we send a null as the user's intention is to remove.
+		if uattrs.Retention.Mode == "" && uattrs.Retention.RetainUntil.IsZero() {
+			nullFields = append(nullFields, "Retention")
+		} else {
+			attrs.Retention = uattrs.Retention
+			forceSendFields = append(forceSendFields, "Retention")
+		}
+	}
+	rawObj := attrs.toRawObject(params.bucket)
 	rawObj.ForceSendFields = forceSendFields
 	rawObj.NullFields = nullFields
-	call := c.raw.Objects.Patch(bucket, object, rawObj).Projection("full").Context(ctx)
-	if err := applyConds("Update", gen, conds, call); err != nil {
+	call := c.raw.Objects.Patch(params.bucket, params.object, rawObj).Projection("full")
+	if err := applyConds("Update", params.gen, params.conds, call); err != nil {
 		return nil, err
 	}
 	if s.userProject != "" {
@@ -512,12 +533,17 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	if uattrs.PredefinedACL != "" {
 		call.PredefinedAcl(uattrs.PredefinedACL)
 	}
-	if err := setEncryptionHeaders(call.Header(), encryptionKey, false); err != nil {
+	if err := setEncryptionHeaders(call.Header(), params.encryptionKey, false); err != nil {
 		return nil, err
 	}
+
+	if params.overrideRetention != nil {
+		call.OverrideUnlockedRetention(*params.overrideRetention)
+	}
+
 	var obj *raw.Object
 	var err error
-	err = run(ctx, func() error { obj, err = call.Do(); return err }, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	err = run(ctx, func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }, s.retry, s.idempotent)
 	var e *googleapi.Error
 	if errors.As(err, &e) && e.Code == http.StatusNotFound {
 		return nil, ErrObjectNotExist
@@ -528,13 +554,40 @@ func (c *httpStorageClient) UpdateObject(ctx context.Context, bucket, object str
 	return newObject(obj), nil
 }
 
+func (c *httpStorageClient) RestoreObject(ctx context.Context, params *restoreObjectParams, opts ...storageOption) (*ObjectAttrs, error) {
+	s := callSettings(c.settings, opts...)
+	req := c.raw.Objects.Restore(params.bucket, params.object, params.gen).Context(ctx)
+	// Do not set the generation here since it's not an optional condition; it gets set above.
+	if err := applyConds("RestoreObject", defaultGen, params.conds, req); err != nil {
+		return nil, err
+	}
+	if s.userProject != "" {
+		req.UserProject(s.userProject)
+	}
+	if params.copySourceACL {
+		req.CopySourceAcl(params.copySourceACL)
+	}
+	if err := setEncryptionHeaders(req.Header(), params.encryptionKey, false); err != nil {
+		return nil, err
+	}
+
+	var obj *raw.Object
+	var err error
+	err = run(ctx, func(ctx context.Context) error { obj, err = req.Context(ctx).Do(); return err }, s.retry, s.idempotent)
+	var e *googleapi.Error
+	if ok := errors.As(err, &e); ok && e.Code == http.StatusNotFound {
+		return nil, ErrObjectNotExist
+	}
+	return newObject(obj), err
+}
+
 // Default Object ACL methods.
 
 func (c *httpStorageClient) DeleteDefaultObjectACL(ctx context.Context, bucket string, entity ACLEntity, opts ...storageOption) error {
 	s := callSettings(c.settings, opts...)
 	req := c.raw.DefaultObjectAccessControls.Delete(bucket, string(entity))
 	configureACLCall(ctx, s.userProject, req)
-	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	return run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 }
 
 func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
@@ -543,10 +596,10 @@ func (c *httpStorageClient) ListDefaultObjectACLs(ctx context.Context, bucket st
 	var err error
 	req := c.raw.DefaultObjectAccessControls.List(bucket)
 	configureACLCall(ctx, s.userProject, req)
-	err = run(ctx, func() error {
-		acls, err = req.Do()
+	err = run(ctx, func(ctx context.Context) error {
+		acls, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, true, setRetryHeaderHTTP(req))
+	}, s.retry, true)
 	if err != nil {
 		return nil, err
 	}
@@ -563,14 +616,13 @@ func (c *httpStorageClient) UpdateDefaultObjectACL(ctx context.Context, bucket s
 		Entity: string(entity),
 		Role:   string(role),
 	}
-	var req setRequest
 	var err error
-	req = c.raw.DefaultObjectAccessControls.Update(bucket, string(entity), acl)
+	req := c.raw.DefaultObjectAccessControls.Update(bucket, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
-	return run(ctx, func() error {
-		_, err = req.Do()
+	return run(ctx, func(ctx context.Context) error {
+		_, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent)
 }
 
 // Bucket ACL methods.
@@ -579,7 +631,7 @@ func (c *httpStorageClient) DeleteBucketACL(ctx context.Context, bucket string, 
 	s := callSettings(c.settings, opts...)
 	req := c.raw.BucketAccessControls.Delete(bucket, string(entity))
 	configureACLCall(ctx, s.userProject, req)
-	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	return run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 }
 
 func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, opts ...storageOption) ([]ACLRule, error) {
@@ -588,10 +640,10 @@ func (c *httpStorageClient) ListBucketACLs(ctx context.Context, bucket string, o
 	var err error
 	req := c.raw.BucketAccessControls.List(bucket)
 	configureACLCall(ctx, s.userProject, req)
-	err = run(ctx, func() error {
-		acls, err = req.Do()
+	err = run(ctx, func(ctx context.Context) error {
+		acls, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, true, setRetryHeaderHTTP(req))
+	}, s.retry, true)
 	if err != nil {
 		return nil, err
 	}
@@ -608,10 +660,10 @@ func (c *httpStorageClient) UpdateBucketACL(ctx context.Context, bucket string, 
 	req := c.raw.BucketAccessControls.Update(bucket, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
 	var err error
-	return run(ctx, func() error {
-		_, err = req.Do()
+	return run(ctx, func(ctx context.Context) error {
+		_, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent)
 }
 
 // configureACLCall sets the context, user project and headers on the apiary library call.
@@ -631,7 +683,7 @@ func (c *httpStorageClient) DeleteObjectACL(ctx context.Context, bucket, object 
 	s := callSettings(c.settings, opts...)
 	req := c.raw.ObjectAccessControls.Delete(bucket, object, string(entity))
 	configureACLCall(ctx, s.userProject, req)
-	return run(ctx, func() error { return req.Context(ctx).Do() }, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	return run(ctx, func(ctx context.Context) error { return req.Context(ctx).Do() }, s.retry, s.idempotent)
 }
 
 // ListObjectACLs retrieves object ACL entries. By default, it operates on the latest generation of this object.
@@ -642,10 +694,10 @@ func (c *httpStorageClient) ListObjectACLs(ctx context.Context, bucket, object s
 	var err error
 	req := c.raw.ObjectAccessControls.List(bucket, object)
 	configureACLCall(ctx, s.userProject, req)
-	err = run(ctx, func() error {
-		acls, err = req.Do()
+	err = run(ctx, func(ctx context.Context) error {
+		acls, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent)
 	if err != nil {
 		return nil, err
 	}
@@ -664,14 +716,13 @@ func (c *httpStorageClient) UpdateObjectACL(ctx context.Context, bucket, object 
 		Entity: string(entity),
 		Role:   string(role),
 	}
-	var req setRequest
 	var err error
-	req = c.raw.ObjectAccessControls.Update(bucket, object, string(entity), acl)
+	req := c.raw.ObjectAccessControls.Update(bucket, object, string(entity), acl)
 	configureACLCall(ctx, s.userProject, req)
-	return run(ctx, func() error {
-		_, err = req.Do()
+	return run(ctx, func(ctx context.Context) error {
+		_, err = req.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(req))
+	}, s.retry, s.idempotent)
 }
 
 // Media operations.
@@ -695,7 +746,7 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 		rawReq.SourceObjects = append(rawReq.SourceObjects, srcObj)
 	}
 
-	call := c.raw.Objects.Compose(req.dstBucket, req.dstObject.name, rawReq).Context(ctx)
+	call := c.raw.Objects.Compose(req.dstBucket, req.dstObject.name, rawReq)
 	if err := applyConds("ComposeFrom destination", defaultGen, req.dstObject.conds, call); err != nil {
 		return nil, err
 	}
@@ -712,9 +763,9 @@ func (c *httpStorageClient) ComposeObject(ctx context.Context, req *composeObjec
 	setClientHeader(call.Header())
 
 	var err error
-	retryCall := func() error { obj, err = call.Do(); return err }
+	retryCall := func(ctx context.Context) error { obj, err = call.Context(ctx).Do(); return err }
 
-	if err := run(ctx, retryCall, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
 		return nil, err
 	}
 	return newObject(obj), nil
@@ -724,7 +775,7 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	rawObject := req.dstObject.attrs.toRawObject("")
 	call := c.raw.Objects.Rewrite(req.srcObject.bucket, req.srcObject.name, req.dstObject.bucket, req.dstObject.name, rawObject)
 
-	call.Context(ctx).Projection("full")
+	call.Projection("full")
 	if req.token != "" {
 		call.RewriteToken(req.token)
 	}
@@ -760,9 +811,9 @@ func (c *httpStorageClient) RewriteObject(ctx context.Context, req *rewriteObjec
 	var err error
 	setClientHeader(call.Header())
 
-	retryCall := func() error { res, err = call.Do(); return err }
+	retryCall := func(ctx context.Context) error { res, err = call.Context(ctx).Do(); return err }
 
-	if err := run(ctx, retryCall, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+	if err := run(ctx, retryCall, s.retry, s.idempotent); err != nil {
 		return nil, err
 	}
 
@@ -804,7 +855,6 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	if err != nil {
 		return nil, err
 	}
-	req = req.WithContext(ctx)
 
 	if s.userProject != "" {
 		req.Header.Set("X-Goog-User-Project", s.userProject)
@@ -814,8 +864,17 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 		return nil, err
 	}
 
+	// Set custom headers passed in via the context. This is only required for XML;
+	// for gRPC & JSON this is handled in the GAPIC and Apiary layers respectively.
+	ctxHeaders := callctx.HeadersFromContext(ctx)
+	for k, vals := range ctxHeaders {
+		for _, v := range vals {
+			req.Header.Add(k, v)
+		}
+	}
+
 	reopen := readerReopen(ctx, req.Header, params, s,
-		func() (*http.Response, error) { return c.hc.Do(req) },
+		func(ctx context.Context) (*http.Response, error) { return c.hc.Do(req.WithContext(ctx)) },
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
 		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
 
@@ -830,7 +889,6 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 	call := c.raw.Objects.Get(params.bucket, params.object)
 
 	setClientHeader(call.Header())
-	call.Context(ctx)
 	call.Projection("full")
 
 	if s.userProject != "" {
@@ -841,7 +899,7 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 		return nil, err
 	}
 
-	reopen := readerReopen(ctx, call.Header(), params, s, func() (*http.Response, error) { return call.Download() },
+	reopen := readerReopen(ctx, call.Header(), params, s, func(ctx context.Context) (*http.Response, error) { return call.Context(ctx).Download() },
 		func() error { return applyConds("NewReader", params.gen, params.conds, call) },
 		func() { call.Generation(params.gen) })
 
@@ -862,7 +920,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	mediaOpts := []googleapi.MediaOption{
 		googleapi.ChunkSize(params.chunkSize),
 	}
-	if c := attrs.ContentType; c != "" {
+	if c := attrs.ContentType; c != "" || params.forceEmptyContentType {
 		mediaOpts = append(mediaOpts, googleapi.ContentType(c))
 	}
 	if params.chunkRetryDeadline != 0 {
@@ -951,11 +1009,11 @@ func (c *httpStorageClient) GetIamPolicy(ctx context.Context, resource string, v
 		call.UserProject(s.userProject)
 	}
 	var rp *raw.Policy
-	err := run(ctx, func() error {
+	err := run(ctx, func(ctx context.Context) error {
 		var err error
 		rp, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	}, s.retry, s.idempotent)
 	if err != nil {
 		return nil, err
 	}
@@ -972,10 +1030,10 @@ func (c *httpStorageClient) SetIamPolicy(ctx context.Context, resource string, p
 		call.UserProject(s.userProject)
 	}
 
-	return run(ctx, func() error {
+	return run(ctx, func(ctx context.Context) error {
 		_, err := call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	}, s.retry, s.idempotent)
 }
 
 func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource string, permissions []string, opts ...storageOption) ([]string, error) {
@@ -986,11 +1044,11 @@ func (c *httpStorageClient) TestIamPermissions(ctx context.Context, resource str
 		call.UserProject(s.userProject)
 	}
 	var res *raw.TestIamPermissionsResponse
-	err := run(ctx, func() error {
+	err := run(ctx, func(ctx context.Context) error {
 		var err error
 		res, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	}, s.retry, s.idempotent)
 	if err != nil {
 		return nil, err
 	}
@@ -1008,10 +1066,10 @@ func (c *httpStorageClient) GetHMACKey(ctx context.Context, project, accessID st
 
 	var metadata *raw.HmacKeyMetadata
 	var err error
-	if err := run(ctx, func() error {
+	if err := run(ctx, func(ctx context.Context) error {
 		metadata, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+	}, s.retry, s.idempotent); err != nil {
 		return nil, err
 	}
 	hk := &raw.HmacKey{
@@ -1048,10 +1106,10 @@ func (c *httpStorageClient) ListHMACKeys(ctx context.Context, project, serviceAc
 		}
 
 		var resp *raw.HmacKeysMetadata
-		err = run(it.ctx, func() error {
-			resp, err = call.Context(it.ctx).Do()
+		err = run(it.ctx, func(ctx context.Context) error {
+			resp, err = call.Context(ctx).Do()
 			return err
-		}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+		}, s.retry, s.idempotent)
 		if err != nil {
 			return "", err
 		}
@@ -1093,10 +1151,10 @@ func (c *httpStorageClient) UpdateHMACKey(ctx context.Context, project, serviceA
 
 	var metadata *raw.HmacKeyMetadata
 	var err error
-	if err := run(ctx, func() error {
+	if err := run(ctx, func(ctx context.Context) error {
 		metadata, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+	}, s.retry, s.idempotent); err != nil {
 		return nil, err
 	}
 	hk := &raw.HmacKey{
@@ -1113,11 +1171,11 @@ func (c *httpStorageClient) CreateHMACKey(ctx context.Context, project, serviceA
 	}
 
 	var hk *raw.HmacKey
-	if err := run(ctx, func() error {
+	if err := run(ctx, func(ctx context.Context) error {
 		h, err := call.Context(ctx).Do()
 		hk = h
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call)); err != nil {
+	}, s.retry, s.idempotent); err != nil {
 		return nil, err
 	}
 	return toHMACKeyFromRaw(hk, true)
@@ -1129,9 +1187,9 @@ func (c *httpStorageClient) DeleteHMACKey(ctx context.Context, project string, a
 	if s.userProject != "" {
 		call = call.UserProject(s.userProject)
 	}
-	return run(ctx, func() error {
+	return run(ctx, func(ctx context.Context) error {
 		return call.Context(ctx).Do()
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	}, s.retry, s.idempotent)
 }
 
 // Notification methods.
@@ -1150,10 +1208,10 @@ func (c *httpStorageClient) ListNotifications(ctx context.Context, bucket string
 		call.UserProject(s.userProject)
 	}
 	var res *raw.Notifications
-	err = run(ctx, func() error {
+	err = run(ctx, func(ctx context.Context) error {
 		res, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, true, setRetryHeaderHTTP(call))
+	}, s.retry, true)
 	if err != nil {
 		return nil, err
 	}
@@ -1170,10 +1228,10 @@ func (c *httpStorageClient) CreateNotification(ctx context.Context, bucket strin
 		call.UserProject(s.userProject)
 	}
 	var rn *raw.Notification
-	err = run(ctx, func() error {
+	err = run(ctx, func(ctx context.Context) error {
 		rn, err = call.Context(ctx).Do()
 		return err
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	}, s.retry, s.idempotent)
 	if err != nil {
 		return nil, err
 	}
@@ -1189,15 +1247,18 @@ func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket strin
 	if s.userProject != "" {
 		call.UserProject(s.userProject)
 	}
-	return run(ctx, func() error {
+	return run(ctx, func(ctx context.Context) error {
 		return call.Context(ctx).Do()
-	}, s.retry, s.idempotent, setRetryHeaderHTTP(call))
+	}, s.retry, s.idempotent)
 }
 
 type httpReader struct {
-	body   io.ReadCloser
-	seen   int64
-	reopen func(seen int64) (*http.Response, error)
+	body     io.ReadCloser
+	seen     int64
+	reopen   func(seen int64) (*http.Response, error)
+	checkCRC bool   // should we check the CRC?
+	wantCRC  uint32 // the CRC32c value the server sent in the header
+	gotCRC   uint32 // running crc
 }
 
 func (r *httpReader) Read(p []byte) (int, error) {
@@ -1206,7 +1267,22 @@ func (r *httpReader) Read(p []byte) (int, error) {
 		m, err := r.body.Read(p[n:])
 		n += m
 		r.seen += int64(m)
-		if err == nil || err == io.EOF {
+		if r.checkCRC {
+			r.gotCRC = crc32.Update(r.gotCRC, crc32cTable, p[:n])
+		}
+		if err == nil {
+			return n, nil
+		}
+		if err == io.EOF {
+			// Check CRC here. It would be natural to check it in Close, but
+			// everybody defers Close on the assumption that it doesn't return
+			// anything worth looking at.
+			if r.checkCRC {
+				if r.gotCRC != r.wantCRC {
+					return n, fmt.Errorf("storage: bad CRC on read: got %d, want %d",
+						r.gotCRC, r.wantCRC)
+				}
+			}
 			return n, err
 		}
 		// Read failed (likely due to connection issues), but we will try to reopen
@@ -1240,7 +1316,7 @@ func setRangeReaderHeaders(h http.Header, params *newRangeReaderParams) error {
 // readerReopen initiates a Read with offset and length, assuming we
 // have already read seen bytes.
 func readerReopen(ctx context.Context, header http.Header, params *newRangeReaderParams, s *settings,
-	doDownload func() (*http.Response, error), applyConditions func() error, setGeneration func()) func(int64) (*http.Response, error) {
+	doDownload func(context.Context) (*http.Response, error), applyConditions func() error, setGeneration func()) func(int64) (*http.Response, error) {
 	return func(seen int64) (*http.Response, error) {
 		// If the context has already expired, return immediately without making a
 		// call.
@@ -1267,8 +1343,8 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 
 		var err error
 		var res *http.Response
-		err = run(ctx, func() error {
-			res, err = doDownload()
+		err = run(ctx, func(ctx context.Context) error {
+			res, err = doDownload(ctx)
 			if err != nil {
 				var e *googleapi.Error
 				if errors.As(err, &e) {
@@ -1322,7 +1398,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 				params.gen = gen64
 			}
 			return nil
-		}, s.retry, s.idempotent, setRetryHeaderHTTP(nil))
+		}, s.retry, s.idempotent)
 		if err != nil {
 			return nil, err
 		}
@@ -1412,11 +1488,12 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		Attrs:    attrs,
 		size:     size,
 		remain:   remain,
-		wantCRC:  crc,
 		checkCRC: checkCRC,
 		reader: &httpReader{
-			reopen: reopen,
-			body:   body,
+			reopen:   reopen,
+			body:     body,
+			wantCRC:  crc,
+			checkCRC: checkCRC,
 		},
 	}, nil
 }

@@ -61,7 +61,7 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 	for _, tc := range testCases {
 		pool := &connectionPool{
 			ctx: context.Background(),
-			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				if len(tc.errors) == 0 {
 					panic("out of errors")
 				}
@@ -99,6 +99,58 @@ func TestConnection_OpenWithRetry(t *testing.T) {
 			if ch == nil {
 				t.Errorf("case %s: expected channel, got nil", tc.desc)
 			}
+		}
+	}
+}
+
+// Ensure we properly refund the flow control during send failures.
+// https://github.com/googleapis/google-cloud-go/issues/9540
+func TestConnection_LockingAppendFlowRelease(t *testing.T) {
+	ctx := context.Background()
+
+	pool := &connectionPool{
+		ctx:                ctx,
+		baseFlowController: newFlowController(10, 0),
+		open: openTestArc(&testAppendRowsClient{},
+			func(req *storagepb.AppendRowsRequest) error {
+				// Append always reports EOF on send.
+				return io.EOF
+			}, nil),
+	}
+	router := newSimpleRouter("")
+	if err := pool.activateRouter(router); err != nil {
+		t.Errorf("activateRouter: %v", err)
+	}
+
+	writer := &ManagedStream{id: "foo", ctx: ctx}
+	if err := pool.addWriter(writer); err != nil {
+		t.Errorf("addWriter: %v", err)
+	}
+
+	pw := newPendingWrite(ctx, writer, &storagepb.AppendRowsRequest{WriteStream: "somestream"}, newVersionedTemplate(), "", "")
+	for i := 0; i < 5; i++ {
+		conn, err := router.pool.selectConn(pw)
+		if err != nil {
+			t.Errorf("selectConn: %v", err)
+		}
+
+		// Ensure FC is empty before lockingAppend
+		if got := conn.fc.count(); got != 0 {
+			t.Errorf("attempt %d expected empty flow count, got %d", i, got)
+		}
+		if got := conn.fc.bytes(); got != 0 {
+			t.Errorf("attempt %d expected empty flow bytes, got %d", i, got)
+		}
+		// invoke lockingAppend, which fails
+		if err := conn.lockingAppend(pw); err != io.EOF {
+			t.Errorf("lockingAppend attempt %d: expected io.EOF, got %v", i, err)
+		}
+		// Ensure we're refunded due to failure
+		if got := conn.fc.count(); got != 0 {
+			t.Errorf("attempt %d expected empty flow count, got %d", i, got)
+		}
+		if got := conn.fc.bytes(); got != 0 {
+			t.Errorf("attempt %d expected empty flow bytes, got %d", i, got)
 		}
 	}
 }
@@ -162,12 +214,12 @@ func TestConnectionPool_OpenCallOptionPropagation(t *testing.T) {
 	pool := &connectionPool{
 		ctx:    ctx,
 		cancel: cancel,
-		open: createOpenF(ctx, func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
+		open: createOpenF(func(ctx context.Context, opts ...gax.CallOption) (storage.BigQueryWrite_AppendRowsClient, error) {
 			if len(opts) == 0 {
 				t.Fatalf("no options were propagated")
 			}
 			return nil, fmt.Errorf("no real client")
-		}),
+		}, ""),
 		callOptions: []gax.CallOption{
 			gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(99)),
 		},

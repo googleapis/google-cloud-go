@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/policytroubleshooter/apiv1",
-    "version": "1.7.1",
+    "version": "1.10.5",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "policytroubleshooter_v1_generated_IamChecker_TroubleshootIamPolicy_sync",
       "title": "policytroubleshooter TroubleshootIamPolicy Sample",
-      "description": "TroubleshootIamPolicy checks whether a member has a specific permission for a specific resource,\nand explains why the member does or does not have that permission.",
+      "description": "TroubleshootIamPolicy checks whether a principal has a specific permission for a specific\nresource, and explains why the principal does or does not have that\npermission.",
       "file": "IamCheckerClient/TroubleshootIamPolicy/main.go",
       "language": "GO",
       "clientMethod": {

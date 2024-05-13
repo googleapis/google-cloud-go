@@ -33,7 +33,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/postprocessor/execv/gocmd"
-	"github.com/google/go-github/v52/github"
+	"github.com/google/go-github/v59/github"
 )
 
 const (
@@ -41,6 +41,11 @@ const (
 	beginNestedCommitDelimiter = "BEGIN_NESTED_COMMIT"
 	endNestedCommitDelimiter   = "END_NESTED_COMMIT"
 	copyTagSubstring           = "Copy-Tag:"
+
+	// This is the default Go version that will be generated into new go.mod
+	// files. It should be updated every time we drop support for old Go
+	// versions.
+	defaultGoModuleVersion = "1.19"
 )
 
 var (
@@ -65,6 +70,17 @@ func main() {
 	githubUsername := flag.String("gh-user", "googleapis", "GitHub username where repo lives.")
 	prFilepath := flag.String("pr-file", "/workspace/new_pull_request_text.txt", "Path at which to write text file if changing PR title or body.")
 
+	if len(os.Args) > 1 {
+		switch os.Args[1] {
+		case "validate":
+			log.Println("Starting config validation.")
+			if err := validate(); err != nil {
+				log.Fatal(err)
+			}
+			log.Println("Validation complete.")
+			return
+		}
+	}
 	flag.Parse()
 	ctx := context.Background()
 
@@ -199,6 +215,8 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			if err := p.generateMinReqFilesNewMod(moduleName, modulePath, importPath, apiName); err != nil {
 				return err
 			}
+			log.Printf("Adding new module %s to list of modules to process", moduleName)
+			p.modules = append(p.modules, moduleName)
 			if err := p.modEditReplaceInSnippets(modulePath, importPath); err != nil {
 				return err
 			}
@@ -214,6 +232,12 @@ func (p *postProcessor) InitializeNewModules(manifest map[string]ManifestEntry) 
 			splitPath := strings.Split(path, "/")
 			lastElement := splitPath[len(splitPath)-1]
 			if !strings.Contains(lastElement, "apiv") {
+				return nil
+			}
+			// Skip unless the presence of doc.go indicates that this is a client.
+			// Some modules contain only type protos, and don't need version.go.
+			pathToClientDocFile := filepath.Join(path, "doc.go")
+			if _, err = os.Stat(pathToClientDocFile); errors.Is(err, fs.ErrNotExist) {
 				return nil
 			}
 			pathToClientVersionFile := filepath.Join(path, "version.go")
@@ -250,7 +274,7 @@ func (p *postProcessor) generateModule(modPath, importPath string) error {
 		return err
 	}
 	log.Printf("Creating %s/go.mod", modPath)
-	if err := gocmd.ModInit(modPath, importPath); err != nil {
+	if err := gocmd.ModInit(modPath, importPath, defaultGoModuleVersion); err != nil {
 		return err
 	}
 	log.Print("Updating workspace")
@@ -488,7 +512,7 @@ func (p *postProcessor) processCommit(title, body string) (string, string, error
 			// When OwlBot generates the commit body, after commit titles it provides 'Source-Link's.
 			// The source-link pointing to the googleapis/googleapis repo commit allows us to extract
 			// hash and find files changed in order to identify the commit's scope.
-			if strings.Contains(line, "googleapis/googleapis/") {
+			if strings.HasPrefix(line, "Source-Link") && strings.Contains(line, "googleapis/googleapis/") {
 				hash := extractHashFromLine(line)
 				scopes, err := p.getScopesFromGoogleapisCommitHash(hash)
 				if err != nil {

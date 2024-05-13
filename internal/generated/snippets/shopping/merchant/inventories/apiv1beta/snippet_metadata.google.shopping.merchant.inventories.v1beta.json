@@ -1,0 +1,289 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/inventories/apiv1beta",
+    "version": "0.6.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.inventories.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_LocalInventoryService_DeleteLocalInventory_sync",
+      "title": "merchantapi DeleteLocalInventory Sample",
+      "description": "DeleteLocalInventory deletes the specified `LocalInventory` from the given product in your\nmerchant account. It might take a up to an hour for the\n`LocalInventory` to be deleted from the specific product.\nOnce you have received a successful delete response, wait for that\nperiod before attempting a delete again.",
+      "file": "LocalInventoryClient/DeleteLocalInventory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteLocalInventory",
+        "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryClient.DeleteLocalInventory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "inventoriespb.DeleteLocalInventoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "LocalInventoryClient",
+          "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryClient"
+        },
+        "method": {
+          "shortName": "DeleteLocalInventory",
+          "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryService.DeleteLocalInventory",
+          "service": {
+            "shortName": "LocalInventoryService",
+            "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_LocalInventoryService_InsertLocalInventory_sync",
+      "title": "merchantapi InsertLocalInventory Sample",
+      "description": "InsertLocalInventory inserts a `LocalInventory` resource to a product in your merchant\naccount.\n\nReplaces the full `LocalInventory` resource if an entry with the same\n[`storeCode`][google.shopping.merchant.inventories.v1beta.LocalInventory.store_code]\nalready exists for the product.\n\nIt might take up to 30 minutes for the new or updated `LocalInventory`\nresource to appear in products.",
+      "file": "LocalInventoryClient/InsertLocalInventory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertLocalInventory",
+        "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryClient.InsertLocalInventory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "inventoriespb.InsertLocalInventoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*inventoriespb.LocalInventory",
+        "client": {
+          "shortName": "LocalInventoryClient",
+          "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryClient"
+        },
+        "method": {
+          "shortName": "InsertLocalInventory",
+          "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryService.InsertLocalInventory",
+          "service": {
+            "shortName": "LocalInventoryService",
+            "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_LocalInventoryService_ListLocalInventories_sync",
+      "title": "merchantapi ListLocalInventories Sample",
+      "description": "ListLocalInventories lists the `LocalInventory` resources for the given product in your merchant\naccount. The response might contain fewer items than specified by\n`pageSize`. If `pageToken` was returned in previous request, it can be used\nto obtain additional results.\n\n`LocalInventory` resources are listed per product for a given account.",
+      "file": "LocalInventoryClient/ListLocalInventories/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocalInventories",
+        "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryClient.ListLocalInventories",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "inventoriespb.ListLocalInventoriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocalInventoryIterator",
+        "client": {
+          "shortName": "LocalInventoryClient",
+          "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryClient"
+        },
+        "method": {
+          "shortName": "ListLocalInventories",
+          "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryService.ListLocalInventories",
+          "service": {
+            "shortName": "LocalInventoryService",
+            "fullName": "google.shopping.merchant.inventories.v1beta.LocalInventoryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_RegionalInventoryService_DeleteRegionalInventory_sync",
+      "title": "merchantapi DeleteRegionalInventory Sample",
+      "description": "DeleteRegionalInventory deletes the specified `RegionalInventory` resource from the given product\nin your merchant account.  It might take up to an hour for the\n`RegionalInventory` to be deleted from the specific product.\nOnce you have received a successful delete response, wait for that\nperiod before attempting a delete again.",
+      "file": "RegionalInventoryClient/DeleteRegionalInventory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRegionalInventory",
+        "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryClient.DeleteRegionalInventory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "inventoriespb.DeleteRegionalInventoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegionalInventoryClient",
+          "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryClient"
+        },
+        "method": {
+          "shortName": "DeleteRegionalInventory",
+          "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryService.DeleteRegionalInventory",
+          "service": {
+            "shortName": "RegionalInventoryService",
+            "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_RegionalInventoryService_InsertRegionalInventory_sync",
+      "title": "merchantapi InsertRegionalInventory Sample",
+      "description": "InsertRegionalInventory inserts a `RegionalInventory` to a given product in your\nmerchant account.\n\nReplaces the full `RegionalInventory` resource if an entry with the same\n[`region`][google.shopping.merchant.inventories.v1beta.RegionalInventory.region]\nalready exists for the product.\n\nIt might take up to 30 minutes for the new or updated `RegionalInventory`\nresource to appear in products.",
+      "file": "RegionalInventoryClient/InsertRegionalInventory/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertRegionalInventory",
+        "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryClient.InsertRegionalInventory",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "inventoriespb.InsertRegionalInventoryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*inventoriespb.RegionalInventory",
+        "client": {
+          "shortName": "RegionalInventoryClient",
+          "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryClient"
+        },
+        "method": {
+          "shortName": "InsertRegionalInventory",
+          "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryService.InsertRegionalInventory",
+          "service": {
+            "shortName": "RegionalInventoryService",
+            "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_RegionalInventoryService_ListRegionalInventories_sync",
+      "title": "merchantapi ListRegionalInventories Sample",
+      "description": "ListRegionalInventories lists the `RegionalInventory` resources for the given product in your\nmerchant account. The response might contain fewer items than specified by\n`pageSize`.  If `pageToken` was returned in previous request, it can be\nused to obtain additional results.\n\n`RegionalInventory` resources are listed per product for a given account.",
+      "file": "RegionalInventoryClient/ListRegionalInventories/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRegionalInventories",
+        "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryClient.ListRegionalInventories",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "inventoriespb.ListRegionalInventoriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RegionalInventoryIterator",
+        "client": {
+          "shortName": "RegionalInventoryClient",
+          "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryClient"
+        },
+        "method": {
+          "shortName": "ListRegionalInventories",
+          "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryService.ListRegionalInventories",
+          "service": {
+            "shortName": "RegionalInventoryService",
+            "fullName": "google.shopping.merchant.inventories.v1beta.RegionalInventoryService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

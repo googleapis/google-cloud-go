@@ -22,9 +22,9 @@ import (
 
 	"cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 // SelectFooFromBar is a SELECT statement that is added to the mocked test
@@ -62,21 +62,22 @@ type MockedSpannerInMemTestServer struct {
 	TestSpanner       InMemSpannerServer
 	TestInstanceAdmin InMemInstanceAdminServer
 	server            *grpc.Server
+	ServerAddress     string
 }
 
 // NewMockedSpannerInMemTestServer creates a MockedSpannerInMemTestServer at
 // localhost with a random port and returns client options that can be used
 // to connect to it.
-func NewMockedSpannerInMemTestServer(t *testing.T) (mockedServer *MockedSpannerInMemTestServer, opts []option.ClientOption, teardown func()) {
-	return NewMockedSpannerInMemTestServerWithAddr(t, "localhost:0")
+func NewMockedSpannerInMemTestServer(t *testing.T, sopt ...grpc.ServerOption) (mockedServer *MockedSpannerInMemTestServer, opts []option.ClientOption, teardown func()) {
+	return NewMockedSpannerInMemTestServerWithAddr(t, "localhost:0", sopt...)
 }
 
 // NewMockedSpannerInMemTestServerWithAddr creates a MockedSpannerInMemTestServer
 // at a given listening address and returns client options that can be used
 // to connect to it.
-func NewMockedSpannerInMemTestServerWithAddr(t *testing.T, addr string) (mockedServer *MockedSpannerInMemTestServer, opts []option.ClientOption, teardown func()) {
+func NewMockedSpannerInMemTestServerWithAddr(t *testing.T, addr string, sopt ...grpc.ServerOption) (mockedServer *MockedSpannerInMemTestServer, opts []option.ClientOption, teardown func()) {
 	mockedServer = &MockedSpannerInMemTestServer{}
-	opts = mockedServer.setupMockedServerWithAddr(t, addr)
+	opts = mockedServer.setupMockedServerWithAddr(t, addr, sopt...)
 	return mockedServer, opts, func() {
 		mockedServer.TestSpanner.Stop()
 		mockedServer.TestInstanceAdmin.Stop()
@@ -84,12 +85,12 @@ func NewMockedSpannerInMemTestServerWithAddr(t *testing.T, addr string) (mockedS
 	}
 }
 
-func (s *MockedSpannerInMemTestServer) setupMockedServerWithAddr(t *testing.T, addr string) []option.ClientOption {
+func (s *MockedSpannerInMemTestServer) setupMockedServerWithAddr(t *testing.T, addr string, sopt ...grpc.ServerOption) []option.ClientOption {
 	s.TestSpanner = NewInMemSpannerServer()
 	s.TestInstanceAdmin = NewInMemInstanceAdminServer()
 	s.setupFooResults()
 	s.setupSingersResults()
-	s.server = grpc.NewServer()
+	s.server = grpc.NewServer(sopt...)
 	spannerpb.RegisterSpannerServer(s.server, s.TestSpanner)
 	instancepb.RegisterInstanceAdminServer(s.server, s.TestInstanceAdmin)
 
@@ -99,9 +100,9 @@ func (s *MockedSpannerInMemTestServer) setupMockedServerWithAddr(t *testing.T, a
 	}
 	go s.server.Serve(lis)
 
-	serverAddress := lis.Addr().String()
+	s.ServerAddress = lis.Addr().String()
 	opts := []option.ClientOption{
-		option.WithEndpoint(serverAddress),
+		option.WithEndpoint(s.ServerAddress),
 		option.WithGRPCDialOption(grpc.WithInsecure()),
 		option.WithoutAuthentication(),
 	}

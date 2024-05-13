@@ -1,5 +1,62 @@
 # Changes
 
+
+## [1.12.5](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.4...language/v1.12.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **language:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.12.4](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.3...language/v1.12.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **language:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.12.3](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.2...language/v1.12.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **language:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.1...language/v1.12.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **language:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.0...language/v1.12.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **language:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.11.1...language/v1.12.0) (2023-10-17)
+
+
+### Features
+
+* **language:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.11.0...language/v1.11.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **language:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/language/v1.10.1...language/v1.11.0) (2023-08-17)
+
+
+### Features
+
+* **language:** Start generating apiv2 ([#8434](https://github.com/googleapis/google-cloud-go/issues/8434)) ([e3b9cdc](https://github.com/googleapis/google-cloud-go/commit/e3b9cdc8d2fddcf829b9b308402be0b729242134))
+
 ## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/language/v1.10.0...language/v1.10.1) (2023-06-20)
 
 

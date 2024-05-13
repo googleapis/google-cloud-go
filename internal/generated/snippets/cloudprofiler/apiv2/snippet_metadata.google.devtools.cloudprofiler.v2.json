@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/cloudprofiler/apiv2",
+    "version": "0.3.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.devtools.cloudprofiler.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudprofiler_v2_generated_ExportService_ListProfiles_sync",
+      "title": "cloudprofiler ListProfiles Sample",
+      "description": "ListProfiles lists profiles which have been collected so far and for which the caller\nhas permission to view.",
+      "file": "ExportClient/ListProfiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProfiles",
+        "fullName": "google.devtools.cloudprofiler.v2.ExportClient.ListProfiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudprofilerpb.ListProfilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProfileIterator",
+        "client": {
+          "shortName": "ExportClient",
+          "fullName": "google.devtools.cloudprofiler.v2.ExportClient"
+        },
+        "method": {
+          "shortName": "ListProfiles",
+          "fullName": "google.devtools.cloudprofiler.v2.ExportService.ListProfiles",
+          "service": {
+            "shortName": "ExportService",
+            "fullName": "google.devtools.cloudprofiler.v2.ExportService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudprofiler_v2_generated_ProfilerService_CreateOfflineProfile_sync",
+      "title": "cloudprofiler CreateOfflineProfile Sample",
+      "description": "CreateOfflineProfile createOfflineProfile creates a new profile resource in the offline\nmode. The client provides the profile to create along with the profile\nbytes, the server records it.\n\n_Direct use of this API is discouraged, please use a [supported\nprofiler\nagent](https: //cloud.google.com/profiler/docs/about-profiler#profiling_agent)\ninstead for profile collection._",
+      "file": "ProfilerClient/CreateOfflineProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateOfflineProfile",
+        "fullName": "google.devtools.cloudprofiler.v2.ProfilerClient.CreateOfflineProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudprofilerpb.CreateOfflineProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudprofilerpb.Profile",
+        "client": {
+          "shortName": "ProfilerClient",
+          "fullName": "google.devtools.cloudprofiler.v2.ProfilerClient"
+        },
+        "method": {
+          "shortName": "CreateOfflineProfile",
+          "fullName": "google.devtools.cloudprofiler.v2.ProfilerService.CreateOfflineProfile",
+          "service": {
+            "shortName": "ProfilerService",
+            "fullName": "google.devtools.cloudprofiler.v2.ProfilerService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudprofiler_v2_generated_ProfilerService_CreateProfile_sync",
+      "title": "cloudprofiler CreateProfile Sample",
+      "description": "CreateProfile createProfile creates a new profile resource in the online mode.\n\n_Direct use of this API is discouraged, please use a [supported\nprofiler\nagent](https: //cloud.google.com/profiler/docs/about-profiler#profiling_agent)\ninstead for profile collection._\n\nThe server ensures that the new profiles are created at a constant rate per\ndeployment, so the creation request may hang for some time until the next\nprofile session is available.\n\nThe request may fail with ABORTED error if the creation is not available\nwithin ~1m, the response will indicate the duration of the backoff the\nclient should take before attempting creating a profile again. The backoff\nduration is returned in google.rpc.RetryInfo extension on the response\nstatus. To a gRPC client, the extension will be return as a\nbinary-serialized proto in the trailing metadata item named\n\"google.rpc.retryinfo-bin\".",
+      "file": "ProfilerClient/CreateProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateProfile",
+        "fullName": "google.devtools.cloudprofiler.v2.ProfilerClient.CreateProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudprofilerpb.CreateProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudprofilerpb.Profile",
+        "client": {
+          "shortName": "ProfilerClient",
+          "fullName": "google.devtools.cloudprofiler.v2.ProfilerClient"
+        },
+        "method": {
+          "shortName": "CreateProfile",
+          "fullName": "google.devtools.cloudprofiler.v2.ProfilerService.CreateProfile",
+          "service": {
+            "shortName": "ProfilerService",
+            "fullName": "google.devtools.cloudprofiler.v2.ProfilerService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudprofiler_v2_generated_ProfilerService_UpdateProfile_sync",
+      "title": "cloudprofiler UpdateProfile Sample",
+      "description": "UpdateProfile updateProfile updates the profile bytes and labels on the profile resource\ncreated in the online mode. Updating the bytes for profiles created in the\noffline mode is currently not supported: the profile content must be\nprovided at the time of the profile creation.\n\n_Direct use of this API is discouraged, please use a [supported\nprofiler\nagent](https: //cloud.google.com/profiler/docs/about-profiler#profiling_agent)\ninstead for profile collection._",
+      "file": "ProfilerClient/UpdateProfile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateProfile",
+        "fullName": "google.devtools.cloudprofiler.v2.ProfilerClient.UpdateProfile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudprofilerpb.UpdateProfileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudprofilerpb.Profile",
+        "client": {
+          "shortName": "ProfilerClient",
+          "fullName": "google.devtools.cloudprofiler.v2.ProfilerClient"
+        },
+        "method": {
+          "shortName": "UpdateProfile",
+          "fullName": "google.devtools.cloudprofiler.v2.ProfilerService.UpdateProfile",
+          "service": {
+            "shortName": "ProfilerService",
+            "fullName": "google.devtools.cloudprofiler.v2.ProfilerService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

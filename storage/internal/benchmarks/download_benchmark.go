@@ -23,6 +23,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type downloadOpts struct {
@@ -37,6 +40,13 @@ type downloadOpts struct {
 }
 
 func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime time.Duration, rerr error) {
+	var span trace.Span
+	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "download")
+	span.SetAttributes(
+		attribute.KeyValue{"object_size", attribute.Int64Value(dopts.objectSize)},
+		attribute.KeyValue{"bucket", attribute.StringValue(dopts.bucket)},
+	)
+	defer span.End()
 	// Set timer
 	start := time.Now()
 	// Multiple defer statements execute in LIFO order, so this will be the last

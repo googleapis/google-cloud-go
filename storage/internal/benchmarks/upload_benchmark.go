@@ -28,6 +28,9 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 )
 
@@ -42,6 +45,14 @@ type uploadOpts struct {
 }
 
 func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Duration, rerr error) {
+	var span trace.Span
+	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "upload")
+	span.SetAttributes(
+		attribute.KeyValue{"bucket", attribute.StringValue(uopts.bucket)},
+		attribute.KeyValue{"chunk_size", attribute.Int64Value(uopts.params.chunkSize)},
+	)
+	defer span.End()
+
 	// Set timer
 	start := time.Now()
 	// Multiple defer statements execute in LIFO order, so this will be the last

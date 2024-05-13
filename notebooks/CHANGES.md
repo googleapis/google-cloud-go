@@ -1,6 +1,62 @@
 # Changes
 
 
+## [1.11.5](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.4...notebooks/v1.11.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **notebooks:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.11.4](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.3...notebooks/v1.11.4) (2024-03-14)
+
+
+### Bug Fixes
+
+* **notebooks:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.2...notebooks/v1.11.3) (2024-01-30)
+
+
+### Bug Fixes
+
+* **notebooks:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.1...notebooks/v1.11.2) (2023-11-01)
+
+
+### Bug Fixes
+
+* **notebooks:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.11.0...notebooks/v1.11.1) (2023-10-26)
+
+
+### Bug Fixes
+
+* **notebooks:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.10.1...notebooks/v1.11.0) (2023-10-17)
+
+
+### Features
+
+* **notebooks:** Promote to GA ([e864fbc](https://github.com/googleapis/google-cloud-go/commit/e864fbcbc4f0a49dfdb04850b07451074c57edc8))
+
+## [1.10.1](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.10.0...notebooks/v1.10.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **notebooks:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.9.1...notebooks/v1.10.0) (2023-08-21)
+
+
+### Features
+
+* **notebooks:** Clients for Notebooks API V2 ([#8455](https://github.com/googleapis/google-cloud-go/issues/8455)) ([1859e6c](https://github.com/googleapis/google-cloud-go/commit/1859e6ca01499ed297167aef60ae1d34a2ed24ea))
+
 ## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/notebooks/v1.9.0...notebooks/v1.9.1) (2023-06-20)
 
 

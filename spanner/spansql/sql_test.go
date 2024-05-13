@@ -28,6 +28,14 @@ func boolAddr(b bool) *bool {
 	return &b
 }
 
+func stringAddr(s string) *string {
+	return &s
+}
+
+func intAddr(i int) *int {
+	return &i
+}
+
 func TestSQL(t *testing.T) {
 	reparseDDL := func(s string) (interface{}, error) {
 		ddl, err := ParseDDLStmt(s)
@@ -161,6 +169,22 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateTable{
+				Name: "WithSynonym",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Synonym:    "AnotherName",
+				Position:   line(1),
+			},
+			`CREATE TABLE WithSynonym (
+  Name STRING(MAX) NOT NULL,
+  SYNONYM(AnotherName),
+) PRIMARY KEY(Name)`,
+			reparseDDL,
+		},
+		{
 			&DropTable{
 				Name:     "Ta",
 				Position: line(1),
@@ -191,8 +215,9 @@ func TestSQL(t *testing.T) {
 		},
 		{
 			&CreateView{
-				Name:      "SingersView",
-				OrReplace: true,
+				Name:         "SingersView",
+				OrReplace:    true,
+				SecurityType: Invoker,
 				Query: Query{
 					Select: Select{
 						List: []Expr{ID("SingerId"), ID("FullName"), ID("Picture")},
@@ -208,6 +233,24 @@ func TestSQL(t *testing.T) {
 				Position: line(1),
 			},
 			"CREATE OR REPLACE VIEW SingersView SQL SECURITY INVOKER AS SELECT SingerId, FullName, Picture FROM Singers ORDER BY LastName, FirstName",
+			reparseDDL,
+		},
+		{
+			&CreateView{
+				Name:         "vname",
+				OrReplace:    false,
+				SecurityType: Definer,
+				Query: Query{
+					Select: Select{
+						List: []Expr{ID("cname")},
+						From: []SelectFrom{SelectFromTable{
+							Table: "tname",
+						}},
+					},
+				},
+				Position: line(1),
+			},
+			"CREATE VIEW vname SQL SECURITY DEFINER AS SELECT cname FROM tname",
 			reparseDDL,
 		},
 		{
@@ -468,6 +511,52 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AddSynonym{
+					Name: "Syn",
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ADD SYNONYM Syn",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: DropSynonym{
+					Name: "Syn",
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta DROP SYNONYM Syn",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: RenameTo{
+					ToName:  "Tb",
+					Synonym: "Syn",
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta RENAME TO Tb, ADD SYNONYM Syn",
+			reparseDDL,
+		},
+		{
+			&RenameTable{
+				TableRenameOps: []TableRenameOp{
+					{FromName: "Ta", ToName: "tmp"},
+					{FromName: "Tb", ToName: "Ta"},
+					{FromName: "tmp", ToName: "Tb"},
+				},
+				Position: line(1),
+			},
+			"RENAME TABLE Ta TO tmp, Tb TO Ta, tmp TO Tb",
+			reparseDDL,
+		},
+		{
 			&AlterDatabase{
 				Name: "dbname",
 				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
@@ -656,6 +745,182 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&CreateTable{
+				Name:        "tname",
+				IfNotExists: true,
+				Columns: []ColumnDef{
+					{Name: "id", Type: Type{Base: Int64}, Position: line(2)},
+					{Name: "name", Type: Type{Base: String, Len: 64}, Position: line(3)},
+				},
+				PrimaryKey: []KeyPart{
+					{Column: "id"},
+				},
+				Position: line(1),
+			},
+			`CREATE TABLE IF NOT EXISTS tname (
+  id INT64,
+  name STRING(64),
+) PRIMARY KEY(id)`,
+			reparseDDL,
+		},
+		{
+			&CreateIndex{
+				Name:  "Ia",
+				Table: "Ta",
+				Columns: []KeyPart{
+					{Column: "Ca"},
+				},
+				IfNotExists: true,
+				Position:    line(1),
+			},
+			"CREATE INDEX IF NOT EXISTS Ia ON Ta(Ca)",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "tname",
+				Alteration: AddColumn{
+					IfNotExists: true,
+					Def:         ColumnDef{Name: "cname", Type: Type{Base: String, Len: 64}, Position: line(1)},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE tname ADD COLUMN IF NOT EXISTS cname STRING(64)",
+			reparseDDL,
+		},
+		{
+			&DropTable{
+				Name:     "tname",
+				IfExists: true,
+				Position: line(1),
+			},
+			"DROP TABLE IF EXISTS tname",
+			reparseDDL,
+		},
+		{
+			&DropIndex{
+				Name:     "iname",
+				IfExists: true,
+				Position: line(1),
+			},
+			"DROP INDEX IF EXISTS iname",
+			reparseDDL,
+		},
+		{
+			&CreateTable{
+				Name: "tname1",
+				Columns: []ColumnDef{
+					{Name: "cname1", Type: Type{Base: Int64}, NotNull: true, Position: line(2)},
+					{Name: "cname2", Type: Type{Base: Int64}, NotNull: true, Position: line(3)},
+				},
+				Constraints: []TableConstraint{
+					{
+						Name:       "con1",
+						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: NoActionOnDelete, Position: line(4)},
+						Position:   line(4),
+					},
+				},
+				PrimaryKey: []KeyPart{
+					{Column: "cname1"},
+				},
+				Position: line(1),
+			},
+			`CREATE TABLE tname1 (
+  cname1 INT64 NOT NULL,
+  cname2 INT64 NOT NULL,
+  CONSTRAINT con1 FOREIGN KEY (cname2) REFERENCES tname2 (cname3) ON DELETE NO ACTION,
+) PRIMARY KEY(cname1)`,
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "tname1",
+				Alteration: AddConstraint{
+					Constraint: TableConstraint{
+						Name:       "con1",
+						Constraint: ForeignKey{Columns: []ID{"cname2"}, RefTable: "tname2", RefColumns: []ID{"cname3"}, OnDelete: CascadeOnDelete, Position: line(1)},
+						Position:   line(1),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER TABLE tname1 ADD CONSTRAINT con1 FOREIGN KEY (cname2) REFERENCES tname2 (cname3) ON DELETE CASCADE`,
+			reparseDDL,
+		},
+		{
+			&CreateSequence{
+				Name:        "sname",
+				IfNotExists: true,
+				Options: SequenceOptions{
+					SequenceKind:     stringAddr("bit_reversed_sequence"),
+					SkipRangeMin:     intAddr(1),
+					SkipRangeMax:     intAddr(1234567),
+					StartWithCounter: intAddr(50),
+				},
+				Position: line(1),
+			},
+			`CREATE SEQUENCE IF NOT EXISTS sname OPTIONS (sequence_kind='bit_reversed_sequence', skip_range_min=1, skip_range_max=1234567, start_with_counter=50)`,
+			reparseDDL,
+		},
+		{
+			&CreateSequence{
+				Name: "sname",
+				Options: SequenceOptions{
+					SequenceKind: stringAddr("bit_reversed_sequence"),
+				},
+				Position: line(1),
+			},
+			`CREATE SEQUENCE sname OPTIONS (sequence_kind='bit_reversed_sequence')`,
+			reparseDDL,
+		},
+		{
+			&AlterSequence{
+				Name: "sname",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						SequenceKind:     stringAddr("bit_reversed_sequence"),
+						SkipRangeMin:     intAddr(1),
+						SkipRangeMax:     intAddr(1234567),
+						StartWithCounter: intAddr(50),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER SEQUENCE sname SET OPTIONS (sequence_kind='bit_reversed_sequence', skip_range_min=1, skip_range_max=1234567, start_with_counter=50)`,
+			reparseDDL,
+		},
+		{
+			&AlterSequence{
+				Name: "sname",
+				Alteration: SetSequenceOptions{
+					Options: SequenceOptions{
+						StartWithCounter: intAddr(1),
+					},
+				},
+				Position: line(1),
+			},
+			`ALTER SEQUENCE sname SET OPTIONS (start_with_counter=1)`,
+			reparseDDL,
+		},
+		{
+			&DropSequence{
+				Name:     "sname",
+				IfExists: true,
+				Position: line(1),
+			},
+			`DROP SEQUENCE IF EXISTS sname`,
+			reparseDDL,
+		},
+		{
+			&DropSequence{
+				Name:     "sname",
+				IfExists: false,
+				Position: line(1),
+			},
+			`DROP SEQUENCE sname`,
+			reparseDDL,
+		},
+		{
 			&Insert{
 				Table:   "Singers",
 				Columns: []ID{ID("SingerId"), ID("FirstName"), ID("LastName")},
@@ -785,6 +1050,31 @@ func TestSQL(t *testing.T) {
 			},
 			`SELECT SAFE_CAST(7 AS DATE)`,
 			reparseQuery,
+		},
+		{
+			Func{Name: "COUNT", Args: []Expr{Star}},
+			`COUNT(*)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "COUNTIF", Args: []Expr{ID("cname")}, Distinct: true},
+			`COUNTIF(DISTINCT cname)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "ARRAY_AGG", Args: []Expr{ID("Foo")}, NullsHandling: IgnoreNulls},
+			`ARRAY_AGG(Foo IGNORE NULLS)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "ANY_VALUE", Args: []Expr{ID("Foo")}, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}},
+			`ANY_VALUE(Foo HAVING MAX Bar)`,
+			reparseExpr,
+		},
+		{
+			Func{Name: "STRING_AGG", Args: []Expr{ID("Foo"), StringLiteral(",")}, Distinct: true, NullsHandling: IgnoreNulls, Having: &AggregateHaving{Condition: HavingMax, Expr: ID("Bar")}},
+			`STRING_AGG(DISTINCT Foo, "," IGNORE NULLS HAVING MAX Bar)`,
+			reparseExpr,
 		},
 		{
 			ComparisonOp{LHS: ID("X"), Op: NotBetween, RHS: ID("Y"), RHS2: ID("Z")},

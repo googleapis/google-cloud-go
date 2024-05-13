@@ -1,0 +1,475 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/cloudcontrolspartner/apiv1beta",
+    "version": "0.2.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.cloudcontrolspartner.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_GetCustomer_sync",
+      "title": "cloudcontrolspartner GetCustomer Sample",
+      "description": "GetCustomer gets details of a single customer",
+      "file": "CloudControlsPartnerCoreClient/GetCustomer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCustomer",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.GetCustomer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.GetCustomerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.Customer",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "GetCustomer",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.GetCustomer",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_GetEkmConnections_sync",
+      "title": "cloudcontrolspartner GetEkmConnections Sample",
+      "description": "GetEkmConnections gets the EKM connections associated with a workload",
+      "file": "CloudControlsPartnerCoreClient/GetEkmConnections/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEkmConnections",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.GetEkmConnections",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.GetEkmConnectionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.EkmConnections",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "GetEkmConnections",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.GetEkmConnections",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_GetPartner_sync",
+      "title": "cloudcontrolspartner GetPartner Sample",
+      "description": "GetPartner get details of a Partner.",
+      "file": "CloudControlsPartnerCoreClient/GetPartner/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPartner",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.GetPartner",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.GetPartnerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.Partner",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "GetPartner",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.GetPartner",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_GetPartnerPermissions_sync",
+      "title": "cloudcontrolspartner GetPartnerPermissions Sample",
+      "description": "GetPartnerPermissions gets the partner permissions granted for a workload",
+      "file": "CloudControlsPartnerCoreClient/GetPartnerPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPartnerPermissions",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.GetPartnerPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.GetPartnerPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.PartnerPermissions",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "GetPartnerPermissions",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.GetPartnerPermissions",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_GetWorkload_sync",
+      "title": "cloudcontrolspartner GetWorkload Sample",
+      "description": "GetWorkload gets details of a single workload",
+      "file": "CloudControlsPartnerCoreClient/GetWorkload/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetWorkload",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.GetWorkload",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.GetWorkloadRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.Workload",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "GetWorkload",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.GetWorkload",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_ListAccessApprovalRequests_sync",
+      "title": "cloudcontrolspartner ListAccessApprovalRequests Sample",
+      "description": "ListAccessApprovalRequests lists access requests associated with a workload",
+      "file": "CloudControlsPartnerCoreClient/ListAccessApprovalRequests/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccessApprovalRequests",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.ListAccessApprovalRequests",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccessApprovalRequestIterator",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "ListAccessApprovalRequests",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.ListAccessApprovalRequests",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_ListCustomers_sync",
+      "title": "cloudcontrolspartner ListCustomers Sample",
+      "description": "ListCustomers lists customers of a partner identified by its Google Cloud organization ID",
+      "file": "CloudControlsPartnerCoreClient/ListCustomers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCustomers",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.ListCustomers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.ListCustomersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CustomerIterator",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "ListCustomers",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.ListCustomers",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerCore_ListWorkloads_sync",
+      "title": "cloudcontrolspartner ListWorkloads Sample",
+      "description": "ListWorkloads lists customer workloads for a given customer org id",
+      "file": "CloudControlsPartnerCoreClient/ListWorkloads/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkloads",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient.ListWorkloads",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.ListWorkloadsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "WorkloadIterator",
+        "client": {
+          "shortName": "CloudControlsPartnerCoreClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCoreClient"
+        },
+        "method": {
+          "shortName": "ListWorkloads",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore.ListWorkloads",
+          "service": {
+            "shortName": "CloudControlsPartnerCore",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerCore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerMonitoring_GetViolation_sync",
+      "title": "cloudcontrolspartner GetViolation Sample",
+      "description": "GetViolation gets details of a single Violation.",
+      "file": "CloudControlsPartnerMonitoringClient/GetViolation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetViolation",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoringClient.GetViolation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.GetViolationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*cloudcontrolspartnerpb.Violation",
+        "client": {
+          "shortName": "CloudControlsPartnerMonitoringClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoringClient"
+        },
+        "method": {
+          "shortName": "GetViolation",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoring.GetViolation",
+          "service": {
+            "shortName": "CloudControlsPartnerMonitoring",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoring"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudcontrolspartner_v1beta_generated_CloudControlsPartnerMonitoring_ListViolations_sync",
+      "title": "cloudcontrolspartner ListViolations Sample",
+      "description": "ListViolations lists Violations for a workload\nCallers may also choose to read across multiple Customers or for a single\ncustomer as per\n[AIP-159](https: //google.aip.dev/159) by using '-' (the hyphen or dash\ncharacter) as a wildcard character instead of {customer} & {workload}.\nFormat: \n`organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}`",
+      "file": "CloudControlsPartnerMonitoringClient/ListViolations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListViolations",
+        "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoringClient.ListViolations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "cloudcontrolspartnerpb.ListViolationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ViolationIterator",
+        "client": {
+          "shortName": "CloudControlsPartnerMonitoringClient",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoringClient"
+        },
+        "method": {
+          "shortName": "ListViolations",
+          "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoring.ListViolations",
+          "service": {
+            "shortName": "CloudControlsPartnerMonitoring",
+            "fullName": "google.cloud.cloudcontrolspartner.v1beta.CloudControlsPartnerMonitoring"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

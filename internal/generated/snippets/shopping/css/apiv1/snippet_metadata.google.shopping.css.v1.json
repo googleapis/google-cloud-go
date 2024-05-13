@@ -1,0 +1,519 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/css/apiv1",
+    "version": "0.6.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.css.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "css_v1_generated_AccountLabelsService_CreateAccountLabel_sync",
+      "title": "css CreateAccountLabel Sample",
+      "description": "CreateAccountLabel creates a new label, not assigned to any account.",
+      "file": "AccountLabelsClient/CreateAccountLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAccountLabel",
+        "fullName": "google.shopping.css.v1.AccountLabelsClient.CreateAccountLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.CreateAccountLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*csspb.AccountLabel",
+        "client": {
+          "shortName": "AccountLabelsClient",
+          "fullName": "google.shopping.css.v1.AccountLabelsClient"
+        },
+        "method": {
+          "shortName": "CreateAccountLabel",
+          "fullName": "google.shopping.css.v1.AccountLabelsService.CreateAccountLabel",
+          "service": {
+            "shortName": "AccountLabelsService",
+            "fullName": "google.shopping.css.v1.AccountLabelsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_AccountLabelsService_DeleteAccountLabel_sync",
+      "title": "css DeleteAccountLabel Sample",
+      "description": "DeleteAccountLabel deletes a label and removes it from all accounts to which it was assigned.",
+      "file": "AccountLabelsClient/DeleteAccountLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAccountLabel",
+        "fullName": "google.shopping.css.v1.AccountLabelsClient.DeleteAccountLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.DeleteAccountLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "AccountLabelsClient",
+          "fullName": "google.shopping.css.v1.AccountLabelsClient"
+        },
+        "method": {
+          "shortName": "DeleteAccountLabel",
+          "fullName": "google.shopping.css.v1.AccountLabelsService.DeleteAccountLabel",
+          "service": {
+            "shortName": "AccountLabelsService",
+            "fullName": "google.shopping.css.v1.AccountLabelsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_AccountLabelsService_ListAccountLabels_sync",
+      "title": "css ListAccountLabels Sample",
+      "description": "ListAccountLabels lists the labels assigned to an account.",
+      "file": "AccountLabelsClient/ListAccountLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccountLabels",
+        "fullName": "google.shopping.css.v1.AccountLabelsClient.ListAccountLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.ListAccountLabelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccountLabelIterator",
+        "client": {
+          "shortName": "AccountLabelsClient",
+          "fullName": "google.shopping.css.v1.AccountLabelsClient"
+        },
+        "method": {
+          "shortName": "ListAccountLabels",
+          "fullName": "google.shopping.css.v1.AccountLabelsService.ListAccountLabels",
+          "service": {
+            "shortName": "AccountLabelsService",
+            "fullName": "google.shopping.css.v1.AccountLabelsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_AccountLabelsService_UpdateAccountLabel_sync",
+      "title": "css UpdateAccountLabel Sample",
+      "description": "UpdateAccountLabel updates a label.",
+      "file": "AccountLabelsClient/UpdateAccountLabel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAccountLabel",
+        "fullName": "google.shopping.css.v1.AccountLabelsClient.UpdateAccountLabel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.UpdateAccountLabelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*csspb.AccountLabel",
+        "client": {
+          "shortName": "AccountLabelsClient",
+          "fullName": "google.shopping.css.v1.AccountLabelsClient"
+        },
+        "method": {
+          "shortName": "UpdateAccountLabel",
+          "fullName": "google.shopping.css.v1.AccountLabelsService.UpdateAccountLabel",
+          "service": {
+            "shortName": "AccountLabelsService",
+            "fullName": "google.shopping.css.v1.AccountLabelsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_AccountsService_GetAccount_sync",
+      "title": "css GetAccount Sample",
+      "description": "GetAccount retrieves a single CSS/MC account by ID.",
+      "file": "AccountsClient/GetAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAccount",
+        "fullName": "google.shopping.css.v1.AccountsClient.GetAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.GetAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*csspb.Account",
+        "client": {
+          "shortName": "AccountsClient",
+          "fullName": "google.shopping.css.v1.AccountsClient"
+        },
+        "method": {
+          "shortName": "GetAccount",
+          "fullName": "google.shopping.css.v1.AccountsService.GetAccount",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.css.v1.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_AccountsService_ListChildAccounts_sync",
+      "title": "css ListChildAccounts Sample",
+      "description": "ListChildAccounts lists all the accounts under the specified CSS account ID, and\noptionally filters by label ID and account name.",
+      "file": "AccountsClient/ListChildAccounts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListChildAccounts",
+        "fullName": "google.shopping.css.v1.AccountsClient.ListChildAccounts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.ListChildAccountsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccountIterator",
+        "client": {
+          "shortName": "AccountsClient",
+          "fullName": "google.shopping.css.v1.AccountsClient"
+        },
+        "method": {
+          "shortName": "ListChildAccounts",
+          "fullName": "google.shopping.css.v1.AccountsService.ListChildAccounts",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.css.v1.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_AccountsService_UpdateLabels_sync",
+      "title": "css UpdateLabels Sample",
+      "description": "UpdateLabels updates labels assigned to CSS/MC accounts by a CSS domain.",
+      "file": "AccountsClient/UpdateLabels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateLabels",
+        "fullName": "google.shopping.css.v1.AccountsClient.UpdateLabels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.UpdateAccountLabelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*csspb.Account",
+        "client": {
+          "shortName": "AccountsClient",
+          "fullName": "google.shopping.css.v1.AccountsClient"
+        },
+        "method": {
+          "shortName": "UpdateLabels",
+          "fullName": "google.shopping.css.v1.AccountsService.UpdateLabels",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.css.v1.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_CssProductInputsService_DeleteCssProductInput_sync",
+      "title": "css DeleteCssProductInput Sample",
+      "description": "DeleteCssProductInput deletes a CSS Product input from your CSS Center account.\n\nAfter a delete it may take several minutes until the input is no longer\navailable.",
+      "file": "CssProductInputsClient/DeleteCssProductInput/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCssProductInput",
+        "fullName": "google.shopping.css.v1.CssProductInputsClient.DeleteCssProductInput",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.DeleteCssProductInputRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CssProductInputsClient",
+          "fullName": "google.shopping.css.v1.CssProductInputsClient"
+        },
+        "method": {
+          "shortName": "DeleteCssProductInput",
+          "fullName": "google.shopping.css.v1.CssProductInputsService.DeleteCssProductInput",
+          "service": {
+            "shortName": "CssProductInputsService",
+            "fullName": "google.shopping.css.v1.CssProductInputsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_CssProductInputsService_InsertCssProductInput_sync",
+      "title": "css InsertCssProductInput Sample",
+      "description": "InsertCssProductInput uploads a CssProductInput to your CSS Center account. If an\ninput with the same contentLanguage, identity, feedLabel and feedId already\nexists, this method replaces that entry.\n\nAfter inserting, updating, or deleting a CSS Product input, it may\ntake several minutes before the processed CSS Product can be retrieved.",
+      "file": "CssProductInputsClient/InsertCssProductInput/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertCssProductInput",
+        "fullName": "google.shopping.css.v1.CssProductInputsClient.InsertCssProductInput",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.InsertCssProductInputRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*csspb.CssProductInput",
+        "client": {
+          "shortName": "CssProductInputsClient",
+          "fullName": "google.shopping.css.v1.CssProductInputsClient"
+        },
+        "method": {
+          "shortName": "InsertCssProductInput",
+          "fullName": "google.shopping.css.v1.CssProductInputsService.InsertCssProductInput",
+          "service": {
+            "shortName": "CssProductInputsService",
+            "fullName": "google.shopping.css.v1.CssProductInputsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_CssProductsService_GetCssProduct_sync",
+      "title": "css GetCssProduct Sample",
+      "description": "GetCssProduct retrieves the processed CSS Product from your CSS Center account. After\ninserting, updating, or deleting a product input, it may take several\nminutes before the updated final product can be retrieved.",
+      "file": "CssProductsClient/GetCssProduct/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCssProduct",
+        "fullName": "google.shopping.css.v1.CssProductsClient.GetCssProduct",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.GetCssProductRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*csspb.CssProduct",
+        "client": {
+          "shortName": "CssProductsClient",
+          "fullName": "google.shopping.css.v1.CssProductsClient"
+        },
+        "method": {
+          "shortName": "GetCssProduct",
+          "fullName": "google.shopping.css.v1.CssProductsService.GetCssProduct",
+          "service": {
+            "shortName": "CssProductsService",
+            "fullName": "google.shopping.css.v1.CssProductsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "css_v1_generated_CssProductsService_ListCssProducts_sync",
+      "title": "css ListCssProducts Sample",
+      "description": "ListCssProducts lists the processed CSS Products in your CSS Center account. The response\nmight contain fewer items than specified by pageSize. Rely on pageToken to\ndetermine if there are more items to be requested.\n\nAfter inserting, updating, or deleting a CSS product input, it may\ntake several minutes before the updated processed CSS product can be\nretrieved.",
+      "file": "CssProductsClient/ListCssProducts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCssProducts",
+        "fullName": "google.shopping.css.v1.CssProductsClient.ListCssProducts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "csspb.ListCssProductsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CssProductIterator",
+        "client": {
+          "shortName": "CssProductsClient",
+          "fullName": "google.shopping.css.v1.CssProductsClient"
+        },
+        "method": {
+          "shortName": "ListCssProducts",
+          "fullName": "google.shopping.css.v1.CssProductsService.ListCssProducts",
+          "service": {
+            "shortName": "CssProductsService",
+            "fullName": "google.shopping.css.v1.CssProductsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

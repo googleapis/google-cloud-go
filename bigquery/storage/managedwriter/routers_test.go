@@ -30,7 +30,7 @@ func TestSimpleRouter(t *testing.T) {
 
 	pool := &connectionPool{
 		ctx: ctx,
-		open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			return &testAppendRowsClient{}, nil
 		},
 	}
@@ -74,7 +74,7 @@ func TestSharedRouter_Basic(t *testing.T) {
 	pool := &connectionPool{
 		ctx:    ctx,
 		cancel: cancel,
-		open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			return &testAppendRowsClient{}, nil
 		},
 	}
@@ -123,7 +123,7 @@ func TestSharedRouter_Multiplex(t *testing.T) {
 		id:     newUUID(poolIDPrefix),
 		ctx:    ctx,
 		cancel: cancel,
-		open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+		open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 			return &testAppendRowsClient{}, nil
 		},
 		baseFlowController: newFlowController(2, 10),
@@ -282,7 +282,7 @@ func BenchmarkRoutingParallel(b *testing.B) {
 		pool := &connectionPool{
 			ctx:    ctx,
 			cancel: cancel,
-			open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 				return &testAppendRowsClient{}, nil
 			},
 		}
@@ -429,7 +429,7 @@ func BenchmarkWatchdogPulse(b *testing.B) {
 			pool := &connectionPool{
 				ctx:    ctx,
 				cancel: cancel,
-				open: func(opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+				open: func(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 					return &testAppendRowsClient{}, nil
 				},
 				baseFlowController: newFlowController(maxFlowInserts, maxFlowBytes),

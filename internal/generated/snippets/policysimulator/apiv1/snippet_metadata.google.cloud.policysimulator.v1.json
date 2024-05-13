@@ -1,0 +1,245 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/policysimulator/apiv1",
+    "version": "0.2.5",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.policysimulator.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "policysimulator_v1_generated_Simulator_CreateReplay_sync",
+      "title": "policysimulator CreateReplay Sample",
+      "description": "CreateReplay creates and starts a [Replay][google.cloud.policysimulator.v1.Replay] using\nthe given [ReplayConfig][google.cloud.policysimulator.v1.ReplayConfig].",
+      "file": "SimulatorClient/CreateReplay/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateReplay",
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.CreateReplay",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "policysimulatorpb.CreateReplayRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateReplayOperation",
+        "client": {
+          "shortName": "SimulatorClient",
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient"
+        },
+        "method": {
+          "shortName": "CreateReplay",
+          "fullName": "google.cloud.policysimulator.v1.Simulator.CreateReplay",
+          "service": {
+            "shortName": "Simulator",
+            "fullName": "google.cloud.policysimulator.v1.Simulator"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "policysimulator_v1_generated_Simulator_GetOperation_sync",
+      "title": "policysimulator GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SimulatorClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SimulatorClient",
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "policysimulator_v1_generated_Simulator_GetReplay_sync",
+      "title": "policysimulator GetReplay Sample",
+      "description": "GetReplay gets the specified [Replay][google.cloud.policysimulator.v1.Replay]. Each\n`Replay` is available for at least 7 days.",
+      "file": "SimulatorClient/GetReplay/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetReplay",
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.GetReplay",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "policysimulatorpb.GetReplayRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*policysimulatorpb.Replay",
+        "client": {
+          "shortName": "SimulatorClient",
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient"
+        },
+        "method": {
+          "shortName": "GetReplay",
+          "fullName": "google.cloud.policysimulator.v1.Simulator.GetReplay",
+          "service": {
+            "shortName": "Simulator",
+            "fullName": "google.cloud.policysimulator.v1.Simulator"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "policysimulator_v1_generated_Simulator_ListOperations_sync",
+      "title": "policysimulator ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SimulatorClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SimulatorClient",
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "policysimulator_v1_generated_Simulator_ListReplayResults_sync",
+      "title": "policysimulator ListReplayResults Sample",
+      "description": "ListReplayResults lists the results of running a\n[Replay][google.cloud.policysimulator.v1.Replay].",
+      "file": "SimulatorClient/ListReplayResults/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReplayResults",
+        "fullName": "google.cloud.policysimulator.v1.SimulatorClient.ListReplayResults",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "policysimulatorpb.ListReplayResultsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReplayResultIterator",
+        "client": {
+          "shortName": "SimulatorClient",
+          "fullName": "google.cloud.policysimulator.v1.SimulatorClient"
+        },
+        "method": {
+          "shortName": "ListReplayResults",
+          "fullName": "google.cloud.policysimulator.v1.Simulator.ListReplayResults",
+          "service": {
+            "shortName": "Simulator",
+            "fullName": "google.cloud.policysimulator.v1.Simulator"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

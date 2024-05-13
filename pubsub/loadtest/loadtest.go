@@ -48,6 +48,7 @@ type PubServer struct {
 
 	cfg    atomic.Value
 	seqNum int32
+	pb.UnimplementedLoadtestWorkerServer
 }
 
 // Start starts the server.
@@ -57,8 +58,7 @@ func (l *PubServer) Start(ctx context.Context, req *pb.StartRequest) (*pb.StartR
 	if err != nil {
 		return nil, err
 	}
-	dur := req.PublishBatchDuration.AsDuration()
-	l.init(c, req.Topic, req.MessageSize, req.PublishBatchSize, dur, false)
+	l.init(c, req.Topic, req.GetPublisherOptions().GetMessageSize(), req.GetPublisherOptions().GetBatchSize(), req.GetPublisherOptions().GetBatchDuration().AsDuration(), false)
 	log.Println("started")
 	return &pb.StartResponse{}, nil
 }
@@ -79,16 +79,6 @@ func (l *PubServer) init(c *pubsub.Client, topicName string, msgSize, batchSize 
 		batchSize: batchSize,
 		ordered:   ordered,
 	})
-}
-
-// Execute executes a request.
-func (l *PubServer) Execute(ctx context.Context, _ *pb.ExecuteRequest) (*pb.ExecuteResponse, error) {
-	latencies, err := l.publishBatch()
-	if err != nil {
-		log.Printf("error: %v", err)
-		return nil, err
-	}
-	return &pb.ExecuteResponse{Latencies: latencies}, nil
 }
 
 func (l *PubServer) publishBatch() ([]int64, error) {
@@ -145,6 +135,7 @@ type SubServer struct {
 	mu        sync.Mutex
 	idents    []*pb.MessageIdentifier
 	latencies []int64
+	pb.UnimplementedLoadtestWorkerServer
 }
 
 // Start starts the server.
@@ -202,24 +193,4 @@ func (s *SubServer) callback(_ context.Context, m *pubsub.Message) {
 	s.latencies = append(s.latencies, latency)
 	s.mu.Unlock()
 	m.Ack()
-}
-
-// Execute executes the request.
-func (s *SubServer) Execute(ctx context.Context, _ *pb.ExecuteRequest) (*pb.ExecuteResponse, error) {
-	// Throttle so the load tester doesn't spam us and consume all our CPU.
-	if err := s.lim.Wait(ctx); err != nil {
-		return nil, err
-	}
-
-	s.mu.Lock()
-	idents := s.idents
-	s.idents = nil
-	latencies := s.latencies
-	s.latencies = nil
-	s.mu.Unlock()
-
-	return &pb.ExecuteResponse{
-		Latencies:        latencies,
-		ReceivedMessages: idents,
-	}, nil
 }

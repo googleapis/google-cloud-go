@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/policytroubleshooter/iam/apiv3",
+    "version": "1.10.5",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.policytroubleshooter.iam.v3",
+        "version": "v3"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "policytroubleshooter_v3_generated_PolicyTroubleshooter_TroubleshootIamPolicy_sync",
+      "title": "policytroubleshooter TroubleshootIamPolicy Sample",
+      "description": "TroubleshootIamPolicy checks whether a principal has a specific permission for a specific\nresource, and explains why the principal does or doesn't have that\npermission.",
+      "file": "PolicyTroubleshooterClient/TroubleshootIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TroubleshootIamPolicy",
+        "fullName": "google.cloud.policytroubleshooter.iam.v3.PolicyTroubleshooterClient.TroubleshootIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TroubleshootIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TroubleshootIamPolicyResponse",
+        "client": {
+          "shortName": "PolicyTroubleshooterClient",
+          "fullName": "google.cloud.policytroubleshooter.iam.v3.PolicyTroubleshooterClient"
+        },
+        "method": {
+          "shortName": "TroubleshootIamPolicy",
+          "fullName": "google.cloud.policytroubleshooter.iam.v3.PolicyTroubleshooter.TroubleshootIamPolicy",
+          "service": {
+            "shortName": "PolicyTroubleshooter",
+            "fullName": "google.cloud.policytroubleshooter.iam.v3.PolicyTroubleshooter"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

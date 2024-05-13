@@ -1,5 +1,68 @@
 # Changes
 
+## [1.12.8](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.7...cloudtasks/v1.12.8) (2024-05-01)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.12.7](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.6...cloudtasks/v1.12.7) (2024-03-14)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.12.6](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.5...cloudtasks/v1.12.6) (2024-01-30)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.12.5](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.4...cloudtasks/v1.12.5) (2024-01-22)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Remove BufferTask method which cannot be called from client libraries ([#9269](https://github.com/googleapis/google-cloud-go/issues/9269)) ([00b9900](https://github.com/googleapis/google-cloud-go/commit/00b990061592a20a181e61faa6964b45205b76a7))
+
+## [1.12.4](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.3...cloudtasks/v1.12.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.12.3](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.2...cloudtasks/v1.12.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.1...cloudtasks/v1.12.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.0...cloudtasks/v1.12.1) (2023-07-26)
+
+
+### Documentation
+
+* **cloudtasks:** Minor formatting ([cdee2d9](https://github.com/googleapis/google-cloud-go/commit/cdee2d918015c9b0a53aa8283085214d9a11c77c))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.11.1...cloudtasks/v1.12.0) (2023-07-18)
+
+
+### Features
+
+* **cloudtasks:** Increase timeout of RPC methods to 20s for v2 ([4a5651c](https://github.com/googleapis/google-cloud-go/commit/4a5651caa472882fe4c7f6be400f782f60f6f258))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.11.0...cloudtasks/v1.11.1) (2023-06-20)
 
 
