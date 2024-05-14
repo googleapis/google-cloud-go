@@ -20,7 +20,7 @@ import (
 )
 
 func TestApply(t *testing.T) {
-	opts := []TransferManagerOption{
+	opts := []Option{
 		WithWorkers(3),
 		WithPerOpTimeout(time.Hour),
 	}

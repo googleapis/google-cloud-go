@@ -46,9 +46,11 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 	d.addInput(input)
 }
 
-// DownloadObject queues the download of a single object. This will initiate the
-// download but is non-blocking. The result will not be added to the results obtained
-// from Downloader.Results; use the callback to process the result.
+// DownloadObjectWithCallback queues the download of a single object. This will
+// initiate the download but is non-blocking; use the callback to process the
+// result.
+// The results of downloads initiated with this method will not be provided in
+// the results given in Downloader.Results.
 func (d *Downloader) DownloadObjectWithCallback(ctx context.Context, input *DownloadObjectInput, callback func(*DownloadOutput)) {
 	input.ctx = ctx
 	input.callback = &callback
@@ -71,7 +73,7 @@ func (d *Downloader) WaitAndClose() error {
 
 // Results returns all the results of the downloads completed since the last
 // time it was called. Call WaitAndClose before calling Results to wait for all
-// downloads to complete.
+// downloads to complete. The results are not guaranteed to be in any order.
 // Results will not return results for downloads initiated with a callback.
 func (d *Downloader) Results() []DownloadOutput {
 	d.resultsMu.Lock()
@@ -166,7 +168,7 @@ func (d *Downloader) downloadWorker() {
 
 // NewDownloader creates a new Downloader to add operations to.
 // Choice of transport, etc is configured on the client that's passed in.
-func NewDownloader(c *storage.Client, opts ...TransferManagerOption) (*Downloader, error) {
+func NewDownloader(c *storage.Client, opts ...Option) (*Downloader, error) {
 	d := &Downloader{
 		client:    c,
 		config:    initTransferManagerConfig(opts...),

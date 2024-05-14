@@ -19,15 +19,15 @@ import (
 	"time"
 )
 
-// A TransferManagerOption is an option for a transfermanager Downloader or Uploader.
-type TransferManagerOption interface {
+// A Option is an option for a transfermanager Downloader or Uploader.
+type Option interface {
 	apply(*transferManagerConfig)
 }
 
 // WithCallbacks returns a TransferManagerOption that allows the use of callbacks
 // to process the results. If this option is set, then the results will not be
 // returned at the end.
-func WithCallbacks() TransferManagerOption {
+func WithCallbacks() Option {
 	return &withCallbacks{}
 }
 
@@ -40,7 +40,7 @@ func (ww withCallbacks) apply(tm *transferManagerConfig) {
 // WithWorkers returns a TransferManagerOption that specifies the maximum number
 // of concurrent goroutines that will be used to download or upload objects.
 // Defaults to runtime.NumCPU()/2.
-func WithWorkers(numWorkers int) TransferManagerOption {
+func WithWorkers(numWorkers int) Option {
 	return &withWorkers{numWorkers: numWorkers}
 }
 
@@ -56,7 +56,7 @@ func (ww withWorkers) apply(tm *transferManagerConfig) {
 // operation that is performed to download or upload an object. The timeout is
 // set when the operation begins processing, not when it is added.
 // By default, no timeout is set.
-func WithPerOpTimeout(timeout time.Duration) TransferManagerOption {
+func WithPerOpTimeout(timeout time.Duration) Option {
 	return &withPerOpTimeout{timeout: timeout}
 }
 
@@ -90,7 +90,7 @@ func defaultTransferManagerConfig() *transferManagerConfig {
 
 // initTransferManagerConfig initializes a config with the defaults and applies
 // the options passed in.
-func initTransferManagerConfig(opts ...TransferManagerOption) *transferManagerConfig {
+func initTransferManagerConfig(opts ...Option) *transferManagerConfig {
 	config := defaultTransferManagerConfig()
 	for _, o := range opts {
 		o.apply(config)
