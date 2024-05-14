@@ -196,7 +196,7 @@ func TestStreamingPullRetry(t *testing.T) {
 
 	sub := client.Subscription("S")
 	sub.ReceiveSettings.NumGoroutines = 1
-	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), 0, func(_ context.Context, m *Message) {
+	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), 2*time.Second, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
 			t.Fatalf("pullN err: %v", err)

@@ -534,34 +534,34 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
 	it.eoMu.RUnlock()
 
-	var toSend []string
-	for len(ackIDs) > 0 {
-		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
-
-		recordStat(it.ctx, AckCount, int64(len(toSend)))
-		addAcks(toSend)
-		// Use context.Background() as the call's context, not it.ctx. We don't
-		// want to cancel this RPC when the iterator is stopped.
-		cctx2, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
-		defer cancel2()
-		err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
-			Subscription: it.subName,
-			AckIds:       toSend,
-		})
-		if exactlyOnceDelivery {
-			resultsByAckID := make(map[string]*AckResult)
-			for _, ackID := range toSend {
-				resultsByAckID[ackID] = m[ackID]
+	batches := makeBatches(ackIDs, ackIDBatchSize)
+	for _, batch := range batches {
+		go func(toSend []string) {
+			recordStat(it.ctx, AckCount, int64(len(toSend)))
+			addAcks(toSend)
+			// Use context.Background() as the call's context, not it.ctx. We don't
+			// want to cancel this RPC when the iterator is stopped.
+			cctx2, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
+			defer cancel2()
+			err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
+				Subscription: it.subName,
+				AckIds:       toSend,
+			})
+			if exactlyOnceDelivery {
+				resultsByAckID := make(map[string]*AckResult)
+				for _, ackID := range toSend {
+					resultsByAckID[ackID] = m[ackID]
+				}
+				st, md := extractMetadata(err)
+				_, toRetry := processResults(st, resultsByAckID, md)
+				if len(toRetry) > 0 {
+					// Retry acks in a separate goroutine.
+					go func() {
+						it.retryAcks(toRetry)
+					}()
+				}
 			}
-			st, md := extractMetadata(err)
-			_, toRetry := processResults(st, resultsByAckID, md)
-			if len(toRetry) > 0 {
-				// Retry acks in a separate goroutine.
-				go func() {
-					it.retryAcks(toRetry)
-				}()
-			}
-		}
+		}(batch)
 	}
 }
 
@@ -580,39 +580,40 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 	it.eoMu.RLock()
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
 	it.eoMu.RUnlock()
-	var toSend []string
-	for len(ackIDs) > 0 {
-		toSend, ackIDs = splitRequestIDs(ackIDs, ackIDBatchSize)
-		if deadline == 0 {
-			recordStat(it.ctx, NackCount, int64(len(toSend)))
-		} else {
-			recordStat(it.ctx, ModAckCount, int64(len(toSend)))
-		}
-		addModAcks(toSend, deadlineSec)
-		// Use context.Background() as the call's context, not it.ctx. We don't
-		// want to cancel this RPC when the iterator is stopped.
-		cctx, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
-		defer cancel2()
-		err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
-			Subscription:       it.subName,
-			AckDeadlineSeconds: deadlineSec,
-			AckIds:             toSend,
-		})
-		if exactlyOnceDelivery {
-			resultsByAckID := make(map[string]*AckResult)
-			for _, ackID := range toSend {
-				resultsByAckID[ackID] = m[ackID]
+	batches := makeBatches(ackIDs, ackIDBatchSize)
+	for _, batch := range batches {
+		go func(toSend []string) {
+			if deadline == 0 {
+				recordStat(it.ctx, NackCount, int64(len(toSend)))
+			} else {
+				recordStat(it.ctx, ModAckCount, int64(len(toSend)))
 			}
+			addModAcks(toSend, deadlineSec)
+			// Use context.Background() as the call's context, not it.ctx. We don't
+			// want to cancel this RPC when the iterator is stopped.
+			cctx, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
+			defer cancel2()
+			err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
+				Subscription:       it.subName,
+				AckDeadlineSeconds: deadlineSec,
+				AckIds:             toSend,
+			})
+			if exactlyOnceDelivery {
+				resultsByAckID := make(map[string]*AckResult)
+				for _, ackID := range toSend {
+					resultsByAckID[ackID] = m[ackID]
+				}
 
-			st, md := extractMetadata(err)
-			_, toRetry := processResults(st, resultsByAckID, md)
-			if len(toRetry) > 0 {
-				// Retry modacks/nacks in a separate goroutine.
-				go func() {
-					it.retryModAcks(toRetry, deadlineSec, logOnInvalid)
-				}()
+				st, md := extractMetadata(err)
+				_, toRetry := processResults(st, resultsByAckID, md)
+				if len(toRetry) > 0 {
+					// Retry modacks/nacks in a separate goroutine.
+					go func() {
+						it.retryModAcks(toRetry, deadlineSec, logOnInvalid)
+					}()
+				}
 			}
-		}
+		}(batch)
 	}
 }
 
@@ -748,6 +749,22 @@ func splitRequestIDs(ids []string, maxBatchSize int) (prefix, remainder []string
 		return ids, []string{}
 	}
 	return ids[:maxBatchSize], ids[maxBatchSize:]
+}
+
+// makeBatches takes a slice of ackIDs and returns a slice of ackID batches.
+// Each ackID batch can be used in a request where the payload does not exceed ackIDBatchSize.
+func makeBatches(ids []string, maxBatchSize int) [][]string {
+	var batches [][]string
+	for len(ids) > 0 {
+		if len(ids) < maxBatchSize {
+			batches = append(batches, ids)
+			ids = []string{}
+		} else {
+			batches = append(batches, ids[:maxBatchSize])
+			ids = ids[maxBatchSize:]
+		}
+	}
+	return batches
 }
 
 // The deadline to ack is derived from a percentile distribution based
