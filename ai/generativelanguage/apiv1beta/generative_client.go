@@ -264,6 +264,11 @@ func (c *GenerativeClient) Connection() *grpc.ClientConn {
 
 // GenerateContent generates a response from the model given an input
 // GenerateContentRequest.
+//
+// Input capabilities differ between models, including tuned models. See the
+// model guide (at https://ai.google.dev/models/gemini) and
+// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
+// details.
 func (c *GenerativeClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	return c.internalClient.GenerateContent(ctx, req, opts...)
 }
@@ -550,6 +555,11 @@ func (c *generativeGRPCClient) CountTokens(ctx context.Context, req *generativel
 
 // GenerateContent generates a response from the model given an input
 // GenerateContentRequest.
+//
+// Input capabilities differ between models, including tuned models. See the
+// model guide (at https://ai.google.dev/models/gemini) and
+// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
+// details.
 func (c *generativeRESTClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
