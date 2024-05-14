@@ -78,7 +78,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 			m.Nack()
 		}
 	})
-	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
+	if err != nil && err != context.Canceled {
 		t.Fatalf("Pull: %v", err)
 	}
 	gotMap := map[string]*Message{}

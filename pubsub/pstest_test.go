@@ -89,7 +89,7 @@ func TestPSTest(t *testing.T) {
 		mu.Unlock()
 		m.Ack()
 	})
-	if err != nil {
-		panic(err)
+	if err != nil && err != context.Canceled {
+		t.Fatal(err)
 	}
 }
