@@ -393,7 +393,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 		},
 		{
 			desc: `q.Where("c", "array-contains-any", []int{1, 2}).RunOptions(ExplainOptions{Analyze: true})`,
-			in:   q.Where("c", "array-contains-any", []int{1, 2}).RunOptions(ExplainOptions{Analyze: true}),
+			in:   q.Where("c", "array-contains-any", []int{1, 2}).WithRunOptions(ExplainOptions{Analyze: true}),
 			want: &pb.RunQueryRequest{
 				Parent: q.parentPath,
 				QueryType: &pb.RunQueryRequest_StructuredQuery{
@@ -406,7 +406,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 		},
 		{
 			desc: `q.Where("c", "array-contains-any", []int{1, 2}).RunOptions(ExplainOptions{Analyze: false})`,
-			in:   q.Where("c", "array-contains-any", []int{1, 2}).RunOptions(ExplainOptions{Analyze: false}),
+			in:   q.Where("c", "array-contains-any", []int{1, 2}).WithRunOptions(ExplainOptions{Analyze: false}),
 			want: &pb.RunQueryRequest{
 				Parent: q.parentPath,
 				QueryType: &pb.RunQueryRequest_StructuredQuery{
@@ -420,8 +420,8 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 		{
 			desc: `q.Where("c", "array-contains-any", []int{1, 2}) RunOptions invoked multiple times`,
 			in: q.Where("c", "array-contains-any", []int{1, 2}).
-				RunOptions(ExplainOptions{Analyze: false}).
-				RunOptions(ExplainOptions{Analyze: true}),
+				WithRunOptions(ExplainOptions{Analyze: false}).
+				WithRunOptions(ExplainOptions{Analyze: true}),
 			want: &pb.RunQueryRequest{
 				Parent: q.parentPath,
 				QueryType: &pb.RunQueryRequest_StructuredQuery{
@@ -1664,8 +1664,8 @@ func TestQueryRunOptionsAndGetAllWithOptions(t *testing.T) {
 	})
 
 	_, err := client.Collection(collectionName).
-		RunOptions(ExplainOptions{Analyze: false}).
-		RunOptions(ExplainOptions{Analyze: true}).
+		WithRunOptions(ExplainOptions{Analyze: false}).
+		WithRunOptions(ExplainOptions{Analyze: true}).
 		Documents(ctx).
 		GetAllWithOptions(ExplainOptions{Analyze: false})
 

@@ -202,6 +202,7 @@ func fromPbExecutionStats(pbstats *pb.ExecutionStats) *ExecutionStats {
 	return executionStats
 }
 
+// RunOption lets the user provide options while running a query
 type RunOption interface {
 	apply(*runQuerySettings) error
 }
@@ -425,9 +426,9 @@ func (q Query) EndBefore(docSnapshotOrFieldValues ...interface{}) Query {
 	return q
 }
 
-// RunOptions allows passing options to the query
-// Calling RunOptions overrides a previous call to RunOptions.
-func (q Query) RunOptions(opts ...RunOption) Query {
+// WithRunOptions allows passing options to the query
+// Calling WithRunOptions overrides a previous call to WithRunOptions.
+func (q Query) WithRunOptions(opts ...RunOption) Query {
 	settings, err := newRunQuerySettings(opts)
 	if err != nil {
 		q.err = err
@@ -1238,7 +1239,7 @@ type GetAllWithOptionsResult struct {
 
 // GetAllWithOptions returns all the documents remaining from the iterator.
 //
-// The query is run with provided options. The provided options override any options provided earlier
+// The query is run with provided options. The provided non-nil options override any options provided earlier
 // e.g. below code will run the query with ExplainOptions{Analyze: true}
 // query := client.Collection("cities").RunOptions(ExplainOptions{Analyze: false}).Where("a", "=", "b")
 // result, err := query.GetAllWithOptions(ExplainOptions{Analyze: true})
@@ -1308,8 +1309,10 @@ func (it *queryDocumentIterator) next(opts ...RunOption) (_ *DocumentSnapshot, e
 	client := it.q.c
 
 	// Override run options
-	newQuery := it.q.RunOptions(opts...)
-	it.q = &newQuery
+	if opts != nil {
+		newQuery := it.q.WithRunOptions(opts...)
+		it.q = &newQuery
+	}
 
 	if it.streamClient == nil {
 		it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
@@ -1609,7 +1612,7 @@ func (a *AggregationQuery) Get(ctx context.Context) (AggregationResult, error) {
 	return nil, err
 }
 
-// Get retrieves the aggregation query results from the service.
+// GetWithOptions runs the aggregation query results with the provided options
 func (a *AggregationQuery) GetWithOptions(ctx context.Context, opts ...RunOption) (aro *AggregationWithOptionsResult, err error) {
 
 	a.query.processLimitToLast()
