@@ -1200,7 +1200,7 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 		}
 
 		received <- string(msg.Data)
-	}); err != nil && err != context.Canceled {
+	}); err != nil && !errors.Is(err, context.Canceled) {
 		t.Error(err)
 	}
 }

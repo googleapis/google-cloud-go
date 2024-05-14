@@ -20,6 +20,7 @@ package pubsub
 
 import (
 	"context"
+	"errors"
 	"io"
 	"strconv"
 	"sync"
@@ -78,7 +79,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 			m.Nack()
 		}
 	})
-	if err != nil && err != context.Canceled {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("Pull: %v", err)
 	}
 	gotMap := map[string]*Message{}

@@ -16,6 +16,7 @@ package pubsub_test
 
 import (
 	"context"
+	"errors"
 	"strconv"
 	"sync"
 	"testing"
@@ -89,7 +90,7 @@ func TestPSTest(t *testing.T) {
 		mu.Unlock()
 		m.Ack()
 	})
-	if err != nil && err != context.Canceled {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatal(err)
 	}
 }
