@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@
 package documentaipb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -472,7 +471,8 @@ type Processor struct {
 	DefaultProcessorVersion string `protobuf:"bytes,9,opt,name=default_processor_version,json=defaultProcessorVersion,proto3" json:"default_processor_version,omitempty"`
 	// Output only. The processor version aliases.
 	ProcessorVersionAliases []*ProcessorVersionAlias `protobuf:"bytes,10,rep,name=processor_version_aliases,json=processorVersionAliases,proto3" json:"processor_version_aliases,omitempty"`
-	// Output only. Immutable. The http endpoint that can be called to invoke processing.
+	// Output only. Immutable. The http endpoint that can be called to invoke
+	// processing.
 	ProcessEndpoint string `protobuf:"bytes,6,opt,name=process_endpoint,json=processEndpoint,proto3" json:"process_endpoint,omitempty"`
 	// The time the processor was created.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`

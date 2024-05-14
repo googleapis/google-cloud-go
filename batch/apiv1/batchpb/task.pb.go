@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -357,8 +356,18 @@ type TaskExecution struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// When task is completed as the status of FAILED or SUCCEEDED,
-	// exit code is for one task execution result, default is 0 as success.
+	// The exit code of a finished task.
+	//
+	// If the task succeeded, the exit code will be 0. If the task failed but not
+	// due to the following reasons, the exit code will be 50000.
+	//
+	// Otherwise, it can be from different sources:
+	// - Batch known failures as
+	// https://cloud.google.com/batch/docs/troubleshooting#reserved-exit-codes.
+	// - Batch runnable execution failures: You can rely on Batch logs for further
+	// diagnose: https://cloud.google.com/batch/docs/analyze-job-using-logs.
+	// If there are multiple runnables failures, Batch only exposes the first
+	// error caught for now.
 	ExitCode int32 `protobuf:"varint,1,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
 }
 

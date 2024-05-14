@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,14 +21,13 @@
 package gkemulticloudpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1634,8 +1633,8 @@ type AwsNodeConfig struct {
 	// (.+-=_:@/). Keys can be up to 127 Unicode characters. Values can be up to
 	// 255 Unicode characters.
 	Tags map[string]string `protobuf:"bytes,5,rep,name=tags,proto3" json:"tags,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
-	// Required. The name or ARN of the AWS IAM role assigned to nodes in the
-	// pool.
+	// Required. The name or ARN of the AWS IAM instance profile to assign to
+	// nodes in the pool.
 	IamInstanceProfile string `protobuf:"bytes,6,opt,name=iam_instance_profile,json=iamInstanceProfile,proto3" json:"iam_instance_profile,omitempty"`
 	// Optional. The OS image type to use on node pool instances.
 	// Can be unspecified, or have a value of `ubuntu`.
