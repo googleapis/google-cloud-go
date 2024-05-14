@@ -113,6 +113,16 @@ func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	}
 }
 
+// FineTunedEndpoint creates a new generative model instance for the specified endpoint
+// Note that the endpoint must point to a fine-tuned gemini model for it to work as expected.
+func (c *Client) FineTunedEndpoint(endpoint string) *GenerativeModel {
+	return &GenerativeModel{
+		c:        c,
+		name:     endpoint,
+		fullName: fmt.Sprintf("projects/%s/locations/%s/endpoints/%s", c.projectID, c.location, endpoint),
+	}
+}
+
 // Name returns the name of the model.
 func (m *GenerativeModel) Name() string {
 	return m.name
