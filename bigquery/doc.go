@@ -305,7 +305,7 @@ to specify the schema and insert ID by hand:
 	    // TODO: Handle error.
 	}
 
-Or just supply the struct or struct pointer directly and the schema will be inferred:
+Lastly, but not least, you can just supply the struct or struct pointer directly and the schema will be inferred:
 
 	type Item2 struct {
 	    Name  string
