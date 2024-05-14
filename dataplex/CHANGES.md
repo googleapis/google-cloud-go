@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.15.1...dataplex/v1.16.0) (2024-05-08)
+
+
+### Features
+
+* **dataplex:** Updated client libraries for Dataplex Catalog ([a4a8fbc](https://github.com/googleapis/google-cloud-go/commit/a4a8fbcf561346eec1dc32987b10174f102bb46a))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.15.0...dataplex/v1.15.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **dataplex:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.3...dataplex/v1.15.0) (2024-03-19)
 
 
@@ -237,4 +251,3 @@
 ## v0.1.0
 
 - feat(dataplex): start generating clients
-

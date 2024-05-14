@@ -19,6 +19,7 @@ package dialogflow
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -658,7 +659,7 @@ func (c *sessionsRESTClient) DetectIntent(ctx context.Context, req *dialogflowpb
 //
 // This method is not supported for the REST transport.
 func (c *sessionsRESTClient) StreamingDetectIntent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Sessions_StreamingDetectIntentClient, error) {
-	return nil, fmt.Errorf("StreamingDetectIntent not yet supported for REST clients")
+	return nil, errors.New("StreamingDetectIntent not yet supported for REST clients")
 }
 
 // GetLocation gets information about a location.

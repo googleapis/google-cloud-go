@@ -177,7 +177,7 @@ func TestPartitionedUpdate_Tagging(t *testing.T) {
 	if err != nil {
 		t.Fatalf("expect no errors, but got %v", err)
 	}
-	checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{RequestTag: "pdml-tag"})
+	checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, &sppb.RequestOptions{RequestTag: "pdml-tag"})
 }
 
 func TestPartitionedUpdate_ExcludeTxnFromChangeStreams(t *testing.T) {

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.5...serviceusage/v1.8.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **serviceusage:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.4...serviceusage/v1.8.5) (2024-03-14)
 
 
@@ -113,4 +120,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out serviceusage as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

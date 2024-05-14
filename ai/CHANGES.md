@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.4.1...ai/v0.5.0) (2024-05-09)
+
+
+### Features
+
+* **ai/generativelanguage:** Add FileState to File ([3e25053](https://github.com/googleapis/google-cloud-go/commit/3e250530567ee81ed4f51a3856c5940dbec35289))
+
+## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.4.0...ai/v0.4.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **ai:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.3.4...ai/v0.4.0) (2024-04-15)
 
 

@@ -193,7 +193,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		}
 		out := make([]spanner.NullInt64, 0)
 		for _, value := range v.GetArrayValue().GetValue() {
-			out = append(out, spanner.NullInt64{value.GetIntValue(), !value.GetIsNull()})
+			out = append(out, spanner.NullInt64{Int64: value.GetIntValue(), Valid: !value.GetIsNull()})
 		}
 		return out, nil
 	case spannerpb.TypeCode_FLOAT64:
@@ -202,7 +202,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		}
 		out := make([]spanner.NullFloat64, 0)
 		for _, value := range v.GetArrayValue().GetValue() {
-			out = append(out, spanner.NullFloat64{value.GetDoubleValue(), !value.GetIsNull()})
+			out = append(out, spanner.NullFloat64{Float64: value.GetDoubleValue(), Valid: !value.GetIsNull()})
 		}
 		return out, nil
 	case spannerpb.TypeCode_STRING:
@@ -211,7 +211,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		}
 		out := make([]spanner.NullString, 0)
 		for _, value := range v.GetArrayValue().GetValue() {
-			out = append(out, spanner.NullString{value.GetStringValue(), !value.GetIsNull()})
+			out = append(out, spanner.NullString{StringVal: value.GetStringValue(), Valid: !value.GetIsNull()})
 		}
 		return out, nil
 	case spannerpb.TypeCode_BYTES:
@@ -277,7 +277,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 				if !ok {
 					return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "unexpected string value %q for numeric number", value.GetStringValue()))
 				}
-				out = append(out, spanner.NullNumeric{*y, true})
+				out = append(out, spanner.NullNumeric{Numeric: *y, Valid: true})
 			}
 		}
 		return out, nil
