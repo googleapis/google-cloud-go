@@ -593,6 +593,7 @@ type FamilyInfo struct {
 	Name         string
 	GCPolicy     string
 	FullGCPolicy GCPolicy
+	ValueType    Type
 }
 
 func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Table_View) (*btapb.Table, error) {
@@ -632,6 +633,7 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 			Name:         name,
 			GCPolicy:     GCRuleToString(fam.GcRule),
 			FullGCPolicy: gcRuleToPolicy(fam.GcRule),
+			ValueType:    protoToType(fam.ValueType),
 		})
 	}
 	// we expect DeletionProtection to be in the response because Table_SCHEMA_VIEW is being used in this function
