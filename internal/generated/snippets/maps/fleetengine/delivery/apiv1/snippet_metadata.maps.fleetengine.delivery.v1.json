@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/maps/fleetengine/delivery/apiv1",
-    "version": "1.7.3",
+    "version": "1.8.0",
     "language": "GO",
     "apis": [
       {
@@ -364,52 +364,6 @@
         "method": {
           "shortName": "ListTasks",
           "fullName": "maps.fleetengine.delivery.v1.DeliveryService.ListTasks",
-          "service": {
-            "shortName": "DeliveryService",
-            "fullName": "maps.fleetengine.delivery.v1.DeliveryService"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 66,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "fleetengine_v1_generated_DeliveryService_SearchTasks_sync",
-      "title": "fleetengine SearchTasks Sample",
-      "description": "SearchTasks deprecated: Use `GetTaskTrackingInfo` instead.\n\n\nDeprecated: SearchTasks may be removed in a future version.",
-      "file": "Client/SearchTasks/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "SearchTasks",
-        "fullName": "maps.fleetengine.delivery.v1.Client.SearchTasks",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "deliverypb.SearchTasksRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "TaskIterator",
-        "client": {
-          "shortName": "Client",
-          "fullName": "maps.fleetengine.delivery.v1.Client"
-        },
-        "method": {
-          "shortName": "SearchTasks",
-          "fullName": "maps.fleetengine.delivery.v1.DeliveryService.SearchTasks",
           "service": {
             "shortName": "DeliveryService",
             "fullName": "maps.fleetengine.delivery.v1.DeliveryService"

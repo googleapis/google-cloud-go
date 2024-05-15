@@ -347,6 +347,11 @@ func TestShouldRetry(t *testing.T) {
 			shouldRetry: true,
 		},
 		{
+			desc:        "net.OpError{Err: errors.New(\"connection reset by peer\")}",
+			inputErr:    &net.OpError{Op: "blah", Net: "tcp", Err: errors.New("connection reset by peer")},
+			shouldRetry: true,
+		},
+		{
 			desc:        "io.ErrUnexpectedEOF",
 			inputErr:    io.ErrUnexpectedEOF,
 			shouldRetry: true,
@@ -382,9 +387,8 @@ func TestShouldRetry(t *testing.T) {
 			shouldRetry: false,
 		},
 		{
-			desc: "wrapped ErrClosed text",
-			// TODO: check directly against wrapped net.ErrClosed (go 1.16+)
-			inputErr:    &net.OpError{Op: "write", Err: errors.New("use of closed network connection")},
+			desc:        "wrapped net.ErrClosed",
+			inputErr:    &net.OpError{Err: net.ErrClosed},
 			shouldRetry: true,
 		},
 	} {

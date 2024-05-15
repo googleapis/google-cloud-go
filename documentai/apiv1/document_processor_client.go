@@ -329,7 +329,8 @@ func (c *DocumentProcessorClient) BatchProcessDocumentsOperation(name string) *B
 	return c.internalClient.BatchProcessDocumentsOperation(name)
 }
 
-// FetchProcessorTypes fetches processor types. Note that we don’t use ListProcessorTypes
+// FetchProcessorTypes fetches processor types. Note that we don’t use
+// ListProcessorTypes
 // here, because it isn’t paginated.
 func (c *DocumentProcessorClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
 	return c.internalClient.FetchProcessorTypes(ctx, req, opts...)
@@ -412,8 +413,9 @@ func (c *DocumentProcessorClient) UndeployProcessorVersionOperation(name string)
 	return c.internalClient.UndeployProcessorVersionOperation(name)
 }
 
-// CreateProcessor creates a processor from the ProcessorType provided.
-// The processor will be at ENABLED state by default after its creation.
+// CreateProcessor creates a processor from the
+// ProcessorType provided. The
+// processor will be at ENABLED state by default after its creation.
 func (c *DocumentProcessorClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	return c.internalClient.CreateProcessor(ctx, req, opts...)
 }
@@ -452,8 +454,10 @@ func (c *DocumentProcessorClient) DisableProcessorOperation(name string) *Disabl
 	return c.internalClient.DisableProcessorOperation(name)
 }
 
-// SetDefaultProcessorVersion set the default (active) version of a Processor that will be used in
-// ProcessDocument and
+// SetDefaultProcessorVersion set the default (active) version of a
+// Processor that will be used in
+// ProcessDocument
+// and
 // BatchProcessDocuments.
 func (c *DocumentProcessorClient) SetDefaultProcessorVersion(ctx context.Context, req *documentaipb.SetDefaultProcessorVersionRequest, opts ...gax.CallOption) (*SetDefaultProcessorVersionOperation, error) {
 	return c.internalClient.SetDefaultProcessorVersion(ctx, req, opts...)
@@ -1518,7 +1522,8 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 	}, nil
 }
 
-// FetchProcessorTypes fetches processor types. Note that we don’t use ListProcessorTypes
+// FetchProcessorTypes fetches processor types. Note that we don’t use
+// ListProcessorTypes
 // here, because it isn’t paginated.
 func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, req *documentaipb.FetchProcessorTypesRequest, opts ...gax.CallOption) (*documentaipb.FetchProcessorTypesResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -2303,8 +2308,9 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 	}, nil
 }
 
-// CreateProcessor creates a processor from the ProcessorType provided.
-// The processor will be at ENABLED state by default after its creation.
+// CreateProcessor creates a processor from the
+// ProcessorType provided. The
+// processor will be at ENABLED state by default after its creation.
 func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProcessor()
@@ -2576,8 +2582,10 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 	}, nil
 }
 
-// SetDefaultProcessorVersion set the default (active) version of a Processor that will be used in
-// ProcessDocument and
+// SetDefaultProcessorVersion set the default (active) version of a
+// Processor that will be used in
+// ProcessDocument
+// and
 // BatchProcessDocuments.
 func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Context, req *documentaipb.SetDefaultProcessorVersionRequest, opts ...gax.CallOption) (*SetDefaultProcessorVersionOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
