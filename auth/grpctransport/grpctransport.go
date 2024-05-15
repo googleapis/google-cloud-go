@@ -216,12 +216,16 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	// Authentication can only be sent when communicating over a secure connection.
 	if !opts.DisableAuthentication {
 		metadata := opts.Metadata
-		creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
-		if err != nil {
-			return nil, err
-		}
+
+		var creds *auth.Credentials
 		if opts.Credentials != nil {
 			creds = opts.Credentials
+		} else {
+			var err error
+			creds, err = credentials.DetectDefault(opts.resolveDetectOptions())
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		qp, err := creds.QuotaProjectID(ctx)
