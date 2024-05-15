@@ -249,12 +249,17 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		rmsgs, err = it.pullMessages(maxToPull)
 	} else {
 		rmsgs, err = it.recvMessages()
+		// If stopping the iterator results in the grpc stream getting shut down and
+		// returning a cancellation error here, treat the same as above and return EOF.
+		// If the cancellation comes from the underlying grpc client getting closed,
+		// do propagate the cancellation error.
+		// See https://github.com/googleapis/google-cloud-go/pull/10153#discussion_r1600814775
+		if status.Code(err) == codes.Canceled && it.ps.ctx.Err() == context.Canceled {
+			err = io.EOF
+		}
 	}
 	// Any error here is fatal.
 	if err != nil {
-		if status.Code(err) == codes.Canceled {
-			err = io.EOF
-		}
 		return nil, it.fail(err)
 	}
 	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
