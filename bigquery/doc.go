@@ -313,7 +313,7 @@ Lastly, but not least, you can just supply the struct or struct pointer directly
 	    Count int
 	}
 
-	// Item2 doesn't implement ValueSaver interface, so schema will be infered
+	// Item2 doesn't implement ValueSaver interface, so schema will be inferred.
 	items2 := []*Item2{
 	    {Name: "n1", Size: 32.6, Count: 7},
 	    {Name: "n2", Size: 4, Count: 2},
