@@ -1,6 +1,6 @@
 module cloud.google.com/go/support
 
-go 1.19
+go 1.20
 
 require (
 	github.com/googleapis/gax-go/v2 v2.12.4
