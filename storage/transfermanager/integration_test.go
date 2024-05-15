@@ -647,6 +647,10 @@ func (tw *testWriter) WriteAt(b []byte, offset int64) (n int, err error) {
 }
 
 func deleteExpiredBuckets(prefix string) error {
+	if testing.Short() {
+		return nil
+	}
+
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
 	if err != nil {
@@ -713,6 +717,9 @@ type downloadTestBucket struct {
 // objects in it. All objects are of the same size but with different contents
 // and can be mapped to their respective crc32c hash in contentHashes.
 func (tb *downloadTestBucket) Create(prefix string) error {
+	if testing.Short() {
+		return nil
+	}
 	ctx := context.Background()
 
 	tb.bucket = prefix + uidSpace.New()
@@ -752,6 +759,9 @@ func (tb *downloadTestBucket) Create(prefix string) error {
 
 // Cleanup deletes the objects and bucket created in Create.
 func (tb *downloadTestBucket) Cleanup() error {
+	if testing.Short() {
+		return nil
+	}
 	ctx := context.Background()
 
 	client, err := storage.NewClient(ctx)
