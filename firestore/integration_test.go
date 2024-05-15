@@ -2160,7 +2160,6 @@ func TestIntegration_CollectionGroupQueries(t *testing.T) {
 
 	cg := client.CollectionGroup(shouldBeFoundID)
 	snaps, err := cg.Documents(ctx).GetAll()
-
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -2818,8 +2817,8 @@ func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
 	h := testHelper{t}
 	docs := []map[string]interface{}{
 		{"weight": 0.5, "height": 99, "model": "A"},
-		{"weight": 0.6, "height": 98, "model": "A"},
-		{"weight": 0.7, "height": 97, "model": "B"},
+		{"weight": 0.5, "height": 98, "model": "A"},
+		{"weight": 0.5, "height": 97, "model": "B"},
 	}
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
@@ -2828,13 +2827,13 @@ func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
 	query := coll.Where("weight", "<=", 1)
 
 	aggQuery := query.NewAggregationQuery().WithCount("count1").
-		WithAvg("height", "height_avg1").
-		WithSum("height", "height_sum1")
+		WithAvg("weight", "weight_avg1").
+		WithSum("weight", "weight_sum1")
 
 	aggResult := map[string]interface{}{
-		"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
-		"height_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
-		"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+		"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(3)}},
+		"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(1.5)}},
+		"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(0.5)}},
 	}
 
 	testcases := []struct {
