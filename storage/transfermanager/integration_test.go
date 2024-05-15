@@ -19,6 +19,7 @@ import (
 	"context"
 	crand "crypto/rand"
 	"errors"
+	"flag"
 	"fmt"
 	"hash/crc32"
 	"io"
@@ -53,6 +54,8 @@ var (
 )
 
 func TestMain(m *testing.M) {
+	flag.Parse()
+
 	if err := httpTestBucket.Create(testPrefix); err != nil {
 		log.Fatalf("test bucket creation failed: %v", err)
 	}
