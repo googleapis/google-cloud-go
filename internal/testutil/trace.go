@@ -15,6 +15,7 @@
 package testutil
 
 import (
+	"errors"
 	"log"
 	"sync"
 	"time"
@@ -27,7 +28,7 @@ import (
 // TestExporter is a test utility exporter. It should be created with NewtestExporter.
 type TestExporter struct {
 	mu    sync.Mutex
-	Spans []*trace.SpanData
+	spans []*trace.SpanData
 
 	Stats chan *view.Data
 	Views []*view.View
@@ -56,7 +57,16 @@ func NewTestExporter(views ...*view.View) *TestExporter {
 func (te *TestExporter) ExportSpan(s *trace.SpanData) {
 	te.mu.Lock()
 	defer te.mu.Unlock()
-	te.Spans = append(te.Spans, s)
+	te.spans = append(te.spans, s)
+}
+
+func (te *TestExporter) LatestSpanStatus() (trace.Status, error) {
+	te.mu.Lock()
+	defer te.mu.Unlock()
+	if len(te.spans) == 0 {
+		return trace.Status{}, errors.New("no spans were exported")
+	}
+	return te.spans[len(te.spans)-1].Status, nil
 }
 
 // ExportView exports a view.
