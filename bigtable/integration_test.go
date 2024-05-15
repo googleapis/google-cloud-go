@@ -35,6 +35,7 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
@@ -1693,6 +1694,16 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 	}
 }
 
+func equalOptionalDuration(a, b optional.Duration) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return int64(a.(time.Duration).Seconds()) == int64(b.(time.Duration).Seconds())
+}
+
 // Testing if automated backups works properly i.e.
 // - Can create table with Automated Backups configured
 // - Can update Automated Backup Policy on an existing table
@@ -1740,6 +1751,7 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
 		t.Fatalf("Create table from config: %v", err)
 	}
+	defer deleteTable(ctx, t, adminClient, myTableName)
 
 	table, err := adminClient.TableInfo(ctx, myTableName)
 	if err != nil {
@@ -1749,112 +1761,62 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 	if table.AutomatedBackupConfig == nil {
 		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
 	}
-
 	tableAbp := table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
-
-	if int64(tableAbp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
+	if !equalOptionalDuration(tableAbp.Frequency, automatedBackupPolicy.Frequency) {
 		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
 	}
-
-	if int64(tableAbp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
-		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
-	}
-
-	// Update automated backup policy, all fields
-	retentionPeriod, err = time.ParseDuration("72h")
-	if err != nil {
-		t.Fatalf("RetentionPeriod not valid: %v", err)
-	}
-	frequency, err = time.ParseDuration("24h")
-	if err != nil {
-		t.Fatalf("Frequency not valid: %v", err)
-	}
-	automatedBackupPolicy = TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
-
-	if err := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, myTableName, automatedBackupPolicy); err != nil {
-		t.Fatalf("Update table from config: %v", err)
-	}
-
-	table, err = adminClient.TableInfo(ctx, myTableName)
-	if err != nil {
-		t.Fatalf("Getting table info: %v", err)
-	}
-
-	tableAbp = table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
-
-	if table.AutomatedBackupConfig == nil {
-		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
-	}
-
-	if int64(tableAbp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
-		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
-	}
-
-	if int64(tableAbp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
+	if !equalOptionalDuration(tableAbp.RetentionPeriod, automatedBackupPolicy.RetentionPeriod) {
 		t.Errorf("Expect automated backup policy retention period to be set for table: %v has info: %v", myTableName, table)
 	}
 
-	// Update automated backup policy, just frequency
-	frequency, err = time.ParseDuration("24h")
-	if err != nil {
-		t.Fatalf("Frequency not valid: %v", err)
-	}
-	automatedBackupPolicy = TableAutomatedBackupPolicy{Frequency: frequency}
-
-	if err := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, myTableName, automatedBackupPolicy); err != nil {
-		t.Fatalf("Update table from config: %v", err)
-	}
-
-	table, err = adminClient.TableInfo(ctx, myTableName)
-	if err != nil {
-		t.Fatalf("Getting table info: %v", err)
-	}
-
-	tableAbp = table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
-
-	if table.AutomatedBackupConfig == nil {
-		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
-	}
-
-	if int64(tableAbp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
-		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
-	}
-
-	if int64(tableAbp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
-		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
-	}
-
-	// Update automated backup policy, just retention period
+	// Test update automated backup policy
 	retentionPeriod, err = time.ParseDuration("72h")
 	if err != nil {
 		t.Fatalf("RetentionPeriod not valid: %v", err)
 	}
-	automatedBackupPolicy = TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
-
-	if err := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, myTableName, automatedBackupPolicy); err != nil {
-		t.Fatalf("Update table from config: %v", err)
-	}
-
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	frequency, err = time.ParseDuration("24h")
 	if err != nil {
-		t.Fatalf("Getting table info: %v", err)
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	for _, testcase := range []struct {
+		desc      string
+		bkpPolicy TableAutomatedBackupPolicy
+	}{
+		{
+			desc:      "Update automated backup policy, just frequency",
+			bkpPolicy: TableAutomatedBackupPolicy{Frequency: frequency},
+		},
+		{
+			desc:      "Update automated backup policy, just retention period",
+			bkpPolicy: TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod},
+		},
+		{
+			desc:      "Update automated backup policy, all fields",
+			bkpPolicy: TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency},
+		},
+	} {
+		if gotErr := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, myTableName, testcase.bkpPolicy); err != nil {
+			t.Fatalf("%v: Update table from config: %v", testcase.desc, gotErr)
+		}
+
+		gotTable, gotErr := adminClient.TableInfo(ctx, myTableName)
+		if gotErr != nil {
+			t.Fatalf("%v: Getting table info: %v", testcase.desc, gotErr)
+		}
+		if gotTable.AutomatedBackupConfig == nil {
+			t.Errorf("%v: Expect Automated Backup Policy to be enabled for table: %v has info: %v", testcase.desc, myTableName, gotTable)
+		}
+
+		gotTableAbp := gotTable.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+		if testcase.bkpPolicy.Frequency != nil && !equalOptionalDuration(gotTableAbp.Frequency, testcase.bkpPolicy.Frequency) {
+			t.Errorf("%v: Expect automated backup policy frequency to be set for table: %v has info: %v", testcase.desc, myTableName, table)
+		}
+		if testcase.bkpPolicy.RetentionPeriod != nil && !equalOptionalDuration(gotTableAbp.RetentionPeriod, testcase.bkpPolicy.RetentionPeriod) {
+			t.Errorf("%v: Expect automated backup policy retention period to be set for table: %v has info: %v", testcase.desc, myTableName, table)
+		}
 	}
 
-	tableAbp = table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
-
-	if table.AutomatedBackupConfig == nil {
-		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
-	}
-
-	if int64(tableAbp.Frequency.(time.Duration).Seconds()) != int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds()) {
-		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
-	}
-
-	if int64(tableAbp.RetentionPeriod.(time.Duration).Seconds()) != int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds()) {
-		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
-	}
-
-	// Disable automated backups
+	// Test disable automated backups
 	if err := adminClient.UpdateTableDisableAutomatedBackupPolicy(ctx, myTableName); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
