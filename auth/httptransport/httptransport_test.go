@@ -87,6 +87,28 @@ func TestAddAuthorizationMiddleware(t *testing.T) {
 	}
 }
 
+func TestAddAuthorizationMiddleware_HandlesNonTransportAsDefaultTransport(t *testing.T) {
+	client := &http.Client{}
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: staticTP("fakeToken"),
+	})
+	dt := http.DefaultTransport
+
+	http.DefaultTransport = &rt{}
+	defer func() { http.DefaultTransport = dt }()
+
+	err := AddAuthorizationMiddleware(client, creds)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	at := client.Transport.(*authTransport)
+	_, ok := at.base.(*rt)
+	if !ok {
+		t.Errorf("got %T, want %T", at.base, &rt{})
+	}
+}
+
 func TestNewClient_FailsValidation(t *testing.T) {
 	tests := []struct {
 		name string
