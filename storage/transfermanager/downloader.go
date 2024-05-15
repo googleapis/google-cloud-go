@@ -17,6 +17,7 @@ package transfermanager
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"sync"
 	"time"
@@ -59,14 +60,16 @@ func (d *Downloader) DownloadObjectWithCallback(ctx context.Context, input *Down
 
 // WaitAndClose waits for all outstanding downloads to complete. The Downloader
 // must not be used for any more downloads after this has been called.
-// WaitAndClose returns an error if any of the downloads fail.
+// WaitAndClose returns an error wrapping all errors that were encountered by
+// the Downloader when downloading objects. These errors are also returned in
+// the DownloadOutput for the failing download.
 func (d *Downloader) WaitAndClose() error {
 	d.done <- true
 	d.workers.Wait()
 
 	if len(d.errors) > 0 {
-		// TODO: return a multierror instead with go 1.20+ Join
-		return errors.New("transfermanager: at least one error encountered downloading objects")
+		err := errors.Join(d.errors...)
+		return fmt.Errorf("transfermanager: at least one error encountered downloading objects:\n%w", err)
 	}
 	return nil
 }

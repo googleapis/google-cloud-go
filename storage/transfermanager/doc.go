@@ -26,7 +26,7 @@ NOTE: This package is in alpha. It is not stable, and is likely to change.
 
 # Example usage
 
-	// Pass in any client opts or set retry policy here
+	// Pass in any client opts or set retry policy here.
 	client, err := storage.NewClient(ctx) // can also use NewGRPCClient
 	if err != nil {
 		// handle error
@@ -39,7 +39,7 @@ NOTE: This package is in alpha. It is not stable, and is likely to change.
 		// handle error
 	}
 
-	// Create local file writer for output
+	// Create local file writer for output.
 	f, err := os.Create("/path/to/localfile")
 	if err != nil {
 		// handle error
@@ -61,10 +61,10 @@ NOTE: This package is in alpha. It is not stable, and is likely to change.
 	ctx, cancel = context.WithTimeout(ctx, 1*time.Minute)
 	defer cancel()
 
-	// Add to Downloader
+	// Add to Downloader.
 	d.DownloadObject(ctx, in)
 
-	// Repeat if desired
+	// Repeat if desired.
 
 	// Wait for all downloads to complete.
 	d.WaitAndClose()
