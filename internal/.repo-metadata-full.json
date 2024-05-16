@@ -776,7 +776,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/commerce/latest/consumer/procurement/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/compute/apiv1": {
@@ -826,7 +826,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/config/latest/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/contactcenterinsights/apiv1": {
@@ -1569,6 +1569,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/maps/routeoptimization/apiv1": {
+    "api_shortname": "routeoptimization",
+    "distribution_name": "cloud.google.com/go/maps/routeoptimization/apiv1",
+    "description": "Route Optimization API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/maps/latest/routeoptimization/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/maps/routing/apiv2": {
     "api_shortname": "routes",
     "distribution_name": "cloud.google.com/go/maps/routing/apiv2",
@@ -1656,7 +1666,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/migrationcenter/latest/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/monitoring/apiv3/v2": {
@@ -1696,7 +1706,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/netapp/latest/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/networkconnectivity/apiv1": {
@@ -2066,7 +2076,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/redis/latest/cluster/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/resourcemanager/apiv2": {
@@ -2326,7 +2336,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/servicehealth/latest/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/servicemanagement/apiv1": {
@@ -2856,7 +2866,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/workstations/latest/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/workstations/apiv1beta": {

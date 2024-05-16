@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.16.0...datastore/v1.17.0) (2024-05-08)
+
+
+### Features
+
+* **datastore:** Add query profiling ([#9200](https://github.com/googleapis/google-cloud-go/issues/9200)) ([b0235bb](https://github.com/googleapis/google-cloud-go/commit/b0235bb3828cea64b87cac3d1d84e42f1b2744ab))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.15.0...datastore/v1.16.0) (2024-04-29)
 
 

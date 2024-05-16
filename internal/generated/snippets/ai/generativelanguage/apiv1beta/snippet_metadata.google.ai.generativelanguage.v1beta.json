@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
-    "version": "0.4.1",
+    "version": "0.5.0",
     "language": "GO",
     "apis": [
       {
@@ -473,7 +473,7 @@
     {
       "regionTag": "generativelanguage_v1beta_generated_GenerativeService_GenerateContent_sync",
       "title": "generativelanguage GenerateContent Sample",
-      "description": "GenerateContent generates a response from the model given an input\n`GenerateContentRequest`.",
+      "description": "GenerateContent generates a response from the model given an input\n`GenerateContentRequest`.\n\nInput capabilities differ between models, including tuned models. See the\n[model guide](https: //ai.google.dev/models/gemini) and\n[tuning guide](https: //ai.google.dev/docs/model_tuning_guidance) for\ndetails.",
       "file": "GenerativeClient/GenerateContent/main.go",
       "language": "GO",
       "clientMethod": {

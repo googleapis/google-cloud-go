@@ -32,6 +32,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/rpcreplay"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
@@ -1240,6 +1241,98 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 
 }
 
+func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	_, _, now, parent, cleanup := createTestEntities(ctx, t, client, "RunAggregationQueryWithOptions", 3)
+	defer cleanup()
+
+	aggQuery := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).NewAggregationQuery().
+		WithSum("I", "i_sum").WithAvg("I", "i_avg").WithCount("count")
+	wantAggResult := map[string]interface{}{
+		"i_sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 6}},
+		"i_avg": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 2}},
+		"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+	}
+
+	testCases := []struct {
+		desc        string
+		wantFailure bool
+		wantErrMsg  string
+		wantRes     AggregationWithOptionsResult
+		opts        []RunOption
+	}{
+		{
+			desc: "No options",
+			wantRes: AggregationWithOptionsResult{
+				Result: wantAggResult,
+			},
+		},
+		{
+			desc: "ExplainOptions.Analyze is false",
+			wantRes: AggregationWithOptionsResult{
+				ExplainMetrics: &ExplainMetrics{
+					PlanSummary: &PlanSummary{
+						IndexesUsed: []*map[string]interface{}{
+							{
+								"properties":  "(T ASC, I ASC, __name__ ASC)",
+								"query_scope": "Includes ancestors",
+							},
+						},
+					},
+				},
+			},
+			opts: []RunOption{ExplainOptions{}},
+		},
+		{
+			desc: "ExplainOptions.Analyze is true",
+			wantRes: AggregationWithOptionsResult{
+				Result: wantAggResult,
+				ExplainMetrics: &ExplainMetrics{
+					PlanSummary: &PlanSummary{
+						IndexesUsed: []*map[string]interface{}{
+							{
+								"properties":  "(T ASC, I ASC, __name__ ASC)",
+								"query_scope": "Includes ancestors",
+							},
+						},
+					},
+					ExecutionStats: &ExecutionStats{
+						ReadOperations:  1,
+						ResultsReturned: 1,
+						DebugStats: &map[string]interface{}{
+							"documents_scanned":     "0",
+							"index_entries_scanned": "3",
+						},
+					},
+				},
+			},
+			opts: []RunOption{ExplainOptions{Analyze: true}},
+		},
+	}
+
+	for _, testcase := range testCases {
+		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			gotRes, gotErr := client.RunAggregationQueryWithOptions(ctx, aggQuery, testcase.opts...)
+			if gotErr != nil {
+				r.Errorf("err: got %v, want: nil", gotErr)
+			}
+
+			if gotErr == nil && !testutil.Equal(gotRes.Result, testcase.wantRes.Result,
+				cmpopts.IgnoreFields(ExplainMetrics{})) {
+				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes, testcase.wantRes)
+				return
+			}
+
+			if err := cmpExplainMetrics(gotRes.ExplainMetrics, testcase.wantRes.ExplainMetrics); err != nil {
+				r.Errorf("%q: Mismatch in ExplainMetrics %+v", testcase.desc, err)
+			}
+		})
+	}
+}
+
 type ckey struct{}
 
 func TestIntegration_LargeQuery(t *testing.T) {
@@ -1554,6 +1647,189 @@ func TestIntegration_GetAllWithFieldMismatch(t *testing.T) {
 	if _, ok := err.(*ErrFieldMismatch); !ok {
 		t.Errorf("client.GetAll: got err=%v, want ErrFieldMismatch", err)
 	}
+}
+
+func createTestEntities(ctx context.Context, t *testing.T, client *Client, partialNameKey string, count int) ([]*Key, []SQChild, int64, *Key, func()) {
+	parent := NameKey("SQParent", keyPrefix+partialNameKey+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+
+	entities := []SQChild{}
+	for i := 0; i < count; i++ {
+		entities = append(entities, SQChild{I: i + 1, T: now, U: now, V: 1.5, W: "str"})
+	}
+
+	keys := make([]*Key, len(entities))
+	for i := range keys {
+		keys[i] = IncompleteKey("SQChild", parent)
+	}
+
+	// Create entities
+	keys, err := client.PutMulti(ctx, keys, entities)
+	if err != nil {
+		t.Fatalf("client.PutMulti: %v", err)
+	}
+	return keys, entities, now, parent, func() {
+		err := client.DeleteMulti(ctx, keys)
+		if err != nil {
+			t.Errorf("client.DeleteMulti: %v", err)
+		}
+	}
+}
+
+type runWithOptionsTestcase struct {
+	desc               string
+	wantKeys           []*Key
+	wantExplainMetrics *ExplainMetrics
+	wantEntities       []SQChild
+	opts               []RunOption
+}
+
+func getRunWithOptionsTestcases(ctx context.Context, t *testing.T, client *Client, partialNameKey string, count int) ([]runWithOptionsTestcase, int64, *Key, func()) {
+	keys, entities, now, parent, cleanup := createTestEntities(ctx, t, client, partialNameKey, count)
+	return []runWithOptionsTestcase{
+		{
+			desc:         "No ExplainOptions",
+			wantKeys:     keys,
+			wantEntities: entities,
+		},
+		{
+			desc: "ExplainOptions.Analyze is false",
+			opts: []RunOption{ExplainOptions{}},
+			wantExplainMetrics: &ExplainMetrics{
+				PlanSummary: &PlanSummary{
+					IndexesUsed: []*map[string]interface{}{
+						{
+							"properties":  "(T ASC, I ASC, __name__ ASC)",
+							"query_scope": "Includes ancestors",
+						},
+					},
+				},
+			},
+		},
+		{
+			desc:     "ExplainOptions.Analyze is true",
+			opts:     []RunOption{ExplainOptions{Analyze: true}},
+			wantKeys: keys,
+			wantExplainMetrics: &ExplainMetrics{
+				ExecutionStats: &ExecutionStats{
+					ReadOperations:  int64(count),
+					ResultsReturned: int64(count),
+					DebugStats: &map[string]interface{}{
+						"documents_scanned":     fmt.Sprint(count),
+						"index_entries_scanned": fmt.Sprint(count),
+					},
+				},
+				PlanSummary: &PlanSummary{
+					IndexesUsed: []*map[string]interface{}{
+						{
+							"properties":  "(T ASC, I ASC, __name__ ASC)",
+							"query_scope": "Includes ancestors",
+						},
+					},
+				},
+			},
+			wantEntities: entities,
+		},
+	}, now, parent, cleanup
+}
+
+func TestIntegration_GetAllWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+	testcases, now, parent, cleanup := getRunWithOptionsTestcases(ctx, t, client, "GetAllWithOptions", 3)
+	defer cleanup()
+	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
+	for _, testcase := range testcases {
+		var gotSQChildsFromGetAll []SQChild
+		gotRes, gotErr := client.GetAllWithOptions(ctx, query, &gotSQChildsFromGetAll, testcase.opts...)
+		if gotErr != nil {
+			t.Errorf("%v err: got: %+v, want: nil", testcase.desc, gotErr)
+		}
+		if !testutil.Equal(gotSQChildsFromGetAll, testcase.wantEntities) {
+			t.Errorf("%v entities: got: %+v, want: %+v", testcase.desc, gotSQChildsFromGetAll, testcase.wantEntities)
+		}
+		if !testutil.Equal(gotRes.Keys, testcase.wantKeys) {
+			t.Errorf("%v keys: got: %+v, want: %+v", testcase.desc, gotRes.Keys, testcase.wantKeys)
+		}
+		if err := cmpExplainMetrics(gotRes.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
+			t.Errorf("%v %+v", testcase.desc, err)
+		}
+	}
+}
+
+func TestIntegration_RunWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+	testcases, now, parent, cleanup := getRunWithOptionsTestcases(ctx, t, client, "RunWithOptions", 3)
+	defer cleanup()
+	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
+	for _, testcase := range testcases {
+		var gotSQChildsFromRun []SQChild
+		iter := client.RunWithOptions(ctx, query, testcase.opts...)
+		for {
+			var gotSQChild SQChild
+			_, err := iter.Next(&gotSQChild)
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Errorf("%v iter.Next: %v", testcase.desc, err)
+			}
+			gotSQChildsFromRun = append(gotSQChildsFromRun, gotSQChild)
+		}
+		if !testutil.Equal(gotSQChildsFromRun, testcase.wantEntities) {
+			t.Errorf("%v entities: got: %+v, want: %+v", testcase.desc, gotSQChildsFromRun, testcase.wantEntities)
+		}
+
+		if err := cmpExplainMetrics(iter.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
+			t.Errorf("%v %+v", testcase.desc, err)
+		}
+	}
+}
+
+func cmpExplainMetrics(got *ExplainMetrics, want *ExplainMetrics) error {
+	if (got != nil && want == nil) || (got == nil && want != nil) {
+		return fmt.Errorf("ExplainMetrics: got: %+v, want: %+v", got, want)
+	}
+	if got == nil {
+		return nil
+	}
+	if !testutil.Equal(got.PlanSummary, want.PlanSummary) {
+		return fmt.Errorf("Plan: got: %+v, want: %+v", got.PlanSummary, want.PlanSummary)
+	}
+	if err := cmpExecutionStats(got.ExecutionStats, want.ExecutionStats); err != nil {
+		return err
+	}
+	return nil
+}
+
+func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
+	if (got != nil && want == nil) || (got == nil && want != nil) {
+		return fmt.Errorf("ExecutionStats: got: %+v, want: %+v", got, want)
+	}
+	if got == nil {
+		return nil
+	}
+
+	// Compare all fields except DebugStats
+	if !testutil.Equal(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats", "ExecutionDuration")) {
+		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s", testutil.Diff(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats")))
+	}
+
+	// Compare DebugStats
+	gotDebugStats := *got.DebugStats
+	for wantK, wantV := range *want.DebugStats {
+		// ExecutionStats.Debugstats has some keys whose values cannot be predicted. So, those values have not been included in want
+		// Here, compare only those values included in want
+		gotV, ok := gotDebugStats[wantK]
+		if !ok || !testutil.Equal(gotV, wantV) {
+			return fmt.Errorf("ExecutionStats.DebugStats: wantKey: %v  gotValue: %+v, wantValue: %+v", wantK, gotV, wantV)
+		}
+	}
+
+	return nil
 }
 
 func TestIntegration_KindlessQueries(t *testing.T) {

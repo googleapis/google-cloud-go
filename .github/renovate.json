@@ -13,6 +13,7 @@
     "commitMessageAction": "update",
     "groupName": "deps",
     "ignoreDeps": [
+        "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace",
         "go.opentelemetry.io/contrib/detectors/gcp",
         "go.opentelemetry.io/otel",
         "go.opentelemetry.io/otel/metric",
