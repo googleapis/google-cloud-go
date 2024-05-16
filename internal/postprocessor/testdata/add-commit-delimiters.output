@@ -1,10 +1,10 @@
 - [ ] Regenerate this pull request now.
 
 ---
-docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+docs(batch): Remove "not yet implemented" for Accelerator & Refine Volume API docs
 
 ---
-docs: update the job id format requirement
+docs(batch): update the job id format requirement
 
 PiperOrigin-RevId: 489502315
 
@@ -15,7 +15,7 @@ Copy-Tag: eyJwIjoiamF2YS1iYXRjaC8uT3dsQm90LnlhbWwiLCJoIjoiZmNjNTY0ZWYwNjRjN2RmZj
 BEGIN_NESTED_COMMIT
 feat: Adds named reservation to InstancePolicy
 ---
-docs:Remove "not yet implemented" for Accelerator & Refine Volume API docs
+docs: Remove "not yet implemented" for Accelerator & Refine Volume API docs
 
 ---
 docs: update the job id format requirement
