@@ -21,11 +21,8 @@
 package servicedirectorypb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -128,7 +127,7 @@ type ListNamespacesRequest struct {
 	// Required. The resource name of the project and location whose namespaces
 	// you'd like to list.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of items to return.
+	// Optional. The maximum number of items to return. The default value is 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The next_page_token value returned from a previous List request,
 	// if any.
@@ -547,7 +546,7 @@ type ListServicesRequest struct {
 	// Required. The resource name of the namespace whose services you'd
 	// like to list.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of items to return.
+	// Optional. The maximum number of items to return. The default value is 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The next_page_token value returned from a previous List request,
 	// if any.
@@ -975,7 +974,7 @@ type ListEndpointsRequest struct {
 	// Required. The resource name of the service whose endpoints you'd like to
 	// list.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Optional. The maximum number of items to return.
+	// Optional. The maximum number of items to return. The default value is 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The next_page_token value returned from a previous List request,
 	// if any.
