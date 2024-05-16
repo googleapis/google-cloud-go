@@ -1,5 +1,18 @@
 # Changelog
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v0.1.4...servicehealth/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **servicehealth:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **servicehealth:** Promote to GA v1.0.0 ([#10211](https://github.com/googleapis/google-cloud-go/issues/10211)) ([20b5793](https://github.com/googleapis/google-cloud-go/commit/20b5793ef496af841aaa074dc9af26b369b956b5))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v0.1.3...servicehealth/v0.1.4) (2024-05-01)
 
 
