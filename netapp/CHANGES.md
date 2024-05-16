@@ -1,6 +1,18 @@
 # Changelog
 
 
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.8...netapp/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **netapp:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **netapp:** Promote to GA v1.0.0 ([#10210](https://github.com/googleapis/google-cloud-go/issues/10210)) ([fc2fb6b](https://github.com/googleapis/google-cloud-go/commit/fc2fb6b2650a0b850913d4c11b4cff8416f0f02c))
+
 ## [0.2.8](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.7...netapp/v0.2.8) (2024-05-01)
 
 
