@@ -21,12 +21,11 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -201,8 +200,13 @@ type Blob struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The IANA standard MIME type of the source data.
-	// Accepted types include: "image/png", "image/jpeg", "image/heic",
-	// "image/heif", "image/webp".
+	// Examples:
+	//   - image/png
+	//   - image/jpeg
+	//
+	// If an unsupported MIME type is provided, an error will be returned. For a
+	// complete list of supported types, see [Supported file
+	// formats](https://ai.google.dev/gemini-api/docs/prompting_with_media#supported_file_formats).
 	MimeType string `protobuf:"bytes,1,opt,name=mime_type,json=mimeType,proto3" json:"mime_type,omitempty"`
 	// Raw bytes for media formats.
 	Data []byte `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
