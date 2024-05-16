@@ -566,21 +566,18 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	rowPbs := rrq.Rows
 	rs := rowSetFromProto(rowPbs)
 
-	// Add row limit read option
-	limitRowsRead := false
-	rowsToRead := int64(0)
-	readOpts := []bigtable.ReadOption{}
-	if rrq.RowsLimit != 0 {
-		limitRowsRead = true
-		readOpts = append(readOpts, bigtable.LimitRows(rrq.RowsLimit))
-		rowsToRead = rrq.RowsLimit
-	}
-
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
 	var rowsReadTillNow int64
 	var rowsPb []*btpb.Row
+
+	limitRowsRead := false
+	rowsToRead := int64(0)
+	if rrq.RowsLimit != 0 {
+		limitRowsRead = true
+		rowsToRead = rrq.RowsLimit
+	}
 	if req.GetCancelAfterRows() != 0 {
 		limitRowsRead = true
 		rowsToRead = int64(req.GetCancelAfterRows())
@@ -600,7 +597,7 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 		rowsPb = append(rowsPb, rpb)
 		rowsReadTillNow++
 		return true
-	}, readOpts...)
+	})
 
 	res := &pb.RowsResult{
 		Status: &statpb.Status{
