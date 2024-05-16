@@ -566,16 +566,28 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 	rowPbs := rrq.Rows
 	rs := rowSetFromProto(rowPbs)
 
+	// Add row limit read option
+	rowsToRead := int64(0)
+	readOpts := []bigtable.ReadOption{}
+	if rrq.RowsLimit != 0 {
+		readOpts = append(readOpts, bigtable.LimitRows(rrq.RowsLimit))
+		rowsToRead = rrq.RowsLimit
+	}
+
 	ctx, cancel := btc.timeout(ctx)
 	defer cancel()
 
-	var c int32
+	var rowsReadTillNow int64
 	var rowsPb []*btpb.Row
-	lim := req.GetCancelAfterRows()
+	if req.GetCancelAfterRows() != 0 {
+		rowsToRead = int64(req.GetCancelAfterRows())
+	}
+
+	// Client libray does not have a built-in way to limit the number of rows read in a call to Table.ReadRows().
+	// The caller needs to keep track of any kind of limit externally and from within the callback function passed to ReadRows()
 	err = t.ReadRows(ctx, rs, func(r bigtable.Row) bool {
 
-		c++
-		if c == lim {
+		if rowsReadTillNow == rowsToRead {
 			return false
 		}
 		rpb, err := rowToProto(r)
@@ -583,8 +595,9 @@ func (s *goTestProxyServer) ReadRows(ctx context.Context, req *pb.ReadRowsReques
 			return false
 		}
 		rowsPb = append(rowsPb, rpb)
+		rowsReadTillNow++
 		return true
-	})
+	}, readOpts...)
 
 	res := &pb.RowsResult{
 		Status: &statpb.Status{
