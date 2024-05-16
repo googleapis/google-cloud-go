@@ -109,8 +109,26 @@ func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	return &GenerativeModel{
 		c:        c,
 		name:     name,
-		fullName: fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/%s", c.projectID, c.location, name),
+		fullName: inferFullModelName(c.projectID, c.location, name),
 	}
+}
+
+// inferModelName infers the full model name (with all the required prefixes)
+func inferFullModelName(project, location, name string) string {
+	pubName := name
+	if !strings.Contains(name, "/") {
+		pubName = "publishers/google/models/" + name
+	} else if strings.HasPrefix(name, "models/") {
+		pubName = "publishers/google/" + name
+	}
+
+	var fullName string
+	if strings.HasPrefix(pubName, "publishers/") {
+		fullName = fmt.Sprintf("projects/%s/locations/%s/%s", project, location, pubName)
+	} else {
+		fullName = pubName
+	}
+	return fullName
 }
 
 // Name returns the name of the model.
