@@ -2828,13 +2828,13 @@ type Document_Page_Token_StyleInfo struct {
 	Italic bool `protobuf:"varint,6,opt,name=italic,proto3" json:"italic,omitempty"`
 	// Whether the text is underlined.
 	Underlined bool `protobuf:"varint,7,opt,name=underlined,proto3" json:"underlined,omitempty"`
-	// Whether the text is strikethrough.
+	// Whether the text is strikethrough. This feature is not supported yet.
 	Strikeout bool `protobuf:"varint,8,opt,name=strikeout,proto3" json:"strikeout,omitempty"`
-	// Whether the text is a subscript.
+	// Whether the text is a subscript. This feature is not supported yet.
 	Subscript bool `protobuf:"varint,9,opt,name=subscript,proto3" json:"subscript,omitempty"`
-	// Whether the text is a superscript.
+	// Whether the text is a superscript. This feature is not supported yet.
 	Superscript bool `protobuf:"varint,10,opt,name=superscript,proto3" json:"superscript,omitempty"`
-	// Whether the text is in small caps.
+	// Whether the text is in small caps. This feature is not supported yet.
 	Smallcaps bool `protobuf:"varint,11,opt,name=smallcaps,proto3" json:"smallcaps,omitempty"`
 	// TrueType weight on a scale `100` (thin) to `1000` (ultra-heavy).
 	// Normal is `400`, bold is `700`.
