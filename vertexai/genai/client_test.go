@@ -582,3 +582,22 @@ func TestIntFloatConversions(t *testing.T) {
 		t.Errorf("got %v, want *1", goti)
 	}
 }
+
+func TestInferFullModelName(t *testing.T) {
+	for _, test := range []struct {
+		name string
+		want string
+	}{
+		{"xyz", "projects/proj/locations/loc/publishers/google/models/xyz"},
+		{"models/abc", "projects/proj/locations/loc/publishers/google/models/abc"},
+		{"publishers/foo/xyz", "projects/proj/locations/loc/publishers/foo/xyz"},
+		{"x/y/z", "x/y/z"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			got := inferFullModelName("proj", "loc", test.name)
+			if got != test.want {
+				t.Errorf("got %q, want %q", got, test.want)
+			}
+		})
+	}
+}
