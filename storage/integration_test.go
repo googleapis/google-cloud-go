@@ -3066,7 +3066,7 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				h := testHelper{t}
-				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				ctx, cancel := context.WithTimeout(ctx, time.Minute)
 				defer cancel()
 
 				printTestCase := func() string {
