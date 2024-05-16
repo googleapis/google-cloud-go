@@ -1,7 +1,7 @@
 {
   "ai": "0.5.0",
   "aiplatform": "1.67.0",
-  "auth": "0.4.1",
+  "auth": "0.4.2",
   "auth/oauth2adapt": "0.2.2",
   "bigquery": "1.61.0",
   "bigtable": "1.23.0",
