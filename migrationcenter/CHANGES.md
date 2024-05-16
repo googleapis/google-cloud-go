@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.5...migrationcenter/v0.2.6) (2024-05-01)
 
 
