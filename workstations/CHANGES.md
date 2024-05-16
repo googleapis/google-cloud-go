@@ -1,6 +1,7 @@
 # Changelog
 
 
+
 ## [0.5.6](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.5...workstations/v0.5.6) (2024-05-01)
 
 
