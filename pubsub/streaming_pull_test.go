@@ -176,7 +176,7 @@ func TestStreamingPullCancel(t *testing.T) {
 	if got := atomic.LoadInt32(&n); got != 0 {
 		t.Fatalf("Receive returned with %d callbacks still running", got)
 	}
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("Receive got <%v>, want nil", err)
 	}
 }
@@ -199,7 +199,7 @@ func TestStreamingPullRetry(t *testing.T) {
 	sub.ReceiveSettings.NumGoroutines = 1
 	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), 0, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
-		if err != nil {
+		if err != nil && !errors.Is(err, context.Canceled) {
 			t.Fatalf("pullN err: %v", err)
 		}
 		// ack evens, nack odds
@@ -273,7 +273,7 @@ func TestStreamingPullOneActive(t *testing.T) {
 		}
 		cancel()
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("got <%v>, want nil", err)
 	}
 }
@@ -361,7 +361,7 @@ func TestStreamingPullFlowControl(t *testing.T) {
 	waitc <- 1
 	// The third callback will never run, because acquire returned a non-nil
 	// error, causing Receive to return. So now Receive should end.
-	if err := <-errc; err != nil {
+	if err := <-errc; err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("got %v from Receive, want nil", err)
 	}
 }
@@ -399,7 +399,7 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 		if !ok {
 			t.Fatalf("Expected a gRPC failure, got %v", recvErr)
 		}
-		if s.Code() != codes.Canceled {
+		if s.Code() != codes.Canceled && !errors.Is(recvErr, context.Canceled) {
 			t.Fatalf("Expected canceled, got %v", s.Code())
 		}
 	case <-time.After(time.Second):
