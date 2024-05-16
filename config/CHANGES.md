@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/config/v0.3.0...config/v0.4.0) (2024-05-01)
 
 
