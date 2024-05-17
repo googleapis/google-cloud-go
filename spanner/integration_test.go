@@ -2271,8 +2271,8 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 	defer cancel()
 	stmts := []string{
 		`CREATE PROTO BUNDLE (
-					spanner.examples.music.SingerInfo,
-					spanner.examples.music.Genre,
+					examples.spanner.music.SingerInfo,
+					examples.spanner.music.Genre,
 				)`,
 		`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
@@ -2280,10 +2280,10 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 					Bytes		BYTES(MAX),
 					Int64Array	ARRAY<INT64>,
 					BytesArray	ARRAY<BYTES(MAX)>,
-					ProtoMessage    spanner.examples.music.SingerInfo,
-					ProtoEnum   spanner.examples.music.Genre,
-					ProtoMessageArray   ARRAY<spanner.examples.music.SingerInfo>,
-					ProtoEnumArray  ARRAY<spanner.examples.music.Genre>,
+					ProtoMessage    examples.spanner.music.SingerInfo,
+					ProtoEnum   examples.spanner.music.Genre,
+					ProtoMessageArray   ARRAY<examples.spanner.music.SingerInfo>,
+					ProtoEnumArray  ARRAY<examples.spanner.music.Genre>,
 			) PRIMARY KEY (RowID)`,
 	}
 
@@ -2512,8 +2512,8 @@ func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 	defer cancel()
 	stmts := []string{
 		`CREATE PROTO BUNDLE (
-					spanner.examples.music.SingerInfo,
-					spanner.examples.music.Genre,
+					examples.spanner.music.SingerInfo,
+					examples.spanner.music.Genre,
 				)`,
 		`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
@@ -2521,10 +2521,10 @@ func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 					Bytes		BYTES(MAX),
 					Int64Array	ARRAY<INT64>,
 					BytesArray	ARRAY<BYTES(MAX)>,
-					ProtoMessage    spanner.examples.music.SingerInfo,
-					ProtoEnum   spanner.examples.music.Genre,
-					ProtoMessageArray   ARRAY<spanner.examples.music.SingerInfo>,
-					ProtoEnumArray  ARRAY<spanner.examples.music.Genre>,
+					ProtoMessage    examples.spanner.music.SingerInfo,
+					ProtoEnum   examples.spanner.music.Genre,
+					ProtoMessageArray   ARRAY<examples.spanner.music.SingerInfo>,
+					ProtoEnumArray  ARRAY<examples.spanner.music.Genre>,
 			) PRIMARY KEY (RowID)`,
 	}
 	protoDescriptor := readProtoDescriptorFile()
@@ -2607,15 +2607,15 @@ func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing
 	defer cancel()
 	stmts := []string{
 		`CREATE PROTO BUNDLE (
-					spanner.examples.music.SingerInfo,
-					spanner.examples.music.Genre,
+					examples.spanner.music.SingerInfo,
+					examples.spanner.music.Genre,
 				)`,
 		`CREATE TABLE Singers (
 				 SingerId   INT64 NOT NULL,
 				 FirstName  STRING(1024),
 				 LastName   STRING(1024),
-				 SingerInfo spanner.examples.music.SingerInfo,
-				 SingerGenre spanner.examples.music.Genre,
+				 SingerInfo examples.spanner.music.SingerInfo,
+				 SingerGenre examples.spanner.music.Genre,
 				 SingerNationality STRING(1024) AS (SingerInfo.nationality) STORED,
 				) PRIMARY KEY (SingerNationality, SingerGenre)`,
 		`CREATE INDEX SingerByNationalityAndGenre ON Singers(SingerNationality, SingerGenre) STORING (SingerId, FirstName, LastName)`,

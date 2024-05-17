@@ -12,9 +12,6 @@
         "advisorynotifications": {
             "component": "advisorynotifications"
         },
-        "ai": {
-            "component": "ai"
-        },
         "alloydb": {
             "component": "alloydb"
         },

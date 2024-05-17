@@ -295,8 +295,8 @@ func TestEncodeValue(t *testing.T) {
 		Nationality: proto.String("Country2"),
 		Genre:       &singer2ProtoEnum,
 	}
-	protoMessagefqn := "spanner.examples.music.SingerInfo"
-	protoEnumfqn := "spanner.examples.music.Genre"
+	protoMessagefqn := "examples.spanner.music.SingerInfo"
+	protoEnumfqn := "examples.spanner.music.Genre"
 
 	var (
 		tString       = stringType()
@@ -1536,8 +1536,8 @@ func TestDecodeValue(t *testing.T) {
 		Nationality: proto.String("Country2"),
 		Genre:       &singer2ProtoEnum,
 	}
-	protoMessagefqn := "spanner.examples.music.SingerInfo"
-	protoEnumfqn := "spanner.examples.music.Genre"
+	protoMessagefqn := "examples.spanner.music.SingerInfo"
+	protoEnumfqn := "examples.spanner.music.Genre"
 
 	for _, test := range []struct {
 		desc      string
