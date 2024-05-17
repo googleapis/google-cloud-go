@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.5...batch/v1.8.6) (2024-05-16)
+
+
+### Documentation
+
+* **batch:** Refine description for field `task_execution` ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
 ## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.4...batch/v1.8.5) (2024-05-01)
 
 
