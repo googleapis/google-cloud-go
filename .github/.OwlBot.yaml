@@ -342,6 +342,7 @@ deep-remove-regex:
   - /internal/generated/snippets/securesourcemanager/apiv1/
   - /internal/generated/snippets/security/privateca/apiv1/
   - /internal/generated/snippets/security/publicca/apiv1beta1/
+  - /internal/generated/snippets/security/publicca/apiv1/
   - /internal/generated/snippets/securitycenter/apiv1/
   - /internal/generated/snippets/securitycenter/apiv1beta1/
   - /internal/generated/snippets/securitycenter/apiv1p1beta1/
@@ -483,6 +484,7 @@ deep-remove-regex:
   - /securesourcemanager/apiv1/
   - /security/privateca/apiv1/
   - /security/publicca/apiv1beta1/
+  - /security/publicca/apiv1/
   - /securitycenter/apiv1/
   - /securitycenter/apiv1beta1/
   - /securitycenter/apiv1p1beta1/
@@ -1016,6 +1018,8 @@ deep-copy-regex:
   - source: /google/cloud/security/privateca/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/security/publicca/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/security/publicca/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/securitycenter/v1/cloud.google.com/go
     dest: /

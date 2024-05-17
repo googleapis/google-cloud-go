@@ -16,8 +16,8 @@ limitations under the License.
 
 syntax = "proto2";
 
-package spanner.examples.music;
-option go_package = "./protos";
+package examples.spanner.music;
+option go_package = "./";
 
 message SingerInfo {
   optional int64 singer_id = 1;

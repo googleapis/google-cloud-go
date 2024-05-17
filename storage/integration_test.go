@@ -314,6 +314,12 @@ var readCases = []readCase{
 func TestIntegration_BucketCreateDelete(t *testing.T) {
 	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+
+		// This timeout is added for debugging #10178
+		// TODO: remove when issue is resolved.
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+		defer cancel()
+
 		projectID := testutil.ProjID()
 
 		labels := map[string]string{
@@ -3066,7 +3072,7 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				h := testHelper{t}
-				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				ctx, cancel := context.WithTimeout(ctx, time.Minute)
 				defer cancel()
 
 				printTestCase := func() string {
