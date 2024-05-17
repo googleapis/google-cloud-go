@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.28.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.28.0...documentai/v1.28.1) (2024-05-16)
+
+
+### Documentation
+
+* **documentai:** Clarify the unavailability of some features ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **documentai:** Updated comments ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
 ## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.27.0...documentai/v1.28.0) (2024-05-01)
 
 
