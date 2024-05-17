@@ -305,6 +305,34 @@ func TestLive(t *testing.T) {
 	})
 }
 
+func TestLiveDefaultLocation(t *testing.T) {
+	projectID := os.Getenv("VERTEX_PROJECT_ID")
+	if testing.Short() {
+		t.Skip("skipping live test in -short mode")
+	}
+
+	if projectID == "" {
+		t.Skip("set a VERTEX_PROJECT_ID env var to run live tests")
+	}
+
+	ctx := context.Background()
+	// No location is passed explicitly: default is used
+	client, err := NewClient(ctx, projectID, "")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+	model := client.GenerativeModel(defaultModel)
+	model.Temperature = Ptr[float32](0)
+
+	resp, err := model.GenerateContent(ctx, Text("Name the planets in the solar system"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := responseString(resp)
+	checkMatch(t, got, `venus|mars`)
+}
+
 func TestLiveREST(t *testing.T) {
 	projectID := os.Getenv("VERTEX_PROJECT_ID")
 	if testing.Short() {
