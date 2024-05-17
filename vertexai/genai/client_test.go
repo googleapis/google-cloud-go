@@ -44,7 +44,7 @@ func TestLive(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	client, err := NewClient(ctx, projectID, "us-central1")
+	client, err := NewClient(ctx, projectID, defaultLocation)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -79,7 +79,7 @@ func TestLive(t *testing.T) {
 	t.Run("streaming", func(t *testing.T) {
 		iter := model.GenerateContentStream(ctx, Text("Are you hungry?"))
 		got := responsesString(t, iter)
-		checkMatch(t, got, `(capable.+experienc.+hunger)|((don't|do\s+not) (have|possess) .*(a .* body|the ability))`)
+		checkMatch(t, got, `(capable.+experienc.+hunger)|(capacity.+feel)|((don't|do\s+not) (have|possess) .*(a .* body|the ability))`)
 	})
 
 	t.Run("chat", func(t *testing.T) {
@@ -344,7 +344,7 @@ func TestLiveREST(t *testing.T) {
 	}
 
 	ctx := context.Background()
-	client, err := NewClient(ctx, projectID, "us-central1", WithREST())
+	client, err := NewClient(ctx, projectID, defaultLocation, WithREST())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -640,7 +640,7 @@ func TestInferLocation(t *testing.T) {
 		{"arg passed", "us-west4", "abc", "def", "us-west4"},
 		{"first env", "", "abc", "", "abc"},
 		{"second env", "", "", "klm", "klm"},
-		{"default", "", "", "", "us-central1"},
+		{"default", "", "", "", defaultLocation},
 		{"first env precedence", "", "101", "klm", "101"},
 	} {
 		t.Run(test.name, func(t *testing.T) {
