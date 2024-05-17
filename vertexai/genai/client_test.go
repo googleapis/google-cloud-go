@@ -601,3 +601,27 @@ func TestInferFullModelName(t *testing.T) {
 		})
 	}
 }
+
+func TestInferLocation(t *testing.T) {
+	for _, test := range []struct {
+		name                             string
+		arg                              string
+		cloudRegionEnv, cloudMlRegionEnv string
+		want                             string
+	}{
+		{"arg passed", "us-west4", "abc", "def", "us-west4"},
+		{"first env", "", "abc", "", "abc"},
+		{"second env", "", "", "klm", "klm"},
+		{"default", "", "", "", "us-central1"},
+		{"first env precedence", "", "101", "klm", "101"},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_CLOUD_REGION", test.cloudRegionEnv)
+			t.Setenv("CLOUD_ML_REGION", test.cloudMlRegionEnv)
+			got := inferLocation(test.arg)
+			if got != test.want {
+				t.Errorf("got %q, want %q", got, test.want)
+			}
+		})
+	}
+}
