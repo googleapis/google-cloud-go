@@ -503,7 +503,7 @@ func (x *SafetyRating) GetBlocked() bool {
 
 // Safety setting, affecting the safety-blocking behavior.
 //
-// Passing a safety setting for a category changes the allowed proability that
+// Passing a safety setting for a category changes the allowed probability that
 // content is blocked.
 type SafetySetting struct {
 	state         protoimpl.MessageState
