@@ -163,6 +163,9 @@ func (it *messageIterator) stop() {
 	it.checkDrained()
 	it.mu.Unlock()
 	it.wg.Wait()
+	if it.ps != nil {
+		it.ps.cancel()
+	}
 }
 
 // checkDrained closes the drained channel if the iterator has been stopped and all
@@ -246,6 +249,14 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		rmsgs, err = it.pullMessages(maxToPull)
 	} else {
 		rmsgs, err = it.recvMessages()
+		// If stopping the iterator results in the grpc stream getting shut down and
+		// returning an error here, treat the same as above and return EOF.
+		// If the cancellation comes from the underlying grpc client getting closed,
+		// do propagate the cancellation error.
+		// See https://github.com/googleapis/google-cloud-go/pull/10153#discussion_r1600814775
+		if err != nil && it.ps.ctx.Err() == context.Canceled {
+			err = io.EOF
+		}
 	}
 	// Any error here is fatal.
 	if err != nil {
