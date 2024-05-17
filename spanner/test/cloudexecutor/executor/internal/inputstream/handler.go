@@ -24,10 +24,15 @@ import (
 	"log"
 	"sync"
 
+	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/actions"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -110,6 +115,34 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 	if err != nil {
 		return outcomeSender.FinishWithError(err)
 	}
+
+	// Setup trace context propagation.
+	tc := propagation.TraceContext{}
+	// Register the TraceContext propagator globally.
+	otel.SetTextMapPropagator(tc)
+
+	// Set up OTel tracing.
+	traceExporter, err := texporter.New(
+		texporter.WithContext(ctx),
+		texporter.WithProjectID("spanner-cloud-systest"),
+		texporter.WithTraceClientOptions(h.Options),
+	)
+	if err != nil {
+		return outcomeSender.FinishWithError(fmt.Errorf("unable to set up tracing: %v", err))
+	}
+	tp := sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(traceExporter),
+		sdktrace.WithSampler(sdktrace.AlwaysSample()),
+	)
+	defer func() { _ = tp.Shutdown(ctx) }()
+
+	otel.SetTracerProvider(tp)
+
+	tracer := tp.Tracer("nareshz-test.com/trace")
+
+	// Create a span for the systest action.
+	ctx, span := tracer.Start(ctx, "systestactiontrace")
+	defer span.End()
 
 	// Create a channel to receive the error from the goroutine.
 	errCh := make(chan error, 1)
