@@ -1968,7 +1968,14 @@ func TestDecodeValue(t *testing.T) {
 		// CUSTOM ARRAY
 		{desc: "decode ARRAY<INT64> to CustomArray", proto: listProto(intProto(0), intProto(6), intProto(3), intProto(5)), protoType: listType(intType()), want: customArray([4]uint8{0, 6, 3, 5})},
 		// PROTO MESSAGE AND PROTO ENUM
-		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: &singerProtoMsg},
+		{desc: "decode PROTO to proto.Message", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn),
+			want: pb.SingerInfo{
+				SingerId:    proto.Int64(1),
+				BirthDate:   proto.String("January"),
+				Nationality: proto.String("Country1"),
+				Genre:       &singerEnumValue,
+			},
+		},
 		{desc: "decode ENUM to protoreflect.Enum", proto: protoEnumProto(pb.Genre_ROCK), protoType: protoEnumType(protoEnumfqn), want: singerEnumValue},
 		{desc: "decode PROTO to NullProto", proto: protoMessageProto(&singerProtoMsg), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{&singerProtoMsg, true}},
 		{desc: "decode NULL to NullProto", proto: nullProto(), protoType: protoMessageType(protoMessagefqn), want: NullProtoMessage{}},
