@@ -269,13 +269,13 @@ func ExampleTool() {
 	printResponse(res)
 }
 
-func ExampleToolConifg() {
+func ExampleGenerativeModel_ToolConfig() {
 	// This example shows how to affect how the model uses the tools provided to it.
 	// By setting the ToolConfig, you can disable function calling.
 
 	// Assume we have created a Model and have set its Tools field with some functions.
 	// See the Example for Tool for details.
-	var model *genai.GenerativeModel
+	model := &genai.GenerativeModel{}
 
 	// By default, the model will use the functions in its responses if it thinks they are
 	// relevant, by returning FunctionCall parts.

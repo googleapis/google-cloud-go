@@ -110,7 +110,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	var txOpts *pb.TransactionOptions
 	if t.readOnly {
 		txOpts = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadOnly_{&pb.TransactionOptions_ReadOnly{}},
+			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
 		}
 	}
 	var backoff gax.Backoff
@@ -164,7 +164,7 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 			// knows it is a retry.
 			txOpts = &pb.TransactionOptions{
 				Mode: &pb.TransactionOptions_ReadWrite_{
-					&pb.TransactionOptions_ReadWrite{RetryTransaction: t.id},
+					ReadWrite: &pb.TransactionOptions_ReadWrite{RetryTransaction: t.id},
 				},
 			}
 		}
