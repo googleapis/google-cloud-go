@@ -43,6 +43,8 @@ type mockTableAdminClock struct {
 	copyBackupReq   *btapb.CopyBackupRequest
 	copyBackupError error
 
+	modColumnReq *btapb.ModifyColumnFamiliesRequest
+
 	createAuthorizedViewReq   *btapb.CreateAuthorizedViewRequest
 	createAuthorizedViewError error
 	updateAuthorizedViewReq   *btapb.UpdateAuthorizedViewRequest
@@ -74,6 +76,12 @@ func (c *mockTableAdminClock) CopyBackup(
 	c.copyBackupReq = in
 	c.copyBackupError = fmt.Errorf("Mock error from client API")
 	return nil, c.copyBackupError
+}
+
+func (c *mockTableAdminClock) ModifyColumnFamilies(
+	ctx context.Context, in *btapb.ModifyColumnFamiliesRequest, opts ...grpc.CallOption) (*btapb.Table, error) {
+	c.modColumnReq = in
+	return nil, nil
 }
 
 func (c *mockTableAdminClock) CreateAuthorizedView(
@@ -354,6 +362,51 @@ func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
 	}
 	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config") {
 		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_SetGcPolicy(t *testing.T) {
+	for _, test := range []struct {
+		desc string
+		opts GCPolicyOption
+		want bool
+	}{
+		{
+			desc: "IgnoreWarnings: false",
+			want: false,
+		},
+		{
+			desc: "IgnoreWarnings: true",
+			opts: IgnoreWarnings(),
+			want: true,
+		},
+	} {
+
+		mock := &mockTableAdminClock{}
+		c := setupTableClient(t, mock)
+
+		err := c.SetGCPolicyWithOptions(context.Background(), "My-table", "cf1", NoGcPolicy(), test.opts)
+		if err != nil {
+			t.Fatalf("%v: Failed to set GC Policy: %v", test.desc, err)
+		}
+
+		modColumnReq := mock.modColumnReq
+		if modColumnReq.IgnoreWarnings != test.want {
+			t.Errorf("%v: IgnoreWarnings got: %v, want: %v", test.desc, modColumnReq.IgnoreWarnings, test.want)
+		}
+	}
+
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.SetGCPolicy(context.Background(), "My-table", "cf1", NoGcPolicy())
+	if err != nil {
+		t.Fatalf("SetGCPolicy: Failed to set GC Policy: %v", err)
+	}
+
+	modColumnReq := mock.modColumnReq
+	if modColumnReq.IgnoreWarnings {
+		t.Errorf("SetGCPolicy: IgnoreWarnings should be set to false")
 	}
 }
 

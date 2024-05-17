@@ -1491,6 +1491,173 @@ func TestParseDDL(t *testing.T) {
 				Position: line(1),
 			},
 		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES(itemDetails, 'value1')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES",
+						Args: []Expr{ID("itemDetails"), StringLiteral("value1")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (ARRAY_MAX(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: false, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_MAX",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item STRING(MAX) AS (ARRAY_MIN(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: false, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_MIN",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_REVERSE(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_REVERSE",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_SLICE(itemDetails, 1, 3)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_SLICE",
+						Args: []Expr{ID("itemDetails"), IntegerLiteral(1), IntegerLiteral(3)},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_TRANSFORM(itemDetails, 'value1')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_TRANSFORM",
+						Args: []Expr{ID("itemDetails"), StringLiteral("value1")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_FIRST(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_FIRST",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES(itemDetails, 'value1')) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES",
+						Args: []Expr{ID("itemDetails"), StringLiteral("value1")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES_ALL(itemDetails, ["1", "2"])) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES_ALL",
+						Args: []Expr{ID("itemDetails"), Array{StringLiteral("1"), StringLiteral("2")}},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_INCLUDES_ANY(itemDetails, ["1", "2"])) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_INCLUDES_ANY",
+						Args: []Expr{ID("itemDetails"), Array{StringLiteral("1"), StringLiteral("2")}},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
+		{`ALTER TABLE products ADD COLUMN item ARRAY<STRING(MAX)> AS (ARRAY_LAST(itemDetails)) STORED`, &DDL{Filename: "filename", List: []DDLStmt{
+			&AlterTable{
+				Name: "products",
+				Alteration: AddColumn{Def: ColumnDef{
+					Name:     "item",
+					Type:     Type{Base: String, Array: true, Len: MaxLen},
+					Position: line(1),
+					Generated: Func{
+						Name: "ARRAY_LAST",
+						Args: []Expr{ID("itemDetails")},
+					},
+				}},
+				Position: line(1),
+			},
+		}}},
 		{
 			`ALTER STATISTICS auto_20191128_14_47_22UTC SET OPTIONS (allow_gc=false)`,
 			&DDL{

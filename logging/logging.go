@@ -41,6 +41,8 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"go.opentelemetry.io/otel/trace"
+
 	vkit "cloud.google.com/go/logging/apiv2"
 	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"cloud.google.com/go/logging/internal"
@@ -812,6 +814,13 @@ func populateTraceInfo(e *Entry, req *http.Request) bool {
 		} else {
 			return false
 		}
+	}
+	otelSpanContext := trace.SpanContextFromContext(req.Context())
+	if otelSpanContext.IsValid() {
+		e.Trace = otelSpanContext.TraceID().String()
+		e.SpanID = otelSpanContext.SpanID().String()
+		e.TraceSampled = otelSpanContext.IsSampled()
+		return true
 	}
 	header := req.Header.Get("Traceparent")
 	if header != "" {

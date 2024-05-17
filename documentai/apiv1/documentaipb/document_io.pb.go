@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -448,7 +448,9 @@ type OcrConfig struct {
 	// Includes symbol level OCR information if set to true.
 	EnableSymbol bool `protobuf:"varint,6,opt,name=enable_symbol,json=enableSymbol,proto3" json:"enable_symbol,omitempty"`
 	// Turn on font identification model and return font style information.
-	// Deprecated, use [PremiumFeatures.compute_style_info][google.cloud.documentai.v1.OcrConfig.PremiumFeatures.compute_style_info] instead.
+	// Deprecated, use
+	// [PremiumFeatures.compute_style_info][google.cloud.documentai.v1.OcrConfig.PremiumFeatures.compute_style_info]
+	// instead.
 	//
 	// Deprecated: Marked as deprecated in google/cloud/documentai/v1/document_io.proto.
 	ComputeStyleInfo bool `protobuf:"varint,8,opt,name=compute_style_info,json=computeStyleInfo,proto3" json:"compute_style_info,omitempty"`
