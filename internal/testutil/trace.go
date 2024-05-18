@@ -60,6 +60,7 @@ func (te *TestExporter) ExportSpan(s *trace.SpanData) {
 	te.spans = append(te.spans, s)
 }
 
+// LatestSpanStatus returns the status of last span if present or returns error
 func (te *TestExporter) LatestSpanStatus() (trace.Status, error) {
 	te.mu.Lock()
 	defer te.mu.Unlock()
