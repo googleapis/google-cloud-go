@@ -197,7 +197,7 @@
     {
       "regionTag": "generativelanguage_v1_generated_GenerativeService_GenerateContent_sync",
       "title": "generativelanguage GenerateContent Sample",
-      "description": "GenerateContent generates a response from the model given an input\n`GenerateContentRequest`.",
+      "description": "GenerateContent generates a response from the model given an input\n`GenerateContentRequest`.\n\nInput capabilities differ between models, including tuned models. See the\n[model guide](https: //ai.google.dev/models/gemini) and\n[tuning guide](https: //ai.google.dev/docs/model_tuning_guidance) for\ndetails.",
       "file": "GenerativeClient/GenerateContent/main.go",
       "language": "GO",
       "clientMethod": {

@@ -23,6 +23,7 @@ import (
 	"io"
 	"net/url"
 	"strconv"
+	"strings"
 	"time"
 
 	btopt "cloud.google.com/go/bigtable/internal/option"
@@ -113,14 +114,50 @@ var (
 	isIdempotentRetryCode = make(map[codes.Code]bool)
 	retryOptions          = []gax.CallOption{
 		gax.WithRetry(func() gax.Retryer {
-			return gax.OnCodes(idempotentRetryCodes, gax.Backoff{
+			backoff := gax.Backoff{
 				Initial:    100 * time.Millisecond,
 				Max:        2 * time.Second,
 				Multiplier: 1.2,
-			})
+			}
+			return &bigtableRetryer{
+				Retryer: gax.OnCodes(idempotentRetryCodes, backoff),
+				Backoff: backoff,
+			}
 		}),
 	}
+	retryableInternalErrMsgs = []string{
+		"stream terminated by RST_STREAM", // Retry similar to spanner client. Special case due to https://github.com/googleapis/google-cloud-go/issues/6476
+	}
 )
+
+// bigtableRetryer extends the generic gax Retryer, but also checks
+// error messages to check if operation can be retried
+type bigtableRetryer struct {
+	gax.Retryer
+	gax.Backoff
+}
+
+func containsAny(str string, substrs []string) bool {
+	for _, substr := range substrs {
+		if strings.Contains(str, substr) {
+			return true
+		}
+	}
+	return false
+}
+
+func (r *bigtableRetryer) Retry(err error) (time.Duration, bool) {
+	if status.Code(err) == codes.Internal && containsAny(err.Error(), retryableInternalErrMsgs) {
+		return r.Backoff.Pause(), true
+	}
+
+	delay, shouldRetry := r.Retryer.Retry(err)
+	if !shouldRetry {
+		return 0, false
+	}
+
+	return delay, true
+}
 
 func init() {
 	for _, code := range idempotentRetryCodes {

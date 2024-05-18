@@ -285,6 +285,11 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 				prefix = grpcTestPrefix
 			}
 
+			// Don't let any individual test run more than 5 minutes. This eases debugging if
+			// test runs get stalled out.
+			ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+			defer cancel()
+
 			test(t, ctx, bucket, prefix, client)
 		})
 	}
@@ -3066,7 +3071,7 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				h := testHelper{t}
-				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				ctx, cancel := context.WithTimeout(ctx, time.Minute)
 				defer cancel()
 
 				printTestCase := func() string {

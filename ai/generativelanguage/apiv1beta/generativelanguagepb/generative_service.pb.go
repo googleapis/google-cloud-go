@@ -1627,7 +1627,8 @@ type CountTokensRequest struct {
 	//
 	// Format: `models/{model}`
 	Model string `protobuf:"bytes,1,opt,name=model,proto3" json:"model,omitempty"`
-	// Optional. The input given to the model as a prompt.
+	// Optional. The input given to the model as a prompt. This field is ignored
+	// when `generate_content_request` is set.
 	Contents []*Content `protobuf:"bytes,2,rep,name=contents,proto3" json:"contents,omitempty"`
 	// Optional. The overall input given to the model. CountTokens will count
 	// prompt, function calling, etc.
