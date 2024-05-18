@@ -285,6 +285,11 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 				prefix = grpcTestPrefix
 			}
 
+			// Don't let any individual test run more than 5 minutes. This eases debugging if
+			// test runs get stalled out.
+			ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+			defer cancel()
+
 			test(t, ctx, bucket, prefix, client)
 		})
 	}
@@ -314,12 +319,6 @@ var readCases = []readCase{
 func TestIntegration_BucketCreateDelete(t *testing.T) {
 	ctx := skipJSONReads(context.Background(), "no reads in test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
-
-		// This timeout is added for debugging #10178
-		// TODO: remove when issue is resolved.
-		ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
-		defer cancel()
-
 		projectID := testutil.ProjID()
 
 		labels := map[string]string{

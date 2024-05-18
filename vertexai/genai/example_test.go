@@ -31,6 +31,10 @@ const projectID = "your-project"
 const location = "some-gcp-location"
 
 // A model name like "gemini-1.0-pro"
+// For custom models from different publishers, prepent the full publisher
+// prefix for the model, e.g.:
+//
+//	model = publishers/some-publisher/models/some-model-name
 const model = "some-model"
 
 func ExampleGenerativeModel_GenerateContent() {
