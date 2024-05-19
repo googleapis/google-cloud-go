@@ -54,7 +54,7 @@ func TestStartSpan_OpenCensus(t *testing.T) {
 
 	TracePrintf(ctx, annotationData(), "Add my annotations")
 
-	err := &googleapi.Error{Code: http.StatusBadRequest, Message: "INVALID ARGUMENT"}
+	var err error = &googleapi.Error{Code: http.StatusBadRequest, Message: "INVALID ARGUMENT"}
 	EndSpan(ctx, err)
 
 	if !IsOpenCensusTracingEnabled() {
@@ -63,23 +63,23 @@ func TestStartSpan_OpenCensus(t *testing.T) {
 	if IsOpenTelemetryTracingEnabled() {
 		t.Errorf("got true, want false")
 	}
-	spans := te.spans
-	if len(spans) != 1 {
-		t.Fatalf("got %d, want 1", len(spans))
+	span, err := te.LatestSpan()
+	if err != nil {
+		t.Fatalf("expected span: %v", err)
 	}
-	if got, want := spans[0].Name, "test-span"; got != want {
+	if got, want := span.Name, "test-span"; got != want {
 		t.Fatalf("got %s, want %s", got, want)
 	}
-	if want := int32(3); spans[0].Status.Code != want {
-		t.Errorf("got %v, want %v", spans[0].Status.Code, want)
+	if want := int32(3); span.Status.Code != want {
+		t.Errorf("got %v, want %v", span.Status.Code, want)
 	}
-	if want := "INVALID ARGUMENT"; spans[0].Status.Message != want {
-		t.Errorf("got %v, want %v", spans[0].Status.Message, want)
+	if want := "INVALID ARGUMENT"; span.Status.Message != want {
+		t.Errorf("got %v, want %v", span.Status.Message, want)
 	}
-	if len(spans[0].Annotations) != 1 {
-		t.Fatalf("got %d, want 1", len(spans[0].Annotations))
+	if len(span.Annotations) != 1 {
+		t.Fatalf("got %d, want 1", len(span.Annotations))
 	}
-	got := spans[0].Annotations[0].Attributes
+	got := span.Annotations[0].Attributes
 	want := make(map[string]interface{})
 	want["my_bool"] = true
 	want["my_float"] = "0.9"
