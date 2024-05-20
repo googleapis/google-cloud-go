@@ -288,7 +288,9 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 			// Don't let any individual test run more than 5 minutes. This eases debugging if
 			// test runs get stalled out.
 			ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
-			defer cancel()
+			t.Cleanup(func() {
+				cancel()
+			})
 
 			test(t, ctx, bucket, prefix, client)
 		})
