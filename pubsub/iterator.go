@@ -761,15 +761,6 @@ func calcFieldSizeInt(fields ...int) int {
 	return overhead
 }
 
-// splitRequestIDs takes a slice of ackIDs and returns two slices such that the first
-// ackID slice can be used in a request where the payload does not exceed ackIDBatchSize.
-func splitRequestIDs(ids []string, maxBatchSize int) (prefix, remainder []string) {
-	if len(ids) < maxBatchSize {
-		return ids, []string{}
-	}
-	return ids[:maxBatchSize], ids[maxBatchSize:]
-}
-
 // makeBatches takes a slice of ackIDs and returns a slice of ackID batches.
 // Each ackID batch can be used in a request where the payload does not exceed ackIDBatchSize.
 func makeBatches(ids []string, maxBatchSize int) [][]string {
