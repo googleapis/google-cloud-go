@@ -24,6 +24,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
@@ -47,11 +48,14 @@ type Client struct {
 // are safe for concurrent use by multiple goroutines.
 // projectID is your GCP project; location is GCP region/location per
 // https://cloud.google.com/vertex-ai/docs/general/locations
+// If location is empty, this function attempts to infer it from environment
+// variables and falls back to a default location if unsuccessful.
 //
 // You may configure the client by passing in options from the
 // [google.golang.org/api/option] package. You may also use options defined in
 // this package, such as [WithREST].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
+	location = inferLocation(location)
 	opts = append([]option.ClientOption{
 		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
 	}, opts...)
@@ -79,6 +83,24 @@ func NewClient(ctx context.Context, projectID, location string, opts ...option.C
 // Close closes the client.
 func (c *Client) Close() error {
 	return c.c.Close()
+}
+
+const defaultLocation = "us-central1"
+
+// inferLocation infers the GCP location from its parameter, env vars or
+// a default location.
+func inferLocation(location string) string {
+	if location != "" {
+		return location
+	}
+	if location = os.Getenv("GOOGLE_CLOUD_REGION"); location != "" {
+		return location
+	}
+	if location = os.Getenv("CLOUD_ML_REGION"); location != "" {
+		return location
+	}
+
+	return defaultLocation
 }
 
 // GenerativeModel is a model that can generate text.
