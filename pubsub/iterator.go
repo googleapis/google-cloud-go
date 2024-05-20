@@ -317,9 +317,10 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		// When exactly once delivery is not enabled, modacks are fire and forget.
 		if !exactlyOnceDelivery {
 			go func() {
-				// Add pending receipt modacks to queue to batch with other modacks
+				// Add pending receipt modacks to queue to batch with other modacks.
 				it.mu.Lock()
 				for id := range ackIDs {
+					// Use a SuccessAckResult (dummy) since we don't propagate modacks back to the user.
 					it.pendingReceipts[id] = newSuccessAckResult()
 				}
 				it.mu.Unlock()
