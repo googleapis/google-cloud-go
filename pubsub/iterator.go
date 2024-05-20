@@ -535,8 +535,11 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	it.eoMu.RUnlock()
 
 	batches := makeBatches(ackIDs, ackIDBatchSize)
+	wg := sync.WaitGroup{}
 	for _, batch := range batches {
+		wg.Add(1)
 		go func(toSend []string) {
+			defer wg.Done()
 			recordStat(it.ctx, AckCount, int64(len(toSend)))
 			addAcks(toSend)
 			// Use context.Background() as the call's context, not it.ctx. We don't
@@ -563,6 +566,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 			}
 		}(batch)
 	}
+	wg.Wait()
 }
 
 // sendModAck is used to extend the lease of messages or nack them.
@@ -581,8 +585,12 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 	exactlyOnceDelivery := it.enableExactlyOnceDelivery
 	it.eoMu.RUnlock()
 	batches := makeBatches(ackIDs, ackIDBatchSize)
+	wg := sync.WaitGroup{}
+
 	for _, batch := range batches {
+		wg.Add(1)
 		go func(toSend []string) {
+			defer wg.Done()
 			if deadline == 0 {
 				recordStat(it.ctx, NackCount, int64(len(toSend)))
 			} else {
@@ -615,6 +623,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 			}
 		}(batch)
 	}
+	wg.Wait()
 }
 
 // retryAcks retries the ack RPC with backoff. This must be called in a goroutine
