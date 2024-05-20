@@ -113,7 +113,7 @@ func (d *DocumentSnapshot) DataTo(p interface{}) error {
 	if !d.Exists() {
 		return status.Errorf(codes.NotFound, "document %s does not exist", d.Ref.Path)
 	}
-	return setFromProtoValue(p, &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: d.proto.Fields}}}, d.c)
+	return setFromProtoValue(p, &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: d.proto.Fields}}}, d.c)
 }
 
 // DataAt returns the data value denoted by path.

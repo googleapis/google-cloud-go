@@ -3000,7 +3000,7 @@ func TestIntegration_Granularity(t *testing.T) {
 		Name: prefix + "/tables/" + myTableName,
 		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
 			Id:  "cf",
-			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{Create: &btapb.ColumnFamily{}},
 		}},
 	}
 	table, err := adminClient.tClient.ModifyColumnFamilies(ctx, req)
@@ -4069,6 +4069,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		t.Logf("bttest.Server running on %s", testEnv.Config().AdminEndpoint)
 	}
 	ctx, cancel := context.WithTimeout(ctx, timeout)
+	_ = cancel // ignore for test
 
 	client, err := testEnv.NewClient()
 	if err != nil {
@@ -4143,7 +4144,8 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 		Max:        2 * time.Second,
 		Multiplier: 1.2,
 	}
-	ctx, _ = context.WithTimeout(ctx, time.Second*60)
+	ctx, cancel := context.WithTimeout(ctx, time.Second*60)
+	defer cancel()
 
 	err := internal.Retry(ctx, bo, func() (bool, error) {
 		err := ac.DeleteTable(ctx, name)

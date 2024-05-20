@@ -233,7 +233,8 @@ func TestIntegration_NewClient(t *testing.T) {
 }
 
 func TestIntegration_Basics(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	defer cancel()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
@@ -309,7 +310,8 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 }
 
 func TestIntegration_TopLevelKeyLoaded(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	defer cancel()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
