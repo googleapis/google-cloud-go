@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.12.2...dlp/v1.13.0) (2024-05-08)
+
+
+### Features
+
+* **dlp:** Add RPCs for deleting TableDataProfiles ([3e25053](https://github.com/googleapis/google-cloud-go/commit/3e250530567ee81ed4f51a3856c5940dbec35289))
+
 ## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.12.1...dlp/v1.12.2) (2024-05-01)
 
 

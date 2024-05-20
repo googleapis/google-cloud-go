@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,7 +60,8 @@ const (
 	// Human review validation is triggered and the document is under review.
 	HumanReviewStatus_IN_PROGRESS HumanReviewStatus_State = 3
 	// Some error happened during triggering human review, see the
-	// [state_message][google.cloud.documentai.v1.HumanReviewStatus.state_message] for details.
+	// [state_message][google.cloud.documentai.v1.HumanReviewStatus.state_message]
+	// for details.
 	HumanReviewStatus_ERROR HumanReviewStatus_State = 4
 )
 
@@ -340,7 +341,8 @@ type ProcessOptions struct {
 
 	// A subset of pages to process. If not specified, all pages are processed.
 	// If a page range is set, only the given pages are extracted and processed
-	// from the document. In the output document, [Document.Page.page_number][google.cloud.documentai.v1.Document.Page.page_number]
+	// from the document. In the output document,
+	// [Document.Page.page_number][google.cloud.documentai.v1.Document.Page.page_number]
 	// refers to the page number in the original document. This configuration
 	// only applies to sync requests.
 	//
@@ -353,9 +355,11 @@ type ProcessOptions struct {
 	// Only applicable to `OCR_PROCESSOR` and `FORM_PARSER_PROCESSOR`.
 	// Returns error if set on other processor types.
 	OcrConfig *OcrConfig `protobuf:"bytes,1,opt,name=ocr_config,json=ocrConfig,proto3" json:"ocr_config,omitempty"`
-	// Optional. Override the schema of the [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion]. Will return an Invalid
-	// Argument error if this field is set when the underlying
-	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] doesn't support schema override.
+	// Optional. Override the schema of the
+	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion]. Will
+	// return an Invalid Argument error if this field is set when the underlying
+	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] doesn't
+	// support schema override.
 	SchemaOverride *DocumentSchema `protobuf:"bytes,8,opt,name=schema_override,json=schemaOverride,proto3" json:"schema_override,omitempty"`
 }
 
@@ -460,7 +464,8 @@ func (*ProcessOptions_FromStart) isProcessOptions_PageRange() {}
 func (*ProcessOptions_FromEnd) isProcessOptions_PageRange() {}
 
 // Request message for the
-// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument] method.
+// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument]
+// method.
 type ProcessRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -474,17 +479,22 @@ type ProcessRequest struct {
 	//	*ProcessRequest_RawDocument
 	//	*ProcessRequest_GcsDocument
 	Source isProcessRequest_Source `protobuf_oneof:"source"`
-	// Required. The resource name of the [Processor][google.cloud.documentai.v1.Processor] or
+	// Required. The resource name of the
+	// [Processor][google.cloud.documentai.v1.Processor] or
 	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion]
-	// to use for processing. If a [Processor][google.cloud.documentai.v1.Processor] is specified, the server will use
-	// its [default version][google.cloud.documentai.v1.Processor.default_processor_version]. Format:
-	// `projects/{project}/locations/{location}/processors/{processor}`, or
+	// to use for processing. If a
+	// [Processor][google.cloud.documentai.v1.Processor] is specified, the server
+	// will use its [default
+	// version][google.cloud.documentai.v1.Processor.default_processor_version].
+	// Format: `projects/{project}/locations/{location}/processors/{processor}`,
+	// or
 	// `projects/{project}/locations/{location}/processors/{processor}/processorVersions/{processorVersion}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Whether human review should be skipped for this request. Default to
 	// `false`.
 	SkipHumanReview bool `protobuf:"varint,3,opt,name=skip_human_review,json=skipHumanReview,proto3" json:"skip_human_review,omitempty"`
-	// Specifies which fields to include in the [ProcessResponse.document][google.cloud.documentai.v1.ProcessResponse.document]
+	// Specifies which fields to include in the
+	// [ProcessResponse.document][google.cloud.documentai.v1.ProcessResponse.document]
 	// output. Only supports top-level document and pages field, so it must be in
 	// the form of `{document_field_name}` or `pages.{page_field_name}`.
 	FieldMask *fieldmaskpb.FieldMask `protobuf:"bytes,6,opt,name=field_mask,json=fieldMask,proto3" json:"field_mask,omitempty"`
@@ -630,9 +640,11 @@ type HumanReviewStatus struct {
 	// A message providing more details about the human review state.
 	StateMessage string `protobuf:"bytes,2,opt,name=state_message,json=stateMessage,proto3" json:"state_message,omitempty"`
 	// The name of the operation triggered by the processed document. This field
-	// is populated only when the [state][google.cloud.documentai.v1.HumanReviewStatus.state] is `HUMAN_REVIEW_IN_PROGRESS`. It has
-	// the same response type and metadata as the long-running operation returned
-	// by [ReviewDocument][google.cloud.documentai.v1.DocumentProcessorService.ReviewDocument].
+	// is populated only when the
+	// [state][google.cloud.documentai.v1.HumanReviewStatus.state] is
+	// `HUMAN_REVIEW_IN_PROGRESS`. It has the same response type and metadata as
+	// the long-running operation returned by
+	// [ReviewDocument][google.cloud.documentai.v1.DocumentProcessorService.ReviewDocument].
 	HumanReviewOperation string `protobuf:"bytes,3,opt,name=human_review_operation,json=humanReviewOperation,proto3" json:"human_review_operation,omitempty"`
 }
 
@@ -690,7 +702,8 @@ func (x *HumanReviewStatus) GetHumanReviewOperation() string {
 }
 
 // Response message for the
-// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument] method.
+// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument]
+// method.
 type ProcessResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -756,7 +769,8 @@ type BatchProcessRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of [Processor][google.cloud.documentai.v1.Processor] or
+	// Required. The resource name of
+	// [Processor][google.cloud.documentai.v1.Processor] or
 	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion].
 	// Format: `projects/{project}/locations/{location}/processors/{processor}`,
 	// or
@@ -986,8 +1000,9 @@ func (x *BatchProcessMetadata) GetIndividualProcessStatuses() []*BatchProcessMet
 }
 
 // Request message for the
-// [FetchProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.FetchProcessorTypes] method.
-// Some processor types may require the project be added to an allowlist.
+// [FetchProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.FetchProcessorTypes]
+// method. Some processor types may require the project be added to an
+// allowlist.
 type FetchProcessorTypesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1038,7 +1053,8 @@ func (x *FetchProcessorTypesRequest) GetParent() string {
 }
 
 // Response message for the
-// [FetchProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.FetchProcessorTypes] method.
+// [FetchProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.FetchProcessorTypes]
+// method.
 type FetchProcessorTypesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1088,8 +1104,9 @@ func (x *FetchProcessorTypesResponse) GetProcessorTypes() []*ProcessorType {
 }
 
 // Request message for the
-// [ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes] method.
-// Some processor types may require the project be added to an allowlist.
+// [ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes]
+// method. Some processor types may require the project be added to an
+// allowlist.
 type ListProcessorTypesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1160,7 +1177,8 @@ func (x *ListProcessorTypesRequest) GetPageToken() string {
 }
 
 // Response message for the
-// [ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes] method.
+// [ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes]
+// method.
 type ListProcessorTypesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1224,8 +1242,8 @@ type ListProcessorsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent (project and location) which owns this collection of Processors.
-	// Format: `projects/{project}/locations/{location}`
+	// Required. The parent (project and location) which owns this collection of
+	// Processors. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of processors to return.
 	// If unspecified, at most `50` processors will be returned.
@@ -1290,7 +1308,8 @@ func (x *ListProcessorsRequest) GetPageToken() string {
 }
 
 // Response message for the
-// [ListProcessors][google.cloud.documentai.v1.DocumentProcessorService.ListProcessors] method.
+// [ListProcessors][google.cloud.documentai.v1.DocumentProcessorService.ListProcessors]
+// method.
 type ListProcessorsResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1349,7 +1368,8 @@ func (x *ListProcessorsResponse) GetNextPageToken() string {
 }
 
 // Request message for the
-// [GetProcessorType][google.cloud.documentai.v1.DocumentProcessorService.GetProcessorType] method.
+// [GetProcessorType][google.cloud.documentai.v1.DocumentProcessorService.GetProcessorType]
+// method.
 type GetProcessorTypeRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1398,7 +1418,8 @@ func (x *GetProcessorTypeRequest) GetName() string {
 	return ""
 }
 
-// Request message for the [GetProcessor][google.cloud.documentai.v1.DocumentProcessorService.GetProcessor]
+// Request message for the
+// [GetProcessor][google.cloud.documentai.v1.DocumentProcessorService.GetProcessor]
 // method.
 type GetProcessorRequest struct {
 	state         protoimpl.MessageState
@@ -1449,7 +1470,8 @@ func (x *GetProcessorRequest) GetName() string {
 }
 
 // Request message for the
-// [GetProcessorVersion][google.cloud.documentai.v1.DocumentProcessorService.GetProcessorVersion] method.
+// [GetProcessorVersion][google.cloud.documentai.v1.DocumentProcessorService.GetProcessorVersion]
+// method.
 type GetProcessorVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1504,8 +1526,9 @@ type ListProcessorVersionsRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent (project, location and processor) to list all versions.
-	// Format: `projects/{project}/locations/{location}/processors/{processor}`
+	// Required. The parent (project, location and processor) to list all
+	// versions. Format:
+	// `projects/{project}/locations/{location}/processors/{processor}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of processor versions to return.
 	// If unspecified, at most `10` processor versions will be returned.
@@ -2018,19 +2041,23 @@ func (x *UndeployProcessorVersionMetadata) GetCommonMetadata() *CommonOperationM
 }
 
 // Request message for the
-// [CreateProcessor][google.cloud.documentai.v1.DocumentProcessorService.CreateProcessor] method. Notice
-// this request is sent to a regionalized backend service. If the
-// [ProcessorType][google.cloud.documentai.v1.ProcessorType] isn't available in that region, the creation fails.
+// [CreateProcessor][google.cloud.documentai.v1.DocumentProcessorService.CreateProcessor]
+// method. Notice this request is sent to a regionalized backend service. If the
+// [ProcessorType][google.cloud.documentai.v1.ProcessorType] isn't available in
+// that region, the creation fails.
 type CreateProcessorRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The parent (project and location) under which to create the processor.
-	// Format: `projects/{project}/locations/{location}`
+	// Required. The parent (project and location) under which to create the
+	// processor. Format: `projects/{project}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. The processor to be created, requires [Processor.type][google.cloud.documentai.v1.Processor.type] and
-	// [Processor.display_name][google.cloud.documentai.v1.Processor.display_name] to be set. Also, the [Processor.kms_key_name][google.cloud.documentai.v1.Processor.kms_key_name]
+	// Required. The processor to be created, requires
+	// [Processor.type][google.cloud.documentai.v1.Processor.type] and
+	// [Processor.display_name][google.cloud.documentai.v1.Processor.display_name]
+	// to be set. Also, the
+	// [Processor.kms_key_name][google.cloud.documentai.v1.Processor.kms_key_name]
 	// field must be set if the processor is under CMEK.
 	Processor *Processor `protobuf:"bytes,2,opt,name=processor,proto3" json:"processor,omitempty"`
 }
@@ -2082,7 +2109,8 @@ func (x *CreateProcessorRequest) GetProcessor() *Processor {
 }
 
 // Request message for the
-// [DeleteProcessor][google.cloud.documentai.v1.DocumentProcessorService.DeleteProcessor] method.
+// [DeleteProcessor][google.cloud.documentai.v1.DocumentProcessorService.DeleteProcessor]
+// method.
 type DeleteProcessorRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2132,7 +2160,8 @@ func (x *DeleteProcessorRequest) GetName() string {
 }
 
 // The long-running operation metadata for the
-// [DeleteProcessor][google.cloud.documentai.v1.DocumentProcessorService.DeleteProcessor] method.
+// [DeleteProcessor][google.cloud.documentai.v1.DocumentProcessorService.DeleteProcessor]
+// method.
 type DeleteProcessorMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2182,7 +2211,8 @@ func (x *DeleteProcessorMetadata) GetCommonMetadata() *CommonOperationMetadata {
 }
 
 // Request message for the
-// [EnableProcessor][google.cloud.documentai.v1.DocumentProcessorService.EnableProcessor] method.
+// [EnableProcessor][google.cloud.documentai.v1.DocumentProcessorService.EnableProcessor]
+// method.
 type EnableProcessorRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2232,8 +2262,8 @@ func (x *EnableProcessorRequest) GetName() string {
 }
 
 // Response message for the
-// [EnableProcessor][google.cloud.documentai.v1.DocumentProcessorService.EnableProcessor] method.
-// Intentionally empty proto for adding fields in future.
+// [EnableProcessor][google.cloud.documentai.v1.DocumentProcessorService.EnableProcessor]
+// method. Intentionally empty proto for adding fields in future.
 type EnableProcessorResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2273,7 +2303,8 @@ func (*EnableProcessorResponse) Descriptor() ([]byte, []int) {
 }
 
 // The long-running operation metadata for the
-// [EnableProcessor][google.cloud.documentai.v1.DocumentProcessorService.EnableProcessor] method.
+// [EnableProcessor][google.cloud.documentai.v1.DocumentProcessorService.EnableProcessor]
+// method.
 type EnableProcessorMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2323,7 +2354,8 @@ func (x *EnableProcessorMetadata) GetCommonMetadata() *CommonOperationMetadata {
 }
 
 // Request message for the
-// [DisableProcessor][google.cloud.documentai.v1.DocumentProcessorService.DisableProcessor] method.
+// [DisableProcessor][google.cloud.documentai.v1.DocumentProcessorService.DisableProcessor]
+// method.
 type DisableProcessorRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2373,8 +2405,8 @@ func (x *DisableProcessorRequest) GetName() string {
 }
 
 // Response message for the
-// [DisableProcessor][google.cloud.documentai.v1.DocumentProcessorService.DisableProcessor] method.
-// Intentionally empty proto for adding fields in future.
+// [DisableProcessor][google.cloud.documentai.v1.DocumentProcessorService.DisableProcessor]
+// method. Intentionally empty proto for adding fields in future.
 type DisableProcessorResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2414,7 +2446,8 @@ func (*DisableProcessorResponse) Descriptor() ([]byte, []int) {
 }
 
 // The long-running operation metadata for the
-// [DisableProcessor][google.cloud.documentai.v1.DocumentProcessorService.DisableProcessor] method.
+// [DisableProcessor][google.cloud.documentai.v1.DocumentProcessorService.DisableProcessor]
+// method.
 type DisableProcessorMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2471,10 +2504,13 @@ type SetDefaultProcessorVersionRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [Processor][google.cloud.documentai.v1.Processor] to change default version.
+	// Required. The resource name of the
+	// [Processor][google.cloud.documentai.v1.Processor] to change default
+	// version.
 	Processor string `protobuf:"bytes,1,opt,name=processor,proto3" json:"processor,omitempty"`
-	// Required. The resource name of child [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] to use as default.
-	// Format:
+	// Required. The resource name of child
+	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] to use as
+	// default. Format:
 	// `projects/{project}/locations/{location}/processors/{processor}/processorVersions/{version}`
 	DefaultProcessorVersion string `protobuf:"bytes,2,opt,name=default_processor_version,json=defaultProcessorVersion,proto3" json:"default_processor_version,omitempty"`
 }
@@ -2630,17 +2666,19 @@ type TrainProcessorVersionRequest struct {
 	//	*TrainProcessorVersionRequest_CustomDocumentExtractionOptions_
 	//	*TrainProcessorVersionRequest_FoundationModelTuningOptions_
 	ProcessorFlags isTrainProcessorVersionRequest_ProcessorFlags `protobuf_oneof:"processor_flags"`
-	// Required. The parent (project, location and processor) to create the new version for.
-	// Format: `projects/{project}/locations/{location}/processors/{processor}`.
+	// Required. The parent (project, location and processor) to create the new
+	// version for. Format:
+	// `projects/{project}/locations/{location}/processors/{processor}`.
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The processor version to be created.
 	ProcessorVersion *ProcessorVersion `protobuf:"bytes,2,opt,name=processor_version,json=processorVersion,proto3" json:"processor_version,omitempty"`
 	// Optional. The schema the processor version will be trained with.
 	DocumentSchema *DocumentSchema `protobuf:"bytes,10,opt,name=document_schema,json=documentSchema,proto3" json:"document_schema,omitempty"`
-	// Optional. The input data used to train the [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion].
+	// Optional. The input data used to train the
+	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion].
 	InputData *TrainProcessorVersionRequest_InputData `protobuf:"bytes,4,opt,name=input_data,json=inputData,proto3" json:"input_data,omitempty"`
-	// Optional. The processor version to use as a base for training. This processor version
-	// must be a child of `parent`. Format:
+	// Optional. The processor version to use as a base for training. This
+	// processor version must be a child of `parent`. Format:
 	// `projects/{project}/locations/{location}/processors/{processor}/processorVersions/{processorVersion}`.
 	BaseProcessorVersion string `protobuf:"bytes,8,opt,name=base_processor_version,json=baseProcessorVersion,proto3" json:"base_processor_version,omitempty"`
 }
@@ -2871,7 +2909,8 @@ func (x *TrainProcessorVersionMetadata) GetTestDatasetValidation() *TrainProcess
 }
 
 // Request message for the
-// [ReviewDocument][google.cloud.documentai.v1.DocumentProcessorService.ReviewDocument] method.
+// [ReviewDocument][google.cloud.documentai.v1.DocumentProcessorService.ReviewDocument]
+// method.
 type ReviewDocumentRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2883,8 +2922,9 @@ type ReviewDocumentRequest struct {
 	//
 	//	*ReviewDocumentRequest_InlineDocument
 	Source isReviewDocumentRequest_Source `protobuf_oneof:"source"`
-	// Required. The resource name of the [HumanReviewConfig][google.cloud.documentai.v1.HumanReviewConfig] that the document will be
-	// reviewed with.
+	// Required. The resource name of the
+	// [HumanReviewConfig][google.cloud.documentai.v1.HumanReviewConfig] that the
+	// document will be reviewed with.
 	HumanReviewConfig string `protobuf:"bytes,1,opt,name=human_review_config,json=humanReviewConfig,proto3" json:"human_review_config,omitempty"`
 	// Whether the validation should be performed on the ad-hoc review request.
 	EnableSchemaValidation bool `protobuf:"varint,3,opt,name=enable_schema_validation,json=enableSchemaValidation,proto3" json:"enable_schema_validation,omitempty"`
@@ -2980,7 +3020,8 @@ type ReviewDocumentRequest_InlineDocument struct {
 func (*ReviewDocumentRequest_InlineDocument) isReviewDocumentRequest_Source() {}
 
 // Response message for the
-// [ReviewDocument][google.cloud.documentai.v1.DocumentProcessorService.ReviewDocument] method.
+// [ReviewDocument][google.cloud.documentai.v1.DocumentProcessorService.ReviewDocument]
+// method.
 type ReviewDocumentResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3049,7 +3090,8 @@ func (x *ReviewDocumentResponse) GetRejectionReason() string {
 }
 
 // The long-running operation metadata for the
-// [ReviewDocument][google.cloud.documentai.v1.DocumentProcessorService.ReviewDocument] method.
+// [ReviewDocument][google.cloud.documentai.v1.DocumentProcessorService.ReviewDocument]
+// method.
 type ReviewDocumentOperationMetadata struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3107,17 +3149,21 @@ func (x *ReviewDocumentOperationMetadata) GetQuestionId() string {
 	return ""
 }
 
-// Evaluates the given [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] against the supplied documents.
+// Evaluates the given
+// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] against the
+// supplied documents.
 type EvaluateProcessorVersionRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] to evaluate.
+	// Required. The resource name of the
+	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] to
+	// evaluate.
 	// `projects/{project}/locations/{location}/processors/{processor}/processorVersions/{processorVersion}`
 	ProcessorVersion string `protobuf:"bytes,1,opt,name=processor_version,json=processorVersion,proto3" json:"processor_version,omitempty"`
-	// Optional. The documents used in the evaluation. If unspecified, use the processor's
-	// dataset as evaluation input.
+	// Optional. The documents used in the evaluation. If unspecified, use the
+	// processor's dataset as evaluation input.
 	EvaluationDocuments *BatchDocumentsInputConfig `protobuf:"bytes,3,opt,name=evaluation_documents,json=evaluationDocuments,proto3" json:"evaluation_documents,omitempty"`
 }
 
@@ -3275,7 +3321,8 @@ type GetEvaluationRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [Evaluation][google.cloud.documentai.v1.Evaluation] to get.
+	// Required. The resource name of the
+	// [Evaluation][google.cloud.documentai.v1.Evaluation] to get.
 	// `projects/{project}/locations/{location}/processors/{processor}/processorVersions/{processorVersion}/evaluations/{evaluation}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
@@ -3319,13 +3366,16 @@ func (x *GetEvaluationRequest) GetName() string {
 	return ""
 }
 
-// Retrieves a list of evaluations for a given [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion].
+// Retrieves a list of evaluations for a given
+// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion].
 type ListEvaluationsRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The resource name of the [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] to list evaluations for.
+	// Required. The resource name of the
+	// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion] to list
+	// evaluations for.
 	// `projects/{project}/locations/{location}/processors/{processor}/processorVersions/{processorVersion}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The standard list page size.
@@ -3504,14 +3554,15 @@ type BatchProcessMetadata_IndividualProcessStatus struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The source of the document, same as the [input_gcs_source][google.cloud.documentai.v1.BatchProcessMetadata.IndividualProcessStatus.input_gcs_source] field in the
-	// request when the batch process started.
+	// The source of the document, same as the
+	// [input_gcs_source][google.cloud.documentai.v1.BatchProcessMetadata.IndividualProcessStatus.input_gcs_source]
+	// field in the request when the batch process started.
 	InputGcsSource string `protobuf:"bytes,1,opt,name=input_gcs_source,json=inputGcsSource,proto3" json:"input_gcs_source,omitempty"`
 	// The status processing the document.
 	Status *status.Status `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
 	// The Cloud Storage output destination (in the request as
-	// [DocumentOutputConfig.GcsOutputConfig.gcs_uri][google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.gcs_uri]) of the processed
-	// document if it was successful, otherwise empty.
+	// [DocumentOutputConfig.GcsOutputConfig.gcs_uri][google.cloud.documentai.v1.DocumentOutputConfig.GcsOutputConfig.gcs_uri])
+	// of the processed document if it was successful, otherwise empty.
 	OutputGcsDestination string `protobuf:"bytes,3,opt,name=output_gcs_destination,json=outputGcsDestination,proto3" json:"output_gcs_destination,omitempty"`
 	// The status of human review on the processed document.
 	HumanReviewStatus *HumanReviewStatus `protobuf:"bytes,5,opt,name=human_review_status,json=humanReviewStatus,proto3" json:"human_review_status,omitempty"`
@@ -3577,7 +3628,8 @@ func (x *BatchProcessMetadata_IndividualProcessStatus) GetHumanReviewStatus() *H
 	return nil
 }
 
-// The input data used to train a new [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion].
+// The input data used to train a new
+// [ProcessorVersion][google.cloud.documentai.v1.ProcessorVersion].
 type TrainProcessorVersionRequest_InputData struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3691,12 +3743,12 @@ type TrainProcessorVersionRequest_FoundationModelTuningOptions struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Optional. The number of steps to run for model tuning. Valid values are between
-	// 1 and 400. If not provided, recommended steps will be used.
+	// Optional. The number of steps to run for model tuning. Valid values are
+	// between 1 and 400. If not provided, recommended steps will be used.
 	TrainSteps int32 `protobuf:"varint,2,opt,name=train_steps,json=trainSteps,proto3" json:"train_steps,omitempty"`
-	// Optional. The multiplier to apply to the recommended learning rate. Valid values
-	// are between 0.1 and 10. If not provided, recommended learning rate will
-	// be used.
+	// Optional. The multiplier to apply to the recommended learning rate. Valid
+	// values are between 0.1 and 10. If not provided, recommended learning rate
+	// will be used.
 	LearningRateMultiplier float32 `protobuf:"fixed32,3,opt,name=learning_rate_multiplier,json=learningRateMultiplier,proto3" json:"learning_rate_multiplier,omitempty"`
 }
 
@@ -5823,7 +5875,8 @@ type DocumentProcessorServiceClient interface {
 	// LRO endpoint to batch process many documents. The output is written
 	// to Cloud Storage as JSON in the [Document] format.
 	BatchProcessDocuments(ctx context.Context, in *BatchProcessRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Fetches processor types. Note that we don't use [ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes]
+	// Fetches processor types. Note that we don't use
+	// [ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes]
 	// here, because it isn't paginated.
 	FetchProcessorTypes(ctx context.Context, in *FetchProcessorTypesRequest, opts ...grpc.CallOption) (*FetchProcessorTypesResponse, error)
 	// Lists the processor types that exist.
@@ -5849,8 +5902,9 @@ type DocumentProcessorServiceClient interface {
 	DeployProcessorVersion(ctx context.Context, in *DeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Undeploys the processor version.
 	UndeployProcessorVersion(ctx context.Context, in *UndeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Creates a processor from the [ProcessorType][google.cloud.documentai.v1.ProcessorType] provided.
-	// The processor will be at `ENABLED` state by default after its creation.
+	// Creates a processor from the
+	// [ProcessorType][google.cloud.documentai.v1.ProcessorType] provided. The
+	// processor will be at `ENABLED` state by default after its creation.
 	CreateProcessor(ctx context.Context, in *CreateProcessorRequest, opts ...grpc.CallOption) (*Processor, error)
 	// Deletes the processor, unloads all deployed model artifacts if it was
 	// enabled and then deletes all artifacts associated with this processor.
@@ -5859,8 +5913,10 @@ type DocumentProcessorServiceClient interface {
 	EnableProcessor(ctx context.Context, in *EnableProcessorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Disables a processor
 	DisableProcessor(ctx context.Context, in *DisableProcessorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Set the default (active) version of a [Processor][google.cloud.documentai.v1.Processor] that will be used in
-	// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument] and
+	// Set the default (active) version of a
+	// [Processor][google.cloud.documentai.v1.Processor] that will be used in
+	// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument]
+	// and
 	// [BatchProcessDocuments][google.cloud.documentai.v1.DocumentProcessorService.BatchProcessDocuments].
 	SetDefaultProcessorVersion(ctx context.Context, in *SetDefaultProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Send a document for Human Review. The input document should be processed by
@@ -6088,7 +6144,8 @@ type DocumentProcessorServiceServer interface {
 	// LRO endpoint to batch process many documents. The output is written
 	// to Cloud Storage as JSON in the [Document] format.
 	BatchProcessDocuments(context.Context, *BatchProcessRequest) (*longrunningpb.Operation, error)
-	// Fetches processor types. Note that we don't use [ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes]
+	// Fetches processor types. Note that we don't use
+	// [ListProcessorTypes][google.cloud.documentai.v1.DocumentProcessorService.ListProcessorTypes]
 	// here, because it isn't paginated.
 	FetchProcessorTypes(context.Context, *FetchProcessorTypesRequest) (*FetchProcessorTypesResponse, error)
 	// Lists the processor types that exist.
@@ -6114,8 +6171,9 @@ type DocumentProcessorServiceServer interface {
 	DeployProcessorVersion(context.Context, *DeployProcessorVersionRequest) (*longrunningpb.Operation, error)
 	// Undeploys the processor version.
 	UndeployProcessorVersion(context.Context, *UndeployProcessorVersionRequest) (*longrunningpb.Operation, error)
-	// Creates a processor from the [ProcessorType][google.cloud.documentai.v1.ProcessorType] provided.
-	// The processor will be at `ENABLED` state by default after its creation.
+	// Creates a processor from the
+	// [ProcessorType][google.cloud.documentai.v1.ProcessorType] provided. The
+	// processor will be at `ENABLED` state by default after its creation.
 	CreateProcessor(context.Context, *CreateProcessorRequest) (*Processor, error)
 	// Deletes the processor, unloads all deployed model artifacts if it was
 	// enabled and then deletes all artifacts associated with this processor.
@@ -6124,8 +6182,10 @@ type DocumentProcessorServiceServer interface {
 	EnableProcessor(context.Context, *EnableProcessorRequest) (*longrunningpb.Operation, error)
 	// Disables a processor
 	DisableProcessor(context.Context, *DisableProcessorRequest) (*longrunningpb.Operation, error)
-	// Set the default (active) version of a [Processor][google.cloud.documentai.v1.Processor] that will be used in
-	// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument] and
+	// Set the default (active) version of a
+	// [Processor][google.cloud.documentai.v1.Processor] that will be used in
+	// [ProcessDocument][google.cloud.documentai.v1.DocumentProcessorService.ProcessDocument]
+	// and
 	// [BatchProcessDocuments][google.cloud.documentai.v1.DocumentProcessorService.BatchProcessDocuments].
 	SetDefaultProcessorVersion(context.Context, *SetDefaultProcessorVersionRequest) (*longrunningpb.Operation, error)
 	// Send a document for Human Review. The input document should be processed by

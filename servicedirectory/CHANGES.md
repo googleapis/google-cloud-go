@@ -1,5 +1,14 @@
 # Changes
 
+## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/servicedirectory/v1.11.6...servicedirectory/v1.11.7) (2024-05-16)
+
+
+### Documentation
+
+* **servicedirectory:** Add maximum page_size to ListEndpoint API documentation ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **servicedirectory:** Add maximum page_size to ListNamespace API documentation ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **servicedirectory:** Add maximum page_size to ListService API documentation ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
 ## [1.11.6](https://github.com/googleapis/google-cloud-go/compare/servicedirectory/v1.11.5...servicedirectory/v1.11.6) (2024-05-01)
 
 
