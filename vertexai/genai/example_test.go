@@ -27,10 +27,15 @@ import (
 // Your GCP project
 const projectID = "your-project"
 
-// A GCP location like "us-central1"
+// A GCP location like "us-central1"; if you're using standard Google-published
+// models (like untuned Gemini models), you can keep location blank ("").
 const location = "some-gcp-location"
 
 // A model name like "gemini-1.0-pro"
+// For custom models from different publishers, prepent the full publisher
+// prefix for the model, e.g.:
+//
+//	model = publishers/some-publisher/models/some-model-name
 const model = "some-model"
 
 func ExampleGenerativeModel_GenerateContent() {
