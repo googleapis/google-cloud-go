@@ -762,7 +762,7 @@ func calcFieldSizeInt(fields ...int) int {
 }
 
 // makeBatches takes a slice of ackIDs and returns a slice of ackID batches.
-// Each ackID batch can be used in a request where the payload does not exceed ackIDBatchSize.
+// Each ackID batch can be used in a request where the payload does not exceed maxBatchSize.
 func makeBatches(ids []string, maxBatchSize int) [][]string {
 	var batches [][]string
 	for len(ids) > 0 {
