@@ -42,7 +42,7 @@ type exists bool
 
 func (e exists) preconditionProto() (*pb.Precondition, error) {
 	return &pb.Precondition{
-		ConditionType: &pb.Precondition_Exists{bool(e)},
+		ConditionType: &pb.Precondition_Exists{Exists: bool(e)},
 	}, nil
 }
 
