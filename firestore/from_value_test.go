@@ -51,7 +51,7 @@ func TestCreateFromProtoValue(t *testing.T) {
 			want: []byte{1, 2},
 		},
 		{
-			in:   &pb.Value{ValueType: &pb.Value_GeoPointValue{ll}},
+			in:   &pb.Value{ValueType: &pb.Value_GeoPointValue{GeoPointValue: ll}},
 			want: ll,
 		},
 		{
@@ -207,7 +207,7 @@ func TestSetFromProtoValueNoJSON(t *testing.T) {
 	}{
 		{&bs, bytesval(bytes), bytes},
 		{&tmi, tsval(tm), tm},
-		{&tmp, &pb.Value{ValueType: &pb.Value_TimestampValue{ptm}}, ptm},
+		{&tmp, &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: ptm}}, ptm},
 		{&lli, geoval(ll), ll},
 	} {
 		if err := setFromProtoValue(test.in, test.val, &Client{}); err != nil {
@@ -254,7 +254,7 @@ func TestSetFromProtoValueErrors(t *testing.T) {
 		{new(int16), floatval(math.MaxFloat32)},  // doesn't fit
 		{new(uint16), floatval(math.MaxFloat32)}, // doesn't fit
 		{new(float32),
-			&pb.Value{ValueType: &pb.Value_IntegerValue{math.MaxInt64}}}, // overflow
+			&pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: math.MaxInt64}}}, // overflow
 	} {
 		err := setFromProtoValue(test.in, test.val, c)
 		if err == nil {
