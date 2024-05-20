@@ -1,5 +1,12 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.4...redis/v1.15.0) (2024-05-16)
+
+
+### Features
+
+* **redis/cluster:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
 ## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.3...redis/v1.14.4) (2024-05-01)
 
 

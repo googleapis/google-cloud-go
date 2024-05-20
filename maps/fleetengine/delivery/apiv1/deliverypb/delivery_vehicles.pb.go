@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -522,14 +522,13 @@ type VehicleStop struct {
 
 	// Required. The location of the stop. Note that the locations in the `Task`s
 	// might not exactly match this location, but will be within a short distance
-	// of it. This field won't be populated in the response of either a `GetTask`,
-	// or a `SearchTasks` call.
+	// of it. This field won't be populated in the response of a `GetTask` call.
 	PlannedLocation *LocationInfo `protobuf:"bytes,1,opt,name=planned_location,json=plannedLocation,proto3" json:"planned_location,omitempty"`
 	// The list of `Task`s to be performed at this stop. This field won't be
-	// populated in the response of either a `GetTask` or `SearchTasks` call.
+	// populated in the response of a `GetTask` call.
 	Tasks []*VehicleStop_TaskInfo `protobuf:"bytes,2,rep,name=tasks,proto3" json:"tasks,omitempty"`
 	// The state of the `VehicleStop`. This field won't be populated in the
-	// response of either a `GetTask`, or a `SearchTasks` call.
+	// response of a `GetTask` call.
 	State VehicleStop_State `protobuf:"varint,3,opt,name=state,proto3,enum=maps.fleetengine.delivery.v1.VehicleStop_State" json:"state,omitempty"`
 }
 
@@ -592,9 +591,8 @@ type VehicleStop_TaskInfo struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The Task ID. This field won't be populated in the response of either a
-	// `GetTask`, or a `SearchTasks` call. Task IDs are subject to the following
-	// restrictions:
+	// The Task ID. This field won't be populated in the response of a `GetTask`
+	// call. Task IDs are subject to the following restrictions:
 	//
 	// * Must be a valid Unicode string.
 	// * Limited to a maximum length of 64 characters.

@@ -35,6 +35,7 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
+	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
@@ -752,6 +753,10 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer cleanup()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("Skip long running tests in short mode")
+	}
 
 	ts := uid.NewSpace("ts", &uid.Options{Short: true}).New()
 	if err := adminClient.CreateColumnFamily(ctx, tableName, ts); err != nil {
@@ -1579,11 +1584,7 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		t.Errorf("We shouldn't be able to delete the table when the deletion protection is enabled for table %v", myTableName)
 	}
 
-	updateTableConf := UpdateTableConf{
-		tableID:            myTableName,
-		deletionProtection: Unprotected,
-	}
-	if err := adminClient.updateTableWithConf(ctx, &updateTableConf); err != nil {
+	if err := adminClient.UpdateTableWithDeletionProtection(ctx, myTableName, Unprotected); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
@@ -1690,6 +1691,143 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 
 	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err != nil {
 		t.Errorf("Deleting the table failed when change stream is disabled: %v", err)
+	}
+}
+
+func equalOptionalDuration(a, b optional.Duration) bool {
+	if a == nil && b == nil {
+		return true
+	}
+	if a == nil || b == nil {
+		return false
+	}
+	return int64(a.(time.Duration).Seconds()) == int64(b.(time.Duration).Seconds())
+}
+
+// Testing if automated backups works properly i.e.
+// - Can create table with Automated Backups configured
+// - Can update Automated Backup Policy on an existing table
+// - Can disable Automated Backups on an existing table
+func TestIntegration_AutomatedBackups(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support Automated Backups")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	retentionPeriod, err := time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	frequency, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+
+	tableConf := TableConf{
+		TableID: myTableName,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+		AutomatedBackupConfig: &automatedBackupPolicy,
+	}
+
+	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
+		t.Fatalf("Create table from config: %v", err)
+	}
+	defer deleteTable(ctx, t, adminClient, myTableName)
+
+	table, err := adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.AutomatedBackupConfig == nil {
+		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
+	}
+	tableAbp := table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+	if !equalOptionalDuration(tableAbp.Frequency, automatedBackupPolicy.Frequency) {
+		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
+	}
+	if !equalOptionalDuration(tableAbp.RetentionPeriod, automatedBackupPolicy.RetentionPeriod) {
+		t.Errorf("Expect automated backup policy retention period to be set for table: %v has info: %v", myTableName, table)
+	}
+
+	// Test update automated backup policy
+	retentionPeriod, err = time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	frequency, err = time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	for _, testcase := range []struct {
+		desc      string
+		bkpPolicy TableAutomatedBackupPolicy
+	}{
+		{
+			desc:      "Update automated backup policy, just frequency",
+			bkpPolicy: TableAutomatedBackupPolicy{Frequency: frequency},
+		},
+		{
+			desc:      "Update automated backup policy, just retention period",
+			bkpPolicy: TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod},
+		},
+		{
+			desc:      "Update automated backup policy, all fields",
+			bkpPolicy: TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency},
+		},
+	} {
+		if gotErr := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, myTableName, testcase.bkpPolicy); err != nil {
+			t.Fatalf("%v: Update table from config: %v", testcase.desc, gotErr)
+		}
+
+		gotTable, gotErr := adminClient.TableInfo(ctx, myTableName)
+		if gotErr != nil {
+			t.Fatalf("%v: Getting table info: %v", testcase.desc, gotErr)
+		}
+		if gotTable.AutomatedBackupConfig == nil {
+			t.Errorf("%v: Expect Automated Backup Policy to be enabled for table: %v has info: %v", testcase.desc, myTableName, gotTable)
+		}
+
+		gotTableAbp := gotTable.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
+		if testcase.bkpPolicy.Frequency != nil && !equalOptionalDuration(gotTableAbp.Frequency, testcase.bkpPolicy.Frequency) {
+			t.Errorf("%v: Expect automated backup policy frequency to be set for table: %v has info: %v", testcase.desc, myTableName, table)
+		}
+		if testcase.bkpPolicy.RetentionPeriod != nil && !equalOptionalDuration(gotTableAbp.RetentionPeriod, testcase.bkpPolicy.RetentionPeriod) {
+			t.Errorf("%v: Expect automated backup policy retention period to be set for table: %v has info: %v", testcase.desc, myTableName, table)
+		}
+	}
+
+	// Test disable automated backups
+	if err := adminClient.UpdateTableDisableAutomatedBackupPolicy(ctx, myTableName); err != nil {
+		t.Fatalf("Update table from config: %v", err)
+	}
+
+	table, err = adminClient.TableInfo(ctx, myTableName)
+	if err != nil {
+		t.Fatalf("Getting table info: %v", err)
+	}
+
+	if table.AutomatedBackupConfig != nil {
+		t.Errorf("Expect table automated backups to be disabled for table: %v has info: %v", myTableName, table)
 	}
 }
 
