@@ -1,5 +1,25 @@
 # Changelog
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.6...migrationcenter/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **migrationcenter:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **migrationcenter:** Promote to GA v1.0.0 ([#10209](https://github.com/googleapis/google-cloud-go/issues/10209)) ([51d4ec8](https://github.com/googleapis/google-cloud-go/commit/51d4ec8c0a40f7b746f0fbf79a050056b0aad18c))
+
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.5...migrationcenter/v0.2.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.4...migrationcenter/v0.2.5) (2024-03-14)
 
 
@@ -50,4 +70,3 @@
 * **migrationcenter:** Migration Center API ([fa91b47](https://github.com/googleapis/google-cloud-go/commit/fa91b478a55d6347f5c4fd29f2490316b2f31072))
 
 ## Changes
-

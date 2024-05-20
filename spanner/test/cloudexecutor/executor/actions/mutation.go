@@ -139,6 +139,9 @@ func createMutation(action *executorpb.MutationAction, tableMetadata *utility.Ta
 				return nil, err
 			}
 			keySet, err := utility.KeySetProtoToCloudKeySet(mod.DeleteKeys, keyColTypes)
+			if err != nil {
+				return nil, err
+			}
 			m = append(m, spanner.Delete(table, keySet))
 		default:
 			return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "unsupported mod: %s", mod.String()))

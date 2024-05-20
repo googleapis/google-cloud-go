@@ -62,6 +62,9 @@ func (cs *ChatSession) SendMessageStream(ctx context.Context, parts ...Part) *Ge
 func (cs *ChatSession) addToHistory(cands []*Candidate) bool {
 	if len(cands) > 0 {
 		c := cands[0].Content
+		if c == nil {
+			return false
+		}
 		c.Role = roleModel
 		cs.History = append(cs.History, c)
 		return true

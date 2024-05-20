@@ -24,6 +24,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
@@ -47,11 +48,14 @@ type Client struct {
 // are safe for concurrent use by multiple goroutines.
 // projectID is your GCP project; location is GCP region/location per
 // https://cloud.google.com/vertex-ai/docs/general/locations
+// If location is empty, this function attempts to infer it from environment
+// variables and falls back to a default location if unsuccessful.
 //
 // You may configure the client by passing in options from the
 // [google.golang.org/api/option] package. You may also use options defined in
 // this package, such as [WithREST].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
+	location = inferLocation(location)
 	opts = append([]option.ClientOption{
 		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
 	}, opts...)
@@ -81,6 +85,24 @@ func (c *Client) Close() error {
 	return c.c.Close()
 }
 
+const defaultLocation = "us-central1"
+
+// inferLocation infers the GCP location from its parameter, env vars or
+// a default location.
+func inferLocation(location string) string {
+	if location != "" {
+		return location
+	}
+	if location = os.Getenv("GOOGLE_CLOUD_REGION"); location != "" {
+		return location
+	}
+	if location = os.Getenv("CLOUD_ML_REGION"); location != "" {
+		return location
+	}
+
+	return defaultLocation
+}
+
 // GenerativeModel is a model that can generate text.
 // Create one with [Client.GenerativeModel], then configure
 // it by setting the exported fields.
@@ -93,22 +115,43 @@ type GenerativeModel struct {
 	fullName string
 
 	GenerationConfig
-	SafetySettings []*SafetySetting
-	Tools          []*Tool
+	SafetySettings    []*SafetySetting
+	Tools             []*Tool
+	ToolConfig        *ToolConfig // configuration for tools
+	SystemInstruction *Content
 }
 
 const defaultMaxOutputTokens = 2048
 
 // GenerativeModel creates a new instance of the named model.
-// name is a string model name like "gemini-1.0.-pro".
+// name is a string model name like "gemini-1.0-pro" or "models/gemini-1.0-pro"
+// for Google-published models.
 // See https://cloud.google.com/vertex-ai/generative-ai/docs/learn/model-versioning
-// for details on model naming and versioning.
+// for details on model naming and versioning, and
+// https://cloud.google.com/vertex-ai/generative-ai/docs/model-garden/explore-models
+// for providing model garden names. The SDK isn't familiar with custom model
+// garden models, and will pass your model name to the backend API server.
 func (c *Client) GenerativeModel(name string) *GenerativeModel {
 	return &GenerativeModel{
 		c:        c,
 		name:     name,
-		fullName: fmt.Sprintf("projects/%s/locations/%s/publishers/google/models/%s", c.projectID, c.location, name),
+		fullName: inferFullModelName(c.projectID, c.location, name),
 	}
+}
+
+// inferFullModelName infers the full model name (with all the required prefixes)
+func inferFullModelName(project, location, name string) string {
+	pubName := name
+	if !strings.Contains(name, "/") {
+		pubName = "publishers/google/models/" + name
+	} else if strings.HasPrefix(name, "models/") {
+		pubName = "publishers/google/" + name
+	}
+
+	if !strings.HasPrefix(pubName, "publishers/") {
+		return pubName
+	}
+	return fmt.Sprintf("projects/%s/locations/%s/%s", project, location, pubName)
 }
 
 // Name returns the name of the model.
@@ -141,11 +184,13 @@ func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateC
 
 func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
-		Model:            m.fullName,
-		Contents:         support.TransformSlice(contents, (*Content).toProto),
-		SafetySettings:   support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
-		Tools:            support.TransformSlice(m.Tools, (*Tool).toProto),
-		GenerationConfig: m.GenerationConfig.toProto(),
+		Model:             m.fullName,
+		Contents:          support.TransformSlice(contents, (*Content).toProto),
+		SafetySettings:    support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Tools:             support.TransformSlice(m.Tools, (*Tool).toProto),
+		ToolConfig:        m.ToolConfig.toProto(),
+		GenerationConfig:  m.GenerationConfig.toProto(),
+		SystemInstruction: m.SystemInstruction.toProto(),
 	}
 }
 

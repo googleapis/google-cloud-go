@@ -254,7 +254,7 @@ func TestPublishTimeout(t *testing.T) {
 	select {
 	case <-r.Ready():
 		_, err = r.Get(ctx)
-		if err != context.DeadlineExceeded {
+		if !errors.Is(err, context.DeadlineExceeded) {
 			t.Fatalf("got %v, want context.DeadlineExceeded", err)
 		}
 	case <-time.After(2 * topic.PublishSettings.Timeout):

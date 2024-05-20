@@ -25,8 +25,13 @@ import (
 	"strings"
 )
 
+var unreleasedModuleDir map[string]bool = map[string]bool{
+	"spanner/test/opentelemetry/test": true,
+}
+
 var individuallyReleasedModules map[string]bool = map[string]bool{
 	".":                true,
+	"ai":               true,
 	"aiplatform":       true,
 	"auth":             true,
 	"auth/oauth2adapt": true,
@@ -143,7 +148,7 @@ func detectModules(dir string) ([]string, error) {
 		if err != nil {
 			log.Fatal(err)
 		}
-		if !d.IsDir() && d.Name() == "go.mod" && !strings.Contains(path, "internal") && !individuallyReleasedModules[filepath.Dir(path)] {
+		if !d.IsDir() && d.Name() == "go.mod" && !strings.Contains(path, "internal") && !individuallyReleasedModules[filepath.Dir(path)] && !unreleasedModuleDir[filepath.Dir(path)] {
 			mods = append(mods, filepath.Dir(path))
 		}
 		return nil

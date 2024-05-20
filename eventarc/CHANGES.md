@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.6](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.13.5...eventarc/v1.13.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **eventarc:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.13.5](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.13.4...eventarc/v1.13.5) (2024-03-14)
 
 
@@ -149,4 +156,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out eventarc as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

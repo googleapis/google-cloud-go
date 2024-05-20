@@ -3315,6 +3315,59 @@ func (op *DeleteNasJobOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteNotebookExecutionJobOperation manages a long-running operation from DeleteNotebookExecutionJob.
+type DeleteNotebookExecutionJobOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteNotebookExecutionJobOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteNotebookExecutionJobOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteNotebookExecutionJobOperation) Metadata() (*aiplatformpb.DeleteOperationMetadata, error) {
+	var meta aiplatformpb.DeleteOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteNotebookExecutionJobOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteNotebookExecutionJobOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteNotebookRuntimeOperation manages a long-running operation from DeleteNotebookRuntime.
 type DeleteNotebookRuntimeOperation struct {
 	lro      *longrunning.Operation
@@ -8166,6 +8219,53 @@ func (it *NasTrialDetailIterator) takeBuf() interface{} {
 	return b
 }
 
+// NotebookExecutionJobIterator manages a stream of *aiplatformpb.NotebookExecutionJob.
+type NotebookExecutionJobIterator struct {
+	items    []*aiplatformpb.NotebookExecutionJob
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.NotebookExecutionJob, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *NotebookExecutionJobIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *NotebookExecutionJobIterator) Next() (*aiplatformpb.NotebookExecutionJob, error) {
+	var item *aiplatformpb.NotebookExecutionJob
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *NotebookExecutionJobIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *NotebookExecutionJobIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // NotebookRuntimeIterator manages a stream of *aiplatformpb.NotebookRuntime.
 type NotebookRuntimeIterator struct {
 	items    []*aiplatformpb.NotebookRuntime
@@ -9101,6 +9201,53 @@ func (it *TrialIterator) bufLen() int {
 }
 
 func (it *TrialIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// TuningJobIterator manages a stream of *aiplatformpb.TuningJob.
+type TuningJobIterator struct {
+	items    []*aiplatformpb.TuningJob
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*aiplatformpb.TuningJob, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *TuningJobIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *TuningJobIterator) Next() (*aiplatformpb.TuningJob, error) {
+	var item *aiplatformpb.TuningJob
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *TuningJobIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TuningJobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

@@ -37,6 +37,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"go.einride.tech/aip/filtering"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
@@ -111,6 +112,13 @@ func NewServer(opts ...ServerReactorOption) *Server {
 
 // NewServerWithPort creates a new fake server running in the current process at the specified port.
 func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
+	return NewServerWithCallback(port, func(*grpc.Server) { /* empty */ }, opts...)
+}
+
+// NewServerWithCallback creates new fake server running in the current process at the specified port.
+// Before starting the server, the provided callback is called to allow caller to register additional fakes
+// into grpc server.
+func NewServerWithCallback(port int, callback func(*grpc.Server), opts ...ServerReactorOption) *Server {
 	srv, err := testutil.NewServerWithPort(port)
 	if err != nil {
 		panic(fmt.Sprintf("pstest.NewServerWithPort: %v", err))
@@ -136,6 +144,9 @@ func NewServerWithPort(port int, opts ...ServerReactorOption) *Server {
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSchemaServiceServer(srv.Gsrv, &s.GServer)
+
+	callback(srv.Gsrv)
+
 	srv.Start()
 	return s
 }
