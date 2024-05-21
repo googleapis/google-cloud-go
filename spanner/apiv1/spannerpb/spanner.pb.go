@@ -22,9 +22,6 @@ package spannerpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1271,11 +1270,11 @@ func (x *ExecuteBatchDmlRequest) GetRequestOptions() *RequestOptions {
 // 1. Check the status in the response message. The
 // [google.rpc.Code][google.rpc.Code] enum
 //
-//		value `OK` indicates that all statements were executed successfully.
-//	 2. If the status was not `OK`, check the number of result sets in the
-//	    response. If the response contains `N`
-//	    [ResultSet][google.spanner.v1.ResultSet] messages, then statement `N+1` in
-//	    the request failed.
+//	value `OK` indicates that all statements were executed successfully.
+//  2. If the status was not `OK`, check the number of result sets in the
+//     response. If the response contains `N`
+//     [ResultSet][google.spanner.v1.ResultSet] messages, then statement `N+1` in
+//     the request failed.
 //
 // Example 1:
 //

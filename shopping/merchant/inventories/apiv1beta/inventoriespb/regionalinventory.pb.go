@@ -21,11 +21,8 @@
 package inventoriespb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	typepb "cloud.google.com/go/shopping/type/typepb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,7 +46,7 @@ const (
 // information like price and availability for a given product in a specific
 // [`region`][google.shopping.merchant.inventories.v1beta.RegionalInventory.region].
 // For a list of all accepted attribute values, see the [regional product
-// inventory feed
+// inventory data
 // specification](https://support.google.com/merchants/answer/9698880).
 type RegionalInventory struct {
 	state         protoimpl.MessageState
@@ -76,11 +75,11 @@ type RegionalInventory struct {
 	// sale price in this region.
 	SalePriceEffectiveDate *interval.Interval `protobuf:"bytes,6,opt,name=sale_price_effective_date,json=salePriceEffectiveDate,proto3" json:"sale_price_effective_date,omitempty"`
 	// Availability of the product in this region.
-	// For accepted attribute values, see the [regional product inventory feed
+	// For accepted attribute values, see the [regional product inventory data
 	// specification](https://support.google.com/merchants/answer/3061342)
 	Availability *string `protobuf:"bytes,7,opt,name=availability,proto3,oneof" json:"availability,omitempty"`
 	// A list of custom (merchant-provided) attributes. You can also use
-	// `CustomAttribute` to submit any attribute of the feed specification in its
+	// `CustomAttribute` to submit any attribute of the data specification in its
 	// generic form.
 	CustomAttributes []*typepb.CustomAttribute `protobuf:"bytes,8,rep,name=custom_attributes,json=customAttributes,proto3" json:"custom_attributes,omitempty"`
 }

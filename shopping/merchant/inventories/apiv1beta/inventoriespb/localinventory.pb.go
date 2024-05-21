@@ -21,11 +21,8 @@
 package inventoriespb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	typepb "cloud.google.com/go/shopping/type/typepb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	grpc "google.golang.org/grpc"
@@ -34,6 +31,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -47,7 +46,7 @@ const (
 // for a specific product at the store specified by
 // [`storeCode`][google.shopping.merchant.inventories.v1beta.LocalInventory.store_code].
 // For a list of all accepted attribute values, see the [local product inventory
-// feed specification](https://support.google.com/merchants/answer/3061342).
+// data specification](https://support.google.com/merchants/answer/3061342).
 type LocalInventory struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -62,7 +61,7 @@ type LocalInventory struct {
 	Account int64 `protobuf:"varint,2,opt,name=account,proto3" json:"account,omitempty"`
 	// Required. Immutable. Store code (the store ID from your Business Profile)
 	// of the physical store the product is sold in. See the [Local product
-	// inventory feed
+	// inventory data
 	// specification](https://support.google.com/merchants/answer/3061342) for
 	// more information.
 	StoreCode string `protobuf:"bytes,3,opt,name=store_code,json=storeCode,proto3" json:"store_code,omitempty"`
@@ -76,7 +75,7 @@ type LocalInventory struct {
 	// sale at this store.
 	SalePriceEffectiveDate *interval.Interval `protobuf:"bytes,6,opt,name=sale_price_effective_date,json=salePriceEffectiveDate,proto3" json:"sale_price_effective_date,omitempty"`
 	// Availability of the product at this store.
-	// For accepted attribute values, see the [local product inventory feed
+	// For accepted attribute values, see the [local product inventory data
 	// specification](https://support.google.com/merchants/answer/3061342)
 	Availability *string `protobuf:"bytes,7,opt,name=availability,proto3,oneof" json:"availability,omitempty"`
 	// Quantity of the product available at this store. Must be greater than or
@@ -85,19 +84,19 @@ type LocalInventory struct {
 	// Supported pickup method for this product. Unless the value is `"not
 	// supported"`, this field must be submitted together with
 	// `pickupSla`.
-	// For accepted attribute values, see the [local product inventory feed
+	// For accepted attribute values, see the [local product inventory data
 	// specification](https://support.google.com/merchants/answer/3061342)
 	PickupMethod *string `protobuf:"bytes,9,opt,name=pickup_method,json=pickupMethod,proto3,oneof" json:"pickup_method,omitempty"`
 	// Relative time period from the order date for an order for this product,
 	// from this store, to be ready for pickup. Must be submitted with
 	// `pickupMethod`.
-	// For accepted attribute values, see the [local product inventory feed
+	// For accepted attribute values, see the [local product inventory data
 	// specification](https://support.google.com/merchants/answer/3061342)
 	PickupSla *string `protobuf:"bytes,10,opt,name=pickup_sla,json=pickupSla,proto3,oneof" json:"pickup_sla,omitempty"`
 	// Location of the product inside the store. Maximum length is 20 bytes.
 	InstoreProductLocation *string `protobuf:"bytes,11,opt,name=instore_product_location,json=instoreProductLocation,proto3,oneof" json:"instore_product_location,omitempty"`
 	// A list of custom (merchant-provided) attributes. You can also use
-	// `CustomAttribute` to submit any attribute of the feed specification in its
+	// `CustomAttribute` to submit any attribute of the data specification in its
 	// generic form.
 	CustomAttributes []*typepb.CustomAttribute `protobuf:"bytes,12,rep,name=custom_attributes,json=customAttributes,proto3" json:"custom_attributes,omitempty"`
 }
