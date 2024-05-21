@@ -810,6 +810,9 @@ service-configs:
   - input-directory: google/cloud/security/publicca/v1beta1
     service-config: publicca_v1beta1.yaml
     import-path: cloud.google.com/go/security/publicca/apiv1beta1
+  - input-directory: google/cloud/security/publicca/v1
+    service-config: publicca_v1.yaml
+    import-path: cloud.google.com/go/security/publicca/apiv1
   - input-directory: google/cloud/securitycenter/settings/v1beta1
     service-config: securitycenter_settings.yaml
     import-path: cloud.google.com/go/securitycenter/settings/apiv1beta1
