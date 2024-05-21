@@ -64,7 +64,7 @@ const (
 	requestsCompressionHeader = "x-response-encoding"
 
 	// endToEndTracingHeader is the name of the metadata header if client
-	// has opted-in for the creation of trace span's on the Spanner layer.
+	// has opted-in for the creation of trace spans on the Spanner layer.
 	endToEndTracingHeader = "x-goog-spanner-end-to-end-tracing"
 
 	// numChannels is the default value for NumChannels of client.
@@ -337,7 +337,7 @@ type ClientConfig struct {
 	OpenTelemetryMeterProvider metric.MeterProvider
 
 	// EnableEndToEndTracing indicates whether end to end tracing is enabled or not.
-	// If it is enabled, trace span's will be created at Spanner layer.
+	// If it is enabled, trace spans will be created at Spanner layer.
 	//
 	// Default: false
 	EnableEndToEndTracing bool
