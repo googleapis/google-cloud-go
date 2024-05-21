@@ -21,11 +21,8 @@
 package lfppb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	typepb "cloud.google.com/go/shopping/type/typepb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -77,7 +76,7 @@ type LfpInventory struct {
 	// Optional. The current price of the product.
 	Price *typepb.Price `protobuf:"bytes,8,opt,name=price,proto3" json:"price,omitempty"`
 	// Required. Availability of the product at this store.
-	// For accepted attribute values, see the [local product inventory feed
+	// For accepted attribute values, see the [local product inventory data
 	// specification](https://support.google.com/merchants/answer/3061342)
 	Availability string `protobuf:"bytes,9,opt,name=availability,proto3" json:"availability,omitempty"`
 	// Optional. Quantity of the product available at this store. Must be greater
@@ -88,12 +87,12 @@ type LfpInventory struct {
 	CollectionTime *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=collection_time,json=collectionTime,proto3" json:"collection_time,omitempty"`
 	// Optional. Supported pickup method for this offer. Unless the value is "not
 	// supported", this field must be submitted together with `pickupSla`. For
-	// accepted attribute values, see the [local product inventory feed
+	// accepted attribute values, see the [local product inventory data
 	// specification](https://support.google.com/merchants/answer/3061342).
 	PickupMethod *string `protobuf:"bytes,12,opt,name=pickup_method,json=pickupMethod,proto3,oneof" json:"pickup_method,omitempty"`
 	// Optional. Expected date that an order will be ready for pickup relative to
 	// the order date. Must be submitted together with `pickupMethod`. For
-	// accepted attribute values, see the [local product inventory feed
+	// accepted attribute values, see the [local product inventory data
 	// specification](https://support.google.com/merchants/answer/3061342).
 	PickupSla *string `protobuf:"bytes,13,opt,name=pickup_sla,json=pickupSla,proto3,oneof" json:"pickup_sla,omitempty"`
 	// Optional. The [feed
