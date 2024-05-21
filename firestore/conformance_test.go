@@ -99,11 +99,12 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 		}
 		srv.addRPC(req, []interface{}{
 			&fspb.BatchGetDocumentsResponse{
-				Result: &fspb.BatchGetDocumentsResponse_Found{&fspb.Document{
-					Name:       typedTestcase.Get.DocRefPath,
-					CreateTime: &ts.Timestamp{},
-					UpdateTime: &ts.Timestamp{},
-				}},
+				Result: &fspb.BatchGetDocumentsResponse_Found{
+					Found: &fspb.Document{
+						Name:       typedTestcase.Get.DocRefPath,
+						CreateTime: &ts.Timestamp{},
+						UpdateTime: &ts.Timestamp{},
+					}},
 				ReadTime: &ts.Timestamp{},
 			},
 		})
@@ -205,7 +206,7 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 		}
 		srv.addRPC(&fspb.ListenRequest{
 			Database:     "projects/projectID/databases/(default)",
-			TargetChange: &fspb.ListenRequest_AddTarget{iter.ws.target},
+			TargetChange: &fspb.ListenRequest_AddTarget{AddTarget: iter.ws.target},
 		}, rs)
 		got, err := nSnapshots(iter, len(typedTestcase.Listen.Snapshots))
 		if err != nil {
