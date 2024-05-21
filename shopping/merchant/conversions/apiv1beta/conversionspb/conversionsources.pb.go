@@ -22,9 +22,6 @@ package conversionspb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -504,7 +503,7 @@ func (x *GoogleAnalyticsLink) GetProperty() string {
 }
 
 // "Merchant Center Destination" sources can be used to send conversion events
-// from a website using a Google tag directly to a Merchant Center account
+// from an online store using a Google tag directly to a Merchant Center account
 // where the source is created.
 type MerchantCenterDestination struct {
 	state         protoimpl.MessageState
