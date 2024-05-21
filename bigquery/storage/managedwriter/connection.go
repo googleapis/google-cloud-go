@@ -343,10 +343,6 @@ func (co *connection) close() {
 
 // lockingAppend handles a single append request on a given connection.
 func (co *connection) lockingAppend(pw *pendingWrite) error {
-	// If connection context is expired, error.
-	if err := co.ctx.Err(); err != nil {
-		return err
-	}
 	// Don't both calling/retrying if this append's context is already expired.
 	if err := pw.reqCtx.Err(); err != nil {
 		return err
@@ -372,6 +368,11 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 			statsOnExit(sCtx)
 		}
 	}()
+
+	// If connection context is expired, error.
+	if err := co.ctx.Err(); err != nil {
+		return err
+	}
 
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
 	var ch chan *pendingWrite
