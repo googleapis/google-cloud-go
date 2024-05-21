@@ -3955,6 +3955,52 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 }
 
+func TestClient_WithEndToEndTracingHeader(t *testing.T) {
+	t.Parallel()
+
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	wantEndToEndTracing := true
+	config := ClientConfig{EnableEndToEndTracing: wantEndToEndTracing}
+	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
+	if err != nil {
+		t.Fatalf("failed to get a client: %v", err)
+	}
+	gotEndToEndTracing := false
+	for _, val := range client.sc.md.Get(endToEndTracingHeader) {
+		if val == "true" {
+			gotEndToEndTracing = true
+		}
+	}
+	if gotEndToEndTracing != wantEndToEndTracing {
+		t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, wantEndToEndTracing)
+	}
+}
+
+func TestClient_WithoutEndToEndTracingHeader(t *testing.T) {
+	t.Parallel()
+
+	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+
+	wantEndToEndTracing := false
+	config := ClientConfig{EnableEndToEndTracing: wantEndToEndTracing}
+	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
+	if err != nil {
+		t.Fatalf("failed to get a client: %v", err)
+	}
+	gotEndToEndTracing := false
+	for _, val := range client.sc.md.Get(endToEndTracingHeader) {
+		if val == "true" {
+			gotEndToEndTracing = true
+		}
+	}
+	if gotEndToEndTracing != wantEndToEndTracing {
+		t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, wantEndToEndTracing)
+	}
+}
+
 func TestClient_WithCustomBatchTimeout(t *testing.T) {
 	t.Parallel()
 
