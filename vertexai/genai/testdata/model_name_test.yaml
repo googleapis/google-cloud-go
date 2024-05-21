@@ -1,0 +1,25 @@
+# This is an xltest file.
+# See github.com/jba/xltest for information about its format
+# and how to interpret it.
+
+# Test function: takes a string, returns a string that is the full
+# model name. Assumes the current project is 'proj' and the current
+# location is 'loc'.
+
+# Validation: default (equality).
+
+name: model name
+description: determining a full model name from a partial one
+subtests:
+  - in: xyz
+    want: projects/proj/locations/loc/publishers/google/models/xyz
+
+  - in: models/abc
+    want: projects/proj/locations/loc/publishers/google/models/abc
+    
+  - in: publishers/foo/xyz
+    want: projects/proj/locations/loc/publishers/foo/xyz
+
+  - in: x/y/z
+    want: x/y/z
+       

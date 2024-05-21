@@ -1,0 +1,37 @@
+# This is an xltest file.
+# See github.com/jba/xltest for information about its format
+# and how to interpret it.
+
+# Test function: takes a string, returns a string that is the location
+# to use for the service.
+# Validation: default (equality).
+
+name: location
+description: how a location for the service is determined
+subtests:
+  - name: user provides
+    in: us-west4
+    want: us-west4
+
+  - name: default
+    description: the default location is us-central1
+    in: ''
+    want: us-central1
+
+  - name: env vars
+    env:
+      CLOUD_ML_REGION: cmr
+    subtests:
+      - in: ''
+        want: cmr
+
+      - description: GOOGLE_CLOUD_REGION takes precedence over CLOUD_ML_REGION
+        env:
+          GOOGLE_CLOUD_REGION: gcr
+        in: ''
+        want: gcr
+
+      - description: user input takes precedence over env vars
+        in: us-west4
+        want: us-west4
+        
