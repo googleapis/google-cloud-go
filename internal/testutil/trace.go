@@ -59,6 +59,7 @@ func (te *TestExporter) ExportSpan(s *trace.SpanData) {
 	te.spans = append(te.spans, s)
 }
 
+// Spans returns the exported spans.
 func (te *TestExporter) Spans() []*trace.SpanData {
 	te.mu.Lock()
 	defer te.mu.Unlock()
