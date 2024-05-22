@@ -48,6 +48,8 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	control "cloud.google.com/go/storage/control/apiv2"
+	"cloud.google.com/go/storage/control/apiv2/controlpb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -56,7 +58,6 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
-	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -88,6 +89,7 @@ var (
 	newTestClient func(ctx context.Context, opts ...option.ClientOption) (*Client, error)
 	replaying     bool
 	testTime      time.Time
+	controlClient *control.StorageControlClient
 )
 
 func TestMain(m *testing.M) {
@@ -195,6 +197,12 @@ func initIntegrationTest() func() error {
 			return func() error { return nil }
 		}
 		defer client.Close()
+		// Create storage control client; in some cases this is needed for test
+		// setup and cleanup.
+		controlClient, err = control.NewStorageControlClient(ctx)
+		if err != nil {
+			log.Fatalf("NewStorageControlClient: %v", err)
+		}
 		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", bucketName, err)
 		}
@@ -1464,19 +1472,21 @@ func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
 			contents[obj] = c
 		}
 
-		// Create a managed folder. This requires using the Apiary client as this is not available
-		// in the veneer layer.
-		// TODO: change to use storage control client once available.
-		call := client.raw.ManagedFolders.Insert(newBucketName, &raw.ManagedFolder{Name: "mf"})
-		mf, err := call.Context(ctx).Do()
+		req := &controlpb.CreateManagedFolderRequest{
+			Parent:          fmt.Sprintf("projects/_/buckets/%s", newBucketName),
+			ManagedFolder:   &controlpb.ManagedFolder{},
+			ManagedFolderId: "mf",
+		}
+		mf, err := controlClient.CreateManagedFolder(ctx, req)
 		if err != nil {
 			t.Fatalf("creating managed folder: %v", err)
 		}
 
 		t.Cleanup(func() {
-			// TODO: add this cleanup logic to killBucket as well once gRPC support is available.
-			call := client.raw.ManagedFolders.Delete(newBucketName, mf.Name)
-			call.Context(ctx).Do()
+			req := &controlpb.DeleteManagedFolderRequest{
+				Name: mf.Name,
+			}
+			controlClient.DeleteManagedFolder(ctx, req)
 		})
 
 		// Test that managed folders are only included when IncludeFoldersAsPrefixes is set.
@@ -6001,6 +6011,33 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 			return fmt.Errorf("deleting %q: %v", bucketName+"/"+objAttrs.Name, err)
 		}
 	}
+	// Delete any managed folders.
+	req := &controlpb.ListManagedFoldersRequest{
+		Parent: fmt.Sprintf("projects/_/buckets/%s", bucketName),
+	}
+	mfIt := controlClient.ListManagedFolders(ctx, req)
+	for {
+		resp, err := mfIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		// Buckets without UBLA will return this error for MF ops; skip.
+		if status.Code(err) == codes.FailedPrecondition {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		deleteReq := &controlpb.DeleteManagedFolderRequest{
+			Name:          resp.Name,
+			AllowNonEmpty: true,
+		}
+		err = controlClient.DeleteManagedFolder(ctx, deleteReq)
+		if err != nil {
+			return err
+		}
+	}
+
 	// GCS is eventually consistent, so this delete may fail because the
 	// replica still sees an object in the bucket. We log the error and expect
 	// a later test run to delete the bucket.
