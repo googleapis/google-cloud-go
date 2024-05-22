@@ -21,7 +21,7 @@ import (
 
 var serverAddress string
 
-func Example_NewRecorder() {
+func ExampleNewRecorder() {
 	rec, err := rpcreplay.NewRecorder("service.replay", nil)
 	if err != nil {
 		// TODO: Handle error.
@@ -38,7 +38,7 @@ func Example_NewRecorder() {
 	_ = conn // TODO: use connection
 }
 
-func Example_NewReplayer() {
+func ExampleNewReplayer() {
 	rep, err := rpcreplay.NewReplayer("service.replay")
 	if err != nil {
 		// TODO: Handle error.
