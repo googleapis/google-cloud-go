@@ -15,7 +15,6 @@
 package testutil
 
 import (
-	"errors"
 	"log"
 	"sync"
 	"time"
@@ -60,14 +59,12 @@ func (te *TestExporter) ExportSpan(s *trace.SpanData) {
 	te.spans = append(te.spans, s)
 }
 
-// LatestSpan returns the last span if present or returns error
-func (te *TestExporter) LatestSpan() (*trace.SpanData, error) {
+func (te *TestExporter) Spans() []*trace.SpanData {
 	te.mu.Lock()
 	defer te.mu.Unlock()
-	if len(te.spans) == 0 {
-		return nil, errors.New("no spans were exported")
-	}
-	return te.spans[len(te.spans)-1], nil
+	spans := make([]*trace.SpanData, len(te.spans))
+	copy(spans, te.spans)
+	return spans
 }
 
 // ExportView exports a view.

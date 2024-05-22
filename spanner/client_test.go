@@ -4548,10 +4548,11 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	s, err := te.LatestSpan()
-	if err != nil {
-		t.Fatal(err)
+	spans := te.Spans()
+	if len(spans) == 0 {
+		t.Fatal("No spans were exported")
 	}
+	s := spans[len(spans)-1].Status
 	if s.Code != int32(codes.OK) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.OK)
 	}
@@ -4596,10 +4597,11 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	s, err := te.LatestSpan()
-	if err != nil {
-		t.Fatal(err)
+	spans := te.Spans()
+	if len(spans) == 0 {
+		t.Fatal("No spans were exported")
 	}
+	s := spans[len(spans)-1].Status
 	if s.Code != int32(codes.InvalidArgument) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.InvalidArgument)
 	}
@@ -5362,10 +5364,11 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	s, err := te.LatestSpan()
-	if err != nil {
-		t.Fatal(err)
+	spans := te.Spans()
+	if len(spans) == 0 {
+		t.Fatal("No spans were exported")
 	}
+	s := spans[len(spans)-1].Status
 	if s.Code != int32(code) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, code)
 	}
