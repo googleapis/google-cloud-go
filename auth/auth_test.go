@@ -506,3 +506,51 @@ func TestNew2LOTokenProvider_Validate(t *testing.T) {
 		})
 	}
 }
+
+type countingTestProvider struct {
+	count int
+}
+
+func (tp *countingTestProvider) Token(ctx context.Context) (*Token, error) {
+	tok := &Token{
+		Value: fmt.Sprint(tp.count),
+		// Set expiry to q1 second from now.
+		Expiry: time.Now().Add(time.Second),
+	}
+	tp.count++
+	return tok, nil
+}
+func TestComputeTokenProvider_NonBlockingRefresh(t *testing.T) {
+	// Freeze now for consistent results.
+	now := time.Now()
+	timeNow = func() time.Time { return now }
+	defer func() { timeNow = time.Now }()
+	tp := NewCachedTokenProvider(&countingTestProvider{count: 1}, &CachedTokenProviderOptions{
+		NonBlockingRefresh: true,
+		// EarlyTokenRefresh ensures that token with expiry 1 second from now is already stale.
+		ExpireEarly: 2 * time.Second,
+	})
+	freshToken, err := tp.Token(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "1"; freshToken.Value != want {
+		t.Errorf("got %q, want %q", freshToken.Value, want)
+	}
+	staleToken, err := tp.Token(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "1"; staleToken.Value != want {
+		t.Errorf("got %q, want %q", staleToken.Value, want)
+	}
+	// Allow time for async refresh.
+	time.Sleep(100 * time.Millisecond)
+	freshToken2, err := tp.Token(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "2"; freshToken2.Value != want {
+		t.Errorf("got %q, want %q", freshToken2.Value, want)
+	}
+}

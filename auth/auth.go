@@ -27,6 +27,8 @@ import (
 
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/jwt"
+
+	"golang.org/x/sync/singleflight"
 )
 
 const (
@@ -41,7 +43,30 @@ const (
 	// so we give it 15 seconds to refresh it's cache before attempting to refresh a token.
 	defaultExpiryDelta = 225 * time.Second
 
+	// nonBlockingRefreshKey is the singleflight uniqueness key for asynchronous
+	// refresh of a token. It can be any value, since there is only one
+	// cachedTokenProvider.cachedToken.
+	nonBlockingRefreshKey = "computeProvider"
+	// nonBlockingRefreshTimeout is the timeout for asynchronous refresh of a
+	// token.
+	nonBlockingRefreshTimeout = 30 * time.Second
+
 	universeDomainDefault = "googleapis.com"
+)
+
+// tokenState represents different states for a [Token].
+type tokenState int
+
+const (
+	// fresh indicates that the [Token] is valid. It is not expired or close to
+	// expired, or the token has no expiry.
+	fresh tokenState = iota
+	// stale indicates that the [Token] is close to expired, and should be
+	// refreshed. The token can be used normally.
+	stale
+	// invalid indicates that the [Token] is expired or invalid. The token
+	// cannot be used for a normal operation.
+	invalid
 )
 
 var (
@@ -81,9 +106,9 @@ type Token struct {
 
 // IsValid reports that a [Token] is non-nil, has a [Token.Value], and has not
 // expired. A token is considered expired if [Token.Expiry] has passed or will
-// pass in the next 10 seconds.
+// pass in the next 225 seconds.
 func (t *Token) IsValid() bool {
-	return t.isValidWithEarlyExpiry(defaultExpiryDelta)
+	return t.isValidWithEarlyExpiry(defaultExpiryDelta) // TODO(quartzmo): investigate why EarlyTokenRefresh, ExpireEarly isn't used here. Bug?
 }
 
 func (t *Token) isValidWithEarlyExpiry(earlyExpiry time.Duration) bool {
@@ -206,11 +231,15 @@ func NewCredentials(opts *CredentialsOptions) *Credentials {
 // CachedTokenProvider.
 type CachedTokenProviderOptions struct {
 	// DisableAutoRefresh makes the TokenProvider always return the same token,
-	// even if it is expired.
+	// even if it is expired. The default is false. Optional.
 	DisableAutoRefresh bool
 	// ExpireEarly configures the amount of time before a token expires, that it
-	// should be refreshed. If unset, the default value is 10 seconds.
+	// should be refreshed. If unset, the default value is 3 minutes and 45
+	// seconds. Optional.
 	ExpireEarly time.Duration
+	// NonBlockingRefresh configures an asynchronous workflow that refreshes
+	// stale tokens without blocking. The default is false. Optional.
+	NonBlockingRefresh bool
 }
 
 func (ctpo *CachedTokenProviderOptions) autoRefresh() bool {
@@ -227,6 +256,13 @@ func (ctpo *CachedTokenProviderOptions) expireEarly() time.Duration {
 	return ctpo.ExpireEarly
 }
 
+func (ctpo *CachedTokenProviderOptions) nonBlockingRefresh() bool {
+	if ctpo == nil {
+		return false
+	}
+	return ctpo.NonBlockingRefresh
+}
+
 // NewCachedTokenProvider wraps a [TokenProvider] to cache the tokens returned
 // by the underlying provider. By default it will refresh tokens ten seconds
 // before they expire, but this time can be configured with the optional
@@ -236,22 +272,102 @@ func NewCachedTokenProvider(tp TokenProvider, opts *CachedTokenProviderOptions) 
 		return ctp
 	}
 	return &cachedTokenProvider{
-		tp:          tp,
-		autoRefresh: opts.autoRefresh(),
-		expireEarly: opts.expireEarly(),
+		tp:                 tp,
+		autoRefresh:        opts.autoRefresh(),
+		expireEarly:        opts.expireEarly(),
+		nonBlockingRefresh: opts.nonBlockingRefresh(),
 	}
 }
 
 type cachedTokenProvider struct {
-	tp          TokenProvider
-	autoRefresh bool
-	expireEarly time.Duration
+	tp                 TokenProvider
+	autoRefresh        bool
+	expireEarly        time.Duration
+	nonBlockingRefresh bool
+	// loadGroup ensures that the non-blocking refresh will only happen on one
+	// goroutine, even if multiple callers have entered the Token method.
+	loadGroup singleflight.Group
 
 	mu          sync.Mutex
 	cachedToken *Token
 }
 
 func (c *cachedTokenProvider) Token(ctx context.Context) (*Token, error) {
+	if c.nonBlockingRefresh {
+		return c.tokenNonBlocking(ctx)
+	}
+	return c.tokenBlocking(ctx)
+}
+
+func (c *cachedTokenProvider) tokenNonBlocking(ctx context.Context) (*Token, error) {
+	switch c.tokenState() {
+	case fresh:
+		c.mu.Lock()
+		defer c.mu.Unlock()
+		return c.cachedToken, nil
+	case stale:
+		// Call singleflight's DoChan (via tokenAsync) but discard the returned
+		// chan. In order to return an err from tokenAsync, we would need to
+		// wait on chan and read its err. Instead, allow all requests during
+		// the refresh window to join serial attempts managed by singleflight.
+		//  If all fail, the Expired case should return the same error.
+		c.tokenAsync()
+		// Return the stale token immediately to not block customer requests to Cloud services
+		c.mu.Lock()
+		defer c.mu.Unlock()
+		return c.cachedToken, nil
+	case invalid:
+		return c.tokenBlocking(ctx)
+	default:
+		panic("unreachable")
+	}
+}
+
+// tokenState reports the token's validity.
+func (c *cachedTokenProvider) tokenState() tokenState {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	t := c.cachedToken
+	if t == nil || t.Value == "" {
+		return invalid
+	} else if t.Expiry.IsZero() {
+		return fresh
+	} else if timeNow().After(t.Expiry.Round(0)) {
+		return invalid
+	} else if timeNow().After(t.Expiry.Round(0).Add(-c.expireEarly)) {
+		return stale
+	}
+	return fresh
+}
+
+// tokenAsync uses singleflight to ensure that only one async token fetch
+// happens at a time, even if multiple callers have entered this function
+// concurrently. This avoids creating an arbitrary number of concurrent
+// goroutines.
+func (c *cachedTokenProvider) tokenAsync() <-chan singleflight.Result {
+	return c.loadGroup.DoChan(nonBlockingRefreshKey, func() (entry any, err error) {
+
+		// Use a new context with timeout. This allows metadata.GetWithContext
+		// to retry regardless of the original request context.
+		refreshCtx, refreshCancel := context.WithTimeout(context.Background(), nonBlockingRefreshTimeout)
+		defer refreshCancel()
+
+		t, err := c.tp.Token(refreshCtx)
+		if err != nil {
+			// In order to return this err to callers of the main goroutine, a
+			// call to tokenAsync would need to wait on the returned chan and
+			// read its err. Currently, it is ignored in tokenNonBlocking, above.
+			return nil, err
+		}
+
+		c.mu.Lock()
+		defer c.mu.Unlock()
+		c.cachedToken = t
+		return t, nil
+	})
+}
+
+func (c *cachedTokenProvider) tokenBlocking(ctx context.Context) (*Token, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
 	if c.cachedToken.IsValid() || !c.autoRefresh {
