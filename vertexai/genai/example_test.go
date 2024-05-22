@@ -27,7 +27,8 @@ import (
 // Your GCP project
 const projectID = "your-project"
 
-// A GCP location like "us-central1"
+// A GCP location like "us-central1"; if you're using standard Google-published
+// models (like untuned Gemini models), you can keep location blank ("").
 const location = "some-gcp-location"
 
 // A model name like "gemini-1.0-pro"
@@ -269,13 +270,13 @@ func ExampleTool() {
 	printResponse(res)
 }
 
-func ExampleToolConifg() {
+func ExampleGenerativeModel_ToolConfig() {
 	// This example shows how to affect how the model uses the tools provided to it.
 	// By setting the ToolConfig, you can disable function calling.
 
 	// Assume we have created a Model and have set its Tools field with some functions.
 	// See the Example for Tool for details.
-	var model *genai.GenerativeModel
+	model := &genai.GenerativeModel{}
 
 	// By default, the model will use the functions in its responses if it thinks they are
 	// relevant, by returning FunctionCall parts.

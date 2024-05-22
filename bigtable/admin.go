@@ -2109,7 +2109,7 @@ func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, tab
 	req := &btapb.RestoreTableRequest{
 		Parent:  parent,
 		TableId: table,
-		Source:  &btapb.RestoreTableRequest_Backup{sourceBackupPath},
+		Source:  &btapb.RestoreTableRequest_Backup{Backup: sourceBackupPath},
 	}
 	op, err := ac.tClient.RestoreTable(ctx, req)
 	if err != nil {

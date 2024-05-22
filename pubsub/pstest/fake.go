@@ -40,6 +40,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -1628,11 +1629,12 @@ func (s *GServer) RollbackSchema(_ context.Context, req *pb.RollbackSchemaReques
 
 	for _, sc := range s.schemas[req.Name] {
 		if sc.RevisionId == req.RevisionId {
-			newSchema := *sc
+			cloned := proto.Clone(sc)
+			newSchema := cloned.(*pb.Schema)
 			newSchema.RevisionId = genRevID()
 			newSchema.RevisionCreateTime = timestamppb.Now()
-			s.schemas[req.Name] = append(s.schemas[req.Name], &newSchema)
-			return &newSchema, nil
+			s.schemas[req.Name] = append(s.schemas[req.Name], newSchema)
+			return newSchema, nil
 		}
 	}
 	return nil, status.Errorf(codes.NotFound, "schema %q@%q not found", req.Name, req.RevisionId)

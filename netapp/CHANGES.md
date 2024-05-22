@@ -1,6 +1,16 @@
 # Changelog
 
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.0.0...netapp/v1.1.0) (2024-05-22)
+
+
+### Features
+
+* **netapp:** Add a new Service Level FLEX ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **netapp:** Add backup chain bytes to BackupConfig in Volume ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **netapp:** Add Location metadata support ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **netapp:** Add Tiering Policy to Volume ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.8...netapp/v1.0.0) (2024-05-16)
 
 
