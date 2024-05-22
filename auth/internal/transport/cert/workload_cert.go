@@ -99,18 +99,18 @@ func getCertAndKeyFiles(configFilePath string) (string, string, error) {
 	}
 
 	if config.CertConfigs.Workload == nil {
-		return "", "", errors.New("workload certificate information not found in certificate configuration")
+		return "", "", errors.New("Workload Identity Federation certificate information not found in the certificate configuration file")
 	}
 
 	certFile := config.CertConfigs.Workload.CertPath
 	keyFile := config.CertConfigs.Workload.KeyPath
 
 	if certFile == "" {
-		err = errors.New("certificate file location could not be found in the certificate configuration")
+		err = errors.New("the certificate configuration is missing the certificate file location")
 	}
 
 	if keyFile == "" {
-		err = errors.New("key file location could not be fouind in the certificate configuration")
+		err = errors.New("the certificate configuration is missing the key file location")
 	}
 
 	if err != nil {
