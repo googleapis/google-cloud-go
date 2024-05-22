@@ -54,7 +54,7 @@ func TestStartSpan_OpenCensus(t *testing.T) {
 
 	TracePrintf(ctx, annotationData(), "Add my annotations")
 
-	var err error = &googleapi.Error{Code: http.StatusBadRequest, Message: "INVALID ARGUMENT"}
+	err := &googleapi.Error{Code: http.StatusBadRequest, Message: "INVALID ARGUMENT"}
 	EndSpan(ctx, err)
 
 	if !IsOpenCensusTracingEnabled() {
