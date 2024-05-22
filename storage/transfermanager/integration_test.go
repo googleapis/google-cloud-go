@@ -96,14 +96,17 @@ func TestIntegration_DownloaderSynchronous(t *testing.T) {
 		for i, obj := range objects {
 			writers[i] = &testWriter{}
 			objToWriter[obj] = i
-			d.DownloadObject(ctx, &DownloadObjectInput{
+			if err := d.DownloadObject(ctx, &DownloadObjectInput{
 				Bucket:      tb.bucket,
 				Object:      obj,
 				Destination: writers[i],
-			})
+			}); err != nil {
+				t.Errorf("d.DownloadObject: %v", err)
+			}
 		}
 
-		if err := d.WaitAndClose(); err != nil {
+		results, err := d.WaitAndClose()
+		if err != nil {
 			t.Fatalf("d.WaitAndClose: %v", err)
 		}
 
@@ -116,7 +119,6 @@ func TestIntegration_DownloaderSynchronous(t *testing.T) {
 		}
 
 		// Check the results.
-		results := d.Results()
 		for _, got := range results {
 			writerIdx := objToWriter[got.Object]
 
@@ -165,15 +167,18 @@ func TestIntegration_DownloaderErrorSync(t *testing.T) {
 		for i, obj := range objects {
 			writers[i] = &testWriter{}
 			objToWriter[obj] = i
-			d.DownloadObject(ctx, &DownloadObjectInput{
+			if err := d.DownloadObject(ctx, &DownloadObjectInput{
 				Bucket:      tb.bucket,
 				Object:      obj,
 				Destination: writers[i],
-			})
+			}); err != nil {
+				t.Errorf("d.DownloadObject: %v", err)
+			}
 		}
 
 		// WaitAndClose should return an error since one of our downloads should have failed.
-		if err := d.WaitAndClose(); err == nil {
+		results, err := d.WaitAndClose()
+		if err == nil {
 			t.Error("d.WaitAndClose should return an error, instead got nil")
 		}
 
@@ -186,7 +191,6 @@ func TestIntegration_DownloaderErrorSync(t *testing.T) {
 		}
 
 		// Check the results.
-		results := d.Results()
 		for _, got := range results {
 			writerIdx := objToWriter[got.Object]
 
@@ -223,7 +227,7 @@ func TestIntegration_DownloaderAsynchronous(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
 		objects := tb.objects
 
-		d, err := NewDownloader(c, WithWorkers(2))
+		d, err := NewDownloader(c, WithWorkers(2), WithCallbacks())
 		if err != nil {
 			t.Fatalf("NewDownloader: %v", err)
 		}
@@ -236,35 +240,38 @@ func TestIntegration_DownloaderAsynchronous(t *testing.T) {
 		for i, obj := range objects {
 			i := i
 			writers[i] = &testWriter{}
-			d.DownloadObjectWithCallback(ctx, &DownloadObjectInput{
+			if err := d.DownloadObject(ctx, &DownloadObjectInput{
 				Bucket:      tb.bucket,
 				Object:      obj,
 				Destination: writers[i],
-			}, func(got *DownloadOutput) {
-				callbackMu.Lock()
-				numCallbacks++
-				callbackMu.Unlock()
+				Callback: func(got *DownloadOutput) {
+					callbackMu.Lock()
+					numCallbacks++
+					callbackMu.Unlock()
 
-				if got.Err != nil {
-					t.Errorf("result.Err: %v", got.Err)
-				}
+					if got.Err != nil {
+						t.Errorf("result.Err: %v", got.Err)
+					}
 
-				// Close the writer so we can check the contents.
-				if err := writers[i].Close(); err != nil {
-					t.Fatalf("testWriter.Close: %v", err)
-				}
+					// Close the writer so we can check the contents.
+					if err := writers[i].Close(); err != nil {
+						t.Fatalf("testWriter.Close: %v", err)
+					}
 
-				if want, got := tb.contentHashes[got.Object], writers[i].crc32c; got != want {
-					t.Fatalf("content crc32c does not match; got: %v, expected: %v", got, want)
-				}
+					if want, got := tb.contentHashes[got.Object], writers[i].crc32c; got != want {
+						t.Fatalf("content crc32c does not match; got: %v, expected: %v", got, want)
+					}
 
-				if got.Attrs.Size != tb.objectSize {
-					t.Errorf("expected object size %d, got %d", tb.objectSize, got.Attrs.Size)
-				}
-			})
+					if got.Attrs.Size != tb.objectSize {
+						t.Errorf("expected object size %d, got %d", tb.objectSize, got.Attrs.Size)
+					}
+				},
+			}); err != nil {
+				t.Errorf("d.DownloadObject: %v", err)
+			}
 		}
 
-		if err := d.WaitAndClose(); err != nil {
+		if _, err := d.WaitAndClose(); err != nil {
 			t.Fatalf("d.WaitAndClose: %v", err)
 		}
 
@@ -276,7 +283,7 @@ func TestIntegration_DownloaderAsynchronous(t *testing.T) {
 
 func TestIntegration_DownloaderErrorAsync(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
-		d, err := NewDownloader(c, WithWorkers(2))
+		d, err := NewDownloader(c, WithWorkers(2), WithCallbacks())
 		if err != nil {
 			t.Fatalf("NewDownloader: %v", err)
 		}
@@ -287,77 +294,86 @@ func TestIntegration_DownloaderErrorAsync(t *testing.T) {
 		callbackMu := sync.Mutex{}
 
 		// Download an object with incorrect generation.
-		d.DownloadObjectWithCallback(ctx, &DownloadObjectInput{
+		if err := d.DownloadObject(ctx, &DownloadObjectInput{
 			Bucket:      tb.bucket,
 			Object:      tb.objects[0],
 			Destination: &testWriter{},
 			Conditions: &storage.Conditions{
 				GenerationMatch: -10,
 			},
-		}, func(got *DownloadOutput) {
-			callbackMu.Lock()
-			numCallbacks++
-			callbackMu.Unlock()
+			Callback: func(got *DownloadOutput) {
+				callbackMu.Lock()
+				numCallbacks++
+				callbackMu.Unlock()
 
-			// This will match both the expected http and grpc errors.
-			wantErr := errors.Join(&googleapi.Error{Code: 412}, status.Error(codes.FailedPrecondition, ""))
+				// This will match both the expected http and grpc errors.
+				wantErr := errors.Join(&googleapi.Error{Code: 412}, status.Error(codes.FailedPrecondition, ""))
 
-			if !errorIs(got.Err, wantErr) {
-				t.Errorf("mismatching errors: got %v, want %v", got.Err, wantErr)
-			}
-		})
+				if !errorIs(got.Err, wantErr) {
+					t.Errorf("mismatching errors: got %v, want %v", got.Err, wantErr)
+				}
+			},
+		}); err != nil {
+			t.Errorf("d.DownloadObject: %v", err)
+		}
 
 		// Download existing objects.
 		writers := make([]*testWriter, len(tb.objects))
 		for i, obj := range tb.objects {
 			i := i
 			writers[i] = &testWriter{}
-			d.DownloadObjectWithCallback(ctx, &DownloadObjectInput{
+			if err := d.DownloadObject(ctx, &DownloadObjectInput{
 				Bucket:      tb.bucket,
 				Object:      obj,
 				Destination: writers[i],
-			}, func(got *DownloadOutput) {
+				Callback: func(got *DownloadOutput) {
+					callbackMu.Lock()
+					numCallbacks++
+					callbackMu.Unlock()
+
+					if got.Err != nil {
+						t.Errorf("result.Err: %v", got.Err)
+					}
+
+					// Close the writer so we can check the contents.
+					if err := writers[i].Close(); err != nil {
+						t.Fatalf("testWriter.Close: %v", err)
+					}
+
+					if want, got := tb.contentHashes[got.Object], writers[i].crc32c; got != want {
+						t.Fatalf("content crc32c does not match; got: %v, expected: %v", got, want)
+					}
+
+					if got.Attrs.Size != tb.objectSize {
+						t.Errorf("expected object size %d, got %d", tb.objectSize, got.Attrs.Size)
+					}
+				},
+			}); err != nil {
+				t.Errorf("d.DownloadObject: %v", err)
+			}
+		}
+
+		// Download a nonexistent object.
+		if err := d.DownloadObject(ctx, &DownloadObjectInput{
+			Bucket:      tb.bucket,
+			Object:      "not-written",
+			Destination: &testWriter{},
+			Callback: func(got *DownloadOutput) {
 				callbackMu.Lock()
 				numCallbacks++
 				callbackMu.Unlock()
 
-				if got.Err != nil {
-					t.Errorf("result.Err: %v", got.Err)
+				// Check that the nonexistent object returned an error.
+				if got.Err != storage.ErrObjectNotExist {
+					t.Errorf("Object(%q) should not exist, err found to be %v", got.Object, got.Err)
 				}
-
-				// Close the writer so we can check the contents.
-				if err := writers[i].Close(); err != nil {
-					t.Fatalf("testWriter.Close: %v", err)
-				}
-
-				if want, got := tb.contentHashes[got.Object], writers[i].crc32c; got != want {
-					t.Fatalf("content crc32c does not match; got: %v, expected: %v", got, want)
-				}
-
-				if got.Attrs.Size != tb.objectSize {
-					t.Errorf("expected object size %d, got %d", tb.objectSize, got.Attrs.Size)
-				}
-			})
+			},
+		}); err != nil {
+			t.Errorf("d.DownloadObject: %v", err)
 		}
 
-		// Download a nonexistent object.
-		d.DownloadObjectWithCallback(ctx, &DownloadObjectInput{
-			Bucket:      tb.bucket,
-			Object:      "not-written",
-			Destination: &testWriter{},
-		}, func(got *DownloadOutput) {
-			callbackMu.Lock()
-			numCallbacks++
-			callbackMu.Unlock()
-
-			// Check that the nonexistent object returned an error.
-			if got.Err != storage.ErrObjectNotExist {
-				t.Errorf("Object(%q) should not exist, err found to be %v", got.Object, got.Err)
-			}
-		})
-
 		// WaitAndClose should return an error since 2 of our downloads should have failed.
-		err = d.WaitAndClose()
+		_, err = d.WaitAndClose()
 		if err == nil {
 			t.Error("d.WaitAndClose should return an error, instead got nil")
 		}
@@ -398,19 +414,21 @@ func TestIntegration_DownloaderTimeout(t *testing.T) {
 	}
 
 	// Download an object.
-	d.DownloadObject(ctx, &DownloadObjectInput{
+	if err := d.DownloadObject(ctx, &DownloadObjectInput{
 		Bucket:      httpTestBucket.bucket,
 		Object:      httpTestBucket.objects[0],
 		Destination: &testWriter{},
-	})
+	}); err != nil {
+		t.Errorf("d.DownloadObject: %v", err)
+	}
 
 	// WaitAndClose should return an error since the timeout is too short.
-	if err := d.WaitAndClose(); err == nil {
+	results, err := d.WaitAndClose()
+	if err == nil {
 		t.Error("d.WaitAndClose should return an error, instead got nil")
 	}
 
 	// Check the result.
-	results := d.Results()
 	got := results[0]
 
 	// Check that the nonexistent object returned an error.

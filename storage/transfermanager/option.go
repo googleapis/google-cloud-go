@@ -25,8 +25,8 @@ type Option interface {
 }
 
 // WithCallbacks returns a TransferManagerOption that allows the use of callbacks
-// to process the results. If this option is set, then the results will not be
-// returned at the end.
+// to process the results. If this option is set, then results will not be returned
+// by [Downloader.WaitAndClose] and must be processed through the callback.
 func WithCallbacks() Option {
 	return &withCallbacks{}
 }
@@ -55,7 +55,8 @@ func (ww withWorkers) apply(tm *transferManagerConfig) {
 // WithPerOpTimeout returns a TransferManagerOption that sets a timeout on each
 // operation that is performed to download or upload an object. The timeout is
 // set when the operation begins processing, not when it is added.
-// By default, no timeout is set.
+// By default, no timeout is set other than an overall timeout as set on the
+// provided context.
 func WithPerOpTimeout(timeout time.Duration) Option {
 	return &withPerOpTimeout{timeout: timeout}
 }

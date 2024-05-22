@@ -41,51 +41,45 @@ type Downloader struct {
 }
 
 // DownloadObject queues the download of a single object. This will initiate the
-// download but is non-blocking; call Downloader.Results to process the result.
-func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectInput) {
-	input.ctx = ctx
-	d.addInput(input)
-}
-
-// DownloadObjectWithCallback queues the download of a single object. This will
-// initiate the download but is non-blocking; use the callback to process the
-// result.
-// The results of downloads initiated with this method will not be provided in
-// the results given in Downloader.Results.
-func (d *Downloader) DownloadObjectWithCallback(ctx context.Context, input *DownloadObjectInput, callback func(*DownloadOutput)) {
-	input.ctx = ctx
-	input.callback = &callback
-	d.addInput(input)
-}
-
-// WaitAndClose waits for all outstanding downloads to complete. The Downloader
-// must not be used for any more downloads after this has been called.
-// WaitAndClose returns an error wrapping all errors that were encountered by
-// the Downloader when downloading objects. These errors are also returned in
-// the DownloadOutput for the failing download.
-func (d *Downloader) WaitAndClose() error {
-	d.done <- true
-	d.workers.Wait()
-
-	if len(d.errors) > 0 {
-		err := errors.Join(d.errors...)
-		return fmt.Errorf("transfermanager: at least one error encountered downloading objects:\n%w", err)
+// download but is non-blocking; call Downloader.Results or use the callback to
+// process the result.
+func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectInput) error {
+	if d.config.asynchronous && input.Callback == nil {
+		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
 	}
+	if !d.config.asynchronous && input.Callback != nil {
+		return errors.New("transfermanager: input.Callback must be nil unless the WithCallbacks option is set")
+	}
+
+	select {
+	case <-d.done:
+		return errors.New("transfermanager: WaitAndClose called before DownloadObject")
+	default:
+	}
+
+	input.ctx = ctx
+	d.addInput(input)
 	return nil
 }
 
-// Results returns all the results of the downloads completed since the last
-// time it was called. Call WaitAndClose before calling Results to wait for all
-// downloads to complete. The results are not guaranteed to be in any order.
-// Results will not return results for downloads initiated with a callback.
-func (d *Downloader) Results() []DownloadOutput {
-	d.resultsMu.Lock()
-	r := make([]DownloadOutput, len(d.results))
-	copy(r, d.results)
-	d.results = []DownloadOutput{}
-	d.resultsMu.Unlock()
+// WaitAndClose waits for all outstanding downloads to complete and closes the
+// downloader. Adding new downloads after this has been called will cause an error.
+//
+// WaitAndClose returns all the results of the downloads and an error wrapping
+// all errors that were encountered by the Downloader when downloading objects.
+// These errors are also returned in the respective DownloadOutput for the
+// failing download. The results are not guaranteed to be in any order.
+// Results will be empty if using the [WithCallbacks] option.
+func (d *Downloader) WaitAndClose() ([]DownloadOutput, error) {
+	d.done <- true
+	d.workers.Wait()
+	close(d.done)
 
-	return r
+	if len(d.errors) > 0 {
+		err := errors.Join(d.errors...)
+		return d.results, fmt.Errorf("transfermanager: at least one error encountered downloading objects:\n%w", err)
+	}
+	return d.results, nil
 }
 
 // sendInputsToWorkChan listens continuously to the inputs slice until d.done.
@@ -156,12 +150,12 @@ func (d *Downloader) downloadWorker() {
 
 		// Keep track of any error that occurred.
 		if out.Err != nil {
-			d.error(out.Err)
+			d.error(fmt.Errorf("downloading %q from bucket %q: %w", input.Object, input.Bucket, out.Err))
 		}
 
 		// Either execute the callback, or append to results.
-		if input.callback != nil {
-			(*input.callback)(out)
+		if d.config.asynchronous {
+			input.Callback(out)
 		} else {
 			d.addResult(out)
 		}
@@ -223,8 +217,12 @@ type DownloadObjectInput struct {
 	EncryptionKey []byte
 	Range         *DownloadRange // if specified, reads only a range
 
-	ctx      context.Context
-	callback *func(*DownloadOutput)
+	// Callback will be run once the object is finished downloading. It must be
+	// set if and only if the [WithCallbacks] option is set; otherwise, it must
+	// not be set.
+	Callback func(*DownloadOutput)
+
+	ctx context.Context
 }
 
 // downloadShard will read a specific object into in.Destination.
