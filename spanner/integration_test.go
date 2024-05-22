@@ -2463,7 +2463,16 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		if want == nil {
 			want = test.val
 		}
-		gotp := reflect.New(reflect.TypeOf(want))
+
+		var gotp reflect.Value
+		switch want.(type) {
+		case proto.Message:
+			// We are passing a pointer of proto message in `want` due to `go vet` issue.
+			// Through the switch case, we are dereferencing the value so that we get proto message instead of its pointer.
+			gotp = reflect.New(reflect.TypeOf(want).Elem())
+		default:
+			gotp = reflect.New(reflect.TypeOf(want))
+		}
 		v := gotp.Interface()
 
 		switch nullValue := v.(type) {
