@@ -56,15 +56,15 @@ func NewWorkloadX509CertProvider(configFilePath string) (Provider, error) {
 	}
 
 	certFile, keyFile, err := getCertAndKeyFiles(configFilePath)
-
 	if err != nil {
 		return nil, err
 	}
 
-	return (&workloadSource{
+	source := &workloadSource{
 		CertPath: certFile,
 		KeyPath:  keyFile,
-	}).getClientCertificate, nil
+	}
+	return source.getClientCertificate, nil
 }
 
 // getClientCertificate attempts to load the certificate and key from the files specified in the
@@ -92,29 +92,25 @@ func getCertAndKeyFiles(configFilePath string) (string, string, error) {
 	if err != nil {
 		return "", "", err
 	}
+
 	var config certificateConfig
-	err = json.Unmarshal(byteValue, &config)
-	if err != nil {
+	if err := json.Unmarshal(byteValue, &config); err != nil {
 		return "", "", err
 	}
 
 	if config.CertConfigs.Workload == nil {
-		return "", "", errors.New("Workload Identity Federation certificate information not found in the certificate configuration file")
+		return "", "", errors.New("no Workload Identity Federation certificate information found in the certificate configuration file")
 	}
 
 	certFile := config.CertConfigs.Workload.CertPath
 	keyFile := config.CertConfigs.Workload.KeyPath
 
 	if certFile == "" {
-		err = errors.New("the certificate configuration is missing the certificate file location")
+		return "", "", errors.New("certificate configuration is missing the certificate file location")
 	}
 
 	if keyFile == "" {
-		err = errors.New("the certificate configuration is missing the key file location")
-	}
-
-	if err != nil {
-		return "", "", err
+		return "", "", errors.New("certificate configuration is missing the key file location")
 	}
 
 	return certFile, keyFile, nil
