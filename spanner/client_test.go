@@ -4548,11 +4548,12 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	spans := te.Spans()
-	if len(spans) == 0 {
+	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
+	// cannot do that.
+	if len(te.Spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	s := spans[len(spans)-1].Status
+	s := te.Spans[len(te.Spans)-1].Status
 	if s.Code != int32(codes.OK) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.OK)
 	}
@@ -4597,11 +4598,12 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	spans := te.Spans()
-	if len(spans) == 0 {
+	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
+	// cannot do that.
+	if len(te.Spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	s := spans[len(spans)-1].Status
+	s := te.Spans[len(te.Spans)-1].Status
 	if s.Code != int32(codes.InvalidArgument) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.InvalidArgument)
 	}
@@ -5364,11 +5366,12 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	spans := te.Spans()
-	if len(spans) == 0 {
+	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
+	// cannot do that.
+	if len(te.Spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	s := spans[len(spans)-1].Status
+	s := te.Spans[len(te.Spans)-1].Status
 	if s.Code != int32(code) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, code)
 	}

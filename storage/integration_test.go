@@ -5675,7 +5675,7 @@ func TestIntegration_OCTracing(t *testing.T) {
 		bkt := client.Bucket(bucket)
 		bkt.Attrs(ctx)
 
-		if len(te.Spans()) == 0 {
+		if len(te.Spans) == 0 {
 			t.Fatalf("Expected some spans to be created, but got %d", 0)
 		}
 	})
