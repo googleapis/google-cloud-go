@@ -871,7 +871,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 			ctxHeaders := callctx.HeadersFromContext(ctx)
 			for k, vals := range ctxHeaders {
 				for _, v := range vals {
-					req.Header.Add(k, v)
+					req.Header.Set(k, v)
 				}
 			}
 			return c.hc.Do(req.WithContext(ctx))
