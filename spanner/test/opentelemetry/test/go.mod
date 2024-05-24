@@ -8,7 +8,7 @@ replace (
 )
 
 require (
-	cloud.google.com/go v0.113.0
+	cloud.google.com/go v0.114.0
 	cloud.google.com/go/spanner v1.61.0
 	go.opentelemetry.io/otel v1.24.0
 	go.opentelemetry.io/otel/sdk v1.24.0
