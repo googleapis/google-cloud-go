@@ -1,0 +1,565 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/ai/generativelanguage/apiv1",
+    "version": "0.5.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.ai.generativelanguage.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "generativelanguage_v1_generated_GenerativeService_BatchEmbedContents_sync",
+      "title": "generativelanguage BatchEmbedContents Sample",
+      "description": "BatchEmbedContents generates multiple embeddings from the model given input text in a\nsynchronous call.",
+      "file": "GenerativeClient/BatchEmbedContents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchEmbedContents",
+        "fullName": "google.ai.generativelanguage.v1.GenerativeClient.BatchEmbedContents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.BatchEmbedContentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.BatchEmbedContentsResponse",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeClient"
+        },
+        "method": {
+          "shortName": "BatchEmbedContents",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeService.BatchEmbedContents",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_GenerativeService_CancelOperation_sync",
+      "title": "generativelanguage CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "GenerativeClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.ai.generativelanguage.v1.GenerativeClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_GenerativeService_CountTokens_sync",
+      "title": "generativelanguage CountTokens Sample",
+      "description": "CountTokens runs a model's tokenizer on input content and returns the token count.",
+      "file": "GenerativeClient/CountTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CountTokens",
+        "fullName": "google.ai.generativelanguage.v1.GenerativeClient.CountTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CountTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CountTokensResponse",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeClient"
+        },
+        "method": {
+          "shortName": "CountTokens",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeService.CountTokens",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_GenerativeService_EmbedContent_sync",
+      "title": "generativelanguage EmbedContent Sample",
+      "description": "EmbedContent generates an embedding from the model given an input `Content`.",
+      "file": "GenerativeClient/EmbedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EmbedContent",
+        "fullName": "google.ai.generativelanguage.v1.GenerativeClient.EmbedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.EmbedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.EmbedContentResponse",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeClient"
+        },
+        "method": {
+          "shortName": "EmbedContent",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeService.EmbedContent",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_GenerativeService_GenerateContent_sync",
+      "title": "generativelanguage GenerateContent Sample",
+      "description": "GenerateContent generates a response from the model given an input\n`GenerateContentRequest`.\n\nInput capabilities differ between models, including tuned models. See the\n[model guide](https: //ai.google.dev/models/gemini) and\n[tuning guide](https: //ai.google.dev/docs/model_tuning_guidance) for\ndetails.",
+      "file": "GenerativeClient/GenerateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateContent",
+        "fullName": "google.ai.generativelanguage.v1.GenerativeClient.GenerateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GenerateContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.GenerateContentResponse",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeClient"
+        },
+        "method": {
+          "shortName": "GenerateContent",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeService.GenerateContent",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_GenerativeService_GetOperation_sync",
+      "title": "generativelanguage GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "GenerativeClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.ai.generativelanguage.v1.GenerativeClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_GenerativeService_ListOperations_sync",
+      "title": "generativelanguage ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "GenerativeClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.ai.generativelanguage.v1.GenerativeClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1.GenerativeClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_ModelService_CancelOperation_sync",
+      "title": "generativelanguage CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.ai.generativelanguage.v1.ModelClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1.ModelClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_ModelService_GetModel_sync",
+      "title": "generativelanguage GetModel Sample",
+      "description": "GetModel gets information about a specific Model.",
+      "file": "ModelClient/GetModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModel",
+        "fullName": "google.ai.generativelanguage.v1.ModelClient.GetModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1.ModelClient"
+        },
+        "method": {
+          "shortName": "GetModel",
+          "fullName": "google.ai.generativelanguage.v1.ModelService.GetModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_ModelService_GetOperation_sync",
+      "title": "generativelanguage GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ModelClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.ai.generativelanguage.v1.ModelClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1.ModelClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_ModelService_ListModels_sync",
+      "title": "generativelanguage ListModels Sample",
+      "description": "ListModels lists models available through the API.",
+      "file": "ModelClient/ListModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModels",
+        "fullName": "google.ai.generativelanguage.v1.ModelClient.ListModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1.ModelClient"
+        },
+        "method": {
+          "shortName": "ListModels",
+          "fullName": "google.ai.generativelanguage.v1.ModelService.ListModels",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1_generated_ModelService_ListOperations_sync",
+      "title": "generativelanguage ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ModelClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.ai.generativelanguage.v1.ModelClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1.ModelClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

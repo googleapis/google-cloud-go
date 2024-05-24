@@ -2,6 +2,113 @@
 
 
 
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.9.0...maps/v1.10.0) (2024-05-22)
+
+
+### Features
+
+* **maps/places:** Add `generative_summary` and `area_summary` for place summaries ([#10204](https://github.com/googleapis/google-cloud-go/issues/10204)) ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.8.0...maps/v1.9.0) (2024-05-16)
+
+
+### Features
+
+* **maps:** FleetEngine and Delivery RPC turndown and removal ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+
+
+### Bug Fixes
+
+* **maps:** An existing message `SearchTasksRequest` is removed ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing message `SearchTasksResponse` is removed ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing message `UpdateVehicleLocationRequest` is removed ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing method `SearchFuzzedVehicles` is removed from service `VehicleService` ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing method `SearchTasks` is removed from service `DeliveryService` ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+* **maps:** An existing method `UpdateVehicleLocation` is removed from service `VehicleService` ([e4543f8](https://github.com/googleapis/google-cloud-go/commit/e4543f87bbad42eb37f501a4571128c3a426780b))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Remove comment about deleted SearchTasks method ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+* **maps/fleetengine:** Mark TerminalPointId as deprecated ([#10130](https://github.com/googleapis/google-cloud-go/issues/10130)) ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.3...maps/v1.8.0) (2024-05-08)
+
+
+### Features
+
+* **maps:** New clients ([#10129](https://github.com/googleapis/google-cloud-go/issues/10129)) ([97eb0f5](https://github.com/googleapis/google-cloud-go/commit/97eb0f5c93e8a4528a35910f9b0ab75a113a002c))
+
+## [1.7.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.2...maps/v1.7.3) (2024-05-01)
+
+
+### Bug Fixes
+
+* **maps:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Correct link in ListTasks documentation ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **maps/places:** Slightly improved documentation for EVOptions in SearchTextRequest ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **maps/places:** Update comment of Places API ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.1...maps/v1.7.2) (2024-04-15)
+
+
+### Documentation
+
+* **maps/places:** Fix designation of Text Search ([#9728](https://github.com/googleapis/google-cloud-go/issues/9728)) ([ce55ad6](https://github.com/googleapis/google-cloud-go/commit/ce55ad694f21cacfa608e9b9952ee31f8d566e49))
+* **maps/places:** Fix typo in PriceLevel enum ([#9669](https://github.com/googleapis/google-cloud-go/issues/9669)) ([264a6dc](https://github.com/googleapis/google-cloud-go/commit/264a6dcddbffaec987dce1dc00f6550c263d2df7))
+* **maps/routing:** Various formatting and grammar fixes for proto documentation ([cca3f47](https://github.com/googleapis/google-cloud-go/commit/cca3f47c895e7cac07d7d48ab3c4850b265a710f))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.7.0...maps/v1.7.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **maps:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.4...maps/v1.7.0) (2024-02-21)
+
+
+### Features
+
+* **maps/addressvalidation:** Add session token support for Autocomplete (New) sessions that end with a call to Address Validation ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+* **maps/places:** Add AutoComplete API ([0195fe9](https://github.com/googleapis/google-cloud-go/commit/0195fe9292274ff9d86c71079a8e96ed2e5f9331))
+
+
+### Documentation
+
+* **maps/fleetengine/delivery:** Updated incorrect reference to `Task.journeySharingInfo` ([#9428](https://github.com/googleapis/google-cloud-go/issues/9428)) ([7e6c208](https://github.com/googleapis/google-cloud-go/commit/7e6c208c5d97d3f6e2f7fd7aca09b8ae98dc0bf2))
+
+## [1.6.4](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.3...maps/v1.6.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **maps:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+
+### Documentation
+
+* **maps/fleetengine:** Update comment on Waypoint ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+* **maps/fleetengine:** Update comment on Waypoint ([#9291](https://github.com/googleapis/google-cloud-go/issues/9291)) ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+## [1.6.3](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.2...maps/v1.6.3) (2024-01-11)
+
+
+### Documentation
+
+* **maps/fleetengine:** Better comments on SearchVehicle fields ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.6.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.1...maps/v1.6.2) (2023-12-11)
+
+
+### Documentation
+
+* **maps/places:** Change comments for some fields in Places API ([29effe6](https://github.com/googleapis/google-cloud-go/commit/29effe600e16f24a127a1422ec04263c4f7a600a))
+
 ## [1.6.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.6.0...maps/v1.6.1) (2023-11-01)
 
 

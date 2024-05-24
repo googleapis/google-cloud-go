@@ -1,0 +1,383 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/servicehealth/apiv1",
+    "version": "1.0.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.servicehealth.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "servicehealth_v1_generated_ServiceHealth_GetEvent_sync",
+      "title": "servicehealth GetEvent Sample",
+      "description": "GetEvent retrieves a resource containing information about an event.",
+      "file": "Client/GetEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEvent",
+        "fullName": "google.cloud.servicehealth.v1.Client.GetEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicehealthpb.GetEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicehealthpb.Event",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.servicehealth.v1.Client"
+        },
+        "method": {
+          "shortName": "GetEvent",
+          "fullName": "google.cloud.servicehealth.v1.ServiceHealth.GetEvent",
+          "service": {
+            "shortName": "ServiceHealth",
+            "fullName": "google.cloud.servicehealth.v1.ServiceHealth"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicehealth_v1_generated_ServiceHealth_GetLocation_sync",
+      "title": "servicehealth GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.servicehealth.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.servicehealth.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicehealth_v1_generated_ServiceHealth_GetOrganizationEvent_sync",
+      "title": "servicehealth GetOrganizationEvent Sample",
+      "description": "GetOrganizationEvent retrieves a resource containing information about an event affecting an\norganization .",
+      "file": "Client/GetOrganizationEvent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOrganizationEvent",
+        "fullName": "google.cloud.servicehealth.v1.Client.GetOrganizationEvent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicehealthpb.GetOrganizationEventRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicehealthpb.OrganizationEvent",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.servicehealth.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOrganizationEvent",
+          "fullName": "google.cloud.servicehealth.v1.ServiceHealth.GetOrganizationEvent",
+          "service": {
+            "shortName": "ServiceHealth",
+            "fullName": "google.cloud.servicehealth.v1.ServiceHealth"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicehealth_v1_generated_ServiceHealth_GetOrganizationImpact_sync",
+      "title": "servicehealth GetOrganizationImpact Sample",
+      "description": "GetOrganizationImpact retrieves a resource containing information about impact to an asset under\nan organization affected by a service health event.",
+      "file": "Client/GetOrganizationImpact/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOrganizationImpact",
+        "fullName": "google.cloud.servicehealth.v1.Client.GetOrganizationImpact",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicehealthpb.GetOrganizationImpactRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicehealthpb.OrganizationImpact",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.servicehealth.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOrganizationImpact",
+          "fullName": "google.cloud.servicehealth.v1.ServiceHealth.GetOrganizationImpact",
+          "service": {
+            "shortName": "ServiceHealth",
+            "fullName": "google.cloud.servicehealth.v1.ServiceHealth"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicehealth_v1_generated_ServiceHealth_ListEvents_sync",
+      "title": "servicehealth ListEvents Sample",
+      "description": "ListEvents lists events under a given project and location.",
+      "file": "Client/ListEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEvents",
+        "fullName": "google.cloud.servicehealth.v1.Client.ListEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicehealthpb.ListEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EventIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.servicehealth.v1.Client"
+        },
+        "method": {
+          "shortName": "ListEvents",
+          "fullName": "google.cloud.servicehealth.v1.ServiceHealth.ListEvents",
+          "service": {
+            "shortName": "ServiceHealth",
+            "fullName": "google.cloud.servicehealth.v1.ServiceHealth"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicehealth_v1_generated_ServiceHealth_ListLocations_sync",
+      "title": "servicehealth ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.servicehealth.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.servicehealth.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicehealth_v1_generated_ServiceHealth_ListOrganizationEvents_sync",
+      "title": "servicehealth ListOrganizationEvents Sample",
+      "description": "ListOrganizationEvents lists organization events under a given organization and location.",
+      "file": "Client/ListOrganizationEvents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOrganizationEvents",
+        "fullName": "google.cloud.servicehealth.v1.Client.ListOrganizationEvents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicehealthpb.ListOrganizationEventsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OrganizationEventIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.servicehealth.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOrganizationEvents",
+          "fullName": "google.cloud.servicehealth.v1.ServiceHealth.ListOrganizationEvents",
+          "service": {
+            "shortName": "ServiceHealth",
+            "fullName": "google.cloud.servicehealth.v1.ServiceHealth"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "servicehealth_v1_generated_ServiceHealth_ListOrganizationImpacts_sync",
+      "title": "servicehealth ListOrganizationImpacts Sample",
+      "description": "ListOrganizationImpacts lists assets impacted by organization events under a given organization and\nlocation.",
+      "file": "Client/ListOrganizationImpacts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOrganizationImpacts",
+        "fullName": "google.cloud.servicehealth.v1.Client.ListOrganizationImpacts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicehealthpb.ListOrganizationImpactsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OrganizationImpactIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.servicehealth.v1.Client"
+        },
+        "method": {
+          "shortName": "ListOrganizationImpacts",
+          "fullName": "google.cloud.servicehealth.v1.ServiceHealth.ListOrganizationImpacts",
+          "service": {
+            "shortName": "ServiceHealth",
+            "fullName": "google.cloud.servicehealth.v1.ServiceHealth"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

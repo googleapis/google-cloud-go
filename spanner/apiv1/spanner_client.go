@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package spanner
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -66,7 +67,9 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("spanner.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("spanner.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("spanner.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -82,6 +85,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -94,6 +98,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -106,6 +111,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -118,6 +124,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -130,6 +137,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -142,6 +150,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -155,6 +164,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -167,6 +177,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -180,6 +191,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -192,6 +204,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -204,6 +217,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -216,6 +230,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -228,6 +243,7 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
 					Initial:    250 * time.Millisecond,
 					Max:        32000 * time.Millisecond,
@@ -249,7 +265,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		BatchCreateSessions: []gax.CallOption{
@@ -260,7 +277,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		GetSession: []gax.CallOption{
@@ -271,7 +289,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		ListSessions: []gax.CallOption{
@@ -282,7 +301,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		DeleteSession: []gax.CallOption{
@@ -293,7 +313,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		ExecuteSql: []gax.CallOption{
@@ -304,7 +325,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		ExecuteStreamingSql: []gax.CallOption{
@@ -318,7 +340,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		Read: []gax.CallOption{
@@ -329,7 +352,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		StreamingRead: []gax.CallOption{
@@ -343,7 +367,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		Commit: []gax.CallOption{
@@ -354,7 +379,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		Rollback: []gax.CallOption{
@@ -365,7 +391,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		PartitionQuery: []gax.CallOption{
@@ -376,7 +403,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		PartitionRead: []gax.CallOption{
@@ -387,7 +415,8 @@ func defaultRESTCallOptions() *CallOptions {
 					Max:        32000 * time.Millisecond,
 					Multiplier: 1.30,
 				},
-					http.StatusServiceUnavailable)
+					http.StatusServiceUnavailable,
+					http.StatusTooManyRequests)
 			}),
 		},
 		BatchWrite: []gax.CallOption{
@@ -735,7 +764,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -786,7 +817,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://spanner.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://spanner.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://spanner.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://spanner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -798,7 +831,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1645,7 +1680,7 @@ func (c *executeStreamingSqlRESTClient) Trailer() metadata.MD {
 
 func (c *executeStreamingSqlRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *executeStreamingSqlRESTClient) Context() context.Context {
@@ -1654,12 +1689,12 @@ func (c *executeStreamingSqlRESTClient) Context() context.Context {
 
 func (c *executeStreamingSqlRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *executeStreamingSqlRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // ExecuteBatchDml executes a batch of SQL DML statements. This method allows many statements
@@ -1911,7 +1946,7 @@ func (c *streamingReadRESTClient) Trailer() metadata.MD {
 
 func (c *streamingReadRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadRESTClient) Context() context.Context {
@@ -1920,12 +1955,12 @@ func (c *streamingReadRESTClient) Context() context.Context {
 
 func (c *streamingReadRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // BeginTransaction begins a new transaction. This step can often be skipped:
@@ -2392,7 +2427,7 @@ func (c *batchWriteRESTClient) Trailer() metadata.MD {
 
 func (c *batchWriteRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *batchWriteRESTClient) Context() context.Context {
@@ -2401,10 +2436,10 @@ func (c *batchWriteRESTClient) Context() context.Context {
 
 func (c *batchWriteRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *batchWriteRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }

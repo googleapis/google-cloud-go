@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/iam/apiv2",
-    "version": "1.1.5",
+    "version": "1.1.8",
     "language": "GO",
     "apis": [
       {
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

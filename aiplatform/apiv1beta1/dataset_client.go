@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,6 +56,7 @@ type DatasetCallOptions struct {
 	ImportData            []gax.CallOption
 	ExportData            []gax.CallOption
 	CreateDatasetVersion  []gax.CallOption
+	UpdateDatasetVersion  []gax.CallOption
 	DeleteDatasetVersion  []gax.CallOption
 	GetDatasetVersion     []gax.CallOption
 	ListDatasetVersions   []gax.CallOption
@@ -81,7 +82,9 @@ type DatasetCallOptions struct {
 func defaultDatasetGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -114,6 +117,7 @@ func defaultDatasetCallOptions() *DatasetCallOptions {
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
 		CreateDatasetVersion:  []gax.CallOption{},
+		UpdateDatasetVersion:  []gax.CallOption{},
 		DeleteDatasetVersion:  []gax.CallOption{},
 		GetDatasetVersion:     []gax.CallOption{},
 		ListDatasetVersions:   []gax.CallOption{},
@@ -167,6 +171,7 @@ func defaultDatasetRESTCallOptions() *DatasetCallOptions {
 			gax.WithTimeout(5000 * time.Millisecond),
 		},
 		CreateDatasetVersion:  []gax.CallOption{},
+		UpdateDatasetVersion:  []gax.CallOption{},
 		DeleteDatasetVersion:  []gax.CallOption{},
 		GetDatasetVersion:     []gax.CallOption{},
 		ListDatasetVersions:   []gax.CallOption{},
@@ -214,6 +219,7 @@ type internalDatasetClient interface {
 	ExportDataOperation(name string) *ExportDataOperation
 	CreateDatasetVersion(context.Context, *aiplatformpb.CreateDatasetVersionRequest, ...gax.CallOption) (*CreateDatasetVersionOperation, error)
 	CreateDatasetVersionOperation(name string) *CreateDatasetVersionOperation
+	UpdateDatasetVersion(context.Context, *aiplatformpb.UpdateDatasetVersionRequest, ...gax.CallOption) (*aiplatformpb.DatasetVersion, error)
 	DeleteDatasetVersion(context.Context, *aiplatformpb.DeleteDatasetVersionRequest, ...gax.CallOption) (*DeleteDatasetVersionOperation, error)
 	DeleteDatasetVersionOperation(name string) *DeleteDatasetVersionOperation
 	GetDatasetVersion(context.Context, *aiplatformpb.GetDatasetVersionRequest, ...gax.CallOption) (*aiplatformpb.DatasetVersion, error)
@@ -347,6 +353,11 @@ func (c *DatasetClient) CreateDatasetVersion(ctx context.Context, req *aiplatfor
 // The name must be that of a previously created CreateDatasetVersionOperation, possibly from a different process.
 func (c *DatasetClient) CreateDatasetVersionOperation(name string) *CreateDatasetVersionOperation {
 	return c.internalClient.CreateDatasetVersionOperation(name)
+}
+
+// UpdateDatasetVersion updates a DatasetVersion.
+func (c *DatasetClient) UpdateDatasetVersion(ctx context.Context, req *aiplatformpb.UpdateDatasetVersionRequest, opts ...gax.CallOption) (*aiplatformpb.DatasetVersion, error) {
+	return c.internalClient.UpdateDatasetVersion(ctx, req, opts...)
 }
 
 // DeleteDatasetVersion deletes a Dataset version.
@@ -566,7 +577,9 @@ func (c *datasetGRPCClient) Connection() *grpc.ClientConn {
 func (c *datasetGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -629,7 +642,9 @@ func NewDatasetRESTClient(ctx context.Context, opts ...option.ClientOption) (*Da
 func defaultDatasetRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://aiplatform.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://aiplatform.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://aiplatform.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -641,7 +656,9 @@ func defaultDatasetRESTClientOptions() []option.ClientOption {
 func (c *datasetRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -838,6 +855,24 @@ func (c *datasetGRPCClient) CreateDatasetVersion(ctx context.Context, req *aipla
 	return &CreateDatasetVersionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *datasetGRPCClient) UpdateDatasetVersion(ctx context.Context, req *aiplatformpb.UpdateDatasetVersionRequest, opts ...gax.CallOption) (*aiplatformpb.DatasetVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset_version.name", url.QueryEscape(req.GetDatasetVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDatasetVersion[0:len((*c.CallOptions).UpdateDatasetVersion):len((*c.CallOptions).UpdateDatasetVersion)], opts...)
+	var resp *aiplatformpb.DatasetVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.datasetClient.UpdateDatasetVersion(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *datasetGRPCClient) DeleteDatasetVersion(ctx context.Context, req *aiplatformpb.DeleteDatasetVersionRequest, opts ...gax.CallOption) (*DeleteDatasetVersionOperation, error) {
@@ -1953,6 +1988,79 @@ func (c *datasetRESTClient) CreateDatasetVersion(ctx context.Context, req *aipla
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// UpdateDatasetVersion updates a DatasetVersion.
+func (c *datasetRESTClient) UpdateDatasetVersion(ctx context.Context, req *aiplatformpb.UpdateDatasetVersionRequest, opts ...gax.CallOption) (*aiplatformpb.DatasetVersion, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDatasetVersion()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDatasetVersion().GetName())
+
+	params := url.Values{}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "dataset_version.name", url.QueryEscape(req.GetDatasetVersion().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDatasetVersion[0:len((*c.CallOptions).UpdateDatasetVersion):len((*c.CallOptions).UpdateDatasetVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.DatasetVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // DeleteDatasetVersion deletes a Dataset version.

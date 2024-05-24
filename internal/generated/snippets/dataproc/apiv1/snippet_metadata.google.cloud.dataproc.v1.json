@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataproc/v2/apiv1",
-    "version": "2.3.0",
+    "version": "2.4.2",
     "language": "GO",
     "apis": [
       {
@@ -371,7 +371,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -417,7 +417,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -920,7 +920,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -966,7 +966,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1470,7 +1470,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1516,7 +1516,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2111,7 +2111,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2157,7 +2157,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2707,7 +2707,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2838,6 +2838,1105 @@
           "service": {
             "shortName": "IAMPolicy",
             "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_CancelOperation_sync",
+      "title": "dataproc CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionControllerClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_CreateSession_sync",
+      "title": "dataproc CreateSession Sample",
+      "description": "CreateSession create an interactive session asynchronously.",
+      "file": "SessionControllerClient/CreateSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSession",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.CreateSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.CreateSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateSessionOperation",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "CreateSession",
+          "fullName": "google.cloud.dataproc.v1.SessionController.CreateSession",
+          "service": {
+            "shortName": "SessionController",
+            "fullName": "google.cloud.dataproc.v1.SessionController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_DeleteOperation_sync",
+      "title": "dataproc DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionControllerClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_DeleteSession_sync",
+      "title": "dataproc DeleteSession Sample",
+      "description": "DeleteSession deletes the interactive session resource. If the session is not in terminal\nstate, it is terminated, and then deleted.",
+      "file": "SessionControllerClient/DeleteSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSession",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.DeleteSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.DeleteSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSessionOperation",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "DeleteSession",
+          "fullName": "google.cloud.dataproc.v1.SessionController.DeleteSession",
+          "service": {
+            "shortName": "SessionController",
+            "fullName": "google.cloud.dataproc.v1.SessionController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_GetIamPolicy_sync",
+      "title": "dataproc GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "SessionControllerClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_GetOperation_sync",
+      "title": "dataproc GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionControllerClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_GetSession_sync",
+      "title": "dataproc GetSession Sample",
+      "description": "GetSession gets the resource representation for an interactive session.",
+      "file": "SessionControllerClient/GetSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSession",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.GetSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.GetSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataprocpb.Session",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "GetSession",
+          "fullName": "google.cloud.dataproc.v1.SessionController.GetSession",
+          "service": {
+            "shortName": "SessionController",
+            "fullName": "google.cloud.dataproc.v1.SessionController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_ListOperations_sync",
+      "title": "dataproc ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SessionControllerClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_ListSessions_sync",
+      "title": "dataproc ListSessions Sample",
+      "description": "ListSessions lists interactive sessions.",
+      "file": "SessionControllerClient/ListSessions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSessions",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.ListSessions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.ListSessionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SessionIterator",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "ListSessions",
+          "fullName": "google.cloud.dataproc.v1.SessionController.ListSessions",
+          "service": {
+            "shortName": "SessionController",
+            "fullName": "google.cloud.dataproc.v1.SessionController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_SetIamPolicy_sync",
+      "title": "dataproc SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "SessionControllerClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_TerminateSession_sync",
+      "title": "dataproc TerminateSession Sample",
+      "description": "TerminateSession terminates the interactive session.",
+      "file": "SessionControllerClient/TerminateSession/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TerminateSession",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.TerminateSession",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.TerminateSessionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TerminateSessionOperation",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "TerminateSession",
+          "fullName": "google.cloud.dataproc.v1.SessionController.TerminateSession",
+          "service": {
+            "shortName": "SessionController",
+            "fullName": "google.cloud.dataproc.v1.SessionController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionController_TestIamPermissions_sync",
+      "title": "dataproc TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "SessionControllerClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataproc.v1.SessionControllerClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "SessionControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionControllerClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_CancelOperation_sync",
+      "title": "dataproc CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionTemplateControllerClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_CreateSessionTemplate_sync",
+      "title": "dataproc CreateSessionTemplate Sample",
+      "description": "CreateSessionTemplate create a session template synchronously.",
+      "file": "SessionTemplateControllerClient/CreateSessionTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSessionTemplate",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.CreateSessionTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.CreateSessionTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataprocpb.SessionTemplate",
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "CreateSessionTemplate",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateController.CreateSessionTemplate",
+          "service": {
+            "shortName": "SessionTemplateController",
+            "fullName": "google.cloud.dataproc.v1.SessionTemplateController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_DeleteOperation_sync",
+      "title": "dataproc DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionTemplateControllerClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_DeleteSessionTemplate_sync",
+      "title": "dataproc DeleteSessionTemplate Sample",
+      "description": "DeleteSessionTemplate deletes a session template.",
+      "file": "SessionTemplateControllerClient/DeleteSessionTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSessionTemplate",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.DeleteSessionTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.DeleteSessionTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "DeleteSessionTemplate",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateController.DeleteSessionTemplate",
+          "service": {
+            "shortName": "SessionTemplateController",
+            "fullName": "google.cloud.dataproc.v1.SessionTemplateController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_GetIamPolicy_sync",
+      "title": "dataproc GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "SessionTemplateControllerClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_GetOperation_sync",
+      "title": "dataproc GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "SessionTemplateControllerClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_GetSessionTemplate_sync",
+      "title": "dataproc GetSessionTemplate Sample",
+      "description": "GetSessionTemplate gets the resource representation for a session template.",
+      "file": "SessionTemplateControllerClient/GetSessionTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSessionTemplate",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.GetSessionTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.GetSessionTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataprocpb.SessionTemplate",
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "GetSessionTemplate",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateController.GetSessionTemplate",
+          "service": {
+            "shortName": "SessionTemplateController",
+            "fullName": "google.cloud.dataproc.v1.SessionTemplateController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_ListOperations_sync",
+      "title": "dataproc ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "SessionTemplateControllerClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_ListSessionTemplates_sync",
+      "title": "dataproc ListSessionTemplates Sample",
+      "description": "ListSessionTemplates lists session templates.",
+      "file": "SessionTemplateControllerClient/ListSessionTemplates/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSessionTemplates",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.ListSessionTemplates",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.ListSessionTemplatesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SessionTemplateIterator",
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "ListSessionTemplates",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateController.ListSessionTemplates",
+          "service": {
+            "shortName": "SessionTemplateController",
+            "fullName": "google.cloud.dataproc.v1.SessionTemplateController"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_SetIamPolicy_sync",
+      "title": "dataproc SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "SessionTemplateControllerClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_TestIamPermissions_sync",
+      "title": "dataproc TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "SessionTemplateControllerClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataproc_v1_generated_SessionTemplateController_UpdateSessionTemplate_sync",
+      "title": "dataproc UpdateSessionTemplate Sample",
+      "description": "UpdateSessionTemplate updates the session template synchronously.",
+      "file": "SessionTemplateControllerClient/UpdateSessionTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSessionTemplate",
+        "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient.UpdateSessionTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataprocpb.UpdateSessionTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataprocpb.SessionTemplate",
+        "client": {
+          "shortName": "SessionTemplateControllerClient",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateControllerClient"
+        },
+        "method": {
+          "shortName": "UpdateSessionTemplate",
+          "fullName": "google.cloud.dataproc.v1.SessionTemplateController.UpdateSessionTemplate",
+          "service": {
+            "shortName": "SessionTemplateController",
+            "fullName": "google.cloud.dataproc.v1.SessionTemplateController"
           }
         }
       },
@@ -3302,7 +4401,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3348,7 +4447,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

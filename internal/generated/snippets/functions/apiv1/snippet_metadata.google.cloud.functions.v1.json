@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/functions/apiv1",
-    "version": "1.15.4",
+    "version": "1.16.2",
     "language": "GO",
     "apis": [
       {
@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_CreateFunction_sync",
       "title": "cloudfunctions CreateFunction Sample",
-      "description": "CreateFunction creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation returns an\n`ALREADY_EXISTS` error.",
+      "description": "CreateFunction creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation will return\n`ALREADY_EXISTS` error.",
       "file": "CloudFunctionsClient/CreateFunction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -106,7 +106,7 @@
     {
       "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_DeleteFunction_sync",
       "title": "cloudfunctions DeleteFunction Sample",
-      "description": "DeleteFunction deletes a function with the given name from the specified project. If the\ngiven function is used by some trigger, the trigger is updated to\nremove this function.",
+      "description": "DeleteFunction deletes a function with the given name from the specified project. If the\ngiven function is used by some trigger, the trigger will be updated to\nremove this function.",
       "file": "CloudFunctionsClient/DeleteFunction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_GenerateDownloadUrl_sync",
       "title": "cloudfunctions GenerateDownloadUrl Sample",
-      "description": "GenerateDownloadUrl returns a signed URL for downloading deployed function source code.\nThe URL is only valid for a limited period and must be used within\nminutes after generation.\nFor more information about the signed URL usage, see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls",
+      "description": "GenerateDownloadUrl returns a signed URL for downloading deployed function source code.\nThe URL is only valid for a limited period and should be used within\nminutes after generation.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls",
       "file": "CloudFunctionsClient/GenerateDownloadUrl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -198,7 +198,7 @@
     {
       "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_GenerateUploadUrl_sync",
       "title": "cloudfunctions GenerateUploadUrl Sample",
-      "description": "GenerateUploadUrl returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls.\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions: \n\n* Source file type should be a zip file.\n* Source file size should not exceed 100MB limit.\n* No credentials should be attached - the signed URLs provide access to the\ntarget bucket using internal service identity; if credentials were\nattached, the identity from the credentials would be used, but that\nidentity does not have permissions to upload files to the URL.\n\nWhen making an HTTP PUT request, these two headers must be specified: \n\n* `content-type: application/zip`\n* `x-goog-content-length-range: 0,104857600`\n\nAnd this header must NOT be specified: \n\n* `Authorization: Bearer YOUR_TOKEN`",
+      "description": "GenerateUploadUrl returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls.\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions: \n\n* Source file type should be a zip file.\n* Source file size should not exceed 100MB limit.\n* No credentials should be attached - the signed URLs provide access to the\ntarget bucket using internal service identity; if credentials were\nattached, the identity from the credentials would be used, but that\nidentity does not have permissions to upload files to the URL.\n\nWhen making a HTTP PUT request, these two headers need to be specified: \n\n* `content-type: application/zip`\n* `x-goog-content-length-range: 0,104857600`\n\nAnd this header SHOULD NOT be specified: \n\n* `Authorization: Bearer YOUR_TOKEN`",
       "file": "CloudFunctionsClient/GenerateUploadUrl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -466,7 +466,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -566,7 +566,7 @@
     {
       "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_TestIamPermissions_sync",
       "title": "cloudfunctions TestIamPermissions Sample",
-      "description": "TestIamPermissions tests the specified permissions against the IAM access control policy\nfor a function.\nIf the function does not exist, this returns an empty set of\npermissions, not a NOT_FOUND error.",
+      "description": "TestIamPermissions tests the specified permissions against the IAM access control policy\nfor a function.\nIf the function does not exist, this will return an empty set of\npermissions, not a NOT_FOUND error.",
       "file": "CloudFunctionsClient/TestIamPermissions/main.go",
       "language": "GO",
       "clientMethod": {

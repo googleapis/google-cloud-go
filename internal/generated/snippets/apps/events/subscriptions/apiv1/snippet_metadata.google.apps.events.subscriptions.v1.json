@@ -1,0 +1,337 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/apps/events/subscriptions/apiv1",
+    "version": "0.4.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.apps.events.subscriptions.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "workspaceevents_v1_generated_SubscriptionsService_CreateSubscription_sync",
+      "title": "workspaceevents CreateSubscription Sample",
+      "description": "CreateSubscription creates a Google Workspace subscription. To learn how to use this\nmethod, see [Create a Google Workspace\nsubscription](https: //developers.google.com/workspace/events/guides/create-subscription).",
+      "file": "Client/CreateSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSubscription",
+        "fullName": "google.apps.events.subscriptions.v1.Client.CreateSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "subscriptionspb.CreateSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateSubscriptionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.apps.events.subscriptions.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateSubscription",
+          "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService.CreateSubscription",
+          "service": {
+            "shortName": "SubscriptionsService",
+            "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workspaceevents_v1_generated_SubscriptionsService_DeleteSubscription_sync",
+      "title": "workspaceevents DeleteSubscription Sample",
+      "description": "DeleteSubscription deletes a Google Workspace subscription.\nTo learn how to use this method, see [Delete a Google Workspace\nsubscription](https: //developers.google.com/workspace/events/guides/delete-subscription).",
+      "file": "Client/DeleteSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSubscription",
+        "fullName": "google.apps.events.subscriptions.v1.Client.DeleteSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "subscriptionspb.DeleteSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteSubscriptionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.apps.events.subscriptions.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteSubscription",
+          "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService.DeleteSubscription",
+          "service": {
+            "shortName": "SubscriptionsService",
+            "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workspaceevents_v1_generated_SubscriptionsService_GetOperation_sync",
+      "title": "workspaceevents GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.apps.events.subscriptions.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.apps.events.subscriptions.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workspaceevents_v1_generated_SubscriptionsService_GetSubscription_sync",
+      "title": "workspaceevents GetSubscription Sample",
+      "description": "GetSubscription gets details about a Google Workspace subscription. To learn how to use\nthis method, see [Get details about a Google Workspace\nsubscription](https: //developers.google.com/workspace/events/guides/get-subscription).",
+      "file": "Client/GetSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSubscription",
+        "fullName": "google.apps.events.subscriptions.v1.Client.GetSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "subscriptionspb.GetSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*subscriptionspb.Subscription",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.apps.events.subscriptions.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSubscription",
+          "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService.GetSubscription",
+          "service": {
+            "shortName": "SubscriptionsService",
+            "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workspaceevents_v1_generated_SubscriptionsService_ListSubscriptions_sync",
+      "title": "workspaceevents ListSubscriptions Sample",
+      "description": "ListSubscriptions lists Google Workspace subscriptions. To learn how to use this method, see\n[List Google Workspace\nsubscriptions](https: //developers.google.com/workspace/events/guides/list-subscriptions).",
+      "file": "Client/ListSubscriptions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubscriptions",
+        "fullName": "google.apps.events.subscriptions.v1.Client.ListSubscriptions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "subscriptionspb.ListSubscriptionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SubscriptionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.apps.events.subscriptions.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSubscriptions",
+          "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService.ListSubscriptions",
+          "service": {
+            "shortName": "SubscriptionsService",
+            "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workspaceevents_v1_generated_SubscriptionsService_ReactivateSubscription_sync",
+      "title": "workspaceevents ReactivateSubscription Sample",
+      "description": "ReactivateSubscription reactivates a suspended Google Workspace subscription.\n\nThis method resets your subscription's `State` field to `ACTIVE`. Before\nyou use this method, you must fix the error that suspended the\nsubscription. To learn how to use this method, see [Reactivate a Google\nWorkspace\nsubscription](https: //developers.google.com/workspace/events/guides/reactivate-subscription).",
+      "file": "Client/ReactivateSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ReactivateSubscription",
+        "fullName": "google.apps.events.subscriptions.v1.Client.ReactivateSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "subscriptionspb.ReactivateSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReactivateSubscriptionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.apps.events.subscriptions.v1.Client"
+        },
+        "method": {
+          "shortName": "ReactivateSubscription",
+          "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService.ReactivateSubscription",
+          "service": {
+            "shortName": "SubscriptionsService",
+            "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "workspaceevents_v1_generated_SubscriptionsService_UpdateSubscription_sync",
+      "title": "workspaceevents UpdateSubscription Sample",
+      "description": "UpdateSubscription updates or renews a Google Workspace subscription. To learn how to use this\nmethod, see [Update or renew a Google Workspace\nsubscription](https: //developers.google.com/workspace/events/guides/update-subscription).",
+      "file": "Client/UpdateSubscription/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSubscription",
+        "fullName": "google.apps.events.subscriptions.v1.Client.UpdateSubscription",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "subscriptionspb.UpdateSubscriptionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateSubscriptionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.apps.events.subscriptions.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSubscription",
+          "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService.UpdateSubscription",
+          "service": {
+            "shortName": "SubscriptionsService",
+            "fullName": "google.apps.events.subscriptions.v1.SubscriptionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

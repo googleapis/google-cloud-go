@@ -1,0 +1,1071 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/securitycentermanagement/apiv1",
+    "version": "0.1.8",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.securitycentermanagement.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_CreateEventThreatDetectionCustomModule_sync",
+      "title": "securitycentermanagement CreateEventThreatDetectionCustomModule Sample",
+      "description": "CreateEventThreatDetectionCustomModule creates a resident Event Threat Detection custom module at the scope of the\ngiven Resource Manager parent, and also creates inherited custom modules\nfor all descendants of the given parent. These modules are enabled by\ndefault.",
+      "file": "Client/CreateEventThreatDetectionCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEventThreatDetectionCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.CreateEventThreatDetectionCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.CreateEventThreatDetectionCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.EventThreatDetectionCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateEventThreatDetectionCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.CreateEventThreatDetectionCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_CreateSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycentermanagement CreateSecurityHealthAnalyticsCustomModule Sample",
+      "description": "CreateSecurityHealthAnalyticsCustomModule creates a resident SecurityHealthAnalyticsCustomModule at the scope of the\ngiven CRM parent, and also creates inherited\nSecurityHealthAnalyticsCustomModules for all CRM descendants of the given\nparent. These modules are enabled by default.",
+      "file": "Client/CreateSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.CreateSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.CreateSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.CreateSecurityHealthAnalyticsCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_DeleteEventThreatDetectionCustomModule_sync",
+      "title": "securitycentermanagement DeleteEventThreatDetectionCustomModule Sample",
+      "description": "DeleteEventThreatDetectionCustomModule deletes the specified Event Threat Detection custom module and all of its\ndescendants in the Resource Manager hierarchy. This method is only\nsupported for resident custom modules.",
+      "file": "Client/DeleteEventThreatDetectionCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEventThreatDetectionCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.DeleteEventThreatDetectionCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.DeleteEventThreatDetectionCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteEventThreatDetectionCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.DeleteEventThreatDetectionCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_DeleteSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycentermanagement DeleteSecurityHealthAnalyticsCustomModule Sample",
+      "description": "DeleteSecurityHealthAnalyticsCustomModule deletes the specified SecurityHealthAnalyticsCustomModule and all of its\ndescendants in the CRM hierarchy. This method is only supported for\nresident custom modules.",
+      "file": "Client/DeleteSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.DeleteSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.DeleteSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.DeleteSecurityHealthAnalyticsCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetEffectiveEventThreatDetectionCustomModule_sync",
+      "title": "securitycentermanagement GetEffectiveEventThreatDetectionCustomModule Sample",
+      "description": "GetEffectiveEventThreatDetectionCustomModule gets an effective ETD custom module. Retrieves the effective module at the\ngiven level. The difference between an EffectiveCustomModule and a\nCustomModule is that the fields for an EffectiveCustomModule are computed\nfrom ancestors if needed. For example, the enablement_state for a\nCustomModule can be either ENABLED, DISABLED, or INHERITED. Where as the\nenablement_state for an EffectiveCustomModule is always computed to ENABLED\nor DISABLED (the effective enablement_state).",
+      "file": "Client/GetEffectiveEventThreatDetectionCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEffectiveEventThreatDetectionCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.GetEffectiveEventThreatDetectionCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.GetEffectiveEventThreatDetectionCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.EffectiveEventThreatDetectionCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "GetEffectiveEventThreatDetectionCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetEffectiveEventThreatDetectionCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetEffectiveSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycentermanagement GetEffectiveSecurityHealthAnalyticsCustomModule Sample",
+      "description": "GetEffectiveSecurityHealthAnalyticsCustomModule gets details of a single EffectiveSecurityHealthAnalyticsCustomModule.",
+      "file": "Client/GetEffectiveSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEffectiveSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.GetEffectiveSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.GetEffectiveSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.EffectiveSecurityHealthAnalyticsCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "GetEffectiveSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetEffectiveSecurityHealthAnalyticsCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetEventThreatDetectionCustomModule_sync",
+      "title": "securitycentermanagement GetEventThreatDetectionCustomModule Sample",
+      "description": "GetEventThreatDetectionCustomModule gets an Event Threat Detection custom module.",
+      "file": "Client/GetEventThreatDetectionCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEventThreatDetectionCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.GetEventThreatDetectionCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.GetEventThreatDetectionCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.EventThreatDetectionCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "GetEventThreatDetectionCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetEventThreatDetectionCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetLocation_sync",
+      "title": "securitycentermanagement GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetSecurityCenterService_sync",
+      "title": "securitycentermanagement GetSecurityCenterService Sample",
+      "description": "GetSecurityCenterService gets service settings for the specified Security Command Center service.",
+      "file": "Client/GetSecurityCenterService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSecurityCenterService",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.GetSecurityCenterService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.GetSecurityCenterServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.SecurityCenterService",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSecurityCenterService",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetSecurityCenterService",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycentermanagement GetSecurityHealthAnalyticsCustomModule Sample",
+      "description": "GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.",
+      "file": "Client/GetSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.GetSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.GetSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetSecurityHealthAnalyticsCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListDescendantEventThreatDetectionCustomModules_sync",
+      "title": "securitycentermanagement ListDescendantEventThreatDetectionCustomModules Sample",
+      "description": "ListDescendantEventThreatDetectionCustomModules lists all resident Event Threat Detection custom modules under the\ngiven Resource Manager parent and its descendants.",
+      "file": "Client/ListDescendantEventThreatDetectionCustomModules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDescendantEventThreatDetectionCustomModules",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ListDescendantEventThreatDetectionCustomModules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.ListDescendantEventThreatDetectionCustomModulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EventThreatDetectionCustomModuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDescendantEventThreatDetectionCustomModules",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListDescendantEventThreatDetectionCustomModules",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListDescendantSecurityHealthAnalyticsCustomModules_sync",
+      "title": "securitycentermanagement ListDescendantSecurityHealthAnalyticsCustomModules Sample",
+      "description": "ListDescendantSecurityHealthAnalyticsCustomModules returns a list of all resident SecurityHealthAnalyticsCustomModules under\nthe given CRM parent and all of the parent's CRM descendants.",
+      "file": "Client/ListDescendantSecurityHealthAnalyticsCustomModules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDescendantSecurityHealthAnalyticsCustomModules",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ListDescendantSecurityHealthAnalyticsCustomModules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.ListDescendantSecurityHealthAnalyticsCustomModulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SecurityHealthAnalyticsCustomModuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ListDescendantSecurityHealthAnalyticsCustomModules",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListDescendantSecurityHealthAnalyticsCustomModules",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListEffectiveEventThreatDetectionCustomModules_sync",
+      "title": "securitycentermanagement ListEffectiveEventThreatDetectionCustomModules Sample",
+      "description": "ListEffectiveEventThreatDetectionCustomModules lists all effective Event Threat Detection custom modules for the\ngiven parent. This includes resident modules defined at the scope of the\nparent along with modules inherited from its ancestors.",
+      "file": "Client/ListEffectiveEventThreatDetectionCustomModules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEffectiveEventThreatDetectionCustomModules",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ListEffectiveEventThreatDetectionCustomModules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.ListEffectiveEventThreatDetectionCustomModulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EffectiveEventThreatDetectionCustomModuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ListEffectiveEventThreatDetectionCustomModules",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListEffectiveEventThreatDetectionCustomModules",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListEffectiveSecurityHealthAnalyticsCustomModules_sync",
+      "title": "securitycentermanagement ListEffectiveSecurityHealthAnalyticsCustomModules Sample",
+      "description": "ListEffectiveSecurityHealthAnalyticsCustomModules returns a list of all EffectiveSecurityHealthAnalyticsCustomModules for the\ngiven parent. This includes resident modules defined at the scope of the\nparent, and inherited modules, inherited from CRM ancestors (no\ndescendants).",
+      "file": "Client/ListEffectiveSecurityHealthAnalyticsCustomModules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEffectiveSecurityHealthAnalyticsCustomModules",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ListEffectiveSecurityHealthAnalyticsCustomModules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.ListEffectiveSecurityHealthAnalyticsCustomModulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EffectiveSecurityHealthAnalyticsCustomModuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ListEffectiveSecurityHealthAnalyticsCustomModules",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListEffectiveSecurityHealthAnalyticsCustomModules",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListEventThreatDetectionCustomModules_sync",
+      "title": "securitycentermanagement ListEventThreatDetectionCustomModules Sample",
+      "description": "ListEventThreatDetectionCustomModules lists all Event Threat Detection custom modules for the given\nResource Manager parent. This includes resident modules defined at the\nscope of the parent along with modules inherited from ancestors.",
+      "file": "Client/ListEventThreatDetectionCustomModules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEventThreatDetectionCustomModules",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ListEventThreatDetectionCustomModules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.ListEventThreatDetectionCustomModulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EventThreatDetectionCustomModuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ListEventThreatDetectionCustomModules",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListEventThreatDetectionCustomModules",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListLocations_sync",
+      "title": "securitycentermanagement ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListSecurityCenterServices_sync",
+      "title": "securitycentermanagement ListSecurityCenterServices Sample",
+      "description": "ListSecurityCenterServices returns a list of all Security Command Center services for the given\nparent.",
+      "file": "Client/ListSecurityCenterServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSecurityCenterServices",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ListSecurityCenterServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.ListSecurityCenterServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SecurityCenterServiceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSecurityCenterServices",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListSecurityCenterServices",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListSecurityHealthAnalyticsCustomModules_sync",
+      "title": "securitycentermanagement ListSecurityHealthAnalyticsCustomModules Sample",
+      "description": "ListSecurityHealthAnalyticsCustomModules returns a list of all SecurityHealthAnalyticsCustomModules for the given\nparent. This includes resident modules defined at the scope of the parent,\nand inherited modules, inherited from CRM ancestors (no descendants).",
+      "file": "Client/ListSecurityHealthAnalyticsCustomModules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSecurityHealthAnalyticsCustomModules",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ListSecurityHealthAnalyticsCustomModules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.ListSecurityHealthAnalyticsCustomModulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SecurityHealthAnalyticsCustomModuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSecurityHealthAnalyticsCustomModules",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListSecurityHealthAnalyticsCustomModules",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_SimulateSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycentermanagement SimulateSecurityHealthAnalyticsCustomModule Sample",
+      "description": "SimulateSecurityHealthAnalyticsCustomModule simulates a given SecurityHealthAnalyticsCustomModule and Resource.",
+      "file": "Client/SimulateSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SimulateSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.SimulateSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.SimulateSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.SimulateSecurityHealthAnalyticsCustomModuleResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "SimulateSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.SimulateSecurityHealthAnalyticsCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_UpdateEventThreatDetectionCustomModule_sync",
+      "title": "securitycentermanagement UpdateEventThreatDetectionCustomModule Sample",
+      "description": "UpdateEventThreatDetectionCustomModule updates the Event Threat Detection custom module with the given name based\non the given update mask. Updating the enablement state is supported for\nboth resident and inherited modules (though resident modules cannot have an\nenablement state of \"inherited\"). Updating the display name or\nconfiguration of a module is supported for resident modules only. The type\nof a module cannot be changed.",
+      "file": "Client/UpdateEventThreatDetectionCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEventThreatDetectionCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.UpdateEventThreatDetectionCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.UpdateEventThreatDetectionCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.EventThreatDetectionCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateEventThreatDetectionCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.UpdateEventThreatDetectionCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_UpdateSecurityCenterService_sync",
+      "title": "securitycentermanagement UpdateSecurityCenterService Sample",
+      "description": "UpdateSecurityCenterService updates a Security Command Center service using the given update mask.",
+      "file": "Client/UpdateSecurityCenterService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSecurityCenterService",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.UpdateSecurityCenterService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.UpdateSecurityCenterServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.SecurityCenterService",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSecurityCenterService",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.UpdateSecurityCenterService",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_UpdateSecurityHealthAnalyticsCustomModule_sync",
+      "title": "securitycentermanagement UpdateSecurityHealthAnalyticsCustomModule Sample",
+      "description": "UpdateSecurityHealthAnalyticsCustomModule updates the SecurityHealthAnalyticsCustomModule under the given name based\non the given update mask. Updating the enablement state is supported on\nboth resident and inherited modules (though resident modules cannot have an\nenablement state of \"inherited\"). Updating the display name and custom\nconfig of a module is supported on resident modules only.",
+      "file": "Client/UpdateSecurityHealthAnalyticsCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSecurityHealthAnalyticsCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.UpdateSecurityHealthAnalyticsCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.UpdateSecurityHealthAnalyticsCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.SecurityHealthAnalyticsCustomModule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSecurityHealthAnalyticsCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.UpdateSecurityHealthAnalyticsCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ValidateEventThreatDetectionCustomModule_sync",
+      "title": "securitycentermanagement ValidateEventThreatDetectionCustomModule Sample",
+      "description": "ValidateEventThreatDetectionCustomModule validates the given Event Threat Detection custom module.",
+      "file": "Client/ValidateEventThreatDetectionCustomModule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ValidateEventThreatDetectionCustomModule",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ValidateEventThreatDetectionCustomModule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.ValidateEventThreatDetectionCustomModuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.ValidateEventThreatDetectionCustomModuleResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ValidateEventThreatDetectionCustomModule",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ValidateEventThreatDetectionCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

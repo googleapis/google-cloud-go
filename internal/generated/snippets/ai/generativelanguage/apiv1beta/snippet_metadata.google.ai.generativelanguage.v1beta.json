@@ -1,0 +1,2216 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
+    "version": "0.5.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.ai.generativelanguage.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "generativelanguage_v1beta_generated_DiscussService_CountMessageTokens_sync",
+      "title": "generativelanguage CountMessageTokens Sample",
+      "description": "CountMessageTokens runs a model's tokenizer on a string and returns the token count.",
+      "file": "DiscussClient/CountMessageTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CountMessageTokens",
+        "fullName": "google.ai.generativelanguage.v1beta.DiscussClient.CountMessageTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CountMessageTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CountMessageTokensResponse",
+        "client": {
+          "shortName": "DiscussClient",
+          "fullName": "google.ai.generativelanguage.v1beta.DiscussClient"
+        },
+        "method": {
+          "shortName": "CountMessageTokens",
+          "fullName": "google.ai.generativelanguage.v1beta.DiscussService.CountMessageTokens",
+          "service": {
+            "shortName": "DiscussService",
+            "fullName": "google.ai.generativelanguage.v1beta.DiscussService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_DiscussService_GenerateMessage_sync",
+      "title": "generativelanguage GenerateMessage Sample",
+      "description": "GenerateMessage generates a response from the model given an input `MessagePrompt`.",
+      "file": "DiscussClient/GenerateMessage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateMessage",
+        "fullName": "google.ai.generativelanguage.v1beta.DiscussClient.GenerateMessage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GenerateMessageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.GenerateMessageResponse",
+        "client": {
+          "shortName": "DiscussClient",
+          "fullName": "google.ai.generativelanguage.v1beta.DiscussClient"
+        },
+        "method": {
+          "shortName": "GenerateMessage",
+          "fullName": "google.ai.generativelanguage.v1beta.DiscussService.GenerateMessage",
+          "service": {
+            "shortName": "DiscussService",
+            "fullName": "google.ai.generativelanguage.v1beta.DiscussService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_FileService_CreateFile_sync",
+      "title": "generativelanguage CreateFile Sample",
+      "description": "CreateFile creates a `File`.",
+      "file": "FileClient/CreateFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFile",
+        "fullName": "google.ai.generativelanguage.v1beta.FileClient.CreateFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CreateFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CreateFileResponse",
+        "client": {
+          "shortName": "FileClient",
+          "fullName": "google.ai.generativelanguage.v1beta.FileClient"
+        },
+        "method": {
+          "shortName": "CreateFile",
+          "fullName": "google.ai.generativelanguage.v1beta.FileService.CreateFile",
+          "service": {
+            "shortName": "FileService",
+            "fullName": "google.ai.generativelanguage.v1beta.FileService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_FileService_DeleteFile_sync",
+      "title": "generativelanguage DeleteFile Sample",
+      "description": "DeleteFile deletes the `File`.",
+      "file": "FileClient/DeleteFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFile",
+        "fullName": "google.ai.generativelanguage.v1beta.FileClient.DeleteFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.DeleteFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "FileClient",
+          "fullName": "google.ai.generativelanguage.v1beta.FileClient"
+        },
+        "method": {
+          "shortName": "DeleteFile",
+          "fullName": "google.ai.generativelanguage.v1beta.FileService.DeleteFile",
+          "service": {
+            "shortName": "FileService",
+            "fullName": "google.ai.generativelanguage.v1beta.FileService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_FileService_GetFile_sync",
+      "title": "generativelanguage GetFile Sample",
+      "description": "GetFile gets the metadata for the given `File`.",
+      "file": "FileClient/GetFile/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFile",
+        "fullName": "google.ai.generativelanguage.v1beta.FileClient.GetFile",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetFileRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.File",
+        "client": {
+          "shortName": "FileClient",
+          "fullName": "google.ai.generativelanguage.v1beta.FileClient"
+        },
+        "method": {
+          "shortName": "GetFile",
+          "fullName": "google.ai.generativelanguage.v1beta.FileService.GetFile",
+          "service": {
+            "shortName": "FileService",
+            "fullName": "google.ai.generativelanguage.v1beta.FileService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_FileService_ListFiles_sync",
+      "title": "generativelanguage ListFiles Sample",
+      "description": "ListFiles lists the metadata for `File`s owned by the requesting project.",
+      "file": "FileClient/ListFiles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFiles",
+        "fullName": "google.ai.generativelanguage.v1beta.FileClient.ListFiles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListFilesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FileIterator",
+        "client": {
+          "shortName": "FileClient",
+          "fullName": "google.ai.generativelanguage.v1beta.FileClient"
+        },
+        "method": {
+          "shortName": "ListFiles",
+          "fullName": "google.ai.generativelanguage.v1beta.FileService.ListFiles",
+          "service": {
+            "shortName": "FileService",
+            "fullName": "google.ai.generativelanguage.v1beta.FileService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_GenerativeService_BatchEmbedContents_sync",
+      "title": "generativelanguage BatchEmbedContents Sample",
+      "description": "BatchEmbedContents generates multiple embeddings from the model given input text in a\nsynchronous call.",
+      "file": "GenerativeClient/BatchEmbedContents/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchEmbedContents",
+        "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient.BatchEmbedContents",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.BatchEmbedContentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.BatchEmbedContentsResponse",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient"
+        },
+        "method": {
+          "shortName": "BatchEmbedContents",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeService.BatchEmbedContents",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1beta.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_GenerativeService_CountTokens_sync",
+      "title": "generativelanguage CountTokens Sample",
+      "description": "CountTokens runs a model's tokenizer on input content and returns the token count.",
+      "file": "GenerativeClient/CountTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CountTokens",
+        "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient.CountTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CountTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CountTokensResponse",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient"
+        },
+        "method": {
+          "shortName": "CountTokens",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeService.CountTokens",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1beta.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_GenerativeService_EmbedContent_sync",
+      "title": "generativelanguage EmbedContent Sample",
+      "description": "EmbedContent generates an embedding from the model given an input `Content`.",
+      "file": "GenerativeClient/EmbedContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EmbedContent",
+        "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient.EmbedContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.EmbedContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.EmbedContentResponse",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient"
+        },
+        "method": {
+          "shortName": "EmbedContent",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeService.EmbedContent",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1beta.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_GenerativeService_GenerateAnswer_sync",
+      "title": "generativelanguage GenerateAnswer Sample",
+      "description": "GenerateAnswer generates a grounded answer from the model given an input\n`GenerateAnswerRequest`.",
+      "file": "GenerativeClient/GenerateAnswer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateAnswer",
+        "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient.GenerateAnswer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GenerateAnswerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.GenerateAnswerResponse",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient"
+        },
+        "method": {
+          "shortName": "GenerateAnswer",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeService.GenerateAnswer",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1beta.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_GenerativeService_GenerateContent_sync",
+      "title": "generativelanguage GenerateContent Sample",
+      "description": "GenerateContent generates a response from the model given an input\n`GenerateContentRequest`.\n\nInput capabilities differ between models, including tuned models. See the\n[model guide](https: //ai.google.dev/models/gemini) and\n[tuning guide](https: //ai.google.dev/docs/model_tuning_guidance) for\ndetails.",
+      "file": "GenerativeClient/GenerateContent/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateContent",
+        "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient.GenerateContent",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GenerateContentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.GenerateContentResponse",
+        "client": {
+          "shortName": "GenerativeClient",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeClient"
+        },
+        "method": {
+          "shortName": "GenerateContent",
+          "fullName": "google.ai.generativelanguage.v1beta.GenerativeService.GenerateContent",
+          "service": {
+            "shortName": "GenerativeService",
+            "fullName": "google.ai.generativelanguage.v1beta.GenerativeService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_ModelService_CreateTunedModel_sync",
+      "title": "generativelanguage CreateTunedModel Sample",
+      "description": "CreateTunedModel creates a tuned model.\nIntermediate tuning progress (if any) is accessed through the\n[google.longrunning.Operations] service.\n\nStatus and results can be accessed through the Operations service.\nExample: \nGET /v1/tunedModels/az2mb0bpw6i/operations/000-111-222",
+      "file": "ModelClient/CreateTunedModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTunedModel",
+        "fullName": "google.ai.generativelanguage.v1beta.ModelClient.CreateTunedModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CreateTunedModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateTunedModelOperation",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelClient"
+        },
+        "method": {
+          "shortName": "CreateTunedModel",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelService.CreateTunedModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1beta.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_ModelService_DeleteTunedModel_sync",
+      "title": "generativelanguage DeleteTunedModel Sample",
+      "description": "DeleteTunedModel deletes a tuned model.",
+      "file": "ModelClient/DeleteTunedModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTunedModel",
+        "fullName": "google.ai.generativelanguage.v1beta.ModelClient.DeleteTunedModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.DeleteTunedModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelClient"
+        },
+        "method": {
+          "shortName": "DeleteTunedModel",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelService.DeleteTunedModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1beta.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_ModelService_GetModel_sync",
+      "title": "generativelanguage GetModel Sample",
+      "description": "GetModel gets information about a specific Model.",
+      "file": "ModelClient/GetModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetModel",
+        "fullName": "google.ai.generativelanguage.v1beta.ModelClient.GetModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Model",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelClient"
+        },
+        "method": {
+          "shortName": "GetModel",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelService.GetModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1beta.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_ModelService_GetTunedModel_sync",
+      "title": "generativelanguage GetTunedModel Sample",
+      "description": "GetTunedModel gets information about a specific TunedModel.",
+      "file": "ModelClient/GetTunedModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTunedModel",
+        "fullName": "google.ai.generativelanguage.v1beta.ModelClient.GetTunedModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetTunedModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.TunedModel",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelClient"
+        },
+        "method": {
+          "shortName": "GetTunedModel",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelService.GetTunedModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1beta.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_ModelService_ListModels_sync",
+      "title": "generativelanguage ListModels Sample",
+      "description": "ListModels lists models available through the API.",
+      "file": "ModelClient/ListModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListModels",
+        "fullName": "google.ai.generativelanguage.v1beta.ModelClient.ListModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ModelIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelClient"
+        },
+        "method": {
+          "shortName": "ListModels",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelService.ListModels",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1beta.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_ModelService_ListTunedModels_sync",
+      "title": "generativelanguage ListTunedModels Sample",
+      "description": "ListTunedModels lists tuned models owned by the user.",
+      "file": "ModelClient/ListTunedModels/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTunedModels",
+        "fullName": "google.ai.generativelanguage.v1beta.ModelClient.ListTunedModels",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListTunedModelsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TunedModelIterator",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelClient"
+        },
+        "method": {
+          "shortName": "ListTunedModels",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelService.ListTunedModels",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1beta.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_ModelService_UpdateTunedModel_sync",
+      "title": "generativelanguage UpdateTunedModel Sample",
+      "description": "UpdateTunedModel updates a tuned model.",
+      "file": "ModelClient/UpdateTunedModel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTunedModel",
+        "fullName": "google.ai.generativelanguage.v1beta.ModelClient.UpdateTunedModel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.UpdateTunedModelRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.TunedModel",
+        "client": {
+          "shortName": "ModelClient",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelClient"
+        },
+        "method": {
+          "shortName": "UpdateTunedModel",
+          "fullName": "google.ai.generativelanguage.v1beta.ModelService.UpdateTunedModel",
+          "service": {
+            "shortName": "ModelService",
+            "fullName": "google.ai.generativelanguage.v1beta.ModelService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_PermissionService_CreatePermission_sync",
+      "title": "generativelanguage CreatePermission Sample",
+      "description": "CreatePermission create a permission to a specific resource.",
+      "file": "PermissionClient/CreatePermission/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreatePermission",
+        "fullName": "google.ai.generativelanguage.v1beta.PermissionClient.CreatePermission",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CreatePermissionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Permission",
+        "client": {
+          "shortName": "PermissionClient",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionClient"
+        },
+        "method": {
+          "shortName": "CreatePermission",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionService.CreatePermission",
+          "service": {
+            "shortName": "PermissionService",
+            "fullName": "google.ai.generativelanguage.v1beta.PermissionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_PermissionService_DeletePermission_sync",
+      "title": "generativelanguage DeletePermission Sample",
+      "description": "DeletePermission deletes the permission.",
+      "file": "PermissionClient/DeletePermission/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeletePermission",
+        "fullName": "google.ai.generativelanguage.v1beta.PermissionClient.DeletePermission",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.DeletePermissionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "PermissionClient",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionClient"
+        },
+        "method": {
+          "shortName": "DeletePermission",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionService.DeletePermission",
+          "service": {
+            "shortName": "PermissionService",
+            "fullName": "google.ai.generativelanguage.v1beta.PermissionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_PermissionService_GetPermission_sync",
+      "title": "generativelanguage GetPermission Sample",
+      "description": "GetPermission gets information about a specific Permission.",
+      "file": "PermissionClient/GetPermission/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPermission",
+        "fullName": "google.ai.generativelanguage.v1beta.PermissionClient.GetPermission",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetPermissionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Permission",
+        "client": {
+          "shortName": "PermissionClient",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionClient"
+        },
+        "method": {
+          "shortName": "GetPermission",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionService.GetPermission",
+          "service": {
+            "shortName": "PermissionService",
+            "fullName": "google.ai.generativelanguage.v1beta.PermissionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_PermissionService_ListPermissions_sync",
+      "title": "generativelanguage ListPermissions Sample",
+      "description": "ListPermissions lists permissions for the specific resource.",
+      "file": "PermissionClient/ListPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPermissions",
+        "fullName": "google.ai.generativelanguage.v1beta.PermissionClient.ListPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PermissionIterator",
+        "client": {
+          "shortName": "PermissionClient",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionClient"
+        },
+        "method": {
+          "shortName": "ListPermissions",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionService.ListPermissions",
+          "service": {
+            "shortName": "PermissionService",
+            "fullName": "google.ai.generativelanguage.v1beta.PermissionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_PermissionService_TransferOwnership_sync",
+      "title": "generativelanguage TransferOwnership Sample",
+      "description": "TransferOwnership transfers ownership of the tuned model.\nThis is the only way to change ownership of the tuned model.\nThe current owner will be downgraded to writer role.",
+      "file": "PermissionClient/TransferOwnership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TransferOwnership",
+        "fullName": "google.ai.generativelanguage.v1beta.PermissionClient.TransferOwnership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.TransferOwnershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.TransferOwnershipResponse",
+        "client": {
+          "shortName": "PermissionClient",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionClient"
+        },
+        "method": {
+          "shortName": "TransferOwnership",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionService.TransferOwnership",
+          "service": {
+            "shortName": "PermissionService",
+            "fullName": "google.ai.generativelanguage.v1beta.PermissionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_PermissionService_UpdatePermission_sync",
+      "title": "generativelanguage UpdatePermission Sample",
+      "description": "UpdatePermission updates the permission.",
+      "file": "PermissionClient/UpdatePermission/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdatePermission",
+        "fullName": "google.ai.generativelanguage.v1beta.PermissionClient.UpdatePermission",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.UpdatePermissionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Permission",
+        "client": {
+          "shortName": "PermissionClient",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionClient"
+        },
+        "method": {
+          "shortName": "UpdatePermission",
+          "fullName": "google.ai.generativelanguage.v1beta.PermissionService.UpdatePermission",
+          "service": {
+            "shortName": "PermissionService",
+            "fullName": "google.ai.generativelanguage.v1beta.PermissionService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_BatchCreateChunks_sync",
+      "title": "generativelanguage BatchCreateChunks Sample",
+      "description": "BatchCreateChunks batch create `Chunk`s.",
+      "file": "RetrieverClient/BatchCreateChunks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchCreateChunks",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.BatchCreateChunks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.BatchCreateChunksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.BatchCreateChunksResponse",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "BatchCreateChunks",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.BatchCreateChunks",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_BatchDeleteChunks_sync",
+      "title": "generativelanguage BatchDeleteChunks Sample",
+      "description": "BatchDeleteChunks batch delete `Chunk`s.",
+      "file": "RetrieverClient/BatchDeleteChunks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchDeleteChunks",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.BatchDeleteChunks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.BatchDeleteChunksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "BatchDeleteChunks",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.BatchDeleteChunks",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_BatchUpdateChunks_sync",
+      "title": "generativelanguage BatchUpdateChunks Sample",
+      "description": "BatchUpdateChunks batch update `Chunk`s.",
+      "file": "RetrieverClient/BatchUpdateChunks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchUpdateChunks",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.BatchUpdateChunks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.BatchUpdateChunksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.BatchUpdateChunksResponse",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "BatchUpdateChunks",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.BatchUpdateChunks",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_CreateChunk_sync",
+      "title": "generativelanguage CreateChunk Sample",
+      "description": "CreateChunk creates a `Chunk`.",
+      "file": "RetrieverClient/CreateChunk/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateChunk",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.CreateChunk",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CreateChunkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Chunk",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "CreateChunk",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.CreateChunk",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_CreateCorpus_sync",
+      "title": "generativelanguage CreateCorpus Sample",
+      "description": "CreateCorpus creates an empty `Corpus`.",
+      "file": "RetrieverClient/CreateCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCorpus",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.CreateCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CreateCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Corpus",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "CreateCorpus",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.CreateCorpus",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_CreateDocument_sync",
+      "title": "generativelanguage CreateDocument Sample",
+      "description": "CreateDocument creates an empty `Document`.",
+      "file": "RetrieverClient/CreateDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDocument",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.CreateDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CreateDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Document",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "CreateDocument",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.CreateDocument",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_DeleteChunk_sync",
+      "title": "generativelanguage DeleteChunk Sample",
+      "description": "DeleteChunk deletes a `Chunk`.",
+      "file": "RetrieverClient/DeleteChunk/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteChunk",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.DeleteChunk",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.DeleteChunkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "DeleteChunk",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.DeleteChunk",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_DeleteCorpus_sync",
+      "title": "generativelanguage DeleteCorpus Sample",
+      "description": "DeleteCorpus deletes a `Corpus`.",
+      "file": "RetrieverClient/DeleteCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCorpus",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.DeleteCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.DeleteCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "DeleteCorpus",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.DeleteCorpus",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_DeleteDocument_sync",
+      "title": "generativelanguage DeleteDocument Sample",
+      "description": "DeleteDocument deletes a `Document`.",
+      "file": "RetrieverClient/DeleteDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDocument",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.DeleteDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.DeleteDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "DeleteDocument",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.DeleteDocument",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_GetChunk_sync",
+      "title": "generativelanguage GetChunk Sample",
+      "description": "GetChunk gets information about a specific `Chunk`.",
+      "file": "RetrieverClient/GetChunk/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetChunk",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.GetChunk",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetChunkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Chunk",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "GetChunk",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.GetChunk",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_GetCorpus_sync",
+      "title": "generativelanguage GetCorpus Sample",
+      "description": "GetCorpus gets information about a specific `Corpus`.",
+      "file": "RetrieverClient/GetCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCorpus",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.GetCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Corpus",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "GetCorpus",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.GetCorpus",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_GetDocument_sync",
+      "title": "generativelanguage GetDocument Sample",
+      "description": "GetDocument gets information about a specific `Document`.",
+      "file": "RetrieverClient/GetDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDocument",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.GetDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GetDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Document",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "GetDocument",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.GetDocument",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_ListChunks_sync",
+      "title": "generativelanguage ListChunks Sample",
+      "description": "ListChunks lists all `Chunk`s in a `Document`.",
+      "file": "RetrieverClient/ListChunks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListChunks",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.ListChunks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListChunksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ChunkIterator",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "ListChunks",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.ListChunks",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_ListCorpora_sync",
+      "title": "generativelanguage ListCorpora Sample",
+      "description": "ListCorpora lists all `Corpora` owned by the user.",
+      "file": "RetrieverClient/ListCorpora/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCorpora",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.ListCorpora",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListCorporaRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CorpusIterator",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "ListCorpora",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.ListCorpora",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_ListDocuments_sync",
+      "title": "generativelanguage ListDocuments Sample",
+      "description": "ListDocuments lists all `Document`s in a `Corpus`.",
+      "file": "RetrieverClient/ListDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDocuments",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.ListDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.ListDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DocumentIterator",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "ListDocuments",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.ListDocuments",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_QueryCorpus_sync",
+      "title": "generativelanguage QueryCorpus Sample",
+      "description": "QueryCorpus performs semantic search over a `Corpus`.",
+      "file": "RetrieverClient/QueryCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryCorpus",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.QueryCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.QueryCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.QueryCorpusResponse",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "QueryCorpus",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.QueryCorpus",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_QueryDocument_sync",
+      "title": "generativelanguage QueryDocument Sample",
+      "description": "QueryDocument performs semantic search over a `Document`.",
+      "file": "RetrieverClient/QueryDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "QueryDocument",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.QueryDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.QueryDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.QueryDocumentResponse",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "QueryDocument",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.QueryDocument",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_UpdateChunk_sync",
+      "title": "generativelanguage UpdateChunk Sample",
+      "description": "UpdateChunk updates a `Chunk`.",
+      "file": "RetrieverClient/UpdateChunk/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateChunk",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.UpdateChunk",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.UpdateChunkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Chunk",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "UpdateChunk",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.UpdateChunk",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_UpdateCorpus_sync",
+      "title": "generativelanguage UpdateCorpus Sample",
+      "description": "UpdateCorpus updates a `Corpus`.",
+      "file": "RetrieverClient/UpdateCorpus/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCorpus",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.UpdateCorpus",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.UpdateCorpusRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Corpus",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "UpdateCorpus",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.UpdateCorpus",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_RetrieverService_UpdateDocument_sync",
+      "title": "generativelanguage UpdateDocument Sample",
+      "description": "UpdateDocument updates a `Document`.",
+      "file": "RetrieverClient/UpdateDocument/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDocument",
+        "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient.UpdateDocument",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.UpdateDocumentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.Document",
+        "client": {
+          "shortName": "RetrieverClient",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverClient"
+        },
+        "method": {
+          "shortName": "UpdateDocument",
+          "fullName": "google.ai.generativelanguage.v1beta.RetrieverService.UpdateDocument",
+          "service": {
+            "shortName": "RetrieverService",
+            "fullName": "google.ai.generativelanguage.v1beta.RetrieverService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_TextService_BatchEmbedText_sync",
+      "title": "generativelanguage BatchEmbedText Sample",
+      "description": "BatchEmbedText generates multiple embeddings from the model given input text in a\nsynchronous call.",
+      "file": "TextClient/BatchEmbedText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchEmbedText",
+        "fullName": "google.ai.generativelanguage.v1beta.TextClient.BatchEmbedText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.BatchEmbedTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.BatchEmbedTextResponse",
+        "client": {
+          "shortName": "TextClient",
+          "fullName": "google.ai.generativelanguage.v1beta.TextClient"
+        },
+        "method": {
+          "shortName": "BatchEmbedText",
+          "fullName": "google.ai.generativelanguage.v1beta.TextService.BatchEmbedText",
+          "service": {
+            "shortName": "TextService",
+            "fullName": "google.ai.generativelanguage.v1beta.TextService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_TextService_CountTextTokens_sync",
+      "title": "generativelanguage CountTextTokens Sample",
+      "description": "CountTextTokens runs a model's tokenizer on a text and returns the token count.",
+      "file": "TextClient/CountTextTokens/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CountTextTokens",
+        "fullName": "google.ai.generativelanguage.v1beta.TextClient.CountTextTokens",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.CountTextTokensRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.CountTextTokensResponse",
+        "client": {
+          "shortName": "TextClient",
+          "fullName": "google.ai.generativelanguage.v1beta.TextClient"
+        },
+        "method": {
+          "shortName": "CountTextTokens",
+          "fullName": "google.ai.generativelanguage.v1beta.TextService.CountTextTokens",
+          "service": {
+            "shortName": "TextService",
+            "fullName": "google.ai.generativelanguage.v1beta.TextService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_TextService_EmbedText_sync",
+      "title": "generativelanguage EmbedText Sample",
+      "description": "EmbedText generates an embedding from the model given an input message.",
+      "file": "TextClient/EmbedText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EmbedText",
+        "fullName": "google.ai.generativelanguage.v1beta.TextClient.EmbedText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.EmbedTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.EmbedTextResponse",
+        "client": {
+          "shortName": "TextClient",
+          "fullName": "google.ai.generativelanguage.v1beta.TextClient"
+        },
+        "method": {
+          "shortName": "EmbedText",
+          "fullName": "google.ai.generativelanguage.v1beta.TextService.EmbedText",
+          "service": {
+            "shortName": "TextService",
+            "fullName": "google.ai.generativelanguage.v1beta.TextService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "generativelanguage_v1beta_generated_TextService_GenerateText_sync",
+      "title": "generativelanguage GenerateText Sample",
+      "description": "GenerateText generates a response from the model given an input message.",
+      "file": "TextClient/GenerateText/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateText",
+        "fullName": "google.ai.generativelanguage.v1beta.TextClient.GenerateText",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "generativelanguagepb.GenerateTextRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*generativelanguagepb.GenerateTextResponse",
+        "client": {
+          "shortName": "TextClient",
+          "fullName": "google.ai.generativelanguage.v1beta.TextClient"
+        },
+        "method": {
+          "shortName": "GenerateText",
+          "fullName": "google.ai.generativelanguage.v1beta.TextService.GenerateText",
+          "service": {
+            "shortName": "TextService",
+            "fullName": "google.ai.generativelanguage.v1beta.TextService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

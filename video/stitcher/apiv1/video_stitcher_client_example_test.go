@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -494,6 +494,12 @@ func ExampleVideoStitcherClient_ListCdnKeys() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*stitcherpb.ListCdnKeysResponse)
 	}
 }
 
@@ -525,6 +531,12 @@ func ExampleVideoStitcherClient_ListLiveAdTagDetails() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*stitcherpb.ListLiveAdTagDetailsResponse)
 	}
 }
 
@@ -556,6 +568,12 @@ func ExampleVideoStitcherClient_ListLiveConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*stitcherpb.ListLiveConfigsResponse)
 	}
 }
 
@@ -587,6 +605,12 @@ func ExampleVideoStitcherClient_ListSlates() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*stitcherpb.ListSlatesResponse)
 	}
 }
 
@@ -618,6 +642,12 @@ func ExampleVideoStitcherClient_ListVodAdTagDetails() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*stitcherpb.ListVodAdTagDetailsResponse)
 	}
 }
 
@@ -649,6 +679,12 @@ func ExampleVideoStitcherClient_ListVodStitchDetails() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*stitcherpb.ListVodStitchDetailsResponse)
 	}
 }
 
@@ -811,5 +847,11 @@ func ExampleVideoStitcherClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

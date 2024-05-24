@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/vmwareengine/apiv1",
-    "version": "1.0.3",
+    "version": "1.1.3",
     "language": "GO",
     "apis": [
       {
@@ -58,6 +58,98 @@
       ]
     },
     {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateExternalAccessRule_sync",
+      "title": "vmwareengine CreateExternalAccessRule Sample",
+      "description": "CreateExternalAccessRule creates a new external access rule in a given network policy.",
+      "file": "Client/CreateExternalAccessRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateExternalAccessRule",
+        "fullName": "google.cloud.vmwareengine.v1.Client.CreateExternalAccessRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.CreateExternalAccessRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateExternalAccessRuleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateExternalAccessRule",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.CreateExternalAccessRule",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateExternalAddress_sync",
+      "title": "vmwareengine CreateExternalAddress Sample",
+      "description": "CreateExternalAddress creates a new `ExternalAddress` resource in a given private cloud. The\nnetwork policy that corresponds to the private cloud must have the external\nIP address network service enabled (`NetworkPolicy.external_ip`).",
+      "file": "Client/CreateExternalAddress/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateExternalAddress",
+        "fullName": "google.cloud.vmwareengine.v1.Client.CreateExternalAddress",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.CreateExternalAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateExternalAddressOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateExternalAddress",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.CreateExternalAddress",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateHcxActivationKey_sync",
       "title": "vmwareengine CreateHcxActivationKey Sample",
       "description": "CreateHcxActivationKey creates a new HCX activation key in a given private cloud.",
@@ -88,6 +180,144 @@
         "method": {
           "shortName": "CreateHcxActivationKey",
           "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.CreateHcxActivationKey",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateLoggingServer_sync",
+      "title": "vmwareengine CreateLoggingServer Sample",
+      "description": "CreateLoggingServer create a new logging server for a given private cloud.",
+      "file": "Client/CreateLoggingServer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateLoggingServer",
+        "fullName": "google.cloud.vmwareengine.v1.Client.CreateLoggingServer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.CreateLoggingServerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateLoggingServerOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateLoggingServer",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.CreateLoggingServer",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateManagementDnsZoneBinding_sync",
+      "title": "vmwareengine CreateManagementDnsZoneBinding Sample",
+      "description": "CreateManagementDnsZoneBinding creates a new `ManagementDnsZoneBinding` resource in a private cloud.\nThis RPC creates the DNS binding and the resource that represents the\nDNS binding of the consumer VPC network to the management DNS zone. A\nmanagement DNS zone is the Cloud DNS cross-project binding zone that\nVMware Engine creates for each private cloud. It contains FQDNs and\ncorresponding IP addresses for the private cloud's ESXi hosts and\nmanagement VM appliances like vCenter and NSX Manager.",
+      "file": "Client/CreateManagementDnsZoneBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateManagementDnsZoneBinding",
+        "fullName": "google.cloud.vmwareengine.v1.Client.CreateManagementDnsZoneBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.CreateManagementDnsZoneBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateManagementDnsZoneBindingOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateManagementDnsZoneBinding",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.CreateManagementDnsZoneBinding",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreateNetworkPeering_sync",
+      "title": "vmwareengine CreateNetworkPeering Sample",
+      "description": "CreateNetworkPeering creates a new network peering between the peer network and VMware Engine\nnetwork provided in a `NetworkPeering` resource. NetworkPeering is a\nglobal resource and location can only be global.",
+      "file": "Client/CreateNetworkPeering/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateNetworkPeering",
+        "fullName": "google.cloud.vmwareengine.v1.Client.CreateNetworkPeering",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.CreateNetworkPeeringRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateNetworkPeeringOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateNetworkPeering",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.CreateNetworkPeering",
           "service": {
             "shortName": "VmwareEngine",
             "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
@@ -152,7 +382,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_CreatePrivateCloud_sync",
       "title": "vmwareengine CreatePrivateCloud Sample",
-      "description": "CreatePrivateCloud creates a new `PrivateCloud` resource in a given project and location.\nPrivate clouds can only be created in zones, regional private clouds are\nnot supported.\n\nCreating a private cloud also creates a [management\ncluster](https: //cloud.google.com/vmware-engine/docs/concepts-vmware-components)\nfor that private cloud.",
+      "description": "CreatePrivateCloud creates a new `PrivateCloud` resource in a given project and location.\nPrivate clouds of type `STANDARD` and\n`TIME_LIMITED` are zonal resources, `STRETCHED` private clouds are\nregional.\nCreating a private cloud also creates a [management\ncluster](https: //cloud.google.com/vmware-engine/docs/concepts-vmware-components)\nfor that private cloud.",
       "file": "Client/CreatePrivateCloud/main.go",
       "language": "GO",
       "clientMethod": {
@@ -318,6 +548,236 @@
         "method": {
           "shortName": "DeleteCluster",
           "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.DeleteCluster",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteExternalAccessRule_sync",
+      "title": "vmwareengine DeleteExternalAccessRule Sample",
+      "description": "DeleteExternalAccessRule deletes a single external access rule.",
+      "file": "Client/DeleteExternalAccessRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExternalAccessRule",
+        "fullName": "google.cloud.vmwareengine.v1.Client.DeleteExternalAccessRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.DeleteExternalAccessRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteExternalAccessRuleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteExternalAccessRule",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.DeleteExternalAccessRule",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteExternalAddress_sync",
+      "title": "vmwareengine DeleteExternalAddress Sample",
+      "description": "DeleteExternalAddress deletes a single external IP address. When you delete an external IP\naddress, connectivity between the external IP address and the corresponding\ninternal IP address is lost.",
+      "file": "Client/DeleteExternalAddress/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExternalAddress",
+        "fullName": "google.cloud.vmwareengine.v1.Client.DeleteExternalAddress",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.DeleteExternalAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteExternalAddressOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteExternalAddress",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.DeleteExternalAddress",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteLoggingServer_sync",
+      "title": "vmwareengine DeleteLoggingServer Sample",
+      "description": "DeleteLoggingServer deletes a single logging server.",
+      "file": "Client/DeleteLoggingServer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteLoggingServer",
+        "fullName": "google.cloud.vmwareengine.v1.Client.DeleteLoggingServer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.DeleteLoggingServerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteLoggingServerOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteLoggingServer",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.DeleteLoggingServer",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteManagementDnsZoneBinding_sync",
+      "title": "vmwareengine DeleteManagementDnsZoneBinding Sample",
+      "description": "DeleteManagementDnsZoneBinding deletes a `ManagementDnsZoneBinding` resource. When a management DNS zone\nbinding is deleted, the corresponding consumer VPC network is no longer\nbound to the management DNS zone.",
+      "file": "Client/DeleteManagementDnsZoneBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteManagementDnsZoneBinding",
+        "fullName": "google.cloud.vmwareengine.v1.Client.DeleteManagementDnsZoneBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.DeleteManagementDnsZoneBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteManagementDnsZoneBindingOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteManagementDnsZoneBinding",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.DeleteManagementDnsZoneBinding",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_DeleteNetworkPeering_sync",
+      "title": "vmwareengine DeleteNetworkPeering Sample",
+      "description": "DeleteNetworkPeering deletes a `NetworkPeering` resource. When a network peering is deleted for\na VMware Engine network, the peer network becomes inaccessible to that\nVMware Engine network. NetworkPeering is a global resource and location can\nonly be global.",
+      "file": "Client/DeleteNetworkPeering/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteNetworkPeering",
+        "fullName": "google.cloud.vmwareengine.v1.Client.DeleteNetworkPeering",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.DeleteNetworkPeeringRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteNetworkPeeringOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteNetworkPeering",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.DeleteNetworkPeering",
           "service": {
             "shortName": "VmwareEngine",
             "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
@@ -563,6 +1023,52 @@
       ]
     },
     {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_FetchNetworkPolicyExternalAddresses_sync",
+      "title": "vmwareengine FetchNetworkPolicyExternalAddresses Sample",
+      "description": "FetchNetworkPolicyExternalAddresses lists external IP addresses assigned to VMware workload VMs within the\nscope of the given network policy.",
+      "file": "Client/FetchNetworkPolicyExternalAddresses/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchNetworkPolicyExternalAddresses",
+        "fullName": "google.cloud.vmwareengine.v1.Client.FetchNetworkPolicyExternalAddresses",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.FetchNetworkPolicyExternalAddressesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExternalAddressIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "FetchNetworkPolicyExternalAddresses",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.FetchNetworkPolicyExternalAddresses",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetCluster_sync",
       "title": "vmwareengine GetCluster Sample",
       "description": "GetCluster retrieves a `Cluster` resource by its resource name.",
@@ -593,6 +1099,190 @@
         "method": {
           "shortName": "GetCluster",
           "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetCluster",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetDnsBindPermission_sync",
+      "title": "vmwareengine GetDnsBindPermission Sample",
+      "description": "GetDnsBindPermission gets all the principals having bind permission on the intranet VPC\nassociated with the consumer project granted by the Grant API.\nDnsBindPermission is a global resource and location can only be global.",
+      "file": "Client/GetDnsBindPermission/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDnsBindPermission",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetDnsBindPermission",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetDnsBindPermissionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.DnsBindPermission",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDnsBindPermission",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetDnsBindPermission",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetDnsForwarding_sync",
+      "title": "vmwareengine GetDnsForwarding Sample",
+      "description": "GetDnsForwarding gets details of the `DnsForwarding` config.",
+      "file": "Client/GetDnsForwarding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDnsForwarding",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetDnsForwarding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetDnsForwardingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.DnsForwarding",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetDnsForwarding",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetDnsForwarding",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetExternalAccessRule_sync",
+      "title": "vmwareengine GetExternalAccessRule Sample",
+      "description": "GetExternalAccessRule gets details of a single external access rule.",
+      "file": "Client/GetExternalAccessRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExternalAccessRule",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetExternalAccessRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetExternalAccessRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.ExternalAccessRule",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetExternalAccessRule",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetExternalAccessRule",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetExternalAddress_sync",
+      "title": "vmwareengine GetExternalAddress Sample",
+      "description": "GetExternalAddress gets details of a single external IP address.",
+      "file": "Client/GetExternalAddress/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExternalAddress",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetExternalAddress",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetExternalAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.ExternalAddress",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetExternalAddress",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetExternalAddress",
           "service": {
             "shortName": "VmwareEngine",
             "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
@@ -747,6 +1437,144 @@
       ]
     },
     {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetLoggingServer_sync",
+      "title": "vmwareengine GetLoggingServer Sample",
+      "description": "GetLoggingServer gets details of a logging server.",
+      "file": "Client/GetLoggingServer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLoggingServer",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetLoggingServer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetLoggingServerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.LoggingServer",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetLoggingServer",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetLoggingServer",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetManagementDnsZoneBinding_sync",
+      "title": "vmwareengine GetManagementDnsZoneBinding Sample",
+      "description": "GetManagementDnsZoneBinding retrieves a 'ManagementDnsZoneBinding' resource by its resource name.",
+      "file": "Client/GetManagementDnsZoneBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetManagementDnsZoneBinding",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetManagementDnsZoneBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetManagementDnsZoneBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.ManagementDnsZoneBinding",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetManagementDnsZoneBinding",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetManagementDnsZoneBinding",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetNetworkPeering_sync",
+      "title": "vmwareengine GetNetworkPeering Sample",
+      "description": "GetNetworkPeering retrieves a `NetworkPeering` resource by its resource name. The resource\ncontains details of the network peering, such as peered\nnetworks, import and export custom route configurations, and peering state.\nNetworkPeering is a global resource and location can only be global.",
+      "file": "Client/GetNetworkPeering/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNetworkPeering",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetNetworkPeering",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetNetworkPeeringRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.NetworkPeering",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetNetworkPeering",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetNetworkPeering",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetNetworkPolicy_sync",
       "title": "vmwareengine GetNetworkPolicy Sample",
       "description": "GetNetworkPolicy retrieves a `NetworkPolicy` resource by its resource name.",
@@ -777,6 +1605,52 @@
         "method": {
           "shortName": "GetNetworkPolicy",
           "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetNetworkPolicy",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GetNode_sync",
+      "title": "vmwareengine GetNode Sample",
+      "description": "GetNode gets details of a single node.",
+      "file": "Client/GetNode/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetNode",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GetNode",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GetNodeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*vmwareenginepb.Node",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GetNode",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GetNode",
           "service": {
             "shortName": "VmwareEngine",
             "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
@@ -1069,6 +1943,52 @@
       ]
     },
     {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_GrantDnsBindPermission_sync",
+      "title": "vmwareengine GrantDnsBindPermission Sample",
+      "description": "GrantDnsBindPermission grants the bind permission to the customer provided principal(user /\nservice account) to bind their DNS zone with the intranet VPC associated\nwith the project. DnsBindPermission is a global resource and location can\nonly be global.",
+      "file": "Client/GrantDnsBindPermission/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GrantDnsBindPermission",
+        "fullName": "google.cloud.vmwareengine.v1.Client.GrantDnsBindPermission",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.GrantDnsBindPermissionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "GrantDnsBindPermissionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "GrantDnsBindPermission",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.GrantDnsBindPermission",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListClusters_sync",
       "title": "vmwareengine ListClusters Sample",
       "description": "ListClusters lists `Cluster` resources in a given private cloud.",
@@ -1109,7 +2029,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListExternalAccessRules_sync",
+      "title": "vmwareengine ListExternalAccessRules Sample",
+      "description": "ListExternalAccessRules lists `ExternalAccessRule` resources in the specified network policy.",
+      "file": "Client/ListExternalAccessRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExternalAccessRules",
+        "fullName": "google.cloud.vmwareengine.v1.Client.ListExternalAccessRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.ListExternalAccessRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExternalAccessRuleIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListExternalAccessRules",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListExternalAccessRules",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListExternalAddresses_sync",
+      "title": "vmwareengine ListExternalAddresses Sample",
+      "description": "ListExternalAddresses lists external IP addresses assigned to VMware workload VMs in a given\nprivate cloud.",
+      "file": "Client/ListExternalAddresses/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExternalAddresses",
+        "fullName": "google.cloud.vmwareengine.v1.Client.ListExternalAddresses",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.ListExternalAddressesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExternalAddressIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListExternalAddresses",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListExternalAddresses",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1155,7 +2167,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1201,7 +2213,145 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListLoggingServers_sync",
+      "title": "vmwareengine ListLoggingServers Sample",
+      "description": "ListLoggingServers lists logging servers configured for a given private\ncloud.",
+      "file": "Client/ListLoggingServers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLoggingServers",
+        "fullName": "google.cloud.vmwareengine.v1.Client.ListLoggingServers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.ListLoggingServersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LoggingServerIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListLoggingServers",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListLoggingServers",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListManagementDnsZoneBindings_sync",
+      "title": "vmwareengine ListManagementDnsZoneBindings Sample",
+      "description": "ListManagementDnsZoneBindings lists Consumer VPCs bound to Management DNS Zone of a given private cloud.",
+      "file": "Client/ListManagementDnsZoneBindings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListManagementDnsZoneBindings",
+        "fullName": "google.cloud.vmwareengine.v1.Client.ListManagementDnsZoneBindings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.ListManagementDnsZoneBindingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ManagementDnsZoneBindingIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListManagementDnsZoneBindings",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListManagementDnsZoneBindings",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListNetworkPeerings_sync",
+      "title": "vmwareengine ListNetworkPeerings Sample",
+      "description": "ListNetworkPeerings lists `NetworkPeering` resources in a given project. NetworkPeering is a\nglobal resource and location can only be global.",
+      "file": "Client/ListNetworkPeerings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNetworkPeerings",
+        "fullName": "google.cloud.vmwareengine.v1.Client.ListNetworkPeerings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.ListNetworkPeeringsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NetworkPeeringIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListNetworkPeerings",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListNetworkPeerings",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1247,7 +2397,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1293,7 +2443,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListNodes_sync",
+      "title": "vmwareengine ListNodes Sample",
+      "description": "ListNodes lists nodes in a given cluster.",
+      "file": "Client/ListNodes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListNodes",
+        "fullName": "google.cloud.vmwareengine.v1.Client.ListNodes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.ListNodesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "NodeIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListNodes",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListNodes",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1339,7 +2535,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_ListPeeringRoutes_sync",
+      "title": "vmwareengine ListPeeringRoutes Sample",
+      "description": "ListPeeringRoutes lists the network peering routes exchanged over a peering connection.\nNetworkPeering is a global resource and location can only be global.",
+      "file": "Client/ListPeeringRoutes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPeeringRoutes",
+        "fullName": "google.cloud.vmwareengine.v1.Client.ListPeeringRoutes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.ListPeeringRoutesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PeeringRouteIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "ListPeeringRoutes",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ListPeeringRoutes",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1385,7 +2627,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1431,7 +2673,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1477,7 +2719,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1523,7 +2765,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1569,7 +2811,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_RepairManagementDnsZoneBinding_sync",
+      "title": "vmwareengine RepairManagementDnsZoneBinding Sample",
+      "description": "RepairManagementDnsZoneBinding retries to create a `ManagementDnsZoneBinding` resource that is\nin failed state.",
+      "file": "Client/RepairManagementDnsZoneBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RepairManagementDnsZoneBinding",
+        "fullName": "google.cloud.vmwareengine.v1.Client.RepairManagementDnsZoneBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.RepairManagementDnsZoneBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RepairManagementDnsZoneBindingOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "RepairManagementDnsZoneBinding",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.RepairManagementDnsZoneBinding",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1651,6 +2939,52 @@
         "method": {
           "shortName": "ResetVcenterCredentials",
           "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.ResetVcenterCredentials",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_RevokeDnsBindPermission_sync",
+      "title": "vmwareengine RevokeDnsBindPermission Sample",
+      "description": "RevokeDnsBindPermission revokes the bind permission from the customer provided principal(user /\nservice account) on the intranet VPC associated with the consumer project.\nDnsBindPermission is a global resource and location can only be global.",
+      "file": "Client/RevokeDnsBindPermission/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RevokeDnsBindPermission",
+        "fullName": "google.cloud.vmwareengine.v1.Client.RevokeDnsBindPermission",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.RevokeDnsBindPermissionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RevokeDnsBindPermissionOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "RevokeDnsBindPermission",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.RevokeDnsBindPermission",
           "service": {
             "shortName": "VmwareEngine",
             "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
@@ -1899,7 +3233,7 @@
     {
       "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateCluster_sync",
       "title": "vmwareengine UpdateCluster Sample",
-      "description": "UpdateCluster modifies a `Cluster` resource. Only the following fields can be updated: \n`node_type_configs.*.node_count`. Only fields specified in `updateMask` are\napplied.\n\nDuring operation processing, the resource is temporarily in the `ACTIVE`\nstate before the operation fully completes. For that period of time, you\ncan't update the resource. Use the operation status to determine when the\nprocessing fully completes.",
+      "description": "UpdateCluster modifies a `Cluster` resource. Only fields specified in `updateMask` are\napplied.\n\nDuring operation processing, the resource is temporarily in the `ACTIVE`\nstate before the operation fully completes. For that period of time, you\ncan't update the resource. Use the operation status to determine when the\nprocessing fully completes.",
       "file": "Client/UpdateCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1927,6 +3261,282 @@
         "method": {
           "shortName": "UpdateCluster",
           "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdateCluster",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateDnsForwarding_sync",
+      "title": "vmwareengine UpdateDnsForwarding Sample",
+      "description": "UpdateDnsForwarding updates the parameters of the `DnsForwarding` config, like associated\ndomains. Only fields specified in `update_mask` are applied.",
+      "file": "Client/UpdateDnsForwarding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDnsForwarding",
+        "fullName": "google.cloud.vmwareengine.v1.Client.UpdateDnsForwarding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.UpdateDnsForwardingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDnsForwardingOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateDnsForwarding",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdateDnsForwarding",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateExternalAccessRule_sync",
+      "title": "vmwareengine UpdateExternalAccessRule Sample",
+      "description": "UpdateExternalAccessRule updates the parameters of a single external access rule.\nOnly fields specified in `update_mask` are applied.",
+      "file": "Client/UpdateExternalAccessRule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateExternalAccessRule",
+        "fullName": "google.cloud.vmwareengine.v1.Client.UpdateExternalAccessRule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.UpdateExternalAccessRuleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateExternalAccessRuleOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateExternalAccessRule",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdateExternalAccessRule",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateExternalAddress_sync",
+      "title": "vmwareengine UpdateExternalAddress Sample",
+      "description": "UpdateExternalAddress updates the parameters of a single external IP address.\nOnly fields specified in `update_mask` are applied.\n\nDuring operation processing, the resource is temporarily in the `ACTIVE`\nstate before the operation fully completes. For that period of time, you\ncan't update the resource. Use the operation status to determine when the\nprocessing fully completes.",
+      "file": "Client/UpdateExternalAddress/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateExternalAddress",
+        "fullName": "google.cloud.vmwareengine.v1.Client.UpdateExternalAddress",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.UpdateExternalAddressRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateExternalAddressOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateExternalAddress",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdateExternalAddress",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateLoggingServer_sync",
+      "title": "vmwareengine UpdateLoggingServer Sample",
+      "description": "UpdateLoggingServer updates the parameters of a single logging server.\nOnly fields specified in `update_mask` are applied.",
+      "file": "Client/UpdateLoggingServer/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateLoggingServer",
+        "fullName": "google.cloud.vmwareengine.v1.Client.UpdateLoggingServer",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.UpdateLoggingServerRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateLoggingServerOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateLoggingServer",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdateLoggingServer",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateManagementDnsZoneBinding_sync",
+      "title": "vmwareengine UpdateManagementDnsZoneBinding Sample",
+      "description": "UpdateManagementDnsZoneBinding updates a `ManagementDnsZoneBinding` resource.\nOnly fields specified in `update_mask` are applied.",
+      "file": "Client/UpdateManagementDnsZoneBinding/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateManagementDnsZoneBinding",
+        "fullName": "google.cloud.vmwareengine.v1.Client.UpdateManagementDnsZoneBinding",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.UpdateManagementDnsZoneBindingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateManagementDnsZoneBindingOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateManagementDnsZoneBinding",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdateManagementDnsZoneBinding",
+          "service": {
+            "shortName": "VmwareEngine",
+            "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "vmwareengine_v1_generated_VmwareEngine_UpdateNetworkPeering_sync",
+      "title": "vmwareengine UpdateNetworkPeering Sample",
+      "description": "UpdateNetworkPeering modifies a `NetworkPeering` resource. Only the `description` field can be\nupdated. Only fields specified in `updateMask` are applied. NetworkPeering\nis a global resource and location can only be global.",
+      "file": "Client/UpdateNetworkPeering/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateNetworkPeering",
+        "fullName": "google.cloud.vmwareengine.v1.Client.UpdateNetworkPeering",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "vmwareenginepb.UpdateNetworkPeeringRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateNetworkPeeringOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.vmwareengine.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateNetworkPeering",
+          "fullName": "google.cloud.vmwareengine.v1.VmwareEngine.UpdateNetworkPeering",
           "service": {
             "shortName": "VmwareEngine",
             "fullName": "google.cloud.vmwareengine.v1.VmwareEngine"

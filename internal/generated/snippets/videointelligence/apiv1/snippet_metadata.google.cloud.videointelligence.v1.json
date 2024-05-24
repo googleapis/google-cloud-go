@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/videointelligence/apiv1",
-    "version": "1.11.4",
+    "version": "1.11.7",
     "language": "GO",
     "apis": [
       {

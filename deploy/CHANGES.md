@@ -1,6 +1,60 @@
 # Changes
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.18.1...deploy/v1.19.0) (2024-05-16)
+
+
+### Features
+
+* **deploy:** Add Skaffold verbose support to Execution Environment properties ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.18.0...deploy/v1.18.1) (2024-05-08)
+
+
+### Documentation
+
+* **deploy:** Small corrections to Cloud Deploy API documentation ([ae42f23](https://github.com/googleapis/google-cloud-go/commit/ae42f23f586ad76b058066a66c1566e4fef23692))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.17.2...deploy/v1.18.0) (2024-05-01)
+
+
+### Features
+
+* **deploy:** Add Skaffold remote config support for GCB repos ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **deploy:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.17.1...deploy/v1.17.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **deploy:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.17.0...deploy/v1.17.1) (2024-01-30)
+
+
+### Bug Fixes
+
+* **deploy:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.16.0...deploy/v1.17.0) (2024-01-08)
+
+
+### Features
+
+* **deploy:** Add stable cutback duration configuration to the k8s gateway service mesh deployment strategy. This allows configuring the amount of time to migrate traffic back to the original Service in the stable phase ([#9227](https://github.com/googleapis/google-cloud-go/issues/9227)) ([bd30055](https://github.com/googleapis/google-cloud-go/commit/bd3005532fbffa9894b11149e9693b7c33227d79))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.15.0...deploy/v1.16.0) (2023-12-07)
+
+
+### Features
+
+* **deploy:** Add custom target type support ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.14.2...deploy/v1.15.0) (2023-11-09)
 
 

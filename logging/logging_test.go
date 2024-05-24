@@ -48,6 +48,9 @@ import (
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
+	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -282,17 +285,17 @@ func TestToLogEntry(t *testing.T) {
 	tests := []struct {
 		name      string
 		in        logging.Entry
-		want      logpb.LogEntry
+		want      *logpb.LogEntry
 		wantError error
 	}{
 		{
 			name: "BlankLogEntry",
 			in:   logging.Entry{},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "Already set Trace",
 			in:   logging.Entry{Trace: "t1"},
-			want: logpb.LogEntry{Trace: "t1"},
+			want: &logpb.LogEntry{Trace: "t1"},
 		}, {
 			name: "No X-Trace-Context header",
 			in: logging.Entry{
@@ -300,7 +303,7 @@ func TestToLogEntry(t *testing.T) {
 					Request: &http.Request{URL: u, Header: http.Header{"foo": {"bar"}}},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "X-Trace-Context header with all fields",
 			in: logging.Entry{
@@ -312,7 +315,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -328,7 +331,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -343,7 +346,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b120001000",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -358,7 +361,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "X-Trace-Context header with blank span",
 			in: logging.Entry{
@@ -369,7 +372,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
 			},
 		}, {
@@ -382,7 +385,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace: "projects/P/traces/105445aa7843bc8bf206b120001000",
 			},
 		}, {
@@ -395,7 +398,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		}, {
 			name: "Invalid X-Trace-Context header but already set TraceID",
 			in: logging.Entry{
@@ -407,13 +410,13 @@ func TestToLogEntry(t *testing.T) {
 				},
 				Trace: "t4",
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace: "t4",
 			},
 		}, {
 			name: "Already set TraceID and SpanID",
 			in:   logging.Entry{Trace: "t1", SpanID: "007"},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:  "t1",
 				SpanId: "007",
 			},
@@ -436,7 +439,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:  "projects/P/traces/105445aa7843bc8bf206b12000100012",
 				SpanId: "000000000000004a",
 			},
@@ -452,7 +455,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:        "projects/P/traces/105445aa7843bc8bf206b12000100012",
 				SpanId:       "000000000000004a",
 				TraceSampled: true,
@@ -470,7 +473,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{
+			want: &logpb.LogEntry{
 				Trace:  "projects/P/traces/105445aa7843bc8bf206b1200010aaaa",
 				SpanId: "0000000000000aaa",
 			},
@@ -485,7 +488,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header short trace field",
@@ -497,7 +500,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header long trace field",
@@ -509,7 +512,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header invalid trace field",
@@ -521,7 +524,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header trace field all 0s",
@@ -533,7 +536,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header short span field",
@@ -545,7 +548,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header long span field",
@@ -557,7 +560,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header invalid span field",
@@ -569,7 +572,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 		{
 			name: "Traceparent header span field all 0s",
@@ -581,7 +584,7 @@ func TestToLogEntry(t *testing.T) {
 					},
 				},
 			},
-			want: logpb.LogEntry{},
+			want: &logpb.LogEntry{},
 		},
 	}
 	for _, test := range tests {
@@ -604,6 +607,132 @@ func TestToLogEntry(t *testing.T) {
 			}
 			if got := e.TraceSampled; got != test.want.TraceSampled {
 				t.Errorf("TraceSampled: %+v: got %t, want %t", test.in, got, test.want.TraceSampled)
+			}
+		})
+	}
+}
+
+func TestToLogEntryOTelIntegration(t *testing.T) {
+	// Some slight modifications need to be done for testing ToLogEntry
+	// for the OpenTelemetry integration, so they are in a separate function.
+	u := &url.URL{Scheme: "http"}
+	tests := []struct {
+		name string
+		in   logging.Entry
+		want *logpb.LogEntry // if want is nil, pull wants from spanContext
+	}{
+		{
+			name: "Using OpenTelemetry with a valid span",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+					},
+				},
+			},
+		},
+		{
+			name: "Using OpenTelemetry only with a valid span + valid traceparent headers (precedence test)",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+						Header: http.Header{
+							"Traceparent": {"00-105445aa7843bc8bf206b12000100012-000000000000004a-01"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Using OpenTelemetry only with a valid span + valid XCTC headers (precedence test)",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+						Header: http.Header{
+							"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120000000/0000000000000bbb;o=1"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "Using OpenTelemetry with a valid span + trace info set in Entry object",
+			in: logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL: u,
+					},
+				},
+				Trace:        "abc",
+				SpanID:       "def",
+				TraceSampled: false,
+			},
+			want: &logpb.LogEntry{
+				Trace:        "abc",
+				SpanId:       "def",
+				TraceSampled: false,
+			},
+		},
+		{
+			name: "Using OpenTelemetry without a request",
+			in:   logging.Entry{},
+			want: &logpb.LogEntry{},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			var span trace.Span
+			ctx := context.Background()
+
+			// Set up an OTel SDK tracer if integration test, mock noop tracer if not.
+			if integrationTest {
+				tracerProvider := sdktrace.NewTracerProvider()
+				defer tracerProvider.Shutdown(ctx)
+
+				ctx, span = tracerProvider.Tracer("integration-test-tracer").Start(ctx, "test span")
+				defer span.End()
+			} else {
+				otelTraceID, _ := trace.TraceIDFromHex(strings.Repeat("a", 32))
+				otelSpanID, _ := trace.SpanIDFromHex(strings.Repeat("f", 16))
+				otelTraceFlags := trace.FlagsSampled // tracesampled = true
+				mockSpanContext := trace.NewSpanContext(trace.SpanContextConfig{
+					TraceID:    otelTraceID,
+					SpanID:     otelSpanID,
+					TraceFlags: otelTraceFlags,
+				})
+				ctx = trace.ContextWithSpanContext(ctx, mockSpanContext)
+				ctx, span = noop.NewTracerProvider().Tracer("test tracer").Start(ctx, "test span")
+				defer span.End()
+			}
+
+			if test.in.HTTPRequest != nil && test.in.HTTPRequest.Request != nil {
+				test.in.HTTPRequest.Request = test.in.HTTPRequest.Request.WithContext(ctx)
+			}
+			spanContext := trace.SpanContextFromContext(ctx)
+
+			// if want is nil, pull wants from spanContext
+			if test.want == nil {
+				test.want = &logpb.LogEntry{
+					Trace:        "projects/P/traces/" + spanContext.TraceID().String(),
+					SpanId:       spanContext.SpanID().String(),
+					TraceSampled: spanContext.TraceFlags().IsSampled(),
+				}
+			}
+
+			e, err := logging.ToLogEntry(test.in, "projects/P")
+			if err != nil {
+				t.Fatalf("Unexpected error: %+v: %v", test.in, err)
+			}
+			if got := e.Trace; got != test.want.Trace {
+				t.Errorf("TraceId: %+v: SpanContext: %+v: got %q, want %q", test.in, spanContext, got, test.want.Trace)
+			}
+			if got := e.SpanId; got != test.want.SpanId {
+				t.Errorf("SpanId: %+v: SpanContext: %+v: got %q, want %q", test.in, spanContext, got, test.want.SpanId)
+			}
+			if got := e.TraceSampled; got != test.want.TraceSampled {
+				t.Errorf("TraceSampled: %+v: SpanContext: %+v: got %t, want %t", test.in, spanContext, got, test.want.TraceSampled)
 			}
 		})
 	}
@@ -1033,6 +1162,74 @@ func TestNonProjectParent(t *testing.T) {
 	}
 }
 
+func TestDetectProjectIdParent(t *testing.T) {
+	ctx := context.Background()
+	initLogs()
+	addr, err := ltesting.NewServer()
+	if err != nil {
+		t.Fatalf("creating fake server: %v", err)
+	}
+	conn, err := grpc.Dial(addr, grpc.WithInsecure())
+	if err != nil {
+		t.Fatalf("dialing %q: %v", addr, err)
+	}
+
+	tests := []struct {
+		name      string
+		resource  *mrpb.MonitoredResource
+		want      string
+		wantError error
+	}{
+		{
+			name: "Test DetectProjectId parent properly set up resource detection",
+			resource: &mrpb.MonitoredResource{
+				Labels: map[string]string{"project_id": testProjectID},
+			},
+			want: "projects/" + testProjectID,
+		},
+		{
+			name:      "Test DetectProjectId parent no resource detected",
+			resource:  nil,
+			wantError: errors.New("could not determine project ID from environment"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			// Check if toLogEntryInternal was called with the right parent
+			toLogEntryInternalMock := func(got logging.Entry, l *logging.Logger, parent string, skipLevels int) (*logpb.LogEntry, error) {
+				if parent != test.want {
+					t.Errorf("toLogEntryInternal called with wrong parent. got: %s want: %s", parent, test.want)
+				}
+				return &logpb.LogEntry{}, nil
+			}
+
+			detectResourceMock := func() *mrpb.MonitoredResource {
+				return test.resource
+			}
+
+			realToLogEntryInternal := logging.SetToLogEntryInternal(toLogEntryInternalMock)
+			defer func() { logging.SetToLogEntryInternal(realToLogEntryInternal) }()
+
+			realDetectResourceInternal := logging.SetDetectResourceInternal(detectResourceMock)
+			defer func() { logging.SetDetectResourceInternal(realDetectResourceInternal) }()
+
+			cli, err := logging.NewClient(ctx, logging.DetectProjectID, option.WithGRPCConn(conn))
+			if err != nil && test.wantError == nil {
+				t.Fatalf("Unexpected error: %+v: %v", test.resource, err)
+			}
+			if err == nil && test.wantError != nil {
+				t.Fatalf("Error is expected: %+v: %v", test.resource, test.wantError)
+			}
+			if test.wantError != nil {
+				return
+			}
+
+			cli.Logger(testLogID).LogSync(ctx, logging.Entry{Payload: "hello"})
+		})
+	}
+}
+
 // waitFor calls f repeatedly with exponential backoff, blocking until it returns true.
 // It returns false after a while (if it times out).
 func waitFor(f func() bool) bool {
@@ -1292,14 +1489,14 @@ func (f *writeLogEntriesTestHandler) WriteLogEntries(_ context.Context, e *logpb
 	return &logpb.WriteLogEntriesResponse{}, nil
 }
 
-func fakeClient(parent string, writeLogEntryHandler func(e *logpb.WriteLogEntriesRequest)) (*logging.Client, error) {
+func fakeClient(parent string, writeLogEntryHandler func(e *logpb.WriteLogEntriesRequest), serverOptions ...grpc.ServerOption) (*logging.Client, error) {
 	// setup fake server
 	fakeBackend := &writeLogEntriesTestHandler{}
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		return nil, err
 	}
-	gsrv := grpc.NewServer()
+	gsrv := grpc.NewServer(serverOptions...)
 	logpb.RegisterLoggingServiceV2Server(gsrv, fakeBackend)
 	fakeServerAddr := l.Addr().String()
 	go func() {
@@ -1357,6 +1554,30 @@ func TestPartialSuccessOption(t *testing.T) {
 				t.Fatal("e.PartialSuccess = false, want true")
 			}
 		})
+	}
+}
+
+func TestWriteLogEntriesSizeLimit(t *testing.T) {
+	// Test that logging too many large requests at once doesn't bump up
+	// against WriteLogEntriesRequest size limit
+	sizeLimit := 10485760 // 10MiB size limit
+
+	// Create a fake client whose server can only handle messages of at most sizeLimit
+	client, err := fakeClient("projects/test", func(e *logpb.WriteLogEntriesRequest) {}, grpc.MaxRecvMsgSize(sizeLimit))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	client.OnError = func(e error) {
+		t.Fatalf(e.Error())
+	}
+
+	defer client.Close()
+	logger := client.Logger("test")
+	entry := logging.Entry{Payload: strings.Repeat("1", 250000)}
+
+	for i := 0; i < 200; i++ {
+		logger.Log(entry)
 	}
 }
 

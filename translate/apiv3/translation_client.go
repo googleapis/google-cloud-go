@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -47,22 +47,34 @@ var newTranslationClientHook clientHook
 
 // TranslationCallOptions contains the retry settings for each method of TranslationClient.
 type TranslationCallOptions struct {
-	TranslateText          []gax.CallOption
-	DetectLanguage         []gax.CallOption
-	GetSupportedLanguages  []gax.CallOption
-	TranslateDocument      []gax.CallOption
-	BatchTranslateText     []gax.CallOption
-	BatchTranslateDocument []gax.CallOption
-	CreateGlossary         []gax.CallOption
-	ListGlossaries         []gax.CallOption
-	GetGlossary            []gax.CallOption
-	DeleteGlossary         []gax.CallOption
+	TranslateText           []gax.CallOption
+	DetectLanguage          []gax.CallOption
+	GetSupportedLanguages   []gax.CallOption
+	TranslateDocument       []gax.CallOption
+	BatchTranslateText      []gax.CallOption
+	BatchTranslateDocument  []gax.CallOption
+	CreateGlossary          []gax.CallOption
+	ListGlossaries          []gax.CallOption
+	GetGlossary             []gax.CallOption
+	DeleteGlossary          []gax.CallOption
+	CreateAdaptiveMtDataset []gax.CallOption
+	DeleteAdaptiveMtDataset []gax.CallOption
+	GetAdaptiveMtDataset    []gax.CallOption
+	ListAdaptiveMtDatasets  []gax.CallOption
+	AdaptiveMtTranslate     []gax.CallOption
+	GetAdaptiveMtFile       []gax.CallOption
+	DeleteAdaptiveMtFile    []gax.CallOption
+	ImportAdaptiveMtFile    []gax.CallOption
+	ListAdaptiveMtFiles     []gax.CallOption
+	ListAdaptiveMtSentences []gax.CallOption
 }
 
 func defaultTranslationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("translate.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("translate.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("translate.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://translate.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -143,6 +155,16 @@ func defaultTranslationCallOptions() *TranslationCallOptions {
 				})
 			}),
 		},
+		CreateAdaptiveMtDataset: []gax.CallOption{},
+		DeleteAdaptiveMtDataset: []gax.CallOption{},
+		GetAdaptiveMtDataset:    []gax.CallOption{},
+		ListAdaptiveMtDatasets:  []gax.CallOption{},
+		AdaptiveMtTranslate:     []gax.CallOption{},
+		GetAdaptiveMtFile:       []gax.CallOption{},
+		DeleteAdaptiveMtFile:    []gax.CallOption{},
+		ImportAdaptiveMtFile:    []gax.CallOption{},
+		ListAdaptiveMtFiles:     []gax.CallOption{},
+		ListAdaptiveMtSentences: []gax.CallOption{},
 	}
 }
 
@@ -214,6 +236,16 @@ func defaultTranslationRESTCallOptions() *TranslationCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CreateAdaptiveMtDataset: []gax.CallOption{},
+		DeleteAdaptiveMtDataset: []gax.CallOption{},
+		GetAdaptiveMtDataset:    []gax.CallOption{},
+		ListAdaptiveMtDatasets:  []gax.CallOption{},
+		AdaptiveMtTranslate:     []gax.CallOption{},
+		GetAdaptiveMtFile:       []gax.CallOption{},
+		DeleteAdaptiveMtFile:    []gax.CallOption{},
+		ImportAdaptiveMtFile:    []gax.CallOption{},
+		ListAdaptiveMtFiles:     []gax.CallOption{},
+		ListAdaptiveMtSentences: []gax.CallOption{},
 	}
 }
 
@@ -236,6 +268,16 @@ type internalTranslationClient interface {
 	GetGlossary(context.Context, *translatepb.GetGlossaryRequest, ...gax.CallOption) (*translatepb.Glossary, error)
 	DeleteGlossary(context.Context, *translatepb.DeleteGlossaryRequest, ...gax.CallOption) (*DeleteGlossaryOperation, error)
 	DeleteGlossaryOperation(name string) *DeleteGlossaryOperation
+	CreateAdaptiveMtDataset(context.Context, *translatepb.CreateAdaptiveMtDatasetRequest, ...gax.CallOption) (*translatepb.AdaptiveMtDataset, error)
+	DeleteAdaptiveMtDataset(context.Context, *translatepb.DeleteAdaptiveMtDatasetRequest, ...gax.CallOption) error
+	GetAdaptiveMtDataset(context.Context, *translatepb.GetAdaptiveMtDatasetRequest, ...gax.CallOption) (*translatepb.AdaptiveMtDataset, error)
+	ListAdaptiveMtDatasets(context.Context, *translatepb.ListAdaptiveMtDatasetsRequest, ...gax.CallOption) *AdaptiveMtDatasetIterator
+	AdaptiveMtTranslate(context.Context, *translatepb.AdaptiveMtTranslateRequest, ...gax.CallOption) (*translatepb.AdaptiveMtTranslateResponse, error)
+	GetAdaptiveMtFile(context.Context, *translatepb.GetAdaptiveMtFileRequest, ...gax.CallOption) (*translatepb.AdaptiveMtFile, error)
+	DeleteAdaptiveMtFile(context.Context, *translatepb.DeleteAdaptiveMtFileRequest, ...gax.CallOption) error
+	ImportAdaptiveMtFile(context.Context, *translatepb.ImportAdaptiveMtFileRequest, ...gax.CallOption) (*translatepb.ImportAdaptiveMtFileResponse, error)
+	ListAdaptiveMtFiles(context.Context, *translatepb.ListAdaptiveMtFilesRequest, ...gax.CallOption) *AdaptiveMtFileIterator
+	ListAdaptiveMtSentences(context.Context, *translatepb.ListAdaptiveMtSentencesRequest, ...gax.CallOption) *AdaptiveMtSentenceIterator
 }
 
 // TranslationClient is a client for interacting with Cloud Translation API.
@@ -369,6 +411,58 @@ func (c *TranslationClient) DeleteGlossaryOperation(name string) *DeleteGlossary
 	return c.internalClient.DeleteGlossaryOperation(name)
 }
 
+// CreateAdaptiveMtDataset creates an Adaptive MT dataset.
+func (c *TranslationClient) CreateAdaptiveMtDataset(ctx context.Context, req *translatepb.CreateAdaptiveMtDatasetRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtDataset, error) {
+	return c.internalClient.CreateAdaptiveMtDataset(ctx, req, opts...)
+}
+
+// DeleteAdaptiveMtDataset deletes an Adaptive MT dataset, including all its entries and associated
+// metadata.
+func (c *TranslationClient) DeleteAdaptiveMtDataset(ctx context.Context, req *translatepb.DeleteAdaptiveMtDatasetRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAdaptiveMtDataset(ctx, req, opts...)
+}
+
+// GetAdaptiveMtDataset gets the Adaptive MT dataset.
+func (c *TranslationClient) GetAdaptiveMtDataset(ctx context.Context, req *translatepb.GetAdaptiveMtDatasetRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtDataset, error) {
+	return c.internalClient.GetAdaptiveMtDataset(ctx, req, opts...)
+}
+
+// ListAdaptiveMtDatasets lists all Adaptive MT datasets for which the caller has read permission.
+func (c *TranslationClient) ListAdaptiveMtDatasets(ctx context.Context, req *translatepb.ListAdaptiveMtDatasetsRequest, opts ...gax.CallOption) *AdaptiveMtDatasetIterator {
+	return c.internalClient.ListAdaptiveMtDatasets(ctx, req, opts...)
+}
+
+// AdaptiveMtTranslate translate text using Adaptive MT.
+func (c *TranslationClient) AdaptiveMtTranslate(ctx context.Context, req *translatepb.AdaptiveMtTranslateRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtTranslateResponse, error) {
+	return c.internalClient.AdaptiveMtTranslate(ctx, req, opts...)
+}
+
+// GetAdaptiveMtFile gets and AdaptiveMtFile
+func (c *TranslationClient) GetAdaptiveMtFile(ctx context.Context, req *translatepb.GetAdaptiveMtFileRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtFile, error) {
+	return c.internalClient.GetAdaptiveMtFile(ctx, req, opts...)
+}
+
+// DeleteAdaptiveMtFile deletes an AdaptiveMtFile along with its sentences.
+func (c *TranslationClient) DeleteAdaptiveMtFile(ctx context.Context, req *translatepb.DeleteAdaptiveMtFileRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAdaptiveMtFile(ctx, req, opts...)
+}
+
+// ImportAdaptiveMtFile imports an AdaptiveMtFile and adds all of its sentences into the
+// AdaptiveMtDataset.
+func (c *TranslationClient) ImportAdaptiveMtFile(ctx context.Context, req *translatepb.ImportAdaptiveMtFileRequest, opts ...gax.CallOption) (*translatepb.ImportAdaptiveMtFileResponse, error) {
+	return c.internalClient.ImportAdaptiveMtFile(ctx, req, opts...)
+}
+
+// ListAdaptiveMtFiles lists all AdaptiveMtFiles associated to an AdaptiveMtDataset.
+func (c *TranslationClient) ListAdaptiveMtFiles(ctx context.Context, req *translatepb.ListAdaptiveMtFilesRequest, opts ...gax.CallOption) *AdaptiveMtFileIterator {
+	return c.internalClient.ListAdaptiveMtFiles(ctx, req, opts...)
+}
+
+// ListAdaptiveMtSentences lists all AdaptiveMtSentences under a given file/dataset.
+func (c *TranslationClient) ListAdaptiveMtSentences(ctx context.Context, req *translatepb.ListAdaptiveMtSentencesRequest, opts ...gax.CallOption) *AdaptiveMtSentenceIterator {
+	return c.internalClient.ListAdaptiveMtSentences(ctx, req, opts...)
+}
+
 // translationGRPCClient is a client for interacting with Cloud Translation API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -448,7 +542,9 @@ func (c *translationGRPCClient) Connection() *grpc.ClientConn {
 func (c *translationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -511,7 +607,9 @@ func NewTranslationRESTClient(ctx context.Context, opts ...option.ClientOption) 
 func defaultTranslationRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://translate.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://translate.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://translate.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://translate.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -523,7 +621,9 @@ func defaultTranslationRESTClientOptions() []option.ClientOption {
 func (c *translationRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -754,6 +854,262 @@ func (c *translationGRPCClient) DeleteGlossary(ctx context.Context, req *transla
 	return &DeleteGlossaryOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *translationGRPCClient) CreateAdaptiveMtDataset(ctx context.Context, req *translatepb.CreateAdaptiveMtDatasetRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtDataset, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateAdaptiveMtDataset[0:len((*c.CallOptions).CreateAdaptiveMtDataset):len((*c.CallOptions).CreateAdaptiveMtDataset)], opts...)
+	var resp *translatepb.AdaptiveMtDataset
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.translationClient.CreateAdaptiveMtDataset(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *translationGRPCClient) DeleteAdaptiveMtDataset(ctx context.Context, req *translatepb.DeleteAdaptiveMtDatasetRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteAdaptiveMtDataset[0:len((*c.CallOptions).DeleteAdaptiveMtDataset):len((*c.CallOptions).DeleteAdaptiveMtDataset)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.translationClient.DeleteAdaptiveMtDataset(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *translationGRPCClient) GetAdaptiveMtDataset(ctx context.Context, req *translatepb.GetAdaptiveMtDatasetRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtDataset, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAdaptiveMtDataset[0:len((*c.CallOptions).GetAdaptiveMtDataset):len((*c.CallOptions).GetAdaptiveMtDataset)], opts...)
+	var resp *translatepb.AdaptiveMtDataset
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.translationClient.GetAdaptiveMtDataset(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *translationGRPCClient) ListAdaptiveMtDatasets(ctx context.Context, req *translatepb.ListAdaptiveMtDatasetsRequest, opts ...gax.CallOption) *AdaptiveMtDatasetIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAdaptiveMtDatasets[0:len((*c.CallOptions).ListAdaptiveMtDatasets):len((*c.CallOptions).ListAdaptiveMtDatasets)], opts...)
+	it := &AdaptiveMtDatasetIterator{}
+	req = proto.Clone(req).(*translatepb.ListAdaptiveMtDatasetsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtDataset, string, error) {
+		resp := &translatepb.ListAdaptiveMtDatasetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.translationClient.ListAdaptiveMtDatasets(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAdaptiveMtDatasets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *translationGRPCClient) AdaptiveMtTranslate(ctx context.Context, req *translatepb.AdaptiveMtTranslateRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtTranslateResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).AdaptiveMtTranslate[0:len((*c.CallOptions).AdaptiveMtTranslate):len((*c.CallOptions).AdaptiveMtTranslate)], opts...)
+	var resp *translatepb.AdaptiveMtTranslateResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.translationClient.AdaptiveMtTranslate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *translationGRPCClient) GetAdaptiveMtFile(ctx context.Context, req *translatepb.GetAdaptiveMtFileRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtFile, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAdaptiveMtFile[0:len((*c.CallOptions).GetAdaptiveMtFile):len((*c.CallOptions).GetAdaptiveMtFile)], opts...)
+	var resp *translatepb.AdaptiveMtFile
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.translationClient.GetAdaptiveMtFile(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *translationGRPCClient) DeleteAdaptiveMtFile(ctx context.Context, req *translatepb.DeleteAdaptiveMtFileRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteAdaptiveMtFile[0:len((*c.CallOptions).DeleteAdaptiveMtFile):len((*c.CallOptions).DeleteAdaptiveMtFile)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.translationClient.DeleteAdaptiveMtFile(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *translationGRPCClient) ImportAdaptiveMtFile(ctx context.Context, req *translatepb.ImportAdaptiveMtFileRequest, opts ...gax.CallOption) (*translatepb.ImportAdaptiveMtFileResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ImportAdaptiveMtFile[0:len((*c.CallOptions).ImportAdaptiveMtFile):len((*c.CallOptions).ImportAdaptiveMtFile)], opts...)
+	var resp *translatepb.ImportAdaptiveMtFileResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.translationClient.ImportAdaptiveMtFile(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *translationGRPCClient) ListAdaptiveMtFiles(ctx context.Context, req *translatepb.ListAdaptiveMtFilesRequest, opts ...gax.CallOption) *AdaptiveMtFileIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAdaptiveMtFiles[0:len((*c.CallOptions).ListAdaptiveMtFiles):len((*c.CallOptions).ListAdaptiveMtFiles)], opts...)
+	it := &AdaptiveMtFileIterator{}
+	req = proto.Clone(req).(*translatepb.ListAdaptiveMtFilesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtFile, string, error) {
+		resp := &translatepb.ListAdaptiveMtFilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.translationClient.ListAdaptiveMtFiles(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAdaptiveMtFiles(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *translationGRPCClient) ListAdaptiveMtSentences(ctx context.Context, req *translatepb.ListAdaptiveMtSentencesRequest, opts ...gax.CallOption) *AdaptiveMtSentenceIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListAdaptiveMtSentences[0:len((*c.CallOptions).ListAdaptiveMtSentences):len((*c.CallOptions).ListAdaptiveMtSentences)], opts...)
+	it := &AdaptiveMtSentenceIterator{}
+	req = proto.Clone(req).(*translatepb.ListAdaptiveMtSentencesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtSentence, string, error) {
+		resp := &translatepb.ListAdaptiveMtSentencesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.translationClient.ListAdaptiveMtSentences(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAdaptiveMtSentences(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // TranslateText translates input text and returns translated text.
@@ -1462,6 +1818,681 @@ func (c *translationRESTClient) DeleteGlossary(ctx context.Context, req *transla
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// CreateAdaptiveMtDataset creates an Adaptive MT dataset.
+func (c *translationRESTClient) CreateAdaptiveMtDataset(ctx context.Context, req *translatepb.CreateAdaptiveMtDatasetRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtDataset, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAdaptiveMtDataset()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v/adaptiveMtDatasets", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).CreateAdaptiveMtDataset[0:len((*c.CallOptions).CreateAdaptiveMtDataset):len((*c.CallOptions).CreateAdaptiveMtDataset)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &translatepb.AdaptiveMtDataset{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteAdaptiveMtDataset deletes an Adaptive MT dataset, including all its entries and associated
+// metadata.
+func (c *translationRESTClient) DeleteAdaptiveMtDataset(ctx context.Context, req *translatepb.DeleteAdaptiveMtDatasetRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// GetAdaptiveMtDataset gets the Adaptive MT dataset.
+func (c *translationRESTClient) GetAdaptiveMtDataset(ctx context.Context, req *translatepb.GetAdaptiveMtDatasetRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtDataset, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetAdaptiveMtDataset[0:len((*c.CallOptions).GetAdaptiveMtDataset):len((*c.CallOptions).GetAdaptiveMtDataset)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &translatepb.AdaptiveMtDataset{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAdaptiveMtDatasets lists all Adaptive MT datasets for which the caller has read permission.
+func (c *translationRESTClient) ListAdaptiveMtDatasets(ctx context.Context, req *translatepb.ListAdaptiveMtDatasetsRequest, opts ...gax.CallOption) *AdaptiveMtDatasetIterator {
+	it := &AdaptiveMtDatasetIterator{}
+	req = proto.Clone(req).(*translatepb.ListAdaptiveMtDatasetsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtDataset, string, error) {
+		resp := &translatepb.ListAdaptiveMtDatasetsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v3/%v/adaptiveMtDatasets", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAdaptiveMtDatasets(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// AdaptiveMtTranslate translate text using Adaptive MT.
+func (c *translationRESTClient) AdaptiveMtTranslate(ctx context.Context, req *translatepb.AdaptiveMtTranslateRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtTranslateResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v:adaptiveMtTranslate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AdaptiveMtTranslate[0:len((*c.CallOptions).AdaptiveMtTranslate):len((*c.CallOptions).AdaptiveMtTranslate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &translatepb.AdaptiveMtTranslateResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetAdaptiveMtFile gets and AdaptiveMtFile
+func (c *translationRESTClient) GetAdaptiveMtFile(ctx context.Context, req *translatepb.GetAdaptiveMtFileRequest, opts ...gax.CallOption) (*translatepb.AdaptiveMtFile, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetAdaptiveMtFile[0:len((*c.CallOptions).GetAdaptiveMtFile):len((*c.CallOptions).GetAdaptiveMtFile)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &translatepb.AdaptiveMtFile{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteAdaptiveMtFile deletes an AdaptiveMtFile along with its sentences.
+func (c *translationRESTClient) DeleteAdaptiveMtFile(ctx context.Context, req *translatepb.DeleteAdaptiveMtFileRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
+// ImportAdaptiveMtFile imports an AdaptiveMtFile and adds all of its sentences into the
+// AdaptiveMtDataset.
+func (c *translationRESTClient) ImportAdaptiveMtFile(ctx context.Context, req *translatepb.ImportAdaptiveMtFileRequest, opts ...gax.CallOption) (*translatepb.ImportAdaptiveMtFileResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3/%v:importAdaptiveMtFile", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ImportAdaptiveMtFile[0:len((*c.CallOptions).ImportAdaptiveMtFile):len((*c.CallOptions).ImportAdaptiveMtFile)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &translatepb.ImportAdaptiveMtFileResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAdaptiveMtFiles lists all AdaptiveMtFiles associated to an AdaptiveMtDataset.
+func (c *translationRESTClient) ListAdaptiveMtFiles(ctx context.Context, req *translatepb.ListAdaptiveMtFilesRequest, opts ...gax.CallOption) *AdaptiveMtFileIterator {
+	it := &AdaptiveMtFileIterator{}
+	req = proto.Clone(req).(*translatepb.ListAdaptiveMtFilesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtFile, string, error) {
+		resp := &translatepb.ListAdaptiveMtFilesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v3/%v/adaptiveMtFiles", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAdaptiveMtFiles(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListAdaptiveMtSentences lists all AdaptiveMtSentences under a given file/dataset.
+func (c *translationRESTClient) ListAdaptiveMtSentences(ctx context.Context, req *translatepb.ListAdaptiveMtSentencesRequest, opts ...gax.CallOption) *AdaptiveMtSentenceIterator {
+	it := &AdaptiveMtSentenceIterator{}
+	req = proto.Clone(req).(*translatepb.ListAdaptiveMtSentencesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*translatepb.AdaptiveMtSentence, string, error) {
+		resp := &translatepb.ListAdaptiveMtSentencesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v3/%v/adaptiveMtSentences", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAdaptiveMtSentences(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // BatchTranslateDocumentOperation returns a new BatchTranslateDocumentOperation from a given name.

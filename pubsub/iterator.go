@@ -62,20 +62,22 @@ var (
 )
 
 type messageIterator struct {
-	ctx        context.Context
-	cancel     func() // the function that will cancel ctx; called in stop
-	po         *pullOptions
-	ps         *pullStream
-	subc       *vkit.SubscriberClient
-	subName    string
-	kaTick     <-chan time.Time // keep-alive (deadline extensions)
-	ackTicker  *time.Ticker     // message acks
-	nackTicker *time.Ticker     // message nacks
-	pingTicker *time.Ticker     //  sends to the stream to keep it open
-	failed     chan struct{}    // closed on stream error
-	drained    chan struct{}    // closed when stopped && no more pending messages
-	wg         sync.WaitGroup
+	ctx           context.Context
+	cancel        func() // the function that will cancel ctx; called in stop
+	po            *pullOptions
+	ps            *pullStream
+	subc          *vkit.SubscriberClient
+	subName       string
+	kaTick        <-chan time.Time // keep-alive (deadline extensions)
+	ackTicker     *time.Ticker     // message acks
+	nackTicker    *time.Ticker     // message nacks
+	pingTicker    *time.Ticker     //  sends to the stream to keep it open
+	receiptTicker *time.Ticker     // sends receipt modacks
+	failed        chan struct{}    // closed on stream error
+	drained       chan struct{}    // closed when stopped && no more pending messages
+	wg            sync.WaitGroup
 
+	// This mutex guards the structs related to lease extension.
 	mu          sync.Mutex
 	ackTimeDist *distribution.D // dist uses seconds
 
@@ -91,11 +93,19 @@ type messageIterator struct {
 	// ack IDs whose ack deadline is to be modified
 	// ModAcks don't have AckResults but allows reuse of the SendModAck function.
 	pendingModAcks map[string]*AckResult
-	err            error // error from stream failure
+	// ack IDs whose receipt need to be acknowledged with a modack.
+	pendingReceipts map[string]*AckResult
+	err             error // error from stream failure
 
 	eoMu                      sync.RWMutex
 	enableExactlyOnceDelivery bool
 	sendNewAckDeadline        bool
+
+	orderingMu sync.RWMutex
+	// enableOrdering determines if messages should be processed in order. This is populated
+	// by the response in StreamingPull and can change mid Receive. Must be accessed
+	// with the lock held.
+	enableOrdering bool
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -121,6 +131,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 	ackTicker := time.NewTicker(100 * time.Millisecond)
 	nackTicker := time.NewTicker(100 * time.Millisecond)
 	pingTicker := time.NewTicker(30 * time.Second)
+	receiptTicker := time.NewTicker(100 * time.Millisecond)
 	cctx, cancel := context.WithCancel(context.Background())
 	cctx = withSubscriptionKey(cctx, subName)
 	it := &messageIterator{
@@ -134,6 +145,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		ackTicker:          ackTicker,
 		nackTicker:         nackTicker,
 		pingTicker:         pingTicker,
+		receiptTicker:      receiptTicker,
 		failed:             make(chan struct{}),
 		drained:            make(chan struct{}),
 		ackTimeDist:        distribution.New(int(maxDurationPerLeaseExtension/time.Second) + 1),
@@ -141,6 +153,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 		pendingAcks:        map[string]*AckResult{},
 		pendingNacks:       map[string]*AckResult{},
 		pendingModAcks:     map[string]*AckResult{},
+		pendingReceipts:    map[string]*AckResult{},
 	}
 	it.wg.Add(1)
 	go it.sender()
@@ -157,6 +170,9 @@ func (it *messageIterator) stop() {
 	it.checkDrained()
 	it.mu.Unlock()
 	it.wg.Wait()
+	if it.ps != nil {
+		it.ps.cancel()
+	}
 }
 
 // checkDrained closes the drained channel if the iterator has been stopped and all
@@ -240,6 +256,14 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		rmsgs, err = it.pullMessages(maxToPull)
 	} else {
 		rmsgs, err = it.recvMessages()
+		// If stopping the iterator results in the grpc stream getting shut down and
+		// returning an error here, treat the same as above and return EOF.
+		// If the cancellation comes from the underlying grpc client getting closed,
+		// do propagate the cancellation error.
+		// See https://github.com/googleapis/google-cloud-go/pull/10153#discussion_r1600814775
+		if err != nil && it.ps.ctx.Err() == context.Canceled {
+			err = io.EOF
+		}
 	}
 	// Any error here is fatal.
 	if err != nil {
@@ -290,11 +314,15 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.mu.Unlock()
 
 	if len(ackIDs) > 0 {
-		// When exactly once delivery is not enabled, modacks are fire and forget.
 		if !exactlyOnceDelivery {
-			go func() {
-				it.sendModAck(ackIDs, deadline, false)
-			}()
+			// When exactly once delivery is not enabled, modacks are fire and forget.
+			// Add pending receipt modacks to queue to batch with other modacks.
+			it.mu.Lock()
+			for id := range ackIDs {
+				// Use a SuccessAckResult (dummy) since we don't propagate modacks back to the user.
+				it.pendingReceipts[id] = newSuccessAckResult()
+			}
+			it.mu.Unlock()
 			return msgs, nil
 		}
 
@@ -313,9 +341,13 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			}
 		}
 		// Only return for processing messages that were successfully modack'ed.
+		// Iterate over the original messages slice for ordering.
 		v := make([]*ipubsub.Message, 0, len(pendingMessages))
-		for _, m := range pendingMessages {
-			v = append(v, m)
+		for _, m := range msgs {
+			ackID := msgAckID(m)
+			if _, ok := pendingMessages[ackID]; ok {
+				v = append(v, m)
+			}
 		}
 		return v, nil
 	}
@@ -348,12 +380,30 @@ func (it *messageIterator) recvMessages() ([]*pb.ReceivedMessage, error) {
 	if err != nil {
 		return nil, err
 	}
-	it.eoMu.Lock()
-	if got := res.GetSubscriptionProperties().GetExactlyOnceDeliveryEnabled(); got != it.enableExactlyOnceDelivery {
+
+	// If the new exactly once settings are different than the current settings, update it.
+	it.eoMu.RLock()
+	enableEOD := it.enableExactlyOnceDelivery
+	it.eoMu.RUnlock()
+
+	subProp := res.GetSubscriptionProperties()
+	if got := subProp.GetExactlyOnceDeliveryEnabled(); got != enableEOD {
+		it.eoMu.Lock()
 		it.sendNewAckDeadline = true
 		it.enableExactlyOnceDelivery = got
+		it.eoMu.Unlock()
 	}
-	it.eoMu.Unlock()
+
+	// Also update the subscriber's ordering setting if stale.
+	it.orderingMu.RLock()
+	enableOrdering := it.enableOrdering
+	it.orderingMu.RUnlock()
+
+	if got := subProp.GetMessageOrderingEnabled(); got != enableOrdering {
+		it.orderingMu.Lock()
+		it.enableOrdering = got
+		it.orderingMu.Unlock()
+	}
 	return res.ReceivedMessages, nil
 }
 
@@ -363,6 +413,7 @@ func (it *messageIterator) sender() {
 	defer it.ackTicker.Stop()
 	defer it.nackTicker.Stop()
 	defer it.pingTicker.Stop()
+	defer it.receiptTicker.Stop()
 	defer func() {
 		if it.ps != nil {
 			it.ps.CloseSend()
@@ -375,6 +426,7 @@ func (it *messageIterator) sender() {
 		sendNacks := false
 		sendModAcks := false
 		sendPing := false
+		sendReceipt := false
 
 		dl := it.ackDeadline()
 
@@ -417,9 +469,12 @@ func (it *messageIterator) sender() {
 			it.mu.Lock()
 			// Ping only if we are processing messages via streaming.
 			sendPing = !it.po.synchronous
+		case <-it.receiptTicker.C:
+			it.mu.Lock()
+			sendReceipt = (len(it.pendingReceipts) > 0)
 		}
 		// Lock is held here.
-		var acks, nacks, modAcks map[string]*AckResult
+		var acks, nacks, modAcks, receipts map[string]*AckResult
 		if sendAcks {
 			acks = it.pendingAcks
 			it.pendingAcks = map[string]*AckResult{}
@@ -431,6 +486,10 @@ func (it *messageIterator) sender() {
 		if sendModAcks {
 			modAcks = it.pendingModAcks
 			it.pendingModAcks = map[string]*AckResult{}
+		}
+		if sendReceipt {
+			receipts = it.pendingReceipts
+			it.pendingReceipts = map[string]*AckResult{}
 		}
 		it.mu.Unlock()
 		// Make Ack and ModAck RPCs.
@@ -446,6 +505,9 @@ func (it *messageIterator) sender() {
 		}
 		if sendPing {
 			it.pingStream()
+		}
+		if sendReceipt {
+			it.sendModAck(receipts, dl, true)
 		}
 	}
 }

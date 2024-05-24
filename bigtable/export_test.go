@@ -54,8 +54,10 @@ func init() {
 	flag.StringVar(&c.AdminEndpoint, "it.admin-endpoint", "", "Admin api host and port")
 	flag.StringVar(&c.DataEndpoint, "it.data-endpoint", "", "Data api host and port")
 	flag.StringVar(&c.Project, "it.project", "", "Project to use for integration test")
+	flag.StringVar(&c.Project2, "it.project2", "", "Optional secondary project to use for copy backup integration test")
 	flag.StringVar(&c.Instance, "it.instance", "", "Bigtable instance to use")
 	flag.StringVar(&c.Cluster, "it.cluster", "", "Bigtable cluster to use")
+	flag.StringVar(&c.Cluster2, "it.cluster2", "", "Optional Bigtable secondary cluster in primary project to use for copy backup integration test")
 	flag.StringVar(&c.Table, "it.table", "", "Bigtable table to create")
 	flag.BoolVar(&c.AttemptDirectPath, "it.attempt-directpath", false, "Attempt DirectPath")
 	flag.BoolVar(&c.DirectPathIPV4Only, "it.directpath-ipv4-only", false, "Run DirectPath on a ipv4-only VM")
@@ -83,8 +85,10 @@ type IntegrationTestConfig struct {
 	AdminEndpoint      string
 	DataEndpoint       string
 	Project            string
+	Project2           string
 	Instance           string
 	Cluster            string
+	Cluster2           string
 	Table              string
 	AttemptDirectPath  bool
 	DirectPathIPV4Only bool
@@ -94,6 +98,7 @@ type IntegrationTestConfig struct {
 // The environment can be implemented using production or an emulator
 type IntegrationEnv interface {
 	Config() IntegrationTestConfig
+	AdminClientOptions() (context.Context, []option.ClientOption, error) // Client options to be used in creating client
 	NewAdminClient() (*AdminClient, error)
 	// NewInstanceAdminClient will return nil if instance administration is unsupported in this environment
 	NewInstanceAdminClient() (*InstanceAdminClient, error)
@@ -110,11 +115,17 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 	if c.Project == "" {
 		c.Project = os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
 	}
+	if c.Project2 == "" {
+		c.Project2 = os.Getenv("GCLOUD_TESTS_GOLANG_SECONDARY_BIGTABLE_PROJECT_ID")
+	}
 	if c.Instance == "" {
 		c.Instance = os.Getenv("GCLOUD_TESTS_BIGTABLE_INSTANCE")
 	}
 	if c.Cluster == "" {
 		c.Cluster = os.Getenv("GCLOUD_TESTS_BIGTABLE_CLUSTER")
+	}
+	if c.Cluster2 == "" {
+		c.Cluster2 = os.Getenv("GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER")
 	}
 
 	if legacyUseProd != "" {
@@ -188,11 +199,10 @@ func (e *EmulatedEnv) Config() IntegrationTestConfig {
 
 var headersInterceptor = testutil.DefaultHeadersEnforcer()
 
-// NewAdminClient builds a new connected admin client for this environment
-func (e *EmulatedEnv) NewAdminClient() (*AdminClient, error) {
+func (e *EmulatedEnv) AdminClientOptions() (context.Context, []option.ClientOption, error) {
 	o, err := btopt.DefaultClientOptions(e.server.Addr, e.server.Addr, AdminScope, clientUserAgent)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	// Add gRPC client interceptors to supply Google client information.
 	//
@@ -203,16 +213,24 @@ func (e *EmulatedEnv) NewAdminClient() (*AdminClient, error) {
 		headersInterceptor.UnaryInterceptors())...)
 
 	timeout := 20 * time.Second
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	_ = cancel // ignore for test
 
 	o = append(o, option.WithGRPCDialOption(grpc.WithBlock()))
 	conn, err := gtransport.DialInsecure(ctx, o...)
 	if err != nil {
+		return nil, nil, err
+	}
+	return ctx, []option.ClientOption{option.WithGRPCConn(conn)}, nil
+}
+
+// NewAdminClient builds a new connected admin client for this environment
+func (e *EmulatedEnv) NewAdminClient() (*AdminClient, error) {
+	ctx, options, err := e.AdminClientOptions()
+	if err != nil {
 		return nil, err
 	}
-
-	return NewAdminClient(ctx, e.config.Project, e.config.Instance,
-		option.WithGRPCConn(conn))
+	return NewAdminClient(ctx, e.config.Project, e.config.Instance, options...)
 }
 
 // NewInstanceAdminClient returns nil for the emulated environment since the API is not implemented.
@@ -235,7 +253,8 @@ func (e *EmulatedEnv) NewClient() (*Client, error) {
 		headersInterceptor.UnaryInterceptors())...)
 
 	timeout := 20 * time.Second
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	_ = cancel // ignore for test
 
 	o = append(o, option.WithGRPCDialOption(grpc.WithBlock()))
 	o = append(o, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -287,22 +306,30 @@ func (e *ProdEnv) Config() IntegrationTestConfig {
 	return e.config
 }
 
-// NewAdminClient builds a new connected admin client for this environment
-func (e *ProdEnv) NewAdminClient() (*AdminClient, error) {
+func (e *ProdEnv) AdminClientOptions() (context.Context, []option.ClientOption, error) {
 	clientOpts := headersInterceptor.CallOptions()
 	if endpoint := e.config.AdminEndpoint; endpoint != "" {
 		clientOpts = append(clientOpts, option.WithEndpoint(endpoint))
 	}
-	return NewAdminClient(context.Background(), e.config.Project, e.config.Instance, clientOpts...)
+	return context.Background(), clientOpts, nil
+}
+
+// NewAdminClient builds a new connected admin client for this environment
+func (e *ProdEnv) NewAdminClient() (*AdminClient, error) {
+	ctx, options, err := e.AdminClientOptions()
+	if err != nil {
+		return nil, err
+	}
+	return NewAdminClient(ctx, e.config.Project, e.config.Instance, options...)
 }
 
 // NewInstanceAdminClient returns a new connected instance admin client for this environment
 func (e *ProdEnv) NewInstanceAdminClient() (*InstanceAdminClient, error) {
-	clientOpts := headersInterceptor.CallOptions()
-	if endpoint := e.config.AdminEndpoint; endpoint != "" {
-		clientOpts = append(clientOpts, option.WithEndpoint(endpoint))
+	ctx, options, err := e.AdminClientOptions()
+	if err != nil {
+		return nil, err
 	}
-	return NewInstanceAdminClient(context.Background(), e.config.Project, clientOpts...)
+	return NewInstanceAdminClient(ctx, e.config.Project, options...)
 }
 
 // NewClient builds a connected data client for this environment

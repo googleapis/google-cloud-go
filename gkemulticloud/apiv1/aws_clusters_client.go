@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,28 +41,34 @@ var newAwsClustersClientHook clientHook
 
 // AwsClustersCallOptions contains the retry settings for each method of AwsClustersClient.
 type AwsClustersCallOptions struct {
-	CreateAwsCluster       []gax.CallOption
-	UpdateAwsCluster       []gax.CallOption
-	GetAwsCluster          []gax.CallOption
-	ListAwsClusters        []gax.CallOption
-	DeleteAwsCluster       []gax.CallOption
-	GenerateAwsAccessToken []gax.CallOption
-	CreateAwsNodePool      []gax.CallOption
-	UpdateAwsNodePool      []gax.CallOption
-	GetAwsNodePool         []gax.CallOption
-	ListAwsNodePools       []gax.CallOption
-	DeleteAwsNodePool      []gax.CallOption
-	GetAwsServerConfig     []gax.CallOption
-	CancelOperation        []gax.CallOption
-	DeleteOperation        []gax.CallOption
-	GetOperation           []gax.CallOption
-	ListOperations         []gax.CallOption
+	CreateAwsCluster             []gax.CallOption
+	UpdateAwsCluster             []gax.CallOption
+	GetAwsCluster                []gax.CallOption
+	ListAwsClusters              []gax.CallOption
+	DeleteAwsCluster             []gax.CallOption
+	GenerateAwsClusterAgentToken []gax.CallOption
+	GenerateAwsAccessToken       []gax.CallOption
+	CreateAwsNodePool            []gax.CallOption
+	UpdateAwsNodePool            []gax.CallOption
+	RollbackAwsNodePoolUpdate    []gax.CallOption
+	GetAwsNodePool               []gax.CallOption
+	ListAwsNodePools             []gax.CallOption
+	DeleteAwsNodePool            []gax.CallOption
+	GetAwsOpenIdConfig           []gax.CallOption
+	GetAwsJsonWebKeys            []gax.CallOption
+	GetAwsServerConfig           []gax.CallOption
+	CancelOperation              []gax.CallOption
+	DeleteOperation              []gax.CallOption
+	GetOperation                 []gax.CallOption
+	ListOperations               []gax.CallOption
 }
 
 func defaultAwsClustersGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gkemulticloud.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("gkemulticloud.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("gkemulticloud.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkemulticloud.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -106,6 +112,18 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 		DeleteAwsCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GenerateAwsClusterAgentToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GenerateAwsAccessToken: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -122,6 +140,9 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		UpdateAwsNodePool: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RollbackAwsNodePoolUpdate: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GetAwsNodePool: []gax.CallOption{
@@ -150,6 +171,30 @@ func defaultAwsClustersCallOptions() *AwsClustersCallOptions {
 		},
 		DeleteAwsNodePool: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAwsOpenIdConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAwsJsonWebKeys: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		GetAwsServerConfig: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -183,15 +228,20 @@ type internalAwsClustersClient interface {
 	ListAwsClusters(context.Context, *gkemulticloudpb.ListAwsClustersRequest, ...gax.CallOption) *AwsClusterIterator
 	DeleteAwsCluster(context.Context, *gkemulticloudpb.DeleteAwsClusterRequest, ...gax.CallOption) (*DeleteAwsClusterOperation, error)
 	DeleteAwsClusterOperation(name string) *DeleteAwsClusterOperation
+	GenerateAwsClusterAgentToken(context.Context, *gkemulticloudpb.GenerateAwsClusterAgentTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAwsClusterAgentTokenResponse, error)
 	GenerateAwsAccessToken(context.Context, *gkemulticloudpb.GenerateAwsAccessTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error)
 	CreateAwsNodePool(context.Context, *gkemulticloudpb.CreateAwsNodePoolRequest, ...gax.CallOption) (*CreateAwsNodePoolOperation, error)
 	CreateAwsNodePoolOperation(name string) *CreateAwsNodePoolOperation
 	UpdateAwsNodePool(context.Context, *gkemulticloudpb.UpdateAwsNodePoolRequest, ...gax.CallOption) (*UpdateAwsNodePoolOperation, error)
 	UpdateAwsNodePoolOperation(name string) *UpdateAwsNodePoolOperation
+	RollbackAwsNodePoolUpdate(context.Context, *gkemulticloudpb.RollbackAwsNodePoolUpdateRequest, ...gax.CallOption) (*RollbackAwsNodePoolUpdateOperation, error)
+	RollbackAwsNodePoolUpdateOperation(name string) *RollbackAwsNodePoolUpdateOperation
 	GetAwsNodePool(context.Context, *gkemulticloudpb.GetAwsNodePoolRequest, ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error)
 	ListAwsNodePools(context.Context, *gkemulticloudpb.ListAwsNodePoolsRequest, ...gax.CallOption) *AwsNodePoolIterator
 	DeleteAwsNodePool(context.Context, *gkemulticloudpb.DeleteAwsNodePoolRequest, ...gax.CallOption) (*DeleteAwsNodePoolOperation, error)
 	DeleteAwsNodePoolOperation(name string) *DeleteAwsNodePoolOperation
+	GetAwsOpenIdConfig(context.Context, *gkemulticloudpb.GetAwsOpenIdConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AwsOpenIdConfig, error)
+	GetAwsJsonWebKeys(context.Context, *gkemulticloudpb.GetAwsJsonWebKeysRequest, ...gax.CallOption) (*gkemulticloudpb.AwsJsonWebKeys, error)
 	GetAwsServerConfig(context.Context, *gkemulticloudpb.GetAwsServerConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
@@ -298,6 +348,11 @@ func (c *AwsClustersClient) DeleteAwsClusterOperation(name string) *DeleteAwsClu
 	return c.internalClient.DeleteAwsClusterOperation(name)
 }
 
+// GenerateAwsClusterAgentToken generates an access token for a cluster agent.
+func (c *AwsClustersClient) GenerateAwsClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsClusterAgentTokenResponse, error) {
+	return c.internalClient.GenerateAwsClusterAgentToken(ctx, req, opts...)
+}
+
 // GenerateAwsAccessToken generates a short-lived access token to authenticate to a given
 // AwsCluster resource.
 func (c *AwsClustersClient) GenerateAwsAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error) {
@@ -331,6 +386,22 @@ func (c *AwsClustersClient) UpdateAwsNodePoolOperation(name string) *UpdateAwsNo
 	return c.internalClient.UpdateAwsNodePoolOperation(name)
 }
 
+// RollbackAwsNodePoolUpdate rolls back a previously aborted or failed
+// AwsNodePool update request.
+// Makes no changes if the last update request successfully finished.
+// If an update request is in progress, you cannot rollback the update.
+// You must first cancel or let it finish unsuccessfully before you can
+// rollback.
+func (c *AwsClustersClient) RollbackAwsNodePoolUpdate(ctx context.Context, req *gkemulticloudpb.RollbackAwsNodePoolUpdateRequest, opts ...gax.CallOption) (*RollbackAwsNodePoolUpdateOperation, error) {
+	return c.internalClient.RollbackAwsNodePoolUpdate(ctx, req, opts...)
+}
+
+// RollbackAwsNodePoolUpdateOperation returns a new RollbackAwsNodePoolUpdateOperation from a given name.
+// The name must be that of a previously created RollbackAwsNodePoolUpdateOperation, possibly from a different process.
+func (c *AwsClustersClient) RollbackAwsNodePoolUpdateOperation(name string) *RollbackAwsNodePoolUpdateOperation {
+	return c.internalClient.RollbackAwsNodePoolUpdateOperation(name)
+}
+
 // GetAwsNodePool describes a specific
 // AwsNodePool resource.
 func (c *AwsClustersClient) GetAwsNodePool(ctx context.Context, req *gkemulticloudpb.GetAwsNodePoolRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsNodePool, error) {
@@ -358,6 +429,21 @@ func (c *AwsClustersClient) DeleteAwsNodePool(ctx context.Context, req *gkemulti
 // The name must be that of a previously created DeleteAwsNodePoolOperation, possibly from a different process.
 func (c *AwsClustersClient) DeleteAwsNodePoolOperation(name string) *DeleteAwsNodePoolOperation {
 	return c.internalClient.DeleteAwsNodePoolOperation(name)
+}
+
+// GetAwsOpenIdConfig gets the OIDC discovery document for the cluster.
+// See the
+// OpenID Connect Discovery 1.0
+// specification (at https://openid.net/specs/openid-connect-discovery-1_0.html)
+// for details.
+func (c *AwsClustersClient) GetAwsOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAwsOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsOpenIdConfig, error) {
+	return c.internalClient.GetAwsOpenIdConfig(ctx, req, opts...)
+}
+
+// GetAwsJsonWebKeys gets the public component of the cluster signing keys in
+// JSON Web Key format.
+func (c *AwsClustersClient) GetAwsJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAwsJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsJsonWebKeys, error) {
+	return c.internalClient.GetAwsJsonWebKeys(ctx, req, opts...)
 }
 
 // GetAwsServerConfig returns information, such as supported AWS regions and Kubernetes
@@ -469,7 +555,9 @@ func (c *awsClustersGRPCClient) Connection() *grpc.ClientConn {
 func (c *awsClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -602,6 +690,24 @@ func (c *awsClustersGRPCClient) DeleteAwsCluster(ctx context.Context, req *gkemu
 	}, nil
 }
 
+func (c *awsClustersGRPCClient) GenerateAwsClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsClusterAgentTokenResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateAwsClusterAgentToken[0:len((*c.CallOptions).GenerateAwsClusterAgentToken):len((*c.CallOptions).GenerateAwsClusterAgentToken)], opts...)
+	var resp *gkemulticloudpb.GenerateAwsClusterAgentTokenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.awsClustersClient.GenerateAwsClusterAgentToken(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *awsClustersGRPCClient) GenerateAwsAccessToken(ctx context.Context, req *gkemulticloudpb.GenerateAwsAccessTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAwsAccessTokenResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster()))}
 
@@ -656,6 +762,26 @@ func (c *awsClustersGRPCClient) UpdateAwsNodePool(ctx context.Context, req *gkem
 		return nil, err
 	}
 	return &UpdateAwsNodePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdate(ctx context.Context, req *gkemulticloudpb.RollbackAwsNodePoolUpdateRequest, opts ...gax.CallOption) (*RollbackAwsNodePoolUpdateOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RollbackAwsNodePoolUpdate[0:len((*c.CallOptions).RollbackAwsNodePoolUpdate):len((*c.CallOptions).RollbackAwsNodePoolUpdate)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.awsClustersClient.RollbackAwsNodePoolUpdate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RollbackAwsNodePoolUpdateOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -742,6 +868,42 @@ func (c *awsClustersGRPCClient) DeleteAwsNodePool(ctx context.Context, req *gkem
 	return &DeleteAwsNodePoolOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *awsClustersGRPCClient) GetAwsOpenIdConfig(ctx context.Context, req *gkemulticloudpb.GetAwsOpenIdConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsOpenIdConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAwsOpenIdConfig[0:len((*c.CallOptions).GetAwsOpenIdConfig):len((*c.CallOptions).GetAwsOpenIdConfig)], opts...)
+	var resp *gkemulticloudpb.AwsOpenIdConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.awsClustersClient.GetAwsOpenIdConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *awsClustersGRPCClient) GetAwsJsonWebKeys(ctx context.Context, req *gkemulticloudpb.GetAwsJsonWebKeysRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsJsonWebKeys, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "aws_cluster", url.QueryEscape(req.GetAwsCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetAwsJsonWebKeys[0:len((*c.CallOptions).GetAwsJsonWebKeys):len((*c.CallOptions).GetAwsJsonWebKeys)], opts...)
+	var resp *gkemulticloudpb.AwsJsonWebKeys
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.awsClustersClient.GetAwsJsonWebKeys(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *awsClustersGRPCClient) GetAwsServerConfig(ctx context.Context, req *gkemulticloudpb.GetAwsServerConfigRequest, opts ...gax.CallOption) (*gkemulticloudpb.AwsServerConfig, error) {
@@ -882,6 +1044,14 @@ func (c *awsClustersGRPCClient) DeleteAwsClusterOperation(name string) *DeleteAw
 // The name must be that of a previously created DeleteAwsNodePoolOperation, possibly from a different process.
 func (c *awsClustersGRPCClient) DeleteAwsNodePoolOperation(name string) *DeleteAwsNodePoolOperation {
 	return &DeleteAwsNodePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RollbackAwsNodePoolUpdateOperation returns a new RollbackAwsNodePoolUpdateOperation from a given name.
+// The name must be that of a previously created RollbackAwsNodePoolUpdateOperation, possibly from a different process.
+func (c *awsClustersGRPCClient) RollbackAwsNodePoolUpdateOperation(name string) *RollbackAwsNodePoolUpdateOperation {
+	return &RollbackAwsNodePoolUpdateOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

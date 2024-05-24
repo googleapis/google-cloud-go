@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/longrunning/autogen",
-    "version": "0.5.4",
+    "version": "0.5.7",
     "language": "GO",
     "apis": [
       {
@@ -188,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

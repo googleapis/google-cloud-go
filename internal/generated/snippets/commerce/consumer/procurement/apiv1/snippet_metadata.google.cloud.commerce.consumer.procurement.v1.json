@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/commerce/consumer/procurement/apiv1",
-    "version": "0.1.3",
+    "version": "1.0.0",
     "language": "GO",
     "apis": [
       {
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

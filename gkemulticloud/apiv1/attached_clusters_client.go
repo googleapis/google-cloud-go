@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ type AttachedClustersCallOptions struct {
 	DeleteAttachedCluster                  []gax.CallOption
 	GetAttachedServerConfig                []gax.CallOption
 	GenerateAttachedClusterInstallManifest []gax.CallOption
+	GenerateAttachedClusterAgentToken      []gax.CallOption
 	CancelOperation                        []gax.CallOption
 	DeleteOperation                        []gax.CallOption
 	GetOperation                           []gax.CallOption
@@ -58,7 +59,9 @@ type AttachedClustersCallOptions struct {
 func defaultAttachedClustersGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("gkemulticloud.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("gkemulticloud.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("gkemulticloud.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://gkemulticloud.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -129,6 +132,18 @@ func defaultAttachedClustersCallOptions() *AttachedClustersCallOptions {
 				})
 			}),
 		},
+		GenerateAttachedClusterAgentToken: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -153,6 +168,7 @@ type internalAttachedClustersClient interface {
 	DeleteAttachedClusterOperation(name string) *DeleteAttachedClusterOperation
 	GetAttachedServerConfig(context.Context, *gkemulticloudpb.GetAttachedServerConfigRequest, ...gax.CallOption) (*gkemulticloudpb.AttachedServerConfig, error)
 	GenerateAttachedClusterInstallManifest(context.Context, *gkemulticloudpb.GenerateAttachedClusterInstallManifestRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterInstallManifestResponse, error)
+	GenerateAttachedClusterAgentToken(context.Context, *gkemulticloudpb.GenerateAttachedClusterAgentTokenRequest, ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse, error)
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -289,6 +305,11 @@ func (c *AttachedClustersClient) GenerateAttachedClusterInstallManifest(ctx cont
 	return c.internalClient.GenerateAttachedClusterInstallManifest(ctx, req, opts...)
 }
 
+// GenerateAttachedClusterAgentToken generates an access token for a cluster agent.
+func (c *AttachedClustersClient) GenerateAttachedClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAttachedClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse, error) {
+	return c.internalClient.GenerateAttachedClusterAgentToken(ctx, req, opts...)
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *AttachedClustersClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
@@ -393,7 +414,9 @@ func (c *attachedClustersGRPCClient) Connection() *grpc.ClientConn {
 func (c *attachedClustersGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -574,6 +597,24 @@ func (c *attachedClustersGRPCClient) GenerateAttachedClusterInstallManifest(ctx 
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.attachedClustersClient.GenerateAttachedClusterInstallManifest(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *attachedClustersGRPCClient) GenerateAttachedClusterAgentToken(ctx context.Context, req *gkemulticloudpb.GenerateAttachedClusterAgentTokenRequest, opts ...gax.CallOption) (*gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "attached_cluster", url.QueryEscape(req.GetAttachedCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateAttachedClusterAgentToken[0:len((*c.CallOptions).GenerateAttachedClusterAgentToken):len((*c.CallOptions).GenerateAttachedClusterAgentToken)], opts...)
+	var resp *gkemulticloudpb.GenerateAttachedClusterAgentTokenResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.attachedClustersClient.GenerateAttachedClusterAgentToken(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

@@ -25,7 +25,7 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -193,7 +193,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		}
 		out := make([]spanner.NullInt64, 0)
 		for _, value := range v.GetArrayValue().GetValue() {
-			out = append(out, spanner.NullInt64{value.GetIntValue(), !value.GetIsNull()})
+			out = append(out, spanner.NullInt64{Int64: value.GetIntValue(), Valid: !value.GetIsNull()})
 		}
 		return out, nil
 	case spannerpb.TypeCode_FLOAT64:
@@ -202,7 +202,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		}
 		out := make([]spanner.NullFloat64, 0)
 		for _, value := range v.GetArrayValue().GetValue() {
-			out = append(out, spanner.NullFloat64{value.GetDoubleValue(), !value.GetIsNull()})
+			out = append(out, spanner.NullFloat64{Float64: value.GetDoubleValue(), Valid: !value.GetIsNull()})
 		}
 		return out, nil
 	case spannerpb.TypeCode_STRING:
@@ -211,7 +211,7 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 		}
 		out := make([]spanner.NullString, 0)
 		for _, value := range v.GetArrayValue().GetValue() {
-			out = append(out, spanner.NullString{value.GetStringValue(), !value.GetIsNull()})
+			out = append(out, spanner.NullString{StringVal: value.GetStringValue(), Valid: !value.GetIsNull()})
 		}
 		return out, nil
 	case spannerpb.TypeCode_BYTES:
@@ -277,13 +277,14 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 				if !ok {
 					return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "unexpected string value %q for numeric number", value.GetStringValue()))
 				}
-				out = append(out, spanner.NullNumeric{*y, true})
+				out = append(out, spanner.NullNumeric{Numeric: *y, Valid: true})
 			}
 		}
 		return out, nil
 	case spannerpb.TypeCode_STRUCT:
 		if null {
-			log.Println("Failing again due to passing untyped nil value for array of structs. Might need to change to typed nil similar to other types")
+			// TODO(sriharshach): will remove this after few successful systest runs. Need this to debug logs.
+			log.Println("Failing again due to passing untyped nil value for array of structs. Might need to change to typed nil similar to other types (made a fix below)")
 		}
 		// Non-NULL array of structs
 		structElemType := t.GetArrayElementType()
@@ -295,7 +296,10 @@ func executorArrayValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, nu
 			return nil, err
 		}
 		goStructType := reflect.TypeOf(dummyStructPtr)
-
+		if null {
+			log.Printf("returning nil slice of struct : %q", reflect.Zero(reflect.SliceOf(goStructType)).Interface())
+			return reflect.Zero(reflect.SliceOf(goStructType)).Interface(), nil
+		}
 		out := reflect.MakeSlice(reflect.SliceOf(goStructType), 0, len(in.GetValue()))
 		for _, value := range in.GetValue() {
 			cv, err := executorStructValueToSpannerValue(structElemType, value.GetStructValue(), false)

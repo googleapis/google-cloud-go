@@ -36,6 +36,7 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	octrace "go.opencensus.io/trace"
+	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
@@ -613,6 +614,8 @@ type sessionPool struct {
 	// indicates the number of leaked sessions removed from the session pool.
 	// This is valid only when ActionOnInactiveTransaction is WarnAndClose or ActionOnInactiveTransaction is Close in InactiveTransactionRemovalOptions.
 	numOfLeakedSessionsRemoved uint64
+
+	otConfig *openTelemetryConfig
 }
 
 // newSessionPool creates a new session pool.
@@ -655,6 +658,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		SessionPoolConfig: config,
 		mw:                newMaintenanceWindow(config.MaxOpened),
 		rand:              rand.New(rand.NewSource(time.Now().UnixNano())),
+		otConfig:          sc.otConfig,
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -690,6 +694,12 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		}
 	}
 	pool.recordStat(context.Background(), MaxAllowedSessionsCount, int64(config.MaxOpened))
+
+	err = registerSessionPoolOTMetrics(pool)
+	if err != nil {
+		logf(pool.sc.logger, "Error when registering session pool metrics in OpenTelemetry, error: %v", err)
+	}
+
 	close(pool.hc.ready)
 	return pool, nil
 }
@@ -705,6 +715,12 @@ func (p *sessionPool) recordStat(ctx context.Context, m *stats.Int64Measure, n i
 		logf(p.sc.logger, "Failed to tag metrics, error: %v", err)
 	}
 	recordStat(ctx, m, n)
+}
+
+func (p *sessionPool) recordOTStat(ctx context.Context, m metric.Int64Counter, val int64) {
+	if m != nil {
+		m.Add(ctx, val, metric.WithAttributes(p.otConfig.attributeMap...))
+	}
 }
 
 func (p *sessionPool) getRatioOfSessionsInUseLocked() float64 {
@@ -724,7 +740,13 @@ func (p *sessionPool) getLongRunningSessionsLocked() []*sessionHandle {
 		for element != nil {
 			sh := element.Value.(*sessionHandle)
 			sh.mu.Lock()
-			diff := time.Now().Sub(sh.lastUseTime)
+			if sh.session == nil {
+				// sessionHandle has already been recycled/destroyed.
+				sh.mu.Unlock()
+				element = element.Next()
+				continue
+			}
+			diff := time.Since(sh.lastUseTime)
 			if !sh.eligibleForLongRunning && diff.Seconds() >= p.idleTimeThreshold.Seconds() {
 				if (p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose) && !sh.isSessionLeakLogged {
 					if p.ActionOnInactiveTransaction == Warn {
@@ -862,6 +884,12 @@ func (p *sessionPool) close(ctx context.Context) {
 		return
 	}
 	p.valid = false
+	if p.otConfig != nil && p.otConfig.otMetricRegistration != nil {
+		err := p.otConfig.otMetricRegistration.Unregister()
+		if err != nil {
+			logf(p.sc.logger, "Failed to unregister callback from the OpenTelemetry meter, error : %v", err)
+		}
+	}
 	p.mu.Unlock()
 	p.hc.close()
 	// destroy all the sessions
@@ -1057,6 +1085,9 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 		case <-ctx.Done():
 			trace.TracePrintf(ctx, nil, "Context done waiting for session")
 			p.recordStat(ctx, GetSessionTimeoutsCount, 1)
+			if p.otConfig != nil {
+				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1)
+			}
 			p.mu.Lock()
 			p.numWaiters--
 			p.mu.Unlock()
@@ -1146,6 +1177,9 @@ func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 	p.numInUse++
 	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
 	p.recordStat(ctx, AcquiredSessionsCount, 1)
+	if p.otConfig != nil {
+		p.recordOTStat(ctx, p.otConfig.acquiredSessionsCount, 1)
+	}
 	if p.numInUse > p.maxNumInUse {
 		p.maxNumInUse = p.numInUse
 		p.recordStat(ctx, MaxInUseSessionsCount, int64(p.maxNumInUse))
@@ -1156,6 +1190,9 @@ func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
 	p.numInUse--
 	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
 	p.recordStat(ctx, ReleasedSessionsCount, 1)
+	if p.otConfig != nil {
+		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1)
+	}
 }
 
 func (p *sessionPool) incNumSessionsLocked(ctx context.Context) {

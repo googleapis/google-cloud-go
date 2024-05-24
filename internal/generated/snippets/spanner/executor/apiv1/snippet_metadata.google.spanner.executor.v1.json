@@ -1,0 +1,57 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/spanner/executor/apiv1",
+    "version": "1.62.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.spanner.executor.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "spanner-cloud-executor_v1_generated_SpannerExecutorProxy_ExecuteActionAsync_sync",
+      "title": "spanner-cloud-executor ExecuteActionAsync Sample",
+      "description": "ExecuteActionAsync executeActionAsync is a streaming call that starts executing a new Spanner\naction.\n\nFor each request, the server will reply with one or more responses, but\nonly the last response will contain status in the outcome.\n\nResponses can be matched to requests by action_id. It is allowed to have\nmultiple actions in flight--in that case, actions are be executed in\nparallel.",
+      "file": "SpannerExecutorProxyClient/ExecuteActionAsync/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExecuteActionAsync",
+        "fullName": "google.spanner.executor.v1.SpannerExecutorProxyClient.ExecuteActionAsync",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "executorpb.SpannerExecutorProxy_ExecuteActionAsyncClient",
+        "client": {
+          "shortName": "SpannerExecutorProxyClient",
+          "fullName": "google.spanner.executor.v1.SpannerExecutorProxyClient"
+        },
+        "method": {
+          "shortName": "ExecuteActionAsync",
+          "fullName": "google.spanner.executor.v1.SpannerExecutorProxy.ExecuteActionAsync",
+          "service": {
+            "shortName": "SpannerExecutorProxy",
+            "fullName": "google.spanner.executor.v1.SpannerExecutorProxy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

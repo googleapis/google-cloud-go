@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gsuiteaddons/apiv1",
-    "version": "1.6.4",
+    "version": "1.6.7",
     "language": "GO",
     "apis": [
       {
@@ -326,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

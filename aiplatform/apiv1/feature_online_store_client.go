@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -39,23 +39,26 @@ var newFeatureOnlineStoreClientHook clientHook
 
 // FeatureOnlineStoreCallOptions contains the retry settings for each method of FeatureOnlineStoreClient.
 type FeatureOnlineStoreCallOptions struct {
-	FetchFeatureValues []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
-	WaitOperation      []gax.CallOption
+	FetchFeatureValues    []gax.CallOption
+	SearchNearestEntities []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	CancelOperation       []gax.CallOption
+	DeleteOperation       []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
+	WaitOperation         []gax.CallOption
 }
 
 func defaultFeatureOnlineStoreGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -66,17 +69,18 @@ func defaultFeatureOnlineStoreGRPCClientOptions() []option.ClientOption {
 
 func defaultFeatureOnlineStoreCallOptions() *FeatureOnlineStoreCallOptions {
 	return &FeatureOnlineStoreCallOptions{
-		FetchFeatureValues: []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
-		WaitOperation:      []gax.CallOption{},
+		FetchFeatureValues:    []gax.CallOption{},
+		SearchNearestEntities: []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		GetIamPolicy:          []gax.CallOption{},
+		SetIamPolicy:          []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
+		WaitOperation:         []gax.CallOption{},
 	}
 }
 
@@ -86,6 +90,7 @@ type internalFeatureOnlineStoreClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	FetchFeatureValues(context.Context, *aiplatformpb.FetchFeatureValuesRequest, ...gax.CallOption) (*aiplatformpb.FetchFeatureValuesResponse, error)
+	SearchNearestEntities(context.Context, *aiplatformpb.SearchNearestEntitiesRequest, ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -100,6 +105,8 @@ type internalFeatureOnlineStoreClient interface {
 
 // FeatureOnlineStoreClient is a client for interacting with Vertex AI API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// A service for fetching feature values from the online store.
 type FeatureOnlineStoreClient struct {
 	// The internal transport-dependent client.
 	internalClient internalFeatureOnlineStoreClient
@@ -134,6 +141,13 @@ func (c *FeatureOnlineStoreClient) Connection() *grpc.ClientConn {
 // FetchFeatureValues fetch feature values under a FeatureView.
 func (c *FeatureOnlineStoreClient) FetchFeatureValues(ctx context.Context, req *aiplatformpb.FetchFeatureValuesRequest, opts ...gax.CallOption) (*aiplatformpb.FetchFeatureValuesResponse, error) {
 	return c.internalClient.FetchFeatureValues(ctx, req, opts...)
+}
+
+// SearchNearestEntities search the nearest entities under a FeatureView.
+// Search only works for indexable feature view; if a feature view isn’t
+// indexable, returns Invalid argument response.
+func (c *FeatureOnlineStoreClient) SearchNearestEntities(ctx context.Context, req *aiplatformpb.SearchNearestEntitiesRequest, opts ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error) {
+	return c.internalClient.SearchNearestEntities(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -222,6 +236,8 @@ type featureOnlineStoreGRPCClient struct {
 
 // NewFeatureOnlineStoreClient creates a new feature online store service client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// A service for fetching feature values from the online store.
 func NewFeatureOnlineStoreClient(ctx context.Context, opts ...option.ClientOption) (*FeatureOnlineStoreClient, error) {
 	clientOpts := defaultFeatureOnlineStoreGRPCClientOptions()
 	if newFeatureOnlineStoreClientHook != nil {
@@ -267,7 +283,9 @@ func (c *featureOnlineStoreGRPCClient) Connection() *grpc.ClientConn {
 func (c *featureOnlineStoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -286,6 +304,24 @@ func (c *featureOnlineStoreGRPCClient) FetchFeatureValues(ctx context.Context, r
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.featureOnlineStoreClient.FetchFeatureValues(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureOnlineStoreGRPCClient) SearchNearestEntities(ctx context.Context, req *aiplatformpb.SearchNearestEntitiesRequest, opts ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "feature_view", url.QueryEscape(req.GetFeatureView()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).SearchNearestEntities[0:len((*c.CallOptions).SearchNearestEntities):len((*c.CallOptions).SearchNearestEntities)], opts...)
+	var resp *aiplatformpb.SearchNearestEntitiesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureOnlineStoreClient.SearchNearestEntities(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

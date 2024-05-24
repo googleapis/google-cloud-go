@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/confidentialcomputing/apiv1",
-    "version": "1.4.0",
+    "version": "1.5.1",
     "language": "GO",
     "apis": [
       {
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

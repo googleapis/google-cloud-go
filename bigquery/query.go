@@ -412,7 +412,8 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 			}
 		}
 		rowSource := &rowSource{
-			j: minimalJob,
+			j:       minimalJob,
+			queryID: resp.QueryId,
 			// RowIterator can precache results from the iterator to save a lookup.
 			cachedRows:      resp.Rows,
 			cachedSchema:    resp.Schema,
@@ -469,6 +470,9 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
 		RequestId:          uid.NewSpace("request", nil).New(),
 		Labels:             q.Labels,
+		FormatOptions: &bq.DataFormatOptions{
+			UseInt64Timestamp: true,
+		},
 	}
 	if q.QueryConfig.DisableQueryCache {
 		qRequest.UseQueryCache = &pfalse

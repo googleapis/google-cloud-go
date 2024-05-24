@@ -27,10 +27,12 @@ import (
 	"testing"
 	"time"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	field_mask "google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -60,6 +62,47 @@ func TestNewServerWithPort(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer conn.Close()
+}
+
+func TestNewServerWithCallback(t *testing.T) {
+	// Allocate an available port to use with NewServerWithPort and then close it so it's available.
+	// Note: There is no guarantee that the port does not become used between closing
+	// the listener and creating the new server with NewServerWithPort, but the chances are
+	// very small.
+	l, err := net.Listen("tcp", ":0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	port := l.Addr().(*net.TCPAddr).Port
+	l.Close()
+
+	additionalFake := struct {
+		iampb.UnimplementedIAMPolicyServer
+	}{}
+
+	verifyCallback := false
+	callback := func(grpc *grpc.Server) {
+		// register something
+		iampb.RegisterIAMPolicyServer(grpc, &additionalFake)
+		verifyCallback = true
+	}
+
+	// Pass a non 0 port to demonstrate we can pass a hardcoded port for the server to listen on
+	srv := NewServerWithCallback(port, callback)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer srv.Close()
+
+	conn, err := grpc.NewClient(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+
+	if !verifyCallback {
+		t.Fatal("callback was not invoked")
+	}
 }
 
 func TestTopics(t *testing.T) {
@@ -1082,14 +1125,14 @@ func TestUpdateFilter(t *testing.T) {
 		AckDeadlineSeconds: minAckDeadlineSecs,
 		Name:               "projects/P/subscriptions/S",
 		Topic:              top.Name,
-		Filter:             "some-filter",
+		Filter:             "NOT attributes:foo",
 	})
 
 	update := &pb.Subscription{
 		AckDeadlineSeconds: sub.AckDeadlineSeconds,
 		Name:               sub.Name,
 		Topic:              top.Name,
-		Filter:             "new-filter",
+		Filter:             "NOT attributes:bar",
 	}
 
 	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{

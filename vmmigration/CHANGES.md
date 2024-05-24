@@ -1,6 +1,28 @@
 # Changes
 
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.6...vmmigration/v1.7.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **vmmigration:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **vmmigration:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.5...vmmigration/v1.7.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **vmmigration:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.7.5](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.4...vmmigration/v1.7.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **vmmigration:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.7.4](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.3...vmmigration/v1.7.4) (2023-11-01)
 
 

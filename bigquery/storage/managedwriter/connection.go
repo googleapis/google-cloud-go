@@ -353,7 +353,7 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 		return err
 	}
 
-	var statsOnExit func()
+	var statsOnExit func(ctx context.Context)
 
 	// critical section:  Things that need to happen inside the critical section:
 	//
@@ -362,11 +362,17 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 	// * add the pending write to the channel for the connection (ordering for the response)
 	co.mu.Lock()
 	defer func() {
+		sCtx := co.ctx
 		co.mu.Unlock()
-		if statsOnExit != nil {
-			statsOnExit()
+		if statsOnExit != nil && sCtx != nil {
+			statsOnExit(sCtx)
 		}
 	}()
+
+	// If connection context is expired, error.
+	if err := co.ctx.Err(); err != nil {
+		return err
+	}
 
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
 	var ch chan *pendingWrite
@@ -418,6 +424,8 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 		err = (*arc).Send(pw.constructFullRequest(true))
 	}
 	if err != nil {
+		// Refund the flow controller immediately, as there's nothing to refund on the receiver.
+		co.fc.release(pw.reqSize)
 		if shouldReconnect(err) {
 			metricCtx := co.ctx // start with the ctx that must be present
 			if pw.writer != nil {
@@ -441,12 +449,12 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 			numRows = int64(len(pr.GetSerializedRows()))
 		}
 	}
-	statsOnExit = func() {
+	statsOnExit = func(ctx context.Context) {
 		// these will get recorded once we exit the critical section.
 		// TODO: resolve open questions around what labels should be attached (connection, streamID, etc)
-		recordStat(co.ctx, AppendRequestRows, numRows)
-		recordStat(co.ctx, AppendRequests, 1)
-		recordStat(co.ctx, AppendRequestBytes, int64(pw.reqSize))
+		recordStat(ctx, AppendRequestRows, numRows)
+		recordStat(ctx, AppendRequests, 1)
+		recordStat(ctx, AppendRequestBytes, int64(pw.reqSize))
 	}
 	ch <- pw
 	return nil
@@ -497,24 +505,39 @@ func (co *connection) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient, f
 // enables testing
 type streamClientFunc func(context.Context, ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
 
+var errConnectionCanceled = grpcstatus.Error(codes.Canceled, "client connection context was canceled")
+
 // connRecvProcessor is used to propagate append responses back up with the originating write requests.  It
 // It runs as a goroutine.  A connection object allows for reconnection, and each reconnection establishes a new
-// processing gorouting and backing channel.
+// context, processing goroutine and backing channel.
 func connRecvProcessor(ctx context.Context, co *connection, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
 	for {
 		select {
 		case <-ctx.Done():
-			// Context is done, so we're not going to get further updates.  Mark all work left in the channel
-			// with the context error.  We don't attempt to re-enqueue in this case.
+			// Channel context is done, which means we're not getting further updates on in flight appends and should
+			// process everything left in the existing channel/connection.
+			doneErr := ctx.Err()
+			if doneErr == context.Canceled {
+				// This is a special case.  Connection recovery ends up cancelling a context as part of a reconnection, and with
+				// request retrying enabled we can possibly re-enqueue writes.  To allow graceful retry for this behavior, we
+				// we translate this to an rpc status error to avoid doing things like introducing context errors as part of the retry predicate.
+				//
+				// The tradeoff here is that write retries may roundtrip multiple times for something like a pool shutdown, even though the final
+				// outcome would result in an error.
+				doneErr = errConnectionCanceled
+			}
 			for {
 				pw, ok := <-ch
 				if !ok {
 					return
 				}
-				// It's unlikely this connection will recover here, but for correctness keep the flow controller
-				// state correct by releasing.
+				// This connection will not recover, but still attempt to keep flow controller state consistent.
 				co.release(pw)
-				pw.markDone(nil, ctx.Err())
+
+				// TODO:  Determine if/how we should report this case, as we have no viable context for propagating.
+
+				// Because we can't tell locally if this write is done, we pass it back to the retrier for possible re-enqueue.
+				pw.writer.processRetry(pw, co, nil, doneErr)
 			}
 		case nextWrite, ok := <-ch:
 			if !ok {

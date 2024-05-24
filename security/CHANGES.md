@@ -1,5 +1,40 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.16.1...security/v1.17.0) (2024-05-22)
+
+
+### Features
+
+* **security:** New client(s) ([#10224](https://github.com/googleapis/google-cloud-go/issues/10224)) ([a495f8f](https://github.com/googleapis/google-cloud-go/commit/a495f8f0786a7be5997fa148969c13f9aa839adf))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.16.0...security/v1.16.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **security:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.6...security/v1.16.0) (2024-04-15)
+
+
+### Features
+
+* **security/privateca:** Add encoding format to `.google.cloud.security.privateca.v1.CaPool` Resource ([2cdc40a](https://github.com/googleapis/google-cloud-go/commit/2cdc40a0b4288f5ab5f2b2b8f5c1d6453a9c81ec))
+
+## [1.15.6](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.5...security/v1.15.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **security:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.15.5](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.4...security/v1.15.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **security:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.15.4](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.3...security/v1.15.4) (2023-11-01)
 
 

@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/api/transport"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
@@ -33,8 +34,10 @@ import (
 )
 
 const (
-	prodAddr  = "datastore.googleapis.com:443"
-	userAgent = "gcloud-golang-datastore/20160401"
+	prodEndpointTemplate = "datastore.UNIVERSE_DOMAIN:443"
+	prodUniverseDomain   = "googleapis.com"
+	prodMtlsAddr         = "datastore.mtls.googleapis.com:443"
+	userAgent            = "gcloud-golang-datastore/20160401"
 )
 
 // ScopeDatastore grants permissions to view and/or manage datastore entities
@@ -114,7 +117,9 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 		}
 	} else {
 		o = []option.ClientOption{
-			option.WithEndpoint(prodAddr),
+			internaloption.WithDefaultEndpointTemplate(prodEndpointTemplate),
+			internaloption.WithDefaultUniverseDomain(prodUniverseDomain),
+			internaloption.WithDefaultMTLSEndpoint(prodMtlsAddr),
 			option.WithScopes(ScopeDatastore),
 			option.WithUserAgent(userAgent),
 		}
@@ -393,7 +398,9 @@ func (c *Client) Get(ctx context.Context, key *Key, dst interface{}) (err error)
 		}
 	}
 
-	err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
+	_, err = c.get(ctx, []*Key{key}, []interface{}{dst}, opts)
 	if me, ok := err.(MultiError); ok {
 		return me[0]
 	}
@@ -426,22 +433,25 @@ func (c *Client) GetMulti(ctx context.Context, keys []*Key, dst interface{}) (er
 		}
 	}
 
-	return c.get(ctx, keys, dst, opts)
+	// Since opts does not contain Transaction option, 'get' call below will return nil
+	// as transaction id which can be ignored
+	_, err = c.get(ctx, keys, dst, opts)
+	return err
 }
 
-func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) error {
+func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb.ReadOptions) ([]byte, error) {
 	v := reflect.ValueOf(dst)
 
 	var multiArgType multiArgType
 
 	// If kind is of type slice, return error
 	if kind := v.Kind(); kind != reflect.Slice {
-		return fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
+		return nil, fmt.Errorf("%w: dst: expected slice got %v", ErrInvalidEntityType, kind.String())
 	}
 
 	// if type is a type which implements PropertyList, return error
 	if argType := v.Type(); argType == typeOfPropertyList {
-		return fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
+		return nil, fmt.Errorf("%w: dst: cannot be PropertyListType", ErrInvalidEntityType)
 	}
 
 	elemType := v.Type().Elem()
@@ -464,11 +474,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	dstLen := v.Len()
 
 	if keysLen := len(keys); keysLen != dstLen {
-		return fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
+		return nil, fmt.Errorf("%w: key length = %d, dst length = %d", ErrDifferentKeyAndDstLength, keysLen, v.Len())
 	}
 
 	if len(keys) == 0 {
-		return nil
+		return nil, nil
 	}
 
 	// Go through keys, validate them, serialize then, and create a dict mapping them to their indices.
@@ -492,7 +502,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		}
 	}
 	if any {
-		return multiErr
+		return nil, multiErr
 	}
 	req := &pb.LookupRequest{
 		ProjectId:   c.dataset,
@@ -501,9 +511,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		ReadOptions: opts,
 	}
 	resp, err := c.client.Lookup(ctx, req)
+
 	if err != nil {
-		return err
+		return nil, err
 	}
+	txnID := resp.Transaction
 	found := resp.Found
 	missing := resp.Missing
 	// Upper bound 1000 iterations to prevent infinite loop. This matches the max
@@ -514,7 +526,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 		req.Keys = resp.Deferred
 		resp, err = c.client.Lookup(ctx, req)
 		if err != nil {
-			return err
+			return txnID, err
 		}
 		found = append(found, resp.Found...)
 		missing = append(missing, resp.Missing...)
@@ -524,7 +536,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range found {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
@@ -544,7 +556,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	for _, e := range missing {
 		k, err := protoToKey(e.Entity.Key)
 		if err != nil {
-			return errors.New("datastore: internal error: server returned an invalid key")
+			return txnID, errors.New("datastore: internal error: server returned an invalid key")
 		}
 		filled += len(keyMap[k.String()])
 		for _, index := range keyMap[k.String()] {
@@ -554,13 +566,13 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 
 	if filled != len(keys) {
-		return errors.New("datastore: internal error: server returned the wrong number of entities")
+		return txnID, errors.New("datastore: internal error: server returned the wrong number of entities")
 	}
 
 	if any {
-		return multiErr
+		return txnID, multiErr
 	}
-	return nil
+	return txnID, nil
 }
 
 // Put saves the entity src into the datastore with the given key. src must be

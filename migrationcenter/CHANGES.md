@@ -1,5 +1,39 @@
 # Changelog
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.6...migrationcenter/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **migrationcenter:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **migrationcenter:** Promote to GA v1.0.0 ([#10209](https://github.com/googleapis/google-cloud-go/issues/10209)) ([51d4ec8](https://github.com/googleapis/google-cloud-go/commit/51d4ec8c0a40f7b746f0fbf79a050056b0aad18c))
+
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.5...migrationcenter/v0.2.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.4...migrationcenter/v0.2.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.3...migrationcenter/v0.2.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **migrationcenter:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.2.3](https://github.com/googleapis/google-cloud-go/compare/migrationcenter/v0.2.2...migrationcenter/v0.2.3) (2023-11-01)
 
 

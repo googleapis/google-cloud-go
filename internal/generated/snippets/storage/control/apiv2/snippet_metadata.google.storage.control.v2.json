@@ -1,0 +1,473 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/storage/control/apiv2",
+    "version": "1.41.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.storage.control.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "storage_v2_generated_StorageControl_CreateFolder_sync",
+      "title": "storage CreateFolder Sample",
+      "description": "CreateFolder creates a new folder. This operation is only applicable to a hierarchical\nnamespace enabled bucket.\nHierarchical namespace buckets are in allowlist preview.",
+      "file": "StorageControlClient/CreateFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.CreateFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.CreateFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.Folder",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "CreateFolder",
+          "fullName": "google.storage.control.v2.StorageControl.CreateFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_CreateManagedFolder_sync",
+      "title": "storage CreateManagedFolder Sample",
+      "description": "CreateManagedFolder creates a new managed folder.",
+      "file": "StorageControlClient/CreateManagedFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateManagedFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.CreateManagedFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.CreateManagedFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.ManagedFolder",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "CreateManagedFolder",
+          "fullName": "google.storage.control.v2.StorageControl.CreateManagedFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_DeleteFolder_sync",
+      "title": "storage DeleteFolder Sample",
+      "description": "DeleteFolder permanently deletes an empty folder. This operation is only applicable to a\nhierarchical namespace enabled bucket.\nHierarchical namespace buckets are in allowlist preview.",
+      "file": "StorageControlClient/DeleteFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.DeleteFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.DeleteFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "DeleteFolder",
+          "fullName": "google.storage.control.v2.StorageControl.DeleteFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_DeleteManagedFolder_sync",
+      "title": "storage DeleteManagedFolder Sample",
+      "description": "DeleteManagedFolder permanently deletes an empty managed folder.",
+      "file": "StorageControlClient/DeleteManagedFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteManagedFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.DeleteManagedFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.DeleteManagedFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "DeleteManagedFolder",
+          "fullName": "google.storage.control.v2.StorageControl.DeleteManagedFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_GetFolder_sync",
+      "title": "storage GetFolder Sample",
+      "description": "GetFolder returns metadata for the specified folder. This operation is only\napplicable to a hierarchical namespace enabled bucket.\nHierarchical namespace buckets are in allowlist preview.",
+      "file": "StorageControlClient/GetFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.GetFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.GetFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.Folder",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "GetFolder",
+          "fullName": "google.storage.control.v2.StorageControl.GetFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_GetManagedFolder_sync",
+      "title": "storage GetManagedFolder Sample",
+      "description": "GetManagedFolder returns metadata for the specified managed folder.",
+      "file": "StorageControlClient/GetManagedFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetManagedFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.GetManagedFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.GetManagedFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.ManagedFolder",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "GetManagedFolder",
+          "fullName": "google.storage.control.v2.StorageControl.GetManagedFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_GetStorageLayout_sync",
+      "title": "storage GetStorageLayout Sample",
+      "description": "GetStorageLayout returns the storage layout configuration for a given bucket.",
+      "file": "StorageControlClient/GetStorageLayout/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetStorageLayout",
+        "fullName": "google.storage.control.v2.StorageControlClient.GetStorageLayout",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.GetStorageLayoutRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*controlpb.StorageLayout",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "GetStorageLayout",
+          "fullName": "google.storage.control.v2.StorageControl.GetStorageLayout",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_ListFolders_sync",
+      "title": "storage ListFolders Sample",
+      "description": "ListFolders retrieves a list of folders. This operation is only applicable to a\nhierarchical namespace enabled bucket.\nHierarchical namespace buckets are in allowlist preview.",
+      "file": "StorageControlClient/ListFolders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListFolders",
+        "fullName": "google.storage.control.v2.StorageControlClient.ListFolders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.ListFoldersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "FolderIterator",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "ListFolders",
+          "fullName": "google.storage.control.v2.StorageControl.ListFolders",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_ListManagedFolders_sync",
+      "title": "storage ListManagedFolders Sample",
+      "description": "ListManagedFolders retrieves a list of managed folders for a given bucket.",
+      "file": "StorageControlClient/ListManagedFolders/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListManagedFolders",
+        "fullName": "google.storage.control.v2.StorageControlClient.ListManagedFolders",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.ListManagedFoldersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ManagedFolderIterator",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "ListManagedFolders",
+          "fullName": "google.storage.control.v2.StorageControl.ListManagedFolders",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "storage_v2_generated_StorageControl_RenameFolder_sync",
+      "title": "storage RenameFolder Sample",
+      "description": "RenameFolder renames a source folder to a destination folder. This operation is only\napplicable to a hierarchical namespace enabled bucket. During a rename, the\nsource and destination folders are locked until the long running operation\ncompletes.\nHierarchical namespace buckets are in allowlist preview.",
+      "file": "StorageControlClient/RenameFolder/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RenameFolder",
+        "fullName": "google.storage.control.v2.StorageControlClient.RenameFolder",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "controlpb.RenameFolderRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RenameFolderOperation",
+        "client": {
+          "shortName": "StorageControlClient",
+          "fullName": "google.storage.control.v2.StorageControlClient"
+        },
+        "method": {
+          "shortName": "RenameFolder",
+          "fullName": "google.storage.control.v2.StorageControl.RenameFolder",
+          "service": {
+            "shortName": "StorageControl",
+            "fullName": "google.storage.control.v2.StorageControl"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

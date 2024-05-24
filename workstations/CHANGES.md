@@ -1,6 +1,40 @@
 # Changelog
 
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.6...workstations/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **workstations:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **workstations:** Promote to GA v1.0.0 ([#10212](https://github.com/googleapis/google-cloud-go/issues/10212)) ([fb8b540](https://github.com/googleapis/google-cloud-go/commit/fb8b5403ae1ac96c7ee57d4bbb22d7cdf17039a7))
+
+## [0.5.6](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.5...workstations/v0.5.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **workstations:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [0.5.5](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.4...workstations/v0.5.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **workstations:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.5.4](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.3...workstations/v0.5.4) (2024-01-30)
+
+
+### Bug Fixes
+
+* **workstations:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [0.5.3](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.2...workstations/v0.5.3) (2023-11-01)
 
 

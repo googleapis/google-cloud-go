@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/certificatemanager/apiv1",
-    "version": "1.7.4",
+    "version": "1.8.1",
     "language": "GO",
     "apis": [
       {
@@ -271,6 +271,52 @@
         "method": {
           "shortName": "CreateDnsAuthorization",
           "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateDnsAuthorization",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_CreateTrustConfig_sync",
+      "title": "certificatemanager CreateTrustConfig Sample",
+      "description": "CreateTrustConfig creates a new TrustConfig in a given project and location.",
+      "file": "Client/CreateTrustConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTrustConfig",
+        "fullName": "google.cloud.certificatemanager.v1.Client.CreateTrustConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "certificatemanagerpb.CreateTrustConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateTrustConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateTrustConfig",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.CreateTrustConfig",
           "service": {
             "shortName": "CertificateManager",
             "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
@@ -557,6 +603,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_DeleteTrustConfig_sync",
+      "title": "certificatemanager DeleteTrustConfig Sample",
+      "description": "DeleteTrustConfig deletes a single TrustConfig.",
+      "file": "Client/DeleteTrustConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTrustConfig",
+        "fullName": "google.cloud.certificatemanager.v1.Client.DeleteTrustConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "certificatemanagerpb.DeleteTrustConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteTrustConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteTrustConfig",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.DeleteTrustConfig",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -884,6 +976,52 @@
       ]
     },
     {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_GetTrustConfig_sync",
+      "title": "certificatemanager GetTrustConfig Sample",
+      "description": "GetTrustConfig gets details of a single TrustConfig.",
+      "file": "Client/GetTrustConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTrustConfig",
+        "fullName": "google.cloud.certificatemanager.v1.Client.GetTrustConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "certificatemanagerpb.GetTrustConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*certificatemanagerpb.TrustConfig",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTrustConfig",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.GetTrustConfig",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "certificatemanager_v1_generated_CertificateManager_ListCertificateIssuanceConfigs_sync",
       "title": "certificatemanager ListCertificateIssuanceConfigs Sample",
       "description": "ListCertificateIssuanceConfigs lists CertificateIssuanceConfigs in a given project and location.",
@@ -924,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -970,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1016,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1062,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1108,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1154,7 +1292,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1200,7 +1338,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_ListTrustConfigs_sync",
+      "title": "certificatemanager ListTrustConfigs Sample",
+      "description": "ListTrustConfigs lists TrustConfigs in a given project and location.",
+      "file": "Client/ListTrustConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTrustConfigs",
+        "fullName": "google.cloud.certificatemanager.v1.Client.ListTrustConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "certificatemanagerpb.ListTrustConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TrustConfigIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTrustConfigs",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.ListTrustConfigs",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1374,6 +1558,52 @@
         "method": {
           "shortName": "UpdateDnsAuthorization",
           "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateDnsAuthorization",
+          "service": {
+            "shortName": "CertificateManager",
+            "fullName": "google.cloud.certificatemanager.v1.CertificateManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "certificatemanager_v1_generated_CertificateManager_UpdateTrustConfig_sync",
+      "title": "certificatemanager UpdateTrustConfig Sample",
+      "description": "UpdateTrustConfig updates a TrustConfig.",
+      "file": "Client/UpdateTrustConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTrustConfig",
+        "fullName": "google.cloud.certificatemanager.v1.Client.UpdateTrustConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "certificatemanagerpb.UpdateTrustConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateTrustConfigOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.certificatemanager.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateTrustConfig",
+          "fullName": "google.cloud.certificatemanager.v1.CertificateManager.UpdateTrustConfig",
           "service": {
             "shortName": "CertificateManager",
             "fullName": "google.cloud.certificatemanager.v1.CertificateManager"

@@ -25,8 +25,8 @@ import (
 	adminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
@@ -347,6 +347,9 @@ func executeGetCloudInstance(ctx context.Context, action *executorpb.GetCloudIns
 	instanceObj, err := instanceAdminClient.GetInstance(ctx, &instancepb.GetInstanceRequest{
 		Name: fmt.Sprintf("projects/%s/instances/%s", projectID, instanceID),
 	})
+	if err != nil {
+		return err
+	}
 	spannerActionOutcome := &executorpb.SpannerActionOutcome{
 		Status: &spb.Status{Code: int32(codes.OK)},
 		AdminResult: &executorpb.AdminResult{

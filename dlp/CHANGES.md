@@ -1,5 +1,40 @@
 # Changes
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.12.2...dlp/v1.13.0) (2024-05-08)
+
+
+### Features
+
+* **dlp:** Add RPCs for deleting TableDataProfiles ([3e25053](https://github.com/googleapis/google-cloud-go/commit/3e250530567ee81ed4f51a3856c5940dbec35289))
+
+## [1.12.2](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.12.1...dlp/v1.12.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **dlp:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.12.0...dlp/v1.12.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **dlp:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.2...dlp/v1.12.0) (2024-03-07)
+
+
+### Features
+
+* **dlp:** Add RPCs for getting and listing project, table, and column data profiles ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.1...dlp/v1.11.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dlp:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.11.0...dlp/v1.11.1) (2023-11-01)
 
 

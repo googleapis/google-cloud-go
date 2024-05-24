@@ -1,5 +1,26 @@
 # Changes
 
+## [1.6.7](https://github.com/googleapis/google-cloud-go/compare/managedidentities/v1.6.6...managedidentities/v1.6.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **managedidentities:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.6.6](https://github.com/googleapis/google-cloud-go/compare/managedidentities/v1.6.5...managedidentities/v1.6.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **managedidentities:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.6.5](https://github.com/googleapis/google-cloud-go/compare/managedidentities/v1.6.4...managedidentities/v1.6.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **managedidentities:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
 ## [1.6.4](https://github.com/googleapis/google-cloud-go/compare/managedidentities/v1.6.3...managedidentities/v1.6.4) (2023-11-01)
 
 

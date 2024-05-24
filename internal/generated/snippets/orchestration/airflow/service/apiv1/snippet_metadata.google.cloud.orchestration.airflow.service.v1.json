@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/orchestration/airflow/service/apiv1",
-    "version": "1.8.4",
+    "version": "1.9.2",
     "language": "GO",
     "apis": [
       {
@@ -53,6 +53,98 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_CreateUserWorkloadsConfigMap_sync",
+      "title": "composer CreateUserWorkloadsConfigMap Sample",
+      "description": "CreateUserWorkloadsConfigMap creates a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/CreateUserWorkloadsConfigMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateUserWorkloadsConfigMap",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.CreateUserWorkloadsConfigMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.CreateUserWorkloadsConfigMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsConfigMap",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "CreateUserWorkloadsConfigMap",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.CreateUserWorkloadsConfigMap",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_CreateUserWorkloadsSecret_sync",
+      "title": "composer CreateUserWorkloadsSecret Sample",
+      "description": "CreateUserWorkloadsSecret creates a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/CreateUserWorkloadsSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateUserWorkloadsSecret",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.CreateUserWorkloadsSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.CreateUserWorkloadsSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsSecret",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "CreateUserWorkloadsSecret",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.CreateUserWorkloadsSecret",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -182,6 +274,96 @@
           "service": {
             "shortName": "Operations",
             "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_DeleteUserWorkloadsConfigMap_sync",
+      "title": "composer DeleteUserWorkloadsConfigMap Sample",
+      "description": "DeleteUserWorkloadsConfigMap deletes a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/DeleteUserWorkloadsConfigMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteUserWorkloadsConfigMap",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.DeleteUserWorkloadsConfigMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.DeleteUserWorkloadsConfigMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "DeleteUserWorkloadsConfigMap",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.DeleteUserWorkloadsConfigMap",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_DeleteUserWorkloadsSecret_sync",
+      "title": "composer DeleteUserWorkloadsSecret Sample",
+      "description": "DeleteUserWorkloadsSecret deletes a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/DeleteUserWorkloadsSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteUserWorkloadsSecret",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.DeleteUserWorkloadsSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.DeleteUserWorkloadsSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "DeleteUserWorkloadsSecret",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.DeleteUserWorkloadsSecret",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
           }
         }
       },
@@ -379,6 +561,98 @@
       ]
     },
     {
+      "regionTag": "composer_v1_generated_Environments_GetUserWorkloadsConfigMap_sync",
+      "title": "composer GetUserWorkloadsConfigMap Sample",
+      "description": "GetUserWorkloadsConfigMap gets an existing user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/GetUserWorkloadsConfigMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetUserWorkloadsConfigMap",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.GetUserWorkloadsConfigMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.GetUserWorkloadsConfigMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsConfigMap",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "GetUserWorkloadsConfigMap",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.GetUserWorkloadsConfigMap",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_GetUserWorkloadsSecret_sync",
+      "title": "composer GetUserWorkloadsSecret Sample",
+      "description": "GetUserWorkloadsSecret gets an existing user workloads Secret.\nValues of the \"data\" field in the response are cleared.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/GetUserWorkloadsSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetUserWorkloadsSecret",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.GetUserWorkloadsSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.GetUserWorkloadsSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsSecret",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "GetUserWorkloadsSecret",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.GetUserWorkloadsSecret",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "composer_v1_generated_Environments_ListEnvironments_sync",
       "title": "composer ListEnvironments Sample",
       "description": "ListEnvironments list environments.",
@@ -419,7 +693,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -465,7 +739,145 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ListUserWorkloadsConfigMaps_sync",
+      "title": "composer ListUserWorkloadsConfigMaps Sample",
+      "description": "ListUserWorkloadsConfigMaps lists user workloads ConfigMaps.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/ListUserWorkloadsConfigMaps/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUserWorkloadsConfigMaps",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ListUserWorkloadsConfigMaps",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ListUserWorkloadsConfigMapsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UserWorkloadsConfigMapIterator",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ListUserWorkloadsConfigMaps",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ListUserWorkloadsConfigMaps",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ListUserWorkloadsSecrets_sync",
+      "title": "composer ListUserWorkloadsSecrets Sample",
+      "description": "ListUserWorkloadsSecrets lists user workloads Secrets.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/ListUserWorkloadsSecrets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUserWorkloadsSecrets",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ListUserWorkloadsSecrets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ListUserWorkloadsSecretsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UserWorkloadsSecretIterator",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ListUserWorkloadsSecrets",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ListUserWorkloadsSecrets",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_ListWorkloads_sync",
+      "title": "composer ListWorkloads Sample",
+      "description": "ListWorkloads lists workloads in a Cloud Composer environment. Workload is a unit that\nruns a single Composer component.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/ListWorkloads/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListWorkloads",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.ListWorkloads",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.ListWorkloadsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ListWorkloadsResponse_ComposerWorkloadIterator",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "ListWorkloads",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.ListWorkloads",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -701,6 +1113,98 @@
       ]
     },
     {
+      "regionTag": "composer_v1_generated_Environments_UpdateUserWorkloadsConfigMap_sync",
+      "title": "composer UpdateUserWorkloadsConfigMap Sample",
+      "description": "UpdateUserWorkloadsConfigMap updates a user workloads ConfigMap.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/UpdateUserWorkloadsConfigMap/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateUserWorkloadsConfigMap",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.UpdateUserWorkloadsConfigMap",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.UpdateUserWorkloadsConfigMapRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsConfigMap",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "UpdateUserWorkloadsConfigMap",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.UpdateUserWorkloadsConfigMap",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "composer_v1_generated_Environments_UpdateUserWorkloadsSecret_sync",
+      "title": "composer UpdateUserWorkloadsSecret Sample",
+      "description": "UpdateUserWorkloadsSecret updates a user workloads Secret.\n\nThis method is supported for Cloud Composer environments in versions\ncomposer-3.*.*-airflow-*.*.* and newer.",
+      "file": "EnvironmentsClient/UpdateUserWorkloadsSecret/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateUserWorkloadsSecret",
+        "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient.UpdateUserWorkloadsSecret",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "servicepb.UpdateUserWorkloadsSecretRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*servicepb.UserWorkloadsSecret",
+        "client": {
+          "shortName": "EnvironmentsClient",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.EnvironmentsClient"
+        },
+        "method": {
+          "shortName": "UpdateUserWorkloadsSecret",
+          "fullName": "google.cloud.orchestration.airflow.service.v1.Environments.UpdateUserWorkloadsSecret",
+          "service": {
+            "shortName": "Environments",
+            "fullName": "google.cloud.orchestration.airflow.service.v1.Environments"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "composer_v1_generated_ImageVersions_DeleteOperation_sync",
       "title": "composer DeleteOperation Sample",
       "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
@@ -832,7 +1336,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -878,7 +1382,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
