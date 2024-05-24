@@ -87,7 +87,7 @@ fi
 
 # CHANGED_DIRS is the list of significant top-level directories that changed,
 # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
-CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u |
+CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | cut -d/ -f1 | sort -u |
   tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
 
 echo "Running tests only in changed submodules: $CHANGED_DIRS"

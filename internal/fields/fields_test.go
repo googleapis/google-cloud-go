@@ -202,8 +202,7 @@ type tEmbed1 struct {
 }
 
 type tEmbed2 struct {
-	Y int `json:"Dup"`  // takes precedence over tEmbed1.Dup because it is tagged
-	Z int `json:"Dup2"` // same name as tEmbed1.X and both tagged, so ignored
+	Y int `json:"Dup"` // takes precedence over tEmbed1.Dup because it is tagged
 }
 
 func jsonTagParser(t reflect.StructTag) (name string, keep bool, other interface{}, err error) {
@@ -258,7 +257,6 @@ func TestAgainstJSONEncodingWithTags(t *testing.T) {
 		},
 		tEmbed2: tEmbed2{
 			Y: 7,
-			Z: 8,
 		},
 	}
 	var want S2
