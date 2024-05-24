@@ -2426,6 +2426,48 @@ func TestMutateRowsEmptyMutationErrors(t *testing.T) {
 	}
 }
 
+func TestMutateRowEmptyRowKeyErrors(t *testing.T) {
+	srv := &server{tables: make(map[string]*table)}
+	ctx := context.Background()
+
+	const tableID = "mytable"
+	tblReq := &btapb.CreateTableRequest{
+		Parent:  "cluster",
+		TableId: tableID,
+		Table: &btapb.Table{
+			ColumnFamilies: map[string]*btapb.ColumnFamily{"cf": {}},
+		},
+	}
+	if _, err := srv.CreateTable(ctx, tblReq); err != nil {
+		t.Fatalf("Failed to create the table: %v", err)
+	}
+
+	const name = "cluster/tables/" + tableID
+	req := &btpb.MutateRowRequest{
+		TableName: name,
+		RowKey:    []byte(""),
+		Mutations: []*btpb.Mutation{
+			{
+				Mutation: &btpb.Mutation_SetCell_{
+					SetCell: &btpb.Mutation_SetCell{
+						FamilyName:      "cf",
+						ColumnQualifier: []byte("col"),
+						TimestampMicros: 1000,
+						Value:           []byte("hello, world!"),
+					},
+				},
+			},
+		},
+	}
+
+	resp, err := srv.MutateRow(ctx, req)
+	if resp != nil || err == nil || err.Error() !=
+		"rpc error: code = InvalidArgument"+
+			" desc = Row keys must be non-empty" {
+		t.Fatalf("Failed to produce the expected error: %s", err)
+	}
+}
+
 func TestFilterRowCellsPerRowLimitFilterTruthiness(t *testing.T) {
 	row := &row{
 		key: "row",
