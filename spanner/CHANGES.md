@@ -1,5 +1,13 @@
 # Changes
 
+## [1.63.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.62.0...spanner/v1.63.0) (2024-05-24)
+
+
+### Features
+
+* **spanner:** Fix schema naming ([#10194](https://github.com/googleapis/google-cloud-go/issues/10194)) ([215e0c8](https://github.com/googleapis/google-cloud-go/commit/215e0c8125ea05246c834984bde1ca698c7dde4c))
+* **spanner:** Update go mod to use latest grpc lib ([#10218](https://github.com/googleapis/google-cloud-go/issues/10218)) ([adf91f9](https://github.com/googleapis/google-cloud-go/commit/adf91f9fd37faa39ec7c6f9200273220f65d2a82))
+
 ## [1.62.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.61.0...spanner/v1.62.0) (2024-05-15)
 
 
