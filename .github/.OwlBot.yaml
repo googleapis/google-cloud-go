@@ -275,6 +275,7 @@ deep-remove-regex:
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
   - /internal/generated/snippets/managedidentities/apiv1/
+  - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
   - /internal/generated/snippets/maps/fleetengine/apiv1/
   - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
@@ -415,6 +416,7 @@ deep-remove-regex:
   - /logging/apiv2/
   - /longrunning/autogen/
   - /managedidentities/apiv1/
+  - /managedkafka/apiv1/
   - /maps/addressvalidation/apiv1/
   - /maps/fleetengine/apiv1/
   - /maps/fleetengine/delivery/apiv1/
@@ -876,6 +878,8 @@ deep-copy-regex:
   - source: /google/longrunning/cloud.google.com/go
     dest: /
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/managedkafka/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/addressvalidation/v1/cloud.google.com/go
     dest: /
