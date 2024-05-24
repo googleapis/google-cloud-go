@@ -26,6 +26,7 @@ import (
 	"os"
 	"strings"
 
+	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor"
 	"golang.org/x/oauth2"
@@ -65,6 +66,12 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// Enable opentelemetry tracing.
+	os.Setenv("GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING", "opentelemetry")
+	trace.SetOpenTelemetryTracingEnabledField(true)
+
+	log.Printf("opentelemetry tracing enabled: %v", trace.IsOpenTelemetryTracingEnabled())
 
 	// Create a new gRPC server
 	grpcServer := grpc.NewServer()

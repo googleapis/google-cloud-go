@@ -121,11 +121,15 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 	// Register the TraceContext propagator globally.
 	otel.SetTextMapPropagator(tc)
 
+	clientOpts := h.Options[1:]
+	clientOpts = append([]option.ClientOption{option.WithEndpoint("staging-cloudtrace.sandbox.googleapis.com:443")}, clientOpts...)
+
 	// Set up OTel tracing.
 	traceExporter, err := texporter.New(
 		texporter.WithContext(ctx),
 		texporter.WithProjectID("spanner-cloud-systest"),
 		texporter.WithTraceClientOptions(h.Options),
+		texporter.WithDestinationProjectQuota(),
 	)
 	if err != nil {
 		return outcomeSender.FinishWithError(fmt.Errorf("unable to set up tracing: %v", err))
