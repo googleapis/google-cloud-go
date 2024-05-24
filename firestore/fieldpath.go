@@ -149,7 +149,7 @@ func setAtPath(m map[string]*pb.Value, fp FieldPath, val *pb.Value) {
 	} else {
 		v, ok := m[fp[0]]
 		if !ok {
-			v = &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: map[string]*pb.Value{}}}}
+			v = &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: map[string]*pb.Value{}}}}
 			m[fp[0]] = v
 		}
 		// The type assertion below cannot fail, because setAtPath is only called

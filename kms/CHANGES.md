@@ -1,5 +1,20 @@
 # Changes
 
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.17.0...kms/v1.17.1) (2024-05-22)
+
+
+### Bug Fixes
+
+* **kms:** Enable cloud.google.com/go/auth ([#10246](https://github.com/googleapis/google-cloud-go/issues/10246)) ([1326df1](https://github.com/googleapis/google-cloud-go/commit/1326df1259942f2fd63b60b54379314ea69b6b80))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.16.0...kms/v1.17.0) (2024-05-16)
+
+
+### Features
+
+* **kms:** Add client library for KMS Autokey service, which enables automated KMS key provision and management ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.15.9...kms/v1.16.0) (2024-05-08)
 
 

@@ -239,7 +239,7 @@ func (h *CloudStreamHandler) newActionHandler(action *executorpb.SpannerAction, 
 			OutcomeSender: outcomeSender,
 		}, nil
 	default:
-		return nil, outcomeSender.FinishWithError(status.Error(codes.Unimplemented, fmt.Sprintf("not implemented yet %T", action.GetAction())))
+		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("not implemented yet %T", action.GetAction()))
 	}
 }
 
