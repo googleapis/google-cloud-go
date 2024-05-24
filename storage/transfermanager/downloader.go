@@ -42,7 +42,11 @@ type Downloader struct {
 
 // DownloadObject queues the download of a single object. This will initiate the
 // download but is non-blocking; call Downloader.Results or use the callback to
-// process the result.
+// process the result. DownloadObject is thread-safe and can be called
+// simultaneously from different goroutines.
+// The download may not start immediately if all workers are busy, so a deadline
+// set on the ctx may time out before the download even starts. To set a timeout
+// that starts with the download, use the [WithPerOpTimeout()] option.
 func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectInput) error {
 	if d.config.asynchronous && input.Callback == nil {
 		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
@@ -63,7 +67,7 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 }
 
 // WaitAndClose waits for all outstanding downloads to complete and closes the
-// downloader. Adding new downloads after this has been called will cause an error.
+// Downloader. Adding new downloads after this has been called will cause an error.
 //
 // WaitAndClose returns all the results of the downloads and an error wrapping
 // all errors that were encountered by the Downloader when downloading objects.
@@ -71,15 +75,24 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 // failing download. The results are not guaranteed to be in any order.
 // Results will be empty if using the [WithCallbacks] option.
 func (d *Downloader) WaitAndClose() ([]DownloadOutput, error) {
-	d.done <- true
-	d.workers.Wait()
-	close(d.done)
+	errMsg := "transfermanager: at least one error encountered downloading objects:"
+	select {
+	case <-d.done: // this allows users to call WaitAndClose various times
+		var err error
+		if len(d.errors) > 0 {
+			err = fmt.Errorf("%s\n%w", errMsg, errors.Join(d.errors...))
+		}
+		return d.results, err
+	default:
+		d.done <- true
+		d.workers.Wait()
+		close(d.done)
 
-	if len(d.errors) > 0 {
-		err := errors.Join(d.errors...)
-		return d.results, fmt.Errorf("transfermanager: at least one error encountered downloading objects:\n%w", err)
+		if len(d.errors) > 0 {
+			return d.results, fmt.Errorf("%s\n%w", errMsg, errors.Join(d.errors...))
+		}
+		return d.results, nil
 	}
-	return d.results, nil
 }
 
 // sendInputsToWorkChan listens continuously to the inputs slice until d.done.
@@ -165,6 +178,7 @@ func (d *Downloader) downloadWorker() {
 
 // NewDownloader creates a new Downloader to add operations to.
 // Choice of transport, etc is configured on the client that's passed in.
+// The returned Downloader can be shared across goroutines to initiate downloads.
 func NewDownloader(c *storage.Client, opts ...Option) (*Downloader, error) {
 	d := &Downloader{
 		client:    c,

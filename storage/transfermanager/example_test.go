@@ -18,7 +18,6 @@ import (
 	"context"
 	"log"
 	"os"
-	"time"
 
 	"cloud.google.com/go/storage"
 	"cloud.google.com/go/storage/transfermanager"
@@ -53,13 +52,6 @@ func ExampleDownloader_synchronous() {
 		// Optionally specify params to apply to download.
 		EncryptionKey: []byte("mykey"),
 	}
-
-	// Can set timeout on this download using context. Note that this download
-	// may not start immediately if all workers are busy, so this may time out
-	// before the download even starts. To set a timeout that starts with the
-	// download, use transfermanager.WithPerOpTimeout(time.Duration).
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-	defer cancel()
 
 	// Add to Downloader.
 	if err := d.DownloadObject(ctx, in); err != nil {
@@ -129,13 +121,6 @@ func ExampleDownloader_asynchronous() {
 		// Specify the callback
 		Callback: callback,
 	}
-
-	// Can set timeout on this download using context. Note that this download
-	// may not start immediately if all workers are busy, so this may time out
-	// before the download even starts. To set a timeout that starts with the
-	// download, use transfermanager.WithPerOpTimeout(time.Duration).
-	ctx, cancel := context.WithTimeout(ctx, 1*time.Minute)
-	defer cancel()
 
 	// Add to Downloader.
 	if err := d.DownloadObject(ctx, in); err != nil {
