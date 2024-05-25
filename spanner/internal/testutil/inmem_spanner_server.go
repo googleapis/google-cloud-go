@@ -711,7 +711,7 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 	if req.Session != nil {
 		creatorRole = req.Session.CreatorRole
 	}
-	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole}
+	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole, Multiplexed: req.Session.Multiplexed}
 	s.totalSessionsCreated++
 	s.sessions[sessionName] = session
 	return session, nil
