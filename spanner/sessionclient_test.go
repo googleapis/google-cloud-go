@@ -59,7 +59,7 @@ func (tc *testConsumer) sessionReady(s *session) {
 	tc.checkReceivedAll()
 }
 
-func (tc *testConsumer) sessionCreationFailed(err error, num int32) {
+func (tc *testConsumer) sessionCreationFailed(err error, num int32, _ bool) {
 	tc.mu.Lock()
 	defer tc.mu.Unlock()
 	tc.errors = append(tc.errors, &testSessionCreateError{
