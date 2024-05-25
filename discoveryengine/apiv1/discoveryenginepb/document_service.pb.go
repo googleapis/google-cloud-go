@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -123,7 +122,7 @@ type ListDocumentsRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Maximum number of [Document][google.cloud.discoveryengine.v1.Document]s to
 	// return. If unspecified, defaults to 100. The maximum allowed value is 1000.
-	// Values above 1000 will be coerced to 1000.
+	// Values above 1000 are set to 1000.
 	//
 	// If this field is negative, an `INVALID_ARGUMENT` error is returned.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
@@ -271,7 +270,7 @@ type CreateDocumentRequest struct {
 	// create.
 	Document *Document `protobuf:"bytes,2,opt,name=document,proto3" json:"document,omitempty"`
 	// Required. The ID to use for the
-	// [Document][google.cloud.discoveryengine.v1.Document], which will become the
+	// [Document][google.cloud.discoveryengine.v1.Document], which becomes the
 	// final component of the
 	// [Document.name][google.cloud.discoveryengine.v1.Document.name].
 	//
@@ -362,12 +361,12 @@ type UpdateDocumentRequest struct {
 	// [allow_missing][google.cloud.discoveryengine.v1.UpdateDocumentRequest.allow_missing]
 	// is not set, a `NOT_FOUND` error is returned.
 	Document *Document `protobuf:"bytes,1,opt,name=document,proto3" json:"document,omitempty"`
-	// If set to true, and the
+	// If set to `true` and the
 	// [Document][google.cloud.discoveryengine.v1.Document] is not found, a new
-	// [Document][google.cloud.discoveryengine.v1.Document] will be created.
+	// [Document][google.cloud.discoveryengine.v1.Document] is be created.
 	AllowMissing bool `protobuf:"varint,2,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 	// Indicates which fields in the provided imported 'document' to update. If
-	// not set, will by default update all fields.
+	// not set, by default updates all fields.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 
@@ -924,7 +923,7 @@ type DocumentServiceClient interface {
 	DeleteDocument(ctx context.Context, in *DeleteDocumentRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Bulk import of multiple
 	// [Document][google.cloud.discoveryengine.v1.Document]s. Request processing
-	// may be synchronous. Non-existing items will be created.
+	// may be synchronous. Non-existing items are created.
 	//
 	// Note: It is possible for a subset of the
 	// [Document][google.cloud.discoveryengine.v1.Document]s to be successfully
@@ -1034,7 +1033,7 @@ type DocumentServiceServer interface {
 	DeleteDocument(context.Context, *DeleteDocumentRequest) (*emptypb.Empty, error)
 	// Bulk import of multiple
 	// [Document][google.cloud.discoveryengine.v1.Document]s. Request processing
-	// may be synchronous. Non-existing items will be created.
+	// may be synchronous. Non-existing items are created.
 	//
 	// Note: It is possible for a subset of the
 	// [Document][google.cloud.discoveryengine.v1.Document]s to be successfully

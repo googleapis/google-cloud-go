@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -97,9 +96,9 @@ type Conversation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Immutable. Fully qualified name
-	// `project/*/locations/global/collections/{collection}/dataStore/*/conversations/*`
+	// `projects/{project}/locations/global/collections/{collection}/dataStore/*/conversations/*`
 	// or
-	// `project/*/locations/global/collections/{collection}/engines/*/conversations/*`.
+	// `projects/{project}/locations/global/collections/{collection}/engines/*/conversations/*`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The state of the Conversation.
 	State Conversation_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.cloud.discoveryengine.v1.Conversation_State" json:"state,omitempty"`
