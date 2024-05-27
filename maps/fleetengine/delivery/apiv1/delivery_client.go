@@ -52,7 +52,6 @@ type CallOptions struct {
 	BatchCreateTasks      []gax.CallOption
 	CreateTask            []gax.CallOption
 	GetTask               []gax.CallOption
-	SearchTasks           []gax.CallOption
 	UpdateTask            []gax.CallOption
 	ListTasks             []gax.CallOption
 	GetTaskTrackingInfo   []gax.CallOption
@@ -136,18 +135,6 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		GetTask: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		SearchTasks: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -278,17 +265,6 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
-		SearchTasks: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnHTTPCodes(gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        10000 * time.Millisecond,
-					Multiplier: 1.30,
-				},
-					http.StatusServiceUnavailable)
-			}),
-		},
 		UpdateTask: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -347,7 +323,6 @@ type internalClient interface {
 	BatchCreateTasks(context.Context, *deliverypb.BatchCreateTasksRequest, ...gax.CallOption) (*deliverypb.BatchCreateTasksResponse, error)
 	CreateTask(context.Context, *deliverypb.CreateTaskRequest, ...gax.CallOption) (*deliverypb.Task, error)
 	GetTask(context.Context, *deliverypb.GetTaskRequest, ...gax.CallOption) (*deliverypb.Task, error)
-	SearchTasks(context.Context, *deliverypb.SearchTasksRequest, ...gax.CallOption) *TaskIterator
 	UpdateTask(context.Context, *deliverypb.UpdateTaskRequest, ...gax.CallOption) (*deliverypb.Task, error)
 	ListTasks(context.Context, *deliverypb.ListTasksRequest, ...gax.CallOption) *TaskIterator
 	GetTaskTrackingInfo(context.Context, *deliverypb.GetTaskTrackingInfoRequest, ...gax.CallOption) (*deliverypb.TaskTrackingInfo, error)
@@ -423,13 +398,6 @@ func (c *Client) CreateTask(ctx context.Context, req *deliverypb.CreateTaskReque
 // GetTask gets information about a Task.
 func (c *Client) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest, opts ...gax.CallOption) (*deliverypb.Task, error) {
 	return c.internalClient.GetTask(ctx, req, opts...)
-}
-
-// SearchTasks deprecated: Use GetTaskTrackingInfo instead.
-//
-// Deprecated: SearchTasks may be removed in a future version.
-func (c *Client) SearchTasks(ctx context.Context, req *deliverypb.SearchTasksRequest, opts ...gax.CallOption) *TaskIterator {
-	return c.internalClient.SearchTasks(ctx, req, opts...)
 }
 
 // UpdateTask updates Task data.
@@ -515,7 +483,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -577,7 +547,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -754,61 +726,6 @@ func (c *gRPCClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 		return nil, err
 	}
 	return resp, nil
-}
-
-func (c *gRPCClient) SearchTasks(ctx context.Context, req *deliverypb.SearchTasksRequest, opts ...gax.CallOption) *TaskIterator {
-	routingHeaders := ""
-	routingHeadersMap := make(map[string]string)
-	if reg := regexp.MustCompile("(?P<provider_id>providers/[^/]+)"); reg.MatchString(req.GetParent()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])) > 0 {
-		routingHeadersMap["provider_id"] = url.QueryEscape(reg.FindStringSubmatch(req.GetParent())[1])
-	}
-	for headerName, headerValue := range routingHeadersMap {
-		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
-	}
-	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
-	hds := []string{"x-goog-request-params", routingHeaders}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).SearchTasks[0:len((*c.CallOptions).SearchTasks):len((*c.CallOptions).SearchTasks)], opts...)
-	it := &TaskIterator{}
-	req = proto.Clone(req).(*deliverypb.SearchTasksRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*deliverypb.Task, string, error) {
-		resp := &deliverypb.SearchTasksResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.client.SearchTasks(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetTasks(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
 }
 
 func (c *gRPCClient) UpdateTask(ctx context.Context, req *deliverypb.UpdateTaskRequest, opts ...gax.CallOption) (*deliverypb.Task, error) {
@@ -1599,132 +1516,6 @@ func (c *restClient) GetTask(ctx context.Context, req *deliverypb.GetTaskRequest
 		return nil, e
 	}
 	return resp, nil
-}
-
-// SearchTasks deprecated: Use GetTaskTrackingInfo instead.
-//
-// Deprecated: SearchTasks may be removed in a future version.
-func (c *restClient) SearchTasks(ctx context.Context, req *deliverypb.SearchTasksRequest, opts ...gax.CallOption) *TaskIterator {
-	it := &TaskIterator{}
-	req = proto.Clone(req).(*deliverypb.SearchTasksRequest)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*deliverypb.Task, string, error) {
-		resp := &deliverypb.SearchTasksResponse{}
-		if pageToken != "" {
-			req.PageToken = pageToken
-		}
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
-		}
-		baseUrl, err := url.Parse(c.endpoint)
-		if err != nil {
-			return nil, "", err
-		}
-		baseUrl.Path += fmt.Sprintf("/v1/%v/tasks:search", req.GetParent())
-
-		params := url.Values{}
-		params.Add("$alt", "json;enum-encoding=int")
-		if req.GetHeader().GetAndroidApiLevel() != 0 {
-			params.Add("header.androidApiLevel", fmt.Sprintf("%v", req.GetHeader().GetAndroidApiLevel()))
-		}
-		if req.GetHeader().GetDeviceModel() != "" {
-			params.Add("header.deviceModel", fmt.Sprintf("%v", req.GetHeader().GetDeviceModel()))
-		}
-		if req.GetHeader().GetLanguageCode() != "" {
-			params.Add("header.languageCode", fmt.Sprintf("%v", req.GetHeader().GetLanguageCode()))
-		}
-		if req.GetHeader().GetManufacturer() != "" {
-			params.Add("header.manufacturer", fmt.Sprintf("%v", req.GetHeader().GetManufacturer()))
-		}
-		if req.GetHeader().GetMapsSdkVersion() != "" {
-			params.Add("header.mapsSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetMapsSdkVersion()))
-		}
-		if req.GetHeader().GetNavSdkVersion() != "" {
-			params.Add("header.navSdkVersion", fmt.Sprintf("%v", req.GetHeader().GetNavSdkVersion()))
-		}
-		if req.GetHeader().GetOsVersion() != "" {
-			params.Add("header.osVersion", fmt.Sprintf("%v", req.GetHeader().GetOsVersion()))
-		}
-		if req.GetHeader().GetPlatform() != 0 {
-			params.Add("header.platform", fmt.Sprintf("%v", req.GetHeader().GetPlatform()))
-		}
-		params.Add("header.regionCode", fmt.Sprintf("%v", req.GetHeader().GetRegionCode()))
-		if req.GetHeader().GetSdkType() != 0 {
-			params.Add("header.sdkType", fmt.Sprintf("%v", req.GetHeader().GetSdkType()))
-		}
-		if req.GetHeader().GetSdkVersion() != "" {
-			params.Add("header.sdkVersion", fmt.Sprintf("%v", req.GetHeader().GetSdkVersion()))
-		}
-		if req.GetHeader().GetTraceId() != "" {
-			params.Add("header.traceId", fmt.Sprintf("%v", req.GetHeader().GetTraceId()))
-		}
-		if req.GetPageSize() != 0 {
-			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
-		}
-		if req.GetPageToken() != "" {
-			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		params.Add("trackingId", fmt.Sprintf("%v", req.GetTrackingId()))
-
-		baseUrl.RawQuery = params.Encode()
-
-		// Build HTTP headers from client and context metadata.
-		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
-		headers := gax.BuildHeaders(ctx, hds...)
-		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			if settings.Path != "" {
-				baseUrl.Path = settings.Path
-			}
-			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
-			if err != nil {
-				return err
-			}
-			httpReq.Header = headers
-
-			httpRsp, err := c.httpClient.Do(httpReq)
-			if err != nil {
-				return err
-			}
-			defer httpRsp.Body.Close()
-
-			if err = googleapi.CheckResponse(httpRsp); err != nil {
-				return err
-			}
-
-			buf, err := io.ReadAll(httpRsp.Body)
-			if err != nil {
-				return err
-			}
-
-			if err := unm.Unmarshal(buf, resp); err != nil {
-				return err
-			}
-
-			return nil
-		}, opts...)
-		if e != nil {
-			return nil, "", e
-		}
-		it.Response = resp
-		return resp.GetTasks(), resp.GetNextPageToken(), nil
-	}
-
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-
-	return it
 }
 
 // UpdateTask updates Task data.

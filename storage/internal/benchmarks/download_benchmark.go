@@ -43,8 +43,8 @@ func downloadBenchmark(ctx context.Context, dopts downloadOpts) (elapsedTime tim
 	var span trace.Span
 	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "download")
 	span.SetAttributes(
-		attribute.KeyValue{"object_size", attribute.Int64Value(dopts.objectSize)},
-		attribute.KeyValue{"bucket", attribute.StringValue(dopts.bucket)},
+		attribute.KeyValue{Key: "object_size", Value: attribute.Int64Value(dopts.objectSize)},
+		attribute.KeyValue{Key: "bucket", Value: attribute.StringValue(dopts.bucket)},
 	)
 	defer span.End()
 	// Set timer

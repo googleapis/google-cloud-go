@@ -1,6 +1,19 @@
 # Changelog
 
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.6...workstations/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **workstations:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **workstations:** Promote to GA v1.0.0 ([#10212](https://github.com/googleapis/google-cloud-go/issues/10212)) ([fb8b540](https://github.com/googleapis/google-cloud-go/commit/fb8b5403ae1ac96c7ee57d4bbb22d7cdf17039a7))
+
 ## [0.5.6](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.5...workstations/v0.5.6) (2024-05-01)
 
 

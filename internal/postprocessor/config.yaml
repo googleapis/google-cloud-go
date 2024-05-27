@@ -83,6 +83,7 @@ modules:
   - logging
   - longrunning
   - managedidentities
+  - managedkafka
   - maps
   - mediatranslation
   - memcache
@@ -637,6 +638,9 @@ service-configs:
   - input-directory: google/cloud/managedidentities/v1
     service-config: managedidentities_v1.yaml
     import-path: cloud.google.com/go/managedidentities/apiv1
+  - input-directory: google/cloud/managedkafka/v1
+    service-config: managedkafka_v1.yaml
+    import-path: cloud.google.com/go/managedkafka/apiv1
   - input-directory: google/cloud/mediatranslation/v1beta1
     service-config: mediatranslation_v1beta1.yaml
     import-path: cloud.google.com/go/mediatranslation/apiv1beta1
@@ -810,6 +814,9 @@ service-configs:
   - input-directory: google/cloud/security/publicca/v1beta1
     service-config: publicca_v1beta1.yaml
     import-path: cloud.google.com/go/security/publicca/apiv1beta1
+  - input-directory: google/cloud/security/publicca/v1
+    service-config: publicca_v1.yaml
+    import-path: cloud.google.com/go/security/publicca/apiv1
   - input-directory: google/cloud/securitycenter/settings/v1beta1
     service-config: securitycenter_settings.yaml
     import-path: cloud.google.com/go/securitycenter/settings/apiv1beta1

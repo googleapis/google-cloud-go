@@ -275,6 +275,7 @@ deep-remove-regex:
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
   - /internal/generated/snippets/managedidentities/apiv1/
+  - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
   - /internal/generated/snippets/maps/fleetengine/apiv1/
   - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
@@ -342,6 +343,7 @@ deep-remove-regex:
   - /internal/generated/snippets/securesourcemanager/apiv1/
   - /internal/generated/snippets/security/privateca/apiv1/
   - /internal/generated/snippets/security/publicca/apiv1beta1/
+  - /internal/generated/snippets/security/publicca/apiv1/
   - /internal/generated/snippets/securitycenter/apiv1/
   - /internal/generated/snippets/securitycenter/apiv1beta1/
   - /internal/generated/snippets/securitycenter/apiv1p1beta1/
@@ -414,6 +416,7 @@ deep-remove-regex:
   - /logging/apiv2/
   - /longrunning/autogen/
   - /managedidentities/apiv1/
+  - /managedkafka/apiv1/
   - /maps/addressvalidation/apiv1/
   - /maps/fleetengine/apiv1/
   - /maps/fleetengine/delivery/apiv1/
@@ -483,6 +486,7 @@ deep-remove-regex:
   - /securesourcemanager/apiv1/
   - /security/privateca/apiv1/
   - /security/publicca/apiv1beta1/
+  - /security/publicca/apiv1/
   - /securitycenter/apiv1/
   - /securitycenter/apiv1beta1/
   - /securitycenter/apiv1p1beta1/
@@ -875,6 +879,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/managedkafka/v1/cloud.google.com/go
+    dest: /
   - source: /google/maps/addressvalidation/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/fleetengine/v1/cloud.google.com/go
@@ -1016,6 +1022,8 @@ deep-copy-regex:
   - source: /google/cloud/security/privateca/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/security/publicca/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/security/publicca/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/securitycenter/v1/cloud.google.com/go
     dest: /
