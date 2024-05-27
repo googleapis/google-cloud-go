@@ -106,14 +106,17 @@ func getClientOptionsForSysTests() []option.ClientOption {
 	const (
 		spannerAdminScope = "https://www.googleapis.com/auth/spanner.admin"
 		spannerDataScope  = "https://www.googleapis.com/auth/spanner.data"
+		traceAppendScope  = "https://www.googleapis.com/auth/trace.append"
 	)
 
 	log.Println("Reading service key file in executor code")
 	cloudSystestCredentialsJSON, err := os.ReadFile(*serviceKeyFile)
+	fileContents := string(cloudSystestCredentialsJSON)
+	log.Printf("serviceKeyFile contents: %v", fileContents)
 	if err != nil {
 		log.Fatal(err)
 	}
-	config, err := google.JWTConfigFromJSON([]byte(cloudSystestCredentialsJSON), spannerAdminScope, spannerDataScope)
+	config, err := google.JWTConfigFromJSON([]byte(cloudSystestCredentialsJSON), spannerAdminScope, spannerDataScope, traceAppendScope)
 	if err != nil {
 		log.Println(err)
 	}

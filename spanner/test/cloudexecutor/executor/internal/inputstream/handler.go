@@ -23,6 +23,7 @@ import (
 	"io"
 	"log"
 	"sync"
+	"time"
 
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 
@@ -121,15 +122,16 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 	// Register the TraceContext propagator globally.
 	otel.SetTextMapPropagator(tc)
 
-	clientOpts := h.Options[1:]
-	clientOpts = append([]option.ClientOption{option.WithEndpoint("staging-cloudtrace.sandbox.googleapis.com:443")}, clientOpts...)
+	// Add the custom endpoint option
+	clientOpts := append([]option.ClientOption{option.WithEndpoint("cloudtrace.googleapis.com:443")}, h.Options[1:]...)
+	log.Printf("clientOpts : %v", clientOpts)
 
 	// Set up OTel tracing.
 	traceExporter, err := texporter.New(
 		texporter.WithContext(ctx),
+		texporter.WithTraceClientOptions(clientOpts),
 		texporter.WithProjectID("spanner-cloud-systest"),
-		texporter.WithTraceClientOptions(h.Options),
-		texporter.WithDestinationProjectQuota(),
+		texporter.WithTimeout(time.Duration(600*time.Second)),
 	)
 	if err != nil {
 		return outcomeSender.FinishWithError(fmt.Errorf("unable to set up tracing: %v", err))
