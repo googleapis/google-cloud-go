@@ -446,8 +446,8 @@ const (
 	deletionProtectionFieldMask    = "deletion_protection"
 	changeStreamConfigFieldMask    = "change_stream_config"
 	automatedBackupPolicyFieldMask = "automated_backup_policy"
-	retentionPeriodFieldMaskPath   = ".retention_period"
-	frequencyFieldMaskPath         = ".frequency"
+	retentionPeriodFieldMaskPath   = "retention_period"
+	frequencyFieldMaskPath         = "frequency"
 )
 
 func (ac *AdminClient) newUpdateTableRequestProto(tableID string) (*btapb.UpdateTableRequest, error) {
@@ -500,7 +500,7 @@ func (ac *AdminClient) UpdateTableWithChangeStream(ctx context.Context, tableID 
 	if err != nil {
 		return err
 	}
-	req.UpdateMask.Paths = []string{changeStreamConfigFieldMask + retentionPeriodFieldMaskPath}
+	req.UpdateMask.Paths = []string{changeStreamConfigFieldMask + "." + retentionPeriodFieldMaskPath}
 	req.Table.ChangeStreamConfig = &btapb.ChangeStreamConfig{}
 	req.Table.ChangeStreamConfig.RetentionPeriod = durationpb.New(changeStreamRetention.(time.Duration))
 	return ac.updateTableAndWait(ctx, req)
@@ -537,13 +537,19 @@ func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context,
 	if err != nil {
 		return err
 	}
+	// If the AutomatedBackupPolicy is not at least partially specified, or if both fields are 0, then this is an
+	// incorrect configuration for updating the table, and should be rejected. Both fields could be zero if (1)
+	// they are set to zero, or (2) neither field was set and the policy was constructed using toProto().
+	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds == 0 && abc.AutomatedBackupPolicy.Frequency.Seconds == 0 {
+		return errors.New("Invalid automated backup policy. If you're intending to disable automated backups, please use the UpdateTableDisableAutomatedBackupPolicy method instead")
+	}
 	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds != 0 {
 		// Update Retention Period
-		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+retentionPeriodFieldMaskPath)
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+retentionPeriodFieldMaskPath)
 	}
 	if abc.AutomatedBackupPolicy.Frequency.Seconds != 0 {
 		// Update Frequency
-		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+frequencyFieldMaskPath)
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+frequencyFieldMaskPath)
 	}
 	req.Table.AutomatedBackupConfig = abc
 	return ac.updateTableAndWait(ctx, req)
