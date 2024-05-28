@@ -864,17 +864,18 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 		return nil, err
 	}
 
-	// Set custom headers passed in via the context. This is only required for XML;
-	// for gRPC & JSON this is handled in the GAPIC and Apiary layers respectively.
-	ctxHeaders := callctx.HeadersFromContext(ctx)
-	for k, vals := range ctxHeaders {
-		for _, v := range vals {
-			req.Header.Add(k, v)
-		}
-	}
-
 	reopen := readerReopen(ctx, req.Header, params, s,
-		func(ctx context.Context) (*http.Response, error) { return c.hc.Do(req.WithContext(ctx)) },
+		func(ctx context.Context) (*http.Response, error) {
+			// Set custom headers passed in via the context. This is only required for XML;
+			// for gRPC & JSON this is handled in the GAPIC and Apiary layers respectively.
+			ctxHeaders := callctx.HeadersFromContext(ctx)
+			for k, vals := range ctxHeaders {
+				for _, v := range vals {
+					req.Header.Set(k, v)
+				}
+			}
+			return c.hc.Do(req.WithContext(ctx))
+		},
 		func() error { return setConditionsHeaders(req.Header, params.conds) },
 		func() { req.URL.RawQuery = fmt.Sprintf("generation=%d", params.gen) })
 
@@ -888,7 +889,6 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
 	call := c.raw.Objects.Get(params.bucket, params.object)
 
-	setClientHeader(call.Header())
 	call.Projection("full")
 
 	if s.userProject != "" {

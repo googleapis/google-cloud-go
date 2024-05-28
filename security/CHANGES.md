@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.16.1...security/v1.17.0) (2024-05-22)
+
+
+### Features
+
+* **security:** New client(s) ([#10224](https://github.com/googleapis/google-cloud-go/issues/10224)) ([a495f8f](https://github.com/googleapis/google-cloud-go/commit/a495f8f0786a7be5997fa148969c13f9aa839adf))
+
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.16.0...security/v1.16.1) (2024-05-01)
 
 
