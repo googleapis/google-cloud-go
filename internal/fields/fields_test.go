@@ -232,9 +232,10 @@ func TestFieldsWithTags(t *testing.T) {
 		field("NoTag", int(0), 0),
 		tfield("tag", int(0), 1),
 		tfield("anon", Anonymous(0), 2),
-		tfield("em", Embed{}, 4),
-		tfield("Tag", int(0), 6),
-		field("Empty", int(0), 7),
+		tfield("em", Embed{}, 3),
+		tfield("Tag", int(0), 5),
+		field("Empty", int(0), 6),
+		tfield("Dup2", int(0), 7, 1),
 		tfield("Dup", int(0), 8, 0),
 	}
 	if msg, ok := compareFields(got, want); !ok {
