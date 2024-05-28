@@ -676,10 +676,16 @@ func write(typeInfos []*typeInfo, conf *config, fset *token.FileSet) ([]byte, er
 		return nil, errors.New("missing supportImportPath in config")
 	}
 	prn(`    "%s"`, conf.SupportImportPath)
+	importPaths := map[string]bool{}
 	for _, et := range externalTypes {
-		if et.used && et.importPath != "" {
-			prn(`    "%s"`, et.importPath)
+		if et.used {
+			for _, ip := range et.importPaths {
+				importPaths[ip] = true
+			}
 		}
+	}
+	for ip := range importPaths {
+		prn(`    "%s"`, ip)
 	}
 	pr(")\n\n")
 
@@ -775,7 +781,7 @@ func (ti *typeInfo) generateFromProto(pr func(string, ...any)) {
 type externalType struct {
 	qualifiedName string
 	replaces      string
-	importPath    string
+	importPaths   []string
 	convertTo     string
 	convertFrom   string
 
@@ -787,7 +793,7 @@ var externalTypes = []*externalType{
 	{
 		qualifiedName: "civil.Date",
 		replaces:      "*date.Date",
-		importPath:    "cloud.google.com/go/civil",
+		importPaths:   []string{"cloud.google.com/go/civil"},
 		convertTo:     "support.CivilDateToProto",
 		convertFrom:   "support.CivilDateFromProto",
 	},
@@ -796,6 +802,13 @@ var externalTypes = []*externalType{
 		replaces:      "*structpb.Struct",
 		convertTo:     "support.MapToStructPB",
 		convertFrom:   "support.MapFromStructPB",
+	},
+	{
+		qualifiedName: "time.Time",
+		replaces:      "*timestamppb.Timestamp",
+		importPaths:   []string{"time", "google.golang.org/protobuf/types/known/timestamppb"},
+		convertTo:     "timestamppb.New",
+		convertFrom:   "support.TimeFromProto",
 	},
 }
 
