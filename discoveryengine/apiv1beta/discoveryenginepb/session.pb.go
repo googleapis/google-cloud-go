@@ -92,7 +92,7 @@ type Session struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Immutable. Fully qualified name
-	// `project/*/locations/global/collections/{collection}/engines/{engine}/sessions/*`
+	// `projects/{project}/locations/global/collections/{collection}/engines/{engine}/sessions/*`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The state of the session.
 	State Session_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.cloud.discoveryengine.v1beta.Session_State" json:"state,omitempty"`
@@ -270,6 +270,9 @@ type Session_Turn struct {
 	// The user query.
 	Query *Query `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
 	// The resource name of the answer to the user query.
+	//
+	// Only set if the answer generation (/answer API call) happened in this
+	// turn.
 	Answer string `protobuf:"bytes,2,opt,name=answer,proto3" json:"answer,omitempty"`
 }
 

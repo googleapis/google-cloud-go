@@ -109,9 +109,9 @@ type ListSchemasRequest struct {
 	// to return. The service may return fewer than this value.
 	//
 	// If unspecified, at most 100
-	// [Schema][google.cloud.discoveryengine.v1beta.Schema]s will be returned.
+	// [Schema][google.cloud.discoveryengine.v1beta.Schema]s are returned.
 	//
-	// The maximum value is 1000; values above 1000 will be coerced to 1000.
+	// The maximum value is 1000; values above 1000 are set to 1000.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous
 	// [SchemaService.ListSchemas][google.cloud.discoveryengine.v1beta.SchemaService.ListSchemas]
@@ -254,7 +254,7 @@ type CreateSchemaRequest struct {
 	// create.
 	Schema *Schema `protobuf:"bytes,2,opt,name=schema,proto3" json:"schema,omitempty"`
 	// Required. The ID to use for the
-	// [Schema][google.cloud.discoveryengine.v1beta.Schema], which will become the
+	// [Schema][google.cloud.discoveryengine.v1beta.Schema], which becomes the
 	// final component of the
 	// [Schema.name][google.cloud.discoveryengine.v1beta.Schema.name].
 	//
@@ -330,8 +330,8 @@ type UpdateSchemaRequest struct {
 	Schema *Schema `protobuf:"bytes,1,opt,name=schema,proto3" json:"schema,omitempty"`
 	// If set to true, and the
 	// [Schema][google.cloud.discoveryengine.v1beta.Schema] is not found, a new
-	// [Schema][google.cloud.discoveryengine.v1beta.Schema] will be created. In
-	// this situation, `update_mask` is ignored.
+	// [Schema][google.cloud.discoveryengine.v1beta.Schema] is created. In this
+	// situation, `update_mask` is ignored.
 	AllowMissing bool `protobuf:"varint,3,opt,name=allow_missing,json=allowMissing,proto3" json:"allow_missing,omitempty"`
 }
 
