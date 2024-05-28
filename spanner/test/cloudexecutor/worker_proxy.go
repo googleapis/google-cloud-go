@@ -42,6 +42,7 @@ var (
 	proxyPort      = flag.String("proxy_port", "", "Proxy port to start worker proxy on.")
 	spannerPort    = flag.String("spanner_port", "", "Port of Spanner Frontend to which to send requests.")
 	cert           = flag.String("cert", "", "Certificate used to connect to Spanner GFE.")
+	rootCert       = flag.String("root_cert", "", "Root certificate used for calls to Cloud Trace endpoint.")
 	serviceKeyFile = flag.String("service_key_file", "", "Service key file used to set authentication.")
 	ipAddress      = "127.0.0.1"
 )
@@ -70,8 +71,11 @@ func main() {
 	// Enable opentelemetry tracing.
 	os.Setenv("GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING", "opentelemetry")
 	trace.SetOpenTelemetryTracingEnabledField(true)
-
 	log.Printf("opentelemetry tracing enabled: %v", trace.IsOpenTelemetryTracingEnabled())
+
+	// Set the default GOOGLE_APPLICATION_CREDENTIALS.
+	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", *serviceKeyFile)
+	os.Setenv("ROOT_CERTIFICATE_FILE_PATH", *rootCert)
 
 	// Create a new gRPC server
 	grpcServer := grpc.NewServer()
@@ -106,17 +110,14 @@ func getClientOptionsForSysTests() []option.ClientOption {
 	const (
 		spannerAdminScope = "https://www.googleapis.com/auth/spanner.admin"
 		spannerDataScope  = "https://www.googleapis.com/auth/spanner.data"
-		traceAppendScope  = "https://www.googleapis.com/auth/trace.append"
 	)
 
 	log.Println("Reading service key file in executor code")
 	cloudSystestCredentialsJSON, err := os.ReadFile(*serviceKeyFile)
-	fileContents := string(cloudSystestCredentialsJSON)
-	log.Printf("serviceKeyFile contents: %v", fileContents)
 	if err != nil {
 		log.Fatal(err)
 	}
-	config, err := google.JWTConfigFromJSON([]byte(cloudSystestCredentialsJSON), spannerAdminScope, spannerDataScope, traceAppendScope)
+	config, err := google.JWTConfigFromJSON([]byte(cloudSystestCredentialsJSON), spannerAdminScope, spannerDataScope)
 	if err != nil {
 		log.Println(err)
 	}

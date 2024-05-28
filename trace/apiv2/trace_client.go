@@ -344,6 +344,7 @@ func (c *gRPCClient) BatchWriteSpans(ctx context.Context, req *tracepb.BatchWrit
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.BatchWriteSpans(ctx, req, settings.GRPC...)
+		fmt.Printf("error in BatchWriteSpans: %v, with opts: %v\n", err, opts)
 		return err
 	}, opts...)
 	return err

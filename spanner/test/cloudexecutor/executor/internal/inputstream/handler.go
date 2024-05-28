@@ -22,10 +22,12 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"os"
 	"sync"
 	"time"
 
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+	"golang.org/x/oauth2/google"
 
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
@@ -35,7 +37,9 @@ import (
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 )
 
@@ -96,6 +100,46 @@ func (h *CloudStreamHandler) Execute() error {
 	return nil
 }
 
+// getCloudTraceClientOptions returns the client options for creating Cloud Trace API client.
+func getCloudTraceClientOptions() ([]option.ClientOption, error) {
+	// Read the service key file.
+	serviceKeyFile := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
+	cloudSystestCredentialsJSON, err := os.ReadFile(serviceKeyFile)
+	if err != nil {
+		return nil, err
+	}
+	fileContents := string(cloudSystestCredentialsJSON)
+	log.Printf("serviceKeyFile contents: %v\n", fileContents)
+
+	var traceClientOpts []option.ClientOption
+	traceClientOpts = append(traceClientOpts, option.WithEndpoint("cloudtrace.googleapis.com:443"))
+
+	// perRPCCredentials, err := oauth.NewJWTAccessFromKey(cloudSystestCredentialsJSON)
+	// if err != nil {
+	// 	return outcomeSender.FinishWithError(err)
+	// }
+	rootCertFilePath := os.Getenv("ROOT_CERTIFICATE_FILE_PATH")
+	fmt.Printf("rootCertFilePath: %v\n", rootCertFilePath)
+	creds, err := credentials.NewClientTLSFromFile(rootCertFilePath, "")
+	if err != nil {
+		return nil, err
+	}
+	fmt.Printf("root CA: %v\n", creds)
+	traceClientOpts = append(traceClientOpts, option.WithGRPCDialOption(grpc.WithTransportCredentials(creds)))
+
+	const (
+		cloudPlatformScope = "https://www.googleapis.com/auth/cloud-platform"
+		traceAppendScope   = "https://www.googleapis.com/auth/trace.append"
+	)
+	tokenSource, err := google.JWTAccessTokenSourceWithScope([]byte(cloudSystestCredentialsJSON), cloudPlatformScope, traceAppendScope)
+	if err != nil {
+		return nil, err
+	}
+	traceClientOpts = append(traceClientOpts, option.WithTokenSource(tokenSource))
+	traceClientOpts = append(traceClientOpts, option.WithCredentialsFile(serviceKeyFile))
+	return traceClientOpts, nil
+}
+
 // startHandlingRequest takes care of the given request. It picks an actionHandler and starts
 // a goroutine in which that action will be executed.
 func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *executorpb.SpannerAsyncActionRequest) error {
@@ -122,14 +166,15 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 	// Register the TraceContext propagator globally.
 	otel.SetTextMapPropagator(tc)
 
-	// Add the custom endpoint option
-	clientOpts := append([]option.ClientOption{option.WithEndpoint("cloudtrace.googleapis.com:443")}, h.Options[1:]...)
-	log.Printf("clientOpts : %v", clientOpts)
-
+	traceClientOpts, err := getCloudTraceClientOptions()
+	if err != nil {
+		return outcomeSender.FinishWithError(err)
+	}
+	fmt.Printf("traceClientOpts: %v\n", traceClientOpts)
 	// Set up OTel tracing.
 	traceExporter, err := texporter.New(
 		texporter.WithContext(ctx),
-		texporter.WithTraceClientOptions(clientOpts),
+		texporter.WithTraceClientOptions(traceClientOpts),
 		texporter.WithProjectID("spanner-cloud-systest"),
 		texporter.WithTimeout(time.Duration(600*time.Second)),
 	)
