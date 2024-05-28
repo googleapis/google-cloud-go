@@ -123,3 +123,13 @@ type Citation struct {
 	Struct          *structpb.Struct
 	CreateTime      *timestamppb.Timestamp
 }
+
+type unexported interface{ u() }
+
+// This demonstrates using population functions to deal with
+// proto oneof field, which has an unexported type.
+// That can be a way to deal with proto oneofs.
+type Pop struct {
+	X int
+	Y unexported
+}
