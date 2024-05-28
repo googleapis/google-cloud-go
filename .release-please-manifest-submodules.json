@@ -76,6 +76,7 @@
     "lifesciences": "0.9.7",
     "longrunning": "0.5.7",
     "managedidentities": "1.6.7",
+    "managedkafka": "0.0.0",
     "maps": "1.10.0",
     "mediatranslation": "0.8.7",
     "memcache": "1.10.7",
