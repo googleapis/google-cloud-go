@@ -2,7 +2,9 @@
 
 # Script to generate info.go.
 
-cat <<'EOF'
+outfile=${1:-/dev/stdout}
+
+cat <<'EOF' > $outfile
 // Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,12 +27,12 @@ cat <<'EOF'
 
 package generativelanguage
 
-//go:generate gen_info.sh > info.go
+//go:generate ./gen_info.sh info.go
 
 EOF
 
 awk '/^func \(c \*[A-Z].*\) setGoogleClientInfo/ {
-  printf("func (c %s (keyval ...string) {\n", $3);
+  printf("func (c %s SetGoogleClientInfo(keyval ...string) {\n", $3);
 	printf("  c.setGoogleClientInfo(keyval...)\n");
   printf("}\n\n");
-}' *_client.go
+}' *_client.go >> $outfile
