@@ -1,6 +1,23 @@
 # Changes
 
 
+## [1.21.0](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.6...video/v1.21.0) (2024-05-29)
+
+
+### Features
+
+* **video/stitcher:** Add apis for Create, Read, Update, Delete for VODConfigs ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Added adtracking to Livesession ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Added fetchoptions with custom headers for Live and VODConfigs ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Added targetting parameter support to Livesession ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Added token config for MediaCdnKey ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **video/stitcher:** Allowed usage for VODConfigs in VODSession ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+
+
+### Documentation
+
+* **video/stitcher:** Added apis for Create, Read, Update, Delete For VODConfigs. Added vodConfig usage in VODSession. Added TokenConfig for MediaCdnKey. Added targeting_parameter and ad_tracking for Livesession. Added FetchOptions for Live and VOD configs. ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+
 ## [1.20.6](https://github.com/googleapis/google-cloud-go/compare/video/v1.20.5...video/v1.20.6) (2024-05-01)
 
 
