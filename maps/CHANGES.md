@@ -2,6 +2,13 @@
 
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.10.0...maps/v1.11.0) (2024-05-29)
+
+
+### Features
+
+* **maps:** Removed mapsplatformdatasets v1alpha library ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.9.0...maps/v1.10.0) (2024-05-22)
 
 
