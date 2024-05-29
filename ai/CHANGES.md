@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.5.0...ai/v0.6.0) (2024-05-29)
+
+
+### Features
+
+* **ai/generativelanguage:** Add generate_content_request to CountTokensRequest ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **ai/generativelanguage:** Add usage metadata to GenerateContentResponse ([#10179](https://github.com/googleapis/google-cloud-go/issues/10179)) ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **ai/generativelanguage:** Add video metadata to files API ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **ai/generativelanguage:** Update timeouts ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **ai/generativelanguage:** Update timeouts for generate content ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Minor updates ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **ai/generativelanguage:** Minor updates ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.4.1...ai/v0.5.0) (2024-05-09)
 
 
