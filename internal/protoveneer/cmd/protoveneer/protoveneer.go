@@ -263,7 +263,7 @@ func buildConverterMap(typeInfos []*typeInfo, conf *config) (map[string]converte
 
 	// Add converters for used external types to the map.
 	for _, et := range externalTypes {
-		if et.used {
+		if et.used && et.convertTo != "" {
 			converters[et.qualifiedName] = customConverter{et.convertTo, et.convertFrom}
 		}
 	}
@@ -849,6 +849,11 @@ var externalTypes = []*externalType{
 		convertTo:     "timestamppb.New",
 		convertFrom:   "support.TimeFromProto",
 	},
+	{
+		qualifiedName: "*status.Status",
+		replaces:      "*status.Status",
+		importPaths:   []string{"google.golang.org/genproto/googleapis/rpc/status"},
+	},
 }
 
 var protoTypeToExternalType = map[string]*externalType{}
@@ -856,6 +861,9 @@ var protoTypeToExternalType = map[string]*externalType{}
 func init() {
 	var err error
 	for _, et := range externalTypes {
+		if et.replaces == "" {
+			continue
+		}
 		et.typeExpr, err = parser.ParseExpr(et.qualifiedName)
 		if err != nil {
 			panic(err)
