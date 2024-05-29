@@ -38,7 +38,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Container for a live session's ad tag detail.
+// Information related to the details for one ad tag. This resource is only
+// available for live sessions that do not implement Google Ad Manager ad
+// insertion.
 type LiveAdTagDetail struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache

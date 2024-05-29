@@ -3,7 +3,7 @@ module cloud.google.com/go/datastore
 go 1.20
 
 require (
-	cloud.google.com/go v0.113.0
+	cloud.google.com/go v0.114.0
 	cloud.google.com/go/longrunning v0.5.7
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.12.4
@@ -39,5 +39,5 @@ require (
 	golang.org/x/sys v0.20.0 // indirect
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240509183442-62759503f434 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240513163218-0867130af1f8 // indirect
 )
