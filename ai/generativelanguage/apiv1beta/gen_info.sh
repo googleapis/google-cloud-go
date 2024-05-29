@@ -36,3 +36,5 @@ awk '/^func \(c \*[A-Z].*\) setGoogleClientInfo/ {
 	printf("  c.setGoogleClientInfo(keyval...)\n");
   printf("}\n\n");
 }' *_client.go >> $outfile
+
+gofmt -w $outfile
