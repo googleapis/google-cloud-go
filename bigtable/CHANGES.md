@@ -1,5 +1,20 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.23.0...bigtable/v1.24.0) (2024-05-28)
+
+
+### Features
+
+* **bigtable:** Add ignore_warnings flag to SetGcPolicy ([#9372](https://github.com/googleapis/google-cloud-go/issues/9372)) ([0e6413d](https://github.com/googleapis/google-cloud-go/commit/0e6413db32f2a27269602fa88afa762abdb837c0))
+* **bigtable:** Adding automated backups ([#9702](https://github.com/googleapis/google-cloud-go/issues/9702)) ([9738386](https://github.com/googleapis/google-cloud-go/commit/9738386b1b0cf7e490e1bdc0b16d791d5e88b249))
+
+
+### Bug Fixes
+
+* **bigtable/bttest:** Error when applying a mutation with an empty row key ([#9512](https://github.com/googleapis/google-cloud-go/issues/9512)) ([7231423](https://github.com/googleapis/google-cloud-go/commit/723142310912d729b20138d9af40d2aeea826838))
+* **bigtable:** Reject misspecified Automated Backup Policies when updating a table ([#10226](https://github.com/googleapis/google-cloud-go/issues/10226)) ([84e45ce](https://github.com/googleapis/google-cloud-go/commit/84e45cee7eef2576c6832e658d59ffa749688fbd))
+* **bigtable:** Retry on RST_STREAM error ([#9673](https://github.com/googleapis/google-cloud-go/issues/9673)) ([d4da4a5](https://github.com/googleapis/google-cloud-go/commit/d4da4a5a4a5838f0f4edaf3fe9c6d1fde355f782))
+
 ## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.22.0...bigtable/v1.23.0) (2024-04-29)
 
 

@@ -234,6 +234,9 @@
         "managedidentities": {
             "component": "managedidentities"
         },
+        "managedkafka": {
+            "component": "managedkafka"
+        },
         "maps": {
             "component": "maps"
         },
