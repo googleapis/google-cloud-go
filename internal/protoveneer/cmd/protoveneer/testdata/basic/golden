@@ -9,6 +9,7 @@ import (
 	pb "example.com/basic"
 	"example.com/protoveneer/support"
 	"github.com/googleapis/gax-go/v2/apierror"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
@@ -106,6 +107,7 @@ func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
 
 type File struct {
 	Error *apierror.APIError
+	Dur   time.Duration
 }
 
 func (v *File) toProto() *pb.File {
@@ -114,6 +116,7 @@ func (v *File) toProto() *pb.File {
 	}
 	return &pb.File{
 		Error: support.APIErrorToProto(v.Error),
+		Dur:   durationpb.New(v.Dur),
 	}
 }
 
@@ -123,6 +126,7 @@ func (File) fromProto(p *pb.File) *File {
 	}
 	return &File{
 		Error: support.APIErrorFromProto(p.Error),
+		Dur:   support.DurationFromProto(p.Dur),
 	}
 }
 

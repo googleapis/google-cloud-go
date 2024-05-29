@@ -19,6 +19,7 @@ import (
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -135,8 +136,10 @@ type Pop struct {
 	Y unexported
 }
 
-// Status converts to itself.
+// status.Status converts to apierror.APIError.
+// durationpb.Duration converts to time.Duration.
 
 type File struct {
 	Error *status.Status
+	Dur   *durationpb.Duration
 }
