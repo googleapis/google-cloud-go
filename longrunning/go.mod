@@ -3,18 +3,18 @@ module cloud.google.com/go/longrunning
 go 1.20
 
 require (
-	cloud.google.com/go v0.113.0
+	cloud.google.com/go v0.114.0
 	github.com/googleapis/gax-go/v2 v2.12.4
-	google.golang.org/api v0.180.0
+	google.golang.org/api v0.182.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
-	google.golang.org/genproto/googleapis/api v0.0.0-20240513163218-0867130af1f8
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240513163218-0867130af1f8
-	google.golang.org/grpc v1.63.2
+	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157
+	google.golang.org/grpc v1.64.0
 	google.golang.org/protobuf v1.34.1
 )
 
 require (
-	cloud.google.com/go/auth v0.4.1 // indirect
+	cloud.google.com/go/auth v0.4.2 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
