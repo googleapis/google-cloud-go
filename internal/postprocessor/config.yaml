@@ -53,6 +53,7 @@ modules:
   - datastore
   - datastream
   - deploy
+  - developerconnect
   - dialogflow
   - discoveryengine
   - dlp
@@ -533,6 +534,9 @@ service-configs:
   - input-directory: google/cloud/deploy/v1
     service-config: clouddeploy_v1.yaml
     import-path: cloud.google.com/go/deploy/apiv1
+  - input-directory: google/cloud/developerconnect/v1
+    service-config: developerconnect_v1.yaml
+    import-path: cloud.google.com/go/developerconnect/apiv1
   - input-directory: google/cloud/dialogflow/cx/v3
     service-config: dialogflow_v3.yaml
     import-path: cloud.google.com/go/dialogflow/cx/apiv3
