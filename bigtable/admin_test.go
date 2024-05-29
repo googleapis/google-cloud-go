@@ -647,37 +647,21 @@ func TestTableAdmin_UpdateTableDisableAutomatedBackupPolicy(t *testing.T) {
 	}
 }
 
-func TestTableAdmin_UpdateTableWithConf_DisableAutomatedBackupPolicy_DisableAbp(t *testing.T) {
-	mock := &mockTableAdminClock{}
-	c := setupTableClient(t, mock)
-
-	err := c.UpdateTableDisableAutomatedBackupPolicy(context.Background(), "My-table")
-	if err != nil {
-		t.Fatalf("UpdateTableDisableAutomatedBackupPolicy failed: %v", err)
-	}
-	updateTableReq := mock.updateTableReq
-	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
-		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
-	}
-	if updateTableReq.Table.AutomatedBackupConfig != nil {
-		t.Errorf("UpdateTableRequest does not match, AutomatedBackupConfig: %v should be empty", updateTableReq.Table.AutomatedBackupConfig)
-	}
-	if updateTableReq.Table.GetAutomatedBackupPolicy() != nil {
-		t.Errorf("UpdateTableRequest does not match, GetAutomatedBackupPolicy: %v should be empty", updateTableReq.Table.GetAutomatedBackupPolicy())
-	}
-	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
-		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
-	}
-	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy") {
-		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
-	}
-}
-
-func TestTableAdmin_UpdateTableWithConf_AutomatedBackupPolicyNilFields_Invalid(t *testing.T) {
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_NilFields_Invalid(t *testing.T) {
 	mock := &mockTableAdminClock{}
 	c := setupTableClient(t, mock)
 
 	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{nil, nil})
+	if err == nil {
+		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_ZeroFields_Invalid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{time.Duration(0), time.Duration(0)})
 	if err == nil {
 		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
 	}

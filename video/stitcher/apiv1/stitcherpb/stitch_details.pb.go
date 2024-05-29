@@ -38,9 +38,9 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// Detailed information related to the interstitial of a VOD session. This
-// resource is only available for VOD sessions that do not implement Google Ad
-// Manager ad insertion.
+// Information related to the interstitial of a VOD session. This resource is
+// only available for VOD sessions that do not implement Google Ad Manager ad
+// insertion.
 type VodStitchDetail struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
