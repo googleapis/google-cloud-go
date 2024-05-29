@@ -57,7 +57,7 @@ const (
 	// specified. The value must be formatted as an XSD `dayTimeDuration`
 	// value (a restricted subset of an ISO 8601 duration value). The
 	// pattern for this is: `[nD][T[nH][nM][nS]]`.
-	// E.g. `5D`, `3DT12H30M`, `T24H`.
+	// For example, `5D`, `3DT12H30M`, `T24H`.
 	SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_FRESHNESS SearchRequest_BoostSpec_ConditionBoostSpec_BoostControlSpec_AttributeType = 2
 )
 
@@ -218,10 +218,10 @@ const (
 	// defaults to
 	// [Mode.AUTO][google.cloud.discoveryengine.v1alpha.SearchRequest.SpellCorrectionSpec.Mode.AUTO].
 	SearchRequest_SpellCorrectionSpec_MODE_UNSPECIFIED SearchRequest_SpellCorrectionSpec_Mode = 0
-	// Search API will try to find a spell suggestion if there
-	// is any and put in the
+	// Search API tries to find a spelling suggestion. If a suggestion is
+	// found, it is put in the
 	// [SearchResponse.corrected_query][google.cloud.discoveryengine.v1alpha.SearchResponse.corrected_query].
-	// The spell suggestion will not be used as the search query.
+	// The spelling suggestion won't be used as the search query.
 	SearchRequest_SpellCorrectionSpec_SUGGESTION_ONLY SearchRequest_SpellCorrectionSpec_Mode = 1
 	// Automatic spell correction built by the Search API. Search will
 	// be based on the corrected query if found.
@@ -270,11 +270,7 @@ func (SearchRequest_SpellCorrectionSpec_Mode) EnumDescriptor() ([]byte, []int) {
 }
 
 // Specifies the search result mode. If unspecified, the
-// search result mode is based on
-// [DataStore.DocumentProcessingConfig.chunking_config][]:
-//   - If [DataStore.DocumentProcessingConfig.chunking_config][] is specified,
-//     it defaults to `CHUNKS`.
-//   - Otherwise, it defaults to `DOCUMENTS`.
+// search result mode defaults to `DOCUMENTS`.
 type SearchRequest_ContentSearchSpec_SearchResultMode int32
 
 const (
@@ -465,7 +461,10 @@ type SearchRequest struct {
 	//
 	// If this field is negative, an  `INVALID_ARGUMENT`  is returned.
 	Offset int32 `protobuf:"varint,6,opt,name=offset,proto3" json:"offset,omitempty"`
-	// A list of data store specs to apply on a search call.
+	// Specs defining dataStores to filter on in a search call and configurations
+	// for those dataStores. This is only considered for engines with multiple
+	// dataStores use case. For single dataStore within an engine, they should
+	// use the specs at the top level.
 	DataStoreSpecs []*SearchRequest_DataStoreSpec `protobuf:"bytes,32,rep,name=data_store_specs,json=dataStoreSpecs,proto3" json:"data_store_specs,omitempty"`
 	// The filter syntax consists of an expression language for constructing a
 	// predicate from one or more fields of the documents being filtered. Filter
@@ -499,7 +498,9 @@ type SearchRequest struct {
 	// The order in which documents are returned. Documents can be ordered by
 	// a field in an [Document][google.cloud.discoveryengine.v1alpha.Document]
 	// object. Leave it unset if ordered by relevance. `order_by` expression is
-	// case-sensitive. For more information on ordering, see
+	// case-sensitive.
+	//
+	// For more information on ordering for retail search, see
 	// [Ordering](https://cloud.google.com/retail/docs/filter-and-order#order)
 	//
 	// If this field is unrecognizable, an `INVALID_ARGUMENT` is returned.
@@ -516,7 +517,7 @@ type SearchRequest struct {
 	FacetSpecs []*SearchRequest_FacetSpec `protobuf:"bytes,9,rep,name=facet_specs,json=facetSpecs,proto3" json:"facet_specs,omitempty"`
 	// Boost specification to boost certain documents.
 	// For more information on boosting, see
-	// [Boosting](https://cloud.google.com/retail/docs/boosting#boost)
+	// [Boosting](https://cloud.google.com/generative-ai-app-builder/docs/boost-search-results)
 	BoostSpec *SearchRequest_BoostSpec `protobuf:"bytes,10,opt,name=boost_spec,json=boostSpec,proto3" json:"boost_spec,omitempty"`
 	// Additional search parameters.
 	//
@@ -524,8 +525,7 @@ type SearchRequest struct {
 	//
 	//   - `user_country_code`: string. Default empty. If set to non-empty, results
 	//     are restricted or boosted based on the location provided.
-	//     Example:
-	//     user_country_code: "au"
+	//     For example, `user_country_code: "au"`
 	//
 	//     For available codes see [Country
 	//     Codes](https://developers.google.com/custom-search/docs/json_api_reference#countryCodes)
@@ -533,8 +533,7 @@ type SearchRequest struct {
 	//   - `search_type`: double. Default empty. Enables non-webpage searching
 	//     depending on the value. The only valid non-default value is 1,
 	//     which enables image searching.
-	//     Example:
-	//     search_type: 1
+	//     For example, `search_type: 1`
 	Params map[string]*structpb.Value `protobuf:"bytes,11,rep,name=params,proto3" json:"params,omitempty" protobuf_key:"bytes,1,opt,name=key,proto3" protobuf_val:"bytes,2,opt,name=value,proto3"`
 	// The query expansion specification that specifies the conditions under which
 	// query expansion occurs.
@@ -1059,7 +1058,9 @@ type SearchRequest_ImageQuery_ImageBytes struct {
 
 func (*SearchRequest_ImageQuery_ImageBytes) isSearchRequest_ImageQuery_Image() {}
 
-// A struct to define data stores to filter on in a search call.
+// A struct to define data stores to filter on in a search call and
+// configurations for those data stores. A maximum of 1 DataStoreSpec per
+// data_store is allowed. Otherwise, an `INVALID_ARGUMENT` error is returned.
 type SearchRequest_DataStoreSpec struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -1118,7 +1119,7 @@ type SearchRequest_FacetSpec struct {
 
 	// Required. The facet key specification.
 	FacetKey *SearchRequest_FacetSpec_FacetKey `protobuf:"bytes,1,opt,name=facet_key,json=facetKey,proto3" json:"facet_key,omitempty"`
-	// Maximum of facet values that should be returned for this facet. If
+	// Maximum facet values that are returned for this facet. If
 	// unspecified, defaults to 20. The maximum allowed value is 300. Values
 	// above 300 are coerced to 300.
 	//
@@ -1363,8 +1364,8 @@ type SearchRequest_SpellCorrectionSpec struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The mode under which spell correction should take effect to
-	// replace the original search query. Default to
+	// The mode under which spell correction
+	// replaces the original search query. Defaults to
 	// [Mode.AUTO][google.cloud.discoveryengine.v1alpha.SearchRequest.SpellCorrectionSpec.Mode.AUTO].
 	Mode SearchRequest_SpellCorrectionSpec_Mode `protobuf:"varint,1,opt,name=mode,proto3,enum=google.cloud.discoveryengine.v1alpha.SearchRequest_SpellCorrectionSpec_Mode" json:"mode,omitempty"`
 }
@@ -1424,11 +1425,7 @@ type SearchRequest_ContentSearchSpec struct {
 	// extractive answer in the search response.
 	ExtractiveContentSpec *SearchRequest_ContentSearchSpec_ExtractiveContentSpec `protobuf:"bytes,3,opt,name=extractive_content_spec,json=extractiveContentSpec,proto3" json:"extractive_content_spec,omitempty"`
 	// Specifies the search result mode. If unspecified, the
-	// search result mode is based on
-	// [DataStore.DocumentProcessingConfig.chunking_config][]:
-	//   - If [DataStore.DocumentProcessingConfig.chunking_config][] is specified,
-	//     it defaults to `CHUNKS`.
-	//   - Otherwise, it defaults to `DOCUMENTS`.
+	// search result mode defaults to `DOCUMENTS`.
 	SearchResultMode SearchRequest_ContentSearchSpec_SearchResultMode `protobuf:"varint,4,opt,name=search_result_mode,json=searchResultMode,proto3,enum=google.cloud.discoveryengine.v1alpha.SearchRequest_ContentSearchSpec_SearchResultMode" json:"search_result_mode,omitempty"`
 	// Specifies the chunk spec to be returned from the search response.
 	// Only available if the
@@ -1582,7 +1579,7 @@ type SearchRequest_FacetSpec_FacetKey struct {
 	// "category" facet only contains "Action > 2022" and "Action > 2021".
 	// Only supported on textual fields. Maximum is 10.
 	Prefixes []string `protobuf:"bytes,4,rep,name=prefixes,proto3" json:"prefixes,omitempty"`
-	// Only get facet values that contains the given strings. For example,
+	// Only get facet values that contain the given strings. For example,
 	// suppose "category" has three values "Action > 2022",
 	// "Action > 2021" and "Sci-Fi > 2022". If set "contains" to "2022", the
 	// "category" facet only contains "Action > 2022" and "Sci-Fi > 2022".
@@ -2548,7 +2545,7 @@ type SearchResponse_SearchResult struct {
 	// searched [Document][google.cloud.discoveryengine.v1alpha.Document].
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
 	// The document data snippet in the search response. Only fields that are
-	// marked as retrievable are populated.
+	// marked as `retrievable` are populated.
 	Document *Document `protobuf:"bytes,2,opt,name=document,proto3" json:"document,omitempty"`
 	// The chunk data in the search response if the
 	// [SearchRequest.ContentSearchSpec.search_result_mode][google.cloud.discoveryengine.v1alpha.SearchRequest.ContentSearchSpec.search_result_mode]
@@ -2625,7 +2622,7 @@ type SearchResponse_Facet struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The key for this facet. E.g., "colors" or "price". It matches
+	// The key for this facet. For example, `"colors"` or `"price"`. It matches
 	// [SearchRequest.FacetSpec.FacetKey.key][google.cloud.discoveryengine.v1alpha.SearchRequest.FacetSpec.FacetKey.key].
 	Key string `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
 	// The facet values for this field.
@@ -2746,7 +2743,7 @@ func (x *SearchResponse_GuidedSearchResult) GetFollowUpQuestions() []string {
 	return nil
 }
 
-// Summary of the top N search result specified by the summary spec.
+// Summary of the top N search results specified by the summary spec.
 type SearchResponse_Summary struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -3048,9 +3045,9 @@ type SearchResponse_GuidedSearchResult_RefinementAttribute struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Attribute key used to refine the results e.g. 'movie_type'.
+	// Attribute key used to refine the results. For example, `"movie_type"`.
 	AttributeKey string `protobuf:"bytes,1,opt,name=attribute_key,json=attributeKey,proto3" json:"attribute_key,omitempty"`
-	// Attribute value used to refine the results e.g. 'drama'.
+	// Attribute value used to refine the results. For example, `"drama"`.
 	AttributeValue string `protobuf:"bytes,2,opt,name=attribute_value,json=attributeValue,proto3" json:"attribute_value,omitempty"`
 }
 

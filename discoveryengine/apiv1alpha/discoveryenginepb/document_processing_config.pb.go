@@ -59,6 +59,7 @@ type DocumentProcessingConfig struct {
 	DefaultParsingConfig *DocumentProcessingConfig_ParsingConfig `protobuf:"bytes,4,opt,name=default_parsing_config,json=defaultParsingConfig,proto3" json:"default_parsing_config,omitempty"`
 	// Map from file type to override the default parsing configuration based on
 	// the file type. Supported keys:
+	//
 	// * `pdf`: Override parsing config for PDF files, either digital parsing, ocr
 	// parsing or layout parsing is supported.
 	// * `html`: Override parsing config for HTML files, only digital parsing and

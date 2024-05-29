@@ -183,6 +183,7 @@ type Project_ServiceTerms struct {
 
 	// The unique identifier of this terms of service.
 	// Available terms:
+	//
 	// * `GA_DATA_USE_TERMS`: [Terms for data
 	// use](https://cloud.google.com/retail/data-use-terms). When using this as
 	// `id`, the acceptable
