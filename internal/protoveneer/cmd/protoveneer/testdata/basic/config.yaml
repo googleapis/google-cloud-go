@@ -46,3 +46,9 @@ types:
       fields:
         Uri:
           name: URI
+
+    Pop:
+      fields:
+        Y:
+          noConvert: true
+      populateToFrom: popYTo, popYFrom

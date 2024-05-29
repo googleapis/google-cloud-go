@@ -100,6 +100,7 @@ use (
 	./logging
 	./longrunning
 	./managedidentities
+	./managedkafka
 	./maps
 	./mediatranslation
 	./memcache
