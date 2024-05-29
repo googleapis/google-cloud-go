@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -36,6 +35,68 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// Function calling mode.
+type FunctionCallingConfig_Mode int32
+
+const (
+	// Unspecified function calling mode. This value should not be used.
+	FunctionCallingConfig_MODE_UNSPECIFIED FunctionCallingConfig_Mode = 0
+	// Default model behavior, model decides to predict either a function call
+	// or a natural language repspose.
+	FunctionCallingConfig_AUTO FunctionCallingConfig_Mode = 1
+	// Model is constrained to always predicting a function call only.
+	// If "allowed_function_names" are set, the predicted function call will be
+	// limited to any one of "allowed_function_names", else the predicted
+	// function call will be any one of the provided "function_declarations".
+	FunctionCallingConfig_ANY FunctionCallingConfig_Mode = 2
+	// Model will not predict any function call. Model behavior is same as when
+	// not passing any function declarations.
+	FunctionCallingConfig_NONE FunctionCallingConfig_Mode = 3
+)
+
+// Enum value maps for FunctionCallingConfig_Mode.
+var (
+	FunctionCallingConfig_Mode_name = map[int32]string{
+		0: "MODE_UNSPECIFIED",
+		1: "AUTO",
+		2: "ANY",
+		3: "NONE",
+	}
+	FunctionCallingConfig_Mode_value = map[string]int32{
+		"MODE_UNSPECIFIED": 0,
+		"AUTO":             1,
+		"ANY":              2,
+		"NONE":             3,
+	}
+)
+
+func (x FunctionCallingConfig_Mode) Enum() *FunctionCallingConfig_Mode {
+	p := new(FunctionCallingConfig_Mode)
+	*p = x
+	return p
+}
+
+func (x FunctionCallingConfig_Mode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (FunctionCallingConfig_Mode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_aiplatform_v1_tool_proto_enumTypes[0].Descriptor()
+}
+
+func (FunctionCallingConfig_Mode) Type() protoreflect.EnumType {
+	return &file_google_cloud_aiplatform_v1_tool_proto_enumTypes[0]
+}
+
+func (x FunctionCallingConfig_Mode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use FunctionCallingConfig_Mode.Descriptor instead.
+func (FunctionCallingConfig_Mode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{8, 0}
+}
 
 // Tool details that the model may use to generate response.
 //
@@ -474,11 +535,6 @@ type GoogleSearchRetrieval struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
-
-	// Optional. Disable using the result from this tool in detecting grounding
-	// attribution. This does not affect how the result is given to the model for
-	// generation.
-	DisableAttribution bool `protobuf:"varint,1,opt,name=disable_attribution,json=disableAttribution,proto3" json:"disable_attribution,omitempty"`
 }
 
 func (x *GoogleSearchRetrieval) Reset() {
@@ -513,11 +569,113 @@ func (*GoogleSearchRetrieval) Descriptor() ([]byte, []int) {
 	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *GoogleSearchRetrieval) GetDisableAttribution() bool {
-	if x != nil {
-		return x.DisableAttribution
+// Tool config. This config is shared for all tools provided in the request.
+type ToolConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Optional. Function calling config.
+	FunctionCallingConfig *FunctionCallingConfig `protobuf:"bytes,1,opt,name=function_calling_config,json=functionCallingConfig,proto3" json:"function_calling_config,omitempty"`
+}
+
+func (x *ToolConfig) Reset() {
+	*x = ToolConfig{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[7]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
 	}
-	return false
+}
+
+func (x *ToolConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ToolConfig) ProtoMessage() {}
+
+func (x *ToolConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[7]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ToolConfig.ProtoReflect.Descriptor instead.
+func (*ToolConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ToolConfig) GetFunctionCallingConfig() *FunctionCallingConfig {
+	if x != nil {
+		return x.FunctionCallingConfig
+	}
+	return nil
+}
+
+// Function calling config.
+type FunctionCallingConfig struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	// Optional. Function calling mode.
+	Mode FunctionCallingConfig_Mode `protobuf:"varint,1,opt,name=mode,proto3,enum=google.cloud.aiplatform.v1.FunctionCallingConfig_Mode" json:"mode,omitempty"`
+	// Optional. Function names to call. Only set when the Mode is ANY. Function
+	// names should match [FunctionDeclaration.name]. With mode set to ANY, model
+	// will predict a function call from the set of function names provided.
+	AllowedFunctionNames []string `protobuf:"bytes,2,rep,name=allowed_function_names,json=allowedFunctionNames,proto3" json:"allowed_function_names,omitempty"`
+}
+
+func (x *FunctionCallingConfig) Reset() {
+	*x = FunctionCallingConfig{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[8]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *FunctionCallingConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FunctionCallingConfig) ProtoMessage() {}
+
+func (x *FunctionCallingConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_aiplatform_v1_tool_proto_msgTypes[8]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FunctionCallingConfig.ProtoReflect.Descriptor instead.
+func (*FunctionCallingConfig) Descriptor() ([]byte, []int) {
+	return file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *FunctionCallingConfig) GetMode() FunctionCallingConfig_Mode {
+	if x != nil {
+		return x.Mode
+	}
+	return FunctionCallingConfig_MODE_UNSPECIFIED
+}
+
+func (x *FunctionCallingConfig) GetAllowedFunctionNames() []string {
+	if x != nil {
+		return x.AllowedFunctionNames
+	}
+	return nil
 }
 
 var File_google_cloud_aiplatform_v1_tool_proto protoreflect.FileDescriptor
@@ -590,25 +748,43 @@ var file_google_cloud_aiplatform_v1_tool_proto_rawDesc = []byte{
 	0x0a, 0x0e, 0x56, 0x65, 0x72, 0x74, 0x65, 0x78, 0x41, 0x49, 0x53, 0x65, 0x61, 0x72, 0x63, 0x68,
 	0x12, 0x21, 0x0a, 0x09, 0x64, 0x61, 0x74, 0x61, 0x73, 0x74, 0x6f, 0x72, 0x65, 0x18, 0x01, 0x20,
 	0x01, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x02, 0x52, 0x09, 0x64, 0x61, 0x74, 0x61, 0x73, 0x74,
-	0x6f, 0x72, 0x65, 0x22, 0x4d, 0x0a, 0x15, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x53, 0x65, 0x61,
-	0x72, 0x63, 0x68, 0x52, 0x65, 0x74, 0x72, 0x69, 0x65, 0x76, 0x61, 0x6c, 0x12, 0x34, 0x0a, 0x13,
-	0x64, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x5f, 0x61, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74,
-	0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x08, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x12,
-	0x64, 0x69, 0x73, 0x61, 0x62, 0x6c, 0x65, 0x41, 0x74, 0x74, 0x72, 0x69, 0x62, 0x75, 0x74, 0x69,
-	0x6f, 0x6e, 0x42, 0xc7, 0x01, 0x0a, 0x1e, 0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c,
-	0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f,
-	0x72, 0x6d, 0x2e, 0x76, 0x31, 0x42, 0x09, 0x54, 0x6f, 0x6f, 0x6c, 0x50, 0x72, 0x6f, 0x74, 0x6f,
-	0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65,
-	0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f,
-	0x72, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x76, 0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66,
-	0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d,
-	0x70, 0x62, 0xaa, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75,
-	0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0xca,
-	0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41,
-	0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x1d, 0x47,
-	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49,
-	0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72,
-	0x6f, 0x74, 0x6f, 0x33,
+	0x6f, 0x72, 0x65, 0x22, 0x17, 0x0a, 0x15, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x53, 0x65, 0x61,
+	0x72, 0x63, 0x68, 0x52, 0x65, 0x74, 0x72, 0x69, 0x65, 0x76, 0x61, 0x6c, 0x22, 0x7c, 0x0a, 0x0a,
+	0x54, 0x6f, 0x6f, 0x6c, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x12, 0x6e, 0x0a, 0x17, 0x66, 0x75,
+	0x6e, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x63, 0x61, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x5f, 0x63,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x18, 0x01, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x31, 0x2e, 0x67, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61,
+	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e, 0x46, 0x75, 0x6e, 0x63, 0x74, 0x69, 0x6f,
+	0x6e, 0x43, 0x61, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x42, 0x03,
+	0xe0, 0x41, 0x01, 0x52, 0x15, 0x66, 0x75, 0x6e, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x6c,
+	0x6c, 0x69, 0x6e, 0x67, 0x43, 0x6f, 0x6e, 0x66, 0x69, 0x67, 0x22, 0xde, 0x01, 0x0a, 0x15, 0x46,
+	0x75, 0x6e, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x43, 0x6f,
+	0x6e, 0x66, 0x69, 0x67, 0x12, 0x4f, 0x0a, 0x04, 0x6d, 0x6f, 0x64, 0x65, 0x18, 0x01, 0x20, 0x01,
+	0x28, 0x0e, 0x32, 0x36, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75,
+	0x64, 0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x2e,
+	0x46, 0x75, 0x6e, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x43, 0x61, 0x6c, 0x6c, 0x69, 0x6e, 0x67, 0x43,
+	0x6f, 0x6e, 0x66, 0x69, 0x67, 0x2e, 0x4d, 0x6f, 0x64, 0x65, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52,
+	0x04, 0x6d, 0x6f, 0x64, 0x65, 0x12, 0x39, 0x0a, 0x16, 0x61, 0x6c, 0x6c, 0x6f, 0x77, 0x65, 0x64,
+	0x5f, 0x66, 0x75, 0x6e, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x5f, 0x6e, 0x61, 0x6d, 0x65, 0x73, 0x18,
+	0x02, 0x20, 0x03, 0x28, 0x09, 0x42, 0x03, 0xe0, 0x41, 0x01, 0x52, 0x14, 0x61, 0x6c, 0x6c, 0x6f,
+	0x77, 0x65, 0x64, 0x46, 0x75, 0x6e, 0x63, 0x74, 0x69, 0x6f, 0x6e, 0x4e, 0x61, 0x6d, 0x65, 0x73,
+	0x22, 0x39, 0x0a, 0x04, 0x4d, 0x6f, 0x64, 0x65, 0x12, 0x14, 0x0a, 0x10, 0x4d, 0x4f, 0x44, 0x45,
+	0x5f, 0x55, 0x4e, 0x53, 0x50, 0x45, 0x43, 0x49, 0x46, 0x49, 0x45, 0x44, 0x10, 0x00, 0x12, 0x08,
+	0x0a, 0x04, 0x41, 0x55, 0x54, 0x4f, 0x10, 0x01, 0x12, 0x07, 0x0a, 0x03, 0x41, 0x4e, 0x59, 0x10,
+	0x02, 0x12, 0x08, 0x0a, 0x04, 0x4e, 0x4f, 0x4e, 0x45, 0x10, 0x03, 0x42, 0xc7, 0x01, 0x0a, 0x1e,
+	0x63, 0x6f, 0x6d, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6c, 0x6f, 0x75, 0x64,
+	0x2e, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x76, 0x31, 0x42, 0x09,
+	0x54, 0x6f, 0x6f, 0x6c, 0x50, 0x72, 0x6f, 0x74, 0x6f, 0x50, 0x01, 0x5a, 0x3e, 0x63, 0x6c, 0x6f,
+	0x75, 0x64, 0x2e, 0x67, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x67, 0x6f,
+	0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2f, 0x61, 0x70, 0x69, 0x76,
+	0x31, 0x2f, 0x61, 0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0x3b, 0x61,
+	0x69, 0x70, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72, 0x6d, 0x70, 0x62, 0xaa, 0x02, 0x1a, 0x47, 0x6f,
+	0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x2e, 0x41, 0x49, 0x50, 0x6c, 0x61,
+	0x74, 0x66, 0x6f, 0x72, 0x6d, 0x2e, 0x56, 0x31, 0xca, 0x02, 0x1a, 0x47, 0x6f, 0x6f, 0x67, 0x6c,
+	0x65, 0x5c, 0x43, 0x6c, 0x6f, 0x75, 0x64, 0x5c, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f,
+	0x72, 0x6d, 0x5c, 0x56, 0x31, 0xea, 0x02, 0x1d, 0x47, 0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x3a, 0x3a,
+	0x43, 0x6c, 0x6f, 0x75, 0x64, 0x3a, 0x3a, 0x41, 0x49, 0x50, 0x6c, 0x61, 0x74, 0x66, 0x6f, 0x72,
+	0x6d, 0x3a, 0x3a, 0x56, 0x31, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -623,31 +799,37 @@ func file_google_cloud_aiplatform_v1_tool_proto_rawDescGZIP() []byte {
 	return file_google_cloud_aiplatform_v1_tool_proto_rawDescData
 }
 
-var file_google_cloud_aiplatform_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_aiplatform_v1_tool_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_google_cloud_aiplatform_v1_tool_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_aiplatform_v1_tool_proto_goTypes = []interface{}{
-	(*Tool)(nil),                  // 0: google.cloud.aiplatform.v1.Tool
-	(*FunctionDeclaration)(nil),   // 1: google.cloud.aiplatform.v1.FunctionDeclaration
-	(*FunctionCall)(nil),          // 2: google.cloud.aiplatform.v1.FunctionCall
-	(*FunctionResponse)(nil),      // 3: google.cloud.aiplatform.v1.FunctionResponse
-	(*Retrieval)(nil),             // 4: google.cloud.aiplatform.v1.Retrieval
-	(*VertexAISearch)(nil),        // 5: google.cloud.aiplatform.v1.VertexAISearch
-	(*GoogleSearchRetrieval)(nil), // 6: google.cloud.aiplatform.v1.GoogleSearchRetrieval
-	(*Schema)(nil),                // 7: google.cloud.aiplatform.v1.Schema
-	(*structpb.Struct)(nil),       // 8: google.protobuf.Struct
+	(FunctionCallingConfig_Mode)(0), // 0: google.cloud.aiplatform.v1.FunctionCallingConfig.Mode
+	(*Tool)(nil),                    // 1: google.cloud.aiplatform.v1.Tool
+	(*FunctionDeclaration)(nil),     // 2: google.cloud.aiplatform.v1.FunctionDeclaration
+	(*FunctionCall)(nil),            // 3: google.cloud.aiplatform.v1.FunctionCall
+	(*FunctionResponse)(nil),        // 4: google.cloud.aiplatform.v1.FunctionResponse
+	(*Retrieval)(nil),               // 5: google.cloud.aiplatform.v1.Retrieval
+	(*VertexAISearch)(nil),          // 6: google.cloud.aiplatform.v1.VertexAISearch
+	(*GoogleSearchRetrieval)(nil),   // 7: google.cloud.aiplatform.v1.GoogleSearchRetrieval
+	(*ToolConfig)(nil),              // 8: google.cloud.aiplatform.v1.ToolConfig
+	(*FunctionCallingConfig)(nil),   // 9: google.cloud.aiplatform.v1.FunctionCallingConfig
+	(*Schema)(nil),                  // 10: google.cloud.aiplatform.v1.Schema
+	(*structpb.Struct)(nil),         // 11: google.protobuf.Struct
 }
 var file_google_cloud_aiplatform_v1_tool_proto_depIdxs = []int32{
-	1, // 0: google.cloud.aiplatform.v1.Tool.function_declarations:type_name -> google.cloud.aiplatform.v1.FunctionDeclaration
-	4, // 1: google.cloud.aiplatform.v1.Tool.retrieval:type_name -> google.cloud.aiplatform.v1.Retrieval
-	6, // 2: google.cloud.aiplatform.v1.Tool.google_search_retrieval:type_name -> google.cloud.aiplatform.v1.GoogleSearchRetrieval
-	7, // 3: google.cloud.aiplatform.v1.FunctionDeclaration.parameters:type_name -> google.cloud.aiplatform.v1.Schema
-	8, // 4: google.cloud.aiplatform.v1.FunctionCall.args:type_name -> google.protobuf.Struct
-	8, // 5: google.cloud.aiplatform.v1.FunctionResponse.response:type_name -> google.protobuf.Struct
-	5, // 6: google.cloud.aiplatform.v1.Retrieval.vertex_ai_search:type_name -> google.cloud.aiplatform.v1.VertexAISearch
-	7, // [7:7] is the sub-list for method output_type
-	7, // [7:7] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	2,  // 0: google.cloud.aiplatform.v1.Tool.function_declarations:type_name -> google.cloud.aiplatform.v1.FunctionDeclaration
+	5,  // 1: google.cloud.aiplatform.v1.Tool.retrieval:type_name -> google.cloud.aiplatform.v1.Retrieval
+	7,  // 2: google.cloud.aiplatform.v1.Tool.google_search_retrieval:type_name -> google.cloud.aiplatform.v1.GoogleSearchRetrieval
+	10, // 3: google.cloud.aiplatform.v1.FunctionDeclaration.parameters:type_name -> google.cloud.aiplatform.v1.Schema
+	11, // 4: google.cloud.aiplatform.v1.FunctionCall.args:type_name -> google.protobuf.Struct
+	11, // 5: google.cloud.aiplatform.v1.FunctionResponse.response:type_name -> google.protobuf.Struct
+	6,  // 6: google.cloud.aiplatform.v1.Retrieval.vertex_ai_search:type_name -> google.cloud.aiplatform.v1.VertexAISearch
+	9,  // 7: google.cloud.aiplatform.v1.ToolConfig.function_calling_config:type_name -> google.cloud.aiplatform.v1.FunctionCallingConfig
+	0,  // 8: google.cloud.aiplatform.v1.FunctionCallingConfig.mode:type_name -> google.cloud.aiplatform.v1.FunctionCallingConfig.Mode
+	9,  // [9:9] is the sub-list for method output_type
+	9,  // [9:9] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_aiplatform_v1_tool_proto_init() }
@@ -741,6 +923,30 @@ func file_google_cloud_aiplatform_v1_tool_proto_init() {
 				return nil
 			}
 		}
+		file_google_cloud_aiplatform_v1_tool_proto_msgTypes[7].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*ToolConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_google_cloud_aiplatform_v1_tool_proto_msgTypes[8].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*FunctionCallingConfig); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
 	}
 	file_google_cloud_aiplatform_v1_tool_proto_msgTypes[4].OneofWrappers = []interface{}{
 		(*Retrieval_VertexAiSearch)(nil),
@@ -750,13 +956,14 @@ func file_google_cloud_aiplatform_v1_tool_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_google_cloud_aiplatform_v1_tool_proto_rawDesc,
-			NumEnums:      0,
-			NumMessages:   7,
+			NumEnums:      1,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_google_cloud_aiplatform_v1_tool_proto_goTypes,
 		DependencyIndexes: file_google_cloud_aiplatform_v1_tool_proto_depIdxs,
+		EnumInfos:         file_google_cloud_aiplatform_v1_tool_proto_enumTypes,
 		MessageInfos:      file_google_cloud_aiplatform_v1_tool_proto_msgTypes,
 	}.Build()
 	File_google_cloud_aiplatform_v1_tool_proto = out.File

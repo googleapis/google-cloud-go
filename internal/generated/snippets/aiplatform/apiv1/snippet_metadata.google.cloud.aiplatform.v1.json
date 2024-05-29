@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/aiplatform/apiv1",
-    "version": "1.67.0",
+    "version": "$VERSION",
     "language": "GO",
     "apis": [
       {
@@ -1236,6 +1236,52 @@
         "method": {
           "shortName": "UpdateDataset",
           "fullName": "google.cloud.aiplatform.v1.DatasetService.UpdateDataset",
+          "service": {
+            "shortName": "DatasetService",
+            "fullName": "google.cloud.aiplatform.v1.DatasetService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_DatasetService_UpdateDatasetVersion_sync",
+      "title": "aiplatform UpdateDatasetVersion Sample",
+      "description": "UpdateDatasetVersion updates a DatasetVersion.",
+      "file": "DatasetClient/UpdateDatasetVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDatasetVersion",
+        "fullName": "google.cloud.aiplatform.v1.DatasetClient.UpdateDatasetVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateDatasetVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.DatasetVersion",
+        "client": {
+          "shortName": "DatasetClient",
+          "fullName": "google.cloud.aiplatform.v1.DatasetClient"
+        },
+        "method": {
+          "shortName": "UpdateDatasetVersion",
+          "fullName": "google.cloud.aiplatform.v1.DatasetService.UpdateDatasetVersion",
           "service": {
             "shortName": "DatasetService",
             "fullName": "google.cloud.aiplatform.v1.DatasetService"
@@ -17801,6 +17847,52 @@
           "service": {
             "shortName": "IAMPolicy",
             "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "aiplatform_v1_generated_NotebookService_UpdateNotebookRuntimeTemplate_sync",
+      "title": "aiplatform UpdateNotebookRuntimeTemplate Sample",
+      "description": "UpdateNotebookRuntimeTemplate updates a NotebookRuntimeTemplate.",
+      "file": "NotebookClient/UpdateNotebookRuntimeTemplate/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateNotebookRuntimeTemplate",
+        "fullName": "google.cloud.aiplatform.v1.NotebookClient.UpdateNotebookRuntimeTemplate",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateNotebookRuntimeTemplateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*aiplatformpb.NotebookRuntimeTemplate",
+        "client": {
+          "shortName": "NotebookClient",
+          "fullName": "google.cloud.aiplatform.v1.NotebookClient"
+        },
+        "method": {
+          "shortName": "UpdateNotebookRuntimeTemplate",
+          "fullName": "google.cloud.aiplatform.v1.NotebookService.UpdateNotebookRuntimeTemplate",
+          "service": {
+            "shortName": "NotebookService",
+            "fullName": "google.cloud.aiplatform.v1.NotebookService"
           }
         }
       },
