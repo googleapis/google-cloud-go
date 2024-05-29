@@ -215,3 +215,33 @@ func (v HarmCategory) String() string {
 	}
 	return fmt.Sprintf("HarmCategory(%d)", v)
 }
+
+// Pop is this demonstrates using population functions to deal with
+// proto oneof field, which has an unexported type.
+// That can be a way to deal with proto oneofs.
+type Pop struct {
+	X int
+	Y unexported
+}
+
+func (v *Pop) toProto() *pb.Pop {
+	if v == nil {
+		return nil
+	}
+	p := &pb.Pop{
+		X: v.X,
+	}
+	popYTo(p, v)
+	return p
+}
+
+func (Pop) fromProto(p *pb.Pop) *Pop {
+	if p == nil {
+		return nil
+	}
+	v := &Pop{
+		X: p.X,
+	}
+	popYFrom(v, p)
+	return v
+}
