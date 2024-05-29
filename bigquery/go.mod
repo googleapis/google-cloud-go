@@ -3,7 +3,7 @@ module cloud.google.com/go/bigquery
 go 1.20
 
 require (
-	cloud.google.com/go v0.113.0
+	cloud.google.com/go v0.114.0
 	cloud.google.com/go/datacatalog v1.20.1
 	cloud.google.com/go/iam v1.1.8
 	cloud.google.com/go/longrunning v0.5.7
