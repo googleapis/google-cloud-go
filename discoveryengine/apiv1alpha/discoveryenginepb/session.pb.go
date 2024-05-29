@@ -271,6 +271,9 @@ type Session_Turn struct {
 	// The user query.
 	Query *Query `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
 	// The resource name of the answer to the user query.
+	//
+	// Only set if the answer generation (/answer API call) happened in this
+	// turn.
 	Answer string `protobuf:"bytes,2,opt,name=answer,proto3" json:"answer,omitempty"`
 }
 

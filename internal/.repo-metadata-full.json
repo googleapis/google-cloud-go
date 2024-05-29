@@ -1029,6 +1029,16 @@
     "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
+  "cloud.google.com/go/developerconnect/apiv1": {
+    "api_shortname": "developerconnect",
+    "distribution_name": "cloud.google.com/go/developerconnect/apiv1",
+    "description": "Developer Connect API",
+    "language": "go",
+    "client_library_type": "generated",
+    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/developerconnect/latest/apiv1",
+    "release_level": "preview",
+    "library_type": "GAPIC_AUTO"
+  },
   "cloud.google.com/go/dialogflow/apiv2": {
     "api_shortname": "dialogflow",
     "distribution_name": "cloud.google.com/go/dialogflow/apiv2",
@@ -1557,16 +1567,6 @@
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/maps/latest/fleetengine/delivery/apiv1",
     "release_level": "stable",
-    "library_type": "GAPIC_AUTO"
-  },
-  "cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha": {
-    "api_shortname": "mapsplatformdatasets",
-    "distribution_name": "cloud.google.com/go/maps/mapsplatformdatasets/apiv1alpha",
-    "description": "Maps Platform Datasets API",
-    "language": "go",
-    "client_library_type": "generated",
-    "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/maps/latest/mapsplatformdatasets/apiv1alpha",
-    "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/maps/places/apiv1": {
