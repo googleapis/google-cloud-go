@@ -17,6 +17,7 @@
 package discoveryengine
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io"
@@ -44,10 +45,11 @@ var newChunkClientHook clientHook
 
 // ChunkCallOptions contains the retry settings for each method of ChunkClient.
 type ChunkCallOptions struct {
-	GetChunk       []gax.CallOption
-	ListChunks     []gax.CallOption
-	GetOperation   []gax.CallOption
-	ListOperations []gax.CallOption
+	GetChunk        []gax.CallOption
+	ListChunks      []gax.CallOption
+	CancelOperation []gax.CallOption
+	GetOperation    []gax.CallOption
+	ListOperations  []gax.CallOption
 }
 
 func defaultChunkGRPCClientOptions() []option.ClientOption {
@@ -68,6 +70,18 @@ func defaultChunkCallOptions() *ChunkCallOptions {
 	return &ChunkCallOptions{
 		GetChunk:   []gax.CallOption{},
 		ListChunks: []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -99,6 +113,17 @@ func defaultChunkRESTCallOptions() *ChunkCallOptions {
 	return &ChunkCallOptions{
 		GetChunk:   []gax.CallOption{},
 		ListChunks: []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -131,6 +156,7 @@ type internalChunkClient interface {
 	Connection() *grpc.ClientConn
 	GetChunk(context.Context, *discoveryenginepb.GetChunkRequest, ...gax.CallOption) (*discoveryenginepb.Chunk, error)
 	ListChunks(context.Context, *discoveryenginepb.ListChunksRequest, ...gax.CallOption) *ChunkIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -180,6 +206,11 @@ func (c *ChunkClient) GetChunk(ctx context.Context, req *discoveryenginepb.GetCh
 // ListChunks gets a list of Chunks.
 func (c *ChunkClient) ListChunks(ctx context.Context, req *discoveryenginepb.ListChunksRequest, opts ...gax.CallOption) *ChunkIterator {
 	return c.internalClient.ListChunks(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *ChunkClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -409,6 +440,20 @@ func (c *chunkGRPCClient) ListChunks(ctx context.Context, req *discoveryenginepb
 	return it
 }
 
+func (c *chunkGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *chunkGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -620,6 +665,54 @@ func (c *chunkRESTClient) ListChunks(ctx context.Context, req *discoveryenginepb
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *chunkRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.

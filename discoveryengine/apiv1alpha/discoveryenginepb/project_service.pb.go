@@ -277,6 +277,7 @@ type ReportConsentChangeRequest struct {
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Required. The unique identifier of the terms of service to update.
 	// Available term ids:
+	//
 	// * `GA_DATA_USE_TERMS`: [Terms for data
 	// use](https://cloud.google.com/retail/data-use-terms). When using this
 	// service term id, the acceptable
@@ -630,6 +631,7 @@ type ProjectServiceClient interface {
 	// This method can be used to retroactively accept the latest terms.
 	//
 	// Terms available for update:
+	//
 	// * [Terms for data use](https://cloud.google.com/retail/data-use-terms)
 	ReportConsentChange(ctx context.Context, in *ReportConsentChangeRequest, opts ...grpc.CallOption) (*Project, error)
 }
@@ -686,6 +688,7 @@ type ProjectServiceServer interface {
 	// This method can be used to retroactively accept the latest terms.
 	//
 	// Terms available for update:
+	//
 	// * [Terms for data use](https://cloud.google.com/retail/data-use-terms)
 	ReportConsentChange(context.Context, *ReportConsentChangeRequest) (*Project, error)
 }
