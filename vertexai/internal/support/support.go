@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import (
 	"cloud.google.com/go/civil"
 	"google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // TransformSlice applies f to each element of from and returns
@@ -109,4 +110,12 @@ func MapFromStructPB(p *structpb.Struct) map[string]any {
 		return nil
 	}
 	return p.AsMap()
+}
+
+// TimeFromProto converts a Timestamp into a time.Time.
+func TimeFromProto(ts *timestamppb.Timestamp) time.Time {
+	if ts == nil {
+		return time.Time{}
+	}
+	return ts.AsTime()
 }

@@ -5,6 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go v0.114.0
 	cloud.google.com/go/aiplatform v1.67.0
+	github.com/google/go-cmp v0.6.0
 	google.golang.org/api v0.183.0
 	google.golang.org/genproto v0.0.0-20240528184218-531527333157
 	google.golang.org/protobuf v1.34.1
