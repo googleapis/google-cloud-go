@@ -1,3 +1,14 @@
+#!/bin/sh
+
+# Script to generate info.go files with methods for all clients.
+
+# Usage: gen_info.sh DIR
+
+cd $1
+
+outfile=info.go
+
+cat <<'EOF' > $outfile
 // Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -20,30 +31,12 @@
 
 package generativelanguage
 
-func (c *DiscussClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
+EOF
 
-func (c *FileClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
+awk '/^func \(c \*[A-Z].*\) setGoogleClientInfo/ {
+  printf("func (c %s SetGoogleClientInfo(keyval ...string) {\n", $3);
+	printf("  c.setGoogleClientInfo(keyval...)\n");
+  printf("}\n\n");
+}' *_client.go >> $outfile
 
-func (c *GenerativeClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
-
-func (c *ModelClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
-
-func (c *PermissionClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
-
-func (c *RetrieverClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
-
-func (c *TextClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
+gofmt -w $outfile
