@@ -153,6 +153,9 @@
         "deploy": {
             "component": "deploy"
         },
+        "developerconnect": {
+            "component": "developerconnect"
+        },
         "dialogflow": {
             "component": "dialogflow"
         },
@@ -233,6 +236,9 @@
         },
         "managedidentities": {
             "component": "managedidentities"
+        },
+        "managedkafka": {
+            "component": "managedkafka"
         },
         "maps": {
             "component": "maps"

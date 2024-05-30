@@ -19,6 +19,7 @@ import (
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	"google.golang.org/protobuf/types/known/structpb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -120,4 +121,15 @@ type Citation struct {
 	// Output only. Publication date of the attribution.
 	PublicationDate *date.Date `protobuf:"bytes,6,opt,name=publication_date,json=publicationDate,proto3" json:"publication_date,omitempty"`
 	Struct          *structpb.Struct
+	CreateTime      *timestamppb.Timestamp
+}
+
+type unexported interface{ u() }
+
+// This demonstrates using population functions to deal with
+// proto oneof field, which has an unexported type.
+// That can be a way to deal with proto oneofs.
+type Pop struct {
+	X int
+	Y unexported
 }

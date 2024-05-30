@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.9.0...vertexai/v0.10.0) (2024-05-20)
+
+
+### Features
+
+* **vertexai:** Infer location when not passed explicitly ([#10222](https://github.com/googleapis/google-cloud-go/issues/10222)) ([4f1f033](https://github.com/googleapis/google-cloud-go/commit/4f1f0339b30d44b52eddcbadd504c31ab215db2e))
+* **vertexai:** Support model garden and tuned models names ([#10197](https://github.com/googleapis/google-cloud-go/issues/10197)) ([d481e0e](https://github.com/googleapis/google-cloud-go/commit/d481e0e746d6c19dc51493b0311f7b8a8029e017)), refs [#9630](https://github.com/googleapis/google-cloud-go/issues/9630)
+
 ## [0.9.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.8.0...vertexai/v0.9.0) (2024-05-13)
 
 
