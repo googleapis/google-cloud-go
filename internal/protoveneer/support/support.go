@@ -123,7 +123,7 @@ func TimeFromProto(ts *timestamppb.Timestamp) time.Time {
 	return ts.AsTime()
 }
 
-// APIErrorToProto attempts to convert an APIError to a proto Status.
+// APIErrorToProto converts an APIError to a proto Status.
 func APIErrorToProto(ae *apierror.APIError) *spb.Status {
 	if ae == nil {
 		return nil
@@ -131,6 +131,7 @@ func APIErrorToProto(ae *apierror.APIError) *spb.Status {
 	return ae.GRPCStatus().Proto()
 }
 
+// APIErrorFromProto converts a proto Status to an APIError.
 func APIErrorFromProto(s *spb.Status) *apierror.APIError {
 	err := gstatus.ErrorProto(s)
 	aerr, ok := apierror.ParseError(err, true)
