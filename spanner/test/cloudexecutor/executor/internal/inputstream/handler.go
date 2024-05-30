@@ -22,24 +22,15 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"os"
 	"sync"
-	"time"
-
-	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
-	"golang.org/x/oauth2/google"
 
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/actions"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/propagation"
-	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/status"
 )
 
@@ -100,46 +91,6 @@ func (h *CloudStreamHandler) Execute() error {
 	return nil
 }
 
-// getCloudTraceClientOptions returns the client options for creating Cloud Trace API client.
-func getCloudTraceClientOptions() ([]option.ClientOption, error) {
-	// Read the service key file.
-	serviceKeyFile := os.Getenv("GOOGLE_APPLICATION_CREDENTIALS")
-	cloudSystestCredentialsJSON, err := os.ReadFile(serviceKeyFile)
-	if err != nil {
-		return nil, err
-	}
-	fileContents := string(cloudSystestCredentialsJSON)
-	log.Printf("serviceKeyFile contents: %v\n", fileContents)
-
-	var traceClientOpts []option.ClientOption
-	traceClientOpts = append(traceClientOpts, option.WithEndpoint("staging-cloudtrace.sandbox.googleapis.com:443"))
-
-	// perRPCCredentials, err := oauth.NewJWTAccessFromKey(cloudSystestCredentialsJSON)
-	// if err != nil {
-	// 	return outcomeSender.FinishWithError(err)
-	// }
-	rootCertFilePath := os.Getenv("ROOT_CERTIFICATE_FILE_PATH")
-	fmt.Printf("rootCertFilePath: %v\n", rootCertFilePath)
-	creds, err := credentials.NewClientTLSFromFile(rootCertFilePath, "")
-	if err != nil {
-		return nil, err
-	}
-	fmt.Printf("root CA: %v\n", creds)
-	traceClientOpts = append(traceClientOpts, option.WithGRPCDialOption(grpc.WithTransportCredentials(creds)))
-
-	const (
-		cloudPlatformScope = "https://www.googleapis.com/auth/cloud-platform"
-		traceAppendScope   = "https://www.googleapis.com/auth/trace.append"
-	)
-	tokenSource, err := google.JWTAccessTokenSourceWithScope([]byte(cloudSystestCredentialsJSON), cloudPlatformScope, traceAppendScope)
-	if err != nil {
-		return nil, err
-	}
-	traceClientOpts = append(traceClientOpts, option.WithTokenSource(tokenSource))
-	traceClientOpts = append(traceClientOpts, option.WithCredentialsFile(serviceKeyFile))
-	return traceClientOpts, nil
-}
-
 // startHandlingRequest takes care of the given request. It picks an actionHandler and starts
 // a goroutine in which that action will be executed.
 func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *executorpb.SpannerAsyncActionRequest) error {
@@ -162,35 +113,7 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 	}
 	actionHandlerType := actionHandlerType(inputAction)
 
-	// Setup trace context propagation.
-	tc := propagation.TraceContext{}
-	// Register the TraceContext propagator globally.
-	otel.SetTextMapPropagator(tc)
-
-	traceClientOpts, err := getCloudTraceClientOptions()
-	if err != nil {
-		return outcomeSender.FinishWithError(err)
-	}
-	fmt.Printf("traceClientOpts: %v\n", traceClientOpts)
-	// Set up OTel tracing.
-	traceExporter, err := texporter.New(
-		texporter.WithContext(ctx),
-		texporter.WithTraceClientOptions(traceClientOpts),
-		texporter.WithProjectID("spanner-cloud-systest"),
-		texporter.WithTimeout(time.Duration(600*time.Second)),
-	)
-	if err != nil {
-		return outcomeSender.FinishWithError(fmt.Errorf("unable to set up tracing: %v", err))
-	}
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithBatcher(traceExporter),
-		sdktrace.WithSampler(sdktrace.TraceIDRatioBased(0.1)),
-	)
-	defer func() { _ = tp.Shutdown(ctx) }()
-
-	otel.SetTracerProvider(tp)
-
-	tracer := tp.Tracer("nareshz-systest.com/trace")
+	tracer := otel.Tracer("nareshz-systest.com/trace")
 
 	// Create a span for the systest action.
 	ctx, span := tracer.Start(ctx, fmt.Sprintf("systestaction_%v", actionHandlerType))
