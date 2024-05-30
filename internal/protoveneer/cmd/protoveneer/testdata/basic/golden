@@ -8,7 +8,7 @@ import (
 	"cloud.google.com/go/civil"
 	pb "example.com/basic"
 	"example.com/protoveneer/support"
-	"google.golang.org/genproto/googleapis/rpc/status"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
@@ -105,7 +105,7 @@ func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
 }
 
 type File struct {
-	Error *status.Status
+	Error *apierror.APIError
 }
 
 func (v *File) toProto() *pb.File {
@@ -113,7 +113,7 @@ func (v *File) toProto() *pb.File {
 		return nil
 	}
 	return &pb.File{
-		Error: v.Error,
+		Error: support.APIErrorToProto(v.Error),
 	}
 }
 
@@ -122,7 +122,7 @@ func (File) fromProto(p *pb.File) *File {
 		return nil
 	}
 	return &File{
-		Error: p.Error,
+		Error: support.APIErrorFromProto(p.Error),
 	}
 }
 

@@ -850,9 +850,11 @@ var externalTypes = []*externalType{
 		convertFrom:   "support.TimeFromProto",
 	},
 	{
-		qualifiedName: "*status.Status",
+		qualifiedName: "*apierror.APIError",
 		replaces:      "*status.Status",
-		importPaths:   []string{"google.golang.org/genproto/googleapis/rpc/status"},
+		importPaths:   []string{"github.com/googleapis/gax-go/v2/apierror"},
+		convertTo:     "support.APIErrorToProto",
+		convertFrom:   "support.APIErrorFromProto",
 	},
 }
 
