@@ -2,11 +2,14 @@
 
 # Script to generate info.go files with methods for all clients.
 
-# Usage: gen_info.sh DIR
-
-cd $1
+if [[ $# != 2 ]]; then
+  echo >&2 "usage: $0 DIR PACKAGE"
+  exit 1
+fi
 
 outfile=info.go
+
+cd $1
 
 cat <<'EOF' > $outfile
 // Copyright 2023 Google LLC
@@ -29,9 +32,10 @@ cat <<'EOF' > $outfile
 //
 // Internal use only.
 
-package generativelanguage
-
 EOF
+
+echo -e >> $outfile "package $2\n"
+
 
 awk '/^func \(c \*[A-Z].*\) setGoogleClientInfo/ {
   printf("func (c %s SetGoogleClientInfo(keyval ...string) {\n", $3);

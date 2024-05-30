@@ -18,7 +18,7 @@
 //
 // Internal use only.
 
-package generativelanguage
+package aiplatform
 
 func (c *DatasetClient) SetGoogleClientInfo(keyval ...string) {
 	c.setGoogleClientInfo(keyval...)
