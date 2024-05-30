@@ -2894,6 +2894,13 @@ func TestClient_ReadWriteTransaction_FirstStatementAsReadFailsHalfway(t *testing
 			Err:         status.Errorf(codes.Internal, "stream terminated by RST_STREAM"),
 		},
 	)
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Errorf(codes.Internal, "Authentication backend internal server error. Please retry"),
+		},
+	)
 	_, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
 		iter := tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
 		defer iter.Stop()
@@ -2914,6 +2921,7 @@ func TestClient_ReadWriteTransaction_FirstStatementAsReadFailsHalfway(t *testing
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
 		&sppb.BatchCreateSessionsRequest{},
+		&sppb.ReadRequest{},
 		&sppb.ReadRequest{},
 		&sppb.ReadRequest{},
 		&sppb.CommitRequest{}}, requests); err != nil {

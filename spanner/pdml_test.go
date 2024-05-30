@@ -77,6 +77,7 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 			Errors: []error{
 				status.Error(codes.Aborted, "Transaction aborted"),
 				status.Error(codes.Internal, "Received unexpected EOS on DATA frame from server"),
+				status.Error(codes.Internal, "Authentication backend internal server error. Please retry"),
 			},
 		})
 	stmt := NewStatement(UpdateBarSetFoo)
@@ -91,6 +92,8 @@ func TestPartitionedUpdate_Aborted(t *testing.T) {
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
 		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.BeginTransactionRequest{},
