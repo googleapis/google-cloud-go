@@ -182,6 +182,9 @@ type ReadOptions struct {
 	// ReadOptions option used to set the DirectedReadOptions for all ReadRequests which indicate
 	// which replicas or regions should be used for running read operations.
 	DirectedReadOptions *sppb.DirectedReadOptions
+
+	// An option to control the order in which rows are returned from a read.
+	OrderBy sppb.ReadRequest_OrderBy
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
@@ -194,6 +197,7 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 		RequestTag:          ro.RequestTag,
 		DataBoostEnabled:    ro.DataBoostEnabled,
 		DirectedReadOptions: ro.DirectedReadOptions,
+		OrderBy:             ro.OrderBy,
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -212,6 +216,9 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	}
 	if opts.DirectedReadOptions != nil {
 		merged.DirectedReadOptions = opts.DirectedReadOptions
+	}
+	if opts.OrderBy != sppb.ReadRequest_ORDER_BY_UNSPECIFIED {
+		merged.OrderBy = opts.OrderBy
 	}
 	return merged
 }
@@ -245,6 +252,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	requestTag := t.ro.RequestTag
 	dataBoostEnabled := t.ro.DataBoostEnabled
 	directedReadOptions := t.ro.DirectedReadOptions
+	orderBy := t.ro.OrderBy
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -258,6 +266,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		if opts.DirectedReadOptions != nil {
 			directedReadOptions = opts.DirectedReadOptions
 		}
+		orderBy = opts.OrderBy
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
@@ -285,6 +294,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
 					DataBoostEnabled:    dataBoostEnabled,
 					DirectedReadOptions: directedReadOptions,
+					OrderBy:             orderBy,
 				})
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
