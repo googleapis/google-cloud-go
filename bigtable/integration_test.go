@@ -38,6 +38,8 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"cloud.google.com/go/monitoring/apiv3/v2/monitoringpb"
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -46,6 +48,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 const (
@@ -274,6 +277,7 @@ func TestIntegration_ReadRowList(t *testing.T) {
 		t.Fatalf("bulk read: wrong reads.\n got %q\nwant %q", got, want)
 	}
 }
+
 func TestIntegration_ReadRowListReverse(t *testing.T) {
 	ctx := context.Background()
 	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
@@ -748,6 +752,18 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 
 func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	ctx := context.Background()
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = time.Minute
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+	testStartTime := time.Now()
+
+	tsListStart := &timestamppb.Timestamp{
+		Seconds: testStartTime.Unix(),
+		Nanos:   int32(testStartTime.Nanosecond()),
+	}
+
 	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
@@ -898,6 +914,53 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		t.Fatalf("No errors for bad bulk mutation")
 	} else if status[0] == nil || status[1] == nil {
 		t.Fatalf("No error for bad bulk mutation")
+	}
+
+	if !testEnv.Config().UseProd {
+		t.Logf("Skipping metrics validation while using emulator")
+		return
+	}
+
+	// Validate that metrics are exported
+	elapsedTime := time.Since(testStartTime)
+	if elapsedTime < 2*defaultSamplePeriod {
+		// Ensure at least 2 datapoints are recorded
+		time.Sleep(2*defaultSamplePeriod - elapsedTime)
+	}
+
+	timeListEnd := time.Now()
+	tsListEnd := &timestamppb.Timestamp{
+		Seconds: timeListEnd.Unix(),
+		Nanos:   int32(timeListEnd.Nanosecond()),
+	}
+
+	monitoringClient, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		t.Errorf("Failed to create metric client: %v", err)
+	}
+
+	metricNamesValidate := []string{
+		metricNameOperationLatencies,
+		metricNameAttemptLatencies,
+		metricNameServerLatencies,
+	}
+	for _, metricName := range metricNamesValidate {
+		// ListTimeSeries can list only one metric type at a time.
+		// So, call ListTimeSeries with different metric names
+		iter := monitoringClient.ListTimeSeries(ctx, &monitoringpb.ListTimeSeriesRequest{
+			Name: fmt.Sprintf("projects/%s", testEnv.Config().Project),
+			Interval: &monitoringpb.TimeInterval{
+				StartTime: tsListStart,
+				EndTime:   tsListEnd,
+			},
+			Filter: fmt.Sprintf("metric.type = starts_with(\"bigtable.googleapis.com/client/%v\")", metricName),
+		})
+
+		// Assert at least 1 datapoint was exported
+		_, err := iter.Next()
+		if err != nil {
+			t.Errorf("%v not exported\n", metricName)
+		}
 	}
 }
 
