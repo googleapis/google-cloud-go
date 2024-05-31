@@ -1,5 +1,18 @@
 # Changelog
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/config/v0.4.0...config/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **config:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **config:** Promote to GA v1.0.0 ([#10208](https://github.com/googleapis/google-cloud-go/issues/10208)) ([5892409](https://github.com/googleapis/google-cloud-go/commit/58924096313b6144b982b2ff908be7eadafc9257))
+
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/config/v0.3.0...config/v0.4.0) (2024-05-01)
 
 

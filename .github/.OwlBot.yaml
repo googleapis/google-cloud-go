@@ -101,6 +101,7 @@ deep-remove-regex:
   - /datastream/apiv1alpha1/
   # - /debugger/apiv2/
   - /deploy/apiv1/
+  - /developerconnect/apiv1/
   - /dialogflow/apiv2/
   - /dialogflow/apiv2beta1/
   - /dialogflow/cx/apiv3/
@@ -231,6 +232,7 @@ deep-remove-regex:
   - /internal/generated/snippets/datastream/apiv1alpha1/
   # - /internal/generated/snippets/debugger/apiv2/
   - /internal/generated/snippets/deploy/apiv1/
+  - /internal/generated/snippets//developerconnect/apiv1/
   - /internal/generated/snippets/dialogflow/apiv2/
   - /internal/generated/snippets/dialogflow/apiv2beta1/
   - /internal/generated/snippets/dialogflow/cx/apiv3/
@@ -275,11 +277,12 @@ deep-remove-regex:
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
   - /internal/generated/snippets/managedidentities/apiv1/
+  - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
   - /internal/generated/snippets/maps/fleetengine/apiv1/
   - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
-  - /internal/generated/snippets/maps/mapsplatformdatasets/apiv1alpha/
   - /internal/generated/snippets/maps/places/apiv1/
+  - /internal/generated/snippets/maps/routeoptimization/apiv1/
   - /internal/generated/snippets/maps/routing/apiv2/
   - /internal/generated/snippets/maps/solar/apiv1/
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
@@ -341,6 +344,7 @@ deep-remove-regex:
   - /internal/generated/snippets/securesourcemanager/apiv1/
   - /internal/generated/snippets/security/privateca/apiv1/
   - /internal/generated/snippets/security/publicca/apiv1beta1/
+  - /internal/generated/snippets/security/publicca/apiv1/
   - /internal/generated/snippets/securitycenter/apiv1/
   - /internal/generated/snippets/securitycenter/apiv1beta1/
   - /internal/generated/snippets/securitycenter/apiv1p1beta1/
@@ -413,11 +417,12 @@ deep-remove-regex:
   - /logging/apiv2/
   - /longrunning/autogen/
   - /managedidentities/apiv1/
+  - /managedkafka/apiv1/
   - /maps/addressvalidation/apiv1/
   - /maps/fleetengine/apiv1/
   - /maps/fleetengine/delivery/apiv1/
-  - /maps/mapsplatformdatasets/apiv1alpha/
   - /maps/places/apiv1/
+  - /maps/routeoptimization/apiv1/
   - /maps/routing/apiv2/
   - /maps/solar/apiv1/
   - /mediatranslation/apiv1beta1/
@@ -481,6 +486,7 @@ deep-remove-regex:
   - /securesourcemanager/apiv1/
   - /security/privateca/apiv1/
   - /security/publicca/apiv1beta1/
+  - /security/publicca/apiv1/
   - /securitycenter/apiv1/
   - /securitycenter/apiv1beta1/
   - /securitycenter/apiv1p1beta1/
@@ -785,6 +791,8 @@ deep-copy-regex:
   #   dest: /
   - source: /google/cloud/deploy/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/developerconnect/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/dialogflow/v2/cloud.google.com/go
     dest: /
   - source: /google/cloud/dialogflow/v2beta1/cloud.google.com/go
@@ -873,15 +881,17 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/managedkafka/v1/cloud.google.com/go
+    dest: /
   - source: /google/maps/addressvalidation/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/fleetengine/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/fleetengine/delivery/v1/cloud.google.com/go
     dest: /
-  - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go
-    dest: /
   - source: /google/maps/places/v1/cloud.google.com/go
+    dest: /
+  - source: /google/maps/routeoptimization/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/routing/v2/cloud.google.com/go
     dest: /
@@ -1012,6 +1022,8 @@ deep-copy-regex:
   - source: /google/cloud/security/privateca/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/security/publicca/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/security/publicca/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/securitycenter/v1/cloud.google.com/go
     dest: /

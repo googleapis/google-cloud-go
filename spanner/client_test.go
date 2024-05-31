@@ -1487,10 +1487,10 @@ func TestClient_ReadOnlyTransaction_WhenMultipleOperations_SessionLastUseTimeSho
 		t.Fatalf("Session lastUseTime times should not be equal")
 	}
 
-	if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+	if time.Since(sessionPrevLastUseTime).Milliseconds() < 400 {
 		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 	}
-	if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+	if time.Since(sessionCheckoutTime).Milliseconds() < 400 {
 		t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 	}
 	// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
@@ -2000,10 +2000,10 @@ func TestClient_ReadWriteTransaction_WhenMultipleOperations_SessionLastUseTimeSh
 			t.Fatalf("Session lastUseTime times should not be equal")
 		}
 
-		if (time.Now().Sub(sessionPrevLastUseTime)).Milliseconds() < 400 {
+		if time.Since(sessionPrevLastUseTime).Milliseconds() < 400 {
 			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 		}
-		if (time.Now().Sub(sessionCheckoutTime)).Milliseconds() < 400 {
+		if time.Since(sessionCheckoutTime).Milliseconds() < 400 {
 			t.Fatalf("Expected session to be checkedout for more than 400 milliseconds")
 		}
 		// force run task to clean up unexpected long-running sessions whose lastUseTime >= 3sec.
@@ -3989,7 +3989,6 @@ func TestClient_WithoutCustomBatchTimeout(t *testing.T) {
 }
 
 func TestClient_CallOptions(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/10069")
 	t.Parallel()
 	co := &vkit.CallOptions{
 		CreateSession: []gax.CallOption{
@@ -4016,7 +4015,7 @@ func TestClient_CallOptions(t *testing.T) {
 	cs := &gax.CallSettings{}
 	// This is the default retry setting.
 	c.CallOptions.CreateSession[1].Resolve(cs)
-	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14]}"; got != want {
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14 8]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}
 
@@ -4549,12 +4548,11 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
-	// cannot do that.
-	if len(te.Spans) == 0 {
+	spans := te.Spans()
+	if len(spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	s := te.Spans[len(te.Spans)-1].Status
+	s := spans[len(spans)-1].Status
 	if s.Code != int32(codes.OK) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.OK)
 	}
@@ -4599,12 +4597,11 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
-	// cannot do that.
-	if len(te.Spans) == 0 {
+	spans := te.Spans()
+	if len(spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	s := te.Spans[len(te.Spans)-1].Status
+	s := spans[len(spans)-1].Status
 	if s.Code != int32(codes.InvalidArgument) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.InvalidArgument)
 	}
@@ -5367,12 +5364,11 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
-	// cannot do that.
-	if len(te.Spans) == 0 {
+	spans := te.Spans()
+	if len(spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	s := te.Spans[len(te.Spans)-1].Status
+	s := spans[len(spans)-1].Status
 	if s.Code != int32(code) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, code)
 	}

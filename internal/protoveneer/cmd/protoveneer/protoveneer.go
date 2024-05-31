@@ -114,7 +114,7 @@ func run(ctx context.Context, configFile, pbDir, outDir string) error {
 	if !*noFormat {
 		src, err = format.Source(src)
 		if err != nil {
-			return err
+			return fmt.Errorf("formatting: %v", err)
 		}
 	}
 
@@ -263,7 +263,7 @@ func buildConverterMap(typeInfos []*typeInfo, conf *config) (map[string]converte
 
 	// Add converters for used external types to the map.
 	for _, et := range externalTypes {
-		if et.used {
+		if et.used && et.convertTo != "" {
 			converters[et.qualifiedName] = customConverter{et.convertTo, et.convertFrom}
 		}
 	}
@@ -284,13 +284,17 @@ func buildConverterMap(typeInfos []*typeInfo, conf *config) (map[string]converte
 }
 
 func parseCustomConverter(name, value string) (converter, error) {
-	toFunc, fromFunc, ok := strings.Cut(value, ",")
-	toFunc = strings.TrimSpace(toFunc)
-	fromFunc = strings.TrimSpace(fromFunc)
-	if !ok || toFunc == "" || fromFunc == "" {
+	toFunc, fromFunc := parseCommaPair(value)
+	if toFunc == "" || fromFunc == "" {
 		return nil, fmt.Errorf(`%s: ConvertToFrom = %q, want "toFunc, fromFunc"`, name, value)
 	}
 	return customConverter{toFunc, fromFunc}, nil
+}
+
+// parseCommaPair parses a string like "foo, bar" into "foo" and "bar".
+func parseCommaPair(s string) (string, string) {
+	a, b, _ := strings.Cut(s, ",")
+	return strings.TrimSpace(a), strings.TrimSpace(b)
 }
 
 // makeConverter constructs a converter for the given type. Not every type is in the map: this
@@ -340,9 +344,11 @@ type typeInfo struct {
 	values    *ast.GenDecl  // the list of values for an enum
 
 	// These fields are added later.
-	veneerName string       // may be provided by config; else same as protoName
-	fields     []*fieldInfo // for structs
-	valueNames []string     // to generate String functions
+	veneerName   string       // may be provided by config; else same as protoName
+	fields       []*fieldInfo // for structs
+	valueNames   []string     // to generate String functions
+	populateFrom string       // name of function doing additional work converting from proto
+	populateTo   string       // name of function doing additional work converting to proto
 }
 
 // A fieldInfo holds information about a struct field.
@@ -351,6 +357,7 @@ type fieldInfo struct {
 	af                    *ast.Field
 	protoName, veneerName string
 	converter             converter
+	noConvert             bool
 }
 
 // collectDecls collects declaration information from a package.
@@ -445,6 +452,15 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 				ti.fields = append(ti.fields, fi)
 			}
 		}
+		// Other processing.
+		if tconf != nil && tconf.PopulateToFrom != "" {
+			toFunc, fromFunc := parseCommaPair(tconf.PopulateToFrom)
+			if toFunc == "" || fromFunc == "" {
+				return fmt.Errorf(`%s: PopulateToFrom = %q, want "toFunc, fromFunc"`, ti.protoName, tconf.PopulateToFrom)
+			}
+			ti.populateTo = toFunc
+			ti.populateFrom = fromFunc
+		}
 	case *ast.Ident:
 		// Enum type. Nothing else to do with the type itself; but see processEnumValues.
 	default:
@@ -492,6 +508,7 @@ func processField(af *ast.Field, tc *typeConfig, typeInfos map[string]*typeInfo)
 				}
 				fi.converter = c
 			}
+			fi.noConvert = fc.NoConvert
 		}
 	}
 	af.Type = veneerType(af.Type, typeInfos)
@@ -676,10 +693,16 @@ func write(typeInfos []*typeInfo, conf *config, fset *token.FileSet) ([]byte, er
 		return nil, errors.New("missing supportImportPath in config")
 	}
 	prn(`    "%s"`, conf.SupportImportPath)
+	importPaths := map[string]bool{}
 	for _, et := range externalTypes {
-		if et.used && et.importPath != "" {
-			prn(`    "%s"`, et.importPath)
+		if et.used {
+			for _, ip := range et.importPaths {
+				importPaths[ip] = true
+			}
 		}
+	}
+	for ip := range importPaths {
+		prn(`    "%s"`, ip)
 	}
 	pr(")\n\n")
 
@@ -750,22 +773,44 @@ func (ti *typeInfo) generateConversionMethods(pr func(string, ...any)) {
 func (ti *typeInfo) generateToProto(pr func(string, ...any)) {
 	pr("func (v *%s) toProto() *pb.%s {\n", ti.veneerName, ti.protoName)
 	pr("  if v == nil { return nil }\n")
-	pr("  return &pb.%s{\n", ti.protoName)
+	if ti.populateTo == "" {
+		pr("  return &pb.%s{\n", ti.protoName)
+	} else {
+		pr("  p := &pb.%s{\n", ti.protoName)
+	}
 	for _, f := range ti.fields {
+		if f.noConvert {
+			continue
+		}
 		pr("        %s: %s,\n", f.protoName, f.converter.genTo("v."+f.veneerName))
 	}
 	pr("    }\n")
+	if ti.populateTo != "" {
+		pr("  %s(p, v)\n", ti.populateTo)
+		pr("  return p\n")
+	}
 	pr("}\n")
 }
 
 func (ti *typeInfo) generateFromProto(pr func(string, ...any)) {
 	pr("func (%s) fromProto(p *pb.%s) *%[1]s {\n", ti.veneerName, ti.protoName)
 	pr("  if p == nil { return nil }\n")
-	pr("  return &%s{\n", ti.veneerName)
+	if ti.populateFrom == "" {
+		pr("  return &%s{\n", ti.veneerName)
+	} else {
+		pr("  v := &%s{\n", ti.veneerName)
+	}
 	for _, f := range ti.fields {
+		if f.noConvert {
+			continue
+		}
 		pr("        %s: %s,\n", f.veneerName, f.converter.genFrom("p."+f.protoName))
 	}
 	pr("    }\n")
+	if ti.populateFrom != "" {
+		pr("  %s(v, p)\n", ti.populateFrom)
+		pr("  return v\n")
+	}
 	pr("}\n")
 }
 
@@ -775,7 +820,7 @@ func (ti *typeInfo) generateFromProto(pr func(string, ...any)) {
 type externalType struct {
 	qualifiedName string
 	replaces      string
-	importPath    string
+	importPaths   []string
 	convertTo     string
 	convertFrom   string
 
@@ -787,7 +832,7 @@ var externalTypes = []*externalType{
 	{
 		qualifiedName: "civil.Date",
 		replaces:      "*date.Date",
-		importPath:    "cloud.google.com/go/civil",
+		importPaths:   []string{"cloud.google.com/go/civil"},
 		convertTo:     "support.CivilDateToProto",
 		convertFrom:   "support.CivilDateFromProto",
 	},
@@ -797,6 +842,20 @@ var externalTypes = []*externalType{
 		convertTo:     "support.MapToStructPB",
 		convertFrom:   "support.MapFromStructPB",
 	},
+	{
+		qualifiedName: "time.Time",
+		replaces:      "*timestamppb.Timestamp",
+		importPaths:   []string{"time", "google.golang.org/protobuf/types/known/timestamppb"},
+		convertTo:     "timestamppb.New",
+		convertFrom:   "support.TimeFromProto",
+	},
+	{
+		qualifiedName: "*apierror.APIError",
+		replaces:      "*status.Status",
+		importPaths:   []string{"github.com/googleapis/gax-go/v2/apierror"},
+		convertTo:     "support.APIErrorToProto",
+		convertFrom:   "support.APIErrorFromProto",
+	},
 }
 
 var protoTypeToExternalType = map[string]*externalType{}
@@ -804,6 +863,9 @@ var protoTypeToExternalType = map[string]*externalType{}
 func init() {
 	var err error
 	for _, et := range externalTypes {
+		if et.replaces == "" {
+			continue
+		}
 		et.typeExpr, err = parser.ParseExpr(et.qualifiedName)
 		if err != nil {
 			panic(err)

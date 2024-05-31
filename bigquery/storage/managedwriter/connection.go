@@ -369,6 +369,11 @@ func (co *connection) lockingAppend(pw *pendingWrite) error {
 		}
 	}()
 
+	// If connection context is expired, error.
+	if err := co.ctx.Err(); err != nil {
+		return err
+	}
+
 	var arc *storagepb.BigQueryWrite_AppendRowsClient
 	var ch chan *pendingWrite
 	var err error

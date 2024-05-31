@@ -12,9 +12,6 @@
         "advisorynotifications": {
             "component": "advisorynotifications"
         },
-        "ai": {
-            "component": "ai"
-        },
         "alloydb": {
             "component": "alloydb"
         },
@@ -156,6 +153,9 @@
         "deploy": {
             "component": "deploy"
         },
+        "developerconnect": {
+            "component": "developerconnect"
+        },
         "dialogflow": {
             "component": "dialogflow"
         },
@@ -236,6 +236,9 @@
         },
         "managedidentities": {
             "component": "managedidentities"
+        },
+        "managedkafka": {
+            "component": "managedkafka"
         },
         "maps": {
             "component": "maps"

@@ -8,6 +8,9 @@ import (
 	"cloud.google.com/go/civil"
 	pb "example.com/basic"
 	"example.com/protoveneer/support"
+	"github.com/googleapis/gax-go/v2/apierror"
+	"google.golang.org/protobuf/types/known/timestamppb"
+	"time"
 )
 
 // Blob contains raw media bytes.
@@ -47,6 +50,7 @@ type Citation struct {
 	// Output only. Publication date of the attribution.
 	PublicationDate civil.Date
 	Struct          map[string]any
+	CreateTime      time.Time
 }
 
 func (v *Citation) toProto() *pb.Citation {
@@ -57,6 +61,7 @@ func (v *Citation) toProto() *pb.Citation {
 		Uri:             v.URI,
 		PublicationDate: support.CivilDateToProto(v.PublicationDate),
 		Struct:          support.MapToStructPB(v.Struct),
+		CreateTime:      timestamppb.New(v.CreateTime),
 	}
 }
 
@@ -68,6 +73,7 @@ func (Citation) fromProto(p *pb.Citation) *Citation {
 		URI:             p.Uri,
 		PublicationDate: support.CivilDateFromProto(p.PublicationDate),
 		Struct:          support.MapFromStructPB(p.Struct),
+		CreateTime:      support.TimeFromProto(p.CreateTime),
 	}
 }
 
@@ -95,6 +101,28 @@ func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
 	return &CitationMetadata{
 		Citations: support.TransformSlice(p.Citations, (Citation{}).fromProto),
 		CitMap:    support.TransformMapValues(p.CitMap, (Citation{}).fromProto),
+	}
+}
+
+type File struct {
+	Error *apierror.APIError
+}
+
+func (v *File) toProto() *pb.File {
+	if v == nil {
+		return nil
+	}
+	return &pb.File{
+		Error: support.APIErrorToProto(v.Error),
+	}
+}
+
+func (File) fromProto(p *pb.File) *File {
+	if p == nil {
+		return nil
+	}
+	return &File{
+		Error: support.APIErrorFromProto(p.Error),
 	}
 }
 
@@ -209,4 +237,34 @@ func (v HarmCategory) String() string {
 		return n
 	}
 	return fmt.Sprintf("HarmCategory(%d)", v)
+}
+
+// Pop is this demonstrates using population functions to deal with
+// proto oneof field, which has an unexported type.
+// That can be a way to deal with proto oneofs.
+type Pop struct {
+	X int
+	Y unexported
+}
+
+func (v *Pop) toProto() *pb.Pop {
+	if v == nil {
+		return nil
+	}
+	p := &pb.Pop{
+		X: v.X,
+	}
+	popYTo(p, v)
+	return p
+}
+
+func (Pop) fromProto(p *pb.Pop) *Pop {
+	if p == nil {
+		return nil
+	}
+	v := &Pop{
+		X: p.X,
+	}
+	popYFrom(v, p)
+	return v
 }

@@ -193,6 +193,21 @@ func TestDateAfter(t *testing.T) {
 	}
 }
 
+func TestDateCompare(t *testing.T) {
+	for _, test := range []struct {
+		d1, d2 Date
+		want   int
+	}{
+		{Date{2016, 12, 31}, Date{2017, 1, 1}, -1},
+		{Date{2016, 1, 1}, Date{2016, 1, 1}, 0},
+		{Date{2016, 12, 31}, Date{2016, 12, 30}, +1},
+	} {
+		if got := test.d1.Compare(test.d2); got != test.want {
+			t.Errorf("%v.Compare(%v): got %d, want %d", test.d1, test.d2, got, test.want)
+		}
+	}
+}
+
 func TestDateIsZero(t *testing.T) {
 	for _, test := range []struct {
 		date Date
@@ -330,6 +345,27 @@ func TestTimeAfter(t *testing.T) {
 	}
 }
 
+func TestTimeCompare(t *testing.T) {
+	for _, test := range []struct {
+		t1, t2 Time
+		want   int
+	}{
+		{Time{12, 0, 0, 0}, Time{14, 0, 0, 0}, -1},
+		{Time{12, 20, 0, 0}, Time{12, 30, 0, 0}, -1},
+		{Time{12, 20, 10, 0}, Time{12, 20, 20, 0}, -1},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 10}, -1},
+		{Time{14, 0, 0, 0}, Time{12, 0, 0, 0}, +1},
+		{Time{12, 30, 0, 0}, Time{12, 20, 0, 0}, +1},
+		{Time{12, 20, 20, 0}, Time{12, 20, 10, 0}, +1},
+		{Time{12, 20, 10, 10}, Time{12, 20, 10, 5}, +1},
+		{Time{12, 20, 10, 5}, Time{12, 20, 10, 5}, 0},
+	} {
+		if got := test.t1.Compare(test.t2); got != test.want {
+			t.Errorf("%v.Compare(%v): got %d, want %d", test.t1, test.t2, got, test.want)
+		}
+	}
+}
+
 func TestDateTimeToString(t *testing.T) {
 	for _, test := range []struct {
 		str       string
@@ -449,6 +485,27 @@ func TestDateTimeAfter(t *testing.T) {
 	} {
 		if got := test.dt1.After(test.dt2); got != test.want {
 			t.Errorf("%v.After(%v): got %t, want %t", test.dt1, test.dt2, got, test.want)
+		}
+	}
+}
+
+func TestDateTimeCompare(t *testing.T) {
+	d1 := Date{2016, 12, 31}
+	d2 := Date{2017, 1, 1}
+	t1 := Time{5, 6, 7, 8}
+	t2 := Time{5, 6, 7, 9}
+	for _, test := range []struct {
+		dt1, dt2 DateTime
+		want     int
+	}{
+		{DateTime{d1, t1}, DateTime{d2, t1}, -1},
+		{DateTime{d1, t1}, DateTime{d1, t2}, -1},
+		{DateTime{d2, t1}, DateTime{d1, t1}, +1},
+		{DateTime{d1, t2}, DateTime{d1, t1}, +1},
+		{DateTime{d2, t1}, DateTime{d2, t1}, 0},
+	} {
+		if got := test.dt1.Compare(test.dt2); got != test.want {
+			t.Errorf("%v.Compare(%v): got %d, want %d", test.dt1, test.dt2, got, test.want)
 		}
 	}
 }

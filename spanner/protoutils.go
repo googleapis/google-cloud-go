@@ -24,6 +24,8 @@ import (
 
 	"cloud.google.com/go/civil"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/reflect/protoreflect"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -143,4 +145,21 @@ func structType(fields ...*sppb.StructType_Field) *sppb.Type {
 
 func nullProto() *proto3.Value {
 	return &proto3.Value{Kind: &proto3.Value_NullValue{NullValue: proto3.NullValue_NULL_VALUE}}
+}
+
+func protoMessageType(fqn string) *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_PROTO, ProtoTypeFqn: fqn}
+}
+
+func protoEnumType(fqn string) *sppb.Type {
+	return &sppb.Type{Code: sppb.TypeCode_ENUM, ProtoTypeFqn: fqn}
+}
+
+func protoMessageProto(m proto.Message) *proto3.Value {
+	var b, _ = proto.Marshal(m)
+	return &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: base64.StdEncoding.EncodeToString(b)}}
+}
+
+func protoEnumProto(e protoreflect.Enum) *proto3.Value {
+	return &proto3.Value{Kind: &proto3.Value_StringValue{StringValue: strconv.FormatInt(int64(e.Number()), 10)}}
 }

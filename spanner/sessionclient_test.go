@@ -424,7 +424,6 @@ func TestBatchCreateSessions_ServerReturnsLessThanRequestedSessions(t *testing.T
 }
 
 func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/10070")
 	t.Parallel()
 
 	numChannels := 4
@@ -443,12 +442,12 @@ func TestBatchCreateSessions_ServerExhausted(t *testing.T) {
 	consumer := newTestConsumer(numSessions)
 	client.sc.batchCreateSessions(numSessions, true, consumer)
 	<-consumer.receivedAll
-	// Session creation should end with at least one RESOURCE_EXHAUSTED error.
+	// Session creation should end with at least one non-retryable error.
 	if len(consumer.errors) == 0 {
 		t.Fatalf("Error count mismatch\nGot: %d\nWant: > %d", len(consumer.errors), 0)
 	}
 	for _, e := range consumer.errors {
-		if g, w := status.Code(e.err), codes.ResourceExhausted; g != w {
+		if g, w := status.Code(e.err), codes.OutOfRange; g != w {
 			t.Fatalf("Error code mismath\nGot: %v\nWant: %v", g, w)
 		}
 	}

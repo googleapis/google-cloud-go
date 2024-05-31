@@ -54,6 +54,8 @@ type typeConfig struct {
 	Fields map[string]fieldConfig
 	// Custom conversion functions: "tofunc, fromfunc"
 	ConvertToFrom string `yaml:"convertToFrom"`
+	// Custom population functions, that are called after field-by-field conversion: "tofunc, fromfunc"
+	PopulateToFrom string `yaml:"populateToFrom"`
 	// Doc string for the type, omitting the initial type name.
 	// This replaces the first line of the doc.
 	Doc string
@@ -69,6 +71,9 @@ type fieldConfig struct {
 	Type string // veneer type
 	// Omit from output.
 	Omit bool
+	// Generate the type, but not conversions.
+	// The populate functions (see [typeConfg.PopulateToFrom]) should set the field.
+	NoConvert bool `yaml:"noConvert"`
 	// Custom conversion functions: "tofunc, fromfunc"
 	ConvertToFrom string `yaml:"convertToFrom"`
 }

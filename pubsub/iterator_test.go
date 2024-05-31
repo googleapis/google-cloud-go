@@ -261,10 +261,8 @@ func startReceiving(ctx context.Context, t *testing.T, s *Subscription, recvdWg 
 			recvdWg.Done()
 		}
 	})
-	if err != nil {
-		if status.Code(err) != codes.Canceled {
-			t.Error(err)
-		}
+	if err != nil && !errors.Is(err, context.Canceled) {
+		t.Error(err)
 	}
 }
 
@@ -397,7 +395,7 @@ func TestIterator_ModifyAckContextDeadline(t *testing.T) {
 	err = s.Receive(cctx, func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("Got error in Receive: %v", err)
 	}
 

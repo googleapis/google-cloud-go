@@ -20,8 +20,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/civil"
+	"github.com/googleapis/gax-go/v2/apierror"
+	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/genproto/googleapis/type/date"
+	gstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // TransformSlice applies f to each element of from and returns
@@ -109,4 +113,31 @@ func MapFromStructPB(p *structpb.Struct) map[string]any {
 		return nil
 	}
 	return p.AsMap()
+}
+
+// TimeFromProto converts a Timestamp into a time.Time.
+func TimeFromProto(ts *timestamppb.Timestamp) time.Time {
+	if ts == nil {
+		return time.Time{}
+	}
+	return ts.AsTime()
+}
+
+// APIErrorToProto converts an APIError to a proto Status.
+func APIErrorToProto(ae *apierror.APIError) *spb.Status {
+	if ae == nil {
+		return nil
+	}
+	return ae.GRPCStatus().Proto()
+}
+
+// APIErrorFromProto converts a proto Status to an APIError.
+func APIErrorFromProto(s *spb.Status) *apierror.APIError {
+	err := gstatus.ErrorProto(s)
+	aerr, ok := apierror.ParseError(err, true)
+	if !ok {
+		// Should be impossible.
+		return nil
+	}
+	return aerr
 }

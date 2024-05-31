@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/security/publicca/apiv1",
+    "version": "1.17.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.security.publicca.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "publicca_v1_generated_PublicCertificateAuthorityService_CreateExternalAccountKey_sync",
+      "title": "publicca CreateExternalAccountKey Sample",
+      "description": "CreateExternalAccountKey creates a new\n[ExternalAccountKey][google.cloud.security.publicca.v1.ExternalAccountKey]\nbound to the project.",
+      "file": "PublicCertificateAuthorityClient/CreateExternalAccountKey/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateExternalAccountKey",
+        "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityClient.CreateExternalAccountKey",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "publiccapb.CreateExternalAccountKeyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*publiccapb.ExternalAccountKey",
+        "client": {
+          "shortName": "PublicCertificateAuthorityClient",
+          "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityClient"
+        },
+        "method": {
+          "shortName": "CreateExternalAccountKey",
+          "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityService.CreateExternalAccountKey",
+          "service": {
+            "shortName": "PublicCertificateAuthorityService",
+            "fullName": "google.cloud.security.publicca.v1.PublicCertificateAuthorityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
