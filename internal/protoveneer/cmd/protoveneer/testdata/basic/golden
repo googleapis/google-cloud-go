@@ -8,6 +8,7 @@ import (
 	"cloud.google.com/go/civil"
 	pb "example.com/basic"
 	"example.com/protoveneer/support"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"time"
 )
@@ -100,6 +101,28 @@ func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
 	return &CitationMetadata{
 		Citations: support.TransformSlice(p.Citations, (Citation{}).fromProto),
 		CitMap:    support.TransformMapValues(p.CitMap, (Citation{}).fromProto),
+	}
+}
+
+type File struct {
+	Error *apierror.APIError
+}
+
+func (v *File) toProto() *pb.File {
+	if v == nil {
+		return nil
+	}
+	return &pb.File{
+		Error: support.APIErrorToProto(v.Error),
+	}
+}
+
+func (File) fromProto(p *pb.File) *File {
+	if p == nil {
+		return nil
+	}
+	return &File{
+		Error: support.APIErrorFromProto(p.Error),
 	}
 }
 
