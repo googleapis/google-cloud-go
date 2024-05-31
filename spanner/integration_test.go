@@ -2859,19 +2859,19 @@ func TestIntegration_StructTypes(t *testing.T) {
 		},
 	}
 	for i, test := range tests {
-		func() {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			iter := client.Single().Query(ctx, test.q)
 			defer iter.Stop()
 			row, err := iter.Next()
 			if err != nil {
-				t.Errorf("%d: %v", i, err)
+				t.Errorf("%v", err)
 				return
 			}
 			if err := test.want(row); err != nil {
-				t.Errorf("%d: %v", i, err)
+				t.Errorf("%v", err)
 				return
 			}
-		}()
+		})
 	}
 }
 
@@ -2955,18 +2955,18 @@ func TestIntegration_QueryExpressions(t *testing.T) {
 		{"ARRAY(SELECT STRUCT(1, 2))", []NullRow{{Row: *newRow([]interface{}{1, 2}), Valid: true}}},
 	}
 	for _, test := range tests {
-		func() {
+		t.Run(test.expr, func(t *testing.T) {
 			iter := client.Single().Query(ctx, Statement{SQL: "SELECT " + test.expr})
 			defer iter.Stop()
 			row, err := iter.Next()
 			if err != nil {
-				t.Errorf("%q: %v", test.expr, err)
+				t.Errorf("%v", err)
 				return
 			}
 			// Create new instance of type of test.want.
 			gotp := reflect.New(reflect.TypeOf(test.want))
 			if err := row.Column(0, gotp.Interface()); err != nil {
-				t.Errorf("%q: Column returned error %v", test.expr, err)
+				t.Errorf("Column returned error %v", err)
 				return
 			}
 			got := reflect.Indirect(gotp).Interface()
@@ -2975,9 +2975,9 @@ func TestIntegration_QueryExpressions(t *testing.T) {
 				return
 			}
 			if !testEqual(got, test.want) {
-				t.Errorf("%q\n got  %#v\nwant %#v", test.expr, got, test.want)
+				t.Errorf("wrong result\n got  %#v\nwant %#v", got, test.want)
 			}
-		}()
+		})
 	}
 }
 
@@ -3316,7 +3316,7 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 		"",
 		"singers_reader",
 	} {
-		func() {
+		t.Run("role:"+dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3340,7 +3340,7 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 			if err != iterator.Done {
 				t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
 			}
-		}()
+		})
 	}
 
 	// A request with insufficient privileges should return permission denied
@@ -3365,7 +3365,7 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 			"Role not found: dropped.",
 		},
 	} {
-		func() {
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3380,7 +3380,7 @@ func TestIntegration_QueryWithRoles(t *testing.T) {
 			if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
 				t.Fatal(msg)
 			}
-		}()
+		})
 	}
 }
 
@@ -3449,7 +3449,7 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 		"",
 		"singers_reader",
 	} {
-		func() {
+		t.Run("role:"+dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3473,7 +3473,7 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 			if err != iterator.Done {
 				t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
 			}
-		}()
+		})
 	}
 
 	// A request with insufficient privileges should return permission denied
@@ -3498,7 +3498,7 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 			"Role not found: dropped.",
 		},
 	} {
-		func() {
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3513,7 +3513,7 @@ func TestIntegration_ReadWithRoles(t *testing.T) {
 			if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
 				t.Fatal(msg)
 			}
-		}()
+		})
 	}
 }
 
@@ -3578,7 +3578,7 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 		"",
 		"singers_updater",
 	} {
-		func() {
+		t.Run("role:"+dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3590,7 +3590,7 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not update row. Got error %v", err)
 			}
-		}()
+		})
 	}
 
 	// A request with insufficient privileges should return permission denied
@@ -3607,7 +3607,7 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			"Role not found: nonexistent.",
 		},
 	} {
-		func() {
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3623,7 +3623,7 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
 				t.Fatal(msg)
 			}
-		}()
+		})
 	}
 
 	// A request with sufficient privileges should insert the row
@@ -3644,7 +3644,7 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			[]interface{}{3, "Alice", "Trentor"},
 		},
 	} {
-		func() {
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3656,7 +3656,7 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not insert row. Got error %v", err)
 			}
-		}()
+		})
 	}
 
 	// A request with sufficient privileges should delete the row
@@ -3665,7 +3665,7 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 		"",
 		"singers_deleter",
 	} {
-		func() {
+		t.Run("role:"+dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3677,7 +3677,7 @@ func TestIntegration_DMLWithRoles(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not delete row. Got error %v", err)
 			}
-		}()
+		})
 	}
 }
 
@@ -3741,7 +3741,7 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 		"",
 		"singers_updater",
 	} {
-		func() {
+		t.Run("role:"+dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3752,7 +3752,7 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not update row. Got error %v", err)
 			}
-		}()
+		})
 	}
 
 	// A request with insufficient privileges should return permission denied
@@ -3769,7 +3769,7 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			"Role not found: nonexistent.",
 		},
 	} {
-		func() {
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3784,7 +3784,7 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			if msg, ok := matchError(err, codes.PermissionDenied, test.errMsg); !ok {
 				t.Fatal(msg)
 			}
-		}()
+		})
 	}
 
 	// A request with sufficient privileges should insert the row
@@ -3801,7 +3801,7 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			[]interface{}{3, "Alice", "Trentor"},
 		},
 	} {
-		func() {
+		t.Run("role:"+test.dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, test.dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3812,7 +3812,7 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not insert row. Got error %v", err)
 			}
-		}()
+		})
 	}
 
 	// A request with sufficient privileges should delete the row
@@ -3820,7 +3820,7 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 		"",
 		"singers_deleter",
 	} {
-		func() {
+		t.Run("role:"+dbRole, func(t *testing.T) {
 			if clientWithRole, err = createClientWithRole(ctx, dbPath, SessionPoolConfig{}, dbRole); err != nil {
 				t.Fatal(err)
 			}
@@ -3831,7 +3831,7 @@ func TestIntegration_MutationWithRoles(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Could not delete row. Got error %v", err)
 			}
-		}()
+		})
 	}
 }
 
@@ -3944,7 +3944,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 
 	// Execute Partitions and compare results
 	for i, p := range partitions {
-		func() {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			iter := txn.Execute(ctx, p)
 			defer iter.Stop()
 
@@ -3970,7 +3970,7 @@ func TestIntegration_BatchQuery(t *testing.T) {
 			if a == str1 && b == str2 {
 				gotResult = true
 			}
-		}()
+		})
 	}
 	if !gotResult {
 		t.Fatalf("execution didn't return expected values")
@@ -4030,7 +4030,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 
 	// Execute Partitions and compare results.
 	for i, p := range partitions {
-		func() {
+		t.Run(strconv.Itoa(i), func(t *testing.T) {
 			iter := txn.Execute(ctx, p)
 			defer iter.Stop()
 			p2 := serdesPartition(t, i, p)
@@ -4056,7 +4056,7 @@ func TestIntegration_BatchRead(t *testing.T) {
 			if a == str1 && b == str2 {
 				gotResult = true
 			}
-		}()
+		})
 	}
 	if !gotResult {
 		t.Fatalf("execution didn't return expected values")
