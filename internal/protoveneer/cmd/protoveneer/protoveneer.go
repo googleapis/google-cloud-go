@@ -566,7 +566,6 @@ func veneerType(protoType ast.Expr, typeInfos map[string]*typeInfo) ast.Expr {
 }
 
 func addField(name string, fconfig fieldConfig, t *ast.StructType, ti *typeInfo) error {
-	fmt.Printf("### adding %s\n", name)
 	expr, err := parser.ParseExpr(fconfig.Type)
 	if err != nil {
 		return err
