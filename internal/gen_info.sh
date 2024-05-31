@@ -1,3 +1,17 @@
+#!/bin/sh
+
+# Script to generate info.go files with methods for all clients.
+
+if [[ $# != 2 ]]; then
+  echo >&2 "usage: $0 DIR PACKAGE"
+  exit 1
+fi
+
+outfile=info.go
+
+cd $1
+
+cat <<'EOF' > $outfile
 // Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -18,32 +32,15 @@
 //
 // Internal use only.
 
-package generativelanguage
+EOF
 
-func (c *DiscussClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
+echo -e >> $outfile "package $2\n"
 
-func (c *FileClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
 
-func (c *GenerativeClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
+awk '/^func \(c \*[A-Z].*\) setGoogleClientInfo/ {
+  printf("func (c %s SetGoogleClientInfo(keyval ...string) {\n", $3);
+	printf("  c.setGoogleClientInfo(keyval...)\n");
+  printf("}\n\n");
+}' *_client.go >> $outfile
 
-func (c *ModelClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
-
-func (c *PermissionClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
-
-func (c *RetrieverClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
-
-func (c *TextClient) SetGoogleClientInfo(keyval ...string) {
-	c.setGoogleClientInfo(keyval...)
-}
+gofmt -w $outfile
