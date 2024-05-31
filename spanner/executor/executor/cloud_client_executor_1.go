@@ -2,7 +2,6 @@ package executor
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -1477,6 +1476,14 @@ func cloudValuesFromExecutorValueLists(valueLists []*executorpb.ValueList, types
 	return cloudRows, nil
 }
 
+// encodedJSON is a pre-encoded JSON value, so when marhsaled the underlying
+// bytes are returned as-is.
+type encodedJSON []byte
+
+func (v encodedJSON) MarshalJSON() ([]byte, error) {
+	return []byte(v), nil
+}
+
 // techValueToInfraValue converts a tech spanner Value with given type t into an infra Spanner's Value.
 // Parameter null indicates whether this value is NULL.
 func executorValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, null bool) (any, error) {
@@ -1529,12 +1536,7 @@ func executorValueToSpannerValue(t *spannerpb.Type, v *executorpb.Value, null bo
 			return spanner.NullJSON{}, nil
 		}
 		x := v.GetStringValue()
-		var y interface{}
-		err := json.Unmarshal([]byte(x), &y)
-		if err != nil {
-			return nil, err
-		}
-		return spanner.NullJSON{Value: y, Valid: true}, nil
+		return spanner.NullJSON{Value: encodedJSON(x), Valid: true}, nil
 	case spannerpb.TypeCode_STRUCT:
 		return executorStructValueToSpannerValue(t, v.GetStructValue(), null)
 	case spannerpb.TypeCode_ARRAY:
