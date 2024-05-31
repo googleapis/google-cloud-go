@@ -253,8 +253,9 @@ func TestApplyErrors(t *testing.T) {
 	ctx := context.Background()
 	table := &Table{
 		c: &Client{
-			project:  "P",
-			instance: "I",
+			project:       "P",
+			instance:      "I",
+			metricsConfig: &metricsConfigInternal{},
 		},
 		table: "t",
 	}

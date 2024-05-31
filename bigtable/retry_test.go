@@ -33,6 +33,8 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+// TODO: Add test to simulate failure and assert that retry_count is recorded
+
 func setupFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err error) {
 	srv, err := bttest.NewServer("localhost:0", opt...)
 	if err != nil {
@@ -346,8 +348,8 @@ func TestRetryApplyBulk_IndividualErrorsAndDeadlineExceeded(t *testing.T) {
 	ctx, cancel := context.WithTimeout(ctx, -10*time.Millisecond)
 	defer cancel()
 	errors, err := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
-	wantErr := context.DeadlineExceeded
-	if wantErr != err {
+	wantErr := status.Error(codes.DeadlineExceeded, context.DeadlineExceeded.Error())
+	if !equalErrs(wantErr, err) {
 		t.Fatalf("deadline exceeded error: got: %v, want: %v", err, wantErr)
 	}
 	if errors != nil {
