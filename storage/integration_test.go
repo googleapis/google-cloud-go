@@ -5821,6 +5821,14 @@ func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate, me
 	h.t.Helper()
 	attrs, err := b.If(BucketConditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Update may already have succeeded with retry; if so, log and grab attrs.
+			if apiErr.HTTPCode() == http.StatusPreconditionFailed || apiErr.GRPCStatus().Code() == codes.FailedPrecondition {
+				log.Println("bucket update failed due to precondition; likely succeeded but retried - grabbing attrs instead")
+				return h.mustBucketAttrs(b)
+			}
+		}
 		h.t.Fatalf("BucketHandle(%q).Update: %v", b.BucketName(), err)
 	}
 	return attrs

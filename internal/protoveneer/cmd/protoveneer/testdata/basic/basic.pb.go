@@ -16,6 +16,7 @@ package basic
 
 import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -132,4 +133,10 @@ type unexported interface{ u() }
 type Pop struct {
 	X int
 	Y unexported
+}
+
+// Status converts to itself.
+
+type File struct {
+	Error *status.Status
 }
