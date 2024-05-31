@@ -143,6 +143,7 @@ func APIErrorFromProto(s *spb.Status) *apierror.APIError {
 	return aerr
 }
 
+// DurationFromProto converts a Duration proto to a time.Duration.
 func DurationFromProto(d *durationpb.Duration) time.Duration {
 	if d == nil {
 		return 0
