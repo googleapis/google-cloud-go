@@ -22,6 +22,7 @@ import (
 	"database/sql/driver"
 	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"math"
 	"math/big"
@@ -3260,7 +3261,7 @@ func errNilListValue(sqlType string) error {
 // errDecodeArrayElement returns error for failure in decoding single array element.
 func errDecodeArrayElement(i int, v proto.Message, sqlType string, err error) error {
 	var se *Error
-	if !errorAs(err, &se) {
+	if !errors.As(err, &se) {
 		return spannerErrorf(codes.Unknown,
 			"cannot decode %v(array element %v) as %v, error = <%v>", v, i, sqlType, err)
 	}
@@ -3842,7 +3843,7 @@ func errDupSpannerField(f string, ty *sppb.StructType) error {
 // a Cloud Spanner STRUCT.
 func errDecodeStructField(ty *sppb.StructType, f string, err error) error {
 	var se *Error
-	if !errorAs(err, &se) {
+	if !errors.As(err, &se) {
 		return spannerErrorf(codes.Unknown,
 			"cannot decode field %v of Cloud Spanner STRUCT %+v, error = <%v>", f, ty, err)
 	}
