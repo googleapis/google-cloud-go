@@ -270,6 +270,9 @@
         "networksecurity": {
             "component": "networksecurity"
         },
+        "networkservices": {
+            "component": "networkservices"
+        },
         "notebooks": {
             "component": "notebooks"
         },

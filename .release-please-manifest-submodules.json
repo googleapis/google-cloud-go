@@ -88,6 +88,7 @@
     "networkconnectivity": "1.14.6",
     "networkmanagement": "1.13.2",
     "networksecurity": "0.9.7",
+    "networkservices": "0.0.0",
     "notebooks": "1.11.5",
     "optimization": "1.6.5",
     "orchestration": "1.9.2",
