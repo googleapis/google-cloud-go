@@ -54,6 +54,35 @@ func (bytes BytesType) proto() *btapb.Type {
 	return &btapb.Type{Kind: &btapb.Type_BytesType{BytesType: &btapb.Type_Bytes{Encoding: encoding}}}
 }
 
+// StringEncoding represents the encoding of a String.
+type StringEncoding interface {
+	proto() *btapb.Type_String_Encoding
+}
+
+// StringUtf8Encoding represents a string with UTF-8 encoding.
+type StringUtf8Encoding struct {
+}
+
+func (encoding StringUtf8Encoding) proto() *btapb.Type_String_Encoding {
+	return &btapb.Type_String_Encoding{
+		Encoding: &btapb.Type_String_Encoding_Utf8Raw_{},
+	}
+}
+
+type StringType struct {
+	Encoding StringEncoding
+}
+
+func (str StringType) proto() *btapb.Type {
+	var encoding *btapb.Type_String_Encoding
+	if str.Encoding != nil {
+		encoding = str.Encoding.proto()
+	} else {
+		encoding = StringUtf8Encoding{}.proto()
+	}
+	return &btapb.Type{Kind: &btapb.Type_StringType{StringType: &btapb.Type_String{Encoding: encoding}}}
+}
+
 // Int64Encoding represents the encoding of an Int64 type.
 type Int64Encoding interface {
 	proto() *btapb.Type_Int64_Encoding
