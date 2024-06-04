@@ -96,14 +96,18 @@ func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client, l
 	}, nil
 }
 
-// setupDynamicDescriptors aids testing when not using a supplied proto
-func setupDynamicDescriptors(t *testing.T, schema bigquery.Schema) (protoreflect.MessageDescriptor, *descriptorpb.DescriptorProto) {
-	convertedSchema, err := adapt.BQSchemaToStorageTableSchema(schema)
+// setupDynamicDescriptors aids testing when not using a supplied proto.
+func setupDynamicDescriptors(t *testing.T, ctx context.Context, c *Client, streamName string) (protoreflect.MessageDescriptor, *descriptorpb.DescriptorProto) {
+
+	resp, err := c.GetWriteStream(ctx, &storagepb.GetWriteStreamRequest{
+		Name: streamName,
+		View: storagepb.WriteStreamView_FULL,
+	})
 	if err != nil {
-		t.Fatalf("adapt.BQSchemaToStorageTableSchema: %v", err)
+		t.Fatalf("couldn't get write stream (%q): %v", streamName, err)
 	}
 
-	descriptor, err := adapt.StorageSchemaToProto2Descriptor(convertedSchema, "root")
+	descriptor, err := adapt.StorageSchemaToProto2Descriptor(resp.GetTableSchema(), "root")
 	if err != nil {
 		t.Fatalf("adapt.StorageSchemaToDescriptor: %v", err)
 	}
@@ -400,7 +404,8 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	md, descriptorProto := setupDynamicDescriptors(t, testdata.GithubArchiveSchema)
+	defStreamName := fmt.Sprintf("%s/streams/_default", TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID))
+	md, descriptorProto := setupDynamicDescriptors(t, ctx, mwClient, defStreamName)
 
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
