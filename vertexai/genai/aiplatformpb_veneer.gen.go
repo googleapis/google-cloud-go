@@ -18,12 +18,12 @@ package genai
 
 import (
 	"fmt"
+	"time"
 
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"time"
 )
 
 // Blob contains binary data like images. Use [Text] for text.
@@ -119,7 +119,6 @@ type CachedContent struct {
 	CreateTime time.Time
 	// Output only. When the cache entry was last updated in UTC time.
 	UpdateTime time.Time
-	client     *Client
 }
 
 func (v *CachedContent) toProto() *pb.CachedContent {
