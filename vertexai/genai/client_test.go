@@ -72,8 +72,6 @@ func TestLive(t *testing.T) {
 		}
 		got := responseString(resp)
 		checkMatch(t, got, `[1-9][0-9].* (cm|centimeters)|[1-9].* inches`)
-		fmt.Println(got)
-
 	})
 
 	t.Run("streaming", func(t *testing.T) {

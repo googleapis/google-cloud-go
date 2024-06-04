@@ -17,6 +17,7 @@ package genai
 import (
 	"context"
 	"flag"
+	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -68,71 +69,99 @@ var (
 	cachingEndpoint = flag.String("caching-endpoint", "", "endpoint to test caching")
 )
 
-func TestCachingCRUD(t *testing.T) {
+func TestCaching(t *testing.T) {
 	ctx := context.Background()
 	if *cachingProject == "" || *cachingEndpoint == "" {
 		t.Skip("missing -caching-project or -caching-endpoint")
 	}
+	const model = "gemini-1.5-pro-001"
+
 	client, err := newClient(ctx, *cachingProject, "us-central1", *cachingEndpoint, config{}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
-	must := func(cc *CachedContent, err error) *CachedContent {
-		t.Helper()
+
+	t.Run("CRUD", func(t *testing.T) {
+		must := func(cc *CachedContent, err error) *CachedContent {
+			t.Helper()
+			if err != nil {
+				t.Fatal(err)
+			}
+			return cc
+		}
+
+		want := &CachedContent{
+			Model: "projects/" + *cachingProject +
+				"/locations/us-central1/publishers/google/models/" + model,
+			Expiration: ExpireTimeOrTTL{ExpireTime: time.Now().Add(time.Hour)},
+			CreateTime: time.Now(),
+			UpdateTime: time.Now(),
+		}
+
+		compare := func(got *CachedContent) {
+			t.Helper()
+			if diff := cmp.Diff(want, got,
+				cmpopts.EquateApproxTime(time.Minute),
+				cmpopts.IgnoreFields(CachedContent{}, "Name")); diff != "" {
+				t.Errorf("mismatch (-want, +got):\n%s", diff)
+			}
+		}
+
+		txt := strings.Repeat("Who's a good boy? You are! ", 3300)
+		argcc := &CachedContent{
+			Model: model,
+			Contents: []*Content{{Role: "user", Parts: []Part{
+				Text(txt)}}},
+		}
+		cc := must(client.CreateCachedContent(ctx, argcc))
+		compare(cc)
+
+		name := cc.Name
+		cc2 := must(client.GetCachedContent(ctx, name))
+		compare(cc2)
+		gotList := listAll(t, client.ListCachedContents(ctx))
+		var cc3 *CachedContent
+		for _, cc := range gotList {
+			if cc.Name == name {
+				cc3 = cc
+				break
+			}
+		}
+		if cc3 == nil {
+			t.Fatal("did not find created in list")
+		}
+		compare(cc3)
+
+		if err := client.DeleteCachedContent(ctx, name); err != nil {
+			t.Fatal(err)
+		}
+
+		if err := client.DeleteCachedContent(ctx, "bad name"); err == nil {
+			t.Fatal("want error, got nil")
+		}
+	})
+	t.Run("generation", func(t *testing.T) {
+		txt := strings.Repeat("George Washington was the first president of the United States. ", 3000)
+		argcc := &CachedContent{
+			Model:    model,
+			Contents: []*Content{{Role: "user", Parts: []Part{Text(txt)}}},
+		}
+		cc, err := client.CreateCachedContent(ctx, argcc)
 		if err != nil {
 			t.Fatal(err)
 		}
-		return cc
-	}
-
-	want := &CachedContent{
-		Model:      "projects/cloud-llm-preview1/locations/us-central1/publishers/google/models/gemini-1.5-pro-001",
-		Expiration: ExpireTimeOrTTL{ExpireTime: time.Now().Add(time.Hour)},
-		CreateTime: time.Now(),
-		UpdateTime: time.Now(),
-	}
-
-	compare := func(got *CachedContent) {
-		t.Helper()
-		if diff := cmp.Diff(want, got,
-			cmpopts.EquateApproxTime(time.Minute),
-			cmpopts.IgnoreFields(CachedContent{}, "Name")); diff != "" {
-			t.Errorf("mismatch (-want, +got):\n%s", diff)
+		defer client.DeleteCachedContent(ctx, cc.Name)
+		m := client.GenerativeModelFromCachedContent(cc)
+		res, err := m.GenerateContent(ctx, Text("Who was the first US president?"))
+		if err != nil {
+			t.Fatal(err)
 		}
-	}
-
-	txt := strings.Repeat("Who's a good boy? You are! ", 3300)
-	argcc := &CachedContent{
-		Model: "gemini-1.5-pro-001",
-		Contents: []*Content{{Role: "user", Parts: []Part{
-			Text(txt)}}},
-	}
-	cc := must(client.CreateCachedContent(ctx, argcc))
-	compare(cc)
-
-	name := cc.Name
-	cc2 := must(client.GetCachedContent(ctx, name))
-	compare(cc2)
-	gotList := listAll(t, client.ListCachedContents(ctx))
-	var cc3 *CachedContent
-	for _, cc := range gotList {
-		if cc.Name == name {
-			cc3 = cc
-			break
+		got := responseString(res)
+		const want = "Washington"
+		if !strings.Contains(got, want) {
+			t.Errorf("got %q, want string containing %q", got, want)
 		}
-	}
-	if cc3 == nil {
-		t.Fatal("did not find created in list")
-	}
-	compare(cc3)
-
-	if err := client.DeleteCachedContent(ctx, name); err != nil {
-		t.Fatal(err)
-	}
-
-	if err := client.DeleteCachedContent(ctx, "bad name"); err == nil {
-		t.Fatal("want error, got nil")
-	}
+	})
 }
 
 func listAll(t *testing.T, iter *CachedContentIterator) []*CachedContent {
@@ -148,4 +177,8 @@ func listAll(t *testing.T, iter *CachedContentIterator) []*CachedContent {
 		ccs = append(ccs, cc)
 	}
 	return ccs
+}
+
+func TestCachedContent(t *testing.T) {
+
 }
