@@ -266,7 +266,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		if opts.DirectedReadOptions != nil {
 			directedReadOptions = opts.DirectedReadOptions
 		}
-		orderBy = opts.OrderBy
+		if opts.OrderBy != sppb.ReadRequest_ORDER_BY_UNSPECIFIED {
+			orderBy = opts.OrderBy
+		}
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
