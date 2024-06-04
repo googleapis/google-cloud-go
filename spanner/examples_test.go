@@ -506,7 +506,7 @@ func ExampleNewStatement_structLiteral() {
 	_ = stmt // TODO: Use stmt in Query.
 }
 
-func ExampleStructParam() {
+func ExampleStatement_structParam() {
 	stmt := spanner.Statement{
 		SQL: "SELECT * FROM SINGERS WHERE (FirstName, LastName) = @singerinfo",
 		Params: map[string]interface{}{
@@ -519,7 +519,7 @@ func ExampleStructParam() {
 	_ = stmt // TODO: Use stmt in Query.
 }
 
-func ExampleArrayOfStructParam() {
+func ExampleStatement_arrayOfStructParam() {
 	stmt := spanner.Statement{
 		SQL: "SELECT * FROM SINGERS WHERE (FirstName, LastName) IN UNNEST(@singerinfo)",
 		Params: map[string]interface{}{

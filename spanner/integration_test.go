@@ -2271,8 +2271,8 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 	defer cancel()
 	stmts := []string{
 		`CREATE PROTO BUNDLE (
-					spanner.examples.music.SingerInfo,
-					spanner.examples.music.Genre,
+					examples.spanner.music.SingerInfo,
+					examples.spanner.music.Genre,
 				)`,
 		`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
@@ -2280,10 +2280,10 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 					Bytes		BYTES(MAX),
 					Int64Array	ARRAY<INT64>,
 					BytesArray	ARRAY<BYTES(MAX)>,
-					ProtoMessage    spanner.examples.music.SingerInfo,
-					ProtoEnum   spanner.examples.music.Genre,
-					ProtoMessageArray   ARRAY<spanner.examples.music.SingerInfo>,
-					ProtoEnumArray  ARRAY<spanner.examples.music.Genre>,
+					ProtoMessage    examples.spanner.music.SingerInfo,
+					ProtoEnum   examples.spanner.music.Genre,
+					ProtoMessageArray   ARRAY<examples.spanner.music.SingerInfo>,
+					ProtoEnumArray  ARRAY<examples.spanner.music.Genre>,
 			) PRIMARY KEY (RowID)`,
 	}
 
@@ -2313,9 +2313,9 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		want interface{}
 	}{
 		// Proto Message
-		{col: "ProtoMessage", val: &singerProtoMessage, want: singerProtoMessage},
+		{col: "ProtoMessage", val: &singerProtoMessage, want: &singerProtoMessage},
 		{col: "ProtoMessage", val: &singerProtoMessage, want: NullProtoMessage{&singerProtoMessage, true}},
-		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: singerProtoMessage},
+		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: &singerProtoMessage},
 		{col: "ProtoMessage", val: NullProtoMessage{&singerProtoMessage, true}, want: NullProtoMessage{&singerProtoMessage, true}},
 		{col: "ProtoMessage", val: nil, want: NullProtoMessage{}},
 		// Proto Enum
@@ -2335,13 +2335,13 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		{col: "ProtoEnum", val: pb.Genre_ROCK, want: singerProtoEnum},
 		// Test Compatibility between Bytes and ProtoMessage
 		{col: "Bytes", val: &singerProtoMessage, want: bytesSingerProtoMessage},
-		{col: "Bytes", val: &singerProtoMessage, want: singerProtoMessage},
-		{col: "Bytes", val: bytesSingerProtoMessage, want: singerProtoMessage},
+		{col: "Bytes", val: &singerProtoMessage, want: &singerProtoMessage},
+		{col: "Bytes", val: bytesSingerProtoMessage, want: &singerProtoMessage},
 		{col: "Bytes", val: bytesSingerProtoMessage},
-		{col: "ProtoMessage", val: bytesSingerProtoMessage, want: singerProtoMessage},
+		{col: "ProtoMessage", val: bytesSingerProtoMessage, want: &singerProtoMessage},
 		{col: "ProtoMessage", val: bytesSingerProtoMessage, want: bytesSingerProtoMessage},
 		{col: "ProtoMessage", val: &singerProtoMessage, want: bytesSingerProtoMessage},
-		{col: "ProtoMessage", val: &singerProtoMessage, want: singerProtoMessage},
+		{col: "ProtoMessage", val: &singerProtoMessage, want: &singerProtoMessage},
 		// Test Compatibility between NullInt64 and NullProtoEnum
 		{col: "Int64a", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullInt64{3, true}},
 		{col: "Int64a", val: NullProtoEnum{pb.Genre_ROCK, true}, want: NullProtoEnum{&singerProtoEnum, true}},
@@ -2463,7 +2463,16 @@ func TestIntegration_BasicTypes_ProtoColumns(t *testing.T) {
 		if want == nil {
 			want = test.val
 		}
-		gotp := reflect.New(reflect.TypeOf(want))
+
+		var gotp reflect.Value
+		switch want.(type) {
+		case proto.Message:
+			// We are passing a pointer of proto message in `want` due to `go vet` issue.
+			// Through the switch case, we are dereferencing the value so that we get proto message instead of its pointer.
+			gotp = reflect.New(reflect.TypeOf(want).Elem())
+		default:
+			gotp = reflect.New(reflect.TypeOf(want))
+		}
 		v := gotp.Interface()
 
 		switch nullValue := v.(type) {
@@ -2512,8 +2521,8 @@ func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 	defer cancel()
 	stmts := []string{
 		`CREATE PROTO BUNDLE (
-					spanner.examples.music.SingerInfo,
-					spanner.examples.music.Genre,
+					examples.spanner.music.SingerInfo,
+					examples.spanner.music.Genre,
 				)`,
 		`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
@@ -2521,10 +2530,10 @@ func TestIntegration_BasicTypes_ProtoColumns_Errors(t *testing.T) {
 					Bytes		BYTES(MAX),
 					Int64Array	ARRAY<INT64>,
 					BytesArray	ARRAY<BYTES(MAX)>,
-					ProtoMessage    spanner.examples.music.SingerInfo,
-					ProtoEnum   spanner.examples.music.Genre,
-					ProtoMessageArray   ARRAY<spanner.examples.music.SingerInfo>,
-					ProtoEnumArray  ARRAY<spanner.examples.music.Genre>,
+					ProtoMessage    examples.spanner.music.SingerInfo,
+					ProtoEnum   examples.spanner.music.Genre,
+					ProtoMessageArray   ARRAY<examples.spanner.music.SingerInfo>,
+					ProtoEnumArray  ARRAY<examples.spanner.music.Genre>,
 			) PRIMARY KEY (RowID)`,
 	}
 	protoDescriptor := readProtoDescriptorFile()
@@ -2607,15 +2616,15 @@ func TestIntegration_ProtoColumns_DML_ParameterizedQueries_Pk_Indexes(t *testing
 	defer cancel()
 	stmts := []string{
 		`CREATE PROTO BUNDLE (
-					spanner.examples.music.SingerInfo,
-					spanner.examples.music.Genre,
+					examples.spanner.music.SingerInfo,
+					examples.spanner.music.Genre,
 				)`,
 		`CREATE TABLE Singers (
 				 SingerId   INT64 NOT NULL,
 				 FirstName  STRING(1024),
 				 LastName   STRING(1024),
-				 SingerInfo spanner.examples.music.SingerInfo,
-				 SingerGenre spanner.examples.music.Genre,
+				 SingerInfo examples.spanner.music.SingerInfo,
+				 SingerGenre examples.spanner.music.Genre,
 				 SingerNationality STRING(1024) AS (SingerInfo.nationality) STORED,
 				) PRIMARY KEY (SingerNationality, SingerGenre)`,
 		`CREATE INDEX SingerByNationalityAndGenre ON Singers(SingerNationality, SingerGenre) STORING (SingerId, FirstName, LastName)`,
@@ -3038,7 +3047,7 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	for i := 0; i < 2; i++ {
 		ms = append(ms, InsertOrUpdate(testTable,
 			testTableColumns,
-			[]interface{}{fmt.Sprintf("k%d", i), fmt.Sprintf("v")}))
+			[]interface{}{fmt.Sprintf("k%d", i), "v"}))
 	}
 	if _, err := client.Apply(ctx, ms); err != nil {
 		t.Fatal(err)

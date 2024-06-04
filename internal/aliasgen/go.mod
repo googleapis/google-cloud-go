@@ -1,11 +1,11 @@
 module cloud.google.com/go/internal/aliasgen
 
-go 1.19
+go 1.20
 
 require (
 	github.com/google/go-cmp v0.6.0
 	golang.org/x/tools v0.21.0
-	google.golang.org/grpc v1.63.2
+	google.golang.org/grpc v1.64.0
 )
 
 require (

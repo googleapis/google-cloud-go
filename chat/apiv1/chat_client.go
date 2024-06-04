@@ -763,7 +763,8 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateMessage creates a message in a Google Chat space. For an example, see Send a
+// CreateMessage creates a message in a Google Chat space. The maximum message size,
+// including text and cards, is 32,000 bytes. For an example, see Send a
 // message (at https://developers.google.com/workspace/chat/create-messages).
 //
 // Calling this method requires
@@ -960,17 +961,17 @@ func (c *Client) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceRequest
 // members (at https://developers.google.com/workspace/chat/set-up-spaces).
 //
 // To specify the human members to add, add memberships with the appropriate
-// member.name in the SetUpSpaceRequest. To add a human user, use
-// users/{user}, where {user} can be the email address for the user. For
-// users in the same Workspace organization {user} can also be the id for
-// the person from the People API, or the id for the user in the Directory
-// API. For example, if the People API Person profile ID for
-// user@example.com is 123456789, you can add the user to the space by
-// setting the membership.member.name to users/user@example.com or
-// users/123456789.
+// membership.member.name. To add a human user, use users/{user}, where
+// {user} can be the email address for the user. For users in the same
+// Workspace organization {user} can also be the id for the person from
+// the People API, or the id for the user in the Directory API. For example,
+// if the People API Person profile ID for user@example.com is 123456789,
+// you can add the user to the space by setting the membership.member.name
+// to users/user@example.com or users/123456789.
 //
-// For a space or group chat, if the caller blocks or is blocked by some
-// members, then those members aren’t added to the created space.
+// For a named space or group chat, if the caller blocks, or is blocked
+// by some members, or doesn’t have permission to add some members, then
+// those members aren’t added to the created space.
 //
 // To create a direct message (DM) between the calling user and another human
 // user, specify exactly one membership to represent the human user. If
@@ -1067,8 +1068,8 @@ func (c *Client) FindDirectMessage(ctx context.Context, req *chatpb.FindDirectMe
 // directly to the specified space. Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 //
-// To specify the member to add, set the membership.member.name in the
-// CreateMembershipRequest:
+// To specify the member to add, set the membership.member.name for the
+// human or app member.
 //
 //	To add the calling app to a space or a direct message between two human
 //	users, use users/app. Unable to add other
@@ -1085,8 +1086,11 @@ func (c *Client) CreateMembership(ctx context.Context, req *chatpb.CreateMembers
 	return c.internalClient.CreateMembership(ctx, req, opts...)
 }
 
-// UpdateMembership updates a membership. Requires user
-// authentication (at https://developers.google.com/chat/api/guides/auth/users).
+// UpdateMembership updates a membership. For an example, see Update a user’s membership in
+// a space (at https://developers.google.com/workspace/chat/update-members).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *Client) UpdateMembership(ctx context.Context, req *chatpb.UpdateMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	return c.internalClient.UpdateMembership(ctx, req, opts...)
 }
@@ -1131,7 +1135,9 @@ func (c *Client) DeleteReaction(ctx context.Context, req *chatpb.DeleteReactionR
 }
 
 // GetSpaceReadState returns details about a user’s read state within a space, used to identify
-// read and unread messages.
+// read and unread messages. For an example, see Get details about a user’s
+// space read
+// state (at https://developers.google.com/workspace/chat/get-space-read-state).
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
@@ -1140,7 +1146,8 @@ func (c *Client) GetSpaceReadState(ctx context.Context, req *chatpb.GetSpaceRead
 }
 
 // UpdateSpaceReadState updates a user’s read state within a space, used to identify read and
-// unread messages.
+// unread messages. For an example, see Update a user’s space read
+// state (at https://developers.google.com/workspace/chat/update-space-read-state).
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
@@ -1149,7 +1156,9 @@ func (c *Client) UpdateSpaceReadState(ctx context.Context, req *chatpb.UpdateSpa
 }
 
 // GetThreadReadState returns details about a user’s read state within a thread, used to identify
-// read and unread messages.
+// read and unread messages. For an example, see Get details about a user’s
+// thread read
+// state (at https://developers.google.com/workspace/chat/get-thread-read-state).
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
@@ -1221,7 +1230,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1284,7 +1295,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1857,7 +1870,8 @@ func (c *gRPCClient) GetThreadReadState(ctx context.Context, req *chatpb.GetThre
 	return resp, nil
 }
 
-// CreateMessage creates a message in a Google Chat space. For an example, see Send a
+// CreateMessage creates a message in a Google Chat space. The maximum message size,
+// including text and cards, is 32,000 bytes. For an example, see Send a
 // message (at https://developers.google.com/workspace/chat/create-messages).
 //
 // Calling this method requires
@@ -2856,17 +2870,17 @@ func (c *restClient) CreateSpace(ctx context.Context, req *chatpb.CreateSpaceReq
 // members (at https://developers.google.com/workspace/chat/set-up-spaces).
 //
 // To specify the human members to add, add memberships with the appropriate
-// member.name in the SetUpSpaceRequest. To add a human user, use
-// users/{user}, where {user} can be the email address for the user. For
-// users in the same Workspace organization {user} can also be the id for
-// the person from the People API, or the id for the user in the Directory
-// API. For example, if the People API Person profile ID for
-// user@example.com is 123456789, you can add the user to the space by
-// setting the membership.member.name to users/user@example.com or
-// users/123456789.
+// membership.member.name. To add a human user, use users/{user}, where
+// {user} can be the email address for the user. For users in the same
+// Workspace organization {user} can also be the id for the person from
+// the People API, or the id for the user in the Directory API. For example,
+// if the People API Person profile ID for user@example.com is 123456789,
+// you can add the user to the space by setting the membership.member.name
+// to users/user@example.com or users/123456789.
 //
-// For a space or group chat, if the caller blocks or is blocked by some
-// members, then those members aren’t added to the created space.
+// For a named space or group chat, if the caller blocks, or is blocked
+// by some members, or doesn’t have permission to add some members, then
+// those members aren’t added to the created space.
 //
 // To create a direct message (DM) between the calling user and another human
 // user, specify exactly one membership to represent the human user. If
@@ -3241,8 +3255,8 @@ func (c *restClient) FindDirectMessage(ctx context.Context, req *chatpb.FindDire
 // directly to the specified space. Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 //
-// To specify the member to add, set the membership.member.name in the
-// CreateMembershipRequest:
+// To specify the member to add, set the membership.member.name for the
+// human or app member.
 //
 //	To add the calling app to a space or a direct message between two human
 //	users, use users/app. Unable to add other
@@ -3321,8 +3335,11 @@ func (c *restClient) CreateMembership(ctx context.Context, req *chatpb.CreateMem
 	return resp, nil
 }
 
-// UpdateMembership updates a membership. Requires user
-// authentication (at https://developers.google.com/chat/api/guides/auth/users).
+// UpdateMembership updates a membership. For an example, see Update a user’s membership in
+// a space (at https://developers.google.com/workspace/chat/update-members).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
 func (c *restClient) UpdateMembership(ctx context.Context, req *chatpb.UpdateMembershipRequest, opts ...gax.CallOption) (*chatpb.Membership, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetMembership()
@@ -3677,7 +3694,9 @@ func (c *restClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 }
 
 // GetSpaceReadState returns details about a user’s read state within a space, used to identify
-// read and unread messages.
+// read and unread messages. For an example, see Get details about a user’s
+// space read
+// state (at https://developers.google.com/workspace/chat/get-space-read-state).
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
@@ -3741,7 +3760,8 @@ func (c *restClient) GetSpaceReadState(ctx context.Context, req *chatpb.GetSpace
 }
 
 // UpdateSpaceReadState updates a user’s read state within a space, used to identify read and
-// unread messages.
+// unread messages. For an example, see Update a user’s space read
+// state (at https://developers.google.com/workspace/chat/update-space-read-state).
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
@@ -3819,7 +3839,9 @@ func (c *restClient) UpdateSpaceReadState(ctx context.Context, req *chatpb.Updat
 }
 
 // GetThreadReadState returns details about a user’s read state within a thread, used to identify
-// read and unread messages.
+// read and unread messages. For an example, see Get details about a user’s
+// thread read
+// state (at https://developers.google.com/workspace/chat/get-thread-read-state).
 //
 // Requires user
 // authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user).
