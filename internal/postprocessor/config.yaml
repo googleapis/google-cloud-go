@@ -95,6 +95,7 @@ modules:
   - networkconnectivity
   - networkmanagement
   - networksecurity
+  - networkservices
   - notebooks
   - optimization
   - orchestration
@@ -681,6 +682,9 @@ service-configs:
   - input-directory: google/cloud/networksecurity/v1beta1
     service-config: networksecurity_v1beta1.yaml
     import-path: cloud.google.com/go/networksecurity/apiv1beta1
+  - input-directory: google/cloud/networkservices/v1
+    service-config: networkservices_v1.yaml
+    import-path: cloud.google.com/go/networkservices/apiv1
   - input-directory: google/cloud/notebooks/v1
     service-config: notebooks_v1.yaml
     import-path: cloud.google.com/go/notebooks/apiv1
@@ -866,12 +870,24 @@ service-configs:
   - input-directory: google/shopping/css/v1
     service-config: css_v1.yaml
     import-path: cloud.google.com/go/shopping/css/apiv1
+  - input-directory: google/shopping/merchant/accounts/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/accounts/apiv1beta
   - input-directory: google/shopping/merchant/conversions/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/conversions/apiv1beta
+  - input-directory: google/shopping/merchant/datasources/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/datasources/apiv1beta
   - input-directory: google/shopping/merchant/notifications/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/notifications/apiv1beta
+  - input-directory: google/shopping/merchant/products/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/products/apiv1beta
+  - input-directory: google/shopping/merchant/promotions/v1beta
+    service-config: merchantapi_v1beta.yaml
+    import-path: cloud.google.com/go/shopping/merchant/promotions/apiv1beta
   - input-directory: google/shopping/merchant/quota/v1beta
     service-config: merchantapi_v1beta.yaml
     import-path: cloud.google.com/go/shopping/merchant/quota/apiv1beta

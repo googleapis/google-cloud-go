@@ -24,6 +24,7 @@ import (
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/genproto/googleapis/type/date"
 	gstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -140,4 +141,12 @@ func APIErrorFromProto(s *spb.Status) *apierror.APIError {
 		return nil
 	}
 	return aerr
+}
+
+// DurationFromProto converts a Duration proto to a time.Duration.
+func DurationFromProto(d *durationpb.Duration) time.Duration {
+	if d == nil {
+		return 0
+	}
+	return d.AsDuration()
 }

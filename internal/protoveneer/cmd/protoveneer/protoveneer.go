@@ -850,6 +850,13 @@ var externalTypes = []*externalType{
 		convertFrom:   "support.TimeFromProto",
 	},
 	{
+		qualifiedName: "time.Duration",
+		replaces:      "*durationpb.Duration",
+		importPaths:   []string{"time", "google.golang.org/protobuf/types/known/durationpb"},
+		convertTo:     "durationpb.New",
+		convertFrom:   "support.DurationFromProto",
+	},
+	{
 		qualifiedName: "*apierror.APIError",
 		replaces:      "*status.Status",
 		importPaths:   []string{"github.com/googleapis/gax-go/v2/apierror"},
