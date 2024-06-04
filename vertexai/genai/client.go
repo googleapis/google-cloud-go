@@ -57,18 +57,20 @@ type Client struct {
 // this package, such as [WithREST].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
 	location = inferLocation(location)
-	opts = append([]option.ClientOption{
-		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
-	}, opts...)
+	endpoint := fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)
 	conf := newConfig(opts...)
+	return newClient(ctx, projectID, location, endpoint, conf, opts)
+}
 
+func newClient(ctx context.Context, projectID, location, endpoint string, conf config, opts []option.ClientOption) (*Client, error) {
+	opts = append([]option.ClientOption{option.WithEndpoint(endpoint)}, opts...)
 	c := &Client{projectID: projectID, location: location}
 
-	if err := newClient(ctx, &c.pc, conf,
+	if err := setGAPICClient(ctx, &c.pc, conf,
 		aiplatform.NewPredictionRESTClient, aiplatform.NewPredictionClient, opts); err != nil {
 		return nil, err
 	}
-	if err := newClient(ctx, &c.cc, conf, newCacheRESTClient, newCacheClient, opts); err != nil {
+	if err := setGAPICClient(ctx, &c.cc, conf, newCacheRESTClient, newCacheClient, opts); err != nil {
 		return nil, err
 	}
 	return c, nil
@@ -76,7 +78,7 @@ func NewClient(ctx context.Context, projectID, location string, opts ...option.C
 
 type sgci interface{ SetGoogleClientInfo(...string) }
 
-func newClient[ClientType sgci](ctx context.Context, pf *ClientType, conf config, newREST, newGRPC func(context.Context, ...option.ClientOption) (ClientType, error), opts []option.ClientOption) error {
+func setGAPICClient[ClientType sgci](ctx context.Context, pf *ClientType, conf config, newREST, newGRPC func(context.Context, ...option.ClientOption) (ClientType, error), opts []option.ClientOption) error {
 	var c ClientType
 	var err error
 	if conf.withREST {
