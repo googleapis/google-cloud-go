@@ -97,7 +97,7 @@ func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client, l
 }
 
 // setupDynamicDescriptors aids testing when not using a supplied proto.
-func setupDynamicDescriptors(t *testing.T, ctx context.Context, c *Client, streamName string) (protoreflect.MessageDescriptor, *descriptorpb.DescriptorProto) {
+func setupDynamicDescriptors(ctx context.Context, t *testing.T, c *Client, streamName string) (protoreflect.MessageDescriptor, *descriptorpb.DescriptorProto) {
 
 	resp, err := c.GetWriteStream(ctx, &storagepb.GetWriteStreamRequest{
 		Name: streamName,
@@ -405,7 +405,7 @@ func testDefaultStreamDynamicJSON(ctx context.Context, t *testing.T, mwClient *C
 	}
 
 	defStreamName := fmt.Sprintf("%s/streams/_default", TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID))
-	md, descriptorProto := setupDynamicDescriptors(t, ctx, mwClient, defStreamName)
+	md, descriptorProto := setupDynamicDescriptors(ctx, t, mwClient, defStreamName)
 
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
