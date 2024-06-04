@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.114.0
 	cloud.google.com/go/longrunning v0.5.7
 	github.com/googleapis/gax-go/v2 v2.12.4
-	golang.org/x/text v0.15.0
+	golang.org/x/text v0.16.0
 	google.golang.org/api v0.182.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
 	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
