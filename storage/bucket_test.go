@@ -66,8 +66,8 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 		Logging:               &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:               &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
 		Autoclass:             &Autoclass{Enabled: true, TerminalStorageClass: "NEARLINE"},
-		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		SoftDeletePolicy:      &SoftDeletePolicy{RetentionDuration: time.Hour},
+		HierarchicalNamespace: &HierarchicalNamespace{Enabled: true},
 		Lifecycle: Lifecycle{
 			Rules: []LifecycleRule{{
 				Action: LifecycleAction{
