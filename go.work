@@ -112,6 +112,7 @@ use (
 	./networkconnectivity
 	./networkmanagement
 	./networksecurity
+	./networkservices
 	./notebooks
 	./optimization
 	./orchestration
