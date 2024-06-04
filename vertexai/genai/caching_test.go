@@ -16,13 +16,15 @@ package genai
 
 import (
 	"context"
-	"fmt"
+	"flag"
+	"strings"
 	"testing"
 	"time"
 
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"google.golang.org/api/iterator"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -61,10 +63,20 @@ func TestPopulateCachedContent(t *testing.T) {
 	}
 }
 
-// called from client_test.go:TestLive.
-func testCaching(t *testing.T, client *Client) {
-	t.Skip("caching not yet working")
+var (
+	cachingProject  = flag.String("caching-project", "", "project ID to test caching")
+	cachingEndpoint = flag.String("caching-endpoint", "", "endpoint to test caching")
+)
+
+func TestCachingCRUD(t *testing.T) {
 	ctx := context.Background()
+	if *cachingProject == "" || *cachingEndpoint == "" {
+		t.Skip("missing -caching-project or -caching-endpoint")
+	}
+	client, err := newClient(ctx, *cachingProject, "us-central1", *cachingEndpoint, config{}, nil)
+	if err != nil {
+		t.Fatal(err)
+	}
 	must := func(cc *CachedContent, err error) *CachedContent {
 		t.Helper()
 		if err != nil {
@@ -73,11 +85,67 @@ func testCaching(t *testing.T, client *Client) {
 		return cc
 	}
 
+	want := &CachedContent{
+		Model:      "projects/cloud-llm-preview1/locations/us-central1/publishers/google/models/gemini-1.5-pro-001",
+		Expiration: ExpireTimeOrTTL{ExpireTime: time.Now().Add(time.Hour)},
+		CreateTime: time.Now(),
+		UpdateTime: time.Now(),
+	}
+
+	compare := func(got *CachedContent) {
+		t.Helper()
+		if diff := cmp.Diff(want, got,
+			cmpopts.EquateApproxTime(time.Minute),
+			cmpopts.IgnoreFields(CachedContent{}, "Name")); diff != "" {
+			t.Errorf("mismatch (-want, +got):\n%s", diff)
+		}
+	}
+
+	txt := strings.Repeat("Who's a good boy? You are! ", 3300)
 	argcc := &CachedContent{
-		Name:              "vertex-caching-test",
-		Model:             "gemini-1.5-pro",
-		SystemInstruction: &Content{Parts: []Part{Text("si")}},
+		Model: "gemini-1.5-pro-001",
+		Contents: []*Content{{Role: "user", Parts: []Part{
+			Text(txt)}}},
 	}
 	cc := must(client.CreateCachedContent(ctx, argcc))
-	fmt.Println(cc)
+	compare(cc)
+
+	name := cc.Name
+	cc2 := must(client.GetCachedContent(ctx, name))
+	compare(cc2)
+	gotList := listAll(t, client.ListCachedContents(ctx))
+	var cc3 *CachedContent
+	for _, cc := range gotList {
+		if cc.Name == name {
+			cc3 = cc
+			break
+		}
+	}
+	if cc3 == nil {
+		t.Fatal("did not find created in list")
+	}
+	compare(cc3)
+
+	if err := client.DeleteCachedContent(ctx, name); err != nil {
+		t.Fatal(err)
+	}
+
+	if err := client.DeleteCachedContent(ctx, "bad name"); err == nil {
+		t.Fatal("want error, got nil")
+	}
+}
+
+func listAll(t *testing.T, iter *CachedContentIterator) []*CachedContent {
+	var ccs []*CachedContent
+	for {
+		cc, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		ccs = append(ccs, cc)
+	}
+	return ccs
 }

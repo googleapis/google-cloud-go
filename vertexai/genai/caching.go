@@ -50,11 +50,24 @@ func (c *Client) GenerativeModelFromCachedContent(cc *CachedContent) *Generative
 // CreateCachedContent creates a new CachedContent.
 // You can use the return value to create a model with [CachedContent.GenerativeModel].
 func (c *Client) CreateCachedContent(ctx context.Context, cc *CachedContent) (*CachedContent, error) {
+	if cc.Name != "" {
+		return nil, errors.New("genai.CreateCachedContent: do not provide a name; one will be generated")
+	}
+	pcc := cc.toProto()
+	pcc.Model = inferFullModelName(c.projectID, c.location, pcc.Model)
 	return c.cachedContentFromProto(c.cc.CreateCachedContent(ctx, &pb.CreateCachedContentRequest{
 		Parent:        c.parent(),
-		CachedContent: cc.toProto(),
+		CachedContent: pcc,
 	}))
 }
+
+// func (c *Client) inferFullCachedContentName(name string) string {
+// 	if strings.Contains(name, "/") {
+// 		return name
+// 	}
+// 	return fmt.Sprintf("projects/%s/locations/%s/cachedContents/%s",
+// 		c.projectID, c.location, name)
+// }
 
 // GetCachedContent retrieves the CachedContent with the given name.
 func (c *Client) GetCachedContent(ctx context.Context, name string) (*CachedContent, error) {
@@ -122,7 +135,6 @@ func (c *Client) cachedContentFromProto(pcc *pb.CachedContent, err error) (*Cach
 		return nil, err
 	}
 	cc := (CachedContent{}).fromProto(pcc)
-	cc.client = c
 	return cc, nil
 }
 
