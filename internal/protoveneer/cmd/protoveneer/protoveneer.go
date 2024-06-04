@@ -220,7 +220,7 @@ func generate(conf *config, pkg *ast.Package, fset *token.FileSet) (src []byte, 
 	// Use the converters map to give every field a converter.
 	for _, ti := range toWrite {
 		for _, f := range ti.fields {
-			if f.converter != nil {
+			if f.converter != nil || f.noConvert {
 				continue
 			}
 			f.converter, err = makeConverter(f.af.Type, f.protoType, converters)
@@ -422,7 +422,7 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 	ti.spec.Name.Name = ti.veneerName
 	switch t := ti.spec.Type.(type) {
 	case *ast.StructType:
-		// Check that all configured fields are present.
+		// Check that all configured fields are present, and added fields are not.
 		exportedFields := map[string]bool{}
 		for _, f := range t.Fields.List {
 			if len(f.Names) > 1 {
@@ -433,13 +433,16 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 			}
 		}
 		if tconf != nil {
-			for name := range tconf.Fields {
-				if !exportedFields[name] {
+			for name, fconfig := range tconf.Fields {
+				if !exportedFields[name] && !fconfig.Add {
 					return fmt.Errorf("%s: configured field %s is not present", ti.protoName, name)
+				}
+				if exportedFields[name] && fconfig.Add {
+					return fmt.Errorf("%s: added field %s is already present", ti.protoName, name)
 				}
 			}
 		}
-		// Process the fields.
+		// Process the existing fields.
 		fs := t.Fields.List
 		t.Fields.List = t.Fields.List[:0]
 		for _, f := range fs {
@@ -450,6 +453,16 @@ func processType(ti *typeInfo, tconf *typeConfig, typeInfos map[string]*typeInfo
 			if fi != nil {
 				t.Fields.List = append(t.Fields.List, f)
 				ti.fields = append(ti.fields, fi)
+			}
+		}
+		// Add additional fields.
+		if tconf != nil {
+			for name, fconfig := range tconf.Fields {
+				if fconfig.Add {
+					if err := addField(name, fconfig, t, ti); err != nil {
+						return err
+					}
+				}
 			}
 		}
 		// Other processing.
@@ -550,6 +563,25 @@ func veneerType(protoType ast.Expr, typeInfos map[string]*typeInfo) ast.Expr {
 	}
 
 	return wtype(protoType)
+}
+
+func addField(name string, fconfig fieldConfig, t *ast.StructType, ti *typeInfo) error {
+	expr, err := parser.ParseExpr(fconfig.Type)
+	if err != nil {
+		return err
+	}
+	af := &ast.Field{
+		Names: []*ast.Ident{{Name: name}},
+		Type:  expr,
+	}
+	t.Fields.List = append(t.Fields.List, af)
+	ti.fields = append(ti.fields, &fieldInfo{
+		af:         af,
+		protoName:  "",
+		veneerName: name,
+		noConvert:  true,
+	})
+	return nil
 }
 
 // processEnumValues processes enum values.
