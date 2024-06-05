@@ -60,8 +60,8 @@ func WithJSONReads() option.ClientOption {
 	return &withReadAPI{useJSON: true}
 }
 
-// WithJSONReads is an option that may be passed to [NewClient].
-// It sets the client to use the XML API for object reads.
+// WithXMLReads is an option that may be passed to [NewClient].
+// It sets the client to use the Cloud Storage XML API for object reads.
 //
 // This is the current default, but the default will switch to JSON in a future
 // release.
