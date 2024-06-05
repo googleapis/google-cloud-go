@@ -889,8 +889,8 @@ var externalTypes = []*externalType{
 	{
 		qualifiedName: "time.Time",
 		replaces:      "*timestamppb.Timestamp",
-		importPaths:   []string{"time", "google.golang.org/protobuf/types/known/timestamppb"},
-		convertTo:     "timestamppb.New",
+		importPaths:   []string{"time"},
+		convertTo:     "support.TimeToProto",
 		convertFrom:   "support.TimeFromProto",
 	},
 	{
