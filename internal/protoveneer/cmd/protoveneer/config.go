@@ -71,6 +71,8 @@ type fieldConfig struct {
 	Type string // veneer type
 	// Omit from output.
 	Omit bool
+	// This field is not part of the proto; add it.
+	Add bool
 	// Generate the type, but not conversions.
 	// The populate functions (see [typeConfg.PopulateToFrom]) should set the field.
 	NoConvert bool `yaml:"noConvert"`
