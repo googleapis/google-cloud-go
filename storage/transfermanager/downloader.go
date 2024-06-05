@@ -23,6 +23,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/storage"
+	"github.com/googleapis/gax-go/v2/callctx"
 )
 
 // Downloader manages a set of parallelized downloads.
@@ -253,6 +254,9 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 		ctx = c
 	}
 
+	// TODO: set to downloadSharded when sharded
+	ctx = setTMmetricHeader(ctx, downloadMany)
+
 	// Set options on the object.
 	o := client.Bucket(in.Bucket).Object(in.Object)
 
@@ -305,4 +309,17 @@ type DownloadOutput struct {
 	Object string
 	Err    error                      // error occurring during download
 	Attrs  *storage.ReaderObjectAttrs // attributes of downloaded object, if successful
+}
+
+const (
+	xGoogHeaderKey  = "x-goog-api-client"
+	downloadMany    = "download_many"
+	downloadSharded = "download_sharded"
+)
+
+// Sets invocation ID headers on the context which will be propagated as
+// headers in the call to the service (for both gRPC and HTTP).
+func setTMmetricHeader(ctx context.Context, method string) context.Context {
+	header := fmt.Sprintf("gccl-gcs-cmd/tm.%s", method)
+	return callctx.SetHeaders(ctx, xGoogHeaderKey, header)
 }
