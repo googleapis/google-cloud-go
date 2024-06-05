@@ -4,6 +4,7 @@ package basic
 
 import (
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/civil"
 	pb "example.com/basic"
@@ -11,7 +12,6 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
-	"time"
 )
 
 // Blob contains raw media bytes.
