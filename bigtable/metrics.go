@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"os"
@@ -30,8 +31,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
-	otelmetric "go.opentelemetry.io/otel/sdk/metric"
-	"google.golang.org/api/option"
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -41,9 +41,10 @@ const (
 	// instrumentationScope is the instrumentation name that will be associated with the emitted telemetry.
 	instrumentationScope = "cloud.google.com/go"
 
-	metricsPrefix     = "bigtable/"
-	locationMDKey     = "x-goog-ext-425905942-bin"
-	serverTimingMDKey = "server-timing"
+	metricsPrefix         = "bigtable/"
+	locationMDKey         = "x-goog-ext-425905942-bin"
+	serverTimingMDKey     = "server-timing"
+	serverTimingValPrefix = "gfet4t7; dur="
 
 	// Monitored resource labels
 	monitoredResLabelKeyProject  = "project_id"
@@ -68,277 +69,193 @@ const (
 )
 
 var (
+	NoopMeterProvider = sdkmetric.NewMeterProvider()
+
 	// duration between two metric exports
-	defaultSamplePeriod = 5 * time.Minute
+	// defaultSamplePeriod = 5 * time.Minute
+	defaultSamplePeriod = 1 * time.Minute
 
 	clientName            = fmt.Sprintf("cloud.google.com/go/bigtable v%v", internal.Version)
 	builtInEnabledDefault = true
 
+	bucketBounds = []float64{0.0, 1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 10.0, 13.0, 16.0, 20.0, 25.0, 30.0, 40.0,
+		50.0, 65.0, 80.0, 100.0, 130.0, 160.0, 200.0, 250.0, 300.0, 400.0, 500.0, 650.0,
+		800.0, 1000.0, 2000.0, 5000.0, 10000.0, 20000.0, 50000.0, 100000.0, 200000.0,
+		400000.0, 800000.0, 1600000.0, 3200000.0}
+
 	// All the built-in metrics have same attributes except 'status' and 'streaming'
 	// These attributes need to be added to only few of the metrics
-	builtinMetrics = map[string]metricInfo{
+	additionalAttributes = map[string][]string{
 		metricNameOperationLatencies: {
-			desc:       "Total time until final operation success or failure, including retries and backoff.",
-			metricType: otelmetric.InstrumentKindHistogram,
-			unit:       "ns",
-			additionalAttributes: []string{
-				metricLabelKeyOperationStatus,
-				metricLabelKeyStreamingOperation,
-			},
+			metricLabelKeyOperationStatus,
+			metricLabelKeyStreamingOperation,
 		},
 		metricNameAttemptLatencies: {
-			desc:       "Client observed latency per RPC attempt.",
-			metricType: otelmetric.InstrumentKindHistogram,
-			unit:       "ns",
-			additionalAttributes: []string{
-				metricLabelKeyOperationStatus,
-				metricLabelKeyStreamingOperation,
-			},
+			metricLabelKeyOperationStatus,
+			metricLabelKeyStreamingOperation,
 		},
 		metricNameServerLatencies: {
-			desc:       "The latency measured from the moment that the RPC entered the Google data center until the RPC was completed.",
-			metricType: otelmetric.InstrumentKindHistogram,
-			unit:       "ns",
-			additionalAttributes: []string{
-				metricLabelKeyOperationStatus,
-				metricLabelKeyStreamingOperation,
-			},
+			metricLabelKeyOperationStatus,
+			metricLabelKeyStreamingOperation,
 		},
 		metricNameRetryCount: {
-			desc:       "The number of additional RPCs sent after the initial attempt.",
-			metricType: otelmetric.InstrumentKindCounter,
-			additionalAttributes: []string{
-				metricLabelKeyOperationStatus,
-			},
+			metricLabelKeyOperationStatus,
 		},
 	}
 
 	noOpRecordFn = func() {}
+
+	// Generates unique client ID in the format go-<random UUID>@<>hostname
+	generateClientUID = func() (string, error) {
+		hostname := "localhost"
+		hostname, err := os.Hostname()
+		if err != nil {
+			return "", err
+		}
+		return "go-" + uuid.NewString() + "@" + hostname, nil
+	}
 )
 
-type metricInfo struct {
-	desc                 string
-	metricType           otelmetric.InstrumentKind
-	unit                 string
-	additionalAttributes []string
-}
-
-type builtInMetricInstruments struct {
-	distributions map[string]metric.Float64Histogram // Key is metric name e.g. operation_latencies
-	counters      map[string]metric.Int64Counter     // Key is metric name e.g. retry_count
-}
-
-// Generates unique client ID in the format go-<random UUID>@<>hostname
-func generateClientUID() (string, error) {
-	hostname := "localhost"
-	hostname, err := os.Hostname()
+func getBuiltInMeterProviderOptions(ctx context.Context, project string) (sdkmetric.Option, error) {
+	defaultExporter, err := newMonitoringExporter(ctx, project)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
-	return "go-" + uuid.NewString() + "@" + hostname, nil
+
+	return sdkmetric.WithReader(
+		sdkmetric.NewPeriodicReader(
+			defaultExporter,
+			sdkmetric.WithInterval(defaultSamplePeriod),
+		),
+	), nil
 }
 
-type metricsConfigInternal struct {
-	exporter otelmetric.Exporter
-
-	project string
-
-	// Flag to indicate whether built-in metrics should be recorded and exported to GCM
-	builtInEnabled bool
+type builtinMetricsTracerFactory struct {
+	builtinEnabled bool
 
 	// attributes that are specific to a client instance and
 	// do not change across different function calls on client
 	clientAttributes []attribute.KeyValue
 
-	// Contains one entry per meter provider
-	instruments []builtInMetricInstruments
+	operationLatencies metric.Float64Histogram
+	serverLatencies    metric.Float64Histogram
+	attemptLatencies   metric.Float64Histogram
+	retryCount         metric.Int64Counter
 }
 
-func newMetricsConfigInternal(ctx context.Context, project, instance string, userProvidedConfig *metricsConfig, opts ...option.ClientOption) (*metricsConfigInternal, error) {
+func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appProfile string, metricsProvider MetricsProvider) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
 		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
 	}
 
-	// Create default meter provider
-	internalMetricsConfig := &metricsConfigInternal{
-		project: project,
+	tracerFactory := &builtinMetricsTracerFactory{
+		builtinEnabled: false,
 		clientAttributes: []attribute.KeyValue{
 			attribute.String(monitoredResLabelKeyProject, project),
 			attribute.String(monitoredResLabelKeyInstance, instance),
+			attribute.String(metricLabelKeyAppProfile, appProfile),
 			attribute.String(metricLabelKeyClientUID, clientUID),
 			attribute.String(metricLabelKeyClientName, clientName),
 		},
-		instruments:    []builtInMetricInstruments{},
-		builtInEnabled: builtInEnabledDefault,
 	}
 
-	defaultExporter, err := newMonitoringExporter(ctx, internalMetricsConfig.project, opts...)
-	if err != nil {
-		return nil, err
-	}
-	internalMetricsConfig.exporter = defaultExporter
-
-	// Create default meter provider
-	defaultMp := otelmetric.NewMeterProvider(
-		otelmetric.WithReader(
-			otelmetric.NewPeriodicReader(
-				defaultExporter,
-				otelmetric.WithInterval(defaultSamplePeriod),
-			),
-		),
-	)
-
-	userProvidedMeterProviders := []*otelmetric.MeterProvider{}
-	if addr := os.Getenv("BIGTABLE_EMULATOR_HOST"); addr != "" {
+	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
 		// Do not emit metrics when emulator is being used
-		internalMetricsConfig.builtInEnabled = false
-	} else if userProvidedConfig != nil {
-		internalMetricsConfig.builtInEnabled = userProvidedConfig.builtInEnabled
-		userProvidedMeterProviders = userProvidedConfig.meterProviders
+		return tracerFactory, nil
 	}
 
-	if !internalMetricsConfig.builtInEnabled {
-		return internalMetricsConfig, nil
-	}
+	var meterProvider *sdkmetric.MeterProvider
+	if metricsProvider == nil {
+		tracerFactory.builtinEnabled = true
 
-	// Create instruments on all meter providers
-	allMeterProviders := append(userProvidedMeterProviders, defaultMp)
-	for _, mp := range allMeterProviders {
-		builtInMetricInstruments := builtInMetricInstruments{
-			distributions: make(map[string]metric.Float64Histogram),
-			counters:      make(map[string]metric.Int64Counter),
+		// Create default meter provider
+		mpOptions, err := getBuiltInMeterProviderOptions(ctx, project)
+		if err != nil {
+			return tracerFactory, err
 		}
-
-		// Create meter
-		meter := mp.Meter(instrumentationScope, metric.WithInstrumentationVersion(internal.Version))
-
-		// Create instruments
-		for metricName, metricDetails := range builtinMetrics {
-			if metricDetails.metricType == otelmetric.InstrumentKindHistogram {
-				builtInMetricInstruments.distributions[metricName], err = meter.Float64Histogram(
-					metricName,
-					metric.WithDescription(metricDetails.desc),
-					metric.WithUnit(metricDetails.unit),
-				)
-				if err != nil {
-					return internalMetricsConfig, err
-				}
-			} else if metricDetails.metricType == otelmetric.InstrumentKindCounter {
-				builtInMetricInstruments.counters[metricName], err = meter.Int64Counter(
-					metricName,
-					metric.WithDescription(metricDetails.desc),
-					metric.WithUnit(metricDetails.unit),
-				)
-				if err != nil {
-					return internalMetricsConfig, err
-				}
-			}
-			internalMetricsConfig.instruments = append(internalMetricsConfig.instruments, builtInMetricInstruments)
+		meterProvider = sdkmetric.NewMeterProvider(mpOptions)
+	} else {
+		switch v := metricsProvider.(type) {
+		case CustomOpenTelemetryMetricsProvider:
+			// User provided meter provider
+			tracerFactory.builtinEnabled = true
+			meterProvider = v.MeterProvider
+		case NoopMetricsProvider:
+			tracerFactory.builtinEnabled = false
+			return tracerFactory, nil
+		default:
+			tracerFactory.builtinEnabled = false
+			return tracerFactory, errors.New("Unknown MetricsProvider type")
 		}
 	}
-	return internalMetricsConfig, nil
+
+	// Create meter and instruments
+	meter := meterProvider.Meter(instrumentationScope, metric.WithInstrumentationVersion(internal.Version))
+	err = tracerFactory.createInstruments(meter)
+	return tracerFactory, err
 }
 
-func (config *metricsConfigInternal) getOperationRecorder(ctx context.Context, table string, appProfile string, method string, isStreaming bool) (*builtinMetricsTracer, func()) {
-	mt := newBuiltinMetricsTracer(method, table, appProfile, isStreaming)
-	return &mt, config.recordOperationCompletion(ctx, &mt)
-}
+func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) error {
+	var err error
 
-func (config *metricsConfigInternal) gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer,
-	f func(ctx context.Context, _ gax.CallSettings) error, opts ...gax.CallOption) error {
-
-	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
-		// Increment number of attempts
-		mt.attemptCount++
-
-		recorder := config.recordAttemptCompletion(ctx, mt)
-		defer recorder()
-
-		err := f(ctx, callSettings)
-
-		// Record attempt status
-		statusCode, _ := convertToGrpcStatusErr(err)
-		mt.status = statusCode.String()
+	// Create operation_latencies
+	tf.operationLatencies, err = meter.Float64Histogram(
+		metricNameOperationLatencies,
+		metric.WithDescription("Total time until final operation success or failure, including retries and backoff."),
+		metric.WithUnit("ms"),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
 		return err
 	}
-	return gax.Invoke(ctx, callWrapper, opts...)
-}
 
-// recordAttemptCompletion returns a function that should be executed to record attempt specific metrics
-// It records as many metrics as it can and does not return error
-func (config *metricsConfigInternal) recordAttemptCompletion(ctx context.Context, mt *builtinMetricsTracer) func() {
-	if !config.builtInEnabled {
-		return noOpRecordFn
+	// Create attempt_latencies
+	tf.attemptLatencies, err = meter.Float64Histogram(
+		metricNameAttemptLatencies,
+		metric.WithDescription("Client observed latency per RPC attempt."),
+		metric.WithUnit("ms"),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
 	}
-	startTime := time.Now()
 
-	return func() {
-		// Calculate elapsed time
-		elapsedTime := time.Since(startTime).Nanoseconds()
-
-		// Attributes for attempt_latencies
-		attemptLatCurrCallAttrs, attemptLatErr := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
-		attemptLatAllAttrs := metric.WithAttributes(append(config.clientAttributes, attemptLatCurrCallAttrs...)...)
-
-		// Attributes for server_latencies
-		serverLatCurrCallAttrs, serverLatErr := mt.toOtelMetricAttrs(metricNameServerLatencies)
-		serverLatAllAttres := metric.WithAttributes(append(config.clientAttributes, serverLatCurrCallAttrs...)...)
-
-		for _, builtInMetricInstruments := range config.instruments {
-			if attemptLatErr == nil {
-				builtInMetricInstruments.distributions[metricNameAttemptLatencies].Record(ctx, float64(elapsedTime), attemptLatAllAttrs)
-			}
-
-			if serverLatErr == nil {
-				serverLatency, serverLatErr := mt.getServerLatency()
-				if serverLatErr == nil {
-					builtInMetricInstruments.distributions[metricNameServerLatencies].Record(ctx, float64(serverLatency), serverLatAllAttres)
-				}
-			}
-		}
+	// Create server_latencies
+	tf.serverLatencies, err = meter.Float64Histogram(
+		metricNameServerLatencies,
+		metric.WithDescription("The latency measured from the moment that the RPC entered the Google data center until the RPC was completed."),
+		metric.WithUnit("ms"),
+		metric.WithExplicitBucketBoundaries(bucketBounds...),
+	)
+	if err != nil {
+		return err
 	}
-}
 
-// recordOperationCompletion returns a function that should be executed to record total operation metrics
-// It records as many metrics as it can and does not return error on first failure
-func (config *metricsConfigInternal) recordOperationCompletion(ctx context.Context, mt *builtinMetricsTracer) func() {
-	if !config.builtInEnabled {
-		return noOpRecordFn
-	}
-	startTime := time.Now()
-
-	return func() {
-		// Calculate elapsed time
-		elapsedTime := time.Since(startTime).Nanoseconds()
-
-		// Attributes for operation_latencies
-		opLatCurrCallAttrs, opLatErr := mt.toOtelMetricAttrs(metricNameOperationLatencies)
-		opLatAllAttrs := metric.WithAttributes(append(config.clientAttributes, opLatCurrCallAttrs...)...)
-
-		// Attributes for retry_count
-		retryCntCurrCallAttrs, retryCountErr := mt.toOtelMetricAttrs(metricNameRetryCount)
-		retryCntAllAttrs := metric.WithAttributes(append(config.clientAttributes, retryCntCurrCallAttrs...)...)
-
-		for _, builtInMetricInstruments := range config.instruments {
-			if opLatErr == nil {
-				builtInMetricInstruments.distributions[metricNameOperationLatencies].Record(ctx, float64(elapsedTime), opLatAllAttrs)
-			}
-
-			// Only record when retry count is greater than 0 so the retry
-			// graph will be less confusing
-			if mt.attemptCount > 1 {
-				if retryCountErr == nil {
-					builtInMetricInstruments.counters[metricNameRetryCount].Add(ctx, mt.attemptCount-1, retryCntAllAttrs)
-				}
-			}
-		}
-	}
+	// Create retry_count
+	tf.retryCount, err = meter.Int64Counter(
+		metricNameRetryCount,
+		metric.WithDescription("The number of additional RPCs sent after the initial attempt."),
+	)
+	return err
 }
 
 // builtinMetricsTracer is created one per function call
 // It is used to store metric attribute values and other data required to obtain them
 type builtinMetricsTracer struct {
+	ctx            context.Context
+	builtInEnabled bool
+	opStartTime    time.Time
+
+	// attributes that are specific to a client instance and
+	// do not change across different function calls on client
+	clientAttributes []attribute.KeyValue
+
+	instrumentOperationLatencies metric.Float64Histogram
+	instrumentServerLatencies    metric.Float64Histogram
+	instrumentAttemptLatencies   metric.Float64Histogram
+	instrumentRetryCount         metric.Int64Counter
+
 	tableName    string
 	appProfileID string
 	method       string
@@ -356,13 +273,22 @@ type builtinMetricsTracer struct {
 	attemptCount int64
 }
 
-func newBuiltinMetricsTracer(method, tableName, appProfile string, isStreaming bool) builtinMetricsTracer {
+func (tf *builtinMetricsTracerFactory) newBuiltinMetricsTracer(ctx context.Context, tableName, appProfile string, isStreaming bool) builtinMetricsTracer {
 	headerMD := metadata.New(nil)
 	trailerMD := metadata.New(nil)
 	return builtinMetricsTracer{
+		ctx:              ctx,
+		builtInEnabled:   tf.builtinEnabled,
+		opStartTime:      time.Now(),
+		clientAttributes: tf.clientAttributes,
+
+		instrumentOperationLatencies: tf.operationLatencies,
+		instrumentServerLatencies:    tf.serverLatencies,
+		instrumentAttemptLatencies:   tf.attemptLatencies,
+		instrumentRetryCount:         tf.retryCount,
+
 		tableName:    tableName,
 		appProfileID: appProfile,
-		method:       method,
 		isStreaming:  isStreaming,
 		status:       "",
 		headerMD:     &headerMD,
@@ -371,19 +297,104 @@ func newBuiltinMetricsTracer(method, tableName, appProfile string, isStreaming b
 	}
 }
 
+// recordOperationCompletion returns a function that should be executed to record total operation metrics
+// It records as many metrics as it can and does not return error
+func (mt *builtinMetricsTracer) recordOperationCompletion() {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// Calculate elapsed time
+	elapsedTimeMs := float64(time.Since(mt.opStartTime).Nanoseconds()) / 1000000
+	fmt.Printf("recording endTime\n")
+	// Attributes for operation_latencies
+	opLatCurrCallAttrs, opLatErr := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	opLatAllAttrs := metric.WithAttributes(append(mt.clientAttributes, opLatCurrCallAttrs...)...)
+
+	// Attributes for retry_count
+	retryCntCurrCallAttrs, retryCountErr := mt.toOtelMetricAttrs(metricNameRetryCount)
+	retryCntAllAttrs := metric.WithAttributes(append(mt.clientAttributes, retryCntCurrCallAttrs...)...)
+
+	if opLatErr == nil {
+		mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, opLatAllAttrs)
+	}
+
+	// Only record when retry count is greater than 0 so the retry
+	// graph will be less confusing
+	if mt.attemptCount > 1 {
+		if retryCountErr == nil {
+			mt.instrumentRetryCount.Add(mt.ctx, mt.attemptCount-1, retryCntAllAttrs)
+		}
+	}
+}
+
+// recordAttemptCompletion returns a function that should be executed to record attempt specific metrics
+// It records as many metrics as it can and does not return error
+func (mt *builtinMetricsTracer) recordAttemptCompletion() func() {
+	if !mt.builtInEnabled {
+		return noOpRecordFn
+	}
+
+	startTime := time.Now()
+
+	return func() {
+		// Calculate elapsed time
+		elapsedTime := float64(time.Since(startTime).Nanoseconds()) / 1000000
+
+		// Attributes for attempt_latencies
+		attemptLatCurrCallAttrs, attemptLatErr := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+		attemptLatAllAttrs := metric.WithAttributes(append(mt.clientAttributes, attemptLatCurrCallAttrs...)...)
+
+		// Attributes for server_latencies
+		serverLatCurrCallAttrs, serverLatErr := mt.toOtelMetricAttrs(metricNameServerLatencies)
+		serverLatAllAttres := metric.WithAttributes(append(mt.clientAttributes, serverLatCurrCallAttrs...)...)
+
+		if attemptLatErr == nil {
+			mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, attemptLatAllAttrs)
+		}
+
+		if serverLatErr == nil {
+			serverLatency, serverLatErr := mt.getServerLatency()
+			if serverLatErr == nil {
+				mt.instrumentServerLatencies.Record(mt.ctx, serverLatency, serverLatAllAttres)
+			}
+		}
+	}
+}
+
+func (mt *builtinMetricsTracer) gaxInvokeWithRecorder(ctx context.Context, method string,
+	f func(ctx context.Context, _ gax.CallSettings) error, opts ...gax.CallOption) error {
+
+	mt.method = method
+	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
+		// Increment number of attempts
+		mt.attemptCount++
+
+		recorder := mt.recordAttemptCompletion()
+		defer recorder()
+
+		err := f(ctx, callSettings)
+
+		// Record attempt status
+		statusCode, _ := convertToGrpcStatusErr(err)
+		mt.status = statusCode.String()
+		return err
+	}
+	return gax.Invoke(ctx, callWrapper, opts...)
+}
+
 func (mt *builtinMetricsTracer) recordAndConvertErr(err error) error {
 	statusCode, statusErr := convertToGrpcStatusErr(err)
 	mt.status = statusCode.String()
 	return statusErr
 }
 
-// mt.toOtelMetricAttrs converts recorded metric attributes values to OpenTelemetry attributes format
+// toOtelMetricAttrs converts recorded metric attributes values to OpenTelemetry attributes format
 func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribute.KeyValue, error) {
 	clusterID, zoneID, _ := mt.getLocation()
 
 	// Create attribute key value pairs for attributes common to all metricss
 	attrKeyValues := []attribute.KeyValue{
-		attribute.String(metricLabelKeyAppProfile, mt.appProfileID),
 		attribute.String(metricLabelKeyMethod, mt.method),
 
 		// Add resource labels to otel metric labels.
@@ -394,13 +405,13 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 		attribute.String(monitoredResLabelKeyZone, zoneID),
 	}
 
-	metricDetails, found := builtinMetrics[metricName]
+	attrs, found := additionalAttributes[metricName]
 	if !found {
 		return nil, fmt.Errorf("Unable to create attributes list for unknown metric: %v", metricName)
 	}
 
 	// Add additional attributes to metrics
-	for _, attrKey := range metricDetails.additionalAttributes {
+	for _, attrKey := range attrs {
 		switch attrKey {
 		case metricLabelKeyOperationStatus:
 			attrKeyValues = append(attrKeyValues, attribute.String(metricLabelKeyOperationStatus, mt.status))
@@ -415,8 +426,7 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 }
 
 // get GFE latency from response metadata
-func (mt *builtinMetricsTracer) getServerLatency() (int, error) {
-	serverLatencyNano := 0
+func (mt *builtinMetricsTracer) getServerLatency() (float64, error) {
 	serverTimingStr := ""
 
 	// Check whether server latency available in response header metadata
@@ -437,14 +447,13 @@ func (mt *builtinMetricsTracer) getServerLatency() (int, error) {
 		}
 	}
 
-	serverTimingValPrefix := "gfet4t7; dur="
-	serverLatencyMillis, err := strconv.Atoi(strings.TrimPrefix(serverTimingStr, serverTimingValPrefix))
+	serverLatencyMillisStr := strings.TrimPrefix(serverTimingStr, serverTimingValPrefix)
+	serverLatencyMillis, err := strconv.ParseFloat(strings.TrimSpace(serverLatencyMillisStr), 64)
 	if !strings.HasPrefix(serverTimingStr, serverTimingValPrefix) || err != nil {
-		return serverLatencyNano, err
+		return serverLatencyMillis, err
 	}
 
-	serverLatencyNano = serverLatencyMillis * 1000000
-	return serverLatencyNano, nil
+	return serverLatencyMillis, nil
 }
 
 // Obtain cluster and zone from response metadata

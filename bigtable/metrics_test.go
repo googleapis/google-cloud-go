@@ -17,6 +17,8 @@ limitations under the License.
 package bigtable
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"testing"
@@ -24,6 +26,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel/attribute"
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/proto"
@@ -65,6 +68,104 @@ func equalErrs(gotErr error, wantErr error) bool {
 	return strings.Contains(gotErr.Error(), wantErr.Error())
 }
 
+type unknownMetricsProvider struct{}
+
+func (unknownMetricsProvider) isMetricsProvider() {}
+
+func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
+	ctx := context.Background()
+	project := "test-project"
+	instance := "test-instance"
+	appProfile := "test-app-profile"
+	clientUID := "test-uid"
+
+	origGenerateClientUID := generateClientUID
+	generateClientUID = func() (string, error) {
+		return clientUID, nil
+	}
+	defer func() {
+		generateClientUID = origGenerateClientUID
+	}()
+
+	wantClientAttributes := []attribute.KeyValue{
+		attribute.String(monitoredResLabelKeyProject, project),
+		attribute.String(monitoredResLabelKeyInstance, instance),
+		attribute.String(metricLabelKeyAppProfile, appProfile),
+		attribute.String(metricLabelKeyClientUID, clientUID),
+		attribute.String(metricLabelKeyClientName, clientName),
+	}
+
+	mpOpts, err := WithBuiltIn(ctx, project)
+	if err != nil {
+		t.Fatalf("WithBuiltIn failed: %v", err)
+	}
+	customMeterProvider := sdkmetric.NewMeterProvider(mpOpts...)
+	customOpenTelemetryMetricsProvider := CustomOpenTelemetryMetricsProvider{MeterProvider: customMeterProvider}
+
+	tests := []struct {
+		desc               string
+		metricsProvider    MetricsProvider
+		wantError          error
+		wantBuiltinEnabled bool
+		setEmulator        bool
+	}{
+		{
+			desc:               "should create a new tracer factory with default meter provider",
+			metricsProvider:    nil,
+			wantBuiltinEnabled: true,
+		},
+		{
+			desc:               "should create a new tracer factory with custom meter provider",
+			metricsProvider:    customOpenTelemetryMetricsProvider,
+			wantBuiltinEnabled: true,
+		},
+		{
+			desc:            "should create a new tracer factory with noop meter provider",
+			metricsProvider: NoopMetricsProvider{},
+		},
+		{
+			desc:            "should not create instruments when BIGTABLE_EMULATOR_HOST is set",
+			metricsProvider: customOpenTelemetryMetricsProvider,
+			setEmulator:     true,
+		},
+		{
+			desc:            "should return an error for unknown metrics provider type",
+			metricsProvider: unknownMetricsProvider{},
+			wantError:       errors.New("Unknown MetricsProvider type"),
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.desc, func(t *testing.T) {
+			if test.setEmulator {
+				// Set environment variable
+				t.Setenv("BIGTABLE_EMULATOR_HOST", "localhost:8086")
+			}
+			tracerFactory, gotErr := newBuiltinMetricsTracerFactory(ctx, project, instance, appProfile, test.metricsProvider)
+			if !equalErrs(gotErr, test.wantError) {
+				t.Fatalf("err: got: %v, want: %v", gotErr, test.wantError)
+			}
+			if tracerFactory.builtinEnabled != test.wantBuiltinEnabled {
+				t.Errorf("builtinEnabled: got: %v, want: %v", tracerFactory.builtinEnabled, test.wantBuiltinEnabled)
+			}
+
+			if diff := testutil.Diff(tracerFactory.clientAttributes, wantClientAttributes,
+				cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{})); diff != "" {
+				t.Errorf("clientAttributes: got=-, want=+ \n%v", diff)
+			}
+
+			// Check instruments
+			gotNonNilInstruments := tracerFactory.operationLatencies != nil &&
+				tracerFactory.serverLatencies != nil &&
+				tracerFactory.attemptLatencies != nil &&
+				tracerFactory.retryCount != nil
+			if test.wantBuiltinEnabled != gotNonNilInstruments {
+				t.Errorf("NonNilInstruments: got: %v, want: %v", gotNonNilInstruments, test.wantBuiltinEnabled)
+			}
+		})
+	}
+}
+
 func TestToOtelMetricAttrs(t *testing.T) {
 	mt := builtinMetricsTracer{
 		tableName:    "my-table",
@@ -89,7 +190,6 @@ func TestToOtelMetricAttrs(t *testing.T) {
 			metricName: metricNameOperationLatencies,
 			wantAttrs: []attribute.KeyValue{
 				attribute.String(monitoredResLabelKeyTable, "my-table"),
-				attribute.String(metricLabelKeyAppProfile, "my-app-profile"),
 				attribute.String(metricLabelKeyMethod, "ReadRows"),
 				attribute.Bool(metricLabelKeyStreamingOperation, true),
 				attribute.String(metricLabelKeyOperationStatus, codes.OK.String()),
@@ -128,13 +228,13 @@ func TestGetServerLatency(t *testing.T) {
 	invalidFormatMD := &metadata.MD{
 		serverTimingMDKey: []string{invalidFormat},
 	}
-	invalidFormatErr := fmt.Errorf("strconv.Atoi: parsing %q: invalid syntax", invalidFormat)
+	invalidFormatErr := fmt.Errorf("strconv.ParseFloat: parsing %q: invalid syntax", invalidFormat)
 
 	tests := []struct {
 		desc        string
 		headerMD    *metadata.MD
 		trailerMD   *metadata.MD
-		wantLatency int
+		wantLatency float64
 		wantError   error
 	}{
 		{
@@ -142,7 +242,7 @@ func TestGetServerLatency(t *testing.T) {
 			headerMD:    &metadata.MD{},
 			trailerMD:   &metadata.MD{},
 			wantLatency: 0,
-			wantError:   fmt.Errorf("strconv.Atoi: parsing \"\": invalid syntax"),
+			wantError:   fmt.Errorf("strconv.ParseFloat: parsing \"\": invalid syntax"),
 		},
 		{
 			desc: "Server latency in header",
@@ -150,7 +250,7 @@ func TestGetServerLatency(t *testing.T) {
 				serverTimingMDKey: []string{"gfet4t7; dur=1234"},
 			},
 			trailerMD:   &metadata.MD{},
-			wantLatency: 1234000000,
+			wantLatency: 1234,
 			wantError:   nil,
 		},
 		{
@@ -159,7 +259,7 @@ func TestGetServerLatency(t *testing.T) {
 			trailerMD: &metadata.MD{
 				serverTimingMDKey: []string{"gfet4t7; dur=5678"},
 			},
-			wantLatency: 5678000000,
+			wantLatency: 5678,
 			wantError:   nil,
 		},
 		{
@@ -170,7 +270,7 @@ func TestGetServerLatency(t *testing.T) {
 			trailerMD: &metadata.MD{
 				serverTimingMDKey: []string{"gfet4t7; dur=5678"},
 			},
-			wantLatency: 1234000000,
+			wantLatency: 1234,
 			wantError:   nil,
 		},
 		{
