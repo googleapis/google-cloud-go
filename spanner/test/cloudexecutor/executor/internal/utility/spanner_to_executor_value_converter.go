@@ -128,7 +128,7 @@ func extractRowValue(row *spanner.Row, i int, t *sppb.Type) (*executorpb.Value, 
 		if err != nil {
 			return nil, err
 		}
-		val.ValueType = &executorpb.Value_StringValue{StringValue: encodeJson(v)}
+		val.ValueType = &executorpb.Value_StringValue{StringValue: encodeJSON(v)}
 	case sppb.TypeCode_ARRAY:
 		val, err = extractRowArrayValue(row, i, t.GetArrayElementType())
 		if err != nil {
@@ -140,7 +140,7 @@ func extractRowValue(row *spanner.Row, i int, t *sppb.Type) (*executorpb.Value, 
 	return val, nil
 }
 
-func encodeJson(n spanner.NullJSON) string {
+func encodeJSON(n spanner.NullJSON) string {
 	if !n.Valid {
 		return "<null>"
 	}
@@ -321,7 +321,7 @@ func extractRowArrayValue(row *spanner.Row, i int, t *sppb.Type) (*executorpb.Va
 				value := &executorpb.Value{ValueType: &executorpb.Value_IsNull{IsNull: true}}
 				arrayValue.Value = append(arrayValue.Value, value)
 			} else {
-				value := &executorpb.Value{ValueType: &executorpb.Value_StringValue{StringValue: encodeJson(vv)}}
+				value := &executorpb.Value{ValueType: &executorpb.Value_StringValue{StringValue: encodeJSON(vv)}}
 				arrayValue.Value = append(arrayValue.Value, value)
 			}
 		}
