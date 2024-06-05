@@ -69,6 +69,7 @@ func (encoding StringUtf8Encoding) proto() *btapb.Type_String_Encoding {
 	}
 }
 
+// StringType represents a string
 type StringType struct {
 	Encoding StringEncoding
 }
