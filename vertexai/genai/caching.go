@@ -55,7 +55,7 @@ func (c *Client) GenerativeModelFromCachedContent(cc *CachedContent) *Generative
 //
 // The return value will contain the name, which should be used to refer to the CachedContent
 // in other API calls. It will also hold various metadata like expiration and creation time.
-// The cached content will not be returned.
+// It will not contain any of the actual content provided as input.
 //
 // You can use the return value to create a model with [Client.GenerativeModelFromCachedContent].
 // Or you can set [GenerativeModel.CachedContentName] to the name of the CachedContent, in which
