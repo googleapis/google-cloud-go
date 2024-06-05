@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -363,12 +362,11 @@ type TaskExecution struct {
 	// due to the following reasons, the exit code will be 50000.
 	//
 	// Otherwise, it can be from different sources:
-	// - Batch known failures as
+	// * Batch known failures:
 	// https://cloud.google.com/batch/docs/troubleshooting#reserved-exit-codes.
-	// - Batch runnable execution failures: You can rely on Batch logs for further
-	// diagnose: https://cloud.google.com/batch/docs/analyze-job-using-logs.
-	// If there are multiple runnables failures, Batch only exposes the first
-	// error caught for now.
+	// * Batch runnable execution failures; you can rely on Batch logs to further
+	// diagnose: https://cloud.google.com/batch/docs/analyze-job-using-logs. If
+	// there are multiple runnables failures, Batch only exposes the first error.
 	ExitCode int32 `protobuf:"varint,1,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
 }
 
@@ -667,10 +665,15 @@ type TaskSpec struct {
 	Runnables []*Runnable `protobuf:"bytes,8,rep,name=runnables,proto3" json:"runnables,omitempty"`
 	// ComputeResource requirements.
 	ComputeResource *ComputeResource `protobuf:"bytes,3,opt,name=compute_resource,json=computeResource,proto3" json:"compute_resource,omitempty"`
-	// Maximum duration the task should run.
-	// The task will be killed and marked as FAILED if over this limit.
-	// The valid value range for max_run_duration in seconds is [0,
-	// 315576000000.999999999],
+	// Maximum duration the task should run before being automatically retried
+	// (if enabled) or automatically failed. Format the value of this field
+	// as a time limit in seconds followed by `s`&mdash;for example, `3600s`
+	// for 1 hour. The field accepts any value between 0 and the maximum listed
+	// for the `Duration` field type at
+	// https://protobuf.dev/reference/protobuf/google.protobuf/#duration; however,
+	// the actual maximum run time for a job will be limited to the maximum run
+	// time for a job listed at
+	// https://cloud.google.com/batch/quotas#max-job-duration.
 	MaxRunDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=max_run_duration,json=maxRunDuration,proto3" json:"max_run_duration,omitempty"`
 	// Maximum number of retries on failures.
 	// The default, 0, which means never retry.

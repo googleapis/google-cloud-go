@@ -21,14 +21,13 @@
 package batchpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1835,9 +1834,9 @@ type AllocationPolicy_InstancePolicyOrTemplate struct {
 	//	*AllocationPolicy_InstancePolicyOrTemplate_Policy
 	//	*AllocationPolicy_InstancePolicyOrTemplate_InstanceTemplate
 	PolicyTemplate isAllocationPolicy_InstancePolicyOrTemplate_PolicyTemplate `protobuf_oneof:"policy_template"`
-	// Set this field true if users want Batch to help fetch drivers from a
-	// third party location and install them for GPUs specified in
-	// policy.accelerators or instance_template on their behalf. Default is
+	// Set this field true if you want Batch to help fetch drivers from a third
+	// party location and install them for GPUs specified in
+	// `policy.accelerators` or `instance_template` on your behalf. Default is
 	// false.
 	//
 	// For Container-Optimized Image cases, Batch will install the
