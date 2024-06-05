@@ -514,3 +514,5 @@ replace cloud.google.com/go/streetview => ../../../streetview
 replace cloud.google.com/go/managedkafka => ../../../managedkafka
 
 replace cloud.google.com/go/developerconnect => ../../../developerconnect
+
+replace cloud.google.com/go/networkservices => ../../../networkservices

@@ -106,8 +106,9 @@ func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
 }
 
 type File struct {
-	Error *apierror.APIError
-	Dur   time.Duration
+	Error  *apierror.APIError
+	Dur    time.Duration
+	hidden *Client
 }
 
 func (v *File) toProto() *pb.File {
