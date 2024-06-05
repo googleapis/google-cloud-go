@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.8...securitycentermanagement/v0.2.0) (2024-05-29)
+
+
+### Features
+
+* **securitycentermanagement:** Adding support for new Security Center Management Apis ([#10247](https://github.com/googleapis/google-cloud-go/issues/10247)) ([b19dd34](https://github.com/googleapis/google-cloud-go/commit/b19dd340b13e247fa80f8ab7868294cf53e50450))
+
+
+### Documentation
+
+* **securitycentermanagement:** Update comment formatting throughout API ([b19dd34](https://github.com/googleapis/google-cloud-go/commit/b19dd340b13e247fa80f8ab7868294cf53e50450))
+
 ## [0.1.8](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.7...securitycentermanagement/v0.1.8) (2024-05-01)
 
 

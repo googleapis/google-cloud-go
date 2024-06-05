@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.28.1...documentai/v1.29.0) (2024-05-29)
+
+
+### Features
+
+* **documentai:** Make Layout Parser generally available in V1 ([#10277](https://github.com/googleapis/google-cloud-go/issues/10277)) ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+
 ## [1.28.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.28.0...documentai/v1.28.1) (2024-05-16)
 
 

@@ -45,6 +45,7 @@ type NotebookCallOptions struct {
 	GetNotebookRuntimeTemplate    []gax.CallOption
 	ListNotebookRuntimeTemplates  []gax.CallOption
 	DeleteNotebookRuntimeTemplate []gax.CallOption
+	UpdateNotebookRuntimeTemplate []gax.CallOption
 	AssignNotebookRuntime         []gax.CallOption
 	GetNotebookRuntime            []gax.CallOption
 	ListNotebookRuntimes          []gax.CallOption
@@ -83,6 +84,7 @@ func defaultNotebookCallOptions() *NotebookCallOptions {
 		GetNotebookRuntimeTemplate:    []gax.CallOption{},
 		ListNotebookRuntimeTemplates:  []gax.CallOption{},
 		DeleteNotebookRuntimeTemplate: []gax.CallOption{},
+		UpdateNotebookRuntimeTemplate: []gax.CallOption{},
 		AssignNotebookRuntime:         []gax.CallOption{},
 		GetNotebookRuntime:            []gax.CallOption{},
 		ListNotebookRuntimes:          []gax.CallOption{},
@@ -113,6 +115,7 @@ type internalNotebookClient interface {
 	ListNotebookRuntimeTemplates(context.Context, *aiplatformpb.ListNotebookRuntimeTemplatesRequest, ...gax.CallOption) *NotebookRuntimeTemplateIterator
 	DeleteNotebookRuntimeTemplate(context.Context, *aiplatformpb.DeleteNotebookRuntimeTemplateRequest, ...gax.CallOption) (*DeleteNotebookRuntimeTemplateOperation, error)
 	DeleteNotebookRuntimeTemplateOperation(name string) *DeleteNotebookRuntimeTemplateOperation
+	UpdateNotebookRuntimeTemplate(context.Context, *aiplatformpb.UpdateNotebookRuntimeTemplateRequest, ...gax.CallOption) (*aiplatformpb.NotebookRuntimeTemplate, error)
 	AssignNotebookRuntime(context.Context, *aiplatformpb.AssignNotebookRuntimeRequest, ...gax.CallOption) (*AssignNotebookRuntimeOperation, error)
 	AssignNotebookRuntimeOperation(name string) *AssignNotebookRuntimeOperation
 	GetNotebookRuntime(context.Context, *aiplatformpb.GetNotebookRuntimeRequest, ...gax.CallOption) (*aiplatformpb.NotebookRuntime, error)
@@ -205,6 +208,11 @@ func (c *NotebookClient) DeleteNotebookRuntimeTemplate(ctx context.Context, req 
 // The name must be that of a previously created DeleteNotebookRuntimeTemplateOperation, possibly from a different process.
 func (c *NotebookClient) DeleteNotebookRuntimeTemplateOperation(name string) *DeleteNotebookRuntimeTemplateOperation {
 	return c.internalClient.DeleteNotebookRuntimeTemplateOperation(name)
+}
+
+// UpdateNotebookRuntimeTemplate updates a NotebookRuntimeTemplate.
+func (c *NotebookClient) UpdateNotebookRuntimeTemplate(ctx context.Context, req *aiplatformpb.UpdateNotebookRuntimeTemplateRequest, opts ...gax.CallOption) (*aiplatformpb.NotebookRuntimeTemplate, error) {
+	return c.internalClient.UpdateNotebookRuntimeTemplate(ctx, req, opts...)
 }
 
 // AssignNotebookRuntime assigns a NotebookRuntime to a user for a particular Notebook file. This
@@ -411,7 +419,9 @@ func (c *notebookGRPCClient) Connection() *grpc.ClientConn {
 func (c *notebookGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -522,6 +532,24 @@ func (c *notebookGRPCClient) DeleteNotebookRuntimeTemplate(ctx context.Context, 
 	return &DeleteNotebookRuntimeTemplateOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *notebookGRPCClient) UpdateNotebookRuntimeTemplate(ctx context.Context, req *aiplatformpb.UpdateNotebookRuntimeTemplateRequest, opts ...gax.CallOption) (*aiplatformpb.NotebookRuntimeTemplate, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "notebook_runtime_template.name", url.QueryEscape(req.GetNotebookRuntimeTemplate().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateNotebookRuntimeTemplate[0:len((*c.CallOptions).UpdateNotebookRuntimeTemplate):len((*c.CallOptions).UpdateNotebookRuntimeTemplate)], opts...)
+	var resp *aiplatformpb.NotebookRuntimeTemplate
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.notebookClient.UpdateNotebookRuntimeTemplate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *notebookGRPCClient) AssignNotebookRuntime(ctx context.Context, req *aiplatformpb.AssignNotebookRuntimeRequest, opts ...gax.CallOption) (*AssignNotebookRuntimeOperation, error) {

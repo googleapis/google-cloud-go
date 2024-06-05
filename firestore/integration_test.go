@@ -2478,10 +2478,15 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		{"weight": 7.1, "height": 93, "model": "C"},
 		{"weight": 8.2, "height": 93, "model": "A"},
 	}
+	docRefs := []*DocumentRef{}
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
+		docRefs = append(docRefs, newDoc)
 		h.mustCreate(newDoc, doc)
 	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 
 	query := coll.Where("weight", ">=", 1)
 

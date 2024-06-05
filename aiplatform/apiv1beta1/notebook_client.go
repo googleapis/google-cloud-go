@@ -51,12 +51,14 @@ type NotebookCallOptions struct {
 	GetNotebookRuntimeTemplate    []gax.CallOption
 	ListNotebookRuntimeTemplates  []gax.CallOption
 	DeleteNotebookRuntimeTemplate []gax.CallOption
+	UpdateNotebookRuntimeTemplate []gax.CallOption
 	AssignNotebookRuntime         []gax.CallOption
 	GetNotebookRuntime            []gax.CallOption
 	ListNotebookRuntimes          []gax.CallOption
 	DeleteNotebookRuntime         []gax.CallOption
 	UpgradeNotebookRuntime        []gax.CallOption
 	StartNotebookRuntime          []gax.CallOption
+	CreateNotebookExecutionJob    []gax.CallOption
 	GetNotebookExecutionJob       []gax.CallOption
 	ListNotebookExecutionJobs     []gax.CallOption
 	DeleteNotebookExecutionJob    []gax.CallOption
@@ -92,12 +94,14 @@ func defaultNotebookCallOptions() *NotebookCallOptions {
 		GetNotebookRuntimeTemplate:    []gax.CallOption{},
 		ListNotebookRuntimeTemplates:  []gax.CallOption{},
 		DeleteNotebookRuntimeTemplate: []gax.CallOption{},
+		UpdateNotebookRuntimeTemplate: []gax.CallOption{},
 		AssignNotebookRuntime:         []gax.CallOption{},
 		GetNotebookRuntime:            []gax.CallOption{},
 		ListNotebookRuntimes:          []gax.CallOption{},
 		DeleteNotebookRuntime:         []gax.CallOption{},
 		UpgradeNotebookRuntime:        []gax.CallOption{},
 		StartNotebookRuntime:          []gax.CallOption{},
+		CreateNotebookExecutionJob:    []gax.CallOption{},
 		GetNotebookExecutionJob:       []gax.CallOption{},
 		ListNotebookExecutionJobs:     []gax.CallOption{},
 		DeleteNotebookExecutionJob:    []gax.CallOption{},
@@ -120,12 +124,14 @@ func defaultNotebookRESTCallOptions() *NotebookCallOptions {
 		GetNotebookRuntimeTemplate:    []gax.CallOption{},
 		ListNotebookRuntimeTemplates:  []gax.CallOption{},
 		DeleteNotebookRuntimeTemplate: []gax.CallOption{},
+		UpdateNotebookRuntimeTemplate: []gax.CallOption{},
 		AssignNotebookRuntime:         []gax.CallOption{},
 		GetNotebookRuntime:            []gax.CallOption{},
 		ListNotebookRuntimes:          []gax.CallOption{},
 		DeleteNotebookRuntime:         []gax.CallOption{},
 		UpgradeNotebookRuntime:        []gax.CallOption{},
 		StartNotebookRuntime:          []gax.CallOption{},
+		CreateNotebookExecutionJob:    []gax.CallOption{},
 		GetNotebookExecutionJob:       []gax.CallOption{},
 		ListNotebookExecutionJobs:     []gax.CallOption{},
 		DeleteNotebookExecutionJob:    []gax.CallOption{},
@@ -153,6 +159,7 @@ type internalNotebookClient interface {
 	ListNotebookRuntimeTemplates(context.Context, *aiplatformpb.ListNotebookRuntimeTemplatesRequest, ...gax.CallOption) *NotebookRuntimeTemplateIterator
 	DeleteNotebookRuntimeTemplate(context.Context, *aiplatformpb.DeleteNotebookRuntimeTemplateRequest, ...gax.CallOption) (*DeleteNotebookRuntimeTemplateOperation, error)
 	DeleteNotebookRuntimeTemplateOperation(name string) *DeleteNotebookRuntimeTemplateOperation
+	UpdateNotebookRuntimeTemplate(context.Context, *aiplatformpb.UpdateNotebookRuntimeTemplateRequest, ...gax.CallOption) (*aiplatformpb.NotebookRuntimeTemplate, error)
 	AssignNotebookRuntime(context.Context, *aiplatformpb.AssignNotebookRuntimeRequest, ...gax.CallOption) (*AssignNotebookRuntimeOperation, error)
 	AssignNotebookRuntimeOperation(name string) *AssignNotebookRuntimeOperation
 	GetNotebookRuntime(context.Context, *aiplatformpb.GetNotebookRuntimeRequest, ...gax.CallOption) (*aiplatformpb.NotebookRuntime, error)
@@ -163,6 +170,8 @@ type internalNotebookClient interface {
 	UpgradeNotebookRuntimeOperation(name string) *UpgradeNotebookRuntimeOperation
 	StartNotebookRuntime(context.Context, *aiplatformpb.StartNotebookRuntimeRequest, ...gax.CallOption) (*StartNotebookRuntimeOperation, error)
 	StartNotebookRuntimeOperation(name string) *StartNotebookRuntimeOperation
+	CreateNotebookExecutionJob(context.Context, *aiplatformpb.CreateNotebookExecutionJobRequest, ...gax.CallOption) (*CreateNotebookExecutionJobOperation, error)
+	CreateNotebookExecutionJobOperation(name string) *CreateNotebookExecutionJobOperation
 	GetNotebookExecutionJob(context.Context, *aiplatformpb.GetNotebookExecutionJobRequest, ...gax.CallOption) (*aiplatformpb.NotebookExecutionJob, error)
 	ListNotebookExecutionJobs(context.Context, *aiplatformpb.ListNotebookExecutionJobsRequest, ...gax.CallOption) *NotebookExecutionJobIterator
 	DeleteNotebookExecutionJob(context.Context, *aiplatformpb.DeleteNotebookExecutionJobRequest, ...gax.CallOption) (*DeleteNotebookExecutionJobOperation, error)
@@ -251,6 +260,11 @@ func (c *NotebookClient) DeleteNotebookRuntimeTemplateOperation(name string) *De
 	return c.internalClient.DeleteNotebookRuntimeTemplateOperation(name)
 }
 
+// UpdateNotebookRuntimeTemplate updates a NotebookRuntimeTemplate.
+func (c *NotebookClient) UpdateNotebookRuntimeTemplate(ctx context.Context, req *aiplatformpb.UpdateNotebookRuntimeTemplateRequest, opts ...gax.CallOption) (*aiplatformpb.NotebookRuntimeTemplate, error) {
+	return c.internalClient.UpdateNotebookRuntimeTemplate(ctx, req, opts...)
+}
+
 // AssignNotebookRuntime assigns a NotebookRuntime to a user for a particular Notebook file. This
 // method will either returns an existing assignment or generates a new one.
 func (c *NotebookClient) AssignNotebookRuntime(ctx context.Context, req *aiplatformpb.AssignNotebookRuntimeRequest, opts ...gax.CallOption) (*AssignNotebookRuntimeOperation, error) {
@@ -304,6 +318,17 @@ func (c *NotebookClient) StartNotebookRuntime(ctx context.Context, req *aiplatfo
 // The name must be that of a previously created StartNotebookRuntimeOperation, possibly from a different process.
 func (c *NotebookClient) StartNotebookRuntimeOperation(name string) *StartNotebookRuntimeOperation {
 	return c.internalClient.StartNotebookRuntimeOperation(name)
+}
+
+// CreateNotebookExecutionJob creates a NotebookExecutionJob.
+func (c *NotebookClient) CreateNotebookExecutionJob(ctx context.Context, req *aiplatformpb.CreateNotebookExecutionJobRequest, opts ...gax.CallOption) (*CreateNotebookExecutionJobOperation, error) {
+	return c.internalClient.CreateNotebookExecutionJob(ctx, req, opts...)
+}
+
+// CreateNotebookExecutionJobOperation returns a new CreateNotebookExecutionJobOperation from a given name.
+// The name must be that of a previously created CreateNotebookExecutionJobOperation, possibly from a different process.
+func (c *NotebookClient) CreateNotebookExecutionJobOperation(name string) *CreateNotebookExecutionJobOperation {
+	return c.internalClient.CreateNotebookExecutionJobOperation(name)
 }
 
 // GetNotebookExecutionJob gets a NotebookExecutionJob.
@@ -476,7 +501,9 @@ func (c *notebookGRPCClient) Connection() *grpc.ClientConn {
 func (c *notebookGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -553,7 +580,9 @@ func defaultNotebookRESTClientOptions() []option.ClientOption {
 func (c *notebookRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -672,6 +701,24 @@ func (c *notebookGRPCClient) DeleteNotebookRuntimeTemplate(ctx context.Context, 
 	return &DeleteNotebookRuntimeTemplateOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *notebookGRPCClient) UpdateNotebookRuntimeTemplate(ctx context.Context, req *aiplatformpb.UpdateNotebookRuntimeTemplateRequest, opts ...gax.CallOption) (*aiplatformpb.NotebookRuntimeTemplate, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "notebook_runtime_template.name", url.QueryEscape(req.GetNotebookRuntimeTemplate().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateNotebookRuntimeTemplate[0:len((*c.CallOptions).UpdateNotebookRuntimeTemplate):len((*c.CallOptions).UpdateNotebookRuntimeTemplate)], opts...)
+	var resp *aiplatformpb.NotebookRuntimeTemplate
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.notebookClient.UpdateNotebookRuntimeTemplate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *notebookGRPCClient) AssignNotebookRuntime(ctx context.Context, req *aiplatformpb.AssignNotebookRuntimeRequest, opts ...gax.CallOption) (*AssignNotebookRuntimeOperation, error) {
@@ -814,6 +861,26 @@ func (c *notebookGRPCClient) StartNotebookRuntime(ctx context.Context, req *aipl
 		return nil, err
 	}
 	return &StartNotebookRuntimeOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *notebookGRPCClient) CreateNotebookExecutionJob(ctx context.Context, req *aiplatformpb.CreateNotebookExecutionJobRequest, opts ...gax.CallOption) (*CreateNotebookExecutionJobOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateNotebookExecutionJob[0:len((*c.CallOptions).CreateNotebookExecutionJob):len((*c.CallOptions).CreateNotebookExecutionJob)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.notebookClient.CreateNotebookExecutionJob(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateNotebookExecutionJobOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1418,6 +1485,79 @@ func (c *notebookRESTClient) DeleteNotebookRuntimeTemplate(ctx context.Context, 
 	}, nil
 }
 
+// UpdateNotebookRuntimeTemplate updates a NotebookRuntimeTemplate.
+func (c *notebookRESTClient) UpdateNotebookRuntimeTemplate(ctx context.Context, req *aiplatformpb.UpdateNotebookRuntimeTemplateRequest, opts ...gax.CallOption) (*aiplatformpb.NotebookRuntimeTemplate, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetNotebookRuntimeTemplate()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetNotebookRuntimeTemplate().GetName())
+
+	params := url.Values{}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "notebook_runtime_template.name", url.QueryEscape(req.GetNotebookRuntimeTemplate().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateNotebookRuntimeTemplate[0:len((*c.CallOptions).UpdateNotebookRuntimeTemplate):len((*c.CallOptions).UpdateNotebookRuntimeTemplate)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.NotebookRuntimeTemplate{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // AssignNotebookRuntime assigns a NotebookRuntime to a user for a particular Notebook file. This
 // method will either returns an existing assignment or generates a new one.
 func (c *notebookRESTClient) AssignNotebookRuntime(ctx context.Context, req *aiplatformpb.AssignNotebookRuntimeRequest, opts ...gax.CallOption) (*AssignNotebookRuntimeOperation, error) {
@@ -1824,6 +1964,79 @@ func (c *notebookRESTClient) StartNotebookRuntime(ctx context.Context, req *aipl
 
 	override := fmt.Sprintf("/ui/%s", resp.GetName())
 	return &StartNotebookRuntimeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateNotebookExecutionJob creates a NotebookExecutionJob.
+func (c *notebookRESTClient) CreateNotebookExecutionJob(ctx context.Context, req *aiplatformpb.CreateNotebookExecutionJobRequest, opts ...gax.CallOption) (*CreateNotebookExecutionJobOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetNotebookExecutionJob()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/notebookExecutionJobs", req.GetParent())
+
+	params := url.Values{}
+	if req.GetNotebookExecutionJobId() != "" {
+		params.Add("notebookExecutionJobId", fmt.Sprintf("%v", req.GetNotebookExecutionJobId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &CreateNotebookExecutionJobOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -2686,6 +2899,24 @@ func (c *notebookGRPCClient) AssignNotebookRuntimeOperation(name string) *Assign
 func (c *notebookRESTClient) AssignNotebookRuntimeOperation(name string) *AssignNotebookRuntimeOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &AssignNotebookRuntimeOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateNotebookExecutionJobOperation returns a new CreateNotebookExecutionJobOperation from a given name.
+// The name must be that of a previously created CreateNotebookExecutionJobOperation, possibly from a different process.
+func (c *notebookGRPCClient) CreateNotebookExecutionJobOperation(name string) *CreateNotebookExecutionJobOperation {
+	return &CreateNotebookExecutionJobOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateNotebookExecutionJobOperation returns a new CreateNotebookExecutionJobOperation from a given name.
+// The name must be that of a previously created CreateNotebookExecutionJobOperation, possibly from a different process.
+func (c *notebookRESTClient) CreateNotebookExecutionJobOperation(name string) *CreateNotebookExecutionJobOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &CreateNotebookExecutionJobOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
