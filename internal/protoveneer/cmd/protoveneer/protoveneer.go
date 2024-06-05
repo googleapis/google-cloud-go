@@ -986,8 +986,6 @@ func sliceAnyError[T any](s []T, f func(T) (bool, error)) (bool, error) {
 // inStdLib reports whether the given import path could be part of the Go standard library,
 // by reporting whether the first component lacks a '.'.
 func inStdLib(path string) bool {
-	if i := strings.IndexByte(path, '/'); i != -1 {
-		path = path[:i]
-	}
-	return !strings.Contains(path, ".")
+	first, _, _ := strings.Cut(path, "/")
+	return !strings.Contains(first, ".")
 }
