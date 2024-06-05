@@ -214,7 +214,7 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace("", &uid.Options{Time: t, Short: true})
+	uidSpace = uid.NewSpace("", &uid.Options{Time: t})
 	bucketName = testPrefix + uidSpace.New()
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
 	grpcBucketName = grpcTestPrefix + uidSpace.New()
