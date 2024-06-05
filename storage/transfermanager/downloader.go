@@ -255,7 +255,7 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 	}
 
 	// TODO: set to downloadSharded when sharded
-	ctx = setTMmetricHeader(ctx, downloadMany)
+	ctx = setUsageMetricHeader(ctx, downloadMany)
 
 	// Set options on the object.
 	o := client.Bucket(in.Bucket).Object(in.Object)
@@ -319,7 +319,7 @@ const (
 
 // Sets invocation ID headers on the context which will be propagated as
 // headers in the call to the service (for both gRPC and HTTP).
-func setTMmetricHeader(ctx context.Context, method string) context.Context {
+func setUsageMetricHeader(ctx context.Context, method string) context.Context {
 	header := fmt.Sprintf("gccl-gcs-cmd/tm.%s", method)
 	return callctx.SetHeaders(ctx, xGoogHeaderKey, header)
 }
