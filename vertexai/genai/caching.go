@@ -48,7 +48,18 @@ func (c *Client) GenerativeModelFromCachedContent(cc *CachedContent) *Generative
 }
 
 // CreateCachedContent creates a new CachedContent.
-// You can use the return value to create a model with [CachedContent.GenerativeModel].
+// The argument should contain a model name and some data to be cached, which can include
+// contents, a system instruction, tools and/or tool configuration. It can also
+// include an expiration time or TTL. But it should not include a name; the system
+// will generate one.
+//
+// The return value will contain the name, which should be used to refer to the CachedContent
+// in other API calls. It will also hold various metadata like expiration and creation time.
+// The cached content will not be returned.
+//
+// You can use the return value to create a model with [Client.GenerativeModelFromCachedContent].
+// Or you can set [GenerativeModel.CachedContentName] to the name of the CachedContent, in which
+// case you must ensure that the model provided in this call matches the name in the [GenerativeModel].
 func (c *Client) CreateCachedContent(ctx context.Context, cc *CachedContent) (*CachedContent, error) {
 	if cc.Name != "" {
 		return nil, errors.New("genai.CreateCachedContent: do not provide a name; one will be generated")
@@ -60,14 +71,6 @@ func (c *Client) CreateCachedContent(ctx context.Context, cc *CachedContent) (*C
 		CachedContent: pcc,
 	}))
 }
-
-// func (c *Client) inferFullCachedContentName(name string) string {
-// 	if strings.Contains(name, "/") {
-// 		return name
-// 	}
-// 	return fmt.Sprintf("projects/%s/locations/%s/cachedContents/%s",
-// 		c.projectID, c.location, name)
-// }
 
 // GetCachedContent retrieves the CachedContent with the given name.
 func (c *Client) GetCachedContent(ctx context.Context, name string) (*CachedContent, error) {
@@ -86,20 +89,31 @@ type CachedContentToUpdate struct {
 	Expiration *ExpireTimeOrTTL
 }
 
-// UpdateCachedContent modifies the [CachedContent] with the given name according to the values
+// UpdateCachedContent modifies the [CachedContent] according to the values
 // of the [CachedContentToUpdate] struct.
 // It returns the modified CachedContent.
-func (c *Client) UpdateCachedContent(ctx context.Context, name string, ccu *CachedContentToUpdate) (*CachedContent, error) {
+//
+// The argument CachedContent must have its Name field populated.
+// If its UpdateTime field is non-zero, it will be compared with the update time
+// of the stored CachedContent and the call will fail if they differ.
+// This avoids a race condition when two updates are attempted concurrently.
+// All other fields of the argument CachedContent are ignored.
+func (c *Client) UpdateCachedContent(ctx context.Context, cc *CachedContent, ccu *CachedContentToUpdate) (*CachedContent, error) {
 	if ccu == nil || ccu.Expiration == nil {
-		return nil, errors.New("cloud.google.com/go/vertexai/genai: no update specified")
+		return nil, errors.New("cloud.google.com/go/vertexai/genai.UpdateCachedContent: no update specified")
 	}
-	cc := &CachedContent{
-		Name:       name,
+	cc2 := &CachedContent{
+		Name:       cc.Name,
+		UpdateTime: cc.UpdateTime,
 		Expiration: *ccu.Expiration,
 	}
+	mask := "expire_time"
+	if ccu.Expiration.ExpireTime.IsZero() {
+		mask = "ttl"
+	}
 	return c.cachedContentFromProto(c.cc.UpdateCachedContent(ctx, &pb.UpdateCachedContentRequest{
-		CachedContent: cc.toProto(),
-		UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{"expiration"}},
+		CachedContent: cc2.toProto(),
+		UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{mask}},
 	}))
 }
 

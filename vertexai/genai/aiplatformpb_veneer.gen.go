@@ -23,7 +23,6 @@ import (
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/vertexai/internal/support"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Blob contains binary data like images. Use [Text] for text.
@@ -132,8 +131,8 @@ func (v *CachedContent) toProto() *pb.CachedContent {
 		Contents:          support.TransformSlice(v.Contents, (*Content).toProto),
 		Tools:             support.TransformSlice(v.Tools, (*Tool).toProto),
 		ToolConfig:        v.ToolConfig.toProto(),
-		CreateTime:        timestamppb.New(v.CreateTime),
-		UpdateTime:        timestamppb.New(v.UpdateTime),
+		CreateTime:        support.TimeToProto(v.CreateTime),
+		UpdateTime:        support.TimeToProto(v.UpdateTime),
 	}
 	populateCachedContentTo(p, v)
 	return p
