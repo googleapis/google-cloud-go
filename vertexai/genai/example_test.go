@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 
 	"cloud.google.com/go/vertexai/genai"
 
@@ -37,6 +38,8 @@ const location = "some-gcp-location"
 //
 //	model = publishers/some-publisher/models/some-model-name
 const model = "some-model"
+
+const modelName = model
 
 func ExampleGenerativeModel_GenerateContent() {
 	ctx := context.Background()
@@ -302,6 +305,42 @@ func ExampleGenerativeModel_ToolConfig() {
 	// It is also possible to force a function call by using FunctionCallingAny
 	// instead of FunctionCallingNone. See the documentation for FunctionCallingMode
 	// for details.
+}
+
+func ExampleClient_cachedContent() {
+	ctx := context.Background()
+	client, err := genai.NewClient(ctx, projectID, location)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer client.Close()
+	file := genai.FileData{MIMEType: "application/pdf", FileURI: "gs://my-bucket/my-doc.pdf"}
+	cc, err := client.CreateCachedContent(ctx, &genai.CachedContent{
+		Model:    modelName,
+		Contents: []*genai.Content{{Parts: []genai.Part{file}}},
+	})
+	model := client.GenerativeModelFromCachedContent(cc)
+	// Work with the model as usual in this program.
+	_ = model
+
+	// Store the CachedContent name for later use.
+	if err := os.WriteFile("my-cached-content-name", []byte(cc.Name), 0o644); err != nil {
+		log.Fatal(err)
+	}
+
+	///////////////////////////////
+	// Later, in another process...
+
+	bytes, err := os.ReadFile("my-cached-content-name")
+	if err != nil {
+		log.Fatal(err)
+	}
+	ccName := string(bytes)
+
+	// No need to call [Client.GetCachedContent]; the name is sufficient.
+	model = client.GenerativeModel(modelName)
+	model.CachedContentName = ccName
+	// Proceed as usual.
 }
 
 func printResponse(resp *genai.GenerateContentResponse) {

@@ -117,6 +117,8 @@ func inferLocation(location string) string {
 	return defaultLocation
 }
 
+// parent returns a Google Cloud reference to the project and location
+// for this client.
 func (c *Client) parent() string {
 	return fmt.Sprintf("projects/%s/locations/%s", c.projectID, c.location)
 }

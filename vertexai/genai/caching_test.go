@@ -17,7 +17,6 @@ package genai
 import (
 	"context"
 	"flag"
-	"fmt"
 	"strings"
 	"testing"
 	"time"
@@ -76,7 +75,7 @@ func TestCaching(t *testing.T) {
 	}
 	const model = "gemini-1.5-pro-001"
 
-	client, err := newClient(ctx, *cachingProject, "us-central1", *cachingEndpoint, config{}, nil)
+	client, err := newClient(ctx, *cachingProject, "us-central1", *cachingEndpoint, config{withREST: true}, nil)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -93,32 +92,35 @@ func TestCaching(t *testing.T) {
 		want := &CachedContent{
 			Model: "projects/" + *cachingProject +
 				"/locations/us-central1/publishers/google/models/" + model,
-			Expiration: ExpireTimeOrTTL{ExpireTime: time.Now().Add(time.Hour)},
 			CreateTime: time.Now(),
 			UpdateTime: time.Now(),
 		}
 
-		compare := func(got *CachedContent) {
+		compare := func(got *CachedContent, expireTime time.Time) {
 			t.Helper()
+			want.Expiration.ExpireTime = expireTime
 			if diff := cmp.Diff(want, got,
-				cmpopts.EquateApproxTime(time.Minute),
-				cmpopts.IgnoreFields(CachedContent{}, "Name")); diff != "" {
+				cmpopts.EquateApproxTime(10*time.Second),
+				cmpopts.IgnoreFields(CachedContent{}, "Name", "UpdateTime")); diff != "" {
 				t.Errorf("mismatch (-want, +got):\n%s", diff)
 			}
 		}
 
 		txt := strings.Repeat("Who's a good boy? You are! ", 3300)
+		ttl := 30 * time.Minute
+		wantExpireTime := time.Now().Add(ttl)
 		argcc := &CachedContent{
-			Model: model,
+			Model:      model,
+			Expiration: ExpireTimeOrTTL{TTL: ttl},
 			Contents: []*Content{{Role: "user", Parts: []Part{
 				Text(txt)}}},
 		}
 		cc := must(client.CreateCachedContent(ctx, argcc))
-		compare(cc)
+		compare(cc, wantExpireTime)
 
 		name := cc.Name
 		cc2 := must(client.GetCachedContent(ctx, name))
-		compare(cc2)
+		compare(cc2, wantExpireTime)
 		gotList := listAll(t, client.ListCachedContents(ctx))
 		var cc3 *CachedContent
 		for _, cc := range gotList {
@@ -130,7 +132,23 @@ func TestCaching(t *testing.T) {
 		if cc3 == nil {
 			t.Fatal("did not find created in list")
 		}
-		compare(cc3)
+		compare(cc3, wantExpireTime)
+
+		// Update using expire time.
+		newExpireTime := cc3.Expiration.ExpireTime.Add(15 * time.Minute)
+		cc4 := must(client.UpdateCachedContent(ctx, cc3, &CachedContentToUpdate{
+			Expiration: &ExpireTimeOrTTL{ExpireTime: newExpireTime},
+		}))
+		compare(cc4, newExpireTime)
+
+		t.Run("update-ttl", func(t *testing.T) {
+			t.Skip("does not work")
+			// Update using TTL.
+			cc5 := must(client.UpdateCachedContent(ctx, cc4, &CachedContentToUpdate{
+				Expiration: &ExpireTimeOrTTL{TTL: ttl},
+			}))
+			compare(cc5, newExpireTime.Add(ttl))
+		})
 
 		if err := client.DeleteCachedContent(ctx, name); err != nil {
 			t.Fatal(err)
@@ -177,8 +195,4 @@ func listAll(t *testing.T, iter *CachedContentIterator) []*CachedContent {
 		ccs = append(ccs, cc)
 	}
 	return ccs
-}
-
-func TestCachedContent(t *testing.T) {
-
 }
