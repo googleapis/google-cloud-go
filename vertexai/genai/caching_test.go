@@ -117,7 +117,6 @@ func TestCaching(t *testing.T) {
 		}
 		cc := must(client.CreateCachedContent(ctx, argcc))
 		compare(cc, wantExpireTime)
-
 		name := cc.Name
 		cc2 := must(client.GetCachedContent(ctx, name))
 		compare(cc2, wantExpireTime)
@@ -142,12 +141,11 @@ func TestCaching(t *testing.T) {
 		compare(cc4, newExpireTime)
 
 		t.Run("update-ttl", func(t *testing.T) {
-			t.Skip("does not work")
 			// Update using TTL.
 			cc5 := must(client.UpdateCachedContent(ctx, cc4, &CachedContentToUpdate{
 				Expiration: &ExpireTimeOrTTL{TTL: ttl},
 			}))
-			compare(cc5, newExpireTime.Add(ttl))
+			compare(cc5, time.Now().Add(ttl))
 		})
 
 		if err := client.DeleteCachedContent(ctx, name); err != nil {
