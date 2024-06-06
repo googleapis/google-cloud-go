@@ -301,6 +301,7 @@ func TestLive(t *testing.T) {
 			}
 		})
 	})
+	t.Run("caching", func(t *testing.T) { testCaching(t, client) })
 }
 
 func TestLiveDefaultLocation(t *testing.T) {

@@ -16,7 +16,7 @@ package genai
 
 import (
 	"context"
-	"flag"
+	"os"
 	"strings"
 	"testing"
 	"time"
@@ -63,22 +63,9 @@ func TestPopulateCachedContent(t *testing.T) {
 	}
 }
 
-var (
-	cachingProject  = flag.String("caching-project", "", "project ID to test caching")
-	cachingEndpoint = flag.String("caching-endpoint", "", "endpoint to test caching")
-)
-
-func TestCaching(t *testing.T) {
+func testCaching(t *testing.T, client *Client) {
 	ctx := context.Background()
-	if *cachingProject == "" || *cachingEndpoint == "" {
-		t.Skip("missing -caching-project or -caching-endpoint")
-	}
 	const model = "gemini-1.5-pro-001"
-
-	client, err := newClient(ctx, *cachingProject, "us-central1", *cachingEndpoint, config{withREST: true}, nil)
-	if err != nil {
-		t.Fatal(err)
-	}
 
 	t.Run("CRUD", func(t *testing.T) {
 		must := func(cc *CachedContent, err error) *CachedContent {
@@ -90,10 +77,10 @@ func TestCaching(t *testing.T) {
 		}
 
 		want := &CachedContent{
-			Model: "projects/" + *cachingProject +
+			Model: "projects/" + os.Getenv("VERTEX_PROJECT_ID") +
 				"/locations/us-central1/publishers/google/models/" + model,
-			CreateTime: time.Now(),
-			UpdateTime: time.Now(),
+			CreateTime: time.Now().UTC(),
+			UpdateTime: time.Now().UTC(),
 		}
 
 		compare := func(got *CachedContent, expireTime time.Time) {
@@ -106,14 +93,14 @@ func TestCaching(t *testing.T) {
 			}
 		}
 
-		txt := strings.Repeat("Who's a good boy? You are! ", 3300)
 		ttl := 30 * time.Minute
 		wantExpireTime := time.Now().Add(ttl)
 		argcc := &CachedContent{
 			Model:      model,
 			Expiration: ExpireTimeOrTTL{TTL: ttl},
 			Contents: []*Content{{Role: "user", Parts: []Part{
-				Text(txt)}}},
+				FileData{MIMEType: "text/plain", FileURI: "gs://0002-test-multimodal/embeddings/xray-embedding.json"},
+			}}},
 		}
 		cc := must(client.CreateCachedContent(ctx, argcc))
 		compare(cc, wantExpireTime)
