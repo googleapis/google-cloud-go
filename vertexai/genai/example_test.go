@@ -36,10 +36,8 @@ const location = "some-gcp-location"
 // For custom models from different publishers, prepent the full publisher
 // prefix for the model, e.g.:
 //
-//	model = publishers/some-publisher/models/some-model-name
-const model = "some-model"
-
-const modelName = model
+//	modelName = publishers/some-publisher/models/some-model-name
+const modelName = "some-model"
 
 func ExampleGenerativeModel_GenerateContent() {
 	ctx := context.Background()
@@ -49,7 +47,7 @@ func ExampleGenerativeModel_GenerateContent() {
 	}
 	defer client.Close()
 
-	model := client.GenerativeModel(model)
+	model := client.GenerativeModel(modelName)
 	model.SetTemperature(0.9)
 	resp, err := model.GenerateContent(ctx, genai.Text("What is the average size of a swallow?"))
 	if err != nil {
@@ -94,7 +92,7 @@ func ExampleGenerativeModel_GenerateContentStream() {
 	}
 	defer client.Close()
 
-	model := client.GenerativeModel(model)
+	model := client.GenerativeModel(modelName)
 
 	iter := model.GenerateContentStream(ctx, genai.Text("Tell me a story about a lumberjack and his giant ox. Keep it very short."))
 	for {
@@ -117,7 +115,7 @@ func ExampleGenerativeModel_CountTokens() {
 	}
 	defer client.Close()
 
-	model := client.GenerativeModel(model)
+	model := client.GenerativeModel(modelName)
 
 	resp, err := model.CountTokens(ctx, genai.Text("What kind of fish is this?"))
 	if err != nil {
@@ -134,7 +132,7 @@ func ExampleChatSession() {
 		log.Fatal(err)
 	}
 	defer client.Close()
-	model := client.GenerativeModel(model)
+	model := client.GenerativeModel(modelName)
 	cs := model.StartChat()
 
 	send := func(msg string) *genai.GenerateContentResponse {
