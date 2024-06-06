@@ -313,13 +313,14 @@ type DownloadOutput struct {
 
 const (
 	xGoogHeaderKey  = "x-goog-api-client"
-	downloadMany    = "download_many"
-	downloadSharded = "download_sharded"
+	usageMetricKey  = "gccl-gcs-cmd"
+	downloadMany    = "tm.download_many"
+	downloadSharded = "tm.download_sharded"
 )
 
 // Sets invocation ID headers on the context which will be propagated as
 // headers in the call to the service (for both gRPC and HTTP).
 func setUsageMetricHeader(ctx context.Context, method string) context.Context {
-	header := fmt.Sprintf("gccl-gcs-cmd/tm.%s", method)
+	header := fmt.Sprintf("%s/%s", usageMetricKey, method)
 	return callctx.SetHeaders(ctx, xGoogHeaderKey, header)
 }
