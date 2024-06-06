@@ -17,18 +17,24 @@ limitations under the License.
 package bigtable
 
 import (
+	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
+	"go.opentelemetry.io/otel/sdk/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/protobuf/proto"
 
 	"google.golang.org/grpc/metadata"
@@ -68,24 +74,12 @@ func equalErrs(gotErr error, wantErr error) bool {
 	return strings.Contains(gotErr.Error(), wantErr.Error())
 }
 
-type unknownMetricsProvider struct{}
-
-func (unknownMetricsProvider) isMetricsProvider() {}
-
-func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
+func TestNewBuiltinMetricsTracerFactory2(t *testing.T) {
 	ctx := context.Background()
 	project := "test-project"
 	instance := "test-instance"
 	appProfile := "test-app-profile"
 	clientUID := "test-uid"
-
-	origGenerateClientUID := generateClientUID
-	generateClientUID = func() (string, error) {
-		return clientUID, nil
-	}
-	defer func() {
-		generateClientUID = origGenerateClientUID
-	}()
 
 	wantClientAttributes := []attribute.KeyValue{
 		attribute.String(monitoredResLabelKeyProject, project),
@@ -95,72 +89,154 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		attribute.String(metricLabelKeyClientName, clientName),
 	}
 
-	mpOpts, err := WithBuiltIn(ctx, project)
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 5 * time.Second
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
+
+	// return constant client UID instead of random, so that attributes can be compared
+	origGenerateClientUID := generateClientUID
+	generateClientUID = func() (string, error) {
+		return clientUID, nil
+	}
+	defer func() {
+		generateClientUID = origGenerateClientUID
+	}()
+
+	// Setup mock monitoring server
+	monitoringServer, err := NewMetricTestServer()
+	if err != nil {
+		t.Fatalf("Error setting up metrics test server")
+	}
+	go monitoringServer.Serve()
+	defer monitoringServer.Shutdown()
+	origExporterOpts := exporterOpts
+	exporterOpts = []option.ClientOption{
+		option.WithEndpoint(monitoringServer.Endpoint),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+	}
+	defer func() {
+		exporterOpts = origExporterOpts
+	}()
+
+	// Create custom meter provider which exports to stdout and GCM
+	var exporterBuf bytes.Buffer
+	stdoutExporter, err := stdoutmetric.New(stdoutmetric.WithWriter(&exporterBuf))
+	if err != nil {
+		t.Fatalf("Failed to create stdout exporter")
+	}
+	stdoutMpOpts := metric.WithReader(metric.NewPeriodicReader(stdoutExporter,
+		metric.WithInterval(defaultSamplePeriod)))
+	mpOpts, err := WithBuiltIn(ctx, project, stdoutMpOpts)
 	if err != nil {
 		t.Fatalf("WithBuiltIn failed: %v", err)
 	}
-	customMeterProvider := sdkmetric.NewMeterProvider(mpOpts...)
-	customOpenTelemetryMetricsProvider := CustomOpenTelemetryMetricsProvider{MeterProvider: customMeterProvider}
+
+	// Setup fake Bigtable server
+	headerInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "ReadRows") {
+			header := metadata.New(map[string]string{
+				serverTimingMDKey: "gfet4t7; dur=123",
+				locationMDKey:     string(testHeaders),
+			})
+			ss.SendHeader(header)
+		}
+		return handler(srv, ss)
+	}
 
 	tests := []struct {
 		desc               string
-		metricsProvider    MetricsProvider
-		wantError          error
+		config             ClientConfig
 		wantBuiltinEnabled bool
 		setEmulator        bool
+		wantCreateTSCalls  int
 	}{
 		{
 			desc:               "should create a new tracer factory with default meter provider",
-			metricsProvider:    nil,
+			config:             ClientConfig{},
 			wantBuiltinEnabled: true,
+			wantCreateTSCalls:  2,
 		},
 		{
-			desc:               "should create a new tracer factory with custom meter provider",
-			metricsProvider:    customOpenTelemetryMetricsProvider,
+			desc: "should create a new tracer factory with custom meter provider",
+			config: ClientConfig{
+				MetricsProvider: CustomOpenTelemetryMetricsProvider{
+					MeterProvider: sdkmetric.NewMeterProvider(mpOpts...)},
+			},
 			wantBuiltinEnabled: true,
+			wantCreateTSCalls:  2,
 		},
 		{
-			desc:            "should create a new tracer factory with noop meter provider",
-			metricsProvider: NoopMetricsProvider{},
+			desc:   "should create a new tracer factory with noop meter provider",
+			config: ClientConfig{MetricsProvider: NoopMetricsProvider{}},
 		},
 		{
-			desc:            "should not create instruments when BIGTABLE_EMULATOR_HOST is set",
-			metricsProvider: customOpenTelemetryMetricsProvider,
-			setEmulator:     true,
-		},
-		{
-			desc:            "should return an error for unknown metrics provider type",
-			metricsProvider: unknownMetricsProvider{},
-			wantError:       errors.New("Unknown MetricsProvider type"),
+			desc:        "should not create instruments when BIGTABLE_EMULATOR_HOST is set",
+			config:      ClientConfig{},
+			setEmulator: true,
 		},
 	}
-
+	wantCreateTSCallsTotal := 0
 	for _, test := range tests {
+		wantCreateTSCallsTotal += test.wantCreateTSCalls
 		t.Run(test.desc, func(t *testing.T) {
 			if test.setEmulator {
 				// Set environment variable
 				t.Setenv("BIGTABLE_EMULATOR_HOST", "localhost:8086")
 			}
-			tracerFactory, gotErr := newBuiltinMetricsTracerFactory(ctx, project, instance, appProfile, test.metricsProvider)
-			if !equalErrs(gotErr, test.wantError) {
-				t.Fatalf("err: got: %v, want: %v", gotErr, test.wantError)
-			}
-			if tracerFactory.builtinEnabled != test.wantBuiltinEnabled {
-				t.Errorf("builtinEnabled: got: %v, want: %v", tracerFactory.builtinEnabled, test.wantBuiltinEnabled)
+
+			// open table and compare errors
+			tbl, cleanup, gotErr := setupFakeServer(project, instance, test.config, grpc.StreamInterceptor(headerInjector))
+			defer cleanup()
+			if gotErr != nil {
+				t.Fatalf("err: got: %v, want: %v", gotErr, nil)
+				return
 			}
 
-			if diff := testutil.Diff(tracerFactory.clientAttributes, wantClientAttributes,
+			gotClient := tbl.c
+
+			if gotClient.metricsTracerFactory.builtinEnabled != test.wantBuiltinEnabled {
+				t.Errorf("builtinEnabled: got: %v, want: %v", gotClient.metricsTracerFactory.builtinEnabled, test.wantBuiltinEnabled)
+			}
+
+			if diff := testutil.Diff(gotClient.metricsTracerFactory.clientAttributes, wantClientAttributes,
 				cmpopts.IgnoreUnexported(attribute.KeyValue{}, attribute.Value{})); diff != "" {
 				t.Errorf("clientAttributes: got=-, want=+ \n%v", diff)
 			}
 
 			// Check instruments
-			gotNonNilInstruments := tracerFactory.operationLatencies != nil &&
-				tracerFactory.serverLatencies != nil &&
-				tracerFactory.attemptLatencies != nil &&
-				tracerFactory.retryCount != nil
+			gotNonNilInstruments := gotClient.metricsTracerFactory.operationLatencies != nil &&
+				gotClient.metricsTracerFactory.serverLatencies != nil &&
+				gotClient.metricsTracerFactory.attemptLatencies != nil &&
+				gotClient.metricsTracerFactory.retryCount != nil
 			if test.wantBuiltinEnabled != gotNonNilInstruments {
 				t.Errorf("NonNilInstruments: got: %v, want: %v", gotNonNilInstruments, test.wantBuiltinEnabled)
+			}
+
+			// record start time
+			testStartTime := time.Now()
+
+			err := tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
+				return true
+			})
+			if err != nil {
+				t.Fatalf("ReadRows failed: %v", err)
+			}
+
+			// Calculate elapsed time
+			elapsedTime := time.Since(testStartTime)
+			if elapsedTime < 2*defaultSamplePeriod {
+				// Ensure at least 2 datapoints are recorded
+				time.Sleep(2*defaultSamplePeriod - elapsedTime)
+			}
+
+			fmt.Printf(exporterBuf.String())
+			gotCalls := monitoringServer.CreateServiceTimeSeriesRequests()
+			if len(gotCalls) != wantCreateTSCallsTotal {
+				t.Errorf("No. of CreateServiceTimeSeriesRequests: got: %v,  want: %v", len(gotCalls), wantCreateTSCallsTotal)
 			}
 		})
 	}

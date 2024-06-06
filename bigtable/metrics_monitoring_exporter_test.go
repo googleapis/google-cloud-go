@@ -61,15 +61,6 @@ func (m *MetricsTestServer) Shutdown() {
 	m.srv.GracefulStop()
 }
 
-// Pops out the CreateMetricDescriptorRequests which the test server has received so far.
-func (m *MetricsTestServer) CreateMetricDescriptorRequests() []*monitoringpb.CreateMetricDescriptorRequest {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	reqs := m.createMetricDescriptorReqs
-	m.createMetricDescriptorReqs = nil
-	return reqs
-}
-
 // Pops out the UserAgent from the most recent CreateTimeSeriesRequests or CreateServiceTimeSeriesRequests.
 func (m *MetricsTestServer) UserAgent() string {
 	m.mu.Lock()

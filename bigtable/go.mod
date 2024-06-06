@@ -25,6 +25,7 @@ require (
 require (
 	cloud.google.com/go/monitoring v1.18.2
 	github.com/google/uuid v1.6.0
+	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.24.0 // Use older version compatible with Go 1.20
 	google.golang.org/genproto/googleapis/api v0.0.0-20240513163218-0867130af1f8
 )
 

@@ -205,10 +205,8 @@ func (me *monitoringExporter) recordToTspb(m otelmetricdata.Metrics) ([]*monitor
 			var ts *monitoringpb.TimeSeries
 			var err error
 			if a.IsMonotonic {
-				fmt.Printf("Is monotonic\n")
 				ts, err = sumToTimeSeries[int64](point, m, mr)
 			} else {
-				fmt.Printf("Is non-monotonic\n")
 				// Send non-monotonic sums as gauges
 				ts, err = gaugeToTimeSeries[int64](point, m, mr)
 			}

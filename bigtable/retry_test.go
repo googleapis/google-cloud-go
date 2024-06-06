@@ -34,8 +34,7 @@ import (
 )
 
 // TODO: Add test to simulate failure and assert that retry_count is recorded
-
-func setupFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err error) {
+func setupFakeServer(project, instance string, config ClientConfig, opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err error) {
 	srv, err := bttest.NewServer("localhost:0", opt...)
 	if err != nil {
 		return nil, nil, err
@@ -45,12 +44,12 @@ func setupFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err 
 		return nil, nil, err
 	}
 
-	client, err := NewClient(context.Background(), "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	client, err := NewClientWithConfig(context.Background(), project, instance, config, option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return nil, nil, err
 	}
 
-	adminClient, err := NewAdminClient(context.Background(), "client", "instance", option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
+	adminClient, err := NewAdminClient(context.Background(), project, instance, option.WithGRPCConn(conn), option.WithGRPCDialOption(grpc.WithBlock()))
 	if err != nil {
 		return nil, nil, err
 	}
@@ -70,6 +69,10 @@ func setupFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err 
 	return t, cleanupFunc, nil
 }
 
+func setupDefaultFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err error) {
+	return setupFakeServer("client", "instance", ClientConfig{}, opt...)
+}
+
 func TestRetryApply(t *testing.T) {
 	ctx := context.Background()
 
@@ -84,7 +87,7 @@ func TestRetryApply(t *testing.T) {
 		}
 		return handler(ctx, req)
 	}
-	tbl, cleanup, err := setupFakeServer(grpc.UnaryInterceptor(errInjector))
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.UnaryInterceptor(errInjector))
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
 	}
@@ -178,7 +181,7 @@ func TestRetryApplyBulk_OverallRequestFailure(t *testing.T) {
 		return handler(ctx, ss)
 	}
 
-	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
 	defer cleanup()
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
@@ -235,7 +238,7 @@ func TestRetryApplyBulk_FailuresAndRetriesInOneRequest(t *testing.T) {
 		return handler(ctx, ss)
 	}
 
-	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
 	defer cleanup()
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
@@ -283,7 +286,7 @@ func TestRetryApplyBulk_UnretryableErrors(t *testing.T) {
 		return handler(ctx, ss)
 	}
 
-	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
 	defer cleanup()
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
@@ -331,7 +334,7 @@ func TestRetryApplyBulk_IndividualErrorsAndDeadlineExceeded(t *testing.T) {
 		return handler(ctx, ss)
 	}
 
-	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
 	defer cleanup()
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
@@ -407,7 +410,7 @@ func TestRetryReadRows(t *testing.T) {
 		return handler(ctx, ss)
 	}
 
-	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
 	defer cleanup()
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
@@ -478,7 +481,7 @@ func TestRetryReverseReadRows(t *testing.T) {
 		return handler(ctx, ss)
 	}
 
-	tbl, cleanup, err := setupFakeServer(grpc.StreamInterceptor(errInjector))
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
 	defer cleanup()
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)

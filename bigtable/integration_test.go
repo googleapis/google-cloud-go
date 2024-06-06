@@ -770,7 +770,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	}
 	defer cleanup()
 
-	if !testEnv.Config().UseProd {
+	if testing.Short() {
 		t.Skip("Skip long running tests in short mode")
 	}
 
@@ -916,11 +916,6 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		t.Fatalf("No error for bad bulk mutation")
 	}
 
-	if !testEnv.Config().UseProd {
-		t.Logf("Skipping metrics validation while using emulator")
-		return
-	}
-
 	// Validate that metrics are exported
 	elapsedTime := time.Since(testStartTime)
 	if elapsedTime < 2*defaultSamplePeriod {
@@ -957,9 +952,13 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		})
 
 		// Assert at least 1 datapoint was exported
-		_, err := iter.Next()
-		if err != nil {
+		exportedTs, err := iter.Next()
+		fmt.Printf("exportedTs: %+v, err: %+v\n", exportedTs, err)
+		if testEnv.Config().UseProd && err != nil {
 			t.Errorf("%v not exported\n", metricName)
+		}
+		if !testEnv.Config().UseProd && err != iterator.Done {
+			t.Errorf("%v should not be exported when using emulator\n", metricName)
 		}
 	}
 }

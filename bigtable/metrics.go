@@ -32,6 +32,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -69,11 +70,8 @@ const (
 )
 
 var (
-	NoopMeterProvider = sdkmetric.NewMeterProvider()
-
 	// duration between two metric exports
-	// defaultSamplePeriod = 5 * time.Minute
-	defaultSamplePeriod = 1 * time.Minute
+	defaultSamplePeriod = 5 * time.Minute
 
 	clientName            = fmt.Sprintf("cloud.google.com/go/bigtable v%v", internal.Version)
 	builtInEnabledDefault = true
@@ -114,10 +112,12 @@ var (
 		}
 		return "go-" + uuid.NewString() + "@" + hostname, nil
 	}
+
+	exporterOpts = []option.ClientOption{}
 )
 
 func getBuiltInMeterProviderOptions(ctx context.Context, project string) (sdkmetric.Option, error) {
-	defaultExporter, err := newMonitoringExporter(ctx, project)
+	defaultExporter, err := newMonitoringExporter(ctx, project, exporterOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -306,7 +306,7 @@ func (mt *builtinMetricsTracer) recordOperationCompletion() {
 
 	// Calculate elapsed time
 	elapsedTimeMs := float64(time.Since(mt.opStartTime).Nanoseconds()) / 1000000
-	fmt.Printf("recording endTime\n")
+
 	// Attributes for operation_latencies
 	opLatCurrCallAttrs, opLatErr := mt.toOtelMetricAttrs(metricNameOperationLatencies)
 	opLatAllAttrs := metric.WithAttributes(append(mt.clientAttributes, opLatCurrCallAttrs...)...)
