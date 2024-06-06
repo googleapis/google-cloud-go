@@ -377,6 +377,34 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// rounding mode values
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Name:         "num",
+						Type:         "NUMERIC",
+						RoundingMode: "ROUND_HALF_AWAY_FROM_ZERO",
+					},
+					{
+						Name:         "bignum",
+						Type:         "BIGNUMERIC",
+						RoundingMode: "ROUND_HALF_EVEN",
+					},
+				}},
+			schema: Schema{
+				{
+					Name:         "num",
+					Type:         NumericFieldType,
+					RoundingMode: RoundHalfAwayFromZero,
+				},
+				{
+					Name:         "bignum",
+					Type:         BigNumericFieldType,
+					RoundingMode: RoundHalfEven,
+				},
+			},
+		},
+		{
 			// policy tags
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
