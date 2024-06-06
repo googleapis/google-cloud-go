@@ -144,3 +144,20 @@ func TestAdjustDoc(t *testing.T) {
 		}
 	}
 }
+
+func TestInStdLib(t *testing.T) {
+	for _, test := range []struct {
+		path string
+		want bool
+	}{
+		{"fmt", true},
+		{"archive/tar", true},
+		{"github.com/foo/bar", false},
+		{"example.org/x", false},
+	} {
+		got := inStdLib(test.path)
+		if got != test.want {
+			t.Errorf("%s: got %t, want %t", test.path, got, test.want)
+		}
+	}
+}
