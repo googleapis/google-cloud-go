@@ -197,7 +197,10 @@ func (r *resource) isKubernetesEngine() bool {
 }
 
 func detectKubernetesResource() *mrpb.MonitoredResource {
-	projectID := detectedResource.metadataProjectID()
+	projectID := detectedResource.attrs.EnvVar("GOOGLE_CLOUD_PROJECT")
+	if projectID == "" {
+		projectID = detectedResource.metadataProjectID()
+	}
 	if projectID == "" {
 		return nil
 	}
