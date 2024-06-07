@@ -15,8 +15,12 @@
 package utility
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
 	"log"
 	"math/big"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -124,7 +128,7 @@ func extractRowValue(row *spanner.Row, i int, t *sppb.Type) (*executorpb.Value, 
 		if err != nil {
 			return nil, err
 		}
-		val.ValueType = &executorpb.Value_StringValue{StringValue: v.String()}
+		val.ValueType = &executorpb.Value_StringValue{StringValue: encodeJSON(v)}
 	case sppb.TypeCode_ARRAY:
 		val, err = extractRowArrayValue(row, i, t.GetArrayElementType())
 		if err != nil {
@@ -134,6 +138,25 @@ func extractRowValue(row *spanner.Row, i int, t *sppb.Type) (*executorpb.Value, 
 		return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "extractRowValue: unable to extract value: type %s not supported", t.GetCode()))
 	}
 	return val, nil
+}
+
+func encodeJSON(n spanner.NullJSON) string {
+	if !n.Valid {
+		return "<null>"
+	}
+	var buf bytes.Buffer
+	encoder := json.NewEncoder(&buf)
+	encoder.SetEscapeHTML(false)
+
+	err := encoder.Encode(n.Value)
+	if err != nil {
+		return fmt.Sprintf("error: %v", err)
+	}
+	resultString := buf.String()
+
+	// Trim the new line since json.Encoder.Encode adds a new line character at the end.
+	resultString = strings.TrimSuffix(resultString, "\n")
+	return resultString
 }
 
 // extractRowArrayValue extracts a single column's array value at given index i from result row.
@@ -298,7 +321,7 @@ func extractRowArrayValue(row *spanner.Row, i int, t *sppb.Type) (*executorpb.Va
 				value := &executorpb.Value{ValueType: &executorpb.Value_IsNull{IsNull: true}}
 				arrayValue.Value = append(arrayValue.Value, value)
 			} else {
-				value := &executorpb.Value{ValueType: &executorpb.Value_StringValue{StringValue: vv.String()}}
+				value := &executorpb.Value{ValueType: &executorpb.Value_StringValue{StringValue: encodeJSON(vv)}}
 				arrayValue.Value = append(arrayValue.Value, value)
 			}
 		}
