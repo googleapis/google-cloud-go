@@ -21,14 +21,13 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -48,6 +47,7 @@ type UserEvent struct {
 	// Required. User event type. Allowed values are:
 	//
 	//   - `add-to-cart`: Products being added to cart.
+	//   - `remove-from-cart`: Products being removed from cart.
 	//   - `category-page-view`: Special pages such as sale or promotion pages
 	//     viewed.
 	//   - `detail-page-view`: Products detail page viewed.
@@ -262,8 +262,8 @@ type UserEvent struct {
 	// The entity for customers that may run multiple different entities, domains,
 	// sites or regions, for example, `Google US`, `Google Ads`, `Waymo`,
 	// `google.com`, `youtube.com`, etc.
-	// It is recommended to set this field to get better per-entity search,
-	// completion and prediction results.
+	// We recommend that you set this field to get better per-entity search,
+	// completion, and prediction results.
 	Entity string `protobuf:"bytes,23,opt,name=entity,proto3" json:"entity,omitempty"`
 }
 
