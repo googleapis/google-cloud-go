@@ -21,9 +21,6 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
@@ -31,6 +28,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -533,7 +532,8 @@ type ImportProductsRequest struct {
 	// The desired location of errors incurred during the Import.
 	ErrorsConfig *ImportErrorsConfig `protobuf:"bytes,3,opt,name=errors_config,json=errorsConfig,proto3" json:"errors_config,omitempty"`
 	// Indicates which fields in the provided imported `products` to update. If
-	// not set, all fields are updated.
+	// not set, all fields are updated. If provided, only the existing product
+	// fields are updated. Missing products will not be created.
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,4,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// The mode of reconciliation between existing products and the products to be
 	// imported. Defaults to
@@ -547,9 +547,14 @@ type ImportProductsRequest struct {
 	// Format of the Pub/Sub topic is `projects/{project}/topics/{topic}`. It has
 	// to be within the same project as
 	// [ImportProductsRequest.parent][google.cloud.retail.v2beta.ImportProductsRequest.parent].
-	// Make sure that `service-<project
-	// number>@gcp-sa-retail.iam.gserviceaccount.com` has the
-	// `pubsub.topics.publish` IAM permission on the topic.
+	// Make sure that both
+	// `cloud-retail-customer-data-access@system.gserviceaccount.com` and
+	// `service-<project number>@gcp-sa-retail.iam.gserviceaccount.com`
+	// have the `pubsub.topics.publish` IAM permission on the topic.
+	//
+	// Only supported when
+	// [ImportProductsRequest.reconciliation_mode][google.cloud.retail.v2beta.ImportProductsRequest.reconciliation_mode]
+	// is set to `FULL`.
 	NotificationPubsubTopic string `protobuf:"bytes,7,opt,name=notification_pubsub_topic,json=notificationPubsubTopic,proto3" json:"notification_pubsub_topic,omitempty"`
 }
 
