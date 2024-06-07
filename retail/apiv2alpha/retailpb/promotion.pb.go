@@ -21,11 +21,10 @@
 package retailpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -48,8 +47,8 @@ type Promotion struct {
 	// id0LikeThis or ID_1_LIKE_THIS. Otherwise, an INVALID_ARGUMENT error is
 	// returned.
 	//
-	// Google Merchant Center property
-	// [promotion](https://support.google.com/merchants/answer/7050148).
+	// Corresponds to Google Merchant Center property
+	// [promotion_id](https://support.google.com/merchants/answer/7050148).
 	PromotionId string `protobuf:"bytes,1,opt,name=promotion_id,json=promotionId,proto3" json:"promotion_id,omitempty"`
 }
 

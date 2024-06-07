@@ -21,11 +21,8 @@
 package retailpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -52,7 +51,7 @@ type ListMerchantCenterAccountLinksRequest struct {
 
 	// Required. The parent Catalog of the resource.
 	// It must match this format:
-	// projects/{PROJECT_NUMBER}/locations/global/catalogs/{CATALOG_ID}
+	// `projects/{PROJECT_NUMBER}/locations/global/catalogs/{CATALOG_ID}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 }
 
@@ -156,7 +155,7 @@ type CreateMerchantCenterAccountLinkRequest struct {
 
 	// Required. The branch resource where this MerchantCenterAccountLink will be
 	// created. Format:
-	// projects/{PROJECT_NUMBER}/locations/global/catalogs/{CATALOG_ID}}
+	// `projects/{PROJECT_NUMBER}/locations/global/catalogs/{CATALOG_ID}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The
 	// [MerchantCenterAccountLink][google.cloud.retail.v2alpha.MerchantCenterAccountLink]
@@ -224,7 +223,7 @@ type DeleteMerchantCenterAccountLinkRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Full resource name. Format:
-	// projects/{project_number}/locations/{location_id}/catalogs/{catalog_id}/merchantCenterAccountLinks/{merchant_center_account_link_id}
+	// `projects/{project_number}/locations/{location_id}/catalogs/{catalog_id}/merchantCenterAccountLinks/{merchant_center_account_link_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
