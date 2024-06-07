@@ -22,9 +22,6 @@ package accountspb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -33,6 +30,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -413,7 +412,7 @@ type ListUsersRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The parent, which owns this collection of users.
-	// Format: `accounts/{account}
+	// Format: `accounts/{account}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of users to return. The service may return
 	// fewer than this value. If unspecified, at most 50 users will be returned.
