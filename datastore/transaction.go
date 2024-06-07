@@ -346,7 +346,7 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 // returning the Commit and a nil error if it succeeds. If the commit fails,
 // transaction is rolled back. If commit error is retryable, RunInTransaction
 // retries f with a new Transaction. It gives up and returns last seen commit
-// or f error safter three failed attempts (or as configured with MaxAttempts).
+// error or f error after three failed attempts (or as configured with MaxAttempts).
 //
 // If f returns non-nil, then the transaction will be rolled back. If f error
 // is retryable, RunInTransaction retries f with a new Transaction. It gives up
