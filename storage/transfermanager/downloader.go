@@ -243,7 +243,7 @@ type DownloadObjectInput struct {
 // If timeout is less than 0, no timeout is set.
 // TODO: download a single shard instead of the entire object.
 func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout time.Duration) (out *DownloadOutput) {
-	out = &DownloadOutput{Bucket: in.Bucket, Object: in.Object}
+	out = &DownloadOutput{Bucket: in.Bucket, Object: in.Object, Range: in.Range}
 
 	// Set timeout.
 	ctx := in.ctx
@@ -303,6 +303,7 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 type DownloadOutput struct {
 	Bucket string
 	Object string
+	Range  *DownloadRange             // requested range, if it was specified
 	Err    error                      // error occurring during download
 	Attrs  *storage.ReaderObjectAttrs // attributes of downloaded object, if successful
 }
