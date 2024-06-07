@@ -116,6 +116,14 @@ func MapFromStructPB(p *structpb.Struct) map[string]any {
 	return p.AsMap()
 }
 
+// TimeToProto converts a time.Time into a Timestamp.
+func TimeToProto(t time.Time) *timestamppb.Timestamp {
+	if t.IsZero() {
+		return nil
+	}
+	return timestamppb.New(t)
+}
+
 // TimeFromProto converts a Timestamp into a time.Time.
 func TimeFromProto(ts *timestamppb.Timestamp) time.Time {
 	if ts == nil {

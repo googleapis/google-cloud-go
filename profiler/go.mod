@@ -9,7 +9,7 @@ require (
 	github.com/golang/mock v1.6.0
 	github.com/google/pprof v0.0.0-20240528025155-186aa0362fba
 	github.com/googleapis/gax-go/v2 v2.12.4
-	golang.org/x/oauth2 v0.20.0
+	golang.org/x/oauth2 v0.21.0
 	google.golang.org/api v0.182.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157

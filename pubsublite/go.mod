@@ -9,7 +9,7 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.12.4
-	golang.org/x/oauth2 v0.20.0
+	golang.org/x/oauth2 v0.21.0
 	golang.org/x/sync v0.7.0
 	google.golang.org/api v0.182.0
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
