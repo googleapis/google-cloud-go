@@ -514,6 +514,17 @@ func processField(af *ast.Field, tc *typeConfig, typeInfos map[string]*typeInfo)
 				}
 				af.Type = expr
 			}
+			if fc.Doc != "" {
+				cg := &ast.CommentGroup{}
+				for i, line := range strings.Split(strings.TrimSpace(fc.Doc), "\n") {
+					c := &ast.Comment{Text: "// " + line}
+					if i == 0 {
+						c.Slash = af.Pos() - 1
+					}
+					cg.List = append(cg.List, c)
+				}
+				af.Doc = cg
+			}
 			if fc.ConvertToFrom != "" {
 				c, err := parseCustomConverter(id.Name, fc.ConvertToFrom)
 				if err != nil {
