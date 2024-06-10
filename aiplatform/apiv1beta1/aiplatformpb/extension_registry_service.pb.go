@@ -220,7 +220,9 @@ type UpdateExtensionRequest struct {
 	//
 	//   - `display_name`
 	//   - `description`
+	//   - `runtime_config`
 	//   - `tool_use_examples`
+	//   - `manifest.description`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 }
 

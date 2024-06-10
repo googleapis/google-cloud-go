@@ -214,7 +214,7 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace("", &uid.Options{Time: t, Short: true})
+	uidSpace = uid.NewSpace("", &uid.Options{Time: t})
 	bucketName = testPrefix + uidSpace.New()
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
 	grpcBucketName = grpcTestPrefix + uidSpace.New()
@@ -1008,6 +1008,50 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 		}
 		if err := o.Generation(gen).Delete(ctx); err != nil {
 			t.Fatalf("final delete failed: %v", err)
+		}
+	})
+}
+
+func TestIntegration_HierarchicalNamespace(t *testing.T) {
+	ctx := skipJSONReads(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		// Create a bucket with HNS enabled.
+		hnsBucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(hnsBucketName)
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+			HierarchicalNamespace:    &HierarchicalNamespace{Enabled: true},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("bkt(%q).Attrs: %v", hnsBucketName, err)
+		}
+
+		if got, want := (attrs.HierarchicalNamespace), (&HierarchicalNamespace{Enabled: true}); cmp.Diff(got, want) != "" {
+			t.Errorf("HierarchicalNamespace: got %+v, want %+v", got, want)
+		}
+
+		// Folder creation should work on HNS bucket, but not on standard bucket.
+		req := &controlpb.CreateFolderRequest{
+			Parent:   fmt.Sprintf("projects/_/buckets/%v", hnsBucketName),
+			FolderId: "foo/",
+			Folder:   &controlpb.Folder{},
+		}
+		if _, err := controlClient.CreateFolder(ctx, req); err != nil {
+			t.Errorf("creating folder in bucket %q: %v", hnsBucketName, err)
+		}
+
+		req2 := &controlpb.CreateFolderRequest{
+			Parent:   fmt.Sprintf("projects/_/buckets/%v", bucket),
+			FolderId: "foo/",
+			Folder:   &controlpb.Folder{},
+		}
+		if _, err := controlClient.CreateFolder(ctx, req2); status.Code(err) != codes.FailedPrecondition {
+			t.Errorf("creating folder in non-HNS bucket %q: got error %v, want FailedPrecondition", bucket, err)
 		}
 	})
 }
@@ -5821,6 +5865,14 @@ func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate, me
 	h.t.Helper()
 	attrs, err := b.If(BucketConditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Update may already have succeeded with retry; if so, log and grab attrs.
+			if apiErr.HTTPCode() == http.StatusPreconditionFailed || apiErr.GRPCStatus().Code() == codes.FailedPrecondition {
+				log.Println("bucket update failed due to precondition; likely succeeded but retried - grabbing attrs instead")
+				return h.mustBucketAttrs(b)
+			}
+		}
 		h.t.Fatalf("BucketHandle(%q).Update: %v", b.BucketName(), err)
 	}
 	return attrs
@@ -6033,6 +6085,32 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 			AllowNonEmpty: true,
 		}
 		err = controlClient.DeleteManagedFolder(ctx, deleteReq)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Delete any folders.
+	listFoldersReq := &controlpb.ListFoldersRequest{
+		Parent: fmt.Sprintf("projects/_/buckets/%s", bucketName),
+	}
+	folderIt := controlClient.ListFolders(ctx, listFoldersReq)
+	for {
+		resp, err := folderIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		// Buckets without UBLA will return this error for Folder ops; skip.
+		if status.Code(err) == codes.FailedPrecondition {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		deleteFolderReq := &controlpb.DeleteFolderRequest{
+			Name: resp.Name,
+		}
+		err = controlClient.DeleteFolder(ctx, deleteFolderReq)
 		if err != nil {
 			return err
 		}

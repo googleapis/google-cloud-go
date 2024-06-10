@@ -1,6 +1,37 @@
 # Changelog
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.7.1...discoveryengine/v1.8.0) (2024-05-29)
+
+
+### Features
+
+* **discoveryengine:** Add control service APIs ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Add control service APIs ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Add control service APIs ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **discoveryengine:** Add custom model list API ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Add custom model list API ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Add provision project API ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Promote answer APIs to v1 GA ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **discoveryengine:** Promote grounding check APIs to v1 GA ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **discoveryengine:** Promote ranking APIs to v1 GA ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **discoveryengine:** Return relevance score for chunk based search (alpha only) ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Support cancelling import operations ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Support cancelling import operations ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Support cancelling import operations ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **discoveryengine:** Support multiple parent patterns for controls ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Support writing user events for blended engines ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Support writing user events for blended engines ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Support writing user events for blended engines ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+
+
+### Documentation
+
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **discoveryengine:** Mention multiple parent patterns for controls ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+
 ## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.7.0...discoveryengine/v1.7.1) (2024-05-01)
 
 

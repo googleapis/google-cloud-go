@@ -1539,7 +1539,7 @@ type isProbe_ProbeType interface {
 }
 
 type Probe_Exec struct {
-	// Exec specifies the action to take.
+	// ExecAction probes the health of a container by executing a command.
 	Exec *Probe_ExecAction `protobuf:"bytes,1,opt,name=exec,proto3,oneof"`
 }
 

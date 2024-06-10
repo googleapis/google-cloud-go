@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.6...batch/v1.8.7) (2024-06-05)
+
+
+### Documentation
+
+* **batch:** Documentation improvements ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
 ## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.5...batch/v1.8.6) (2024-05-16)
 
 
