@@ -298,6 +298,9 @@ func (f *fakeApiaryRequest) Header() http.Header {
 	return f.header
 }
 
+// TestInvokeHeaderMerge tests that values for x-goog-api-client are merged into
+// a single space-separated value. This test should be removed with the code once
+// both transport package dependencies do the merge.
 func TestInvokeHeaderMerge(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
