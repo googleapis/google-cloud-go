@@ -255,7 +255,12 @@ var (
 	jobRetryReasons = []string{"backendError", "rateLimitExceeded", "jobRateLimitExceeded", "internalError"}
 
 	retry5xxCodes = []int{
-		http.StatusInternalServerError,
+		// NOTICE: nestoca change: removing 500 as a retryable error.
+		// This implies that panics and parsing errors are retryable; thus making requests using the bigquery client hang.
+		//
+		// --- http.StatusInternalServerError, ---
+		//
+
 		http.StatusBadGateway,
 		http.StatusServiceUnavailable,
 		http.StatusGatewayTimeout,
