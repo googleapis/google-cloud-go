@@ -233,6 +233,13 @@ func (iter *GenerateContentResponseIterator) Next() (*GenerateContentResponse, e
 	return gcp, nil
 }
 
+// MergedResponse returns the result of combining all the streamed responses seen so far.
+// After iteration completes, the merged response should match the response obtained without streaming
+// (that is, if [GenerativeModel.GenerateContent] were called).
+func (iter *GenerateContentResponseIterator) MergedResponse() *GenerateContentResponse {
+	return iter.merged
+}
+
 func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse, error) {
 	gcp := (GenerateContentResponse{}).fromProto(resp)
 	// Assume a non-nil PromptFeedback is an error.
