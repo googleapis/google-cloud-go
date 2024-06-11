@@ -52,3 +52,9 @@ types:
         Y:
           noConvert: true
       populateToFrom: popYTo, popYFrom
+
+    File:
+      fields:
+        hidden:
+          add: true
+          type: '*Client'
