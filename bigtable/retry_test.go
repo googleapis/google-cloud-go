@@ -33,7 +33,6 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-// TODO: Add test to simulate failure and assert that retry_count is recorded
 func setupFakeServer(project, instance string, config ClientConfig, opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err error) {
 	srv, err := bttest.NewServer("localhost:0", opt...)
 	if err != nil {

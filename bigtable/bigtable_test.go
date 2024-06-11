@@ -30,6 +30,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+var disableMetricsConfig = ClientConfig{MetricsProvider: NoopMetricsProvider{}}
+
 func TestPrefix(t *testing.T) {
 	for _, test := range []struct {
 		prefix, succ string
@@ -582,9 +584,9 @@ func TestReadRowsInvalidRowSet(t *testing.T) {
 	if err := adminClient.CreateTable(ctx, testEnv.config.Table); err != nil {
 		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
 	}
-	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
 	if err != nil {
-		t.Fatalf("NewClient failed: %v", err)
+		t.Fatalf("NewClientWithConfig failed: %v", err)
 	}
 	defer client.Close()
 	table := client.Open(testEnv.config.Table)
@@ -658,9 +660,9 @@ func TestReadRowsRequestStats(t *testing.T) {
 		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
 	}
 
-	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
 	if err != nil {
-		t.Fatalf("NewClient failed: %v", err)
+		t.Fatalf("NewClientWithConfig failed: %v", err)
 	}
 	defer client.Close()
 	table := client.Open(testEnv.config.Table)
@@ -786,9 +788,9 @@ func TestMutateRowsWithAggregates(t *testing.T) {
 		t.Fatalf("CreateTable(%v) failed: %v", testEnv.config.Table, err)
 	}
 
-	client, err := NewClient(ctx, testEnv.config.Project, testEnv.config.Instance, option.WithGRPCConn(conn))
+	client, err := NewClientWithConfig(ctx, testEnv.config.Project, testEnv.config.Instance, disableMetricsConfig, option.WithGRPCConn(conn))
 	if err != nil {
-		t.Fatalf("NewClient failed: %v", err)
+		t.Fatalf("NewClientWithConfig failed: %v", err)
 	}
 	defer client.Close()
 	table := client.Open(testEnv.config.Table)

@@ -38,7 +38,6 @@ import (
 )
 
 const (
-	meterName            = "bigtable.googleapis.com/internal/client/"
 	bigtableResourceType = "bigtable_client_raw"
 
 	// The number of timeserieses to send to GCM in a single request. This
@@ -174,7 +173,7 @@ func (me *monitoringExporter) recordToMpb(metrics otelmetricdata.Metrics, attrib
 	}
 	addAttributes(&attributes)
 	return &googlemetricpb.Metric{
-		Type:   fmt.Sprintf("%v%s", meterName, metrics.Name),
+		Type:   fmt.Sprintf("%v%s", builtInMetricsMeterName, metrics.Name),
 		Labels: labels,
 	}, mr
 }
@@ -204,12 +203,7 @@ func (me *monitoringExporter) recordToTspb(m otelmetricdata.Metrics) ([]*monitor
 			metric, mr := me.recordToMpb(m, point.Attributes)
 			var ts *monitoringpb.TimeSeries
 			var err error
-			if a.IsMonotonic {
-				ts, err = sumToTimeSeries[int64](point, m, mr)
-			} else {
-				// Send non-monotonic sums as gauges
-				ts, err = gaugeToTimeSeries[int64](point, m, mr)
-			}
+			ts, err = sumToTimeSeries[int64](point, m, mr)
 			if err != nil {
 				errs = append(errs, err)
 				continue
@@ -229,6 +223,10 @@ func (me *monitoringExporter) recordsToTspbs(rm *otelmetricdata.ResourceMetrics)
 		errs []error
 	)
 	for _, scope := range rm.ScopeMetrics {
+		if scope.Scope.Name != builtInMetricsMeterName {
+			// Filter out metric data for instruments that are not part of the bigtable builtin metrics
+			continue
+		}
 		for _, metrics := range scope.Metrics {
 			ts, err := me.recordToTspb(metrics)
 			errs = append(errs, err)
@@ -237,26 +235,6 @@ func (me *monitoringExporter) recordsToTspbs(rm *otelmetricdata.ResourceMetrics)
 	}
 
 	return tss, errors.Join(errs...)
-}
-
-func gaugeToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {
-	value, valueType := numberDataPointToValue(point)
-	timestamp := timestamppb.New(point.Time)
-	if err := timestamp.CheckValid(); err != nil {
-		return nil, err
-	}
-	return &monitoringpb.TimeSeries{
-		Resource:   mr,
-		Unit:       string(metrics.Unit),
-		MetricKind: googlemetricpb.MetricDescriptor_GAUGE,
-		ValueType:  valueType,
-		Points: []*monitoringpb.Point{{
-			Interval: &monitoringpb.TimeInterval{
-				EndTime: timestamp,
-			},
-			Value: value,
-		}},
-	}, nil
 }
 
 func sumToTimeSeries[N int64 | float64](point otelmetricdata.DataPoint[N], metrics otelmetricdata.Metrics, mr *monitoredrespb.MonitoredResource) (*monitoringpb.TimeSeries, error) {

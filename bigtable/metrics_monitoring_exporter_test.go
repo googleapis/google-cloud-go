@@ -28,6 +28,7 @@ import (
 
 	"go.opentelemetry.io/otel/attribute"
 	otelmetric "go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/sdk/instrumentation"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
@@ -41,6 +42,7 @@ import (
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/types/known/emptypb"
 )
@@ -120,7 +122,7 @@ func (f *fakeMetricServiceServer) CreateMetricDescriptor(
 }
 
 func NewMetricTestServer() (*MetricsTestServer, error) {
-	srv := grpc.NewServer()
+	srv := grpc.NewServer(grpc.KeepaliveParams(keepalive.ServerParameters{Time: 5 * time.Minute}))
 	lis, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		return nil, err
@@ -183,8 +185,15 @@ func TestExportMetrics(t *testing.T) {
 	if err != nil {
 		t.Errorf("Error occurred when creating exporter: %v", err)
 	}
+
+	// Reduce sampling period to reduce test run time
+	origSamplePeriod := defaultSamplePeriod
+	defaultSamplePeriod = 5 * time.Second
+	defer func() {
+		defaultSamplePeriod = origSamplePeriod
+	}()
 	provider := metric.NewMeterProvider(
-		metric.WithReader(metric.NewPeriodicReader(exporter)),
+		metric.WithReader(metric.NewPeriodicReader(exporter, metric.WithInterval(defaultSamplePeriod))),
 		metric.WithResource(res),
 	)
 
@@ -194,11 +203,37 @@ func TestExportMetrics(t *testing.T) {
 		assertNoError(t, err)
 	}()
 
-	meter := provider.Meter("test")
-	counter, err := meter.Int64Counter("name.lastvalue")
+	meterBuiltIn := provider.Meter(builtInMetricsMeterName)
+	counterBuiltIn, err := meterBuiltIn.Int64Counter("name.lastvalue")
 	requireNoError(t, err)
 
-	counter.Add(ctx, 1)
+	meterNameNotBuiltIn := "testing"
+	meterNotbuiltIn := provider.Meter(meterNameNotBuiltIn)
+	counterNotBuiltIn, err := meterNotbuiltIn.Int64Counter("name.lastvalue")
+	requireNoError(t, err)
+
+	// record start time
+	testStartTime := time.Now()
+
+	// record data points
+	counterBuiltIn.Add(ctx, 1)
+	counterNotBuiltIn.Add(ctx, 1)
+
+	// Calculate elapsed time
+	elapsedTime := time.Since(testStartTime)
+	if elapsedTime < 3*defaultSamplePeriod {
+		// Ensure at least 2 datapoints are recorded
+		time.Sleep(3*defaultSamplePeriod - elapsedTime)
+	}
+
+	gotCalls := testServer.CreateServiceTimeSeriesRequests()
+	for _, gotCall := range gotCalls {
+		for _, ts := range gotCall.TimeSeries {
+			if strings.Contains(ts.Metric.Type, meterNameNotBuiltIn) {
+				t.Errorf("Exporter should only export builtin metrics")
+			}
+		}
+	}
 }
 
 func TestExportCounter(t *testing.T) {
@@ -232,7 +267,7 @@ func TestExportCounter(t *testing.T) {
 	}()
 
 	// Start meter
-	meter := provider.Meter("cloudmonitoring/test")
+	meter := provider.Meter(builtInMetricsMeterName)
 
 	// Register counter value
 	counter, err := meter.Int64Counter("counter-a")
@@ -274,7 +309,7 @@ func TestExportHistogram(t *testing.T) {
 	}()
 
 	// Start meter
-	meter := provider.Meter("cloudmonitoring/test")
+	meter := provider.Meter(builtInMetricsMeterName)
 
 	// Register counter value
 	counter, err := meter.Float64Histogram("counter-a")
@@ -310,7 +345,7 @@ func TestRecordToMpb(t *testing.T) {
 	}
 
 	wantMetric := &googlemetricpb.Metric{
-		Type: fmt.Sprintf("%v%s", meterName, metricName),
+		Type: fmt.Sprintf("%v%s", builtInMetricsMeterName, metricName),
 		Labels: map[string]string{
 			"a": "A",
 			"b": "100",
@@ -558,6 +593,9 @@ func TestBatchingExport(t *testing.T) {
 			err := exporter.Export(ctx, &metricdata.ResourceMetrics{
 				ScopeMetrics: []metricdata.ScopeMetrics{
 					{
+						Scope: instrumentation.Scope{
+							Name: builtInMetricsMeterName,
+						},
 						Metrics: input,
 					},
 				},

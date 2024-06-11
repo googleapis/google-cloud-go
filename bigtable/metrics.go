@@ -39,8 +39,7 @@ import (
 )
 
 const (
-	// instrumentationScope is the instrumentation name that will be associated with the emitted telemetry.
-	instrumentationScope = "cloud.google.com/go"
+	builtInMetricsMeterName = "bigtable.googleapis.com/internal/client/"
 
 	metricsPrefix         = "bigtable/"
 	locationMDKey         = "x-goog-ext-425905942-bin"
@@ -65,8 +64,8 @@ const (
 	// Metric names
 	metricNameOperationLatencies = "operation_latencies"
 	metricNameAttemptLatencies   = "attempt_latencies"
-	metricNameRetryCount         = "retry_count"
 	metricNameServerLatencies    = "server_latencies"
+	metricNameRetryCount         = "retry_count"
 )
 
 var (
@@ -116,6 +115,7 @@ var (
 	exporterOpts = []option.ClientOption{}
 )
 
+// getBuiltInMeterProviderOptions returns meter provider options, shutdown function and error
 func getBuiltInMeterProviderOptions(ctx context.Context, project string) (sdkmetric.Option, error) {
 	defaultExporter, err := newMonitoringExporter(ctx, project, exporterOpts...)
 	if err != nil {
@@ -132,6 +132,9 @@ func getBuiltInMeterProviderOptions(ctx context.Context, project string) (sdkmet
 
 type builtinMetricsTracerFactory struct {
 	builtinEnabled bool
+
+	// To be called on client close
+	shutdown func()
 
 	// attributes that are specific to a client instance and
 	// do not change across different function calls on client
@@ -158,6 +161,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 			attribute.String(metricLabelKeyClientUID, clientUID),
 			attribute.String(metricLabelKeyClientName, clientName),
 		},
+		shutdown: func() {},
 	}
 
 	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
@@ -167,14 +171,15 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
-		tracerFactory.builtinEnabled = true
-
 		// Create default meter provider
 		mpOptions, err := getBuiltInMeterProviderOptions(ctx, project)
 		if err != nil {
 			return tracerFactory, err
 		}
 		meterProvider = sdkmetric.NewMeterProvider(mpOptions)
+
+		tracerFactory.builtinEnabled = true
+		tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
 	} else {
 		switch v := metricsProvider.(type) {
 		case CustomOpenTelemetryMetricsProvider:
@@ -191,7 +196,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	}
 
 	// Create meter and instruments
-	meter := meterProvider.Meter(instrumentationScope, metric.WithInstrumentationVersion(internal.Version))
+	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
 	err = tracerFactory.createInstruments(meter)
 	return tracerFactory, err
 }
@@ -241,7 +246,8 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 }
 
 // builtinMetricsTracer is created one per function call
-// It is used to store metric attribute values and other data required to obtain them
+// It is used to store metric instruments, attribute values
+// and other data required to obtain and record them
 type builtinMetricsTracer struct {
 	ctx            context.Context
 	builtInEnabled bool
@@ -297,8 +303,7 @@ func (tf *builtinMetricsTracerFactory) newBuiltinMetricsTracer(ctx context.Conte
 	}
 }
 
-// recordOperationCompletion returns a function that should be executed to record total operation metrics
-// It records as many metrics as it can and does not return error
+// recordOperationCompletion records as many metrics as it can and does not return error
 func (mt *builtinMetricsTracer) recordOperationCompletion() {
 	if !mt.builtInEnabled {
 		return

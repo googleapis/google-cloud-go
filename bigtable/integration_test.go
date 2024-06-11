@@ -952,8 +952,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		})
 
 		// Assert at least 1 datapoint was exported
-		exportedTs, err := iter.Next()
-		fmt.Printf("exportedTs: %+v, err: %+v\n", exportedTs, err)
+		_, err := iter.Next()
 		if testEnv.Config().UseProd && err != nil {
 			t.Errorf("%v not exported\n", metricName)
 		}

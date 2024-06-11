@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"testing"
 	"time"
@@ -35,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 
 	"google.golang.org/grpc/metadata"
@@ -74,7 +76,7 @@ func equalErrs(gotErr error, wantErr error) bool {
 	return strings.Contains(gotErr.Error(), wantErr.Error())
 }
 
-func TestNewBuiltinMetricsTracerFactory2(t *testing.T) {
+func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	ctx := context.Background()
 	project := "test-project"
 	instance := "test-instance"
@@ -87,6 +89,11 @@ func TestNewBuiltinMetricsTracerFactory2(t *testing.T) {
 		attribute.String(metricLabelKeyAppProfile, appProfile),
 		attribute.String(metricLabelKeyClientUID, clientUID),
 		attribute.String(metricLabelKeyClientName, clientName),
+	}
+	wantMetricNamesStdout := []string{metricNameAttemptLatencies, metricNameAttemptLatencies, metricNameOperationLatencies, metricNameRetryCount, metricNameServerLatencies}
+	wantMetricTypesGCM := []string{}
+	for _, wantMetricName := range wantMetricNamesStdout {
+		wantMetricTypesGCM = append(wantMetricTypesGCM, builtInMetricsMeterName+wantMetricName)
 	}
 
 	// Reduce sampling period to reduce test run time
@@ -122,22 +129,15 @@ func TestNewBuiltinMetricsTracerFactory2(t *testing.T) {
 		exporterOpts = origExporterOpts
 	}()
 
-	// Create custom meter provider which exports to stdout and GCM
-	var exporterBuf bytes.Buffer
-	stdoutExporter, err := stdoutmetric.New(stdoutmetric.WithWriter(&exporterBuf))
-	if err != nil {
-		t.Fatalf("Failed to create stdout exporter")
-	}
-	stdoutMpOpts := metric.WithReader(metric.NewPeriodicReader(stdoutExporter,
-		metric.WithInterval(defaultSamplePeriod)))
-	mpOpts, err := WithBuiltIn(ctx, project, stdoutMpOpts)
-	if err != nil {
-		t.Fatalf("WithBuiltIn failed: %v", err)
-	}
-
 	// Setup fake Bigtable server
-	headerInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+	isFirstAttempt := true
+	headerAndErrorInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if strings.HasSuffix(info.FullMethod, "ReadRows") {
+			if isFirstAttempt {
+				// Fail first attempt
+				isFirstAttempt = false
+				return status.Error(codes.Unavailable, "Mock Unavailable error")
+			}
 			header := metadata.New(map[string]string{
 				serverTimingMDKey: "gfet4t7; dur=123",
 				locationMDKey:     string(testHeaders),
@@ -148,26 +148,24 @@ func TestNewBuiltinMetricsTracerFactory2(t *testing.T) {
 	}
 
 	tests := []struct {
-		desc               string
-		config             ClientConfig
-		wantBuiltinEnabled bool
-		setEmulator        bool
-		wantCreateTSCalls  int
+		desc                   string
+		config                 ClientConfig
+		wantBuiltinEnabled     bool
+		setEmulator            bool
+		createCustom           bool
+		wantCreateTSCallsCount int // No. of CreateTimeSeries calls
 	}{
 		{
-			desc:               "should create a new tracer factory with default meter provider",
-			config:             ClientConfig{},
-			wantBuiltinEnabled: true,
-			wantCreateTSCalls:  2,
+			desc:                   "should create a new tracer factory with default meter provider",
+			config:                 ClientConfig{},
+			wantBuiltinEnabled:     true,
+			wantCreateTSCallsCount: 2,
 		},
 		{
-			desc: "should create a new tracer factory with custom meter provider",
-			config: ClientConfig{
-				MetricsProvider: CustomOpenTelemetryMetricsProvider{
-					MeterProvider: sdkmetric.NewMeterProvider(mpOpts...)},
-			},
-			wantBuiltinEnabled: true,
-			wantCreateTSCalls:  2,
+			desc:                   "should create a new tracer factory with custom meter provider",
+			wantBuiltinEnabled:     true,
+			wantCreateTSCallsCount: 2,
+			createCustom:           true,
 		},
 		{
 			desc:   "should create a new tracer factory with noop meter provider",
@@ -179,17 +177,43 @@ func TestNewBuiltinMetricsTracerFactory2(t *testing.T) {
 			setEmulator: true,
 		},
 	}
-	wantCreateTSCallsTotal := 0
 	for _, test := range tests {
-		wantCreateTSCallsTotal += test.wantCreateTSCalls
 		t.Run(test.desc, func(t *testing.T) {
+			var exporterBuf bytes.Buffer
+			var customMeterProvider *sdkmetric.MeterProvider
+			if test.createCustom {
+				// Create stdout exporter
+				stdoutExporter, err := stdoutmetric.New(stdoutmetric.WithWriter(&exporterBuf))
+				if err != nil {
+					t.Fatalf("Failed to create stdout exporter")
+				}
+
+				// Create reader for custom meter provider
+				periodicReaderStdout := metric.NewPeriodicReader(stdoutExporter,
+					metric.WithInterval(defaultSamplePeriod))
+
+				// Create meter provider options for custom meter provider
+				stdoutMpOpts := metric.WithReader(periodicReaderStdout)
+				mpOpts, err := WithBuiltIn(ctx, project, stdoutMpOpts)
+				if err != nil {
+					t.Fatalf("WithBuiltIn failed: %v", err)
+				}
+
+				// Create custom meter provider which exports to stdout and GCM
+				customMeterProvider = sdkmetric.NewMeterProvider(mpOpts...)
+
+				test.config = ClientConfig{
+					MetricsProvider: CustomOpenTelemetryMetricsProvider{
+						MeterProvider: customMeterProvider},
+				}
+			}
 			if test.setEmulator {
 				// Set environment variable
 				t.Setenv("BIGTABLE_EMULATOR_HOST", "localhost:8086")
 			}
 
 			// open table and compare errors
-			tbl, cleanup, gotErr := setupFakeServer(project, instance, test.config, grpc.StreamInterceptor(headerInjector))
+			tbl, cleanup, gotErr := setupFakeServer(project, instance, test.config, grpc.StreamInterceptor(headerAndErrorInjector))
 			defer cleanup()
 			if gotErr != nil {
 				t.Fatalf("err: got: %v, want: %v", gotErr, nil)
@@ -219,6 +243,11 @@ func TestNewBuiltinMetricsTracerFactory2(t *testing.T) {
 			// record start time
 			testStartTime := time.Now()
 
+			// pop out all old requests
+			monitoringServer.CreateServiceTimeSeriesRequests()
+
+			// Perform read rows operation
+			isFirstAttempt = true
 			err := tbl.ReadRows(ctx, NewRange("a", "z"), func(r Row) bool {
 				return true
 			})
@@ -228,15 +257,44 @@ func TestNewBuiltinMetricsTracerFactory2(t *testing.T) {
 
 			// Calculate elapsed time
 			elapsedTime := time.Since(testStartTime)
-			if elapsedTime < 2*defaultSamplePeriod {
+			if elapsedTime < 3*defaultSamplePeriod {
 				// Ensure at least 2 datapoints are recorded
-				time.Sleep(2*defaultSamplePeriod - elapsedTime)
+				time.Sleep(3*defaultSamplePeriod - elapsedTime)
 			}
 
-			fmt.Printf(exporterBuf.String())
-			gotCalls := monitoringServer.CreateServiceTimeSeriesRequests()
-			if len(gotCalls) != wantCreateTSCallsTotal {
-				t.Errorf("No. of CreateServiceTimeSeriesRequests: got: %v,  want: %v", len(gotCalls), wantCreateTSCallsTotal)
+			// Get new CreateServiceTimeSeriesRequests
+			gotCreateTSCalls := monitoringServer.CreateServiceTimeSeriesRequests()
+			for _, gotCreateTSCall := range gotCreateTSCalls {
+				gotMetricTypes := []string{}
+				for _, ts := range gotCreateTSCall.TimeSeries {
+					gotMetricTypes = append(gotMetricTypes, ts.Metric.Type)
+				}
+				sort.Strings(gotMetricTypes)
+				if !testutil.Equal(gotMetricTypes, wantMetricTypesGCM) {
+					t.Errorf("Metric types missing in req. got: %v, want: %v", gotMetricTypes, wantMetricTypesGCM)
+				}
+			}
+
+			gotCreateTSCallsCount := len(gotCreateTSCalls)
+			if test.createCustom {
+				// Shutdown reader before reading to prevent data race
+				customMeterProvider.Shutdown(ctx)
+
+				// Validate metrics exported to stdout
+				line, err := exporterBuf.ReadString('\n')
+				if err != nil {
+					t.Errorf("Error reading string: %v", err)
+					return
+				}
+				for _, wantMetric := range wantMetricNamesStdout {
+					if !strings.Contains(line, wantMetric) {
+						t.Errorf("%v not exported to stdout", wantMetric)
+					}
+				}
+			}
+
+			if gotCreateTSCallsCount < test.wantCreateTSCallsCount {
+				t.Errorf("No. of CreateServiceTimeSeriesRequests: got: %v,  want: %v", gotCreateTSCalls, test.wantCreateTSCallsCount)
 			}
 		})
 	}

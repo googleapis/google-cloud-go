@@ -152,6 +152,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 // Close closes the Client.
 func (c *Client) Close() error {
+	if c.metricsTracerFactory != nil {
+		c.metricsTracerFactory.shutdown()
+	}
 	return c.connPool.Close()
 }
 
