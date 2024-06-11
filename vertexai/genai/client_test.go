@@ -71,7 +71,7 @@ func TestLive(t *testing.T) {
 			t.Fatal(err)
 		}
 		got := responseString(resp)
-		checkMatch(t, got, `[1-9][0-9].* cm|[1-9].* inches`)
+		checkMatch(t, got, `[1-9][0-9].* (cm|centimeters)|[1-9].* inches`)
 		fmt.Println(got)
 
 	})
@@ -462,7 +462,9 @@ func responseString(resp *GenerateContentResponse) string {
 		if len(resp.Candidates) > 1 {
 			fmt.Fprintf(&b, "%d:", i+1)
 		}
-		b.WriteString(contentString(cand.Content))
+		if cand.Content != nil {
+			b.WriteString(contentString(cand.Content))
+		}
 	}
 	return b.String()
 }
