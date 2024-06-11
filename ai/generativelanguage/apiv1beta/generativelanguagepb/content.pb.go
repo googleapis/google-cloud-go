@@ -21,13 +21,12 @@
 package generativelanguagepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -115,7 +114,7 @@ const (
 	// Unspecified function calling mode. This value should not be used.
 	FunctionCallingConfig_MODE_UNSPECIFIED FunctionCallingConfig_Mode = 0
 	// Default model behavior, model decides to predict either a function call
-	// or a natural language repspose.
+	// or a natural language response.
 	FunctionCallingConfig_AUTO FunctionCallingConfig_Mode = 1
 	// Model is constrained to always predicting a function call only.
 	// If "allowed_function_names" are set, the predicted function call will be

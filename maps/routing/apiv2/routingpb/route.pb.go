@@ -21,9 +21,6 @@
 package routingpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	localized_text "google.golang.org/genproto/googleapis/type/localized_text"
 	money "google.golang.org/genproto/googleapis/type/money"
@@ -31,6 +28,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
