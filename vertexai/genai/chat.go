@@ -50,7 +50,7 @@ func (cs *ChatSession) SendMessageStream(ctx context.Context, parts ...Part) *Ge
 	req := cs.m.newGenerateContentRequest(cs.History...)
 	var cc int32 = 1
 	req.GenerationConfig.CandidateCount = &cc
-	streamClient, err := cs.m.c.c.StreamGenerateContent(ctx, req)
+	streamClient, err := cs.m.c.pc.StreamGenerateContent(ctx, req)
 	return &GenerateContentResponseIterator{
 		sc:  streamClient,
 		err: err,
