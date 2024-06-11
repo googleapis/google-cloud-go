@@ -204,11 +204,22 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	client := opts.Client
+	xp, _ := stp.(*x509Provider)
+	if xp != nil {
+		client, err = xp.client()
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	tp := &tokenProvider{
-		client: opts.Client,
+		client: client,
 		opts:   opts,
 		stp:    stp,
 	}
+
 	if opts.ServiceAccountImpersonationURL == "" {
 		return auth.NewCachedTokenProvider(tp, nil), nil
 	}
@@ -218,7 +229,7 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	// needed for impersonation
 	tp.opts.Scopes = []string{"https://www.googleapis.com/auth/cloud-platform"}
 	imp, err := impersonate.NewTokenProvider(&impersonate.Options{
-		Client:               opts.Client,
+		Client:               client,
 		URL:                  opts.ServiceAccountImpersonationURL,
 		Scopes:               scopes,
 		Tp:                   auth.NewCachedTokenProvider(tp, nil),
@@ -353,6 +364,15 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 		execProvider.opts = o
 		execProvider.env = runtimeEnvironment{}
 		return execProvider, nil
+	} else if o.CredentialSource.Certificate != nil {
+		cert := o.CredentialSource.Certificate
+		if cert.UseDefaultCertificateConfig == false && cert.CertificateConfigLocation == "" {
+			return nil, errors.New("credentials: \"certificate\" object must either specify a certificate_config_location or use_default_certificate_config should be true")
+		}
+		if cert.UseDefaultCertificateConfig == true && cert.CertificateConfigLocation != "" {
+			return nil, errors.New("credentials: \"certificate\" object cannot specify both a certificate_config_location and use_default_certificate_config=true")
+		}
+		return &x509Provider{certificateConfigLocation: cert.CertificateConfigLocation}, nil
 	}
 	return nil, errors.New("credentials: unable to parse credential source")
 }
