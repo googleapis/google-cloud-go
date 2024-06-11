@@ -2,6 +2,7 @@
 *                       @googleapis/yoshi-go-admins
 
 /ai/                    @googleapis/go-vertexai @googleapis/yoshi-go-admins
+/aiplatform/            @googleapis/go-vertexai @googleapis/yoshi-go-admins
 /bigtable/              @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigtable/cmd/cbt       @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/yoshi-go-admins
 /bigtable/cmd/emulator  @igorbernstein2 @googleapis/cloud-native-db-dpes @googleapis/api-bigtable-partners @googleapis/api-bigtable @googleapis/yoshi-go-admins
