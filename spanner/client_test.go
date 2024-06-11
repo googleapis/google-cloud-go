@@ -874,6 +874,9 @@ func checkReqsForReadOptions(t *testing.T, server InMemSpannerServer, ro ReadOpt
 	if got, want := sqlReq.DirectedReadOptions, ro.DirectedReadOptions; got.String() != want.String() {
 		t.Fatalf("Directed Read Options mismatch, got %v, want %v", got, want)
 	}
+	if got, want := sqlReq.OrderBy, ro.OrderBy; got != want {
+		t.Fatalf("OrderBy mismatch, got %v, want %v", got, want)
+	}
 }
 
 func checkReqsForTransactionOptions(t *testing.T, server InMemSpannerServer, txo TransactionOptions) {
@@ -4436,20 +4439,26 @@ func readOptionsTestCases() []ReadOptionsTestCase {
 	return []ReadOptionsTestCase{
 		{
 			name:   "Client level",
-			client: &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
-			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			client: &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+		},
+		{
+			name:   "Client level has precendence when ORDER_BY_UNSPECIFIED at read level",
+			client: &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+			read:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
 		},
 		{
 			name:   "Read level",
 			client: &ReadOptions{},
-			read:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
-			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			read:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
 		},
 		{
 			name:   "Read level has precedence than client level",
-			client: &ReadOptions{Index: "clientIndex", Limit: 10, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "clientRequestTag"},
-			read:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
-			want:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
+			client: &ReadOptions{Index: "clientIndex", Limit: 10, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "clientRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+			read:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_PRIMARY_KEY},
+			want:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_PRIMARY_KEY},
 		},
 	}
 }
@@ -4548,12 +4557,11 @@ func TestClient_DoForEachRow_ShouldNotEndSpanWithIteratorDoneError(t *testing.T)
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
-	// cannot do that.
-	if len(te.Spans) == 0 {
+	spans := te.Spans()
+	if len(spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	s := te.Spans[len(te.Spans)-1].Status
+	s := spans[len(spans)-1].Status
 	if s.Code != int32(codes.OK) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.OK)
 	}
@@ -4598,12 +4606,11 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
-	// cannot do that.
-	if len(te.Spans) == 0 {
+	spans := te.Spans()
+	if len(spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	s := te.Spans[len(te.Spans)-1].Status
+	s := spans[len(spans)-1].Status
 	if s.Code != int32(codes.InvalidArgument) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.InvalidArgument)
 	}
@@ -5366,12 +5373,11 @@ func checkBatchWriteSpan(t *testing.T, errors []error, code codes.Code) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("No stats were exported before timeout")
 	}
-	// Preferably we would want to lock the TestExporter here, but the mutex TestExporter.mu is not exported, so we
-	// cannot do that.
-	if len(te.Spans) == 0 {
+	spans := te.Spans()
+	if len(spans) == 0 {
 		t.Fatal("No spans were exported")
 	}
-	s := te.Spans[len(te.Spans)-1].Status
+	s := spans[len(spans)-1].Status
 	if s.Code != int32(code) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, code)
 	}

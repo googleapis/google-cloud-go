@@ -48,6 +48,8 @@ var newSearchTuningClientHook clientHook
 // SearchTuningCallOptions contains the retry settings for each method of SearchTuningClient.
 type SearchTuningCallOptions struct {
 	TrainCustomModel []gax.CallOption
+	ListCustomModels []gax.CallOption
+	CancelOperation  []gax.CallOption
 	GetOperation     []gax.CallOption
 	ListOperations   []gax.CallOption
 }
@@ -69,6 +71,19 @@ func defaultSearchTuningGRPCClientOptions() []option.ClientOption {
 func defaultSearchTuningCallOptions() *SearchTuningCallOptions {
 	return &SearchTuningCallOptions{
 		TrainCustomModel: []gax.CallOption{},
+		ListCustomModels: []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -99,6 +114,18 @@ func defaultSearchTuningCallOptions() *SearchTuningCallOptions {
 func defaultSearchTuningRESTCallOptions() *SearchTuningCallOptions {
 	return &SearchTuningCallOptions{
 		TrainCustomModel: []gax.CallOption{},
+		ListCustomModels: []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -131,6 +158,8 @@ type internalSearchTuningClient interface {
 	Connection() *grpc.ClientConn
 	TrainCustomModel(context.Context, *discoveryenginepb.TrainCustomModelRequest, ...gax.CallOption) (*TrainCustomModelOperation, error)
 	TrainCustomModelOperation(name string) *TrainCustomModelOperation
+	ListCustomModels(context.Context, *discoveryenginepb.ListCustomModelsRequest, ...gax.CallOption) (*discoveryenginepb.ListCustomModelsResponse, error)
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -184,6 +213,16 @@ func (c *SearchTuningClient) TrainCustomModel(ctx context.Context, req *discover
 // The name must be that of a previously created TrainCustomModelOperation, possibly from a different process.
 func (c *SearchTuningClient) TrainCustomModelOperation(name string) *TrainCustomModelOperation {
 	return c.internalClient.TrainCustomModelOperation(name)
+}
+
+// ListCustomModels gets a list of all the custom models.
+func (c *SearchTuningClient) ListCustomModels(ctx context.Context, req *discoveryenginepb.ListCustomModelsRequest, opts ...gax.CallOption) (*discoveryenginepb.ListCustomModelsResponse, error) {
+	return c.internalClient.ListCustomModels(ctx, req, opts...)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *SearchTuningClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -278,7 +317,9 @@ func (c *searchTuningGRPCClient) Connection() *grpc.ClientConn {
 func (c *searchTuningGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -355,7 +396,9 @@ func defaultSearchTuningRESTClientOptions() []option.ClientOption {
 func (c *searchTuningRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -390,6 +433,38 @@ func (c *searchTuningGRPCClient) TrainCustomModel(ctx context.Context, req *disc
 	return &TrainCustomModelOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *searchTuningGRPCClient) ListCustomModels(ctx context.Context, req *discoveryenginepb.ListCustomModelsRequest, opts ...gax.CallOption) (*discoveryenginepb.ListCustomModelsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_store", url.QueryEscape(req.GetDataStore()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListCustomModels[0:len((*c.CallOptions).ListCustomModels):len((*c.CallOptions).ListCustomModels)], opts...)
+	var resp *discoveryenginepb.ListCustomModelsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.searchTuningClient.ListCustomModels(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *searchTuningGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *searchTuningGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
@@ -524,6 +599,114 @@ func (c *searchTuningRESTClient) TrainCustomModel(ctx context.Context, req *disc
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// ListCustomModels gets a list of all the custom models.
+func (c *searchTuningRESTClient) ListCustomModels(ctx context.Context, req *discoveryenginepb.ListCustomModelsRequest, opts ...gax.CallOption) (*discoveryenginepb.ListCustomModelsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v/customModels", req.GetDataStore())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_store", url.QueryEscape(req.GetDataStore()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ListCustomModels[0:len((*c.CallOptions).ListCustomModels):len((*c.CallOptions).ListCustomModels)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.ListCustomModelsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *searchTuningRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.

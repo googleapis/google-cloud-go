@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.1.3...gkemulticloud/v1.2.0) (2024-05-16)
+
+
+### Features
+
+* **gkemulticloud:** Option to ignore_errors while deleting Azure clusters / nodepools ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
 ## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.1.2...gkemulticloud/v1.1.3) (2024-05-01)
 
 

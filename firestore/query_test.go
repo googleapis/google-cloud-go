@@ -441,7 +441,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 					StructuredQuery: &pb.StructuredQuery{
 						Where: &pb.StructuredQuery_Filter{
 							FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
-								&pb.StructuredQuery_CompositeFilter{
+								CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 									Op: pb.StructuredQuery_CompositeFilter_AND,
 									Filters: []*pb.StructuredQuery_Filter{
 										filtr([]string{"a"}, ">", 5), filtr([]string{"b"}, "<", "foo"),
@@ -837,7 +837,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 					StructuredQuery: &pb.StructuredQuery{
 						Where: &pb.StructuredQuery_Filter{
 							FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
-								&pb.StructuredQuery_CompositeFilter{
+								CompositeFilter: &pb.StructuredQuery_CompositeFilter{
 									Op: pb.StructuredQuery_CompositeFilter_AND,
 									Filters: []*pb.StructuredQuery_Filter{
 										filtr([]string{"b"}, "==", 1),

@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.0...securitycentermanagement/v0.2.1) (2024-06-10)
+
+
+### Documentation
+
+* **securitycentermanagement:** Minor docs formatting in `UpdateSecurityCenterServiceRequest.validate_only` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.8...securitycentermanagement/v0.2.0) (2024-05-29)
+
+
+### Features
+
+* **securitycentermanagement:** Adding support for new Security Center Management Apis ([#10247](https://github.com/googleapis/google-cloud-go/issues/10247)) ([b19dd34](https://github.com/googleapis/google-cloud-go/commit/b19dd340b13e247fa80f8ab7868294cf53e50450))
+
+
+### Documentation
+
+* **securitycentermanagement:** Update comment formatting throughout API ([b19dd34](https://github.com/googleapis/google-cloud-go/commit/b19dd340b13e247fa80f8ab7868294cf53e50450))
+
 ## [0.1.8](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.7...securitycentermanagement/v0.1.8) (2024-05-01)
 
 
