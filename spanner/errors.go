@@ -24,6 +24,7 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/protoadapt"
 )
 
 // Error is the structured error returned by Cloud Spanner client.
@@ -64,6 +65,10 @@ type TransactionOutcomeUnknownError struct {
 	// error. The wrapped error can be read with the Unwrap method.
 	err error
 }
+
+// RowNotFoundReason represents the [errdetails.ErrorInfo.Reason] used when a 
+// row is not found by some key.
+const RowNotFoundReason = "ROW_NOT_FOUND"
 
 const transactionOutcomeUnknownMsg = "transaction outcome unknown"
 
@@ -116,8 +121,15 @@ func (e *Error) decorate(info string) {
 // spannerErrorf generates a *spanner.Error with the given description and an
 // APIError error having given error code as its status.
 func spannerErrorf(code codes.Code, format string, args ...interface{}) error {
+	return spannerErrorfWithDetails(code, nil, format, args)
+}
+
+// spannerErrorfWithDetails generates a *spanner.Error with the given description and an
+// APIError error having given error code as its status, and the details attached.
+func spannerErrorfWithDetails(code codes.Code, details []protoadapt.MessageV1, format string, args ...interface{}) error {
 	msg := fmt.Sprintf(format, args...)
-	wrapped, _ := apierror.FromError(status.Error(code, msg))
+	statusErr, _ := status.New(code, msg).WithDetails(details...)
+	wrapped, _ := apierror.FromError(statusErr.Err())
 	return &Error{
 		Code: code,
 		err:  wrapped,

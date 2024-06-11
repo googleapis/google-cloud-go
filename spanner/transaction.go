@@ -28,9 +28,11 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/protoadapt"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
@@ -326,7 +328,8 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 // errRowNotFound returns error for not being able to read the row identified by
 // key.
 func errRowNotFound(table string, key Key) error {
-	return spannerErrorf(codes.NotFound, "row not found(Table: %v, PrimaryKey: %v)", table, key)
+	details := []protoadapt.MessageV1{&errdetails.ErrorInfo{Reason: RowNotFoundReason}}
+	return spannerErrorfWithDetails(codes.NotFound, details, "row not found(Table: %v, PrimaryKey: %v)", table, key)
 }
 
 // errRowNotFoundByIndex returns error for not being able to read the row by index.
@@ -348,8 +351,36 @@ func errInlineBeginTransactionFailed() error {
 //
 // If no row is present with the given key, then ReadRow returns an error where
 // spanner.ErrCode(err) is codes.NotFound.
+// 
+// To reliably determine if an error is due to the row not being found, unwrap the 
+// error as an APIError, and compare its ErrorInfo.Reason to RowNotFoundReason.
+// 
+// Example:
+//  var apiErr *apierror.APIError
+//  _, err := spanner.Single().ReadRow(...)
+//  
+//  if err != nil {
+//    errors.As(err, &apiErr)
+//    if apiErr.Details.ErrorInfo.Reason == spanner.RowNotFoundReason {
+//      // handle row not found
+//    }
+//  }
 func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
 	return t.ReadRowWithOptions(ctx, table, key, columns, nil)
+}
+
+// ReadRowOptional reads a single row from the database.
+//
+// If no row is present with the given key, then ReadRowOptional returns nil.
+// This is a convenience function to simplify use cases that want to treat 
+// a missing row as nil in a reliable manner, without matching against the 
+// error message.
+func (t *txReadOnly) ReadRowOptional(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
+	row, err := t.ReadRowWithOptions(ctx, table, key, columns, nil)
+	if err == errRowNotFound(table, key) {
+		return nil, nil
+	}
+	return row, err
 }
 
 // ReadRowWithOptions reads a single row from the database. Pass a ReadOptions to modify the read operation.
@@ -374,6 +405,20 @@ func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key K
 //
 // If no row is present with the given index, then ReadRowUsingIndex returns an
 // error where spanner.ErrCode(err) is codes.NotFound.
+//
+// To reliably determine if an error is due to the row not being found, unwrap the 
+// error as an APIError, and compare its ErrorInfo.Reason to RowNotFoundReason.
+// 
+// Example:
+//  var apiErr *apierror.APIError
+//  _, err := spanner.Single().ReadRowUsingIndex(...)
+//  
+//  if err != nil {
+//    errors.As(err, &apiErr)
+//    if apiErr.Details.ErrorInfo.Reason == spanner.RowNotFoundReason {
+//      // handle row not found
+//    }
+//  }
 //
 // If more than one row received with the given index, then ReadRowUsingIndex
 // returns an error where spanner.ErrCode(err) is codes.FailedPrecondition.
