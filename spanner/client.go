@@ -63,6 +63,10 @@ const (
 
 	requestsCompressionHeader = "x-response-encoding"
 
+	// endToEndTracingHeader is the name of the metadata header if client
+	// has opted-in for the creation of trace spans on the Spanner layer.
+	endToEndTracingHeader = "x-goog-spanner-end-to-end-tracing"
+
 	// numChannels is the default value for NumChannels of client.
 	numChannels = 4
 )
@@ -331,6 +335,12 @@ type ClientConfig struct {
 	DirectedReadOptions *sppb.DirectedReadOptions
 
 	OpenTelemetryMeterProvider metric.MeterProvider
+
+	// EnableEndToEndTracing indicates whether end to end tracing is enabled or not.
+	// If it is enabled, trace spans will be created at Spanner layer.
+	//
+	// Default: false
+	EnableEndToEndTracing bool
 }
 
 type openTelemetryConfig struct {
@@ -443,6 +453,9 @@ func newClientWithConfig(ctx context.Context, database string, config ClientConf
 	md := metadata.Pairs(resourcePrefixHeader, database)
 	if config.Compression == gzip.Name {
 		md.Append(requestsCompressionHeader, gzip.Name)
+	}
+	if config.EnableEndToEndTracing {
+		md.Append(endToEndTracingHeader, "true")
 	}
 
 	// Create a session client.
