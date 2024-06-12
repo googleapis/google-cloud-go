@@ -139,6 +139,13 @@ types:
     FunctionDeclaration:
     SafetySetting:
 
+    CachedContent:
+      populateToFrom: populateCachedContentTo, populateCachedContentFrom
+      fields:
+        Expiration:
+          type: ExpireTimeOrTTL
+          noConvert: true
+
 # Omit everything that is not explicitly configured.
 omitTypes:
   - '*'
