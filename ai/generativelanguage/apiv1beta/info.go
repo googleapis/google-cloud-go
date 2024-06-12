@@ -20,8 +20,6 @@
 
 package generativelanguage
 
-//go:generate ./gen_info.sh info.go
-
 func (c *DiscussClient) SetGoogleClientInfo(keyval ...string) {
 	c.setGoogleClientInfo(keyval...)
 }

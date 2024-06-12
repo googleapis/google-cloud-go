@@ -16,8 +16,10 @@ package basic
 
 import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
+	status "google.golang.org/genproto/googleapis/rpc/status"
 	date "google.golang.org/genproto/googleapis/type/date"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -132,4 +134,12 @@ type unexported interface{ u() }
 type Pop struct {
 	X int
 	Y unexported
+}
+
+// status.Status converts to apierror.APIError.
+// durationpb.Duration converts to time.Duration.
+
+type File struct {
+	Error *status.Status
+	Dur   *durationpb.Duration
 }

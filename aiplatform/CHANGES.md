@@ -1,6 +1,90 @@
 # Changes
 
 
+## [1.68.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.67.0...aiplatform/v1.68.0) (2024-06-11)
+
+
+### Features
+
+* **aiplatform/apiv1beta1:** Add methods to info.go ([#10288](https://github.com/googleapis/google-cloud-go/issues/10288)) ([882fe5c](https://github.com/googleapis/google-cloud-go/commit/882fe5c8ebc3afe800da2125c09595761e1a5e87))
+* **aiplatform:** A new field `search_entry_point` is added to message `.google.cloud.aiplatform.v1beta1.GroundingMetadata` ([ae42f23](https://github.com/googleapis/google-cloud-go/commit/ae42f23f586ad76b058066a66c1566e4fef23692))
+* **aiplatform:** A new value `TPU_V5_LITEPOD` is added to enum `AcceleratorType` ([#10074](https://github.com/googleapis/google-cloud-go/issues/10074)) ([7656129](https://github.com/googleapis/google-cloud-go/commit/7656129e1cffbfb788d849f3b35c28c7ac69054f))
+* **aiplatform:** Add cached_content to GenerationContentRequest ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add ChatCompletions to PredictionService ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add dataplex_config to MetadataStore ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add dataplex_config to MetadataStore ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add direct_notebook_source to NotebookExecutionJob ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add direct_notebook_source to NotebookExecutionJob ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add encryption_spec to FeatureOnlineStore ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add encryption_spec to FeatureOnlineStore ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add encryption_spec to NotebookRuntimeTemplate ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add encryption_spec to NotebookRuntimeTemplate ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add encryption_spec, service_account, disable_container_logging to DeploymentResourcePool ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add encryption_spec, service_account, disable_container_logging to DeploymentResourcePool ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add idle_shutdown_config, encryption_spec, satisfies_pzs, satisfies_pzi to NotebookRuntime ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add idle_shutdown_config, encryption_spec, satisfies_pzs, satisfies_pzi to NotebookRuntime ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add INVALID_SPARSE_DIMENSIONS, INVALID_SPARSE_EMBEDDING, INVALID_EMBEDDING to NearestNeighborSearchOperationMetadata.RecordError ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add INVALID_SPARSE_DIMENSIONS, INVALID_SPARSE_EMBEDDING, INVALID_EMBEDDING to NearestNeighborSearchOperationMetadata.RecordError ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add max_embedding_requests_per_min to ImportRagFilesConfig ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **aiplatform:** Add model_monitor resource and APIs to public v1beta1 client library ([#9755](https://github.com/googleapis/google-cloud-go/issues/9755)) ([8892943](https://github.com/googleapis/google-cloud-go/commit/8892943b169060f8ba7be227cd65680696c494a0))
+* **aiplatform:** Add model_reference to Dataset ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add model_reference to Dataset ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add model_reference to DatasetVersion ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add model_reference to DatasetVersion ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add more fields in FindNeighborsRequest.Query ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add more fields in FindNeighborsRequest.Query ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add new GenAiCacheService and CachedContent ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add NotebookExecutionJob resource and APIs to public v1beta1 client library ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **aiplatform:** Add progress_percentage to ImportRagFilesOperationMetadata ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add rag_embedding_model_config to RagCorpus ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **aiplatform:** Add RaySpec to PersistentResource ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add sparse_distance to FindNeighborsResponse.Neighbor ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add sparse_distance to FindNeighborsResponse.Neighbor ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add sparse_embedding to IndexDatapoint ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add sparse_embedding to IndexDatapoint ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add sparse_vectors_count to IndexStats ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add sparse_vectors_count to IndexStats ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add struct_value to FeatureValue ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add struct_value to FeatureValue ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add tool_config to GenerateContentRequest ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add UpdateNotebookRuntimeTemplate to NotebookService ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add UpdateNotebookRuntimeTemplate to NotebookService ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add UpdateReasoningEngine to ReasoningEngineService ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add valid_sparse_record_count, invalid_sparse_record_count to NearestNeighborSearchOperationMetadata.ContentValidationStats ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add valid_sparse_record_count, invalid_sparse_record_count to NearestNeighborSearchOperationMetadata.ContentValidationStats ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add ValueType.STRUCT to Feature ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Add ValueType.STRUCT to Feature ([#10282](https://github.com/googleapis/google-cloud-go/issues/10282)) ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Added the new `GenerationConfig.response_schema` field ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **aiplatform:** Added the v1beta1 version of the GenAI Tuning Service ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
+
+### Bug Fixes
+
+* **aiplatform:** An existing field `app_id` is renamed to `engine_id` in message `.google.cloud.aiplatform.v1beta1.RuntimeConfig` ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** An existing field `disable_attribution` is removed from message `.google.cloud.aiplatform.v1beta1.GoogleSearchRetrieval` ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** An existing field `grounding_attributions` is removed from message `.google.cloud.aiplatform.v1beta1.GroundingMetadata` ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** An existing message `GroundingAttribution` is removed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** An existing message `Segment` is removed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **aiplatform:** Delete the deprecated field for model monitor ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Documentation
+
+* **aiplatform:** A comment for enum value `EMBEDDING_SIZE_MISMATCH` in enum `RecordErrorType` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for enum value `EMBEDDING_SIZE_MISMATCH` in enum `RecordErrorType` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `create_notebook_execution_job_request` in message `.google.cloud.aiplatform.v1beta1.Schedule` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `description` in message `.google.cloud.aiplatform.v1beta1.ExtensionManifest` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `exec` in message `.google.cloud.aiplatform.v1beta1.Probe` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `exec` in message `.google.cloud.aiplatform.v1beta1.Probe` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `feature_vector` in message `.google.cloud.aiplatform.v1beta1.IndexDatapoint` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `feature_vector` in message `.google.cloud.aiplatform.v1beta1.IndexDatapoint` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `INVALID_EMBEDDING` in message `NearestNeighborSearchOperationMetadata.RecordError` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `serving_config_name` in message `.google.cloud.aiplatform.v1beta1.RuntimeConfig` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `update_mask` in message `.google.cloud.aiplatform.v1beta1.UpdateExtensionRequest` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `vectors_count` in message `.google.cloud.aiplatform.v1beta1.IndexStats` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+* **aiplatform:** A comment for field `vectors_count` in message `.google.cloud.aiplatform.v1beta1.IndexStats` is changed ([fac63c3](https://github.com/googleapis/google-cloud-go/commit/fac63c33a1c8452516fd78d841780c524ad2f730))
+
 ## [1.67.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.66.0...aiplatform/v1.67.0) (2024-04-08)
 
 
