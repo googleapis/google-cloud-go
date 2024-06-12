@@ -122,6 +122,8 @@ type ExecutableConfig struct {
 	OutputFile    string `json:"output_file"`
 }
 
+// CertificateConfig reqpresents the options used to set up X509 based workload
+// [CredentialSource]
 type CertificateConfig struct {
 	UseDefaultCertificateConfig bool   `json:"use_default_certificate_config"`
 	CertificateConfigLocation   string `json:"certificate_config_location"`
