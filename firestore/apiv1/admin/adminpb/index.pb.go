@@ -534,7 +534,7 @@ type Index_IndexField_ArrayConfig_ struct {
 }
 
 type Index_IndexField_VectorConfig_ struct {
-	// Indicates that this field supports nearest neighbors and distance
+	// Indicates that this field supports nearest neighbor and distance
 	// operations on vector.
 	VectorConfig *Index_IndexField_VectorConfig `protobuf:"bytes,4,opt,name=vector_config,json=vectorConfig,proto3,oneof"`
 }
