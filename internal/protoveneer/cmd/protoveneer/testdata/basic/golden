@@ -4,14 +4,13 @@ package basic
 
 import (
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/civil"
 	pb "example.com/basic"
 	"example.com/protoveneer/support"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/protobuf/types/known/durationpb"
-	"google.golang.org/protobuf/types/known/timestamppb"
-	"time"
 )
 
 // Blob contains raw media bytes.
@@ -62,7 +61,7 @@ func (v *Citation) toProto() *pb.Citation {
 		Uri:             v.URI,
 		PublicationDate: support.CivilDateToProto(v.PublicationDate),
 		Struct:          support.MapToStructPB(v.Struct),
-		CreateTime:      timestamppb.New(v.CreateTime),
+		CreateTime:      support.TimeToProto(v.CreateTime),
 	}
 }
 
