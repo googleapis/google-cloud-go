@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.10.0...vertexai/v0.11.0) (2024-06-11)
+
+
+### Features
+
+* **vertexai:** Explicit caching ([#10363](https://github.com/googleapis/google-cloud-go/issues/10363)) ([d9754c7](https://github.com/googleapis/google-cloud-go/commit/d9754c7c07656b2f68cb63f24f1da4ddcc697f8f))
+
+
+### Bug Fixes
+
+* **vertexai:** Don't add empty Text parts to session history ([#10362](https://github.com/googleapis/google-cloud-go/issues/10362)) ([088b6c3](https://github.com/googleapis/google-cloud-go/commit/088b6c3afd85d75ce3b30af0620529ec04d4ce1c)), refs [#10309](https://github.com/googleapis/google-cloud-go/issues/10309)
+
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.9.0...vertexai/v0.10.0) (2024-05-20)
 
 

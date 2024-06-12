@@ -37,7 +37,8 @@ import (
 
 // A Client is a Google Vertex AI client.
 type Client struct {
-	c         *aiplatform.PredictionClient
+	pc        *aiplatform.PredictionClient
+	cc        *cacheClient
 	projectID string
 	location  string
 }
@@ -56,33 +57,46 @@ type Client struct {
 // this package, such as [WithREST].
 func NewClient(ctx context.Context, projectID, location string, opts ...option.ClientOption) (*Client, error) {
 	location = inferLocation(location)
-	opts = append([]option.ClientOption{
-		option.WithEndpoint(fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)),
-	}, opts...)
+	endpoint := fmt.Sprintf("%s-aiplatform.googleapis.com:443", location)
 	conf := newConfig(opts...)
+	return newClient(ctx, projectID, location, endpoint, conf, opts)
+}
 
-	var c *aiplatform.PredictionClient
-	var err error
-	if conf.withREST {
-		c, err = aiplatform.NewPredictionRESTClient(ctx, opts...)
-	} else {
-		c, err = aiplatform.NewPredictionClient(ctx, opts...)
-	}
-	if err != nil {
+func newClient(ctx context.Context, projectID, location, endpoint string, conf config, opts []option.ClientOption) (*Client, error) {
+	opts = append([]option.ClientOption{option.WithEndpoint(endpoint)}, opts...)
+	c := &Client{projectID: projectID, location: location}
+
+	if err := setGAPICClient(ctx, &c.pc, conf,
+		aiplatform.NewPredictionRESTClient, aiplatform.NewPredictionClient, opts); err != nil {
 		return nil, err
 	}
+	if err := setGAPICClient(ctx, &c.cc, conf, newCacheRESTClient, newCacheClient, opts); err != nil {
+		return nil, err
+	}
+	return c, nil
+}
 
+type sgci interface{ SetGoogleClientInfo(...string) }
+
+func setGAPICClient[ClientType sgci](ctx context.Context, pf *ClientType, conf config, newREST, newGRPC func(context.Context, ...option.ClientOption) (ClientType, error), opts []option.ClientOption) error {
+	var c ClientType
+	var err error
+	if conf.withREST {
+		c, err = newREST(ctx, opts...)
+	} else {
+		c, err = newGRPC(ctx, opts...)
+	}
+	if err != nil {
+		return err
+	}
 	c.SetGoogleClientInfo("gccl", internal.Version)
-	return &Client{
-		c:         c,
-		projectID: projectID,
-		location:  location,
-	}, nil
+	*pf = c
+	return nil
 }
 
 // Close closes the client.
 func (c *Client) Close() error {
-	return c.c.Close()
+	return c.pc.Close()
 }
 
 const defaultLocation = "us-central1"
@@ -103,6 +117,12 @@ func inferLocation(location string) string {
 	return defaultLocation
 }
 
+// parent returns a Google Cloud reference to the project and location
+// for this client.
+func (c *Client) parent() string {
+	return fmt.Sprintf("projects/%s/locations/%s", c.projectID, c.location)
+}
+
 // GenerativeModel is a model that can generate text.
 // Create one with [Client.GenerativeModel], then configure
 // it by setting the exported fields.
@@ -119,6 +139,9 @@ type GenerativeModel struct {
 	Tools             []*Tool
 	ToolConfig        *ToolConfig // configuration for tools
 	SystemInstruction *Content
+	// The name of the CachedContent to use.
+	// Must have already been created with [Client.CreateCachedContent].
+	CachedContentName string
 }
 
 const defaultMaxOutputTokens = 2048
@@ -166,7 +189,7 @@ func (m *GenerativeModel) GenerateContent(ctx context.Context, parts ...Part) (*
 
 // GenerateContentStream returns an iterator that enumerates responses.
 func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Part) *GenerateContentResponseIterator {
-	streamClient, err := m.c.c.StreamGenerateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
+	streamClient, err := m.c.pc.StreamGenerateContent(ctx, m.newGenerateContentRequest(newUserContent(parts)))
 	return &GenerateContentResponseIterator{
 		sc:  streamClient,
 		err: err,
@@ -174,7 +197,7 @@ func (m *GenerativeModel) GenerateContentStream(ctx context.Context, parts ...Pa
 }
 
 func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateContentRequest) (*GenerateContentResponse, error) {
-	res, err := m.c.c.GenerateContent(ctx, req)
+	res, err := m.c.pc.GenerateContent(ctx, req)
 
 	if err != nil {
 		return nil, err
@@ -191,6 +214,7 @@ func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.Ge
 		ToolConfig:        m.ToolConfig.toProto(),
 		GenerationConfig:  m.GenerationConfig.toProto(),
 		SystemInstruction: m.SystemInstruction.toProto(),
+		CachedContent:     m.CachedContentName,
 	}
 }
 
@@ -233,6 +257,13 @@ func (iter *GenerateContentResponseIterator) Next() (*GenerateContentResponse, e
 	return gcp, nil
 }
 
+// MergedResponse returns the result of combining all the streamed responses seen so far.
+// After iteration completes, the merged response should match the response obtained without streaming
+// (that is, if [GenerativeModel.GenerateContent] were called).
+func (iter *GenerateContentResponseIterator) MergedResponse() *GenerateContentResponse {
+	return iter.merged
+}
+
 func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse, error) {
 	gcp := (GenerateContentResponse{}).fromProto(resp)
 	// Assume a non-nil PromptFeedback is an error.
@@ -253,7 +284,7 @@ func protoToResponse(resp *pb.GenerateContentResponse) (*GenerateContentResponse
 // CountTokens counts the number of tokens in the content.
 func (m *GenerativeModel) CountTokens(ctx context.Context, parts ...Part) (*CountTokensResponse, error) {
 	req := m.newCountTokensRequest(newUserContent(parts))
-	res, err := m.c.c.CountTokens(ctx, req)
+	res, err := m.c.pc.CountTokens(ctx, req)
 	if err != nil {
 		return nil, err
 	}
