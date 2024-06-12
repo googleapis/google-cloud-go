@@ -52,7 +52,7 @@ type ListMerchantCenterAccountLinksRequest struct {
 
 	// Required. The parent Catalog of the resource.
 	// It must match this format:
-	// projects/{PROJECT_NUMBER}/locations/global/catalogs/{CATALOG_ID}
+	// `projects/{PROJECT_NUMBER}/locations/global/catalogs/{CATALOG_ID}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 }
 
@@ -156,7 +156,7 @@ type CreateMerchantCenterAccountLinkRequest struct {
 
 	// Required. The branch resource where this MerchantCenterAccountLink will be
 	// created. Format:
-	// projects/{PROJECT_NUMBER}/locations/global/catalogs/{CATALOG_ID}}
+	// `projects/{PROJECT_NUMBER}/locations/global/catalogs/{CATALOG_ID}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Required. The
 	// [MerchantCenterAccountLink][google.cloud.retail.v2alpha.MerchantCenterAccountLink]
@@ -224,7 +224,7 @@ type DeleteMerchantCenterAccountLinkRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Full resource name. Format:
-	// projects/{project_number}/locations/{location_id}/catalogs/{catalog_id}/merchantCenterAccountLinks/{merchant_center_account_link_id}
+	// `projects/{project_number}/locations/{location_id}/catalogs/{catalog_id}/merchantCenterAccountLinks/{merchant_center_account_link_id}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
