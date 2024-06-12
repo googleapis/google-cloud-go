@@ -99,7 +99,7 @@ func TestRetrieveSubjectToken_X509(t *testing.T) {
 	}
 }
 
-func TestGetClient_Success(t *testing.T) {
+func TestClient_Success(t *testing.T) {
 	opts := cloneTestOpts()
 	opts.CredentialSource = &credsfile.CredentialSource{
 		Certificate: &credsfile.CertificateConfig{
@@ -114,7 +114,7 @@ func TestGetClient_Success(t *testing.T) {
 
 	client, err := base.(*x509Provider).client()
 	if err != nil {
-		t.Fatalf("getclient(): %v", err)
+		t.Fatalf("client(): %v", err)
 	}
 
 	if client == nil {

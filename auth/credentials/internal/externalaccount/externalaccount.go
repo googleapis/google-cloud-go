@@ -366,10 +366,10 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 		return execProvider, nil
 	} else if o.CredentialSource.Certificate != nil {
 		cert := o.CredentialSource.Certificate
-		if cert.UseDefaultCertificateConfig == false && cert.CertificateConfigLocation == "" {
+		if !cert.UseDefaultCertificateConfig && cert.CertificateConfigLocation == "" {
 			return nil, errors.New("credentials: \"certificate\" object must either specify a certificate_config_location or use_default_certificate_config should be true")
 		}
-		if cert.UseDefaultCertificateConfig == true && cert.CertificateConfigLocation != "" {
+		if cert.UseDefaultCertificateConfig && cert.CertificateConfigLocation != "" {
 			return nil, errors.New("credentials: \"certificate\" object cannot specify both a certificate_config_location and use_default_certificate_config=true")
 		}
 		return &x509Provider{certificateConfigLocation: cert.CertificateConfigLocation}, nil

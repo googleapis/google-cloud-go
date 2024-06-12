@@ -37,6 +37,7 @@ func (xp *x509Provider) subjectToken(ctx context.Context) (string, error) {
 }
 
 func (xp *x509Provider) client() (*http.Client, error) {
+	// Create client if it doesn't already exist
 	if xp.cachedClient == nil {
 		certProvider, err := cert.NewWorkloadX509CertProvider(xp.certificateConfigLocation)
 		if err != nil {
@@ -49,6 +50,7 @@ func (xp *x509Provider) client() (*http.Client, error) {
 			GetClientCertificate: certProvider,
 		}
 
+		// Create client with default settings plus the X509 workload certs
 		xp.cachedClient = &http.Client{
 			Transport: trans,
 			Timeout:   30 * time.Second,
