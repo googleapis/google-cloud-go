@@ -206,6 +206,8 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	}
 
 	client := opts.Client
+	// If the credential is using X509, we need to create a different client that uses
+	// the certs specified in the credential configuration for a mTLS request.
 	xp, _ := stp.(*x509Provider)
 	if xp != nil {
 		client, err = xp.client()
