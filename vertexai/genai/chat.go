@@ -74,11 +74,7 @@ func (cs *ChatSession) addToHistory(cands []*Candidate) {
 func copySanitizedModelContent(c *Content) *Content {
 	newc := &Content{Role: roleModel}
 	for _, part := range c.Parts {
-		if t, ok := part.(Text); ok {
-			if len(string(t)) > 0 {
-				newc.Parts = append(newc.Parts, part)
-			}
-		} else {
+		if t, ok := part.(Text); !ok || len(string(t)) > 0 {
 			newc.Parts = append(newc.Parts, part)
 		}
 	}
