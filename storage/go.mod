@@ -13,7 +13,6 @@ require (
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.12.4
 	golang.org/x/oauth2 v0.21.0
-	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
 	google.golang.org/api v0.183.0
 	google.golang.org/genproto v0.0.0-20240528184218-531527333157
 	google.golang.org/genproto/googleapis/api v0.0.0-20240604185151-ef581f913117
