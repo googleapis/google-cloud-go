@@ -120,9 +120,9 @@ type DetectOptions struct {
 	// this refresh window the token is considered valid but stale. If unset,
 	// the default value is 3 minutes and 45 seconds. Optional.
 	EarlyTokenRefresh time.Duration
-	// NonBlockingRefresh configures an asynchronous workflow that refreshes
-	// stale tokens without blocking. The default is false. Optional.
-	NonBlockingRefresh bool
+	// BlockingRefresh configures a synchronous workflow that refreshes
+	// stale tokens while blocking. The default is false. Optional.
+	BlockingRefresh bool
 	// AuthHandlerOptions configures an authorization handler and other options
 	// for 3LO flows. It is required, and only used, for client credential
 	// flows.

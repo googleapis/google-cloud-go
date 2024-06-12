@@ -39,8 +39,8 @@ var (
 // uses the metadata service to retrieve tokens.
 func computeTokenProvider(opts *DetectOptions) auth.TokenProvider {
 	return auth.NewCachedTokenProvider(computeProvider{scopes: opts.Scopes}, &auth.CachedTokenProviderOptions{
-		ExpireEarly:        opts.EarlyTokenRefresh,
-		NonBlockingRefresh: opts.NonBlockingRefresh,
+		ExpireEarly:     opts.EarlyTokenRefresh,
+		BlockingRefresh: opts.BlockingRefresh,
 	})
 }
 

@@ -237,9 +237,9 @@ type CachedTokenProviderOptions struct {
 	// should be refreshed. If unset, the default value is 3 minutes and 45
 	// seconds. Optional.
 	ExpireEarly time.Duration
-	// NonBlockingRefresh configures an asynchronous workflow that refreshes
-	// stale tokens without blocking. The default is false. Optional.
-	NonBlockingRefresh bool
+	// BlockingRefresh configures a synchronous workflow that refreshes
+	// stale tokens while blocking. The default is false. Optional.
+	BlockingRefresh bool
 }
 
 func (ctpo *CachedTokenProviderOptions) autoRefresh() bool {
@@ -256,34 +256,38 @@ func (ctpo *CachedTokenProviderOptions) expireEarly() time.Duration {
 	return ctpo.ExpireEarly
 }
 
-func (ctpo *CachedTokenProviderOptions) nonBlockingRefresh() bool {
+func (ctpo *CachedTokenProviderOptions) blockingRefresh() bool {
 	if ctpo == nil {
 		return false
 	}
-	return ctpo.NonBlockingRefresh
+	return ctpo.BlockingRefresh
 }
 
 // NewCachedTokenProvider wraps a [TokenProvider] to cache the tokens returned
-// by the underlying provider. By default it will refresh tokens ten seconds
-// before they expire, but this time can be configured with the optional
-// options.
+// by the underlying provider. By default it will refresh tokens asynchronously
+// (non-blocking mode) within a window that starts 3 minutes and 45 seconds
+// before they expire. The asynchronous (non-blocking) refresh can be changed to
+// a synchronous (blocking) refresh using the
+// CachedTokenProviderOptions.BlockingRefresh option. The time-before-expiry
+// duration can be configured using the CachedTokenProviderOptions.ExpireEarly
+// option.
 func NewCachedTokenProvider(tp TokenProvider, opts *CachedTokenProviderOptions) TokenProvider {
 	if ctp, ok := tp.(*cachedTokenProvider); ok {
 		return ctp
 	}
 	return &cachedTokenProvider{
-		tp:                 tp,
-		autoRefresh:        opts.autoRefresh(),
-		expireEarly:        opts.expireEarly(),
-		nonBlockingRefresh: opts.nonBlockingRefresh(),
+		tp:              tp,
+		autoRefresh:     opts.autoRefresh(),
+		expireEarly:     opts.expireEarly(),
+		blockingRefresh: opts.blockingRefresh(),
 	}
 }
 
 type cachedTokenProvider struct {
-	tp                 TokenProvider
-	autoRefresh        bool
-	expireEarly        time.Duration
-	nonBlockingRefresh bool
+	tp              TokenProvider
+	autoRefresh     bool
+	expireEarly     time.Duration
+	blockingRefresh bool
 	// loadGroup ensures that the non-blocking refresh will only happen on one
 	// goroutine, even if multiple callers have entered the Token method.
 	loadGroup singleflight.Group
@@ -293,10 +297,10 @@ type cachedTokenProvider struct {
 }
 
 func (c *cachedTokenProvider) Token(ctx context.Context) (*Token, error) {
-	if c.nonBlockingRefresh {
-		return c.tokenNonBlocking(ctx)
+	if c.blockingRefresh {
+		return c.tokenBlocking(ctx)
 	}
-	return c.tokenBlocking(ctx)
+	return c.tokenNonBlocking(ctx)
 }
 
 func (c *cachedTokenProvider) tokenNonBlocking(ctx context.Context) (*Token, error) {
