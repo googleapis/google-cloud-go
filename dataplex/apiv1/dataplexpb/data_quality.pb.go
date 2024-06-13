@@ -21,12 +21,11 @@
 package dataplexpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -392,10 +391,10 @@ type DataQualityRuleResult struct {
 	//
 	// This field is only valid for row-level type rules.
 	FailingRowsQuery string `protobuf:"bytes,10,opt,name=failing_rows_query,json=failingRowsQuery,proto3" json:"failing_rows_query,omitempty"`
-	// Output only. The number of rows returned by the sql statement in the
-	// SqlAssertion rule.
+	// Output only. The number of rows returned by the SQL statement in a SQL
+	// assertion rule.
 	//
-	// This field is only valid for SqlAssertion rules.
+	// This field is only valid for SQL assertion rules.
 	AssertionRowCount int64 `protobuf:"varint,11,opt,name=assertion_row_count,json=assertionRowCount,proto3" json:"assertion_row_count,omitempty"`
 }
 
@@ -865,7 +864,7 @@ type DataQualityRule_TableConditionExpectation_ struct {
 
 type DataQualityRule_SqlAssertion_ struct {
 	// Aggregate rule which evaluates the number of rows returned for the
-	// provided statement.
+	// provided statement. If any rows are returned, this rule fails.
 	SqlAssertion *DataQualityRule_SqlAssertion `protobuf:"bytes,202,opt,name=sql_assertion,json=sqlAssertion,proto3,oneof"`
 }
 
@@ -1893,17 +1892,19 @@ func (x *DataQualityRule_TableConditionExpectation) GetSqlExpression() string {
 	return ""
 }
 
-// Queries for rows returned by the provided SQL statement. If any rows are
-// are returned, this rule fails.
+// A SQL statement that is evaluated to return rows that match an invalid
+// state. If any rows are are returned, this rule fails.
 //
-// The SQL statement needs to use BigQuery standard SQL syntax, and must not
+// The SQL statement must use BigQuery standard SQL syntax, and must not
 // contain any semicolons.
 //
-// ${data()} can be used to reference the rows being evaluated, i.e. the table
-// after all additional filters (row filters, incremental data filters,
-// sampling) are applied.
+// You can use the data reference parameter `${data()}` to reference the
+// source table with all of its precondition filters applied. Examples of
+// precondition filters include row filters, incremental data filters, and
+// sampling. For more information, see [Data reference
+// parameter](https://cloud.google.com/dataplex/docs/auto-data-quality-overview#data-reference-parameter).
 //
-// Example: SELECT * FROM ${data()} WHERE price < 0
+// Example: `SELECT * FROM ${data()} WHERE price < 0`
 type DataQualityRule_SqlAssertion struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
