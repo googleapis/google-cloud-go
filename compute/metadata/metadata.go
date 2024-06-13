@@ -61,7 +61,7 @@ var (
 	instID  = &cachedValue{k: "instance/id", trim: true}
 )
 
-var defaultClient = &client{hc: newDefaultHTTPClient()}
+var defaultClient = &Client{hc: newDefaultHTTPClient()}
 
 func newDefaultHTTPClient() *http.Client {
 	return &http.Client{
@@ -88,7 +88,7 @@ func (suffix NotDefinedError) Error() string {
 	return fmt.Sprintf("metadata: GCE metadata %q not defined", string(suffix))
 }
 
-func (c *cachedValue) get(ctx context.Context, cl *client) (v string, err error) {
+func (c *cachedValue) get(ctx context.Context, cl *Client) (v string, err error) {
 	defer c.mu.Unlock()
 	c.mu.Lock()
 	if c.v != "" {
@@ -423,7 +423,7 @@ func strsContains(ss []string, s string) bool {
 
 // A Client provides metadata.
 type Client struct {
-	*client
+	hc *http.Client
 }
 
 // NewClient returns a Client that can be used to fetch metadata.
@@ -431,20 +431,14 @@ type Client struct {
 // If nil is specified, returns the default client.
 func NewClient(c *http.Client) *Client {
 	if c == nil {
-		return &Client{client: defaultClient}
+		return defaultClient
 	}
-	return &Client{client: &client{hc: c}}
-}
-
-// client is a context aware client that provides metadata.
-// This helps to ensure we only use with context methods internally.
-type client struct {
-	hc *http.Client
+	return &Client{hc: c}
 }
 
 // getETag returns a value from the metadata service as well as the associated ETag.
 // This func is otherwise equivalent to Get.
-func (c *client) getETag(ctx context.Context, suffix string) (value, etag string, err error) {
+func (c *Client) getETag(ctx context.Context, suffix string) (value, etag string, err error) {
 	// Using a fixed IP makes it very difficult to spoof the metadata service in
 	// a container, which is an important use-case for local testing of cloud
 	// deployments. To enable spoofing of the metadata service, the environment
@@ -527,18 +521,18 @@ func (c *Client) Get(suffix string) (string, error) {
 // NOTE: Without an extra deadline in the context this call can take in the
 // worst case, with internal backoff retries, up to 15 seconds (e.g. when server
 // is responding slowly). Pass context with additional timeouts when needed.
-func (c *client) GetWithContext(ctx context.Context, suffix string) (string, error) {
+func (c *Client) GetWithContext(ctx context.Context, suffix string) (string, error) {
 	val, _, err := c.getETag(ctx, suffix)
 	return val, err
 }
 
-func (c *client) getTrimmed(ctx context.Context, suffix string) (s string, err error) {
+func (c *Client) getTrimmed(ctx context.Context, suffix string) (s string, err error) {
 	s, err = c.GetWithContext(ctx, suffix)
 	s = strings.TrimSpace(s)
 	return
 }
 
-func (c *client) lines(ctx context.Context, suffix string) ([]string, error) {
+func (c *Client) lines(ctx context.Context, suffix string) ([]string, error) {
 	j, err := c.GetWithContext(ctx, suffix)
 	if err != nil {
 		return nil, err
@@ -556,7 +550,7 @@ func (c *client) lines(ctx context.Context, suffix string) ([]string, error) {
 func (c *Client) ProjectID() (string, error) { return c.ProjectIDWithContext(context.Background()) }
 
 // ProjectIDWithContext returns the current instance's project ID string.
-func (c *client) ProjectIDWithContext(ctx context.Context) (string, error) { return projID.get(ctx, c) }
+func (c *Client) ProjectIDWithContext(ctx context.Context) (string, error) { return projID.get(ctx, c) }
 
 // NumericProjectID returns the current instance's numeric project ID.
 //
@@ -566,7 +560,7 @@ func (c *Client) NumericProjectID() (string, error) {
 }
 
 // NumericProjectIDWithContext returns the current instance's numeric project ID.
-func (c *client) NumericProjectIDWithContext(ctx context.Context) (string, error) {
+func (c *Client) NumericProjectIDWithContext(ctx context.Context) (string, error) {
 	return projNum.get(ctx, c)
 }
 
@@ -578,7 +572,7 @@ func (c *Client) InstanceID() (string, error) {
 }
 
 // InstanceIDWithContext returns the current VM's numeric instance ID.
-func (c *client) InstanceIDWithContext(ctx context.Context) (string, error) {
+func (c *Client) InstanceIDWithContext(ctx context.Context) (string, error) {
 	return instID.get(ctx, c)
 }
 
@@ -590,7 +584,7 @@ func (c *Client) InternalIP() (string, error) {
 }
 
 // InternalIPWithContext returns the instance's primary internal IP address.
-func (c *client) InternalIPWithContext(ctx context.Context) (string, error) {
+func (c *Client) InternalIPWithContext(ctx context.Context) (string, error) {
 	return c.getTrimmed(ctx, "instance/network-interfaces/0/ip")
 }
 
@@ -602,7 +596,7 @@ func (c *Client) Email(serviceAccount string) (string, error) {
 }
 
 // EmailWithContext returns the email address associated with the service account.
-func (c *client) EmailWithContext(ctx context.Context, serviceAccount string) (string, error) {
+func (c *Client) EmailWithContext(ctx context.Context, serviceAccount string) (string, error) {
 	if serviceAccount == "" {
 		serviceAccount = "default"
 	}
@@ -617,7 +611,7 @@ func (c *Client) ExternalIP() (string, error) {
 }
 
 // ExternalIPWithContext returns the instance's primary external (public) IP address.
-func (c *client) ExternalIPWithContext(ctx context.Context) (string, error) {
+func (c *Client) ExternalIPWithContext(ctx context.Context) (string, error) {
 	return c.getTrimmed(ctx, "instance/network-interfaces/0/access-configs/0/external-ip")
 }
 
@@ -631,7 +625,7 @@ func (c *Client) Hostname() (string, error) {
 
 // HostnameWithContext returns the instance's hostname. This will be of the form
 // "<instanceID>.c.<projID>.internal".
-func (c *client) HostnameWithContext(ctx context.Context) (string, error) {
+func (c *Client) HostnameWithContext(ctx context.Context) (string, error) {
 	return c.getTrimmed(ctx, "instance/hostname")
 }
 
@@ -644,7 +638,7 @@ func (c *Client) InstanceTags() ([]string, error) {
 
 // InstanceTagsWithContext returns the list of user-defined instance tags,
 // assigned when initially creating a GCE instance.
-func (c *client) InstanceTagsWithContext(ctx context.Context) ([]string, error) {
+func (c *Client) InstanceTagsWithContext(ctx context.Context) ([]string, error) {
 	var s []string
 	j, err := c.GetWithContext(ctx, "instance/tags")
 	if err != nil {
@@ -664,7 +658,7 @@ func (c *Client) InstanceName() (string, error) {
 }
 
 // InstanceNameWithContext returns the current VM's instance ID string.
-func (c *client) InstanceNameWithContext(ctx context.Context) (string, error) {
+func (c *Client) InstanceNameWithContext(ctx context.Context) (string, error) {
 	return c.getTrimmed(ctx, "instance/name")
 }
 
@@ -676,7 +670,7 @@ func (c *Client) Zone() (string, error) {
 }
 
 // ZoneWithContext returns the current VM's zone, such as "us-central1-b".
-func (c *client) ZoneWithContext(ctx context.Context) (string, error) {
+func (c *Client) ZoneWithContext(ctx context.Context) (string, error) {
 	zone, err := c.getTrimmed(ctx, "instance/zone")
 	// zone is of the form "projects/<projNum>/zones/<zoneName>".
 	if err != nil {
@@ -697,7 +691,7 @@ func (c *Client) InstanceAttributes() ([]string, error) {
 // InstanceAttributesWithContext returns the list of user-defined attributes,
 // assigned when initially creating a GCE VM instance. The value of an
 // attribute can be obtained with InstanceAttributeValue.
-func (c *client) InstanceAttributesWithContext(ctx context.Context) ([]string, error) {
+func (c *Client) InstanceAttributesWithContext(ctx context.Context) ([]string, error) {
 	return c.lines(ctx, "instance/attributes/")
 }
 
@@ -713,7 +707,7 @@ func (c *Client) ProjectAttributes() ([]string, error) {
 // ProjectAttributesWithContext returns the list of user-defined attributes
 // applying to the project as a whole, not just this VM.  The value of
 // an attribute can be obtained with ProjectAttributeValue.
-func (c *client) ProjectAttributesWithContext(ctx context.Context) ([]string, error) {
+func (c *Client) ProjectAttributesWithContext(ctx context.Context) ([]string, error) {
 	return c.lines(ctx, "project/attributes/")
 }
 
@@ -739,7 +733,7 @@ func (c *Client) InstanceAttributeValue(attr string) (string, error) {
 //
 // InstanceAttributeValue may return ("", nil) if the attribute was
 // defined to be the empty string.
-func (c *client) InstanceAttributeValueWithContext(ctx context.Context, attr string) (string, error) {
+func (c *Client) InstanceAttributeValueWithContext(ctx context.Context, attr string) (string, error) {
 	return c.GetWithContext(ctx, "instance/attributes/"+attr)
 }
 
@@ -765,7 +759,7 @@ func (c *Client) ProjectAttributeValue(attr string) (string, error) {
 //
 // ProjectAttributeValue may return ("", nil) if the attribute was
 // defined to be the empty string.
-func (c *client) ProjectAttributeValueWithContext(ctx context.Context, attr string) (string, error) {
+func (c *Client) ProjectAttributeValueWithContext(ctx context.Context, attr string) (string, error) {
 	return c.GetWithContext(ctx, "project/attributes/"+attr)
 }
 
@@ -781,7 +775,7 @@ func (c *Client) Scopes(serviceAccount string) ([]string, error) {
 // ScopesWithContext returns the service account scopes for the given account.
 // The account may be empty or the string "default" to use the instance's
 // main account.
-func (c *client) ScopesWithContext(ctx context.Context, serviceAccount string) ([]string, error) {
+func (c *Client) ScopesWithContext(ctx context.Context, serviceAccount string) ([]string, error) {
 	if serviceAccount == "" {
 		serviceAccount = "default"
 	}
@@ -806,7 +800,7 @@ func (c *Client) Subscribe(suffix string, fn func(v string, ok bool) error) erro
 // empty string and ok false. Subscribe blocks until fn returns a non-nil error
 // or the value is deleted. Subscribe returns the error value returned from the
 // last call to fn, which may be nil when ok == false.
-func (c *client) SubscribeWithContext(ctx context.Context, suffix string, fn func(ctx context.Context, v string, ok bool) error) error {
+func (c *Client) SubscribeWithContext(ctx context.Context, suffix string, fn func(ctx context.Context, v string, ok bool) error) error {
 	const failedSubscribeSleep = time.Second * 5
 
 	// First check to see if the metadata value exists at all.
