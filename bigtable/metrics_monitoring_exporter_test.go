@@ -167,7 +167,9 @@ func assertEqual(t *testing.T, got, want interface{}) {
 }
 
 func TestExportMetrics(t *testing.T) {
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+
 	testServer, err := NewMetricTestServer()
 	//nolint:errcheck
 	go testServer.Serve()

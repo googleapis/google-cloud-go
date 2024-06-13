@@ -333,40 +333,6 @@ func (mt *builtinMetricsTracer) recordOperationCompletion() {
 	}
 }
 
-// recordAttemptCompletion returns a function that should be executed to record attempt specific metrics
-// It records as many metrics as it can and does not return error
-func (mt *builtinMetricsTracer) recordAttemptCompletion() func() {
-	if !mt.builtInEnabled {
-		return noOpRecordFn
-	}
-
-	startTime := time.Now()
-
-	return func() {
-		// Calculate elapsed time
-		elapsedTime := float64(time.Since(startTime).Nanoseconds()) / 1000000
-
-		// Attributes for attempt_latencies
-		attemptLatCurrCallAttrs, attemptLatErr := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
-		attemptLatAllAttrs := metric.WithAttributes(append(mt.clientAttributes, attemptLatCurrCallAttrs...)...)
-
-		// Attributes for server_latencies
-		serverLatCurrCallAttrs, serverLatErr := mt.toOtelMetricAttrs(metricNameServerLatencies)
-		serverLatAllAttres := metric.WithAttributes(append(mt.clientAttributes, serverLatCurrCallAttrs...)...)
-
-		if attemptLatErr == nil {
-			mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, attemptLatAllAttrs)
-		}
-
-		if serverLatErr == nil {
-			serverLatency, serverLatErr := mt.getServerLatency()
-			if serverLatErr == nil {
-				mt.instrumentServerLatencies.Record(mt.ctx, serverLatency, serverLatAllAttres)
-			}
-		}
-	}
-}
-
 func (mt *builtinMetricsTracer) gaxInvokeWithRecorder(ctx context.Context, method string,
 	f func(ctx context.Context, _ gax.CallSettings) error, opts ...gax.CallOption) error {
 
@@ -375,9 +341,37 @@ func (mt *builtinMetricsTracer) gaxInvokeWithRecorder(ctx context.Context, metho
 		// Increment number of attempts
 		mt.attemptCount++
 
-		recorder := mt.recordAttemptCompletion()
-		defer recorder()
+		// record start time
+		startTime := time.Now()
+		defer func() {
+			if !mt.builtInEnabled {
+				return
+			}
 
+			// Calculate elapsed time
+			elapsedTime := float64(time.Since(startTime).Nanoseconds()) / 1000000
+
+			// Attributes for attempt_latencies
+			attemptLatCurrCallAttrs, attemptLatErr := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+			attemptLatAllAttrs := metric.WithAttributes(append(mt.clientAttributes, attemptLatCurrCallAttrs...)...)
+
+			// Attributes for server_latencies
+			serverLatCurrCallAttrs, serverLatErr := mt.toOtelMetricAttrs(metricNameServerLatencies)
+			serverLatAllAttres := metric.WithAttributes(append(mt.clientAttributes, serverLatCurrCallAttrs...)...)
+
+			if attemptLatErr == nil {
+				mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, attemptLatAllAttrs)
+			}
+
+			if serverLatErr == nil {
+				serverLatency, serverLatErr := mt.getServerLatency()
+				if serverLatErr == nil {
+					mt.instrumentServerLatencies.Record(mt.ctx, serverLatency, serverLatAllAttres)
+				}
+			}
+		}()
+
+		// Make call to CBT service
 		err := f(ctx, callSettings)
 
 		// Record attempt status
