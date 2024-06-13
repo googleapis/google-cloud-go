@@ -315,7 +315,7 @@ func (c *cachedTokenProvider) tokenNonBlocking(ctx context.Context) (*Token, err
 		// wait on chan and read its err. Instead, allow all requests during
 		// the refresh window to join serial attempts managed by singleflight.
 		//  If all fail, the Expired case should return the same error.
-		c.tokenAsync()
+		c.tokenAsync(ctx)
 		// Return the stale token immediately to not block customer requests to Cloud services
 		c.mu.Lock()
 		defer c.mu.Unlock()
@@ -348,12 +348,11 @@ func (c *cachedTokenProvider) tokenState() tokenState {
 // happens at a time, even if multiple callers have entered this function
 // concurrently. This avoids creating an arbitrary number of concurrent
 // goroutines.
-func (c *cachedTokenProvider) tokenAsync() <-chan singleflight.Result {
+func (c *cachedTokenProvider) tokenAsync(ctx context.Context) <-chan singleflight.Result {
 	return c.loadGroup.DoChan(nonBlockingRefreshKey, func() (entry any, err error) {
 
-		// Use a new context with timeout. This allows metadata.GetWithContext
-		// to retry regardless of the original request context.
-		refreshCtx, refreshCancel := context.WithTimeout(context.Background(), nonBlockingRefreshTimeout)
+		// Set a 30s timeout.
+		refreshCtx, refreshCancel := context.WithTimeout(ctx, nonBlockingRefreshTimeout)
 		defer refreshCancel()
 
 		t, err := c.tp.Token(refreshCtx)
