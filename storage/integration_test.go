@@ -48,6 +48,8 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	control "cloud.google.com/go/storage/control/apiv2"
+	"cloud.google.com/go/storage/control/apiv2/controlpb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -56,7 +58,6 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
-	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -88,6 +89,7 @@ var (
 	newTestClient func(ctx context.Context, opts ...option.ClientOption) (*Client, error)
 	replaying     bool
 	testTime      time.Time
+	controlClient *control.StorageControlClient
 )
 
 func TestMain(m *testing.M) {
@@ -195,6 +197,12 @@ func initIntegrationTest() func() error {
 			return func() error { return nil }
 		}
 		defer client.Close()
+		// Create storage control client; in some cases this is needed for test
+		// setup and cleanup.
+		controlClient, err = control.NewStorageControlClient(ctx)
+		if err != nil {
+			log.Fatalf("NewStorageControlClient: %v", err)
+		}
 		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", bucketName, err)
 		}
@@ -206,7 +214,7 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace("", &uid.Options{Time: t, Short: true})
+	uidSpace = uid.NewSpace("", &uid.Options{Time: t})
 	bucketName = testPrefix + uidSpace.New()
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
 	grpcBucketName = grpcTestPrefix + uidSpace.New()
@@ -284,6 +292,13 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 				bucket = grpcBucketName
 				prefix = grpcTestPrefix
 			}
+
+			// Don't let any individual test run more than 5 minutes. This eases debugging if
+			// test runs get stalled out.
+			ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+			t.Cleanup(func() {
+				cancel()
+			})
 
 			test(t, ctx, bucket, prefix, client)
 		})
@@ -443,12 +458,12 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				b := client.Bucket(newBucketName)
 
 				if err := b.Create(ctx, projectID, test.attrs); err != nil {
-					t.Fatalf("bucket create: %v", err)
+					t.Fatalf("BucketHandle.Create(%q): %v", newBucketName, err)
 				}
 
 				gotAttrs, err := b.Attrs(ctx)
 				if err != nil {
-					t.Fatalf("bucket attrs: %v", err)
+					t.Fatalf("BucketHandle.Attrs(%q): %v", newBucketName, err)
 				}
 
 				// All newly created buckets should conform to the following:
@@ -484,7 +499,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 
 				// Delete the bucket and check that the deletion was succesful
 				if err := b.Delete(ctx); err != nil {
-					t.Fatalf("bucket delete: %v", err)
+					t.Fatalf("BucketHandle.Delete(%q): %v", newBucketName, err)
 				}
 				_, err = b.Attrs(ctx)
 				if err != ErrBucketNotExist {
@@ -997,6 +1012,50 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 	})
 }
 
+func TestIntegration_HierarchicalNamespace(t *testing.T) {
+	ctx := skipJSONReads(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		// Create a bucket with HNS enabled.
+		hnsBucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(hnsBucketName)
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+			HierarchicalNamespace:    &HierarchicalNamespace{Enabled: true},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("bkt(%q).Attrs: %v", hnsBucketName, err)
+		}
+
+		if got, want := (attrs.HierarchicalNamespace), (&HierarchicalNamespace{Enabled: true}); cmp.Diff(got, want) != "" {
+			t.Errorf("HierarchicalNamespace: got %+v, want %+v", got, want)
+		}
+
+		// Folder creation should work on HNS bucket, but not on standard bucket.
+		req := &controlpb.CreateFolderRequest{
+			Parent:   fmt.Sprintf("projects/_/buckets/%v", hnsBucketName),
+			FolderId: "foo/",
+			Folder:   &controlpb.Folder{},
+		}
+		if _, err := controlClient.CreateFolder(ctx, req); err != nil {
+			t.Errorf("creating folder in bucket %q: %v", hnsBucketName, err)
+		}
+
+		req2 := &controlpb.CreateFolderRequest{
+			Parent:   fmt.Sprintf("projects/_/buckets/%v", bucket),
+			FolderId: "foo/",
+			Folder:   &controlpb.Folder{},
+		}
+		if _, err := controlClient.CreateFolder(ctx, req2); status.Code(err) != codes.FailedPrecondition {
+			t.Errorf("creating folder in non-HNS bucket %q: got error %v, want FailedPrecondition", bucket, err)
+		}
+	})
+}
+
 func TestIntegration_ObjectsRangeReader(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		bkt := client.Bucket(bucket)
@@ -1457,19 +1516,21 @@ func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
 			contents[obj] = c
 		}
 
-		// Create a managed folder. This requires using the Apiary client as this is not available
-		// in the veneer layer.
-		// TODO: change to use storage control client once available.
-		call := client.raw.ManagedFolders.Insert(newBucketName, &raw.ManagedFolder{Name: "mf"})
-		mf, err := call.Context(ctx).Do()
+		req := &controlpb.CreateManagedFolderRequest{
+			Parent:          fmt.Sprintf("projects/_/buckets/%s", newBucketName),
+			ManagedFolder:   &controlpb.ManagedFolder{},
+			ManagedFolderId: "mf",
+		}
+		mf, err := controlClient.CreateManagedFolder(ctx, req)
 		if err != nil {
 			t.Fatalf("creating managed folder: %v", err)
 		}
 
 		t.Cleanup(func() {
-			// TODO: add this cleanup logic to killBucket as well once gRPC support is available.
-			call := client.raw.ManagedFolders.Delete(newBucketName, mf.Name)
-			call.Context(ctx).Do()
+			req := &controlpb.DeleteManagedFolderRequest{
+				Name: mf.Name,
+			}
+			controlClient.DeleteManagedFolder(ctx, req)
 		})
 
 		// Test that managed folders are only included when IncludeFoldersAsPrefixes is set.
@@ -3066,7 +3127,7 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				h := testHelper{t}
-				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				ctx, cancel := context.WithTimeout(ctx, time.Minute)
 				defer cancel()
 
 				printTestCase := func() string {
@@ -5658,7 +5719,7 @@ func TestIntegration_OCTracing(t *testing.T) {
 		bkt := client.Bucket(bucket)
 		bkt.Attrs(ctx)
 
-		if len(te.Spans) == 0 {
+		if len(te.Spans()) == 0 {
 			t.Fatalf("Expected some spans to be created, but got %d", 0)
 		}
 	})
@@ -5779,14 +5840,14 @@ type testHelper struct {
 func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttrs) {
 	h.t.Helper()
 	if err := b.Create(context.Background(), projID, attrs); err != nil {
-		h.t.Fatalf("bucket create: %v", err)
+		h.t.Fatalf("BucketHandle(%q).Create: %v", b.BucketName(), err)
 	}
 }
 
 func (h testHelper) mustDeleteBucket(b *BucketHandle) {
 	h.t.Helper()
 	if err := b.Delete(context.Background()); err != nil {
-		h.t.Fatalf("bucket delete: %v", err)
+		h.t.Fatalf("BucketHandle(%q).Delete: %v", b.BucketName(), err)
 	}
 }
 
@@ -5794,7 +5855,7 @@ func (h testHelper) mustBucketAttrs(b *BucketHandle) *BucketAttrs {
 	h.t.Helper()
 	attrs, err := b.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("bucket attrs: %v", err)
+		h.t.Fatalf("BucketHandle(%q).Attrs: %v", b.BucketName(), err)
 	}
 	return attrs
 }
@@ -5804,7 +5865,15 @@ func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate, me
 	h.t.Helper()
 	attrs, err := b.If(BucketConditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("update: %v", err)
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Update may already have succeeded with retry; if so, log and grab attrs.
+			if apiErr.HTTPCode() == http.StatusPreconditionFailed || apiErr.GRPCStatus().Code() == codes.FailedPrecondition {
+				log.Println("bucket update failed due to precondition; likely succeeded but retried - grabbing attrs instead")
+				return h.mustBucketAttrs(b)
+			}
+		}
+		h.t.Fatalf("BucketHandle(%q).Update: %v", b.BucketName(), err)
 	}
 	return attrs
 }
@@ -5813,7 +5882,7 @@ func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
 	h.t.Helper()
 	attrs, err := o.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("object attrs: %v", err)
+		h.t.Fatalf("get object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return attrs
 }
@@ -5828,7 +5897,7 @@ func (h testHelper) mustDeleteObject(o *ObjectHandle) {
 				return
 			}
 		}
-		h.t.Fatalf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
+		h.t.Fatalf("delete object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 }
 
@@ -5837,7 +5906,7 @@ func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate, me
 	h.t.Helper()
 	attrs, err := o.If(Conditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("update: %v", err)
+		h.t.Fatalf("update object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return attrs
 }
@@ -5846,10 +5915,10 @@ func (h testHelper) mustWrite(w *Writer, data []byte) {
 	h.t.Helper()
 	if _, err := w.Write(data); err != nil {
 		w.Close()
-		h.t.Fatalf("write: %v", err)
+		h.t.Fatalf("write object %q to bucket %q: %v", w.o.ObjectName(), w.o.BucketName(), err)
 	}
 	if err := w.Close(); err != nil {
-		h.t.Fatalf("close write: %v", err)
+		h.t.Fatalf("close write object %q to bucket %q: %v", w.o.ObjectName(), w.o.BucketName(), err)
 	}
 }
 
@@ -5878,7 +5947,7 @@ func deleteObjectIfExists(o *ObjectHandle, retryOpts ...RetryOption) error {
 				return nil
 			}
 		}
-		return fmt.Errorf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
+		return fmt.Errorf("delete object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return nil
 }
@@ -5994,6 +6063,59 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 			return fmt.Errorf("deleting %q: %v", bucketName+"/"+objAttrs.Name, err)
 		}
 	}
+	// Delete any managed folders.
+	req := &controlpb.ListManagedFoldersRequest{
+		Parent: fmt.Sprintf("projects/_/buckets/%s", bucketName),
+	}
+	mfIt := controlClient.ListManagedFolders(ctx, req)
+	for {
+		resp, err := mfIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		// Buckets without UBLA will return this error for MF ops; skip.
+		if status.Code(err) == codes.FailedPrecondition {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		deleteReq := &controlpb.DeleteManagedFolderRequest{
+			Name:          resp.Name,
+			AllowNonEmpty: true,
+		}
+		err = controlClient.DeleteManagedFolder(ctx, deleteReq)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Delete any folders.
+	listFoldersReq := &controlpb.ListFoldersRequest{
+		Parent: fmt.Sprintf("projects/_/buckets/%s", bucketName),
+	}
+	folderIt := controlClient.ListFolders(ctx, listFoldersReq)
+	for {
+		resp, err := folderIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		// Buckets without UBLA will return this error for Folder ops; skip.
+		if status.Code(err) == codes.FailedPrecondition {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		deleteFolderReq := &controlpb.DeleteFolderRequest{
+			Name: resp.Name,
+		}
+		err = controlClient.DeleteFolder(ctx, deleteFolderReq)
+		if err != nil {
+			return err
+		}
+	}
+
 	// GCS is eventually consistent, so this delete may fail because the
 	// replica still sees an object in the bucket. We log the error and expect
 	// a later test run to delete the bucket.

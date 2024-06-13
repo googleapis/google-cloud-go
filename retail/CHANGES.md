@@ -1,5 +1,23 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.16.2...retail/v1.17.0) (2024-06-10)
+
+
+### Features
+
+* **retail:** Add branch and project APIs to alpha ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **retail:** Add page_categories to control condition ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **retail:** Add product purge API ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **retail:** Allow to skip denylist postfiltering in recommendations ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **retail:** Support attribute suggestion in autocomplete ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **retail:** Support frequent bought together model config ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **retail:** Support merged facets ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
+
+### Documentation
+
+* **retail:** Keep the API doc up-to-date with recent changes ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
 ## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/retail/v1.16.1...retail/v1.16.2) (2024-05-01)
 
 

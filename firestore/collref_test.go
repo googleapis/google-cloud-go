@@ -64,7 +64,7 @@ func TestAdd(t *testing.T) {
 	wantReq := commitRequestForSet()
 	w := wantReq.Writes[0]
 	w.CurrentDocument = &pb.Precondition{
-		ConditionType: &pb.Precondition_Exists{false},
+		ConditionType: &pb.Precondition_Exists{Exists: false},
 	}
 	srv.addRPCAdjust(wantReq, commitResponseForSet, func(gotReq proto.Message) {
 		// We can't know the doc ID before Add is called, so we take it from

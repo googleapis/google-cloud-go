@@ -74,7 +74,7 @@ func defaultGenerativeGRPCClientOptions() []option.ClientOption {
 func defaultGenerativeCallOptions() *GenerativeCallOptions {
 	return &GenerativeCallOptions{
 		GenerateContent: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -141,7 +141,7 @@ func defaultGenerativeCallOptions() *GenerativeCallOptions {
 func defaultGenerativeRESTCallOptions() *GenerativeCallOptions {
 	return &GenerativeCallOptions{
 		GenerateContent: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -152,7 +152,7 @@ func defaultGenerativeRESTCallOptions() *GenerativeCallOptions {
 			}),
 		},
 		StreamGenerateContent: []gax.CallOption{
-			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
 					Initial:    1000 * time.Millisecond,
@@ -254,6 +254,11 @@ func (c *GenerativeClient) Connection() *grpc.ClientConn {
 
 // GenerateContent generates a response from the model given an input
 // GenerateContentRequest.
+//
+// Input capabilities differ between models, including tuned models. See the
+// model guide (at https://ai.google.dev/models/gemini) and
+// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
+// details.
 func (c *GenerativeClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	return c.internalClient.GenerateContent(ctx, req, opts...)
 }
@@ -362,7 +367,9 @@ func (c *generativeGRPCClient) Connection() *grpc.ClientConn {
 func (c *generativeGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -425,7 +432,9 @@ func defaultGenerativeRESTClientOptions() []option.ClientOption {
 func (c *generativeRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -612,6 +621,11 @@ func (c *generativeGRPCClient) ListOperations(ctx context.Context, req *longrunn
 
 // GenerateContent generates a response from the model given an input
 // GenerateContentRequest.
+//
+// Input capabilities differ between models, including tuned models. See the
+// model guide (at https://ai.google.dev/models/gemini) and
+// tuning guide (at https://ai.google.dev/docs/model_tuning_guidance) for
+// details.
 func (c *generativeRESTClient) GenerateContent(ctx context.Context, req *generativelanguagepb.GenerateContentRequest, opts ...gax.CallOption) (*generativelanguagepb.GenerateContentResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

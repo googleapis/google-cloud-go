@@ -47,17 +47,18 @@ var newCloudRedisClusterClientHook clientHook
 
 // CloudRedisClusterCallOptions contains the retry settings for each method of CloudRedisClusterClient.
 type CloudRedisClusterCallOptions struct {
-	ListClusters    []gax.CallOption
-	GetCluster      []gax.CallOption
-	UpdateCluster   []gax.CallOption
-	DeleteCluster   []gax.CallOption
-	CreateCluster   []gax.CallOption
-	GetLocation     []gax.CallOption
-	ListLocations   []gax.CallOption
-	CancelOperation []gax.CallOption
-	DeleteOperation []gax.CallOption
-	GetOperation    []gax.CallOption
-	ListOperations  []gax.CallOption
+	ListClusters                   []gax.CallOption
+	GetCluster                     []gax.CallOption
+	UpdateCluster                  []gax.CallOption
+	DeleteCluster                  []gax.CallOption
+	CreateCluster                  []gax.CallOption
+	GetClusterCertificateAuthority []gax.CallOption
+	GetLocation                    []gax.CallOption
+	ListLocations                  []gax.CallOption
+	CancelOperation                []gax.CallOption
+	DeleteOperation                []gax.CallOption
+	GetOperation                   []gax.CallOption
+	ListOperations                 []gax.CallOption
 }
 
 func defaultCloudRedisClusterGRPCClientOptions() []option.ClientOption {
@@ -91,6 +92,9 @@ func defaultCloudRedisClusterCallOptions() *CloudRedisClusterCallOptions {
 		CreateCluster: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		GetClusterCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -117,6 +121,9 @@ func defaultCloudRedisClusterRESTCallOptions() *CloudRedisClusterCallOptions {
 		CreateCluster: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		GetClusterCertificateAuthority: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -139,6 +146,7 @@ type internalCloudRedisClusterClient interface {
 	DeleteClusterOperation(name string) *DeleteClusterOperation
 	CreateCluster(context.Context, *clusterpb.CreateClusterRequest, ...gax.CallOption) (*CreateClusterOperation, error)
 	CreateClusterOperation(name string) *CreateClusterOperation
+	GetClusterCertificateAuthority(context.Context, *clusterpb.GetClusterCertificateAuthorityRequest, ...gax.CallOption) (*clusterpb.CertificateAuthority, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -277,6 +285,11 @@ func (c *CloudRedisClusterClient) CreateCluster(ctx context.Context, req *cluste
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
 func (c *CloudRedisClusterClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return c.internalClient.CreateClusterOperation(name)
+}
+
+// GetClusterCertificateAuthority gets the details of certificate authority information for Redis cluster.
+func (c *CloudRedisClusterClient) GetClusterCertificateAuthority(ctx context.Context, req *clusterpb.GetClusterCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.CertificateAuthority, error) {
+	return c.internalClient.GetClusterCertificateAuthority(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -423,7 +436,9 @@ func (c *cloudRedisClusterGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudRedisClusterGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -529,7 +544,9 @@ func defaultCloudRedisClusterRESTClientOptions() []option.ClientOption {
 func (c *cloudRedisClusterRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -668,6 +685,24 @@ func (c *cloudRedisClusterGRPCClient) CreateCluster(ctx context.Context, req *cl
 	return &CreateClusterOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *cloudRedisClusterGRPCClient) GetClusterCertificateAuthority(ctx context.Context, req *clusterpb.GetClusterCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.CertificateAuthority, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetClusterCertificateAuthority[0:len((*c.CallOptions).GetClusterCertificateAuthority):len((*c.CallOptions).GetClusterCertificateAuthority)], opts...)
+	var resp *clusterpb.CertificateAuthority
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudRedisClusterClient.GetClusterCertificateAuthority(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *cloudRedisClusterGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1216,6 +1251,66 @@ func (c *cloudRedisClusterRESTClient) CreateCluster(ctx context.Context, req *cl
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// GetClusterCertificateAuthority gets the details of certificate authority information for Redis cluster.
+func (c *cloudRedisClusterRESTClient) GetClusterCertificateAuthority(ctx context.Context, req *clusterpb.GetClusterCertificateAuthorityRequest, opts ...gax.CallOption) (*clusterpb.CertificateAuthority, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetClusterCertificateAuthority[0:len((*c.CallOptions).GetClusterCertificateAuthority):len((*c.CallOptions).GetClusterCertificateAuthority)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &clusterpb.CertificateAuthority{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.

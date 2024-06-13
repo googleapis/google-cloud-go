@@ -1,5 +1,61 @@
 # Changelog
 
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.0...shopping/v0.8.1) (2024-06-10)
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** Format comments in ListUsersRequest ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.7.0...shopping/v0.8.0) (2024-06-05)
+
+
+### Features
+
+* **shopping:** New client(s) ([#10313](https://github.com/googleapis/google-cloud-go/issues/10313)) ([b439b80](https://github.com/googleapis/google-cloud-go/commit/b439b80a7488ff6b3bce775b63f7923951ee5e1a))
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** Mark `BusinessInfo.phone` as output only ([#10319](https://github.com/googleapis/google-cloud-go/issues/10319)) ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.6.0...shopping/v0.7.0) (2024-05-22)
+
+
+### Features
+
+* **shopping/merchant/reports:** A new enum `Effectiveness` is added ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/reports:** A new field `effectiveness` is added to message `.google.shopping.merchant.reports.v1beta.PriceInsightsProductView` ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/reports:** Add `effectiveness` field to `price_insights_product_view` table in Reports sub-API ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/reports:** Add `non_product_performance_view` table to Reports sub-API ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+
+
+### Documentation
+
+* **shopping/merchant/conversions:** A comment for message `MerchantCenterDestination` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/conversions:** Change in wording ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** A comment for field `availability` in message `.google.shopping.merchant.inventories.v1beta.LocalInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** A comment for field `availability` in message `.google.shopping.merchant.inventories.v1beta.RegionalInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** A comment for field `custom_attributes` in message `.google.shopping.merchant.inventories.v1beta.LocalInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** A comment for field `custom_attributes` in message `.google.shopping.merchant.inventories.v1beta.RegionalInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** A comment for field `pickup_method` in message `.google.shopping.merchant.inventories.v1beta.LocalInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** A comment for field `pickup_sla` in message `.google.shopping.merchant.inventories.v1beta.LocalInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** A comment for field `store_code` in message `.google.shopping.merchant.inventories.v1beta.LocalInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** A comment for message `LocalInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** A comment for message `RegionalInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/inventories:** Change in wording ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/lfp:** A comment for enum `StoreMatchingState` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/lfp:** A comment for field `availability` in message `.google.shopping.merchant.lfp.v1beta.LfpInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/lfp:** A comment for field `matching_state` in message `.google.shopping.merchant.lfp.v1beta.LfpStore` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/lfp:** A comment for field `pickup_method` in message `.google.shopping.merchant.lfp.v1beta.LfpInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/lfp:** A comment for field `pickup_sla` in message `.google.shopping.merchant.lfp.v1beta.LfpInventory` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/lfp:** A comment for message `LfpStore` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/lfp:** Change in wording ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/reports:** A comment for enum `AggregatedReportingContextStatus` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/reports:** A comment for field `brand_inventory_status` in message `.google.shopping.merchant.reports.v1beta.BestSellersProductClusterView` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/reports:** A comment for field `inventory_status` in message `.google.shopping.merchant.reports.v1beta.BestSellersProductClusterView` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **shopping/merchant/reports:** A comment for field `shipping_label` in message `.google.shopping.merchant.reports.v1beta.ProductView` is changed ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.5.0...shopping/v0.6.0) (2024-05-01)
 
 

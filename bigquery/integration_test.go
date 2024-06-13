@@ -24,6 +24,7 @@ import (
 	"math/big"
 	"net/http"
 	"os"
+	"reflect"
 	"sort"
 	"strings"
 	"testing"
@@ -2527,6 +2528,37 @@ func TestIntegration_QueryParameters(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryEmptyArrays(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT ARRAY<string>[] as a, ARRAY<STRUCT<name string>>[] as b")
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for {
+		vals := map[string]Value{}
+		if err := it.Next(&vals); err != nil {
+			if errors.Is(err, iterator.Done) {
+				break
+			}
+		}
+
+		valueOfA := reflect.ValueOf(vals["a"])
+		if testutil.Equal(vals["a"], nil) || valueOfA.IsNil() {
+			t.Fatalf("expected empty string array to not return nil, but found %v %v %T", valueOfA, vals["a"], vals["a"])
+		}
+
+		valueOfB := reflect.ValueOf(vals["b"])
+		if testutil.Equal(vals["b"], nil) || valueOfB.IsNil() {
+			t.Fatalf("expected empty struct array to not return nil, but found %v %v %T", valueOfB, vals["b"], vals["b"])
+		}
+	}
+}
+
 // This test can be merged with the TestIntegration_QueryParameters as soon as support for explicit typed query parameter lands.
 // To test timestamps with different formats, we need to be able to specify the type explicitly.
 func TestIntegration_TimestampFormat(t *testing.T) {
@@ -3372,7 +3404,7 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 		CREATE MODEL %s
 		OPTIONS (
 			model_type='linear_reg',
-			max_iteration=1,
+			max_iterations=1,
 			learn_rate=0.4,
 			learn_rate_strategy='constant'
 		) AS (
