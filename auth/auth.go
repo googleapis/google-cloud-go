@@ -350,12 +350,7 @@ func (c *cachedTokenProvider) tokenState() tokenState {
 // goroutines.
 func (c *cachedTokenProvider) tokenAsync(ctx context.Context) <-chan singleflight.Result {
 	return c.loadGroup.DoChan(nonBlockingRefreshKey, func() (entry any, err error) {
-
-		// Set a 30s timeout.
-		refreshCtx, refreshCancel := context.WithTimeout(ctx, nonBlockingRefreshTimeout)
-		defer refreshCancel()
-
-		t, err := c.tp.Token(refreshCtx)
+		t, err := c.tp.Token(ctx)
 		if err != nil {
 			// In order to return this err to callers of the main goroutine, a
 			// call to tokenAsync would need to wait on the returned chan and
