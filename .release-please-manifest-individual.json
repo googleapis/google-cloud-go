@@ -1,5 +1,5 @@
 {
-  "ai": "0.6.0",
+  "ai": "0.7.0",
   "aiplatform": "1.68.0",
   "auth": "0.5.1",
   "auth/oauth2adapt": "0.2.2",
