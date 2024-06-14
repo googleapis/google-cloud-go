@@ -877,6 +877,9 @@ func checkReqsForReadOptions(t *testing.T, server InMemSpannerServer, ro ReadOpt
 	if got, want := sqlReq.OrderBy, ro.OrderBy; got != want {
 		t.Fatalf("OrderBy mismatch, got %v, want %v", got, want)
 	}
+	if got, want := sqlReq.LockHint, ro.LockHint; got != want {
+		t.Fatalf("LockHint mismatch, got %v, want %v", got, want)
+	}
 }
 
 func checkReqsForTransactionOptions(t *testing.T, server InMemSpannerServer, txo TransactionOptions) {
@@ -2143,8 +2146,34 @@ func TestClient_ReadWriteTransaction_Query_QueryOptions(t *testing.T) {
 	}
 }
 
-func TestClient_ReadWriteTransaction_Query_ReadOptions(t *testing.T) {
-	for _, tt := range readOptionsTestCases() {
+func TestClient_LockHintOptions(t *testing.T) {
+	readOptionsTestCases := []ReadOptionsTestCase{
+		{
+			name:   "Client level",
+			client: &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+			want:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+		},
+		{
+			name:   "Read level",
+			client: &ReadOptions{},
+			read:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+			want:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+		},
+		{
+			name:   "Read level has precedence than client level",
+			client: &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_SHARED},
+			read:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+			want:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+		},
+		{
+			name:   "Client level has precendence when ORDER_BY_UNSPECIFIED at read level",
+			client: &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+			read:   &ReadOptions{},
+			want:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+		},
+	}
+
+	for _, tt := range readOptionsTestCases {
 		t.Run(tt.name, func(t *testing.T) {
 			ctx := context.Background()
 			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
@@ -2165,6 +2194,9 @@ func TestClient_ReadWriteTransaction_Query_ReadOptions(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestClient_ReadWriteTransaction__ReadOptions(t *testing.T) {
 }
 
 func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
