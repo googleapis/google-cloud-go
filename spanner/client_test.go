@@ -2196,9 +2196,6 @@ func TestClient_LockHintOptions(t *testing.T) {
 	}
 }
 
-func TestClient_ReadWriteTransaction__ReadOptions(t *testing.T) {
-}
-
 func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
