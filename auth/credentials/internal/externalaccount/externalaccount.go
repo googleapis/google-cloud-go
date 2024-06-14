@@ -100,6 +100,10 @@ type Options struct {
 	AwsSecurityCredentialsProvider AwsSecurityCredentialsProvider
 	// Client for token request.
 	Client *http.Client
+	// IsDefaultClient marks whether the client passed in is a default client that can be overriden.
+	// This is important for X509 credentials which should create a new client if the default was used
+	// but should respect a client explicitly passed in by the user.
+	IsDefaultClient bool
 }
 
 // SubjectTokenProvider can be used to supply a subject token to exchange for a
@@ -181,6 +185,26 @@ func (o *Options) validate() error {
 	return nil
 }
 
+// client returns the http client that should be used for the token exchange. If a non-default client
+// is provided, then the client configured in the options will always be returned. If a default client
+// is provided and the options are configured for X509 credentials, a new client will be created.
+func (o *Options) client() (*http.Client, error) {
+	// If a client was explicitly provided or if there is no certificate configuration, return the client
+	// from the options.
+	if !o.IsDefaultClient || o.CredentialSource == nil || o.CredentialSource.Certificate == nil {
+		return o.Client, nil
+	}
+
+	cert := o.CredentialSource.Certificate
+	if !cert.UseDefaultCertificateConfig && cert.CertificateConfigLocation == "" {
+		return nil, errors.New("credentials: \"certificate\" object must either specify a certificate_config_location or use_default_certificate_config should be true")
+	}
+	if cert.UseDefaultCertificateConfig && cert.CertificateConfigLocation != "" {
+		return nil, errors.New("credentials: \"certificate\" object cannot specify both a certificate_config_location and use_default_certificate_config=true")
+	}
+	return createX509Client(cert.CertificateConfigLocation)
+}
+
 // resolveTokenURL sets the default STS token endpoint with the configured
 // universe domain.
 func (o *Options) resolveTokenURL() {
@@ -205,15 +229,9 @@ func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 		return nil, err
 	}
 
-	client := opts.Client
-	// If the credential is using X509, we need to create a different client that uses
-	// the certs specified in the credential configuration for a mTLS request.
-	xp, _ := stp.(*x509Provider)
-	if xp != nil {
-		client, err = xp.client()
-		if err != nil {
-			return nil, err
-		}
+	client, err := opts.client()
+	if err != nil {
+		return nil, err
 	}
 
 	tp := &tokenProvider{
@@ -367,14 +385,7 @@ func newSubjectTokenProvider(o *Options) (subjectTokenProvider, error) {
 		execProvider.env = runtimeEnvironment{}
 		return execProvider, nil
 	} else if o.CredentialSource.Certificate != nil {
-		cert := o.CredentialSource.Certificate
-		if !cert.UseDefaultCertificateConfig && cert.CertificateConfigLocation == "" {
-			return nil, errors.New("credentials: \"certificate\" object must either specify a certificate_config_location or use_default_certificate_config should be true")
-		}
-		if cert.UseDefaultCertificateConfig && cert.CertificateConfigLocation != "" {
-			return nil, errors.New("credentials: \"certificate\" object cannot specify both a certificate_config_location and use_default_certificate_config=true")
-		}
-		return &x509Provider{certificateConfigLocation: cert.CertificateConfigLocation}, nil
+		return &x509Provider{}, nil
 	}
 	return nil, errors.New("credentials: unable to parse credential source")
 }

@@ -24,8 +24,6 @@ import (
 )
 
 type x509Provider struct {
-	certificateConfigLocation string
-	cachedClient              *http.Client
 }
 
 func (xp *x509Provider) providerType() string {
@@ -36,25 +34,22 @@ func (xp *x509Provider) subjectToken(ctx context.Context) (string, error) {
 	return "", nil
 }
 
-func (xp *x509Provider) client() (*http.Client, error) {
-	// Create client if it doesn't already exist
-	if xp.cachedClient == nil {
-		certProvider, err := cert.NewWorkloadX509CertProvider(xp.certificateConfigLocation)
-		if err != nil {
-			return nil, err
-		}
-
-		trans := http.DefaultTransport.(*http.Transport).Clone()
-
-		trans.TLSClientConfig = &tls.Config{
-			GetClientCertificate: certProvider,
-		}
-
-		// Create client with default settings plus the X509 workload certs
-		xp.cachedClient = &http.Client{
-			Transport: trans,
-			Timeout:   30 * time.Second,
-		}
+func createX509Client(certificateConfigLocation string) (*http.Client, error) {
+	certProvider, err := cert.NewWorkloadX509CertProvider(certificateConfigLocation)
+	if err != nil {
+		return nil, err
 	}
-	return xp.cachedClient, nil
+	trans := http.DefaultTransport.(*http.Transport).Clone()
+
+	trans.TLSClientConfig = &tls.Config{
+		GetClientCertificate: certProvider,
+	}
+
+	// Create client with default settings plus the X509 workload certs
+	client := &http.Client{
+		Transport: trans,
+		Timeout:   30 * time.Second,
+	}
+
+	return client, nil
 }

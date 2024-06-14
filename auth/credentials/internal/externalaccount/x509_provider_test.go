@@ -100,21 +100,9 @@ func TestRetrieveSubjectToken_X509(t *testing.T) {
 }
 
 func TestClient_Success(t *testing.T) {
-	opts := cloneTestOpts()
-	opts.CredentialSource = &credsfile.CredentialSource{
-		Certificate: &credsfile.CertificateConfig{
-			CertificateConfigLocation: "testdata/certificate_config_workload.json",
-		},
-	}
-
-	base, err := newSubjectTokenProvider(opts)
+	client, err := createX509Client("testdata/certificate_config_workload.json")
 	if err != nil {
-		t.Fatalf("newSubjectTokenProvider(): %v", err)
-	}
-
-	client, err := base.(*x509Provider).client()
-	if err != nil {
-		t.Fatalf("client(): %v", err)
+		t.Fatalf("createX509Client(): %v", err)
 	}
 
 	if client == nil {
@@ -123,19 +111,7 @@ func TestClient_Success(t *testing.T) {
 }
 
 func TestGetClient_error(t *testing.T) {
-	opts := cloneTestOpts()
-	opts.CredentialSource = &credsfile.CredentialSource{
-		Certificate: &credsfile.CertificateConfig{
-			CertificateConfigLocation: "testdata/bad_file.json",
-		},
-	}
-
-	base, err := newSubjectTokenProvider(opts)
-	if err != nil {
-		t.Fatalf("newSubjectTokenProvider(): %v", err)
-	}
-
-	if _, err = base.(*x509Provider).client(); err == nil {
+	if _, err := createX509Client("testdata/bad_file.json"); err == nil {
 		t.Errorf("got nil, want an error")
 	}
 }
