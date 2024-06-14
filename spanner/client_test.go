@@ -2195,6 +2195,29 @@ func TestClient_LockHintOptions(t *testing.T) {
 		})
 	}
 }
+func TestClient_ReadWriteTransaction_Query_ReadOptions(t *testing.T) {
+	for _, tt := range readOptionsTestCases() {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			defer teardown()
+
+			_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+				var iter *RowIterator
+				if tt.read == nil {
+					iter = tx.Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+				} else {
+					iter = tx.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, tt.read)
+				}
+				testReadOptions(t, iter, server.TestSpanner, *tt.want)
+				return nil
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
 
 func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
