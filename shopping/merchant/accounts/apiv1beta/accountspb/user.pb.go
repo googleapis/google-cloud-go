@@ -413,7 +413,7 @@ type ListUsersRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The parent, which owns this collection of users.
-	// Format: `accounts/{account}
+	// Format: `accounts/{account}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of users to return. The service may return
 	// fewer than this value. If unspecified, at most 50 users will be returned.
