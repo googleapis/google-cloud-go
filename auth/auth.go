@@ -314,7 +314,7 @@ func (c *cachedTokenProvider) tokenNonBlocking(ctx context.Context) (*Token, err
 		// chan. In order to return an err from tokenAsync, we would need to
 		// wait on chan and read its err. Instead, allow all requests during
 		// the refresh window to join serial attempts managed by singleflight.
-		//  If all fail, the Expired case should return the same error.
+		//  If all fail, the invalid case should return the same error.
 		c.tokenAsync(ctx)
 		// Return the stale token immediately to not block customer requests to Cloud services
 		c.mu.Lock()
