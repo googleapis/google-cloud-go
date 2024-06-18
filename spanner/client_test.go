@@ -3526,6 +3526,21 @@ func TestReadWriteTransaction_WrapSessionNotFoundError(t *testing.T) {
 	}
 }
 
+func TestStmtBasedReadWriteTransaction_SessionNotFoundError_shouldNotPanic(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
+		})
+	ctx := context.Background()
+	tx, _ := NewReadWriteStmtBasedTransaction(ctx, client)
+	_ = tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
+	// This would panic, as it could not refresh the session.
+	_, _ = tx.Commit(ctx)
+}
+
 func TestClient_WriteStructWithPointers(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
