@@ -18,6 +18,7 @@ package genai
 
 import (
 	"fmt"
+	"time"
 
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/civil"
@@ -82,6 +83,77 @@ func (v BlockedReason) String() string {
 		return n
 	}
 	return fmt.Sprintf("BlockedReason(%d)", v)
+}
+
+// CachedContent is a resource used in LLM queries for users to explicitly specify what to cache
+// and how to cache.
+type CachedContent struct {
+	// Expiration time of the cached content.
+	//
+	// Types that are assignable to Expiration:
+	//
+	//	*CachedContent_ExpireTime
+	//	*CachedContent_Ttl
+	Expiration ExpireTimeOrTTL
+	// Immutable. Identifier. The resource name of the cached content
+	// Format:
+	// projects/{project}/locations/{location}/cachedContents/{cached_content}
+	Name string
+	// Immutable. The name of the publisher model to use for cached content.
+	// Format:
+	// projects/{project}/locations/{location}/publishers/{publisher}/models/{model}
+	Model string
+	// Optional. Input only. Immutable. Developer set system instruction.
+	// Currently, text only
+	SystemInstruction *Content
+	// Optional. Input only. Immutable. The content to cache
+	Contents []*Content
+	// Optional. Input only. Immutable. A list of `Tools` the model may use to
+	// generate the next response
+	Tools []*Tool
+	// Optional. Input only. Immutable. Tool config. This config is shared for all
+	// tools
+	ToolConfig *ToolConfig
+	// Output only. Creatation time of the cache entry.
+	CreateTime time.Time
+	// Output only. When the cache entry was last updated in UTC time.
+	UpdateTime time.Time
+}
+
+func (v *CachedContent) toProto() *pb.CachedContent {
+	if v == nil {
+		return nil
+	}
+	p := &pb.CachedContent{
+		Name:              v.Name,
+		Model:             v.Model,
+		SystemInstruction: v.SystemInstruction.toProto(),
+		Contents:          support.TransformSlice(v.Contents, (*Content).toProto),
+		Tools:             support.TransformSlice(v.Tools, (*Tool).toProto),
+		ToolConfig:        v.ToolConfig.toProto(),
+		CreateTime:        support.TimeToProto(v.CreateTime),
+		UpdateTime:        support.TimeToProto(v.UpdateTime),
+	}
+	populateCachedContentTo(p, v)
+	return p
+}
+
+func (CachedContent) fromProto(p *pb.CachedContent) *CachedContent {
+	if p == nil {
+		return nil
+	}
+	v := &CachedContent{
+		Name:              p.Name,
+		Model:             p.Model,
+		SystemInstruction: (Content{}).fromProto(p.SystemInstruction),
+		Contents:          support.TransformSlice(p.Contents, (Content{}).fromProto),
+		Tools:             support.TransformSlice(p.Tools, (Tool{}).fromProto),
+		ToolConfig:        (ToolConfig{}).fromProto(p.ToolConfig),
+		CreateTime:        support.TimeFromProto(p.CreateTime),
+		UpdateTime:        support.TimeFromProto(p.UpdateTime),
+	}
+	populateCachedContentFrom(v, p)
+	return v
 }
 
 // Candidate is a response candidate generated from the model.
@@ -592,6 +664,14 @@ type GenerationConfig struct {
 	// otherwise the behavior is undefined.
 	// This is a preview feature.
 	ResponseMIMEType string
+	// Optional. The `Schema` object allows the definition of input and output
+	// data types. These types can be objects, but also primitives and arrays.
+	// Represents a select subset of an [OpenAPI 3.0 schema
+	// object](https://spec.openapis.org/oas/v3.0.3#schema).
+	// If set, a compatible response_mime_type must also be set.
+	// Compatible mimetypes:
+	// `application/json`: Schema for JSON response.
+	ResponseSchema *Schema
 }
 
 func (v *GenerationConfig) toProto() *pb.GenerationConfig {
@@ -608,6 +688,7 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		PresencePenalty:  v.PresencePenalty,
 		FrequencyPenalty: v.FrequencyPenalty,
 		ResponseMimeType: v.ResponseMIMEType,
+		ResponseSchema:   v.ResponseSchema.toProto(),
 	}
 }
 
@@ -625,6 +706,7 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		PresencePenalty:  p.PresencePenalty,
 		FrequencyPenalty: p.FrequencyPenalty,
 		ResponseMIMEType: p.ResponseMimeType,
+		ResponseSchema:   (Schema{}).fromProto(p.ResponseSchema),
 	}
 }
 

@@ -403,7 +403,8 @@ type Schedule_CreateModelMonitoringJobRequest struct {
 }
 
 type Schedule_CreateNotebookExecutionJobRequest struct {
-	// Request for [NotebookService.CreateNotebookExecutionJob][].
+	// Request for
+	// [NotebookService.CreateNotebookExecutionJob][google.cloud.aiplatform.v1beta1.NotebookService.CreateNotebookExecutionJob].
 	CreateNotebookExecutionJobRequest *CreateNotebookExecutionJobRequest `protobuf:"bytes,20,opt,name=create_notebook_execution_job_request,json=createNotebookExecutionJobRequest,proto3,oneof"`
 }
 

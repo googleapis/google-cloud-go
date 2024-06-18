@@ -153,6 +153,9 @@
         "deploy": {
             "component": "deploy"
         },
+        "developerconnect": {
+            "component": "developerconnect"
+        },
         "dialogflow": {
             "component": "dialogflow"
         },
@@ -266,6 +269,9 @@
         },
         "networksecurity": {
             "component": "networksecurity"
+        },
+        "networkservices": {
+            "component": "networkservices"
         },
         "notebooks": {
             "component": "notebooks"

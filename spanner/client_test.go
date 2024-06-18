@@ -874,6 +874,9 @@ func checkReqsForReadOptions(t *testing.T, server InMemSpannerServer, ro ReadOpt
 	if got, want := sqlReq.DirectedReadOptions, ro.DirectedReadOptions; got.String() != want.String() {
 		t.Fatalf("Directed Read Options mismatch, got %v, want %v", got, want)
 	}
+	if got, want := sqlReq.OrderBy, ro.OrderBy; got != want {
+		t.Fatalf("OrderBy mismatch, got %v, want %v", got, want)
+	}
 }
 
 func checkReqsForTransactionOptions(t *testing.T, server InMemSpannerServer, txo TransactionOptions) {
@@ -3471,6 +3474,21 @@ func TestReadWriteTransaction_WrapSessionNotFoundError(t *testing.T) {
 	}
 }
 
+func TestStmtBasedReadWriteTransaction_SessionNotFoundError_shouldNotPanic(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")},
+		})
+	ctx := context.Background()
+	tx, _ := NewReadWriteStmtBasedTransaction(ctx, client)
+	_ = tx.BufferWrite([]*Mutation{Update("my_table", []string{"key", "value"}, []interface{}{int64(1), "my-value"})})
+	// This would panic, as it could not refresh the session.
+	_, _ = tx.Commit(ctx)
+}
+
 func TestClient_WriteStructWithPointers(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -4436,20 +4454,26 @@ func readOptionsTestCases() []ReadOptionsTestCase {
 	return []ReadOptionsTestCase{
 		{
 			name:   "Client level",
-			client: &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
-			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			client: &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+		},
+		{
+			name:   "Client level has precendence when ORDER_BY_UNSPECIFIED at read level",
+			client: &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+			read:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
 		},
 		{
 			name:   "Read level",
 			client: &ReadOptions{},
-			read:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
-			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag"},
+			read:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+			want:   &ReadOptions{Index: "testIndex", Limit: 100, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "testRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
 		},
 		{
 			name:   "Read level has precedence than client level",
-			client: &ReadOptions{Index: "clientIndex", Limit: 10, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "clientRequestTag"},
-			read:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
-			want:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag"},
+			client: &ReadOptions{Index: "clientIndex", Limit: 10, Priority: sppb.RequestOptions_PRIORITY_LOW, RequestTag: "clientRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_NO_ORDER},
+			read:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_PRIMARY_KEY},
+			want:   &ReadOptions{Index: "readIndex", Limit: 20, Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "readRequestTag", OrderBy: sppb.ReadRequest_ORDER_BY_PRIMARY_KEY},
 		},
 	}
 }

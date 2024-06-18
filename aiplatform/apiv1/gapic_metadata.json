@@ -145,6 +145,11 @@
                 "UpdateDataset"
               ]
             },
+            "UpdateDatasetVersion": {
+              "methods": [
+                "UpdateDatasetVersion"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
@@ -2115,6 +2120,11 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateNotebookRuntimeTemplate": {
+              "methods": [
+                "UpdateNotebookRuntimeTemplate"
               ]
             },
             "UpgradeNotebookRuntime": {

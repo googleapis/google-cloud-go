@@ -2568,10 +2568,11 @@ type ProductServiceClient interface {
 	// updates are not marked as [done][google.longrunning.Operation.done] until
 	// they are obsolete.
 	SetInventory(ctx context.Context, in *SetInventoryRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// It is recommended to use the
+	// We recommend that you use the
 	// [ProductService.AddLocalInventories][google.cloud.retail.v2alpha.ProductService.AddLocalInventories]
-	// method instead of
-	// [ProductService.AddFulfillmentPlaces][google.cloud.retail.v2alpha.ProductService.AddFulfillmentPlaces].
+	// method instead of the
+	// [ProductService.AddFulfillmentPlaces][google.cloud.retail.v2alpha.ProductService.AddFulfillmentPlaces]
+	// method.
 	// [ProductService.AddLocalInventories][google.cloud.retail.v2alpha.ProductService.AddLocalInventories]
 	// achieves the same results but provides more fine-grained control over
 	// ingesting local inventory data.
@@ -2598,10 +2599,11 @@ type ProductServiceClient interface {
 	// updates will not be marked as [done][google.longrunning.Operation.done]
 	// until being obsolete.
 	AddFulfillmentPlaces(ctx context.Context, in *AddFulfillmentPlacesRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// It is recommended to use the
+	// We recommend that you use the
 	// [ProductService.RemoveLocalInventories][google.cloud.retail.v2alpha.ProductService.RemoveLocalInventories]
-	// method instead of
-	// [ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2alpha.ProductService.RemoveFulfillmentPlaces].
+	// method instead of the
+	// [ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2alpha.ProductService.RemoveFulfillmentPlaces]
+	// method.
 	// [ProductService.RemoveLocalInventories][google.cloud.retail.v2alpha.ProductService.RemoveLocalInventories]
 	// achieves the same results but provides more fine-grained control over
 	// ingesting local inventory data.
@@ -2890,10 +2892,11 @@ type ProductServiceServer interface {
 	// updates are not marked as [done][google.longrunning.Operation.done] until
 	// they are obsolete.
 	SetInventory(context.Context, *SetInventoryRequest) (*longrunningpb.Operation, error)
-	// It is recommended to use the
+	// We recommend that you use the
 	// [ProductService.AddLocalInventories][google.cloud.retail.v2alpha.ProductService.AddLocalInventories]
-	// method instead of
-	// [ProductService.AddFulfillmentPlaces][google.cloud.retail.v2alpha.ProductService.AddFulfillmentPlaces].
+	// method instead of the
+	// [ProductService.AddFulfillmentPlaces][google.cloud.retail.v2alpha.ProductService.AddFulfillmentPlaces]
+	// method.
 	// [ProductService.AddLocalInventories][google.cloud.retail.v2alpha.ProductService.AddLocalInventories]
 	// achieves the same results but provides more fine-grained control over
 	// ingesting local inventory data.
@@ -2920,10 +2923,11 @@ type ProductServiceServer interface {
 	// updates will not be marked as [done][google.longrunning.Operation.done]
 	// until being obsolete.
 	AddFulfillmentPlaces(context.Context, *AddFulfillmentPlacesRequest) (*longrunningpb.Operation, error)
-	// It is recommended to use the
+	// We recommend that you use the
 	// [ProductService.RemoveLocalInventories][google.cloud.retail.v2alpha.ProductService.RemoveLocalInventories]
-	// method instead of
-	// [ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2alpha.ProductService.RemoveFulfillmentPlaces].
+	// method instead of the
+	// [ProductService.RemoveFulfillmentPlaces][google.cloud.retail.v2alpha.ProductService.RemoveFulfillmentPlaces]
+	// method.
 	// [ProductService.RemoveLocalInventories][google.cloud.retail.v2alpha.ProductService.RemoveLocalInventories]
 	// achieves the same results but provides more fine-grained control over
 	// ingesting local inventory data.

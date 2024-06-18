@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "FirestoreAdminClient",
           "rpcs": {
+            "BulkDeleteDocuments": {
+              "methods": [
+                "BulkDeleteDocuments"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -150,6 +155,11 @@
         "rest": {
           "libraryClient": "FirestoreAdminClient",
           "rpcs": {
+            "BulkDeleteDocuments": {
+              "methods": [
+                "BulkDeleteDocuments"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"

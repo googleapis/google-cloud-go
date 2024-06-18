@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.0...shopping/v0.8.1) (2024-06-10)
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** Format comments in ListUsersRequest ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.7.0...shopping/v0.8.0) (2024-06-05)
+
+
+### Features
+
+* **shopping:** New client(s) ([#10313](https://github.com/googleapis/google-cloud-go/issues/10313)) ([b439b80](https://github.com/googleapis/google-cloud-go/commit/b439b80a7488ff6b3bce775b63f7923951ee5e1a))
+
+
+### Documentation
+
+* **shopping/merchant/accounts:** Mark `BusinessInfo.phone` as output only ([#10319](https://github.com/googleapis/google-cloud-go/issues/10319)) ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.6.0...shopping/v0.7.0) (2024-05-22)
 
 
