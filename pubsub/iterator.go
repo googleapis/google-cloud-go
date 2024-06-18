@@ -533,60 +533,11 @@ func (it *messageIterator) handleKeepAlives() {
 	it.checkDrained()
 }
 
-// sendAck is used to confirm acknowledgement of a message. If exactly once delivery is
-// enabled, we'll retry these messages for a short duration in a goroutine.
-func (it *messageIterator) sendAck(m map[string]*AckResult) {
-	ackIDs := make([]string, 0, len(m))
-	for k := range m {
-		ackIDs = append(ackIDs, k)
-	}
-	it.eoMu.RLock()
-	exactlyOnceDelivery := it.enableExactlyOnceDelivery
-	it.eoMu.RUnlock()
+type ackFunc = func(ctx context.Context, subName string, ackIds []string) error
+type ackRecordStat = func(ctx context.Context, toSend []string)
+type retryAckFunc = func(toRetry map[string]*ipubsub.AckResult)
 
-	batches := makeBatches(ackIDs, ackIDBatchSize)
-	wg := sync.WaitGroup{}
-	for _, batch := range batches {
-		wg.Add(1)
-		go func(toSend []string) {
-			defer wg.Done()
-			recordStat(it.ctx, AckCount, int64(len(toSend)))
-			addAcks(toSend)
-			// Use context.Background() as the call's context, not it.ctx. We don't
-			// want to cancel this RPC when the iterator is stopped.
-			cctx2, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
-			defer cancel2()
-			err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
-				Subscription: it.subName,
-				AckIds:       toSend,
-			})
-			if exactlyOnceDelivery {
-				resultsByAckID := make(map[string]*AckResult)
-				for _, ackID := range toSend {
-					resultsByAckID[ackID] = m[ackID]
-				}
-				st, md := extractMetadata(err)
-				_, toRetry := processResults(st, resultsByAckID, md)
-				if len(toRetry) > 0 {
-					// Retry acks in a separate goroutine.
-					go func() {
-						it.retryAcks(toRetry)
-					}()
-				}
-			}
-		}(batch)
-	}
-	wg.Wait()
-}
-
-// sendModAck is used to extend the lease of messages or nack them.
-// The receipt mod-ack amount is derived from a percentile distribution based
-// on the time it takes to process messages. The percentile chosen is the 99%th
-// percentile in order to capture the highest amount of time necessary without
-// considering 1% outliers. If the ModAck RPC fails and exactly once delivery is
-// enabled, we retry it in a separate goroutine for a short duration.
-func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration, logOnInvalid bool) {
-	deadlineSec := int32(deadline / time.Second)
+func (it *messageIterator) sendAckWithFunc(m map[string]*AckResult, ackFunc ackFunc, retryAckFunc retryAckFunc, ackRecordStat ackRecordStat) {
 	ackIDs := make([]string, 0, len(m))
 	for k := range m {
 		ackIDs = append(ackIDs, k)
@@ -601,21 +552,12 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 		wg.Add(1)
 		go func(toSend []string) {
 			defer wg.Done()
-			if deadline == 0 {
-				recordStat(it.ctx, NackCount, int64(len(toSend)))
-			} else {
-				recordStat(it.ctx, ModAckCount, int64(len(toSend)))
-			}
-			addModAcks(toSend, deadlineSec)
+			ackRecordStat(it.ctx, toSend)
 			// Use context.Background() as the call's context, not it.ctx. We don't
 			// want to cancel this RPC when the iterator is stopped.
 			cctx, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
 			defer cancel2()
-			err := it.subc.ModifyAckDeadline(cctx, &pb.ModifyAckDeadlineRequest{
-				Subscription:       it.subName,
-				AckDeadlineSeconds: deadlineSec,
-				AckIds:             toSend,
-			})
+			err := ackFunc(cctx, it.subName, toSend)
 			if exactlyOnceDelivery {
 				resultsByAckID := make(map[string]*AckResult)
 				for _, ackID := range toSend {
@@ -627,13 +569,53 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 				if len(toRetry) > 0 {
 					// Retry modacks/nacks in a separate goroutine.
 					go func() {
-						it.retryModAcks(toRetry, deadlineSec, logOnInvalid)
+						retryAckFunc(toRetry)
 					}()
 				}
 			}
 		}(batch)
 	}
 	wg.Wait()
+}
+
+// sendAck is used to confirm acknowledgement of a message. If exactly once delivery is
+// enabled, we'll retry these messages for a short duration in a goroutine.
+func (it *messageIterator) sendAck(m map[string]*AckResult) {
+	it.sendAckWithFunc(m, func(ctx context.Context, subName string, ackIds []string) error {
+		return it.subc.Acknowledge(ctx, &pb.AcknowledgeRequest{
+			Subscription: it.subName,
+			AckIds:       ackIds,
+		})
+	}, it.retryAcks, func(ctx context.Context, toSend []string) {
+		recordStat(it.ctx, AckCount, int64(len(toSend)))
+		addAcks(toSend)
+	})
+}
+
+// sendModAck is used to extend the lease of messages or nack them.
+// The receipt mod-ack amount is derived from a percentile distribution based
+// on the time it takes to process messages. The percentile chosen is the 99%th
+// percentile in order to capture the highest amount of time necessary without
+// considering 1% outliers. If the ModAck RPC fails and exactly once delivery is
+// enabled, we retry it in a separate goroutine for a short duration.
+func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Duration, logOnInvalid bool) {
+	deadlineSec := int32(deadline / time.Second)
+	it.sendAckWithFunc(m, func(ctx context.Context, subName string, ackIds []string) error {
+		return it.subc.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{
+			Subscription:       it.subName,
+			AckDeadlineSeconds: deadlineSec,
+			AckIds:             ackIds,
+		})
+	}, func(toRetry map[string]*ipubsub.AckResult) {
+		it.retryModAcks(toRetry, deadlineSec, logOnInvalid)
+	}, func(ctx context.Context, toSend []string) {
+		if deadline == 0 {
+			recordStat(it.ctx, NackCount, int64(len(toSend)))
+		} else {
+			recordStat(it.ctx, ModAckCount, int64(len(toSend)))
+		}
+		addModAcks(toSend, deadlineSec)
+	})
 }
 
 // retryAcks retries the ack RPC with backoff. This must be called in a goroutine
