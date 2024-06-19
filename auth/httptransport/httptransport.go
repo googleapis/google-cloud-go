@@ -21,7 +21,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	detect "cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
 )
@@ -33,7 +33,7 @@ type ClientCertProvider = func(*tls.CertificateRequestInfo) (*tls.Certificate, e
 
 // Options used to configure a [net/http.Client] from [NewClient].
 type Options struct {
-	// DisableTelemetry disables default telemetry (OpenCensus). An example
+	// DisableTelemetry disables default telemetry (OpenTelemetry). An example
 	// reason to do so would be to bind custom telemetry that overrides the
 	// defaults.
 	DisableTelemetry bool
@@ -44,21 +44,29 @@ type Options struct {
 	// Headers are extra HTTP headers that will be appended to every outgoing
 	// request.
 	Headers http.Header
+	// BaseRoundTripper overrides the base transport used for serving requests.
+	// If specified ClientCertProvider is ignored.
+	BaseRoundTripper http.RoundTripper
 	// Endpoint overrides the default endpoint to be used for a service.
 	Endpoint string
 	// APIKey specifies an API key to be used as the basis for authentication.
 	// If set DetectOpts are ignored.
 	APIKey string
-	// TokenProvider specifies the provider used to add Authorization header to
-	// all requests. If set DetectOpts are ignored.
-	TokenProvider auth.TokenProvider
+	// Credentials used to add Authorization header to all requests. If set
+	// DetectOpts are ignored.
+	Credentials *auth.Credentials
 	// ClientCertProvider is a function that returns a TLS client certificate to
 	// be used when opening TLS connections. It follows the same semantics as
 	// crypto/tls.Config.GetClientCertificate.
 	ClientCertProvider ClientCertProvider
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
-	DetectOpts *detect.Options
+	DetectOpts *detect.DetectOptions
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". This is the universe domain
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials.
+	UniverseDomain string
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.
@@ -69,8 +77,11 @@ func (o *Options) validate() error {
 	if o == nil {
 		return errors.New("httptransport: opts required to be non-nil")
 	}
+	if o.InternalOptions != nil && o.InternalOptions.SkipValidation {
+		return nil
+	}
 	hasCreds := o.APIKey != "" ||
-		o.TokenProvider != nil ||
+		o.Credentials != nil ||
 		(o.DetectOpts != nil && len(o.DetectOpts.CredentialsJSON) > 0) ||
 		(o.DetectOpts != nil && o.DetectOpts.CredentialsFile != "")
 	if o.DisableAuthentication && hasCreds {
@@ -88,7 +99,7 @@ func (o *Options) client() *http.Client {
 	return nil
 }
 
-func (o *Options) resolveDetectOptions() *detect.Options {
+func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 	io := o.InternalOptions
 	// soft-clone these so we are not updating a ref the user holds and may reuse
 	do := transport.CloneDetectOptions(o.DetectOpts)
@@ -118,30 +129,42 @@ type InternalOptions struct {
 	// DefaultAudience specifies a default audience to be used as the audience
 	// field ("aud") for the JWT token authentication.
 	DefaultAudience string
-	// DefaultEndpoint specifies the default endpoint.
-	DefaultEndpoint string
+	// DefaultEndpointTemplate combined with UniverseDomain specifies the
+	// default endpoint.
+	DefaultEndpointTemplate string
 	// DefaultMTLSEndpoint specifies the default mTLS endpoint.
 	DefaultMTLSEndpoint string
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
 	DefaultScopes []string
+	// SkipValidation bypasses validation on Options. It should only be used
+	// internally for clients that needs more control over their transport.
+	SkipValidation bool
 }
 
 // AddAuthorizationMiddleware adds a middleware to the provided client's
 // transport that sets the Authorization header with the value produced by the
-// provided [cloud.google.com/go/auth.TokenProvider]. An error is returned only
-// if client or tp is nil.
-func AddAuthorizationMiddleware(client *http.Client, tp auth.TokenProvider) error {
-	if client == nil || tp == nil {
+// provided [cloud.google.com/go/auth.Credentials]. An error is returned only
+// if client or creds is nil.
+func AddAuthorizationMiddleware(client *http.Client, creds *auth.Credentials) error {
+	if client == nil || creds == nil {
 		return fmt.Errorf("httptransport: client and tp must not be nil")
 	}
 	base := client.Transport
 	if base == nil {
-		base = http.DefaultTransport.(*http.Transport).Clone()
+		if dt, ok := http.DefaultTransport.(*http.Transport); ok {
+			base = dt.Clone()
+		} else {
+			// Directly reuse the DefaultTransport if the application has
+			// replaced it with an implementation of RoundTripper other than
+			// http.Transport.
+			base = http.DefaultTransport
+		}
 	}
 	client.Transport = &authTransport{
-		provider: auth.NewCachedTokenProvider(tp, nil),
-		base:     base,
+		creds: creds,
+		base:  base,
+		// TODO(quartzmo): Somehow set clientUniverseDomain from impersonate calls.
 	}
 	return nil
 }
@@ -158,16 +181,21 @@ func NewClient(opts *Options) (*http.Client, error) {
 		Endpoint:           opts.Endpoint,
 		ClientCertProvider: opts.ClientCertProvider,
 		Client:             opts.client(),
+		UniverseDomain:     opts.UniverseDomain,
 	}
 	if io := opts.InternalOptions; io != nil {
-		tOpts.DefaultEndpoint = io.DefaultEndpoint
+		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
 		tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
 	}
 	clientCertProvider, dialTLSContext, err := transport.GetHTTPTransportConfig(tOpts)
 	if err != nil {
 		return nil, err
 	}
-	trans, err := newTransport(defaultBaseTransport(clientCertProvider, dialTLSContext), opts)
+	baseRoundTripper := opts.BaseRoundTripper
+	if baseRoundTripper == nil {
+		baseRoundTripper = defaultBaseTransport(clientCertProvider, dialTLSContext)
+	}
+	trans, err := newTransport(baseRoundTripper, opts)
 	if err != nil {
 		return nil, err
 	}

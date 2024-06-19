@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/kms/apiv1",
-    "version": "1.15.7",
+    "version": "1.17.1",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,834 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "cloudkms_v1_generated_Autokey_CreateKeyHandle_sync",
+      "title": "cloudkms CreateKeyHandle Sample",
+      "description": "CreateKeyHandle creates a new [KeyHandle][google.cloud.kms.v1.KeyHandle], triggering the\nprovisioning of a new [CryptoKey][google.cloud.kms.v1.CryptoKey] for CMEK\nuse with the given resource type in the configured key project and the same\nlocation. [GetOperation][Operations.GetOperation] should be used to resolve\nthe resulting long-running operation and get the resulting\n[KeyHandle][google.cloud.kms.v1.KeyHandle] and\n[CryptoKey][google.cloud.kms.v1.CryptoKey].",
+      "file": "AutokeyClient/CreateKeyHandle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateKeyHandle",
+        "fullName": "google.cloud.kms.v1.AutokeyClient.CreateKeyHandle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.CreateKeyHandleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateKeyHandleOperation",
+        "client": {
+          "shortName": "AutokeyClient",
+          "fullName": "google.cloud.kms.v1.AutokeyClient"
+        },
+        "method": {
+          "shortName": "CreateKeyHandle",
+          "fullName": "google.cloud.kms.v1.Autokey.CreateKeyHandle",
+          "service": {
+            "shortName": "Autokey",
+            "fullName": "google.cloud.kms.v1.Autokey"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_Autokey_GetIamPolicy_sync",
+      "title": "cloudkms GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "AutokeyClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.kms.v1.AutokeyClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "AutokeyClient",
+          "fullName": "google.cloud.kms.v1.AutokeyClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_Autokey_GetKeyHandle_sync",
+      "title": "cloudkms GetKeyHandle Sample",
+      "description": "GetKeyHandle returns the [KeyHandle][google.cloud.kms.v1.KeyHandle].",
+      "file": "AutokeyClient/GetKeyHandle/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetKeyHandle",
+        "fullName": "google.cloud.kms.v1.AutokeyClient.GetKeyHandle",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.GetKeyHandleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.KeyHandle",
+        "client": {
+          "shortName": "AutokeyClient",
+          "fullName": "google.cloud.kms.v1.AutokeyClient"
+        },
+        "method": {
+          "shortName": "GetKeyHandle",
+          "fullName": "google.cloud.kms.v1.Autokey.GetKeyHandle",
+          "service": {
+            "shortName": "Autokey",
+            "fullName": "google.cloud.kms.v1.Autokey"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_Autokey_GetLocation_sync",
+      "title": "cloudkms GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "AutokeyClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.kms.v1.AutokeyClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "AutokeyClient",
+          "fullName": "google.cloud.kms.v1.AutokeyClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_Autokey_GetOperation_sync",
+      "title": "cloudkms GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AutokeyClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.kms.v1.AutokeyClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AutokeyClient",
+          "fullName": "google.cloud.kms.v1.AutokeyClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_Autokey_ListKeyHandles_sync",
+      "title": "cloudkms ListKeyHandles Sample",
+      "description": "ListKeyHandles lists [KeyHandles][google.cloud.kms.v1.KeyHandle].",
+      "file": "AutokeyClient/ListKeyHandles/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListKeyHandles",
+        "fullName": "google.cloud.kms.v1.AutokeyClient.ListKeyHandles",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.ListKeyHandlesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.ListKeyHandlesResponse",
+        "client": {
+          "shortName": "AutokeyClient",
+          "fullName": "google.cloud.kms.v1.AutokeyClient"
+        },
+        "method": {
+          "shortName": "ListKeyHandles",
+          "fullName": "google.cloud.kms.v1.Autokey.ListKeyHandles",
+          "service": {
+            "shortName": "Autokey",
+            "fullName": "google.cloud.kms.v1.Autokey"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_Autokey_ListLocations_sync",
+      "title": "cloudkms ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "AutokeyClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.kms.v1.AutokeyClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "AutokeyClient",
+          "fullName": "google.cloud.kms.v1.AutokeyClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_Autokey_SetIamPolicy_sync",
+      "title": "cloudkms SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "AutokeyClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.kms.v1.AutokeyClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "AutokeyClient",
+          "fullName": "google.cloud.kms.v1.AutokeyClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_Autokey_TestIamPermissions_sync",
+      "title": "cloudkms TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "AutokeyClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.kms.v1.AutokeyClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "AutokeyClient",
+          "fullName": "google.cloud.kms.v1.AutokeyClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_AutokeyAdmin_GetAutokeyConfig_sync",
+      "title": "cloudkms GetAutokeyConfig Sample",
+      "description": "GetAutokeyConfig returns the [AutokeyConfig][google.cloud.kms.v1.AutokeyConfig] for a\nfolder.",
+      "file": "AutokeyAdminClient/GetAutokeyConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAutokeyConfig",
+        "fullName": "google.cloud.kms.v1.AutokeyAdminClient.GetAutokeyConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.GetAutokeyConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.AutokeyConfig",
+        "client": {
+          "shortName": "AutokeyAdminClient",
+          "fullName": "google.cloud.kms.v1.AutokeyAdminClient"
+        },
+        "method": {
+          "shortName": "GetAutokeyConfig",
+          "fullName": "google.cloud.kms.v1.AutokeyAdmin.GetAutokeyConfig",
+          "service": {
+            "shortName": "AutokeyAdmin",
+            "fullName": "google.cloud.kms.v1.AutokeyAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_AutokeyAdmin_GetIamPolicy_sync",
+      "title": "cloudkms GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "AutokeyAdminClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.kms.v1.AutokeyAdminClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "AutokeyAdminClient",
+          "fullName": "google.cloud.kms.v1.AutokeyAdminClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_AutokeyAdmin_GetLocation_sync",
+      "title": "cloudkms GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "AutokeyAdminClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.kms.v1.AutokeyAdminClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "AutokeyAdminClient",
+          "fullName": "google.cloud.kms.v1.AutokeyAdminClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_AutokeyAdmin_GetOperation_sync",
+      "title": "cloudkms GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "AutokeyAdminClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.kms.v1.AutokeyAdminClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "AutokeyAdminClient",
+          "fullName": "google.cloud.kms.v1.AutokeyAdminClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_AutokeyAdmin_ListLocations_sync",
+      "title": "cloudkms ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "AutokeyAdminClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.kms.v1.AutokeyAdminClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "AutokeyAdminClient",
+          "fullName": "google.cloud.kms.v1.AutokeyAdminClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_AutokeyAdmin_SetIamPolicy_sync",
+      "title": "cloudkms SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "AutokeyAdminClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.kms.v1.AutokeyAdminClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "AutokeyAdminClient",
+          "fullName": "google.cloud.kms.v1.AutokeyAdminClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_AutokeyAdmin_ShowEffectiveAutokeyConfig_sync",
+      "title": "cloudkms ShowEffectiveAutokeyConfig Sample",
+      "description": "ShowEffectiveAutokeyConfig returns the effective Cloud KMS Autokey configuration for a given project.",
+      "file": "AutokeyAdminClient/ShowEffectiveAutokeyConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ShowEffectiveAutokeyConfig",
+        "fullName": "google.cloud.kms.v1.AutokeyAdminClient.ShowEffectiveAutokeyConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.ShowEffectiveAutokeyConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.ShowEffectiveAutokeyConfigResponse",
+        "client": {
+          "shortName": "AutokeyAdminClient",
+          "fullName": "google.cloud.kms.v1.AutokeyAdminClient"
+        },
+        "method": {
+          "shortName": "ShowEffectiveAutokeyConfig",
+          "fullName": "google.cloud.kms.v1.AutokeyAdmin.ShowEffectiveAutokeyConfig",
+          "service": {
+            "shortName": "AutokeyAdmin",
+            "fullName": "google.cloud.kms.v1.AutokeyAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_AutokeyAdmin_TestIamPermissions_sync",
+      "title": "cloudkms TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "AutokeyAdminClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.kms.v1.AutokeyAdminClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "AutokeyAdminClient",
+          "fullName": "google.cloud.kms.v1.AutokeyAdminClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudkms_v1_generated_AutokeyAdmin_UpdateAutokeyConfig_sync",
+      "title": "cloudkms UpdateAutokeyConfig Sample",
+      "description": "UpdateAutokeyConfig updates the [AutokeyConfig][google.cloud.kms.v1.AutokeyConfig] for a\nfolder. The caller must have both `cloudkms.autokeyConfigs.update`\npermission on the parent folder and `cloudkms.cryptoKeys.setIamPolicy`\npermission on the provided key project. A\n[KeyHandle][google.cloud.kms.v1.KeyHandle] creation in the folder's\ndescendant projects will use this configuration to determine where to\ncreate the resulting [CryptoKey][google.cloud.kms.v1.CryptoKey].",
+      "file": "AutokeyAdminClient/UpdateAutokeyConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAutokeyConfig",
+        "fullName": "google.cloud.kms.v1.AutokeyAdminClient.UpdateAutokeyConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "kmspb.UpdateAutokeyConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*kmspb.AutokeyConfig",
+        "client": {
+          "shortName": "AutokeyAdminClient",
+          "fullName": "google.cloud.kms.v1.AutokeyAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateAutokeyConfig",
+          "fullName": "google.cloud.kms.v1.AutokeyAdmin.UpdateAutokeyConfig",
+          "service": {
+            "shortName": "AutokeyAdmin",
+            "fullName": "google.cloud.kms.v1.AutokeyAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "cloudkms_v1_generated_EkmService_CreateEkmConnection_sync",
       "title": "cloudkms CreateEkmConnection Sample",
@@ -242,6 +1070,52 @@
       ]
     },
     {
+      "regionTag": "cloudkms_v1_generated_EkmService_GetOperation_sync",
+      "title": "cloudkms GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "EkmClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.kms.v1.EkmClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "EkmClient",
+          "fullName": "google.cloud.kms.v1.EkmClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudkms_v1_generated_EkmService_ListEkmConnections_sync",
       "title": "cloudkms ListEkmConnections Sample",
       "description": "ListEkmConnections lists [EkmConnections][google.cloud.kms.v1.EkmConnection].",
@@ -282,7 +1156,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -328,7 +1202,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1300,6 +2174,52 @@
       ]
     },
     {
+      "regionTag": "cloudkms_v1_generated_KeyManagementService_GetOperation_sync",
+      "title": "cloudkms GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "KeyManagementClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.kms.v1.KeyManagementClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "KeyManagementClient",
+          "fullName": "google.cloud.kms.v1.KeyManagementClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "cloudkms_v1_generated_KeyManagementService_GetPublicKey_sync",
       "title": "cloudkms GetPublicKey Sample",
       "description": "GetPublicKey returns the public key for the given\n[CryptoKeyVersion][google.cloud.kms.v1.CryptoKeyVersion]. The\n[CryptoKey.purpose][google.cloud.kms.v1.CryptoKey.purpose] must be\n[ASYMMETRIC_SIGN][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_SIGN]\nor\n[ASYMMETRIC_DECRYPT][google.cloud.kms.v1.CryptoKey.CryptoKeyPurpose.ASYMMETRIC_DECRYPT].",
@@ -1432,7 +2352,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1478,7 +2398,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1524,7 +2444,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1570,7 +2490,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1616,7 +2536,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

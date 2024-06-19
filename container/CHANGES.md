@@ -1,5 +1,73 @@
 # Changes
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.36.0...container/v1.37.0) (2024-06-12)
+
+
+### Features
+
+* **container:** Enable REST transport for google/container/v1 ([#10356](https://github.com/googleapis/google-cloud-go/issues/10356)) ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.35.1...container/v1.36.0) (2024-06-10)
+
+
+### Features
+
+* **container:** A new field `accelerators` is added to message `.google.container.v1.UpdateNodePoolRequest` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `additive_vpc_scope_dns_domain` is added to message `.google.container.v1.DNSConfig` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `containerd_config` is added to message `.google.container.v1.NodeConfig` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `containerd_config` is added to message `.google.container.v1.NodeConfigDefaults` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `containerd_config` is added to message `.google.container.v1.UpdateNodePoolRequest` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `desired_containerd_config` is added to message `.google.container.v1.ClusterUpdate` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `desired_node_kubelet_config` is added to message `.google.container.v1.ClusterUpdate` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `desired_node_pool_auto_config_kubelet_config` is added to message `.google.container.v1.ClusterUpdate` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `enable_nested_virtualization` is added to message `.google.container.v1.AdvancedMachineFeatures` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `hugepages` is added to message `.google.container.v1.LinuxNodeConfig` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `node_kubelet_config` is added to message `.google.container.v1.NodeConfigDefaults` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `node_kubelet_config` is added to message `.google.container.v1.NodePoolAutoConfig` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `satisfies_pzi` is added to message `.google.container.v1.Cluster` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new field `satisfies_pzs` is added to message `.google.container.v1.Cluster` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new message `ContainerdConfig` is added ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new message `HugepagesConfig` is added ([#10346](https://github.com/googleapis/google-cloud-go/issues/10346)) ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new method_signature `parent` is added to method `ListOperations` in service `ClusterManager` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new value `CADVISOR` is added to enum `Component` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new value `ENTERPRISE` is added to enum `Mode` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new value `KUBELET` is added to enum `Component` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A new value `MPS` is added to enum `GPUSharingStrategy` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
+
+### Documentation
+
+* **container:** A comment for field `desired_private_cluster_config` in message `.google.container.v1.ClusterUpdate` is changed ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+* **container:** A comment for field `in_transit_encryption_config` in message `.google.container.v1.NetworkConfig` is changed ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
+## [1.35.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.35.0...container/v1.35.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **container:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.34.0...container/v1.35.0) (2024-03-27)
+
+
+### Features
+
+* **container:** Add several fields to manage state of database encryption update ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.33.1...container/v1.34.0) (2024-03-25)
+
+
+### Features
+
+* **container:** Add optional secondary_boot_disk_update_strategy field to NodePool API ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+
+## [1.33.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.33.0...container/v1.33.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **container:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.32.0...container/v1.33.0) (2024-03-07)
 
 

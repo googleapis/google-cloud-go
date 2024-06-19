@@ -30,8 +30,8 @@ import (
 	"testing"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/grpc/codes"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	apiv1 "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/iterator"

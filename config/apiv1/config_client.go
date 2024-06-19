@@ -68,6 +68,8 @@ type CallOptions struct {
 	ListPreviews              []gax.CallOption
 	DeletePreview             []gax.CallOption
 	ExportPreviewResult       []gax.CallOption
+	ListTerraformVersions     []gax.CallOption
+	GetTerraformVersion       []gax.CallOption
 	GetLocation               []gax.CallOption
 	ListLocations             []gax.CallOption
 	GetIamPolicy              []gax.CallOption
@@ -116,6 +118,8 @@ func defaultCallOptions() *CallOptions {
 		ListPreviews:              []gax.CallOption{},
 		DeletePreview:             []gax.CallOption{},
 		ExportPreviewResult:       []gax.CallOption{},
+		ListTerraformVersions:     []gax.CallOption{},
+		GetTerraformVersion:       []gax.CallOption{},
 		GetLocation:               []gax.CallOption{},
 		ListLocations:             []gax.CallOption{},
 		GetIamPolicy:              []gax.CallOption{},
@@ -151,6 +155,8 @@ func defaultRESTCallOptions() *CallOptions {
 		ListPreviews:              []gax.CallOption{},
 		DeletePreview:             []gax.CallOption{},
 		ExportPreviewResult:       []gax.CallOption{},
+		ListTerraformVersions:     []gax.CallOption{},
+		GetTerraformVersion:       []gax.CallOption{},
 		GetLocation:               []gax.CallOption{},
 		ListLocations:             []gax.CallOption{},
 		GetIamPolicy:              []gax.CallOption{},
@@ -196,6 +202,8 @@ type internalClient interface {
 	DeletePreview(context.Context, *configpb.DeletePreviewRequest, ...gax.CallOption) (*DeletePreviewOperation, error)
 	DeletePreviewOperation(name string) *DeletePreviewOperation
 	ExportPreviewResult(context.Context, *configpb.ExportPreviewResultRequest, ...gax.CallOption) (*configpb.ExportPreviewResultResponse, error)
+	ListTerraformVersions(context.Context, *configpb.ListTerraformVersionsRequest, ...gax.CallOption) *TerraformVersionIterator
+	GetTerraformVersion(context.Context, *configpb.GetTerraformVersionRequest, ...gax.CallOption) (*configpb.TerraformVersion, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -399,6 +407,18 @@ func (c *Client) ExportPreviewResult(ctx context.Context, req *configpb.ExportPr
 	return c.internalClient.ExportPreviewResult(ctx, req, opts...)
 }
 
+// ListTerraformVersions lists TerraformVersions in a
+// given project and location.
+func (c *Client) ListTerraformVersions(ctx context.Context, req *configpb.ListTerraformVersionsRequest, opts ...gax.CallOption) *TerraformVersionIterator {
+	return c.internalClient.ListTerraformVersions(ctx, req, opts...)
+}
+
+// GetTerraformVersion gets details about a
+// TerraformVersion.
+func (c *Client) GetTerraformVersion(ctx context.Context, req *configpb.GetTerraformVersionRequest, opts ...gax.CallOption) (*configpb.TerraformVersion, error) {
+	return c.internalClient.GetTerraformVersion(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -544,7 +564,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -622,7 +644,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1131,6 +1155,70 @@ func (c *gRPCClient) ExportPreviewResult(ctx context.Context, req *configpb.Expo
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.ExportPreviewResult(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListTerraformVersions(ctx context.Context, req *configpb.ListTerraformVersionsRequest, opts ...gax.CallOption) *TerraformVersionIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListTerraformVersions[0:len((*c.CallOptions).ListTerraformVersions):len((*c.CallOptions).ListTerraformVersions)], opts...)
+	it := &TerraformVersionIterator{}
+	req = proto.Clone(req).(*configpb.ListTerraformVersionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*configpb.TerraformVersion, string, error) {
+		resp := &configpb.ListTerraformVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListTerraformVersions(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTerraformVersions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetTerraformVersion(ctx context.Context, req *configpb.GetTerraformVersionRequest, opts ...gax.CallOption) (*configpb.TerraformVersion, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetTerraformVersion[0:len((*c.CallOptions).GetTerraformVersion):len((*c.CallOptions).GetTerraformVersion)], opts...)
+	var resp *configpb.TerraformVersion
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetTerraformVersion(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -2825,6 +2913,163 @@ func (c *restClient) ExportPreviewResult(ctx context.Context, req *configpb.Expo
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListTerraformVersions lists TerraformVersions in a
+// given project and location.
+func (c *restClient) ListTerraformVersions(ctx context.Context, req *configpb.ListTerraformVersionsRequest, opts ...gax.CallOption) *TerraformVersionIterator {
+	it := &TerraformVersionIterator{}
+	req = proto.Clone(req).(*configpb.ListTerraformVersionsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*configpb.TerraformVersion, string, error) {
+		resp := &configpb.ListTerraformVersionsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/terraformVersions", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetTerraformVersions(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetTerraformVersion gets details about a
+// TerraformVersion.
+func (c *restClient) GetTerraformVersion(ctx context.Context, req *configpb.GetTerraformVersionRequest, opts ...gax.CallOption) (*configpb.TerraformVersion, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetTerraformVersion[0:len((*c.CallOptions).GetTerraformVersion):len((*c.CallOptions).GetTerraformVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &configpb.TerraformVersion{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}

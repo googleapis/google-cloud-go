@@ -36,7 +36,7 @@ go run ./internal/actions/cmd/changefinder -q -format=github
 go run ./internal/actions/cmd/changefinder -q -format=github -gh-var=foo
 ```
 
-## Example  using `-touch`
+## How to bump all changed modules for release using `-touch`
 
 The `-touch` flag is best used when attempting to generate nested commits for an
 already submitted change. For example, a GAPIC generator change touches every
@@ -51,10 +51,12 @@ using `changefinder`:
 3. checkout the commit just before the target commit: `git checkout <the commit just before>`
 4. "save" this to a branch : `git checkout -b base`
 5. checkout the changes: `git checkout changed`
-6. generate the nested commits + touch each module:
+6. generate the nested commits to stdout, and add a temporary blank line to each
+   module. release-please should clean up the blank lines later.
 ```
 go run ./internal/actions/cmd/changefinder -q \
   -format=commit \
+  -base=base \
   -commit-scope=fix \
   -commit-message="describe the change" \
   -touch
@@ -66,3 +68,6 @@ git checkout main && \
   git commit -a -m 'chore: bump changed modules' && \
   git push
 ```
+8. create a PR in GitHub from your branch.
+9. copy/paste the nested commit messages from stdout to the description of your
+   GitHub PR.

@@ -1,5 +1,19 @@
 # Changes
 
+## [2.8.2](https://github.com/googleapis/google-cloud-go/compare/vision/v2.8.1...vision/v2.8.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **vision:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [2.8.1](https://github.com/googleapis/google-cloud-go/compare/vision/v2.8.0...vision/v2.8.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **vision:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [2.8.0](https://github.com/googleapis/google-cloud-go/compare/vision/v2.7.6...vision/v2.8.0) (2024-02-09)
 
 

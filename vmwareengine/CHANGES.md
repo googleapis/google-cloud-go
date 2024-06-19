@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.1.2...vmwareengine/v1.1.3) (2024-05-01)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.1.1...vmwareengine/v1.1.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **vmwareengine:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/vmwareengine/v1.1.0...vmwareengine/v1.1.1) (2024-01-30)
 
 

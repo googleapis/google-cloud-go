@@ -19,6 +19,7 @@ package cx
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -404,7 +405,9 @@ func (c *sessionsGRPCClient) Connection() *grpc.ClientConn {
 func (c *sessionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -469,7 +472,9 @@ func defaultSessionsRESTClientOptions() []option.ClientOption {
 func (c *sessionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -899,7 +904,7 @@ func (c *serverStreamingDetectIntentRESTClient) Trailer() metadata.MD {
 
 func (c *serverStreamingDetectIntentRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *serverStreamingDetectIntentRESTClient) Context() context.Context {
@@ -908,12 +913,12 @@ func (c *serverStreamingDetectIntentRESTClient) Context() context.Context {
 
 func (c *serverStreamingDetectIntentRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *serverStreamingDetectIntentRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // StreamingDetectIntent processes a natural language query in audio format in a streaming fashion
@@ -926,7 +931,7 @@ func (c *serverStreamingDetectIntentRESTClient) RecvMsg(m interface{}) error {
 //
 // This method is not supported for the REST transport.
 func (c *sessionsRESTClient) StreamingDetectIntent(ctx context.Context, opts ...gax.CallOption) (cxpb.Sessions_StreamingDetectIntentClient, error) {
-	return nil, fmt.Errorf("StreamingDetectIntent not yet supported for REST clients")
+	return nil, errors.New("StreamingDetectIntent not yet supported for REST clients")
 }
 
 // MatchIntent returns preliminary intent match results, doesn’t change the session

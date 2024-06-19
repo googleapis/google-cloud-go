@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/monitoring/apiv3/v2",
-    "version": "1.18.0",
+    "version": "1.19.0",
     "language": "GO",
     "apis": [
       {
@@ -189,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -418,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -464,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -518,7 +518,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_CreateMetricDescriptor_sync",
       "title": "monitoring CreateMetricDescriptor Sample",
-      "description": "CreateMetricDescriptor creates a new metric descriptor.\nThe creation is executed asynchronously and callers may check the returned\noperation to track its progress.\nUser-created metric descriptors define\n[custom metrics](https: //cloud.google.com/monitoring/custom-metrics).",
+      "description": "CreateMetricDescriptor creates a new metric descriptor.\nThe creation is executed asynchronously.\nUser-created metric descriptors define\n[custom metrics](https: //cloud.google.com/monitoring/custom-metrics).\nThe metric descriptor is updated if it already exists,\nexcept that metric labels are never removed.",
       "file": "MetricClient/CreateMetricDescriptor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -609,7 +609,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_CreateTimeSeries_sync",
       "title": "monitoring CreateTimeSeries Sample",
-      "description": "CreateTimeSeries creates or adds data to one or more time series.\nThe response is empty if all time series in the request were written.\nIf any time series could not be written, a corresponding failure message is\nincluded in the error response.",
+      "description": "CreateTimeSeries creates or adds data to one or more time series.\nThe response is empty if all time series in the request were written.\nIf any time series could not be written, a corresponding failure message is\nincluded in the error response.\nThis method does not support\n[resource locations constraint of an organization\npolicy](https: //cloud.google.com/resource-manager/docs/organization-policy/defining-locations#setting_the_organization_policy).",
       "file": "MetricClient/CreateTimeSeries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -699,7 +699,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_GetMetricDescriptor_sync",
       "title": "monitoring GetMetricDescriptor Sample",
-      "description": "GetMetricDescriptor gets a single metric descriptor. This method does not require a Workspace.",
+      "description": "GetMetricDescriptor gets a single metric descriptor.",
       "file": "MetricClient/GetMetricDescriptor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -745,7 +745,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_GetMonitoredResourceDescriptor_sync",
       "title": "monitoring GetMonitoredResourceDescriptor Sample",
-      "description": "GetMonitoredResourceDescriptor gets a single monitored resource descriptor. This method does not require a Workspace.",
+      "description": "GetMonitoredResourceDescriptor gets a single monitored resource descriptor.",
       "file": "MetricClient/GetMonitoredResourceDescriptor/main.go",
       "language": "GO",
       "clientMethod": {
@@ -791,7 +791,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_ListMetricDescriptors_sync",
       "title": "monitoring ListMetricDescriptors Sample",
-      "description": "ListMetricDescriptors lists metric descriptors that match a filter. This method does not require a Workspace.",
+      "description": "ListMetricDescriptors lists metric descriptors that match a filter.",
       "file": "MetricClient/ListMetricDescriptors/main.go",
       "language": "GO",
       "clientMethod": {
@@ -829,7 +829,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -837,7 +837,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_ListMonitoredResourceDescriptors_sync",
       "title": "monitoring ListMonitoredResourceDescriptors Sample",
-      "description": "ListMonitoredResourceDescriptors lists monitored resource descriptors that match a filter. This method does not require a Workspace.",
+      "description": "ListMonitoredResourceDescriptors lists monitored resource descriptors that match a filter.",
       "file": "MetricClient/ListMonitoredResourceDescriptors/main.go",
       "language": "GO",
       "clientMethod": {
@@ -875,7 +875,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -883,7 +883,7 @@
     {
       "regionTag": "monitoring_v3_generated_MetricService_ListTimeSeries_sync",
       "title": "monitoring ListTimeSeries Sample",
-      "description": "ListTimeSeries lists time series that match a filter. This method does not require a Workspace.",
+      "description": "ListTimeSeries lists time series that match a filter.",
       "file": "MetricClient/ListTimeSeries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -921,7 +921,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1196,7 +1196,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1242,7 +1242,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1387,7 +1387,7 @@
     {
       "regionTag": "monitoring_v3_generated_QueryService_QueryTimeSeries_sync",
       "title": "monitoring QueryTimeSeries Sample",
-      "description": "QueryTimeSeries queries time series using Monitoring Query Language. This method does not require a Workspace.",
+      "description": "QueryTimeSeries queries time series using Monitoring Query Language.",
       "file": "QueryClient/QueryTimeSeries/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1425,7 +1425,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1745,7 +1745,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1753,7 +1753,7 @@
     {
       "regionTag": "monitoring_v3_generated_ServiceMonitoringService_ListServices_sync",
       "title": "monitoring ListServices Sample",
-      "description": "ListServices list `Service`s for this workspace.",
+      "description": "ListServices list `Service`s for this Metrics Scope.",
       "file": "ServiceMonitoringClient/ListServices/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1791,7 +1791,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2021,7 +2021,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2250,7 +2250,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2296,7 +2296,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

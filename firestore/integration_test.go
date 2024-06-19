@@ -33,7 +33,6 @@ import (
 
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
 	"cloud.google.com/go/firestore/apiv1/admin/adminpb"
-	firestorev1 "cloud.google.com/go/firestore/apiv1/firestorepb"
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
@@ -133,13 +132,13 @@ func initIntegrationTest() {
 	iClient = c
 	iColl = c.Collection(collectionIDs.New())
 
-	adminC, err := apiv1.NewFirestoreAdminClient(ctx, option.WithTokenSource(ts))
+	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	adminC, err := apiv1.NewFirestoreAdminClient(adminCtx, option.WithTokenSource(ts))
 	if err != nil {
 		log.Fatalf("NewFirestoreAdminClient: %v", err)
 	}
 	iAdminClient = adminC
-
-	createIndexes(ctx, wantDBPath)
 
 	refDoc := iColl.NewDoc()
 	integrationTestMap["ref"] = refDoc
@@ -151,13 +150,7 @@ func initIntegrationTest() {
 // Indexes are required to run queries with composite filters on multiple fields.
 // Without indexes, FailedPrecondition rpc error is seen with
 // desc 'The query requires multiple indexes'.
-func createIndexes(ctx context.Context, dbPath string) {
-
-	indexFields := [][]string{
-		{"updatedAt", "weight", "height"},
-		{"weight", "height"},
-		{"width", "depth"},
-		{"width", "model"}}
+func createIndexes(ctx context.Context, dbPath string, indexFields [][]string) {
 	indexNames = make([]string, len(indexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
@@ -198,7 +191,7 @@ func handleCreateIndexResp(ctx context.Context, wg *sync.WaitGroup, i int, op *a
 	defer wg.Done()
 	createdIndex, waitErr := op.Wait(ctx)
 	if waitErr != nil {
-		log.Fatalf("Wait: %v", waitErr)
+		log.Fatalf("CreateIndexes failed. Wait: %v", waitErr)
 	}
 	indexNames[i] = createdIndex.Name
 }
@@ -300,8 +293,11 @@ func deleteDocument(ctx context.Context, docRef *DocumentRef, bulkwriter *BulkWr
 
 func cleanupIntegrationTest() {
 	if iClient != nil {
+		adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+		defer cancel()
+		deleteIndexes(adminCtx)
+
 		ctx := context.Background()
-		deleteIndexes(ctx)
 		deleteCollection(ctx, iColl)
 		iClient.Close()
 	}
@@ -871,6 +867,14 @@ func TestIntegration_WriteBatch(t *testing.T) {
 func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
+
+	indexFields := [][]string{
+		{"updatedAt", "weight", "height"},
+		{"weight", "height"}}
+	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	createIndexes(adminCtx, wantDBPath, indexFields)
+
 	h := testHelper{t}
 	nowTime := time.Now()
 	todayTime := nowTime.Unix()
@@ -1095,8 +1099,6 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 			t.Errorf("#%d %v: %+v: got %d docs, want %d", i, test.desc, test.q, len(gotDocs), len(test.want))
 			continue
 		}
-
-		fmt.Printf("test.want: %+v\n", test.want)
 
 		docsEqual := true
 		docsNotEqualErr := ""
@@ -2458,34 +2460,46 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	client := integrationClient(t)
+
+	indexFields := [][]string{
+		{"weight", "model"}}
+	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	createIndexes(adminCtx, wantDBPath, indexFields)
+
 	h := testHelper{t}
 	docs := []map[string]interface{}{
-		{"width": 1.5, "depth": 99, "model": "A"},
-		{"width": 2.6, "depth": 98, "model": "A"},
-		{"width": 3.7, "depth": 97, "model": "B"},
-		{"width": 4.8, "depth": 96, "model": "B"},
-		{"width": 5.9, "depth": 95, "model": "C"},
-		{"width": 6.0, "depth": 94, "model": "B"},
-		{"width": 7.1, "depth": 93, "model": "C"},
-		{"width": 8.2, "depth": 93, "model": "A"},
+		{"weight": 1.5, "height": 99, "model": "A"},
+		{"weight": 2.6, "height": 98, "model": "A"},
+		{"weight": 3.7, "height": 97, "model": "B"},
+		{"weight": 4.8, "height": 96, "model": "B"},
+		{"weight": 5.9, "height": 95, "model": "C"},
+		{"weight": 6.0, "height": 94, "model": "B"},
+		{"weight": 7.1, "height": 93, "model": "C"},
+		{"weight": 8.2, "height": 93, "model": "A"},
 	}
+	docRefs := []*DocumentRef{}
 	for _, doc := range docs {
 		newDoc := coll.NewDoc()
+		docRefs = append(docRefs, newDoc)
 		h.mustCreate(newDoc, doc)
 	}
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 
-	query := coll.Where("width", ">=", 1)
+	query := coll.Where("weight", ">=", 1)
 
-	limitQuery := coll.Where("width", ">=", 1).Limit(4)
-	limitToLastQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).LimitToLast(4)
+	limitQuery := coll.Where("weight", ">=", 1).Limit(4)
+	limitToLastQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).LimitToLast(4)
 
-	startAtQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).StartAt(3.7)
-	startAfterQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).StartAfter(3.7)
+	startAtQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).StartAt(3.7)
+	startAfterQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).StartAfter(3.7)
 
-	endAtQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).EndAt(7.1)
-	endBeforeQuery := coll.Where("width", ">=", 2.6).OrderBy("width", Asc).EndBefore(7.1)
+	endAtQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).EndAt(7.1)
+	endBeforeQuery := coll.Where("weight", ">=", 2.6).OrderBy("weight", Asc).EndBefore(7.1)
 
-	emptyResultsQuery := coll.Where("width", "<", 1)
+	emptyResultsQuery := coll.Where("weight", "<", 1)
 	emptyResultsQueryPtr := &emptyResultsQuery
 
 	testcases := []struct {
@@ -2497,32 +2511,32 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}{
 		{
 			desc:             "Multiple aggregations",
-			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("width", "width_avg1").WithAvg("depth", "depth_avg1").WithSum("width", "width_sum1").WithSum("depth", "depth_sum1"),
+			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("height", "height_avg1").WithSum("weight", "weight_sum1").WithSum("height", "height_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
-				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
-				"depth_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
-				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
-				"depth_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
 			},
 		},
 		{
 			desc:             "Aggregations in transaction",
-			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("width", "width_avg1").WithAvg("depth", "depth_avg1").WithSum("width", "width_sum1").WithSum("depth", "depth_sum1"),
+			aggregationQuery: query.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithAvg("height", "height_avg1").WithSum("weight", "weight_sum1").WithSum("height", "height_sum1"),
 			wantErr:          false,
 			runInTransaction: true,
 			result: map[string]interface{}{
-				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
-				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
-				"depth_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
-				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
-				"depth_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(8)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
+				"height_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(765)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
+				"height_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(95.625)}},
 			},
 		},
 		{
 			desc:             "WithSum aggregation without alias",
-			aggregationQuery: query.NewAggregationQuery().WithSum("width", ""),
+			aggregationQuery: query.NewAggregationQuery().WithSum("weight", ""),
 			wantErr:          false,
 			result: map[string]interface{}{
 				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
@@ -2530,7 +2544,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:             "WithSumPath aggregation without alias",
-			aggregationQuery: query.NewAggregationQuery().WithSumPath([]string{"width"}, ""),
+			aggregationQuery: query.NewAggregationQuery().WithSumPath([]string{"weight"}, ""),
 			wantErr:          false,
 			result: map[string]interface{}{
 				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(39.8)}},
@@ -2538,7 +2552,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:             "WithAvg aggregation without alias",
-			aggregationQuery: query.NewAggregationQuery().WithAvg("width", ""),
+			aggregationQuery: query.NewAggregationQuery().WithAvg("weight", ""),
 			wantErr:          false,
 			result: map[string]interface{}{
 				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
@@ -2546,7 +2560,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:             "WithAvgPath aggregation without alias",
-			aggregationQuery: query.NewAggregationQuery().WithAvgPath([]string{"width"}, ""),
+			aggregationQuery: query.NewAggregationQuery().WithAvgPath([]string{"weight"}, ""),
 			wantErr:          false,
 			result: map[string]interface{}{
 				"field_1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.975)}},
@@ -2554,72 +2568,72 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		},
 		{
 			desc:             "Aggregations with limit",
-			aggregationQuery: (&limitQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			aggregationQuery: (&limitQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
-				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
-				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(12.6)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(3.15)}},
 			},
 		},
 		{
 			desc:             "Aggregations with StartAt",
-			aggregationQuery: (&startAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			aggregationQuery: (&startAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
-				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(35.7)}},
-				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.95)}},
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(35.7)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.95)}},
 			},
 		},
 		{
 			desc:             "Aggregations with StartAfter",
-			aggregationQuery: (&startAfterQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			aggregationQuery: (&startAfterQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
-				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(32)}},
-				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.4)}},
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(32)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.4)}},
 			},
 		},
 		{
 			desc:             "Aggregations with EndAt",
-			aggregationQuery: (&endAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			aggregationQuery: (&endAtQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
-				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(30.1)}},
-				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.016666666666667)}},
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(6)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(30.1)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(5.016666666666667)}},
 			},
 		},
 		{
 			desc:             "Aggregations with EndBefore",
-			aggregationQuery: (&endBeforeQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			aggregationQuery: (&endBeforeQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
-				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(23)}},
-				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.6)}},
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(5)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(23)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(4.6)}},
 			},
 		},
 		{
 			desc:             "Aggregations with LimitToLast",
-			aggregationQuery: (&limitToLastQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"width"}, "width_avg1").WithSumPath([]string{"width"}, "width_sum1"),
+			aggregationQuery: (&limitToLastQuery).NewAggregationQuery().WithCount("count1").WithAvgPath([]string{"weight"}, "weight_avg1").WithSumPath([]string{"weight"}, "weight_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
-				"width_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(27.2)}},
-				"width_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.8)}},
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(4)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(27.2)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(6.8)}},
 			},
 		},
 		{
 			desc:             "Aggregations on empty results",
-			aggregationQuery: emptyResultsQueryPtr.NewAggregationQuery().WithCount("count1").WithAvg("width", "width_avg1").WithSum("width", "width_sum1"),
+			aggregationQuery: emptyResultsQueryPtr.NewAggregationQuery().WithCount("count1").WithAvg("weight", "weight_avg1").WithSum("weight", "weight_sum1"),
 			wantErr:          false,
 			result: map[string]interface{}{
-				"count1":     &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
-				"width_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
-				"width_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
+				"count1":      &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"weight_sum1": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(0)}},
+				"weight_avg1": &pb.Value{ValueType: &pb.Value_NullValue{NullValue: structpb.NullValue_NULL_VALUE}},
 			},
 		},
 		{
@@ -2710,7 +2724,7 @@ func TestIntegration_CountAggregationQuery(t *testing.T) {
 	if !ok {
 		t.Errorf("key %s not in response %v", alias, ar)
 	}
-	cv := count.(*firestorev1.Value)
+	cv := count.(*pb.Value)
 	if cv.GetIntegerValue() != 2 {
 		t.Errorf("COUNT aggregation query mismatch;\ngot: %d, want: %d", cv.GetIntegerValue(), 2)
 	}

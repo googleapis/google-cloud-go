@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkebackup/apiv1",
-    "version": "1.3.5",
+    "version": "1.5.0",
     "language": "GO",
     "apis": [
       {
@@ -516,6 +516,52 @@
       ]
     },
     {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetBackupIndexDownloadUrl_sync",
+      "title": "gkebackup GetBackupIndexDownloadUrl Sample",
+      "description": "GetBackupIndexDownloadUrl retrieve the link to the backupIndex.",
+      "file": "BackupForGKEClient/GetBackupIndexDownloadUrl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupIndexDownloadUrl",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetBackupIndexDownloadUrl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetBackupIndexDownloadUrlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkebackuppb.GetBackupIndexDownloadUrlResponse",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetBackupIndexDownloadUrl",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetBackupIndexDownloadUrl",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "gkebackup_v1_generated_BackupForGKE_GetBackupPlan_sync",
       "title": "gkebackup GetBackupPlan Sample",
       "description": "GetBackupPlan retrieve the details of a single BackupPlan.",
@@ -924,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -970,7 +1016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1016,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1062,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1108,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1154,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1200,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1246,7 +1292,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

@@ -1,6 +1,39 @@
 # Changes
 
 
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.18.1...deploy/v1.19.0) (2024-05-16)
+
+
+### Features
+
+* **deploy:** Add Skaffold verbose support to Execution Environment properties ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.18.0...deploy/v1.18.1) (2024-05-08)
+
+
+### Documentation
+
+* **deploy:** Small corrections to Cloud Deploy API documentation ([ae42f23](https://github.com/googleapis/google-cloud-go/commit/ae42f23f586ad76b058066a66c1566e4fef23692))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.17.2...deploy/v1.18.0) (2024-05-01)
+
+
+### Features
+
+* **deploy:** Add Skaffold remote config support for GCB repos ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **deploy:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.17.1...deploy/v1.17.2) (2024-03-14)
+
+
+### Bug Fixes
+
+* **deploy:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.17.0...deploy/v1.17.1) (2024-01-30)
 
 

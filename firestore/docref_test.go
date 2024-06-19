@@ -53,7 +53,7 @@ func TestDocGet(t *testing.T) {
 		Documents: []string{path},
 	}, []interface{}{
 		&pb.BatchGetDocumentsResponse{
-			Result:   &pb.BatchGetDocumentsResponse_Found{pdoc},
+			Result:   &pb.BatchGetDocumentsResponse_Found{Found: pdoc},
 			ReadTime: aTimestamp2,
 		},
 	})
@@ -81,7 +81,7 @@ func TestDocGet(t *testing.T) {
 			Documents: []string{path2},
 		}, []interface{}{
 			&pb.BatchGetDocumentsResponse{
-				Result:   &pb.BatchGetDocumentsResponse_Missing{path2},
+				Result:   &pb.BatchGetDocumentsResponse_Missing{Missing: path2},
 				ReadTime: aTimestamp3,
 			},
 		})
@@ -164,7 +164,7 @@ func TestDocCreate(t *testing.T) {
 						},
 					},
 					CurrentDocument: &pb.Precondition{
-						ConditionType: &pb.Precondition_Exists{false},
+						ConditionType: &pb.Precondition_Exists{Exists: false},
 					},
 				},
 			},
@@ -186,7 +186,7 @@ func TestDocDelete(t *testing.T) {
 		&pb.CommitRequest{
 			Database: "projects/projectID/databases/(default)",
 			Writes: []*pb.Write{
-				{Operation: &pb.Write_Delete{"projects/projectID/databases/(default)/documents/C/d"}},
+				{Operation: &pb.Write_Delete{Delete: "projects/projectID/databases/(default)/documents/C/d"}},
 			},
 		},
 		&pb.CommitResponse{

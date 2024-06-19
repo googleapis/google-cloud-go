@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/dataplex/apiv1",
-    "version": "1.14.2",
+    "version": "1.16.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,1292 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_CancelOperation_sync",
+      "title": "dataplex CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CatalogClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_CreateAspectType_sync",
+      "title": "dataplex CreateAspectType Sample",
+      "description": "CreateAspectType creates an AspectType",
+      "file": "CatalogClient/CreateAspectType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAspectType",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CreateAspectType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateAspectTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateAspectTypeOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CreateAspectType",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CreateAspectType",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_CreateEntry_sync",
+      "title": "dataplex CreateEntry Sample",
+      "description": "CreateEntry creates an Entry.",
+      "file": "CatalogClient/CreateEntry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEntry",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CreateEntry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateEntryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.Entry",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CreateEntry",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CreateEntry",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_CreateEntryGroup_sync",
+      "title": "dataplex CreateEntryGroup Sample",
+      "description": "CreateEntryGroup creates an EntryGroup",
+      "file": "CatalogClient/CreateEntryGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEntryGroup",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CreateEntryGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateEntryGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEntryGroupOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CreateEntryGroup",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CreateEntryGroup",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_CreateEntryType_sync",
+      "title": "dataplex CreateEntryType Sample",
+      "description": "CreateEntryType creates an EntryType",
+      "file": "CatalogClient/CreateEntryType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateEntryType",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.CreateEntryType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.CreateEntryTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateEntryTypeOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "CreateEntryType",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.CreateEntryType",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_DeleteAspectType_sync",
+      "title": "dataplex DeleteAspectType Sample",
+      "description": "DeleteAspectType deletes a AspectType resource.",
+      "file": "CatalogClient/DeleteAspectType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAspectType",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.DeleteAspectType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteAspectTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteAspectTypeOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "DeleteAspectType",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.DeleteAspectType",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_DeleteEntry_sync",
+      "title": "dataplex DeleteEntry Sample",
+      "description": "DeleteEntry deletes an Entry.",
+      "file": "CatalogClient/DeleteEntry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEntry",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.DeleteEntry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteEntryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.Entry",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "DeleteEntry",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.DeleteEntry",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_DeleteEntryGroup_sync",
+      "title": "dataplex DeleteEntryGroup Sample",
+      "description": "DeleteEntryGroup deletes a EntryGroup resource.",
+      "file": "CatalogClient/DeleteEntryGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEntryGroup",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.DeleteEntryGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteEntryGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEntryGroupOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "DeleteEntryGroup",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.DeleteEntryGroup",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_DeleteEntryType_sync",
+      "title": "dataplex DeleteEntryType Sample",
+      "description": "DeleteEntryType deletes a EntryType resource.",
+      "file": "CatalogClient/DeleteEntryType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteEntryType",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.DeleteEntryType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.DeleteEntryTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteEntryTypeOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "DeleteEntryType",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.DeleteEntryType",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_DeleteOperation_sync",
+      "title": "dataplex DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "CatalogClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetAspectType_sync",
+      "title": "dataplex GetAspectType Sample",
+      "description": "GetAspectType retrieves a AspectType resource.",
+      "file": "CatalogClient/GetAspectType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAspectType",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetAspectType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetAspectTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.AspectType",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetAspectType",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.GetAspectType",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetEntry_sync",
+      "title": "dataplex GetEntry Sample",
+      "description": "GetEntry gets a single entry.",
+      "file": "CatalogClient/GetEntry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEntry",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetEntry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetEntryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.Entry",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetEntry",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.GetEntry",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetEntryGroup_sync",
+      "title": "dataplex GetEntryGroup Sample",
+      "description": "GetEntryGroup retrieves a EntryGroup resource.",
+      "file": "CatalogClient/GetEntryGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEntryGroup",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetEntryGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetEntryGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.EntryGroup",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetEntryGroup",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.GetEntryGroup",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetEntryType_sync",
+      "title": "dataplex GetEntryType Sample",
+      "description": "GetEntryType retrieves a EntryType resource.",
+      "file": "CatalogClient/GetEntryType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEntryType",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetEntryType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GetEntryTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.EntryType",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetEntryType",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.GetEntryType",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetLocation_sync",
+      "title": "dataplex GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "CatalogClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_GetOperation_sync",
+      "title": "dataplex GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CatalogClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_ListAspectTypes_sync",
+      "title": "dataplex ListAspectTypes Sample",
+      "description": "ListAspectTypes lists AspectType resources in a project and location.",
+      "file": "CatalogClient/ListAspectTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAspectTypes",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.ListAspectTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListAspectTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AspectTypeIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "ListAspectTypes",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.ListAspectTypes",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_ListEntries_sync",
+      "title": "dataplex ListEntries Sample",
+      "description": "ListEntries lists entries within an entry group.",
+      "file": "CatalogClient/ListEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEntries",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.ListEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListEntriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EntryIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "ListEntries",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.ListEntries",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_ListEntryGroups_sync",
+      "title": "dataplex ListEntryGroups Sample",
+      "description": "ListEntryGroups lists EntryGroup resources in a project and location.",
+      "file": "CatalogClient/ListEntryGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEntryGroups",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.ListEntryGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListEntryGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EntryGroupIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "ListEntryGroups",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.ListEntryGroups",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_ListEntryTypes_sync",
+      "title": "dataplex ListEntryTypes Sample",
+      "description": "ListEntryTypes lists EntryType resources in a project and location.",
+      "file": "CatalogClient/ListEntryTypes/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListEntryTypes",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.ListEntryTypes",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.ListEntryTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "EntryTypeIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "ListEntryTypes",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.ListEntryTypes",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_ListLocations_sync",
+      "title": "dataplex ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CatalogClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_ListOperations_sync",
+      "title": "dataplex ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CatalogClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_LookupEntry_sync",
+      "title": "dataplex LookupEntry Sample",
+      "description": "LookupEntry looks up a single entry.",
+      "file": "CatalogClient/LookupEntry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "LookupEntry",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.LookupEntry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.LookupEntryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.Entry",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "LookupEntry",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.LookupEntry",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_SearchEntries_sync",
+      "title": "dataplex SearchEntries Sample",
+      "description": "SearchEntries searches for entries matching given query and scope.",
+      "file": "CatalogClient/SearchEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SearchEntries",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.SearchEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.SearchEntriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SearchEntriesResultIterator",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "SearchEntries",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.SearchEntries",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_UpdateAspectType_sync",
+      "title": "dataplex UpdateAspectType Sample",
+      "description": "UpdateAspectType updates a AspectType resource.",
+      "file": "CatalogClient/UpdateAspectType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAspectType",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.UpdateAspectType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateAspectTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateAspectTypeOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "UpdateAspectType",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.UpdateAspectType",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_UpdateEntry_sync",
+      "title": "dataplex UpdateEntry Sample",
+      "description": "UpdateEntry updates an Entry.",
+      "file": "CatalogClient/UpdateEntry/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEntry",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.UpdateEntry",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateEntryRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.Entry",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "UpdateEntry",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.UpdateEntry",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_UpdateEntryGroup_sync",
+      "title": "dataplex UpdateEntryGroup Sample",
+      "description": "UpdateEntryGroup updates a EntryGroup resource.",
+      "file": "CatalogClient/UpdateEntryGroup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEntryGroup",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.UpdateEntryGroup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateEntryGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEntryGroupOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "UpdateEntryGroup",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.UpdateEntryGroup",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "dataplex_v1_generated_CatalogService_UpdateEntryType_sync",
+      "title": "dataplex UpdateEntryType Sample",
+      "description": "UpdateEntryType updates a EntryType resource.",
+      "file": "CatalogClient/UpdateEntryType/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEntryType",
+        "fullName": "google.cloud.dataplex.v1.CatalogClient.UpdateEntryType",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.UpdateEntryTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateEntryTypeOperation",
+        "client": {
+          "shortName": "CatalogClient",
+          "fullName": "google.cloud.dataplex.v1.CatalogClient"
+        },
+        "method": {
+          "shortName": "UpdateEntryType",
+          "fullName": "google.cloud.dataplex.v1.CatalogService.UpdateEntryType",
+          "service": {
+            "shortName": "CatalogService",
+            "fullName": "google.cloud.dataplex.v1.CatalogService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "dataplex_v1_generated_ContentService_CancelOperation_sync",
       "title": "dataplex CancelOperation Sample",
@@ -417,7 +1703,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -463,7 +1749,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -509,7 +1795,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -835,6 +2121,52 @@
       ]
     },
     {
+      "regionTag": "dataplex_v1_generated_DataScanService_GenerateDataQualityRules_sync",
+      "title": "dataplex GenerateDataQualityRules Sample",
+      "description": "GenerateDataQualityRules generates recommended DataQualityRule from a data profiling DataScan.",
+      "file": "DataScanClient/GenerateDataQualityRules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GenerateDataQualityRules",
+        "fullName": "google.cloud.dataplex.v1.DataScanClient.GenerateDataQualityRules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "dataplexpb.GenerateDataQualityRulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*dataplexpb.GenerateDataQualityRulesResponse",
+        "client": {
+          "shortName": "DataScanClient",
+          "fullName": "google.cloud.dataplex.v1.DataScanClient"
+        },
+        "method": {
+          "shortName": "GenerateDataQualityRules",
+          "fullName": "google.cloud.dataplex.v1.DataScanService.GenerateDataQualityRules",
+          "service": {
+            "shortName": "DataScanService",
+            "fullName": "google.cloud.dataplex.v1.DataScanService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "dataplex_v1_generated_DataScanService_GetDataScan_sync",
       "title": "dataplex GetDataScan Sample",
       "description": "GetDataScan gets a DataScan resource.",
@@ -1059,7 +2391,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1105,7 +2437,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1151,7 +2483,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1197,7 +2529,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1931,7 +3263,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1977,7 +3309,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2023,7 +3355,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2069,7 +3401,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2115,7 +3447,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3262,7 +4594,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3308,7 +4640,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3354,7 +4686,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3400,7 +4732,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3446,7 +4778,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3492,7 +4824,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3538,7 +4870,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3584,7 +4916,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3630,7 +4962,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3676,7 +5008,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3722,7 +5054,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3768,7 +5100,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4546,7 +5878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4592,7 +5924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4638,7 +5970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4684,7 +6016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

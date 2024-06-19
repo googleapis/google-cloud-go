@@ -1,5 +1,38 @@
 # Changes
 
+## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.23.0...bigtable/v1.24.0) (2024-05-28)
+
+
+### Features
+
+* **bigtable:** Add ignore_warnings flag to SetGcPolicy ([#9372](https://github.com/googleapis/google-cloud-go/issues/9372)) ([0e6413d](https://github.com/googleapis/google-cloud-go/commit/0e6413db32f2a27269602fa88afa762abdb837c0))
+* **bigtable:** Adding automated backups ([#9702](https://github.com/googleapis/google-cloud-go/issues/9702)) ([9738386](https://github.com/googleapis/google-cloud-go/commit/9738386b1b0cf7e490e1bdc0b16d791d5e88b249))
+
+
+### Bug Fixes
+
+* **bigtable/bttest:** Error when applying a mutation with an empty row key ([#9512](https://github.com/googleapis/google-cloud-go/issues/9512)) ([7231423](https://github.com/googleapis/google-cloud-go/commit/723142310912d729b20138d9af40d2aeea826838))
+* **bigtable:** Reject misspecified Automated Backup Policies when updating a table ([#10226](https://github.com/googleapis/google-cloud-go/issues/10226)) ([84e45ce](https://github.com/googleapis/google-cloud-go/commit/84e45cee7eef2576c6832e658d59ffa749688fbd))
+* **bigtable:** Retry on RST_STREAM error ([#9673](https://github.com/googleapis/google-cloud-go/issues/9673)) ([d4da4a5](https://github.com/googleapis/google-cloud-go/commit/d4da4a5a4a5838f0f4edaf3fe9c6d1fde355f782))
+
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.22.0...bigtable/v1.23.0) (2024-04-29)
+
+
+### Features
+
+* **bigtable/spanner:** Remove grpclb ([#9186](https://github.com/googleapis/google-cloud-go/issues/9186)) ([480f9a0](https://github.com/googleapis/google-cloud-go/commit/480f9a0ea8e159299dd3f909e2c0d8b5e771c580))
+* **bigtable:** Allow non-default service account in DirectPath ([#9040](https://github.com/googleapis/google-cloud-go/issues/9040)) ([c2df09c](https://github.com/googleapis/google-cloud-go/commit/c2df09c32808e7dab35ca5084e80e0b9c6c0e6f8))
+* **bigtable:** Support AuthorizedView in data and admin client ([#9515](https://github.com/googleapis/google-cloud-go/issues/9515)) ([8259645](https://github.com/googleapis/google-cloud-go/commit/8259645be0d9e635a41944788f2e65d2b52c4dbb))
+
+
+### Bug Fixes
+
+* **bigtable:** Accept nil RowSet to read all rows ([#9327](https://github.com/googleapis/google-cloud-go/issues/9327)) ([cd36506](https://github.com/googleapis/google-cloud-go/commit/cd36506d377d2d5199402a58360c23ba4ce9a3d4))
+* **bigtable:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **bigtable:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **bigtable:** Resolve DeadlineExceeded conformance test failures ([#9688](https://github.com/googleapis/google-cloud-go/issues/9688)) ([54d2990](https://github.com/googleapis/google-cloud-go/commit/54d2990c5cd66e274279a1534844e1c4018dd5f5))
+* **bigtable:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.21.0...bigtable/v1.22.0) (2024-03-11)
 
 

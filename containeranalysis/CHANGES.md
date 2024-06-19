@@ -1,5 +1,19 @@
 # Changes
 
+## [0.11.6](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.5...containeranalysis/v0.11.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [0.11.5](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.4...containeranalysis/v0.11.5) (2024-03-14)
+
+
+### Bug Fixes
+
+* **containeranalysis:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [0.11.4](https://github.com/googleapis/google-cloud-go/compare/containeranalysis/v0.11.3...containeranalysis/v0.11.4) (2024-01-30)
 
 

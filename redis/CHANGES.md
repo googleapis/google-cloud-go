@@ -1,5 +1,40 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.15.0...redis/v1.16.0) (2024-06-05)
+
+
+### Features
+
+* **redis/cluster:** [Memorystore for Redis Cluster] Add persistence support ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **redis/cluster:** [Memorystore for Redis Cluster] Add support for different node types ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **redis/cluster:** [Memorystore for Redis Cluster] Get details of certificate authority from redis cluster ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+
+### Documentation
+
+* **redis/cluster:** [Memorystore for Redis Cluster] size_gb field shows the size of the cluster rounded up to the next integer, precise_size_gb field will show the exact size of the cluster ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.4...redis/v1.15.0) (2024-05-16)
+
+
+### Features
+
+* **redis/cluster:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+## [1.14.4](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.3...redis/v1.14.4) (2024-05-01)
+
+
+### Bug Fixes
+
+* **redis:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.2...redis/v1.14.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* **redis:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.1...redis/v1.14.2) (2024-01-30)
 
 

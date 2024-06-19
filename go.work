@@ -23,6 +23,7 @@ use (
 	./auth
 	./auth/oauth2adapt
 	./automl
+	./backupdr
 	./baremetalsolution
 	./batch
 	./beyondcorp
@@ -32,6 +33,7 @@ use (
 	./binaryauthorization
 	./certificatemanager
 	./channel
+	./chat
 	./cloudbuild
 	./cloudcontrolspartner
 	./clouddms
@@ -57,6 +59,7 @@ use (
 	./datastore
 	./datastream
 	./deploy
+	./developerconnect
 	./dialogflow
 	./discoveryengine
 	./dlp
@@ -78,6 +81,7 @@ use (
 	./gsuiteaddons
 	./iam
 	./iap
+	./identitytoolkit
 	./ids
 	./internal/actions
 	./internal/aliasfix
@@ -97,6 +101,7 @@ use (
 	./logging
 	./longrunning
 	./managedidentities
+	./managedkafka
 	./maps
 	./mediatranslation
 	./memcache
@@ -107,6 +112,7 @@ use (
 	./networkconnectivity
 	./networkmanagement
 	./networksecurity
+	./networkservices
 	./notebooks
 	./optimization
 	./orchestration
@@ -151,6 +157,7 @@ use (
 	./storage/internal/benchmarks
 	./storageinsights
 	./storagetransfer
+	./streetview
 	./support
 	./talent
 	./telcoautomation

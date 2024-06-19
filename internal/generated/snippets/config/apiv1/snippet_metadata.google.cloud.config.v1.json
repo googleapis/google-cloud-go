@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/config/apiv1",
-    "version": "0.2.1",
+    "version": "1.0.0",
     "language": "GO",
     "apis": [
       {
@@ -837,6 +837,52 @@
       ]
     },
     {
+      "regionTag": "config_v1_generated_Config_GetTerraformVersion_sync",
+      "title": "config GetTerraformVersion Sample",
+      "description": "GetTerraformVersion gets details about a\n[TerraformVersion][google.cloud.config.v1.TerraformVersion].",
+      "file": "Client/GetTerraformVersion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTerraformVersion",
+        "fullName": "google.cloud.config.v1.Client.GetTerraformVersion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.GetTerraformVersionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*configpb.TerraformVersion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "GetTerraformVersion",
+          "fullName": "google.cloud.config.v1.Config.GetTerraformVersion",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "config_v1_generated_Config_ImportStatefile_sync",
       "title": "config ImportStatefile Sample",
       "description": "ImportStatefile imports Terraform state file in a given deployment. The state file does not\ntake effect until the Deployment has been unlocked.",
@@ -923,7 +969,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -969,7 +1015,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1015,7 +1061,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1061,7 +1107,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1107,7 +1153,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1153,7 +1199,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "config_v1_generated_Config_ListTerraformVersions_sync",
+      "title": "config ListTerraformVersions Sample",
+      "description": "ListTerraformVersions lists [TerraformVersion][google.cloud.config.v1.TerraformVersion]s in a\ngiven project and location.",
+      "file": "Client/ListTerraformVersions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTerraformVersions",
+        "fullName": "google.cloud.config.v1.Client.ListTerraformVersions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "configpb.ListTerraformVersionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TerraformVersionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.config.v1.Client"
+        },
+        "method": {
+          "shortName": "ListTerraformVersions",
+          "fullName": "google.cloud.config.v1.Config.ListTerraformVersions",
+          "service": {
+            "shortName": "Config",
+            "fullName": "google.cloud.config.v1.Config"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]

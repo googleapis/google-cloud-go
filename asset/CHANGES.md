@@ -1,5 +1,26 @@
 # Changes
 
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.19.0...asset/v1.19.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **asset:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.18.1...asset/v1.19.0) (2024-04-15)
+
+
+### Features
+
+* **asset:** Add tag key id support ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.18.0...asset/v1.18.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **asset:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.17.2...asset/v1.18.0) (2024-03-07)
 
 

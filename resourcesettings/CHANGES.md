@@ -1,5 +1,26 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.6.7...resourcesettings/v1.7.0) (2024-06-05)
+
+
+### Features
+
+* **resourcesettings:** Resource Settings is deprecated. As of November 7, 2023, no organizations will be onboarded for any of the enabled settings, and the service will be shut down on October 1, 2024 ([#10300](https://github.com/googleapis/google-cloud-go/issues/10300)) ([6015637](https://github.com/googleapis/google-cloud-go/commit/6015637c97c205a5811cea64be51676b3dcf16d8))
+
+## [1.6.7](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.6.6...resourcesettings/v1.6.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **resourcesettings:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.6.6](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.6.5...resourcesettings/v1.6.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **resourcesettings:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.6.5](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.6.4...resourcesettings/v1.6.5) (2024-01-30)
 
 

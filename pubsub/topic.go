@@ -39,6 +39,7 @@ import (
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -125,6 +126,17 @@ type PublishSettings struct {
 
 	// FlowControlSettings defines publisher flow control settings.
 	FlowControlSettings FlowControlSettings
+
+	// EnableCompression enables transport compression for Publish operations
+	EnableCompression bool
+
+	// CompressionBytesThreshold defines the threshold (in bytes) above which messages
+	// are compressed for transport. Only takes effect if EnableCompression is true.
+	CompressionBytesThreshold int
+}
+
+func (ps *PublishSettings) shouldCompress(batchSize int) bool {
+	return ps.EnableCompression && batchSize > ps.CompressionBytesThreshold
 }
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
@@ -142,6 +154,10 @@ var DefaultPublishSettings = PublishSettings{
 		MaxOutstandingBytes:    -1,
 		LimitExceededBehavior:  FlowControlIgnore,
 	},
+	// Publisher compression defaults matches Java's defaults
+	// https://github.com/googleapis/java-pubsub/blob/7d33e7891db1b2e32fd523d7655b6c11ea140a8b/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/Publisher.java#L717-L718
+	EnableCompression:         false,
+	CompressionBytesThreshold: 240,
 }
 
 // CreateTopic creates a new topic.
@@ -951,13 +967,14 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("topic.publishMessageBundle"))
 		defer pSpan.End()
 	}
-
+	var batchSize int
 	for i, bm := range bms {
 		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
+		batchSize = batchSize + proto.Size(pbMsgs[i])
 		bm.msg = nil // release bm.msg for GC
 	}
 
@@ -974,11 +991,17 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			opt.Resolve(&settings)
 		}
 		r := &publishRetryer{defaultRetryer: settings.Retry()}
+		gaxOpts := []gax.CallOption{
+			gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
+			gax.WithRetry(func() gax.Retryer { return r }),
+		}
+		if t.PublishSettings.shouldCompress(batchSize) {
+			gaxOpts = append(gaxOpts, gax.WithGRPCOptions(grpc.UseCompressor(gzip.Name)))
+		}
 		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
-		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)),
-			gax.WithRetry(func() gax.Retryer { return r }))
+		}, gaxOpts...)
 	}
 	end := time.Now()
 	if err != nil {

@@ -17,12 +17,14 @@ package grpctransport
 import (
 	"context"
 	"errors"
+	"log"
 	"net"
 	"testing"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	echo "cloud.google.com/go/auth/grpctransport/testdata"
+	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -81,14 +83,16 @@ func TestDial_FailsValidation(t *testing.T) {
 			name: "has creds with disable options, tp",
 			opts: &Options{
 				DisableAuthentication: true,
-				TokenProvider:         staticTP("fakeToken"),
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
+				}),
 			},
 		},
 		{
 			name: "has creds with disable options, cred file",
 			opts: &Options{
 				DisableAuthentication: true,
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsFile: "abc.123",
 				},
 			},
@@ -97,7 +101,7 @@ func TestDial_FailsValidation(t *testing.T) {
 			name: "has creds with disable options, cred json",
 			opts: &Options{
 				DisableAuthentication: true,
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsJSON: []byte(`{"foo":"bar"}`),
 				},
 			},
@@ -113,21 +117,42 @@ func TestDial_FailsValidation(t *testing.T) {
 	}
 }
 
+func TestDial_SkipValidation(t *testing.T) {
+	opts := &Options{
+		DisableAuthentication: true,
+		Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
+		}),
+	}
+	t.Run("invalid opts", func(t *testing.T) {
+		if err := opts.validate(); err == nil {
+			t.Fatalf("opts.validate() = nil, want error")
+		}
+	})
+
+	t.Run("skip invalid opts", func(t *testing.T) {
+		opts.InternalOptions = &InternalOptions{SkipValidation: true}
+		if err := opts.validate(); err != nil {
+			t.Fatalf("opts.validate() = %v, want nil", err)
+		}
+	})
+}
+
 func TestOptions_ResolveDetectOptions(t *testing.T) {
 	tests := []struct {
 		name string
 		in   *Options
-		want *detect.Options
+		want *credentials.DetectOptions
 	}{
 		{
 			name: "base",
 			in: &Options{
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Scopes:          []string{"scope"},
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:          []string{"scope"},
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -138,12 +163,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 				InternalOptions: &InternalOptions{
 					EnableJWTWithScope: true,
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Scopes:          []string{"scope"},
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:           []string{"scope"},
 				CredentialsFile:  "/path/to/a/file",
 				UseSelfSignedJWT: true,
@@ -152,12 +177,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 		{
 			name: "self-signed, with aud",
 			in: &Options{
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Audience:        "aud",
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Audience:         "aud",
 				CredentialsFile:  "/path/to/a/file",
 				UseSelfSignedJWT: true,
@@ -170,11 +195,11 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 					DefaultScopes:   []string{"default"},
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:          []string{"default"},
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -186,12 +211,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 					DefaultScopes:   []string{"default"},
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Scopes:          []string{"non-default"},
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:          []string{"non-default"},
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -203,12 +228,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 					DefaultScopes:   []string{"default"},
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Audience:        "non-default",
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Audience:         "non-default",
 				CredentialsFile:  "/path/to/a/file",
 				UseSelfSignedJWT: true,
@@ -220,11 +245,11 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 				InternalOptions: &InternalOptions{
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Audience:        "default",
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -240,10 +265,77 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 	}
 }
 
+func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
+	nonDefault := "example.com"
+	tests := []struct {
+		name           string
+		universeDomain string
+		want           string
+	}{
+		{
+			name:           "default",
+			universeDomain: "",
+			want:           internal.DefaultUniverseDomain,
+		},
+		{
+			name:           "non-default",
+			universeDomain: nonDefault,
+			want:           nonDefault,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			at := &grpcCredentialsProvider{clientUniverseDomain: tt.universeDomain}
+			got := at.getClientUniverseDomain()
+			if got != tt.want {
+				t.Errorf("got %q, want %q", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestGrpcCredentialsProvider_TokenType(t *testing.T) {
+	tests := []struct {
+		name string
+		tok  *auth.Token
+		want string
+	}{
+		{
+			name: "type set",
+			tok: &auth.Token{
+				Value: "token",
+				Type:  "Basic",
+			},
+			want: "Basic token",
+		},
+		{
+			name: "type set",
+			tok: &auth.Token{
+				Value: "token",
+			},
+			want: "Bearer token",
+		},
+	}
+	for _, tc := range tests {
+		cp := grpcCredentialsProvider{
+			creds: &auth.Credentials{
+				TokenProvider: &staticTP{tok: tc.tok},
+			},
+		}
+		m, err := cp.GetRequestMetadata(context.Background(), "")
+		if err != nil {
+			log.Fatalf("cp.GetRequestMetadata() = %v, want nil", err)
+		}
+		if got := m["authorization"]; got != tc.want {
+			t.Fatalf("got %q, want %q", got, tc.want)
+		}
+	}
+}
+
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	l, err := net.Listen("tcp", "localhost:0")
 	if err != nil {
 		t.Fatal(err)
@@ -278,14 +370,15 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	pool, err := Dial(context.Background(), false, &Options{
 		Metadata: map[string]string{"Foo": wantHeader},
 		InternalOptions: &InternalOptions{
-			DefaultEndpoint: l.Addr().String(),
+			DefaultEndpointTemplate: l.Addr().String(),
 		},
-		DetectOpts: &detect.Options{
+		DetectOpts: &credentials.DetectOptions{
 			Audience:         l.Addr().String(),
-			CredentialsFile:  "../internal/testdata/sa.json",
+			CredentialsFile:  "../internal/testdata/sa_universe_domain.json",
 			UseSelfSignedJWT: true,
 		},
-		GRPCDialOpts: []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+		GRPCDialOpts:   []grpc.DialOption{grpc.WithTransportCredentials(insecure.NewCredentials())},
+		UniverseDomain: "example.com", // Also configured in sa_universe_domain.json
 	})
 	if err != nil {
 		t.Fatalf("NewClient() = %v", err)
@@ -296,12 +389,12 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	}
 }
 
-type staticTP string
+type staticTP struct {
+	tok *auth.Token
+}
 
-func (tp staticTP) Token(context.Context) (*auth.Token, error) {
-	return &auth.Token{
-		Value: string(tp),
-	}, nil
+func (tp *staticTP) Token(context.Context) (*auth.Token, error) {
+	return tp.tok, nil
 }
 
 type fakeEchoService struct {

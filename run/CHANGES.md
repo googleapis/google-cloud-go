@@ -1,6 +1,21 @@
 # Changelog
 
 
+## [1.3.7](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.6...run/v1.3.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **run:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **run:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.3.6](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.5...run/v1.3.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **run:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.3.5](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.4...run/v1.3.5) (2024-03-07)
 
 

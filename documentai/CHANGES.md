@@ -1,6 +1,60 @@
 # Changes
 
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.29.0...documentai/v1.30.0) (2024-06-05)
+
+
+### Features
+
+* **documentai:** Make Layout Parser generally available in V1 ([#10286](https://github.com/googleapis/google-cloud-go/issues/10286)) ([92dc381](https://github.com/googleapis/google-cloud-go/commit/92dc381da281197567a2c9eb8dc941292000a3da))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.28.1...documentai/v1.29.0) (2024-05-29)
+
+
+### Features
+
+* **documentai:** Make Layout Parser generally available in V1 ([#10277](https://github.com/googleapis/google-cloud-go/issues/10277)) ([dafecc9](https://github.com/googleapis/google-cloud-go/commit/dafecc9f28a6b028889c8cefb352e50f60563a4e))
+
+## [1.28.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.28.0...documentai/v1.28.1) (2024-05-16)
+
+
+### Documentation
+
+* **documentai:** Clarify the unavailability of some features ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+* **documentai:** Updated comments ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.27.0...documentai/v1.28.0) (2024-05-01)
+
+
+### Features
+
+* **documentai:** A new message `FoundationModelTuningOptions` is added ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **documentai:** Support Chunk header and footer in Doc AI external proto ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **documentai:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.26.1...documentai/v1.27.0) (2024-04-15)
+
+
+### Features
+
+* **documentai:** Support a new Layout Processor in Document AI ([2cdc40a](https://github.com/googleapis/google-cloud-go/commit/2cdc40a0b4288f5ab5f2b2b8f5c1d6453a9c81ec))
+
+## [1.26.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.26.0...documentai/v1.26.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **documentai:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **documentai:** A comment for field `processor_version_source` in message `.google.cloud.documentai.v1beta3.ImportProcessorVersionRequest` is changed ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
 ## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.25.0...documentai/v1.26.0) (2024-02-21)
 
 

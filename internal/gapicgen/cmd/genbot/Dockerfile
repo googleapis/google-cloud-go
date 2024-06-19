@@ -1,4 +1,4 @@
-FROM golang:1.21-alpine as godist
+FROM golang:1.22-alpine as godist
 RUN go version
 
 FROM docker:25.0

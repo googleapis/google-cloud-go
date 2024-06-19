@@ -1,6 +1,38 @@
 # Changes
 
 
+## [2.13.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.12.0...recaptchaenterprise/v2.13.0) (2024-05-01)
+
+
+### Features
+
+* **recaptchaenterprise:** Add Fraud Prevention settings field ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **recaptchaenterprise:** Add Fraud Prevention settings field ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+
+### Documentation
+
+* **recaptchaenterprise:** Fixed the description of ListFirewallPoliciesResponse ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+## [2.12.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.11.1...recaptchaenterprise/v2.12.0) (2024-03-25)
+
+
+### Features
+
+* **recaptchaenterprise:** Existing resource_reference option of the field name is removed from message `google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMemberShip` ([94f9463](https://github.com/googleapis/google-cloud-go/commit/94f9463f890ed886622ee65edfbc4b5ecdfa97f8))
+
+## [2.11.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.11.0...recaptchaenterprise/v2.11.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [2.11.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.10.0...recaptchaenterprise/v2.11.0) (2024-03-07)
 
 

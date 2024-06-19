@@ -580,12 +580,18 @@ func (c *Client) InitializeZone(ctx context.Context, req *edgenetworkpb.Initiali
 	return c.internalClient.InitializeZone(ctx, req, opts...)
 }
 
-// ListZones lists Zones in a given project and location.
+// ListZones deprecated: not implemented.
+// Lists Zones in a given project and location.
+//
+// Deprecated: ListZones may be removed in a future version.
 func (c *Client) ListZones(ctx context.Context, req *edgenetworkpb.ListZonesRequest, opts ...gax.CallOption) *ZoneIterator {
 	return c.internalClient.ListZones(ctx, req, opts...)
 }
 
-// GetZone gets details of a single Zone.
+// GetZone deprecated: not implemented.
+// Gets details of a single Zone.
+//
+// Deprecated: GetZone may be removed in a future version.
 func (c *Client) GetZone(ctx context.Context, req *edgenetworkpb.GetZoneRequest, opts ...gax.CallOption) (*edgenetworkpb.Zone, error) {
 	return c.internalClient.GetZone(ctx, req, opts...)
 }
@@ -883,7 +889,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -963,7 +971,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1858,7 +1868,10 @@ func (c *restClient) InitializeZone(ctx context.Context, req *edgenetworkpb.Init
 	return resp, nil
 }
 
-// ListZones lists Zones in a given project and location.
+// ListZones deprecated: not implemented.
+// Lists Zones in a given project and location.
+//
+// Deprecated: ListZones may be removed in a future version.
 func (c *restClient) ListZones(ctx context.Context, req *edgenetworkpb.ListZonesRequest, opts ...gax.CallOption) *ZoneIterator {
 	it := &ZoneIterator{}
 	req = proto.Clone(req).(*edgenetworkpb.ListZonesRequest)
@@ -1953,7 +1966,10 @@ func (c *restClient) ListZones(ctx context.Context, req *edgenetworkpb.ListZones
 	return it
 }
 
-// GetZone gets details of a single Zone.
+// GetZone deprecated: not implemented.
+// Gets details of a single Zone.
+//
+// Deprecated: GetZone may be removed in a future version.
 func (c *restClient) GetZone(ctx context.Context, req *edgenetworkpb.GetZoneRequest, opts ...gax.CallOption) (*edgenetworkpb.Zone, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

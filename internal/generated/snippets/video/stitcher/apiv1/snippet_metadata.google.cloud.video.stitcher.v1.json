@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/video/stitcher/apiv1",
-    "version": "1.20.4",
+    "version": "1.21.0",
     "language": "GO",
     "apis": [
       {
@@ -241,6 +241,52 @@
       ]
     },
     {
+      "regionTag": "videostitcher_v1_generated_VideoStitcherService_CreateVodConfig_sync",
+      "title": "videostitcher CreateVodConfig Sample",
+      "description": "CreateVodConfig registers the VOD config with the provided unique ID in\nthe specified region.",
+      "file": "VideoStitcherClient/CreateVodConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateVodConfig",
+        "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient.CreateVodConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "stitcherpb.CreateVodConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateVodConfigOperation",
+        "client": {
+          "shortName": "VideoStitcherClient",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient"
+        },
+        "method": {
+          "shortName": "CreateVodConfig",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService.CreateVodConfig",
+          "service": {
+            "shortName": "VideoStitcherService",
+            "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "videostitcher_v1_generated_VideoStitcherService_CreateVodSession_sync",
       "title": "videostitcher CreateVodSession Sample",
       "description": "CreateVodSession creates a client side playback VOD session and returns the full\ntracking and playback metadata of the session.",
@@ -454,6 +500,52 @@
         "method": {
           "shortName": "DeleteSlate",
           "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService.DeleteSlate",
+          "service": {
+            "shortName": "VideoStitcherService",
+            "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "videostitcher_v1_generated_VideoStitcherService_DeleteVodConfig_sync",
+      "title": "videostitcher DeleteVodConfig Sample",
+      "description": "DeleteVodConfig deletes the specified VOD config.",
+      "file": "VideoStitcherClient/DeleteVodConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteVodConfig",
+        "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient.DeleteVodConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "stitcherpb.DeleteVodConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteVodConfigOperation",
+        "client": {
+          "shortName": "VideoStitcherClient",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient"
+        },
+        "method": {
+          "shortName": "DeleteVodConfig",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService.DeleteVodConfig",
           "service": {
             "shortName": "VideoStitcherService",
             "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService"
@@ -792,6 +884,52 @@
       ]
     },
     {
+      "regionTag": "videostitcher_v1_generated_VideoStitcherService_GetVodConfig_sync",
+      "title": "videostitcher GetVodConfig Sample",
+      "description": "GetVodConfig returns the specified VOD config managed by the Video\nStitcher API service.",
+      "file": "VideoStitcherClient/GetVodConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetVodConfig",
+        "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient.GetVodConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "stitcherpb.GetVodConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*stitcherpb.VodConfig",
+        "client": {
+          "shortName": "VideoStitcherClient",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient"
+        },
+        "method": {
+          "shortName": "GetVodConfig",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService.GetVodConfig",
+          "service": {
+            "shortName": "VideoStitcherService",
+            "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "videostitcher_v1_generated_VideoStitcherService_GetVodSession_sync",
       "title": "videostitcher GetVodSession Sample",
       "description": "GetVodSession returns the full tracking, playback metadata, and relevant ad-ops\nlogs for the specified VOD session.",
@@ -924,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -970,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1016,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1062,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1108,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1154,7 +1292,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "videostitcher_v1_generated_VideoStitcherService_ListVodConfigs_sync",
+      "title": "videostitcher ListVodConfigs Sample",
+      "description": "ListVodConfigs lists all VOD configs managed by the Video Stitcher API that\nbelong to the specified project and region.",
+      "file": "VideoStitcherClient/ListVodConfigs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListVodConfigs",
+        "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient.ListVodConfigs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "stitcherpb.ListVodConfigsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "VodConfigIterator",
+        "client": {
+          "shortName": "VideoStitcherClient",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient"
+        },
+        "method": {
+          "shortName": "ListVodConfigs",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService.ListVodConfigs",
+          "service": {
+            "shortName": "VideoStitcherService",
+            "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1200,7 +1384,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1252,6 +1436,52 @@
       ]
     },
     {
+      "regionTag": "videostitcher_v1_generated_VideoStitcherService_UpdateLiveConfig_sync",
+      "title": "videostitcher UpdateLiveConfig Sample",
+      "description": "UpdateLiveConfig updates the specified LiveConfig. Only update fields specified\nin the call method body.",
+      "file": "VideoStitcherClient/UpdateLiveConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateLiveConfig",
+        "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient.UpdateLiveConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "stitcherpb.UpdateLiveConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateLiveConfigOperation",
+        "client": {
+          "shortName": "VideoStitcherClient",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient"
+        },
+        "method": {
+          "shortName": "UpdateLiveConfig",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService.UpdateLiveConfig",
+          "service": {
+            "shortName": "VideoStitcherService",
+            "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "videostitcher_v1_generated_VideoStitcherService_UpdateSlate_sync",
       "title": "videostitcher UpdateSlate Sample",
       "description": "UpdateSlate updates the specified slate.",
@@ -1282,6 +1512,52 @@
         "method": {
           "shortName": "UpdateSlate",
           "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService.UpdateSlate",
+          "service": {
+            "shortName": "VideoStitcherService",
+            "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "videostitcher_v1_generated_VideoStitcherService_UpdateVodConfig_sync",
+      "title": "videostitcher UpdateVodConfig Sample",
+      "description": "UpdateVodConfig updates the specified VOD config. Only update fields specified\nin the call method body.",
+      "file": "VideoStitcherClient/UpdateVodConfig/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateVodConfig",
+        "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient.UpdateVodConfig",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "stitcherpb.UpdateVodConfigRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateVodConfigOperation",
+        "client": {
+          "shortName": "VideoStitcherClient",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherClient"
+        },
+        "method": {
+          "shortName": "UpdateVodConfig",
+          "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService.UpdateVodConfig",
           "service": {
             "shortName": "VideoStitcherService",
             "fullName": "google.cloud.video.stitcher.v1.VideoStitcherService"
