@@ -42,6 +42,7 @@ const (
 	testPrefix      = "go-integration-test-tm"
 	grpcTestPrefix  = "golang-grpc-test-tm"
 	bucketExpiryAge = 24 * time.Hour
+	maxObjectSize   = 1024 * 1024
 )
 
 var (
@@ -85,7 +86,7 @@ func TestIntegration_DownloaderSynchronous(t *testing.T) {
 
 		// Start a downloader. Give it a smaller amount of workers than objects,
 		// to make sure we aren't blocking anywhere.
-		d, err := NewDownloader(c, WithWorkers(2), WithPartSize(1024*1024/2))
+		d, err := NewDownloader(c, WithWorkers(2), WithPartSize(maxObjectSize/2))
 		if err != nil {
 			t.Fatalf("NewDownloader: %v", err)
 		}
@@ -147,7 +148,7 @@ func TestIntegration_DownloaderErrorSync(t *testing.T) {
 		objects = append([]string{nonexistentObject}, objects...)
 
 		// Start a downloader.
-		d, err := NewDownloader(c, WithWorkers(2), WithPartSize(21))
+		d, err := NewDownloader(c, WithWorkers(2), WithPartSize(maxObjectSize/2))
 		if err != nil {
 			t.Fatalf("NewDownloader: %v", err)
 		}
@@ -210,7 +211,7 @@ func TestIntegration_DownloaderAsynchronous(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
 		objects := tb.objects
 
-		d, err := NewDownloader(c, WithWorkers(2), WithCallbacks(), WithPartSize(1001))
+		d, err := NewDownloader(c, WithWorkers(2), WithCallbacks(), WithPartSize(maxObjectSize/2))
 		if err != nil {
 			t.Fatalf("NewDownloader: %v", err)
 		}
@@ -714,7 +715,7 @@ func (tb *downloadTestBucket) Create(prefix string) error {
 
 	// Write objects.
 	for _, obj := range tb.objects {
-		size := randomInt64(1000, 1024*1024)
+		size := randomInt64(1000, maxObjectSize)
 		crc, err := generateFileInGCS(ctx, b.Object(obj), size)
 		if err != nil {
 			return fmt.Errorf("generateFileInGCS: %v", err)
@@ -800,8 +801,3 @@ func initTransportClients(ctx context.Context) (map[string]*storage.Client, erro
 func crc32c(b []byte) uint32 {
 	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
 }
-
-// Test checksumming
-// Test sentinel error (that it does return real err and doesn't return sentinel ctx canceled )
-// error not on first shard
-// transcoding
