@@ -460,7 +460,7 @@ func TestIntegration_DownloadShard(t *testing.T) {
 					Bucket: tb.bucket,
 					Object: objectName,
 					Range: &DownloadRange{
-						Offset: tb.objectSize - 5,
+						Offset: objectSize - 5,
 						Length: -1,
 					},
 					Attrs: &storage.ReaderObjectAttrs{
