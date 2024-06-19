@@ -238,6 +238,7 @@ var errCancelAllShards = errors.New("cancelled because another shard failed")
 // the first shard should already be complete).
 // It will add the result to the Downloader once it has received all shards.
 // gatherShards cancels remaining shards if any shard errored.
+// It does not do any checking to verify that shards are for the same object.
 func (d *Downloader) gatherShards(in *DownloadObjectInput, outs <-chan *DownloadOutput, shards int) {
 	errs := []error{}
 	var shardOut *DownloadOutput
@@ -256,6 +257,7 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, outs <-chan *Download
 	}
 
 	// All pieces gathered; return output. Any shard output will do.
+	shardOut.Range = in.Range
 	if len(errs) != 0 {
 		shardOut.Err = fmt.Errorf("download shard errors:\n%w", errors.Join(errs...))
 	}

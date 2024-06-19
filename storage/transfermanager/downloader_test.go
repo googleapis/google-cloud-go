@@ -16,7 +16,9 @@ package transfermanager
 
 import (
 	"context"
+	"errors"
 	"strings"
+	"sync"
 	"testing"
 
 	"cloud.google.com/go/storage"
@@ -375,5 +377,120 @@ func TestCalculateRange(t *testing.T) {
 				t.Errorf("want %v got %v", test.want, got)
 			}
 		})
+	}
+}
+
+// This tests that gather shards works as expected and cancels other shards
+// without error after it encounters an error.
+func TestGatherShards(t *testing.T) {
+	ctx, cancelCtx := context.WithCancelCause(context.Background())
+
+	// Start a downloader.
+	d, err := NewDownloader(nil, WithWorkers(2), WithCallbacks())
+	if err != nil {
+		t.Fatalf("NewDownloader: %v", err)
+	}
+
+	// Test that gatherShards finishes without error.
+	object := "obj1"
+	shards := 4
+	downloadRange := &DownloadRange{
+		Offset: 20,
+		Length: 120,
+	}
+	outChan := make(chan *DownloadOutput, shards)
+	outs := []*DownloadOutput{
+		{Object: object, Range: &DownloadRange{Offset: 50, Length: 30}},
+		{Object: object, Range: &DownloadRange{Offset: 80, Length: 30}},
+		{Object: object, Range: &DownloadRange{Offset: 110, Length: 30}},
+	}
+
+	in := &DownloadObjectInput{
+		Callback: func(o *DownloadOutput) {
+			if o.Err != nil {
+				t.Errorf("unexpected error in DownloadOutput: %v", o.Err)
+			}
+			if o.Range != downloadRange {
+				t.Errorf("mismatching download range, got: %v, want: %v", o.Range, downloadRange)
+			}
+			if o.Object != object {
+				t.Errorf("mismatching object names, got: %v, want: %v", o.Object, object)
+			}
+		},
+		ctx:          ctx,
+		cancelCtx:    cancelCtx,
+		shardOutputs: outChan,
+		Range:        downloadRange,
+	}
+
+	var wg sync.WaitGroup
+	wg.Add(1)
+	d.downloadsInProgress.Add(1)
+
+	go func() {
+		d.gatherShards(in, outChan, shards)
+		wg.Done()
+	}()
+
+	for _, o := range outs {
+		outChan <- o
+	}
+
+	wg.Wait()
+
+	// Test that an error will cancel remaining pieces correctly.
+	shardErr := errors.New("some error")
+
+	in.Callback = func(o *DownloadOutput) {
+		// Error returned should wrap the original error.
+		if !errors.Is(o.Err, shardErr) {
+			t.Errorf("error in DownloadOutput should wrap error %q; intead got: %v", shardErr, o.Err)
+		}
+		// Error returned should not wrap nor contain the sentinel error.
+		if errors.Is(o.Err, errCancelAllShards) || strings.Contains(o.Err.Error(), errCancelAllShards.Error()) {
+			t.Errorf("error in DownloadOutput should not contain error %q; got: %v", errCancelAllShards, o.Err)
+		}
+		if o.Range != downloadRange {
+			t.Errorf("mismatching download range, got: %v, want: %v", o.Range, downloadRange)
+		}
+		if o.Object != object {
+			t.Errorf("mismatching object names, got: %v, want: %v", o.Object, object)
+		}
+	}
+
+	wg.Add(1)
+	d.downloadsInProgress.Add(1)
+
+	go func() {
+		d.gatherShards(in, outChan, shards)
+		wg.Done()
+	}()
+
+	// Send a successfull shard, an errored shard, and then a cancelled shard.
+	outs[1].Err = shardErr
+	outs[2].Err = context.Canceled
+	for _, o := range outs {
+		outChan <- o
+	}
+
+	// Check that the context was cancelled with the sentinel error.
+	_, ok := <-in.ctx.Done()
+	if ok {
+		t.Error("context was not cancelled")
+	}
+
+	if ctxErr := context.Cause(in.ctx); !errors.Is(ctxErr, errCancelAllShards) {
+		t.Errorf("context.Cause: error should wrap %q; intead got: %v", errCancelAllShards, ctxErr)
+	}
+
+	wg.Wait()
+
+	// Check that the overall error returned also wraps only the proper error.
+	_, err = d.WaitAndClose()
+	if !errors.Is(err, shardErr) {
+		t.Errorf("error in DownloadOutput should wrap error %q; intead got: %v", shardErr, err)
+	}
+	if errors.Is(err, errCancelAllShards) || strings.Contains(err.Error(), errCancelAllShards.Error()) {
+		t.Errorf("error in DownloadOutput should not contain error %q; got: %v", errCancelAllShards, err)
 	}
 }
