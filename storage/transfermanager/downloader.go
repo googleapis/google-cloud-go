@@ -75,7 +75,8 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 // all errors that were encountered by the Downloader when downloading objects.
 // These errors are also returned in the respective DownloadOutput for the
 // failing download. The results are not guaranteed to be in any order.
-// Results will be empty if using the [WithCallbacks] option.
+// Results will be empty if using the [WithCallbacks] option. WaitAndClose will
+// wait for all callbacks to finish.
 func (d *Downloader) WaitAndClose() ([]DownloadOutput, error) {
 	errMsg := "transfermanager: at least one error encountered downloading objects:"
 	select {
@@ -289,6 +290,7 @@ func NewDownloader(c *storage.Client, opts ...Option) (*Downloader, error) {
 }
 
 // DownloadRange specifies the object range.
+// Transcoded objects do not support ranged reads.
 type DownloadRange struct {
 	// Offset is the starting offset (inclusive) from with the object is read.
 	// If offset is negative, the object is not sharded and is read by a single
@@ -317,6 +319,9 @@ type DownloadObjectInput struct {
 	// Callback will be run once the object is finished downloading. It must be
 	// set if and only if the [WithCallbacks] option is set; otherwise, it must
 	// not be set.
+	// A worker will be used to execute the callback; therefore, it should not
+	// be a long-running function. WaitAndClose will wait for all callbacks to
+	// finish.
 	Callback func(*DownloadOutput)
 
 	ctx          context.Context
