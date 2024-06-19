@@ -309,6 +309,11 @@
                 "ListProducts"
               ]
             },
+            "PurgeProducts": {
+              "methods": [
+                "PurgeProducts"
+              ]
+            },
             "RemoveFulfillmentPlaces": {
               "methods": [
                 "RemoveFulfillmentPlaces"

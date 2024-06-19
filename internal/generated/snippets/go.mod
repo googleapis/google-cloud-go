@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/generated
 go 1.20
 
 require (
-	cloud.google.com/go v0.114.0
+	cloud.google.com/go v0.115.0
 	cloud.google.com/go/accessapproval v1.7.7
 	cloud.google.com/go/accesscontextmanager v1.8.7
 	cloud.google.com/go/advisorynotifications v0.0.0-00010101000000-000000000000
@@ -49,8 +49,8 @@ require (
 	cloud.google.com/go/deploy v1.19.0
 	cloud.google.com/go/dialogflow v1.53.0
 	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/dlp v1.13.0
-	cloud.google.com/go/documentai v1.28.1
+	cloud.google.com/go/dlp v1.14.0
+	cloud.google.com/go/documentai v1.29.0
 	cloud.google.com/go/domains v0.9.7
 	cloud.google.com/go/edgecontainer v1.2.1
 	cloud.google.com/go/errorreporting v0.3.0
@@ -74,7 +74,7 @@ require (
 	cloud.google.com/go/logging v1.10.0
 	cloud.google.com/go/longrunning v0.5.7
 	cloud.google.com/go/managedidentities v1.6.7
-	cloud.google.com/go/maps v1.10.0
+	cloud.google.com/go/maps v1.11.0
 	cloud.google.com/go/mediatranslation v0.8.7
 	cloud.google.com/go/memcache v1.10.7
 	cloud.google.com/go/metastore v1.13.6
@@ -120,7 +120,7 @@ require (
 	cloud.google.com/go/tpu v1.6.7
 	cloud.google.com/go/trace v1.10.7
 	cloud.google.com/go/translate v1.10.3
-	cloud.google.com/go/video v1.20.6
+	cloud.google.com/go/video v1.21.0
 	cloud.google.com/go/videointelligence v1.11.7
 	cloud.google.com/go/vision/v2 v2.8.2
 	cloud.google.com/go/vmmigration v1.7.7
@@ -131,8 +131,8 @@ require (
 	cloud.google.com/go/workflows v1.12.6
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.182.0
-	google.golang.org/genproto v0.0.0-20240528184218-531527333157
+	google.golang.org/api v0.184.0
+	google.golang.org/genproto v0.0.0-20240604185151-ef581f913117
 )
 
 require (
@@ -152,6 +152,7 @@ require (
 	cloud.google.com/go/managedkafka v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/migrationcenter v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/netapp v0.0.0-00010101000000-000000000000
+	cloud.google.com/go/networkservices v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/parallelstore v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/policysimulator v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/rapidmigrationassessment v0.0.0-00010101000000-000000000000
@@ -160,16 +161,16 @@ require (
 	cloud.google.com/go/securityposture v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/servicehealth v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/shopping v0.0.0-00010101000000-000000000000
-	cloud.google.com/go/storage v1.41.0
+	cloud.google.com/go/storage v1.42.0
 	cloud.google.com/go/streetview v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/telcoautomation v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/visionai v0.0.0-00010101000000-000000000000
-	google.golang.org/genproto/googleapis/api v0.0.0-20240528184218-531527333157
-	google.golang.org/protobuf v1.34.1
+	google.golang.org/genproto/googleapis/api v0.0.0-20240610135401-a8a62080eff3
+	google.golang.org/protobuf v1.34.2
 )
 
 require (
-	cloud.google.com/go/auth v0.4.2 // indirect
+	cloud.google.com/go/auth v0.5.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -186,14 +187,14 @@ require (
 	go.opentelemetry.io/otel v1.24.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
 	go.opentelemetry.io/otel/trace v1.24.0 // indirect
-	golang.org/x/crypto v0.23.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/oauth2 v0.20.0 // indirect
+	golang.org/x/crypto v0.24.0 // indirect
+	golang.org/x/net v0.26.0 // indirect
+	golang.org/x/oauth2 v0.21.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
-	golang.org/x/sys v0.20.0 // indirect
-	golang.org/x/text v0.15.0 // indirect
+	golang.org/x/sys v0.21.0 // indirect
+	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240528184218-531527333157 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240610135401-a8a62080eff3 // indirect
 	google.golang.org/grpc v1.64.0 // indirect
 )
 

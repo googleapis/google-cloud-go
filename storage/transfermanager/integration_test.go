@@ -459,6 +459,10 @@ func TestIntegration_DownloadShard(t *testing.T) {
 				want: &DownloadOutput{
 					Bucket: tb.bucket,
 					Object: objectName,
+					Range: &DownloadRange{
+						Offset: tb.objectSize - 5,
+						Length: -1,
+					},
 					Attrs: &storage.ReaderObjectAttrs{
 						Size:            objectSize,
 						StartOffset:     objectSize - 5,
@@ -556,8 +560,12 @@ func TestIntegration_DownloadShard(t *testing.T) {
 					t.Errorf("wanted bucket %q, object %q, got: %q, %q", test.want.Bucket, test.want.Object, got.Bucket, got.Object)
 				}
 
+				if diff := cmp.Diff(got.Range, test.want.Range); diff != "" {
+					t.Errorf("DownloadOutput.Range: got(-) vs. want(+): %v", diff)
+				}
+
 				if diff := cmp.Diff(got.Attrs, test.want.Attrs); diff != "" {
-					t.Errorf("diff got(-) vs. want(+): %v", diff)
+					t.Errorf("DownloadOutput.Attrs: got(-) vs. want(+): %v", diff)
 				}
 
 				if !errorIs(got.Err, test.want.Err) {

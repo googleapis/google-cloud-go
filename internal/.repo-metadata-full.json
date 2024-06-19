@@ -1576,7 +1576,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/maps/latest/places/apiv1",
-    "release_level": "stable",
+    "release_level": "preview",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/maps/routeoptimization/apiv1": {
@@ -1606,7 +1606,7 @@
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/maps/latest/solar/apiv1",
-    "release_level": "preview",
+    "release_level": "stable",
     "library_type": "GAPIC_AUTO"
   },
   "cloud.google.com/go/mediatranslation/apiv1beta1": {
@@ -2132,7 +2132,7 @@
   "cloud.google.com/go/retail/apiv2": {
     "api_shortname": "retail",
     "distribution_name": "cloud.google.com/go/retail/apiv2",
-    "description": "Retail API",
+    "description": "Vertex AI Search for Retail API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2",
@@ -2142,7 +2142,7 @@
   "cloud.google.com/go/retail/apiv2alpha": {
     "api_shortname": "retail",
     "distribution_name": "cloud.google.com/go/retail/apiv2alpha",
-    "description": "Retail API",
+    "description": "Vertex AI Search for Retail API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2alpha",
@@ -2152,7 +2152,7 @@
   "cloud.google.com/go/retail/apiv2beta": {
     "api_shortname": "retail",
     "distribution_name": "cloud.google.com/go/retail/apiv2beta",
-    "description": "Retail API",
+    "description": "Vertex AI Search for Retail API",
     "language": "go",
     "client_library_type": "generated",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/retail/latest/apiv2beta",
