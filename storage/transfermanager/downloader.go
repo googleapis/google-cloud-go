@@ -344,8 +344,13 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 		ctx = c
 	}
 
-	// TODO: set to downloadSharded when sharded
-	ctx = setUsageMetricHeader(ctx, downloadMany)
+	// The first shard will be sent as download many, since we do not know yet
+	// if it will be sharded.
+	method := downloadMany
+	if in.shard != 0 {
+		method = downloadSharded
+	}
+	ctx = setUsageMetricHeader(ctx, method)
 
 	// Set options on the object.
 	o := client.Bucket(in.Bucket).Object(in.Object)
