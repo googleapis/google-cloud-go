@@ -2166,7 +2166,7 @@ func TestClient_ReadWriteTransaction_LockHintOptions(t *testing.T) {
 			want:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
 		},
 		{
-			name:   "Client level has precendence when ORDER_BY_UNSPECIFIED at read level",
+			name:   "Client level has precendence when LOCK_HINT_UNSPECIFIED at read level",
 			client: &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
 			read:   &ReadOptions{},
 			want:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
