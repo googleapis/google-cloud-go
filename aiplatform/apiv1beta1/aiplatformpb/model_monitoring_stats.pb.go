@@ -21,13 +21,12 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -455,7 +454,8 @@ type ModelMonitoringStatsDataPoint_TypedValue_DistributionDataValue struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// tensorflow.metadata.v0.DatasetFeatureStatistics format.
+	// Predictive monitoring drift distribution in
+	// `tensorflow.metadata.v0.DatasetFeatureStatistics` format.
 	Distribution *structpb.Value `protobuf:"bytes,1,opt,name=distribution,proto3" json:"distribution,omitempty"`
 	// Distribution distance deviation from the current dataset's statistics
 	// to baseline dataset's statistics.
