@@ -545,6 +545,8 @@ type Retrieval struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
+	// The source of the retrieval.
+	//
 	// Types that are assignable to Source:
 	//
 	//	*Retrieval_VertexAiSearch
