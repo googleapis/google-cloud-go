@@ -16,12 +16,13 @@ package grpctransport
 
 import (
 	"context"
+	"crypto/tls"
 	"errors"
 	"fmt"
 	"net/http"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/credentials"
+	detect "cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
 	"go.opencensus.io/plugin/ocgrpc"
@@ -44,6 +45,11 @@ var (
 	// Set at init time by dial_socketopt.go. If nil, socketopt is not supported.
 	timeoutDialerOption grpc.DialOption
 )
+
+// ClientCertProvider is a function that returns a TLS client certificate to be
+// used when opening TLS connections. It follows the same semantics as
+// [crypto/tls.Config.GetClientCertificate].
+type ClientCertProvider = func(*tls.CertificateRequestInfo) (*tls.Certificate, error)
 
 // Options used to configure a [GRPCClientConnPool] from [Dial].
 type Options struct {
@@ -69,9 +75,13 @@ type Options struct {
 	// Credentials used to add Authorization metadata to all requests. If set
 	// DetectOpts are ignored.
 	Credentials *auth.Credentials
+	// ClientCertProvider is a function that returns a TLS client certificate to
+	// be used when opening TLS connections. It follows the same semantics as
+	// crypto/tls.Config.GetClientCertificate.
+	ClientCertProvider ClientCertProvider
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
-	DetectOpts *credentials.DetectOptions
+	DetectOpts *detect.DetectOptions
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	// The default value is "googleapis.com". This is the universe domain
 	// configured for the client, which will be compared to the universe domain
@@ -108,7 +118,7 @@ func (o *Options) validate() error {
 	return nil
 }
 
-func (o *Options) resolveDetectOptions() *credentials.DetectOptions {
+func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 	io := o.InternalOptions
 	// soft-clone these so we are not updating a ref the user holds and may reuse
 	do := transport.CloneDetectOptions(o.DetectOpts)
@@ -124,6 +134,13 @@ func (o *Options) resolveDetectOptions() *credentials.DetectOptions {
 	}
 	if len(do.Scopes) == 0 && do.Audience == "" && io != nil {
 		do.Audience = o.InternalOptions.DefaultAudience
+	}
+	if o.ClientCertProvider != nil {
+		tlsConfig := &tls.Config{
+			GetClientCertificate: o.ClientCertProvider,
+		}
+		do.Client = detect.CustomHTTPClient(tlsConfig)
+		do.TokenURL = detect.GetGoogleMtlsTokenURL()
 	}
 	return do
 }
@@ -189,9 +206,10 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 // return a GRPCClientConnPool if pool == 1 or else a pool of of them if >1
 func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, error) {
 	tOpts := &transport.Options{
-		Endpoint:       opts.Endpoint,
-		Client:         opts.client(),
-		UniverseDomain: opts.UniverseDomain,
+		Endpoint:           opts.Endpoint,
+		ClientCertProvider: opts.ClientCertProvider,
+		Client:             opts.client(),
+		UniverseDomain:     opts.UniverseDomain,
 	}
 	if io := opts.InternalOptions; io != nil {
 		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
@@ -213,6 +231,12 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		grpc.WithTransportCredentials(transportCreds),
 	}
 
+	// Ensure the token exchange HTTP transport uses the same ClientCertProvider as the GRPC API transport.
+	opts.ClientCertProvider, err = transport.GetClientCertificateSource(tOpts)
+	if err != nil {
+		return nil, err
+	}
+
 	// Authentication can only be sent when communicating over a secure connection.
 	if !opts.DisableAuthentication {
 		metadata := opts.Metadata
@@ -222,7 +246,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			creds = opts.Credentials
 		} else {
 			var err error
-			creds, err = credentials.DetectDefault(opts.resolveDetectOptions())
+			creds, err = detect.DetectDefault(opts.resolveDetectOptions())
 			if err != nil {
 				return nil, err
 			}
