@@ -946,32 +946,32 @@ type DataQualityScanRuleResult_RuleType int32
 const (
 	// An unspecified rule type.
 	DataQualityScanRuleResult_RULE_TYPE_UNSPECIFIED DataQualityScanRuleResult_RuleType = 0
-	// Please see
-	// https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule#nonnullexpectation.
+	// See
+	// [DataQualityRule.NonNullExpectation][google.cloud.dataplex.v1.DataQualityRule.NonNullExpectation].
 	DataQualityScanRuleResult_NON_NULL_EXPECTATION DataQualityScanRuleResult_RuleType = 1
-	// Please see
-	// https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule#rangeexpectation.
+	// See
+	// [DataQualityRule.RangeExpectation][google.cloud.dataplex.v1.DataQualityRule.RangeExpectation].
 	DataQualityScanRuleResult_RANGE_EXPECTATION DataQualityScanRuleResult_RuleType = 2
-	// Please see
-	// https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule#regexexpectation.
+	// See
+	// [DataQualityRule.RegexExpectation][google.cloud.dataplex.v1.DataQualityRule.RegexExpectation].
 	DataQualityScanRuleResult_REGEX_EXPECTATION DataQualityScanRuleResult_RuleType = 3
-	// Please see
-	// https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule#rowconditionexpectation.
+	// See
+	// [DataQualityRule.RowConditionExpectation][google.cloud.dataplex.v1.DataQualityRule.RowConditionExpectation].
 	DataQualityScanRuleResult_ROW_CONDITION_EXPECTATION DataQualityScanRuleResult_RuleType = 4
-	// Please see
-	// https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule#setexpectation.
+	// See
+	// [DataQualityRule.SetExpectation][google.cloud.dataplex.v1.DataQualityRule.SetExpectation].
 	DataQualityScanRuleResult_SET_EXPECTATION DataQualityScanRuleResult_RuleType = 5
-	// Please see
-	// https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule#statisticrangeexpectation.
+	// See
+	// [DataQualityRule.StatisticRangeExpectation][google.cloud.dataplex.v1.DataQualityRule.StatisticRangeExpectation].
 	DataQualityScanRuleResult_STATISTIC_RANGE_EXPECTATION DataQualityScanRuleResult_RuleType = 6
-	// Please see
-	// https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule#tableconditionexpectation.
+	// See
+	// [DataQualityRule.TableConditionExpectation][google.cloud.dataplex.v1.DataQualityRule.TableConditionExpectation].
 	DataQualityScanRuleResult_TABLE_CONDITION_EXPECTATION DataQualityScanRuleResult_RuleType = 7
-	// Please see
-	// https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule#uniquenessexpectation.
+	// See
+	// [DataQualityRule.UniquenessExpectation][google.cloud.dataplex.v1.DataQualityRule.UniquenessExpectation].
 	DataQualityScanRuleResult_UNIQUENESS_EXPECTATION DataQualityScanRuleResult_RuleType = 8
-	// Please see
-	// https://cloud.google.com/dataplex/docs/reference/rest/v1/DataQualityRule#sqlAssertion.
+	// See
+	// [DataQualityRule.SqlAssertion][google.cloud.dataplex.v1.DataQualityRule.SqlAssertion].
 	DataQualityScanRuleResult_SQL_ASSERTION DataQualityScanRuleResult_RuleType = 9
 )
 
@@ -1917,8 +1917,8 @@ type DataQualityScanRuleResult struct {
 	PassedRowCount int64 `protobuf:"varint,11,opt,name=passed_row_count,json=passedRowCount,proto3" json:"passed_row_count,omitempty"`
 	// The number of rows with null values in the specified column.
 	NullRowCount int64 `protobuf:"varint,12,opt,name=null_row_count,json=nullRowCount,proto3" json:"null_row_count,omitempty"`
-	// The number of rows returned by the sql statement in the SqlAssertion rule.
-	// This field is only valid for SqlAssertion rules.
+	// The number of rows returned by the SQL statement in a SQL assertion rule.
+	// This field is only valid for SQL assertion rules.
 	AssertionRowCount int64 `protobuf:"varint,13,opt,name=assertion_row_count,json=assertionRowCount,proto3" json:"assertion_row_count,omitempty"`
 }
 
