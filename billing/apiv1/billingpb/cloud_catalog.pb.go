@@ -22,9 +22,6 @@ package billingpb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	money "google.golang.org/genproto/googleapis/type/money"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -212,10 +211,10 @@ type Service struct {
 	unknownFields protoimpl.UnknownFields
 
 	// The resource name for the service.
-	// Example: "services/DA34-426B-A397"
+	// Example: "services/6F81-5844-456A"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The identifier for the service.
-	// Example: "DA34-426B-A397"
+	// Example: "6F81-5844-456A"
 	ServiceId string `protobuf:"bytes,2,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
 	// A human readable display name for this service.
 	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -284,17 +283,17 @@ func (x *Service) GetBusinessEntityName() string {
 	return ""
 }
 
-// Encapsulates a single SKU in Google Cloud Platform
+// Encapsulates a single SKU in Google Cloud
 type Sku struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
 	// The resource name for the SKU.
-	// Example: "services/DA34-426B-A397/skus/AA95-CD31-42FE"
+	// Example: "services/6F81-5844-456A/skus/D041-B8A1-6E0B"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The identifier for the SKU.
-	// Example: "AA95-CD31-42FE"
+	// Example: "D041-B8A1-6E0B"
 	SkuId string `protobuf:"bytes,2,opt,name=sku_id,json=skuId,proto3" json:"sku_id,omitempty"`
 	// A human readable description of the SKU, has a maximum length of 256
 	// characters.
@@ -960,7 +959,7 @@ type ListSkusRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. The name of the service.
-	// Example: "services/DA34-426B-A397"
+	// Example: "services/6F81-5844-456A"
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional inclusive start time of the time range for which the pricing
 	// versions will be returned. Timestamps in the future are not allowed.
