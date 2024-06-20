@@ -1,5 +1,12 @@
 # Changes
 
+## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.24.0...bigtable/v1.25.0) (2024-06-20)
+
+
+### Features
+
+* **bigtable:** Add string type to supported Bigtable type ([#10306](https://github.com/googleapis/google-cloud-go/issues/10306)) ([18fa7e4](https://github.com/googleapis/google-cloud-go/commit/18fa7e4961d055939078833d0442a415fac96ae6))
+
 ## [1.24.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.23.0...bigtable/v1.24.0) (2024-05-28)
 
 
