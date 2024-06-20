@@ -216,7 +216,10 @@ func (c *DataScanClient) ListDataScanJobs(ctx context.Context, req *dataplexpb.L
 	return c.internalClient.ListDataScanJobs(ctx, req, opts...)
 }
 
-// GenerateDataQualityRules generates recommended DataQualityRule from a data profiling DataScan.
+// GenerateDataQualityRules generates recommended data quality rules based on the results of a data
+// profiling scan.
+//
+// Use the recommendations to build rules for a data quality scan.
 func (c *DataScanClient) GenerateDataQualityRules(ctx context.Context, req *dataplexpb.GenerateDataQualityRulesRequest, opts ...gax.CallOption) (*dataplexpb.GenerateDataQualityRulesResponse, error) {
 	return c.internalClient.GenerateDataQualityRules(ctx, req, opts...)
 }

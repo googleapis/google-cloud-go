@@ -21,11 +21,8 @@
 package dataplexpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -35,6 +32,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1027,16 +1026,18 @@ func (x *ListDataScanJobsResponse) GetNextPageToken() string {
 	return ""
 }
 
-// Generate recommended DataQualityRules request.
+// Request details for generating data quality rule recommendations.
 type GenerateDataQualityRulesRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The name should be either
-	// * the name of a datascan with at least one successful completed data
-	// profiling job, or
-	// * the name of a successful completed data profiling datascan job.
+	// Required. The name must be one of the following:
+	//
+	// * The name of a data scan with at least one successful, completed data
+	// profiling job
+	// * The name of a successful, completed data profiling job (a data scan job
+	// where the job type is data profiling)
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
@@ -1079,13 +1080,14 @@ func (x *GenerateDataQualityRulesRequest) GetName() string {
 	return ""
 }
 
-// Generate recommended DataQualityRules response.
+// Response details for data quality rule recommendations.
 type GenerateDataQualityRulesResponse struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Generated recommended {@link DataQualityRule}s.
+	// The data quality rules that Dataplex generates based on the results
+	// of a data profiling scan.
 	Rule []*DataQualityRule `protobuf:"bytes,1,rep,name=rule,proto3" json:"rule,omitempty"`
 }
 
@@ -2588,7 +2590,10 @@ type DataScanServiceClient interface {
 	GetDataScanJob(ctx context.Context, in *GetDataScanJobRequest, opts ...grpc.CallOption) (*DataScanJob, error)
 	// Lists DataScanJobs under the given DataScan.
 	ListDataScanJobs(ctx context.Context, in *ListDataScanJobsRequest, opts ...grpc.CallOption) (*ListDataScanJobsResponse, error)
-	// Generates recommended DataQualityRule from a data profiling DataScan.
+	// Generates recommended data quality rules based on the results of a data
+	// profiling scan.
+	//
+	// Use the recommendations to build rules for a data quality scan.
 	GenerateDataQualityRules(ctx context.Context, in *GenerateDataQualityRulesRequest, opts ...grpc.CallOption) (*GenerateDataQualityRulesResponse, error)
 }
 
@@ -2699,7 +2704,10 @@ type DataScanServiceServer interface {
 	GetDataScanJob(context.Context, *GetDataScanJobRequest) (*DataScanJob, error)
 	// Lists DataScanJobs under the given DataScan.
 	ListDataScanJobs(context.Context, *ListDataScanJobsRequest) (*ListDataScanJobsResponse, error)
-	// Generates recommended DataQualityRule from a data profiling DataScan.
+	// Generates recommended data quality rules based on the results of a data
+	// profiling scan.
+	//
+	// Use the recommendations to build rules for a data quality scan.
 	GenerateDataQualityRules(context.Context, *GenerateDataQualityRulesRequest) (*GenerateDataQualityRulesResponse, error)
 }
 
