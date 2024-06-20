@@ -65,6 +65,11 @@
                 "GetBackup"
               ]
             },
+            "GetBackupIndexDownloadUrl": {
+              "methods": [
+                "GetBackupIndexDownloadUrl"
+              ]
+            },
             "GetBackupPlan": {
               "methods": [
                 "GetBackupPlan"
@@ -233,6 +238,11 @@
             "GetBackup": {
               "methods": [
                 "GetBackup"
+              ]
+            },
+            "GetBackupIndexDownloadUrl": {
+              "methods": [
+                "GetBackupIndexDownloadUrl"
               ]
             },
             "GetBackupPlan": {

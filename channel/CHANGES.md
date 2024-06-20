@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.7](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.6...channel/v1.17.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **channel:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.17.6](https://github.com/googleapis/google-cloud-go/compare/channel/v1.17.5...channel/v1.17.6) (2024-03-14)
 
 

@@ -22,7 +22,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/ptypes"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
@@ -147,11 +146,10 @@ func ExtractRetryDelay(err error) (time.Duration, bool) {
 	}
 	for _, detail := range s.Details() {
 		if retryInfo, ok := detail.(*errdetails.RetryInfo); ok {
-			delay, err := ptypes.Duration(retryInfo.RetryDelay)
-			if err != nil {
+			if !retryInfo.GetRetryDelay().IsValid() {
 				return 0, false
 			}
-			return delay, true
+			return retryInfo.GetRetryDelay().AsDuration(), true
 		}
 	}
 	return 0, false

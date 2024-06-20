@@ -318,7 +318,7 @@ func testReceive(t *testing.T, synchronous, exactlyOnceDelivery bool) {
 				m.Ack()
 			}
 		})
-		if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
+		if err != nil && !errors.Is(err, context.Canceled) {
 			t.Fatalf("Pull: %v", err)
 		}
 		var seen [256]bool
@@ -609,7 +609,7 @@ func TestExactlyOnceDelivery_AckSuccess(t *testing.T) {
 		}
 		cancel()
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("s.Receive err: %v", err)
 	}
 }
@@ -656,7 +656,7 @@ func TestExactlyOnceDelivery_AckFailureErrorPermissionDenied(t *testing.T) {
 		}
 		cancel()
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("s.Receive err: %v", err)
 	}
 }
@@ -708,7 +708,7 @@ func TestExactlyOnceDelivery_AckRetryDeadlineExceeded(t *testing.T) {
 		}
 		cancel()
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("s.Receive err: %v", err)
 	}
 }
@@ -750,7 +750,7 @@ func TestExactlyOnceDelivery_NackSuccess(t *testing.T) {
 		}
 		cancel()
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("s.Receive err: %v", err)
 	}
 }
@@ -835,7 +835,7 @@ func TestSubscribeMessageExpirationFlowControl(t *testing.T) {
 	if deliveryCount != 2 {
 		t.Fatalf("expected 2 iterations of the callback, got %d", deliveryCount)
 	}
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("s.Receive err: %v", err)
 	}
 }

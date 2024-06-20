@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycentermanagement/apiv1",
-    "version": "0.1.6",
+    "version": "0.2.1",
     "language": "GO",
     "apis": [
       {
@@ -378,6 +378,52 @@
       ]
     },
     {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetSecurityCenterService_sync",
+      "title": "securitycentermanagement GetSecurityCenterService Sample",
+      "description": "GetSecurityCenterService gets service settings for the specified Security Command Center service.",
+      "file": "Client/GetSecurityCenterService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSecurityCenterService",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.GetSecurityCenterService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.GetSecurityCenterServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.SecurityCenterService",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSecurityCenterService",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.GetSecurityCenterService",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_GetSecurityHealthAnalyticsCustomModule_sync",
       "title": "securitycentermanagement GetSecurityHealthAnalyticsCustomModule Sample",
       "description": "GetSecurityHealthAnalyticsCustomModule retrieves a SecurityHealthAnalyticsCustomModule.",
@@ -464,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -510,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -556,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -602,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -648,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -694,7 +740,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_ListSecurityCenterServices_sync",
+      "title": "securitycentermanagement ListSecurityCenterServices Sample",
+      "description": "ListSecurityCenterServices returns a list of all Security Command Center services for the given\nparent.",
+      "file": "Client/ListSecurityCenterServices/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSecurityCenterServices",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.ListSecurityCenterServices",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.ListSecurityCenterServicesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SecurityCenterServiceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSecurityCenterServices",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.ListSecurityCenterServices",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -740,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -822,6 +914,52 @@
         "method": {
           "shortName": "UpdateEventThreatDetectionCustomModule",
           "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.UpdateEventThreatDetectionCustomModule",
+          "service": {
+            "shortName": "SecurityCenterManagement",
+            "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "securitycentermanagement_v1_generated_SecurityCenterManagement_UpdateSecurityCenterService_sync",
+      "title": "securitycentermanagement UpdateSecurityCenterService Sample",
+      "description": "UpdateSecurityCenterService updates a Security Command Center service using the given update mask.",
+      "file": "Client/UpdateSecurityCenterService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSecurityCenterService",
+        "fullName": "google.cloud.securitycentermanagement.v1.Client.UpdateSecurityCenterService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "securitycentermanagementpb.UpdateSecurityCenterServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*securitycentermanagementpb.SecurityCenterService",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.securitycentermanagement.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSecurityCenterService",
+          "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement.UpdateSecurityCenterService",
           "service": {
             "shortName": "SecurityCenterManagement",
             "fullName": "google.cloud.securitycentermanagement.v1.SecurityCenterManagement"

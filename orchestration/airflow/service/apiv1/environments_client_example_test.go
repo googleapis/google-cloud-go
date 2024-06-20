@@ -396,6 +396,12 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicepb.ListEnvironmentsResponse)
 	}
 }
 
@@ -427,6 +433,12 @@ func ExampleEnvironmentsClient_ListUserWorkloadsConfigMaps() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicepb.ListUserWorkloadsConfigMapsResponse)
 	}
 }
 
@@ -458,6 +470,12 @@ func ExampleEnvironmentsClient_ListUserWorkloadsSecrets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicepb.ListUserWorkloadsSecretsResponse)
 	}
 }
 
@@ -489,6 +507,12 @@ func ExampleEnvironmentsClient_ListWorkloads() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicepb.ListWorkloadsResponse)
 	}
 }
 
@@ -758,5 +782,11 @@ func ExampleEnvironmentsClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

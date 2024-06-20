@@ -1,5 +1,42 @@
 # Changelog
 
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.0.0...netapp/v1.1.0) (2024-05-22)
+
+
+### Features
+
+* **netapp:** Add a new Service Level FLEX ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **netapp:** Add backup chain bytes to BackupConfig in Volume ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **netapp:** Add Location metadata support ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **netapp:** Add Tiering Policy to Volume ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.8...netapp/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **netapp:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **netapp:** Promote to GA v1.0.0 ([#10210](https://github.com/googleapis/google-cloud-go/issues/10210)) ([fc2fb6b](https://github.com/googleapis/google-cloud-go/commit/fc2fb6b2650a0b850913d4c11b4cff8416f0f02c))
+
+## [0.2.8](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.7...netapp/v0.2.8) (2024-05-01)
+
+
+### Bug Fixes
+
+* **netapp:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [0.2.7](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.6...netapp/v0.2.7) (2024-03-25)
+
+
+### Documentation
+
+* **netapp:** Rephrase comment on psa_range ([1ef5b19](https://github.com/googleapis/google-cloud-go/commit/1ef5b1917bb9a1271c3fb152413ec0e74163164d))
+
 ## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.5...netapp/v0.2.6) (2024-03-14)
 
 

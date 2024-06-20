@@ -21,9 +21,8 @@ import (
 	"sort"
 	"strings"
 
-	"cloud.google.com/go/firestore/apiv1/firestorepb"
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Returns a negative number, zero, or a positive number depending on whether a is
@@ -217,7 +216,7 @@ func typeOrder(v *pb.Value) int {
 }
 
 // byReferenceValue implements sort.Interface for []*firestorepb.Value
-type byFirestoreValue []*firestorepb.Value
+type byFirestoreValue []*pb.Value
 
 func (a byFirestoreValue) Len() int           { return len(a) }
 func (a byFirestoreValue) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
