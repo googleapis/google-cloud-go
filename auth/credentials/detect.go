@@ -36,8 +36,8 @@ const (
 	jwtTokenURL = "https://oauth2.googleapis.com/token"
 
 	// Google's OAuth 2.0 default endpoints.
-	googleAuthURL  = "https://accounts.google.com/o/oauth2/auth"
-	googleTokenURL = "https://oauth2.googleapis.com/token"
+	googleAuthURL      = "https://accounts.google.com/o/oauth2/auth"
+	googleTokenURL     = "https://oauth2.googleapis.com/token"
 	googleMtlsTokenURL = "https://oauth2.mtls.googleapis.com/token"
 
 	// Help on default credentials
@@ -255,7 +255,7 @@ func clientCredConfigFromJSON(b []byte, opts *DetectOptions) *auth.Options3LO {
 }
 
 // GetGoogleMtlsTokenURL returns the mTLS token exchange URL
-func GetGoogleMtlsTokenURL () string {
+func GetGoogleMtlsTokenURL() string {
 	return googleMtlsTokenURL
 }
 
