@@ -2146,7 +2146,7 @@ func TestClient_ReadWriteTransaction_Query_QueryOptions(t *testing.T) {
 	}
 }
 
-func TestClient_LockHintOptions(t *testing.T) {
+func TestClient_ReadWriteTransaction_LockHintOptions(t *testing.T) {
 	readOptionsTestCases := []ReadOptionsTestCase{
 		{
 			name:   "Client level",
@@ -2192,6 +2192,40 @@ func TestClient_LockHintOptions(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+		})
+	}
+}
+
+func TestClient_ReadOnlyTransaction_LockHintOptions(t *testing.T) {
+	readOptionsTestCases := []ReadOptionsTestCase{
+		{
+			name:   "Client level Lock hint overiden in request level",
+			client: &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+			read:   &ReadOptions{},
+			want:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_UNSPECIFIED},
+		},
+		{
+			name:   "Request level",
+			client: &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_EXCLUSIVE},
+			read:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_SHARED},
+			want:   &ReadOptions{LockHint: sppb.ReadRequest_LOCK_HINT_SHARED},
+		},
+	}
+
+	for _, tt := range readOptionsTestCases {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{ReadOptions: *tt.client})
+			defer teardown()
+
+			for _, tx := range []*ReadOnlyTransaction{
+				client.Single(),
+				client.ReadOnlyTransaction(),
+			} {
+				iter := tx.ReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, tt.read)
+				testReadOptions(t, iter, server.TestSpanner, *tt.want)
+			}
+
 		})
 	}
 }
