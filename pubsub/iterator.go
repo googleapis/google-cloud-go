@@ -113,8 +113,9 @@ type messageIterator struct {
 	enableOrdering bool
 
 	enableTracing bool
-	// This maps trace parent spans to ackIDs, used for otel tracing.
-	activeSpan sync.Map
+	// This maps trace ackID (string) to root subscribe spans(trace.Span), used for otel tracing.
+	// Active ackIDs in this map should also exist 1:1 with ids in keepAliveDeadlines.
+	activeSpans sync.Map
 }
 
 // newMessageIterator starts and returns a new messageIterator.
@@ -144,7 +145,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOpt
 	cctx, cancel := context.WithCancel(context.Background())
 	cctx = withSubscriptionKey(cctx, subName)
 
-	subID := strings.Split(subName, "/")[3]
+	subID := idFromFullyQualified(subName)
 
 	it := &messageIterator{
 		ctx:                cctx,
@@ -285,12 +286,8 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 
 	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
 
-	it.eoMu.RLock()
-	enableExactlyOnceDelivery := it.enableExactlyOnceDelivery
-	it.eoMu.RUnlock()
-
 	now := time.Now()
-	msgs, err := convertMessages(rmsgs, now, it.done, it.subName, enableExactlyOnceDelivery)
+	msgs, err := convertMessages(rmsgs, now, it.done)
 	if err != nil {
 		return nil, it.fail(err)
 	}
@@ -334,15 +331,15 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 			if m.Attributes != nil {
 				ctx = propagation.TraceContext{}.Extract(ctx, newMessageCarrier(m))
 			}
-			attr := getSubSpanAttributes(it.subID, m)
+			attr := getSubscriberOpts(it.subID, m)
 			_, span := startSpan(ctx, subscribeSpanName, it.subID, attr...)
 			span.SetAttributes(
 				attribute.Bool(eosAttribute, it.enableExactlyOnceDelivery),
 				attribute.String(ackIDAttribute, ackID),
 				semconv.MessagingBatchMessageCount(len(msgs)),
-				semconv.CodeFunction("iterator.receive"),
+				semconv.CodeFunction("receive"),
 			)
-			it.activeSpan.Store(ackID, span)
+			it.activeSpans.Store(ackID, span)
 		}
 	}
 	deadline := it.ackDeadline()
@@ -561,11 +558,17 @@ func (it *messageIterator) handleKeepAlives() {
 			// statements with range clause", note 3, and stated explicitly at
 			// https://groups.google.com/forum/#!msg/golang-nuts/UciASUb03Js/pzSq5iVFAQAJ.
 			delete(it.keepAliveDeadlines, id)
-			// get the parent span context for this ackID for otel tracing.
-			s, _ := it.activeSpan.LoadAndDelete(id)
-			span := s.(trace.Span)
-			span.SetAttributes(attribute.String(resultAttribute, resultExpired))
-			span.End()
+			if it.enableTracing {
+				// get the parent span context for this ackID for otel tracing.
+				s, ok := it.activeSpans.LoadAndDelete(id)
+				if ok {
+					span := s.(trace.Span)
+					span.SetAttributes(attribute.String(resultAttribute, resultExpired))
+					span.End()
+				} else {
+					log.Printf("pubsub: handleKeepAlives failed to load ackID(%s) from activeSpans map", id)
+				}
+			}
 		} else {
 			// Use a success AckResult since we don't propagate ModAcks back to the user.
 			it.pendingModAcks[id] = newSuccessAckResult()
@@ -631,26 +634,31 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 		var links []trace.Link
 		if it.enableTracing {
 			for _, ackID := range ackIDs {
-				// get the parent span context for this ackID for otel tracing.
-				s, _ := it.activeSpan.Load(ackID)
-				parentSpan := s.(trace.Span)
-				defer parentSpan.End()
-				defer parentSpan.SetAttributes(attribute.String(resultAttribute, resultAcked))
-				parentSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(ackIDs))))
-				defer parentSpan.AddEvent(eventAckEnd)
-				if parentSpan.SpanContext().IsSampled() {
-					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
+				// get the main subscribe span context for this ackID for otel tracing.
+				s, ok := it.activeSpans.LoadAndDelete(ackID)
+				if ok {
+					subscribeSpan := s.(trace.Span)
+					defer subscribeSpan.End()
+					defer subscribeSpan.SetAttributes(attribute.String(resultAttribute, resultAcked))
+					subscribeSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+					defer subscribeSpan.AddEvent(eventAckEnd)
+					if subscribeSpan.SpanContext().IsSampled() {
+						links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
+					}
+				} else {
+					log.Printf("pubsub: sendAck failed to load ackID(%s) from activeSpans map", ackID)
 				}
 			}
 		}
 		var ackSpan trace.Span
 		if it.enableTracing {
-			ctx, ackSpan = startSpan(context.Background(), ackSpanName, it.subID, trace.WithLinks(links...))
+			opts := getCommonOptions(it.subID)
+			opts = append(opts, trace.WithLinks(links...))
+			ctx, ackSpan = startSpan(context.Background(), ackSpanName, it.subID, opts...)
 			defer ackSpan.End()
-			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(len(ackIDs)),
-				semconv.CodeFunction("messageIterator.sendAck"))
+			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
+				semconv.CodeFunction("sendAck"))
 		}
-
 		return it.subc.Acknowledge(ctx, &pb.AcknowledgeRequest{
 			Subscription: it.subName,
 			AckIds:       ackIDs,
@@ -685,23 +693,36 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 		for _, ackID := range ackIDs {
 			if it.enableTracing {
 				// get the parent span context for this ackID for otel tracing.
-				s, _ := it.activeSpan.Load(ackID)
-				parentSpan := s.(trace.Span)
+				var s any
+				var ok bool
 				if isNack {
-					defer parentSpan.End()
-					defer parentSpan.SetAttributes(attribute.String(resultAttribute, resultNacked))
+					s, ok = it.activeSpans.LoadAndDelete(ackID)
+				} else {
+					s, ok = it.activeSpans.Load(ackID)
 				}
-				parentSpan.AddEvent(eventStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
-				defer parentSpan.AddEvent(eventEnd)
-				if parentSpan.IsRecording() {
-					links = append(links, trace.Link{SpanContext: parentSpan.SpanContext()})
+				if !ok {
+					// This should never happen since this means the ackID was dropped early.
+					log.Printf("pubsub: sendModAck failed to load ackID(%s) from activeSpans map", ackID)
+					continue
+				}
+				subscribeSpan := s.(trace.Span)
+				if isNack {
+					defer subscribeSpan.End()
+					defer subscribeSpan.SetAttributes(attribute.String(resultAttribute, resultNacked))
+				}
+				subscribeSpan.AddEvent(eventStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+				defer subscribeSpan.AddEvent(eventEnd)
+				if subscribeSpan.IsRecording() {
+					links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
 				}
 
 			}
 		}
 		var mSpan trace.Span
 		if it.enableTracing {
-			ctx, mSpan = startSpan(context.Background(), modackSpanName, it.subID, trace.WithLinks(links...))
+			opts := getCommonOptions(it.subID)
+			opts = append(opts, trace.WithLinks(links...))
+			ctx, mSpan = startSpan(context.Background(), modackSpanName, it.subID, opts...)
 			defer mSpan.End()
 			if !isNack {
 				mSpan.SetAttributes(
@@ -709,7 +730,7 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 					attribute.Bool(receiptModackAttribute, isReceipt))
 			}
 			mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
-				semconv.CodeFunction("messageIterator.sendModAck"))
+				semconv.CodeFunction("sendModAck"))
 		}
 
 		return it.subc.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{

@@ -60,10 +60,10 @@ func msgAckID(m *Message) string {
 // The done method of the iterator that created a Message.
 type iterDoneFunc func(string, bool, *AckResult, time.Time)
 
-func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string, eos bool) ([]*Message, error) {
+func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc) ([]*Message, error) {
 	msgs := make([]*Message, 0, len(rms))
 	for i, m := range rms {
-		msg, err := toMessage(m, receiveTime, doneFunc, subName, eos, len(rms))
+		msg, err := toMessage(m, receiveTime, doneFunc)
 		if err != nil {
 			return nil, fmt.Errorf("pubsub: cannot decode the retrieved message at index: %d, message: %+v", i, m)
 		}
@@ -72,7 +72,7 @@ func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc 
 	return msgs, nil
 }
 
-func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc, subName string, eos bool, numMsgs int) (*Message, error) {
+func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc) (*Message, error) {
 	ackh := &psAckHandler{ackID: resp.AckId}
 	msg := ipubsub.NewMessage(ackh)
 	if resp.Message == nil {

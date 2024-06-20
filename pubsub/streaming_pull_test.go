@@ -87,7 +87,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 		gotMap[msgAckID(m)] = m
 	}
 	for i, msg := range msgs {
-		want, err := toMessage(msg, time.Time{}, nil, "", false, len(msgs))
+		want, err := toMessage(msg, time.Time{}, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -217,7 +217,7 @@ func TestStreamingPullRetry(t *testing.T) {
 		gotMap[msgAckID(m)] = m
 	}
 	for i, msg := range testMessages {
-		want, err := toMessage(msg, time.Time{}, nil, "", false, len(testMessages))
+		want, err := toMessage(msg, time.Time{}, nil)
 		if err != nil {
 			t.Fatal(err)
 		}

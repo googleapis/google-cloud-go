@@ -409,7 +409,7 @@ func TestDeadLettering_toMessage(t *testing.T) {
 			PublishTime: timestamppb.Now(),
 		},
 	}
-	got, err := toMessage(receivedMsg, time.Time{}, nil, "", false, 1)
+	got, err := toMessage(receivedMsg, time.Time{}, nil)
 	if err != nil {
 		t.Errorf("toMessage failed: %v", err)
 	}
@@ -419,7 +419,7 @@ func TestDeadLettering_toMessage(t *testing.T) {
 
 	// If dead lettering is enabled, toMessage should properly pass through the DeliveryAttempt field.
 	receivedMsg.DeliveryAttempt = 10
-	got, err = toMessage(receivedMsg, time.Time{}, nil, "", false, 1)
+	got, err = toMessage(receivedMsg, time.Time{}, nil)
 	if err != nil {
 		t.Errorf("toMessage failed: %v", err)
 	}

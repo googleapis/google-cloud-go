@@ -308,7 +308,20 @@ func (c messageCarrier) Keys() []string {
 	return out
 }
 
+// injectPropagation injects context data into the Pub/Sub message's Attributes field.
+func injectPropagation(ctx context.Context, msg *Message) {
+	// only inject propagation if a valid span context was detected.
+	if trace.SpanFromContext(ctx).SpanContext().IsValid() {
+		if msg.Attributes == nil {
+			msg.Attributes = make(map[string]string)
+		}
+		propagation.TraceContext{}.Inject(ctx, newMessageCarrier(msg))
+	}
+}
+
 const (
+	pubsubSemConvName = "gcp_pubsub"
+
 	// publish span names
 	createSpanName     = "create"
 	publishFCSpanName  = "publisher flow control"
@@ -351,45 +364,6 @@ const (
 	receiptModackAttribute   = pubsubPrefix + "is_receipt_modack"
 )
 
-func startCreateSpan(ctx context.Context, m *Message, topicID string) (context.Context, trace.Span) {
-	opts := getPublishSpanAttributes(topicID, m)
-	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, createSpanName), opts...)
-}
-
-func getPublishSpanAttributes(topic string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
-	// TODO(hongalex): benchmark this to make sure no significant performance degradation
-	// when calculating proto.Size in receive paths.
-	// TODO(hongalex): find way to incorporate pubsub client library version in attribute.
-	msgSize := proto.Size(&pubsubpb.PubsubMessage{
-		Data:        msg.Data,
-		Attributes:  msg.Attributes,
-		OrderingKey: msg.OrderingKey,
-	})
-	ss := []trace.SpanStartOption{
-		trace.WithAttributes(
-			semconv.MessagingSystemKey.String("pubsub"),
-			semconv.MessagingDestinationName(topic),
-			semconv.MessagingMessageID(msg.ID),
-			semconv.MessagingMessagePayloadSizeBytes(msgSize),
-			attribute.String(orderingAttribute, msg.OrderingKey),
-		),
-		trace.WithAttributes(opts...),
-		trace.WithSpanKind(trace.SpanKindProducer),
-	}
-	return ss
-}
-
-// injectPropagation injects context data into the Pub/Sub message's Attributes field.
-func injectPropagation(ctx context.Context, msg *Message) {
-	// only inject propagation if a valid span context was detected.
-	if trace.SpanFromContext(ctx).SpanContext().IsValid() {
-		if msg.Attributes == nil {
-			msg.Attributes = make(map[string]string)
-		}
-		propagation.TraceContext{}.Inject(ctx, newMessageCarrier(msg))
-	}
-}
-
 func startSpan(ctx context.Context, spanType, resourceID string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	spanName := spanType
 	if resourceID != "" {
@@ -398,34 +372,71 @@ func startSpan(ctx context.Context, spanType, resourceID string, opts ...trace.S
 	return tracer().Start(ctx, spanName, opts...)
 }
 
-func getSubSpanAttributes(sub string, msg *Message, opts ...attribute.KeyValue) []trace.SpanStartOption {
+func startCreateSpan(ctx context.Context, m *Message, topicID string) (context.Context, trace.Span) {
+	opts := getPublishSpanAttributes(topicID, m)
+	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, createSpanName), opts...)
+}
+
+func getPublishSpanAttributes(dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
+	// TODO(hongalex): find way to incorporate pubsub client library version in attribute.
 	msgSize := proto.Size(&pubsubpb.PubsubMessage{
 		Data:        msg.Data,
 		Attributes:  msg.Attributes,
 		OrderingKey: msg.OrderingKey,
 	})
-	ss := []trace.SpanStartOption{
+	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
-			semconv.MessagingSystemKey.String("pubsub"),
-			semconv.MessagingDestinationName(sub),
 			semconv.MessagingMessageID(msg.ID),
 			semconv.MessagingMessagePayloadSizeBytes(msgSize),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
-		trace.WithAttributes(opts...),
+		trace.WithAttributes(attrs...),
+		trace.WithSpanKind(trace.SpanKindProducer),
+	}
+	opts = append(opts, getCommonOptions(dst)...)
+	return opts
+}
+
+func getSubscriberOpts(dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
+	msgSize := proto.Size(&pubsubpb.PubsubMessage{
+		Data:        msg.Data,
+		Attributes:  msg.Attributes,
+		OrderingKey: msg.OrderingKey,
+	})
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingMessageID(msg.ID),
+			semconv.MessagingMessagePayloadSizeBytes(msgSize),
+			attribute.String(orderingAttribute, msg.OrderingKey),
+		),
+		trace.WithAttributes(attrs...),
 		trace.WithSpanKind(trace.SpanKindConsumer),
 	}
 	if msg.DeliveryAttempt != nil {
-		ss = append(ss, trace.WithAttributes(attribute.Int(deliveryAttemptAttribute, *msg.DeliveryAttempt)))
+		opts = append(opts, trace.WithAttributes(attribute.Int(deliveryAttemptAttribute, *msg.DeliveryAttempt)))
 	}
-	return ss
+	opts = append(opts, getCommonOptions(dst)...)
+	return opts
+}
+
+func getCommonOptions(destination string) []trace.SpanStartOption {
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(
+			semconv.MessagingSystemKey.String(pubsubSemConvName),
+			semconv.MessagingDestinationName(destination),
+		),
+	}
+	return opts
+
 }
 
 // spanRecordError records the error, sets the status to error, and ends the span.
 // This is recommended by https://opentelemetry.io/docs/instrumentation/go/manual/#record-errors
 // since RecordError doesn't set the status of a span.
 func spanRecordError(span trace.Span, err error) {
-	span.RecordError(err)
-	span.SetStatus(otelcodes.Error, err.Error())
-	span.End()
+	if span != nil {
+		span.RecordError(err)
+		span.SetStatus(otelcodes.Error, err.Error())
+		span.End()
+	}
 }

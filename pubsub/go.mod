@@ -11,10 +11,18 @@ require (
 	go.einride.tech/aip v0.67.1
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/otel v1.24.0
+<<<<<<< HEAD
 	go.opentelemetry.io/otel/sdk v1.24.0
 	go.opentelemetry.io/otel/trace v1.24.0
 	golang.org/x/oauth2 v0.21.0
 	golang.org/x/sync v0.7.0
+=======
+	go.opentelemetry.io/otel/sdk v1.22.0
+	go.opentelemetry.io/otel/trace v1.24.0
+	golang.org/x/exp v0.0.0-20240314144324-c7f7c6466f7f
+	golang.org/x/oauth2 v0.18.0
+	golang.org/x/sync v0.6.0
+>>>>>>> c3d5c9bbbb404b9c3c72d7dfa9efa9886b2c391c
 	golang.org/x/time v0.5.0
 	google.golang.org/api v0.184.0
 	google.golang.org/genproto v0.0.0-20240604185151-ef581f913117
@@ -38,11 +46,20 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0 // indirect
 	go.opentelemetry.io/otel/metric v1.24.0 // indirect
+<<<<<<< HEAD
 	golang.org/x/crypto v0.24.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240610135401-a8a62080eff3 // indirect
+=======
+	golang.org/x/crypto v0.21.0 // indirect
+	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/sys v0.18.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
+	google.golang.org/appengine v1.6.8 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240311132316-a219d84964c2 // indirect
+>>>>>>> c3d5c9bbbb404b9c3c72d7dfa9efa9886b2c391c
 )
 
 replace cloud.google.com/go => ../

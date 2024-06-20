@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"strings"
 	"sync"
 	"time"
@@ -1394,14 +1395,23 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					iter.eoMu.RLock()
 					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
-					ctx := context.Background()
+					// otelCtx is used to relate the main subscribe span to the other subspans in the subscribe side.
+					// We don't want to override the ctx passed into Receive, which is necessary for user-initiated cancellations.
+					// This context is passed into the callback (regardless of if tracing is enabled). Thus, it shadows ctx2 so
+					// the callback cancellable.
+					otelCtx := ctx2
 					var ccSpan trace.Span
 					if iter.enableTracing {
-						c, _ := iter.activeSpan.Load(ackh.ackID)
-						sc := c.(trace.Span)
-						ctx = trace.ContextWithSpanContext(ctx, sc.SpanContext())
-						ctx, ccSpan = startSpan(ctx, ccSpanName, "")
+						c, ok := iter.activeSpans.Load(ackh.ackID)
+						if ok {
+							sc := c.(trace.Span)
+							otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
+							_, ccSpan = startSpan(otelCtx, ccSpanName, "")
+						} else {
+							log.Printf("pubsub: subscriber concurrency control failed to load ackID(%s) from activeSpans map", ackh.ackID)
+						}
 					}
+					// Use the original user defined ctx for this operation so the acquire operation can be cancelled.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {
@@ -1426,7 +1436,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// constructor level?
 					var schedulerSpan trace.Span
 					if iter.enableTracing {
-						_, schedulerSpan = startSpan(ctx, scheduleSpanName, "")
+						_, schedulerSpan = startSpan(otelCtx, scheduleSpanName, "")
 					}
 					iter.orderingMu.RUnlock()
 					msgLen := len(msg.Data)
@@ -1438,7 +1448,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						defer wg.Done()
 						var ps trace.Span
 						if iter.enableTracing {
-							_, ps = startSpan(ctx, processSpanName, s.ID())
+							otelCtx, ps = startSpan(otelCtx, processSpanName, s.ID())
 							old := ackh.doneFunc
 							ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
 								var eventString string
@@ -1454,7 +1464,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 							}
 						}
 						defer fc.release(ctx, msgLen)
-						f(ctx2, m)
+						f(otelCtx, m)
 					}); err != nil {
 						wg.Done()
 						// TODO(hongalex): propagate these errors to an otel span.
