@@ -21,11 +21,8 @@
 package documentaipb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -36,6 +33,8 @@ import (
 	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -6072,7 +6071,11 @@ type DocumentProcessorServiceClient interface {
 	UndeployProcessorVersion(ctx context.Context, in *UndeployProcessorVersionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Creates a processor from the
 	// [ProcessorType][google.cloud.documentai.v1.ProcessorType] provided. The
-	// processor will be at `ENABLED` state by default after its creation.
+	// processor will be at `ENABLED` state by default after its creation. Note
+	// that this method requires the `documentai.processors.create` permission on
+	// the project, which is highly privileged. A user or service account with
+	// this permission can create new processors that can interact with any gcs
+	// bucket in your project.
 	CreateProcessor(ctx context.Context, in *CreateProcessorRequest, opts ...grpc.CallOption) (*Processor, error)
 	// Deletes the processor, unloads all deployed model artifacts if it was
 	// enabled and then deletes all artifacts associated with this processor.
@@ -6341,7 +6344,11 @@ type DocumentProcessorServiceServer interface {
 	UndeployProcessorVersion(context.Context, *UndeployProcessorVersionRequest) (*longrunningpb.Operation, error)
 	// Creates a processor from the
 	// [ProcessorType][google.cloud.documentai.v1.ProcessorType] provided. The
-	// processor will be at `ENABLED` state by default after its creation.
+	// processor will be at `ENABLED` state by default after its creation. Note
+	// that this method requires the `documentai.processors.create` permission on
+	// the project, which is highly privileged. A user or service account with
+	// this permission can create new processors that can interact with any gcs
+	// bucket in your project.
 	CreateProcessor(context.Context, *CreateProcessorRequest) (*Processor, error)
 	// Deletes the processor, unloads all deployed model artifacts if it was
 	// enabled and then deletes all artifacts associated with this processor.
