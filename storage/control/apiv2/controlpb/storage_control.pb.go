@@ -21,11 +21,8 @@
 package controlpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -94,7 +93,6 @@ func (x *PendingRenameInfo) GetOperation() string {
 
 // A folder resource. This resource can only exist in a hierarchical namespace
 // enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 type Folder struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -187,7 +185,6 @@ func (x *Folder) GetPendingRenameInfo() *PendingRenameInfo {
 
 // Request message for GetFolder. This operation is only applicable to a
 // hierarchical namespace enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 type GetFolderRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -269,7 +266,6 @@ func (x *GetFolderRequest) GetRequestId() string {
 
 // Request message for CreateFolder. This operation is only applicable to a
 // hierarchical namespace enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 type CreateFolderRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -366,7 +362,6 @@ func (x *CreateFolderRequest) GetRequestId() string {
 
 // Request message for DeleteFolder. This operation is only applicable to a
 // hierarchical namespace enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 type DeleteFolderRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -448,7 +443,6 @@ func (x *DeleteFolderRequest) GetRequestId() string {
 
 // Request message for ListFolders. This operation is only applicable to a
 // hierarchical namespace enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 type ListFoldersRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -634,7 +628,6 @@ func (x *ListFoldersResponse) GetNextPageToken() string {
 
 // Request message for RenameFolder. This operation is only applicable to a
 // hierarchical namespace enabled bucket.
-// Hierarchical namespace buckets are in allowlist preview.
 type RenameFolderRequest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
@@ -2499,25 +2492,20 @@ const _ = grpc.SupportPackageIsVersion6
 type StorageControlClient interface {
 	// Creates a new folder. This operation is only applicable to a hierarchical
 	// namespace enabled bucket.
-	// Hierarchical namespace buckets are in allowlist preview.
 	CreateFolder(ctx context.Context, in *CreateFolderRequest, opts ...grpc.CallOption) (*Folder, error)
 	// Permanently deletes an empty folder. This operation is only applicable to a
 	// hierarchical namespace enabled bucket.
-	// Hierarchical namespace buckets are in allowlist preview.
 	DeleteFolder(ctx context.Context, in *DeleteFolderRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Returns metadata for the specified folder. This operation is only
 	// applicable to a hierarchical namespace enabled bucket.
-	// Hierarchical namespace buckets are in allowlist preview.
 	GetFolder(ctx context.Context, in *GetFolderRequest, opts ...grpc.CallOption) (*Folder, error)
 	// Retrieves a list of folders. This operation is only applicable to a
 	// hierarchical namespace enabled bucket.
-	// Hierarchical namespace buckets are in allowlist preview.
 	ListFolders(ctx context.Context, in *ListFoldersRequest, opts ...grpc.CallOption) (*ListFoldersResponse, error)
 	// Renames a source folder to a destination folder. This operation is only
 	// applicable to a hierarchical namespace enabled bucket. During a rename, the
 	// source and destination folders are locked until the long running operation
 	// completes.
-	// Hierarchical namespace buckets are in allowlist preview.
 	RenameFolder(ctx context.Context, in *RenameFolderRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Returns the storage layout configuration for a given bucket.
 	GetStorageLayout(ctx context.Context, in *GetStorageLayoutRequest, opts ...grpc.CallOption) (*StorageLayout, error)
@@ -2633,25 +2621,20 @@ func (c *storageControlClient) ListManagedFolders(ctx context.Context, in *ListM
 type StorageControlServer interface {
 	// Creates a new folder. This operation is only applicable to a hierarchical
 	// namespace enabled bucket.
-	// Hierarchical namespace buckets are in allowlist preview.
 	CreateFolder(context.Context, *CreateFolderRequest) (*Folder, error)
 	// Permanently deletes an empty folder. This operation is only applicable to a
 	// hierarchical namespace enabled bucket.
-	// Hierarchical namespace buckets are in allowlist preview.
 	DeleteFolder(context.Context, *DeleteFolderRequest) (*emptypb.Empty, error)
 	// Returns metadata for the specified folder. This operation is only
 	// applicable to a hierarchical namespace enabled bucket.
-	// Hierarchical namespace buckets are in allowlist preview.
 	GetFolder(context.Context, *GetFolderRequest) (*Folder, error)
 	// Retrieves a list of folders. This operation is only applicable to a
 	// hierarchical namespace enabled bucket.
-	// Hierarchical namespace buckets are in allowlist preview.
 	ListFolders(context.Context, *ListFoldersRequest) (*ListFoldersResponse, error)
 	// Renames a source folder to a destination folder. This operation is only
 	// applicable to a hierarchical namespace enabled bucket. During a rename, the
 	// source and destination folders are locked until the long running operation
 	// completes.
-	// Hierarchical namespace buckets are in allowlist preview.
 	RenameFolder(context.Context, *RenameFolderRequest) (*longrunningpb.Operation, error)
 	// Returns the storage layout configuration for a given bucket.
 	GetStorageLayout(context.Context, *GetStorageLayoutRequest) (*StorageLayout, error)
