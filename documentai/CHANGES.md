@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.30.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.0...documentai/v1.30.1) (2024-06-20)
+
+
+### Documentation
+
+* **documentai:** Update the comment to add a note about `documentai.processors.create` permission ([4fa4308](https://github.com/googleapis/google-cloud-go/commit/4fa43082511e153044084c1e6736553de41a9894))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.29.0...documentai/v1.30.0) (2024-06-05)
 
 
