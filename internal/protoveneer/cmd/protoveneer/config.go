@@ -69,6 +69,7 @@ type typeConfig struct {
 type fieldConfig struct {
 	Name string // veneer name
 	Type string // veneer type
+	Doc  string // Doc string for the field. Replaces existing doc.
 	// Omit from output.
 	Omit bool
 	// This field is not part of the proto; add it.
