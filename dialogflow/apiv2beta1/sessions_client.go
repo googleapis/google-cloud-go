@@ -19,6 +19,7 @@ package dialogflow
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -304,7 +305,9 @@ func (c *sessionsGRPCClient) Connection() *grpc.ClientConn {
 func (c *sessionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -369,7 +372,9 @@ func defaultSessionsRESTClientOptions() []option.ClientOption {
 func (c *sessionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -658,7 +663,7 @@ func (c *sessionsRESTClient) DetectIntent(ctx context.Context, req *dialogflowpb
 //
 // This method is not supported for the REST transport.
 func (c *sessionsRESTClient) StreamingDetectIntent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Sessions_StreamingDetectIntentClient, error) {
-	return nil, fmt.Errorf("StreamingDetectIntent not yet supported for REST clients")
+	return nil, errors.New("StreamingDetectIntent not yet supported for REST clients")
 }
 
 // GetLocation gets information about a location.

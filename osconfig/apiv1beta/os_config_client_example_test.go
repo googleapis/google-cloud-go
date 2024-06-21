@@ -307,6 +307,12 @@ func ExampleClient_ListGuestPolicies() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListGuestPoliciesResponse)
 	}
 }
 
@@ -338,6 +344,12 @@ func ExampleClient_ListPatchDeployments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListPatchDeploymentsResponse)
 	}
 }
 
@@ -369,6 +381,12 @@ func ExampleClient_ListPatchJobInstanceDetails() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListPatchJobInstanceDetailsResponse)
 	}
 }
 
@@ -400,6 +418,12 @@ func ExampleClient_ListPatchJobs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*osconfigpb.ListPatchJobsResponse)
 	}
 }
 

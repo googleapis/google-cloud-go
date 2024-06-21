@@ -467,6 +467,12 @@ func ExampleDataMigrationClient_DescribeDatabaseEntities() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*clouddmspb.DescribeDatabaseEntitiesResponse)
 	}
 }
 
@@ -498,6 +504,12 @@ func ExampleDataMigrationClient_FetchStaticIps() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*clouddmspb.FetchStaticIpsResponse)
 	}
 }
 
@@ -734,6 +746,12 @@ func ExampleDataMigrationClient_ListConnectionProfiles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*clouddmspb.ListConnectionProfilesResponse)
 	}
 }
 
@@ -765,6 +783,12 @@ func ExampleDataMigrationClient_ListConversionWorkspaces() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*clouddmspb.ListConversionWorkspacesResponse)
 	}
 }
 
@@ -796,6 +820,12 @@ func ExampleDataMigrationClient_ListMappingRules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*clouddmspb.ListMappingRulesResponse)
 	}
 }
 
@@ -827,6 +857,12 @@ func ExampleDataMigrationClient_ListMigrationJobs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*clouddmspb.ListMigrationJobsResponse)
 	}
 }
 
@@ -858,6 +894,12 @@ func ExampleDataMigrationClient_ListPrivateConnections() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*clouddmspb.ListPrivateConnectionsResponse)
 	}
 }
 
@@ -1269,6 +1311,12 @@ func ExampleDataMigrationClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -1446,5 +1494,11 @@ func ExampleDataMigrationClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

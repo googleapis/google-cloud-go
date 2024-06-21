@@ -68,11 +68,16 @@
 //	}
 //	defer c.Close()
 //
-//	req := &adminpb.CreateBackupScheduleRequest{
+//	req := &adminpb.BulkDeleteDocumentsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#CreateBackupScheduleRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#BulkDeleteDocumentsRequest.
 //	}
-//	resp, err := c.CreateBackupSchedule(ctx, req)
+//	op, err := c.BulkDeleteDocuments(ctx, req)
+//	if err != nil {
+//		// TODO: Handle error.
+//	}
+//
+//	resp, err := op.Wait(ctx)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

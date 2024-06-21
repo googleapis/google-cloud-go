@@ -25,10 +25,10 @@ import (
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 	"google.golang.org/api/iterator"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 // Check that stats are being exported.

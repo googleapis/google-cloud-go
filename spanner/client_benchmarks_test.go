@@ -106,7 +106,8 @@ func readWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- in
 				break
 			}
 			if err != nil {
-				b.Fatal(err)
+				b.Error(err)
+				return
 			}
 			row++
 			if row == 1 {
@@ -135,7 +136,8 @@ func writeWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- i
 			}
 			return nil
 		}); err != nil {
-			b.Fatal(err)
+			b.Error(err)
+			return
 		}
 		results <- updateCount
 	}

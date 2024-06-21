@@ -49,6 +49,20 @@ func TestBQToStandardSQLDataType(t *testing.T) {
 				},
 			},
 		},
+		{
+			&bq.StandardSqlDataType{
+				TypeKind: "RANGE",
+				RangeElementType: &bq.StandardSqlDataType{
+					TypeKind: "DATETIME",
+				},
+			},
+			&StandardSQLDataType{
+				TypeKind: "RANGE",
+				RangeElementType: &StandardSQLDataType{
+					TypeKind: "DATETIME",
+				},
+			},
+		},
 	} {
 		got, err := bqToStandardSQLDataType(test.in)
 		if err != nil {

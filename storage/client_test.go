@@ -16,8 +16,10 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -26,7 +28,11 @@ import (
 
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"github.com/google/go-cmp/cmp"
+	"github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/apierror"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
 )
 
 var emulatorClients map[string]storageClient
@@ -267,7 +273,7 @@ func TestGetObjectEmulated(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("closing object: %v", err)
 		}
-		got, err := client.GetObject(context.Background(), bucket, want.Name, defaultGen, nil, nil)
+		got, err := client.GetObject(context.Background(), &getObjectParams{bucket: bucket, object: want.Name, gen: defaultGen})
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -792,10 +798,6 @@ func TestOpenReaderEmulated(t *testing.T) {
 
 func TestOpenWriterEmulated(t *testing.T) {
 	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
-		if strings.Contains(project, "grpc") {
-			t.Skip("Implementation in testbench pending: https://github.com/googleapis/storage-testbench/issues/568")
-		}
-
 		// Populate test data.
 		_, err := client.CreateBucket(context.Background(), project, bucket, &BucketAttrs{
 			Name: bucket,
@@ -1327,7 +1329,7 @@ func TestObjectConditionsEmulated(t *testing.T) {
 					if err != nil {
 						return fmt.Errorf("creating object: %w", err)
 					}
-					_, err = client.GetObject(ctx, bucket, objName, gen, nil, &Conditions{GenerationMatch: gen, MetagenerationMatch: metaGen})
+					_, err = client.GetObject(ctx, &getObjectParams{bucket: bucket, object: objName, gen: gen, conds: &Conditions{GenerationMatch: gen, MetagenerationMatch: metaGen}})
 					return err
 				},
 			},
@@ -1340,6 +1342,111 @@ func TestObjectConditionsEmulated(t *testing.T) {
 			})
 		}
 	})
+}
+
+// Test that RetryNever prevents any retries from happening in both transports.
+func TestRetryNeverEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		instructions := map[string][]string{"storage.buckets.get": {"return-503"}}
+		testID := createRetryTest(t, project, bucket, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		_, err := client.GetBucket(ctx, bucket, nil, withRetryConfig(&retryConfig{policy: RetryNever}))
+
+		var ae *apierror.APIError
+		if errors.As(err, &ae) {
+			// We expect a 503/UNAVAILABLE error. For anything else including a nil
+			// error, the test should fail.
+			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
+				t.Errorf("GetBucket: got unexpected error %v; want 503", err)
+			}
+		}
+	})
+}
+
+// Test that errors are wrapped correctly if retry happens until a timeout.
+func TestRetryTimeoutEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
+		testID := createRetryTest(t, project, bucket, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		ctx, cancel := context.WithTimeout(ctx, 100*time.Millisecond)
+		defer cancel()
+		_, err := client.GetBucket(ctx, bucket, nil, idempotent(true))
+
+		var ae *apierror.APIError
+		if errors.As(err, &ae) {
+			// We expect a 503/UNAVAILABLE error. For anything else including a nil
+			// error, the test should fail.
+			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
+				t.Errorf("GetBucket: got unexpected error: %v; want 503", err)
+			}
+		}
+		// Error should be wrapped so it's also equivalent to a context timeout.
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Errorf("GetBucket: got unexpected error %v, want to match DeadlineExceeded.", err)
+		}
+	})
+}
+
+// Test that errors are wrapped correctly if retry happens until max attempts.
+func TestRetryMaxAttemptsEmulated(t *testing.T) {
+	transportClientTest(t, func(t *testing.T, project, bucket string, client storageClient) {
+		ctx := context.Background()
+		instructions := map[string][]string{"storage.buckets.get": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
+		testID := createRetryTest(t, project, bucket, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		config := &retryConfig{maxAttempts: expectedAttempts(3), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+		_, err := client.GetBucket(ctx, bucket, nil, idempotent(true), withRetryConfig(config))
+
+		var ae *apierror.APIError
+		if errors.As(err, &ae) {
+			// We expect a 503/UNAVAILABLE error. For anything else including a nil
+			// error, the test should fail.
+			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
+				t.Errorf("GetBucket: got unexpected error %v; want 503", err)
+			}
+		}
+		// Error should be wrapped so it indicates that MaxAttempts has been reached.
+		if got, want := err.Error(), "retry failed after 3 attempts"; !strings.Contains(got, want) {
+			t.Errorf("got error: %q, want to contain: %q", got, want)
+		}
+	})
+}
+
+// createRetryTest creates a bucket in the emulator and sets up a test using the
+// Retry Test API for the given instructions. This is intended for emulator tests
+// of retry behavior that are not covered by conformance tests.
+func createRetryTest(t *testing.T, project, bucket string, client storageClient, instructions map[string][]string) string {
+	t.Helper()
+	ctx := context.Background()
+
+	_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+	if err != nil {
+		t.Fatalf("creating bucket: %v", err)
+	}
+
+	// Need the HTTP hostname to set up a retry test, as well as knowledge of
+	// underlying transport to specify instructions.
+	host := os.Getenv("STORAGE_EMULATOR_HOST")
+	endpoint, err := url.Parse(host)
+	if err != nil {
+		t.Fatalf("parsing endpoint: %v", err)
+	}
+	var transport string
+	if _, ok := client.(*httpStorageClient); ok {
+		transport = "http"
+	} else {
+		transport = "grpc"
+	}
+
+	et := emulatorTest{T: t, name: t.Name(), resources: resources{}, host: endpoint}
+	et.create(instructions, transport)
+	t.Cleanup(func() {
+		et.delete()
+	})
+	return et.id
 }
 
 // createObject creates an object in the emulator and returns its name, generation, and

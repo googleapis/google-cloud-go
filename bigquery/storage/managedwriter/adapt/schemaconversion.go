@@ -35,6 +35,7 @@ var fieldTypeMap = map[bigquery.FieldType]storagepb.TableFieldSchema_Type{
 	bigquery.NumericFieldType:    storagepb.TableFieldSchema_NUMERIC,
 	bigquery.BigNumericFieldType: storagepb.TableFieldSchema_BIGNUMERIC,
 	bigquery.GeographyFieldType:  storagepb.TableFieldSchema_GEOGRAPHY,
+	bigquery.RangeFieldType:      storagepb.TableFieldSchema_RANGE,
 }
 
 func bqFieldToProto(in *bigquery.FieldSchema) (*storagepb.TableFieldSchema, error) {
@@ -60,6 +61,16 @@ func bqFieldToProto(in *bigquery.FieldSchema) (*storagepb.TableFieldSchema, erro
 	}
 	if !in.Repeated && in.Required {
 		out.Mode = storagepb.TableFieldSchema_REQUIRED
+	}
+
+	if in.RangeElementType != nil {
+		eleType, ok := fieldTypeMap[in.RangeElementType.Type]
+		if !ok {
+			return nil, fmt.Errorf("could not convert rante element type in %s: %q", in.Name, in.Type)
+		}
+		out.RangeElementType = &storagepb.TableFieldSchema_FieldElementType{
+			Type: eleType,
+		}
 	}
 
 	for _, s := range in.Schema {
@@ -93,6 +104,23 @@ func protoToBQField(in *storagepb.TableFieldSchema) (*bigquery.FieldSchema, erro
 	}
 	if !typeResolved {
 		return nil, fmt.Errorf("could not convert proto type to bigquery type: %v", in.GetType().String())
+	}
+
+	if in.GetRangeElementType() != nil {
+		eleType := in.GetRangeElementType().GetType()
+		ret := &bigquery.RangeElementType{}
+		typeResolved := false
+		for k, v := range fieldTypeMap {
+			if v == eleType {
+				ret.Type = k
+				typeResolved = true
+				break
+			}
+		}
+		if !typeResolved {
+			return nil, fmt.Errorf("could not convert proto range element type to bigquery type: %v", eleType.String())
+		}
+		out.RangeElementType = ret
 	}
 
 	for _, s := range in.Fields {

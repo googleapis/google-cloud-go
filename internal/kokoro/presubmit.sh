@@ -78,7 +78,7 @@ runPresubmitTests() {
 }
 
 SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/main...$KOKORO_GIT_COMMIT_google_cloud_go |
-  grep -Ev '(\.md$|^\.github)' || true)
+  grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' | xargs dirname | sort -u || true)
 
 if [ -z $SIGNIFICANT_CHANGES ]; then
   echo "No changes detected, skipping tests"
@@ -87,11 +87,18 @@ fi
 
 # CHANGED_DIRS is the list of significant top-level directories that changed,
 # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
-CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u |
+CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | cut -d/ -f1 | sort -u |
   tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
 
 echo "Running tests only in changed submodules: $CHANGED_DIRS"
 for d in $CHANGED_DIRS; do
+  # Check if "." is in the list of changed directories, which means the root
+  if [ "$d" = "." ]; then
+    pushd $(dirname $d)
+    runPresubmitTests
+    popd
+    continue
+  fi
   for i in $(find "$d" -name go.mod); do
     pushd $(dirname $i)
     runPresubmitTests

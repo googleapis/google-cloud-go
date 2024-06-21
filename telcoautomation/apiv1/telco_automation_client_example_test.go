@@ -577,6 +577,12 @@ func ExampleClient_ListBlueprintRevisions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.ListBlueprintRevisionsResponse)
 	}
 }
 
@@ -608,6 +614,12 @@ func ExampleClient_ListBlueprints() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.ListBlueprintsResponse)
 	}
 }
 
@@ -639,6 +651,12 @@ func ExampleClient_ListDeploymentRevisions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.ListDeploymentRevisionsResponse)
 	}
 }
 
@@ -670,6 +688,12 @@ func ExampleClient_ListDeployments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.ListDeploymentsResponse)
 	}
 }
 
@@ -701,6 +725,12 @@ func ExampleClient_ListEdgeSlms() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.ListEdgeSlmsResponse)
 	}
 }
 
@@ -732,6 +762,12 @@ func ExampleClient_ListHydratedDeployments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.ListHydratedDeploymentsResponse)
 	}
 }
 
@@ -763,6 +799,12 @@ func ExampleClient_ListOrchestrationClusters() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.ListOrchestrationClustersResponse)
 	}
 }
 
@@ -794,6 +836,12 @@ func ExampleClient_ListPublicBlueprints() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.ListPublicBlueprintsResponse)
 	}
 }
 
@@ -923,6 +971,12 @@ func ExampleClient_SearchBlueprintRevisions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.SearchBlueprintRevisionsResponse)
 	}
 }
 
@@ -954,6 +1008,12 @@ func ExampleClient_SearchDeploymentRevisions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*telcoautomationpb.SearchDeploymentRevisionsResponse)
 	}
 }
 
@@ -1085,6 +1145,12 @@ func ExampleClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -1187,5 +1253,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

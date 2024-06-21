@@ -16,19 +16,17 @@ package firestore
 
 import (
 	"context"
-	"fmt"
 	"testing"
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/ptypes"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/type/latlng"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (
@@ -40,12 +38,8 @@ var (
 	aTimestamp3 = mustTimestampProto(aTime3)
 )
 
-func mustTimestampProto(t time.Time) *tspb.Timestamp {
-	ts, err := ptypes.TimestampProto(t)
-	if err != nil {
-		panic(err)
-	}
-	return ts
+func mustTimestampProto(t time.Time) *timestamppb.Timestamp {
+	return timestamppb.New(t)
 }
 
 var cmpOpts = []cmp.Option{
@@ -107,48 +101,44 @@ func intval(i int) *pb.Value {
 }
 
 func int64val(i int64) *pb.Value {
-	return &pb.Value{ValueType: &pb.Value_IntegerValue{i}}
+	return &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: i}}
 }
 
 func boolval(b bool) *pb.Value {
-	return &pb.Value{ValueType: &pb.Value_BooleanValue{b}}
+	return &pb.Value{ValueType: &pb.Value_BooleanValue{BooleanValue: b}}
 }
 
 func floatval(f float64) *pb.Value {
-	return &pb.Value{ValueType: &pb.Value_DoubleValue{f}}
+	return &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: f}}
 }
 
 func strval(s string) *pb.Value {
-	return &pb.Value{ValueType: &pb.Value_StringValue{s}}
+	return &pb.Value{ValueType: &pb.Value_StringValue{StringValue: s}}
 }
 
 func bytesval(b []byte) *pb.Value {
-	return &pb.Value{ValueType: &pb.Value_BytesValue{b}}
+	return &pb.Value{ValueType: &pb.Value_BytesValue{BytesValue: b}}
 }
 
 func tsval(t time.Time) *pb.Value {
-	ts, err := ptypes.TimestampProto(t)
-	if err != nil {
-		panic(fmt.Sprintf("bad time %s in test: %v", t, err))
-	}
-	return &pb.Value{ValueType: &pb.Value_TimestampValue{ts}}
+	return &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: timestamppb.New(t)}}
 }
 
 func geoval(ll *latlng.LatLng) *pb.Value {
-	return &pb.Value{ValueType: &pb.Value_GeoPointValue{ll}}
+	return &pb.Value{ValueType: &pb.Value_GeoPointValue{GeoPointValue: ll}}
 }
 
 func arrayval(s ...*pb.Value) *pb.Value {
 	if s == nil {
 		s = []*pb.Value{}
 	}
-	return &pb.Value{ValueType: &pb.Value_ArrayValue{&pb.ArrayValue{Values: s}}}
+	return &pb.Value{ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{Values: s}}}
 }
 
 func mapval(m map[string]*pb.Value) *pb.Value {
-	return &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: m}}}
+	return &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: m}}}
 }
 
 func refval(path string) *pb.Value {
-	return &pb.Value{ValueType: &pb.Value_ReferenceValue{path}}
+	return &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: path}}
 }

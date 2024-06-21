@@ -28,11 +28,11 @@ import (
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
-	structpb "github.com/golang/protobuf/ptypes/struct"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata/metricdatatest"
 	"google.golang.org/api/iterator"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestOTMetrics_InstrumentationScope(t *testing.T) {

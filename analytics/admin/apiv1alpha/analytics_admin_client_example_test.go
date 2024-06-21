@@ -2140,6 +2140,12 @@ func ExampleAnalyticsAdminClient_ListAccessBindings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListAccessBindingsResponse)
 	}
 }
 
@@ -2171,6 +2177,12 @@ func ExampleAnalyticsAdminClient_ListAccountSummaries() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListAccountSummariesResponse)
 	}
 }
 
@@ -2202,6 +2214,12 @@ func ExampleAnalyticsAdminClient_ListAccounts() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListAccountsResponse)
 	}
 }
 
@@ -2233,6 +2251,12 @@ func ExampleAnalyticsAdminClient_ListAdSenseLinks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListAdSenseLinksResponse)
 	}
 }
 
@@ -2264,6 +2288,12 @@ func ExampleAnalyticsAdminClient_ListAudiences() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListAudiencesResponse)
 	}
 }
 
@@ -2295,6 +2325,12 @@ func ExampleAnalyticsAdminClient_ListBigQueryLinks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListBigQueryLinksResponse)
 	}
 }
 
@@ -2326,6 +2362,12 @@ func ExampleAnalyticsAdminClient_ListCalculatedMetrics() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListCalculatedMetricsResponse)
 	}
 }
 
@@ -2357,6 +2399,12 @@ func ExampleAnalyticsAdminClient_ListChannelGroups() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListChannelGroupsResponse)
 	}
 }
 
@@ -2413,6 +2461,12 @@ func ExampleAnalyticsAdminClient_ListConversionEvents() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListConversionEventsResponse)
 	}
 }
 
@@ -2444,6 +2498,12 @@ func ExampleAnalyticsAdminClient_ListCustomDimensions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListCustomDimensionsResponse)
 	}
 }
 
@@ -2475,6 +2535,12 @@ func ExampleAnalyticsAdminClient_ListCustomMetrics() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListCustomMetricsResponse)
 	}
 }
 
@@ -2506,6 +2572,12 @@ func ExampleAnalyticsAdminClient_ListDataStreams() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListDataStreamsResponse)
 	}
 }
 
@@ -2537,6 +2609,12 @@ func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinkProposals() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListDisplayVideo360AdvertiserLinkProposalsResponse)
 	}
 }
 
@@ -2568,6 +2646,12 @@ func ExampleAnalyticsAdminClient_ListDisplayVideo360AdvertiserLinks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListDisplayVideo360AdvertiserLinksResponse)
 	}
 }
 
@@ -2599,6 +2683,12 @@ func ExampleAnalyticsAdminClient_ListEventCreateRules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListEventCreateRulesResponse)
 	}
 }
 
@@ -2630,6 +2720,12 @@ func ExampleAnalyticsAdminClient_ListExpandedDataSets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListExpandedDataSetsResponse)
 	}
 }
 
@@ -2661,6 +2757,12 @@ func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListFirebaseLinksResponse)
 	}
 }
 
@@ -2692,6 +2794,12 @@ func ExampleAnalyticsAdminClient_ListGoogleAdsLinks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListGoogleAdsLinksResponse)
 	}
 }
 
@@ -2723,6 +2831,12 @@ func ExampleAnalyticsAdminClient_ListMeasurementProtocolSecrets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListMeasurementProtocolSecretsResponse)
 	}
 }
 
@@ -2754,6 +2868,12 @@ func ExampleAnalyticsAdminClient_ListProperties() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListPropertiesResponse)
 	}
 }
 
@@ -2785,6 +2905,12 @@ func ExampleAnalyticsAdminClient_ListRollupPropertySourceLinks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListRollupPropertySourceLinksResponse)
 	}
 }
 
@@ -2816,6 +2942,12 @@ func ExampleAnalyticsAdminClient_ListSKAdNetworkConversionValueSchemas() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListSKAdNetworkConversionValueSchemasResponse)
 	}
 }
 
@@ -2847,6 +2979,12 @@ func ExampleAnalyticsAdminClient_ListSearchAds360Links() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListSearchAds360LinksResponse)
 	}
 }
 
@@ -2878,6 +3016,12 @@ func ExampleAnalyticsAdminClient_ListSubpropertyEventFilters() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.ListSubpropertyEventFiltersResponse)
 	}
 }
 
@@ -2959,6 +3103,12 @@ func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*adminpb.SearchChangeHistoryEventsResponse)
 	}
 }
 

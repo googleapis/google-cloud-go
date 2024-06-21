@@ -78,8 +78,8 @@ runDirectoryTests() {
     tee sponge_log.log
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
   # xUnit XML file.
-  cat sponge_log.log \
-    | go-junit-report -set-exit-code > sponge_log.xml
+  cat sponge_log.log |
+    go-junit-report -set-exit-code >sponge_log.xml
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
 }
@@ -92,9 +92,9 @@ testChangedModules() {
       for gd in $goDirectories; do
         # run tests only if spanner module is part of $CHANGED_DIRS
         if [[ $gd == *"spanner"* ]]; then
-          pushd "$gd" > /dev/null;
-            runDirectoryTests
-          popd > /dev/null;
+          pushd "$gd" >/dev/null
+          runDirectoryTests
+          popd >/dev/null
         fi
       done
     fi
@@ -118,7 +118,7 @@ esac
 if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # Continuous jobs only run root tests & tests in submodules changed by the PR.
   # We need to find CHANGED_DIRS because PR merge in any other modulo ether than spanner also triggers this sh file. So we verify if spanner is part of CHANGED_DIRS
-  SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github)' || true)
+  SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' || true)
   # CHANGED_DIRS is the list of significant top-level directories that changed,
   # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on main.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
@@ -129,16 +129,16 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
 elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
   # Expected job name format: ".../nightly/[OPTIONAL_MODULE_NAME]/[OPTIONAL_JOB_NAMES...]"
   ARR=(${KOKORO_JOB_NAME//// }) # Splits job name by "/" where ARR[0] is expected to be "nightly".
-  SUBMODULE_NAME=${ARR[5]} # Gets the token after "nightly/".
+  SUBMODULE_NAME=${ARR[5]}      # Gets the token after "nightly/".
   # Runs test only in spanner submodule
-  if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]] &&[[ $SUBMODULE_NAME == *"spanner"* ]]; then
+  if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]] && [[ $SUBMODULE_NAME == *"spanner"* ]]; then
     # Only run tests in the submodule designated in the Kokoro job name.
     # Expected format example: ...google-cloud-go/nightly/spanner.
     runDirectoryTests . # Always run base tests
     echo "Running tests in one submodule: $SUBMODULE_NAME"
-    pushd $SUBMODULE_NAME > /dev/null;
-      runDirectoryTests
-    popd > /dev/null
+    pushd $SUBMODULE_NAME >/dev/null
+    runDirectoryTests
+    popd >/dev/null
   fi
 fi
 

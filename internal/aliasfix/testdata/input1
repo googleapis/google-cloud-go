@@ -1,5 +1,5 @@
 package golden
 
-import "example.com/old/foo"
+import "example.com/old/foo/v1"
 
 func Bar1(foo foo.Baz) {}

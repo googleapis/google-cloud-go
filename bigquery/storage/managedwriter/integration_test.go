@@ -1401,6 +1401,9 @@ func TestIntegration_ProtoNormalization(t *testing.T) {
 				InnerType: &testdata.InnerType{
 					Value: []string{"top"},
 				},
+				RangeType: &testdata.RangeTypeTimestamp{
+					End: proto.Int64(time.Now().UnixNano()),
+				},
 			}
 			b, err := proto.Marshal(mesg)
 			if err != nil {

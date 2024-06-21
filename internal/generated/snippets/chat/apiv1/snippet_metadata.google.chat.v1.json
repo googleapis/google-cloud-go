@@ -1,0 +1,1208 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/chat/apiv1",
+    "version": "0.1.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.chat.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "chat_v1_generated_ChatService_CompleteImportSpace_sync",
+      "title": "chat CompleteImportSpace Sample",
+      "description": "CompleteImportSpace completes the\n[import process](https: //developers.google.com/workspace/chat/import-data)\nfor the specified space and makes it visible to users.\nRequires app authentication and domain-wide delegation. For more\ninformation, see [Authorize Google Chat apps to import\ndata](https: //developers.google.com/workspace/chat/authorize-import).",
+      "file": "Client/CompleteImportSpace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CompleteImportSpace",
+        "fullName": "google.chat.v1.Client.CompleteImportSpace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.CompleteImportSpaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.CompleteImportSpaceResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "CompleteImportSpace",
+          "fullName": "google.chat.v1.ChatService.CompleteImportSpace",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_CreateMembership_sync",
+      "title": "chat CreateMembership Sample",
+      "description": "CreateMembership creates a human membership or app membership for the calling app. Creating\nmemberships for other apps isn't supported. For an example, see\n[Invite or add a user or a Google Chat app to a\nspace](https: //developers.google.com/workspace/chat/create-members).\nWhen creating a membership, if the specified member has their auto-accept\npolicy turned off, then they're invited, and must accept the space\ninvitation before joining. Otherwise, creating a membership adds the member\ndirectly to the specified space. Requires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nTo specify the member to add, set the `membership.member.name` for the\nhuman or app member.\n\n- To add the calling app to a space or a direct message between two human\nusers, use `users/app`. Unable to add other\napps to the space.\n\n- To add a human user, use `users/{user}`, where `{user}` can be the email\naddress for the user. For users in the same Workspace organization `{user}`\ncan also be the `id` for the person from the People API, or the `id` for\nthe user in the Directory API. For example, if the People API Person\nprofile ID for `user@example.com` is `123456789`, you can add the user to\nthe space by setting the `membership.member.name` to\n`users/user@example.com` or `users/123456789`.",
+      "file": "Client/CreateMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMembership",
+        "fullName": "google.chat.v1.Client.CreateMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.CreateMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Membership",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateMembership",
+          "fullName": "google.chat.v1.ChatService.CreateMembership",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_CreateMessage_sync",
+      "title": "chat CreateMessage Sample",
+      "description": "CreateMessage creates a message in a Google Chat space. The maximum message size,\nincluding text and cards, is 32,000 bytes. For an example, see [Send a\nmessage](https: //developers.google.com/workspace/chat/create-messages).\n\nCalling this method requires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize)\nand supports the following authentication types: \n\n- For text messages, user authentication or app authentication are\nsupported.\n- For card messages, only app authentication is supported. (Only Chat apps\ncan create card messages.)",
+      "file": "Client/CreateMessage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateMessage",
+        "fullName": "google.chat.v1.Client.CreateMessage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.CreateMessageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Message",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateMessage",
+          "fullName": "google.chat.v1.ChatService.CreateMessage",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_CreateReaction_sync",
+      "title": "chat CreateReaction Sample",
+      "description": "CreateReaction creates a reaction and adds it to a message. Only unicode emojis are\nsupported. For an example, see\n[Add a reaction to a\nmessage](https: //developers.google.com/workspace/chat/create-reactions).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/CreateReaction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateReaction",
+        "fullName": "google.chat.v1.Client.CreateReaction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.CreateReactionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Reaction",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateReaction",
+          "fullName": "google.chat.v1.ChatService.CreateReaction",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_CreateSpace_sync",
+      "title": "chat CreateSpace Sample",
+      "description": "CreateSpace creates a named space. Spaces grouped by topics aren't supported. For an\nexample, see [Create a\nspace](https: //developers.google.com/workspace/chat/create-spaces).\n\nIf you receive the error message `ALREADY_EXISTS` when creating\na space, try a different `displayName`. An existing space within\nthe Google Workspace organization might already use this display name.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/CreateSpace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSpace",
+        "fullName": "google.chat.v1.Client.CreateSpace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.CreateSpaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Space",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "CreateSpace",
+          "fullName": "google.chat.v1.ChatService.CreateSpace",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_DeleteMembership_sync",
+      "title": "chat DeleteMembership Sample",
+      "description": "DeleteMembership deletes a membership. For an example, see\n[Remove a user or a Google Chat app from a\nspace](https: //developers.google.com/workspace/chat/delete-members).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/DeleteMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMembership",
+        "fullName": "google.chat.v1.Client.DeleteMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.DeleteMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Membership",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteMembership",
+          "fullName": "google.chat.v1.ChatService.DeleteMembership",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_DeleteMessage_sync",
+      "title": "chat DeleteMessage Sample",
+      "description": "DeleteMessage deletes a message.\nFor an example, see [Delete a\nmessage](https: //developers.google.com/workspace/chat/delete-messages).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\nWhen using app authentication, requests can only delete messages\ncreated by the calling Chat app.",
+      "file": "Client/DeleteMessage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteMessage",
+        "fullName": "google.chat.v1.Client.DeleteMessage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.DeleteMessageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteMessage",
+          "fullName": "google.chat.v1.ChatService.DeleteMessage",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_DeleteReaction_sync",
+      "title": "chat DeleteReaction Sample",
+      "description": "DeleteReaction deletes a reaction to a message. Only unicode emojis are supported.\nFor an example, see\n[Delete a\nreaction](https: //developers.google.com/workspace/chat/delete-reactions).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/DeleteReaction/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteReaction",
+        "fullName": "google.chat.v1.Client.DeleteReaction",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.DeleteReactionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteReaction",
+          "fullName": "google.chat.v1.ChatService.DeleteReaction",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_DeleteSpace_sync",
+      "title": "chat DeleteSpace Sample",
+      "description": "DeleteSpace deletes a named space. Always performs a cascading delete, which means\nthat the space's child resources—like messages posted in the space and\nmemberships in the space—are also deleted. For an example, see\n[Delete a\nspace](https: //developers.google.com/workspace/chat/delete-spaces).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nfrom a user who has permission to delete the space.",
+      "file": "Client/DeleteSpace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSpace",
+        "fullName": "google.chat.v1.Client.DeleteSpace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.DeleteSpaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "DeleteSpace",
+          "fullName": "google.chat.v1.ChatService.DeleteSpace",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_FindDirectMessage_sync",
+      "title": "chat FindDirectMessage Sample",
+      "description": "FindDirectMessage returns the existing direct message with the specified user. If no direct\nmessage space is found, returns a `404 NOT_FOUND` error. For an example,\nsee\n[Find a direct message](/chat/api/guides/v1/spaces/find-direct-message).\n\nWith [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user),\nreturns the direct message space between the specified user and the\nauthenticated user.\n\nWith [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app),\nreturns the direct message space between the specified user and the calling\nChat app.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nor [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app).",
+      "file": "Client/FindDirectMessage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FindDirectMessage",
+        "fullName": "google.chat.v1.Client.FindDirectMessage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.FindDirectMessageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Space",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "FindDirectMessage",
+          "fullName": "google.chat.v1.ChatService.FindDirectMessage",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_GetAttachment_sync",
+      "title": "chat GetAttachment Sample",
+      "description": "GetAttachment gets the metadata of a message attachment. The attachment data is fetched\nusing the [media\nAPI](https: //developers.google.com/workspace/chat/api/reference/rest/v1/media/download).\nFor an example, see\n[Get metadata about a message\nattachment](https: //developers.google.com/workspace/chat/get-media-attachments).\nRequires [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app).",
+      "file": "Client/GetAttachment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAttachment",
+        "fullName": "google.chat.v1.Client.GetAttachment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.GetAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Attachment",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "GetAttachment",
+          "fullName": "google.chat.v1.ChatService.GetAttachment",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_GetMembership_sync",
+      "title": "chat GetMembership Sample",
+      "description": "GetMembership returns details about a membership. For an example, see\n[Get details about a user's or Google Chat app's\nmembership](https: //developers.google.com/workspace/chat/get-members).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/GetMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMembership",
+        "fullName": "google.chat.v1.Client.GetMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.GetMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Membership",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "GetMembership",
+          "fullName": "google.chat.v1.ChatService.GetMembership",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_GetMessage_sync",
+      "title": "chat GetMessage Sample",
+      "description": "GetMessage returns details about a message.\nFor an example, see [Get details about a\nmessage](https: //developers.google.com/workspace/chat/get-messages).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nNote: Might return a message from a blocked member or space.",
+      "file": "Client/GetMessage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetMessage",
+        "fullName": "google.chat.v1.Client.GetMessage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.GetMessageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Message",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "GetMessage",
+          "fullName": "google.chat.v1.ChatService.GetMessage",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_GetSpace_sync",
+      "title": "chat GetSpace Sample",
+      "description": "GetSpace returns details about a space. For an example, see\n[Get details about a\nspace](https: //developers.google.com/workspace/chat/get-spaces).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/GetSpace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSpace",
+        "fullName": "google.chat.v1.Client.GetSpace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.GetSpaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Space",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSpace",
+          "fullName": "google.chat.v1.ChatService.GetSpace",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_GetSpaceReadState_sync",
+      "title": "chat GetSpaceReadState Sample",
+      "description": "GetSpaceReadState returns details about a user's read state within a space, used to identify\nread and unread messages. For an example, see [Get details about a user's\nspace read\nstate](https: //developers.google.com/workspace/chat/get-space-read-state).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/GetSpaceReadState/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSpaceReadState",
+        "fullName": "google.chat.v1.Client.GetSpaceReadState",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.GetSpaceReadStateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.SpaceReadState",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "GetSpaceReadState",
+          "fullName": "google.chat.v1.ChatService.GetSpaceReadState",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_GetThreadReadState_sync",
+      "title": "chat GetThreadReadState Sample",
+      "description": "GetThreadReadState returns details about a user's read state within a thread, used to identify\nread and unread messages. For an example, see [Get details about a user's\nthread read\nstate](https: //developers.google.com/workspace/chat/get-thread-read-state).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/GetThreadReadState/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetThreadReadState",
+        "fullName": "google.chat.v1.Client.GetThreadReadState",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.GetThreadReadStateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.ThreadReadState",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "GetThreadReadState",
+          "fullName": "google.chat.v1.ChatService.GetThreadReadState",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_ListMemberships_sync",
+      "title": "chat ListMemberships Sample",
+      "description": "ListMemberships lists memberships in a space. For an example, see [List users and Google\nChat apps in a\nspace](https: //developers.google.com/workspace/chat/list-members). Listing\nmemberships with [app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nlists memberships in spaces that the Chat app has\naccess to, but excludes Chat app memberships,\nincluding its own. Listing memberships with\n[User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nlists memberships in spaces that the authenticated user has access to.\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/ListMemberships/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMemberships",
+        "fullName": "google.chat.v1.Client.ListMemberships",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.ListMembershipsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MembershipIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "ListMemberships",
+          "fullName": "google.chat.v1.ChatService.ListMemberships",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_ListMessages_sync",
+      "title": "chat ListMessages Sample",
+      "description": "ListMessages lists messages in a space that the caller is a member of, including\nmessages from blocked members and spaces. For an example, see\n[List messages](/chat/api/guides/v1/messages/list).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/ListMessages/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMessages",
+        "fullName": "google.chat.v1.Client.ListMessages",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.ListMessagesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MessageIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "ListMessages",
+          "fullName": "google.chat.v1.ChatService.ListMessages",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_ListReactions_sync",
+      "title": "chat ListReactions Sample",
+      "description": "ListReactions lists reactions to a message. For an example, see\n[List reactions for a\nmessage](https: //developers.google.com/workspace/chat/list-reactions).\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/ListReactions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListReactions",
+        "fullName": "google.chat.v1.Client.ListReactions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.ListReactionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReactionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "ListReactions",
+          "fullName": "google.chat.v1.ChatService.ListReactions",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_ListSpaces_sync",
+      "title": "chat ListSpaces Sample",
+      "description": "ListSpaces lists spaces the caller is a member of. Group chats and DMs aren't listed\nuntil the first message is sent. For an example, see\n[List\nspaces](https: //developers.google.com/workspace/chat/list-spaces).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nLists spaces visible to the caller or authenticated user. Group chats\nand DMs aren't listed until the first message is sent.",
+      "file": "Client/ListSpaces/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSpaces",
+        "fullName": "google.chat.v1.Client.ListSpaces",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.ListSpacesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "SpaceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "ListSpaces",
+          "fullName": "google.chat.v1.ChatService.ListSpaces",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_SetUpSpace_sync",
+      "title": "chat SetUpSpace Sample",
+      "description": "SetUpSpace creates a space and adds specified users to it. The calling user is\nautomatically added to the space, and shouldn't be specified as a\nmembership in the request. For an example, see\n[Set up a space with initial\nmembers](https: //developers.google.com/workspace/chat/set-up-spaces).\n\nTo specify the human members to add, add memberships with the appropriate\n`membership.member.name`. To add a human user, use `users/{user}`, where\n`{user}` can be the email address for the user. For users in the same\nWorkspace organization `{user}` can also be the `id` for the person from\nthe People API, or the `id` for the user in the Directory API. For example,\nif the People API Person profile ID for `user@example.com` is `123456789`,\nyou can add the user to the space by setting the `membership.member.name`\nto `users/user@example.com` or `users/123456789`.\n\nFor a named space or group chat, if the caller blocks, or is blocked\nby some members, or doesn't have permission to add some members, then\nthose members aren't added to the created space.\n\nTo create a direct message (DM) between the calling user and another human\nuser, specify exactly one membership to represent the human user. If\none user blocks the other, the request fails and the DM isn't created.\n\nTo create a DM between the calling user and the calling app, set\n`Space.singleUserBotDm` to `true` and don't specify any memberships. You\ncan only use this method to set up a DM with the calling app. To add the\ncalling app as a member of a space or an existing DM between two human\nusers, see\n[Invite or add a user or app to a\nspace](https: //developers.google.com/workspace/chat/create-members).\n\nIf a DM already exists between two users, even when one user blocks the\nother at the time a request is made, then the existing DM is returned.\n\nSpaces with threaded replies aren't supported. If you receive the error\nmessage `ALREADY_EXISTS` when setting up a space, try a different\n`displayName`. An existing space within the Google Workspace organization\nmight already use this display name.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/SetUpSpace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetUpSpace",
+        "fullName": "google.chat.v1.Client.SetUpSpace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.SetUpSpaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Space",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "SetUpSpace",
+          "fullName": "google.chat.v1.ChatService.SetUpSpace",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_UpdateMembership_sync",
+      "title": "chat UpdateMembership Sample",
+      "description": "UpdateMembership updates a membership. For an example, see [Update a user's membership in\na space](https: //developers.google.com/workspace/chat/update-members).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/UpdateMembership/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMembership",
+        "fullName": "google.chat.v1.Client.UpdateMembership",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.UpdateMembershipRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Membership",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateMembership",
+          "fullName": "google.chat.v1.ChatService.UpdateMembership",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_UpdateMessage_sync",
+      "title": "chat UpdateMessage Sample",
+      "description": "UpdateMessage updates a message. There's a difference between the `patch` and `update`\nmethods. The `patch`\nmethod uses a `patch` request while the `update` method uses a `put`\nrequest. We recommend using the `patch` method. For an example, see\n[Update a\nmessage](https: //developers.google.com/workspace/chat/update-messages).\n\nRequires\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize).\nSupports\n[app\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-app)\nand [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\nWhen using app authentication, requests can only update messages\ncreated by the calling Chat app.",
+      "file": "Client/UpdateMessage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateMessage",
+        "fullName": "google.chat.v1.Client.UpdateMessage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.UpdateMessageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Message",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateMessage",
+          "fullName": "google.chat.v1.ChatService.UpdateMessage",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_UpdateSpace_sync",
+      "title": "chat UpdateSpace Sample",
+      "description": "UpdateSpace updates a space. For an example, see\n[Update a\nspace](https: //developers.google.com/workspace/chat/update-spaces).\n\nIf you're updating the `displayName` field and receive the error message\n`ALREADY_EXISTS`, try a different display name.. An existing space within\nthe Google Workspace organization might already use this display name.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/UpdateSpace/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSpace",
+        "fullName": "google.chat.v1.Client.UpdateSpace",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.UpdateSpaceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.Space",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSpace",
+          "fullName": "google.chat.v1.ChatService.UpdateSpace",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_UpdateSpaceReadState_sync",
+      "title": "chat UpdateSpaceReadState Sample",
+      "description": "UpdateSpaceReadState updates a user's read state within a space, used to identify read and\nunread messages. For an example, see [Update a user's space read\nstate](https: //developers.google.com/workspace/chat/update-space-read-state).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).",
+      "file": "Client/UpdateSpaceReadState/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSpaceReadState",
+        "fullName": "google.chat.v1.Client.UpdateSpaceReadState",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.UpdateSpaceReadStateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.SpaceReadState",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "UpdateSpaceReadState",
+          "fullName": "google.chat.v1.ChatService.UpdateSpaceReadState",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "chat_v1_generated_ChatService_UploadAttachment_sync",
+      "title": "chat UploadAttachment Sample",
+      "description": "UploadAttachment uploads an attachment. For an example, see\n[Upload media as a file\nattachment](https: //developers.google.com/workspace/chat/upload-media-attachments).\nRequires user\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user).\n\nYou can upload attachments up to 200 MB. Certain file types aren't\nsupported. For details, see [File types blocked by Google\nChat](https: //support.google.com/chat/answer/7651457?&co=GENIE.Platform%3DDesktop#File%20types%20blocked%20in%20Google%20Chat).",
+      "file": "Client/UploadAttachment/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UploadAttachment",
+        "fullName": "google.chat.v1.Client.UploadAttachment",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "chatpb.UploadAttachmentRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*chatpb.UploadAttachmentResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.chat.v1.Client"
+        },
+        "method": {
+          "shortName": "UploadAttachment",
+          "fullName": "google.chat.v1.ChatService.UploadAttachment",
+          "service": {
+            "shortName": "ChatService",
+            "fullName": "google.chat.v1.ChatService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

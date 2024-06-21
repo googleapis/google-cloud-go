@@ -26,7 +26,6 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/ptypes"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -118,7 +117,7 @@ func newWatchStreamForQuery(ctx context.Context, q Query) (*watchStream, error) 
 		TargetType: &pb.Target_Query{
 			Query: &pb.Target_QueryTarget{
 				Parent:    q.parentPath,
-				QueryType: &pb.Target_QueryTarget_StructuredQuery{qp},
+				QueryType: &pb.Target_QueryTarget_StructuredQuery{StructuredQuery: qp},
 			},
 		},
 		TargetId: watchTargetID,
@@ -244,13 +243,12 @@ func (s *watchStream) handleTargetChange(tc *pb.TargetChange) bool {
 		s.logf("TargetNoChange %d %v", len(tc.TargetIds), tc.ReadTime)
 		if len(tc.TargetIds) == 0 && tc.ReadTime != nil && s.current {
 			// Everything is up-to-date, so we are ready to return a snapshot.
-			rt, err := ptypes.Timestamp(tc.ReadTime)
-			if err != nil {
+			if err := tc.ReadTime.CheckValid(); err != nil {
 				s.err = err
 				return true
 			}
-			s.readTime = rt
-			s.target.ResumeType = &pb.Target_ResumeToken{tc.ResumeToken}
+			s.readTime = tc.ReadTime.AsTime()
+			s.target.ResumeType = &pb.Target_ResumeToken{ResumeToken: tc.ResumeToken}
 			return true
 		}
 

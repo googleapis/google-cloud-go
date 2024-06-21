@@ -30,10 +30,10 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
 
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
@@ -44,7 +44,6 @@ import (
 )
 
 var _ = io.EOF
-var _ = ptypes.MarshalAny
 var _ status.Status
 
 type mockDatabaseAdminServer struct {
@@ -208,7 +207,7 @@ func TestDatabaseAdminCreateDatabase(t *testing.T) {
 	mockDatabaseAdmin.err = nil
 	mockDatabaseAdmin.reqs = nil
 
-	any, err := ptypes.MarshalAny(expectedResponse)
+	any, err := anypb.New(expectedResponse)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -353,7 +352,7 @@ func TestDatabaseAdminUpdateDatabaseDdl(t *testing.T) {
 	mockDatabaseAdmin.err = nil
 	mockDatabaseAdmin.reqs = nil
 
-	any, err := ptypes.MarshalAny(expectedResponse)
+	any, err := anypb.New(expectedResponse)
 	if err != nil {
 		t.Fatal(err)
 	}

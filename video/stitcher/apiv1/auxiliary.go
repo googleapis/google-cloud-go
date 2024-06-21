@@ -210,6 +210,67 @@ func (op *CreateSlateOperation) Name() string {
 	return op.lro.Name()
 }
 
+// CreateVodConfigOperation manages a long-running operation from CreateVodConfig.
+type CreateVodConfigOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateVodConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.VodConfig, error) {
+	var resp stitcherpb.VodConfig
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateVodConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.VodConfig, error) {
+	var resp stitcherpb.VodConfig
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateVodConfigOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
+	var meta stitcherpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateVodConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateVodConfigOperation) Name() string {
+	return op.lro.Name()
+}
+
 // DeleteCdnKeyOperation manages a long-running operation from DeleteCdnKey.
 type DeleteCdnKeyOperation struct {
 	lro *longrunning.Operation
@@ -360,6 +421,56 @@ func (op *DeleteSlateOperation) Name() string {
 	return op.lro.Name()
 }
 
+// DeleteVodConfigOperation manages a long-running operation from DeleteVodConfig.
+type DeleteVodConfigOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteVodConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteVodConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteVodConfigOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
+	var meta stitcherpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteVodConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteVodConfigOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateCdnKeyOperation manages a long-running operation from UpdateCdnKey.
 type UpdateCdnKeyOperation struct {
 	lro *longrunning.Operation
@@ -421,6 +532,67 @@ func (op *UpdateCdnKeyOperation) Name() string {
 	return op.lro.Name()
 }
 
+// UpdateLiveConfigOperation manages a long-running operation from UpdateLiveConfig.
+type UpdateLiveConfigOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateLiveConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.LiveConfig, error) {
+	var resp stitcherpb.LiveConfig
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateLiveConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.LiveConfig, error) {
+	var resp stitcherpb.LiveConfig
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateLiveConfigOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
+	var meta stitcherpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateLiveConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateLiveConfigOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateSlateOperation manages a long-running operation from UpdateSlate.
 type UpdateSlateOperation struct {
 	lro *longrunning.Operation
@@ -479,6 +651,67 @@ func (op *UpdateSlateOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateSlateOperation) Name() string {
+	return op.lro.Name()
+}
+
+// UpdateVodConfigOperation manages a long-running operation from UpdateVodConfig.
+type UpdateVodConfigOperation struct {
+	lro *longrunning.Operation
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *UpdateVodConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.VodConfig, error) {
+	var resp stitcherpb.VodConfig
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *UpdateVodConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*stitcherpb.VodConfig, error) {
+	var resp stitcherpb.VodConfig
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *UpdateVodConfigOperation) Metadata() (*stitcherpb.OperationMetadata, error) {
+	var meta stitcherpb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *UpdateVodConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *UpdateVodConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -759,6 +992,53 @@ func (it *VodAdTagDetailIterator) bufLen() int {
 }
 
 func (it *VodAdTagDetailIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// VodConfigIterator manages a stream of *stitcherpb.VodConfig.
+type VodConfigIterator struct {
+	items    []*stitcherpb.VodConfig
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*stitcherpb.VodConfig, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *VodConfigIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *VodConfigIterator) Next() (*stitcherpb.VodConfig, error) {
+	var item *stitcherpb.VodConfig
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *VodConfigIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *VodConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

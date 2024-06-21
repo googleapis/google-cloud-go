@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.6](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.0.5...beyondcorp/v1.0.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **beyondcorp:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.0.5](https://github.com/googleapis/google-cloud-go/compare/beyondcorp/v1.0.4...beyondcorp/v1.0.5) (2024-03-14)
 
 

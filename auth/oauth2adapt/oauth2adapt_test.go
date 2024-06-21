@@ -23,17 +23,18 @@ import (
 	"cloud.google.com/go/auth"
 	"github.com/google/go-cmp/cmp"
 	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 )
 
 func TestTokenProviderFromTokenSource(t *testing.T) {
 	tests := []struct {
 		name  string
-		token string
+		token *oauth2.Token
 		err   error
 	}{
 		{
 			name:  "working token",
-			token: "fakeToken",
+			token: &oauth2.Token{AccessToken: "fakeToken", TokenType: "Basic"},
 			err:   nil,
 		},
 		{
@@ -71,8 +72,11 @@ func TestTokenProviderFromTokenSource(t *testing.T) {
 				}
 				return
 			}
-			if tok.Value != tt.token {
-				t.Errorf("got %q, want %q", tok.Value, tt.token)
+			if tok.Value != tt.token.AccessToken {
+				t.Errorf("got %q, want %q", tok.Value, tt.token.AccessToken)
+			}
+			if tok.Type != tt.token.TokenType {
+				t.Errorf("got %q, want %q", tok.Type, tt.token.TokenType)
 			}
 		})
 	}
@@ -81,13 +85,16 @@ func TestTokenProviderFromTokenSource(t *testing.T) {
 func TestTokenSourceFromTokenProvider(t *testing.T) {
 	tests := []struct {
 		name  string
-		token string
+		token *auth.Token
 		err   error
 	}{
 		{
-			name:  "working token",
-			token: "fakeToken",
-			err:   nil,
+			name: "working token",
+			token: &auth.Token{
+				Value: "fakeToken",
+				Type:  "Basic",
+			},
+			err: nil,
 		},
 		{
 			name: "coverts err",
@@ -133,15 +140,120 @@ func TestTokenSourceFromTokenProvider(t *testing.T) {
 				}
 				return
 			}
-			if tok.AccessToken != tt.token {
-				t.Errorf("got %q, want %q", tok.AccessToken, tt.token)
+			if tok.AccessToken != tt.token.Value {
+				t.Errorf("got %q, want %q", tok.AccessToken, tt.token.Value)
+			}
+			if tok.TokenType != tt.token.Type {
+				t.Errorf("got %q, want %q", tok.TokenType, tt.token.Type)
 			}
 		})
 	}
 }
 
+func TestAuthCredentialsFromOauth2Credentials(t *testing.T) {
+	ctx := context.Background()
+	inputCreds := &google.Credentials{
+		ProjectID:   "test_project",
+		TokenSource: tokenSource{token: &oauth2.Token{AccessToken: "token"}},
+		JSON:        []byte("json"),
+		UniverseDomainProvider: func() (string, error) {
+			return "domain", nil
+		},
+	}
+	outCreds := AuthCredentialsFromOauth2Credentials(inputCreds)
+
+	gotProject, err := outCreds.ProjectID(ctx)
+	if err != nil {
+		t.Fatalf("outCreds.ProjectID() = %v", err)
+	}
+	if want := inputCreds.ProjectID; gotProject != want {
+		t.Fatalf("got %q, want %q", gotProject, want)
+	}
+
+	gotToken, err := outCreds.Token(ctx)
+	if err != nil {
+		t.Fatalf("outCreds.Token() = %v", err)
+	}
+	wantTok, err := inputCreds.TokenSource.Token()
+	if err != nil {
+		t.Fatalf("inputCreds.TokenSource.Token() = %v", err)
+	}
+	if gotToken.Value != wantTok.AccessToken {
+		t.Fatalf("got %q, want %q", gotToken.Value, wantTok.AccessToken)
+	}
+
+	gotJSON := outCreds.JSON()
+	if want := inputCreds.JSON; !cmp.Equal(gotJSON, want) {
+		t.Fatalf("got %s, want %s", gotJSON, want)
+	}
+
+	gotUD, err := outCreds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatalf("outCreds.UniverseDomain() = %v", err)
+	}
+	wantUD, err := inputCreds.GetUniverseDomain()
+	if err != nil {
+		t.Fatalf("inputCreds.GetUniverseDomain() = %v", err)
+	}
+	if gotUD != wantUD {
+		t.Fatalf("got %q, want %q", wantUD, wantUD)
+	}
+}
+
+func TestOauth2CredentialsFromAuthCredentials(t *testing.T) {
+	ctx := context.Background()
+	inputCreds := auth.NewCredentials(&auth.CredentialsOptions{
+		ProjectIDProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
+			return "project", nil
+		}),
+		TokenProvider: tokenProvider{token: &auth.Token{Value: "token"}},
+		JSON:          []byte("json"),
+		UniverseDomainProvider: auth.CredentialsPropertyFunc(func(ctx context.Context) (string, error) {
+			return "domain", nil
+		}),
+	})
+	outCreds := Oauth2CredentialsFromAuthCredentials(inputCreds)
+
+	wantProject, err := inputCreds.ProjectID(ctx)
+	if err != nil {
+		t.Fatalf("inputCreds.ProjectID() = %v", err)
+	}
+	if outCreds.ProjectID != wantProject {
+		t.Fatalf("got %q, want %q", outCreds.ProjectID, wantProject)
+	}
+
+	gotToken, err := inputCreds.Token(ctx)
+	if err != nil {
+		t.Fatalf("inputCreds.Token() = %v", err)
+	}
+	wantTok, err := outCreds.TokenSource.Token()
+	if err != nil {
+		t.Fatalf("outCreds.TokenSource.Token() = %v", err)
+	}
+	if gotToken.Value != wantTok.AccessToken {
+		t.Fatalf("got %q, want %q", gotToken.Value, wantTok.AccessToken)
+	}
+
+	wantJSON := inputCreds.JSON()
+	if !cmp.Equal(outCreds.JSON, wantJSON) {
+		t.Fatalf("got %s, want %s", outCreds.JSON, wantJSON)
+	}
+
+	wantUD, err := inputCreds.UniverseDomain(ctx)
+	if err != nil {
+		t.Fatalf("outCreds.UniverseDomain() = %v", err)
+	}
+	gotUD, err := outCreds.GetUniverseDomain()
+	if err != nil {
+		t.Fatalf("inputCreds.GetUniverseDomain() = %v", err)
+	}
+	if gotUD != wantUD {
+		t.Fatalf("got %q, want %q", wantUD, wantUD)
+	}
+}
+
 type tokenSource struct {
-	token string
+	token *oauth2.Token
 	err   error
 }
 
@@ -150,12 +262,13 @@ func (ts tokenSource) Token() (*oauth2.Token, error) {
 		return nil, ts.err
 	}
 	return &oauth2.Token{
-		AccessToken: ts.token,
+		AccessToken: ts.token.AccessToken,
+		TokenType:   ts.token.TokenType,
 	}, nil
 }
 
 type tokenProvider struct {
-	token string
+	token *auth.Token
 	err   error
 }
 
@@ -164,6 +277,7 @@ func (tp tokenProvider) Token(context.Context) (*auth.Token, error) {
 		return nil, tp.err
 	}
 	return &auth.Token{
-		Value: tp.token,
+		Value: tp.token.Value,
+		Type:  tp.token.Type,
 	}, nil
 }

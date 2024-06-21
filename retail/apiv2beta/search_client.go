@@ -126,7 +126,7 @@ func defaultSearchRESTCallOptions() *SearchCallOptions {
 	}
 }
 
-// internalSearchClient is an interface that defines the methods available from Retail API.
+// internalSearchClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalSearchClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -136,7 +136,7 @@ type internalSearchClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// SearchClient is a client for interacting with Retail API.
+// SearchClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for search.
@@ -192,7 +192,7 @@ func (c *SearchClient) ListOperations(ctx context.Context, req *longrunningpb.Li
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// searchGRPCClient is a client for interacting with Retail API over gRPC transport.
+// searchGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type searchGRPCClient struct {
@@ -261,7 +261,9 @@ func (c *searchGRPCClient) Connection() *grpc.ClientConn {
 func (c *searchGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -326,7 +328,9 @@ func defaultSearchRESTClientOptions() []option.ClientOption {
 func (c *searchRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when

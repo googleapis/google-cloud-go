@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
 	"go.opencensus.io/plugin/ocgrpc"
 	"google.golang.org/grpc"
@@ -46,7 +47,7 @@ var (
 
 // Options used to configure a [GRPCClientConnPool] from [Dial].
 type Options struct {
-	// DisableTelemetry disables default telemetry (OpenCensus). An example
+	// DisableTelemetry disables default telemetry (OpenTelemetry). An example
 	// reason to do so would be to bind custom telemetry that overrides the
 	// defaults.
 	DisableTelemetry bool
@@ -71,6 +72,11 @@ type Options struct {
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
 	DetectOpts *credentials.DetectOptions
+	// UniverseDomain is the default service domain for a given Cloud universe.
+	// The default value is "googleapis.com". This is the universe domain
+	// configured for the client, which will be compared to the universe domain
+	// that is separately configured for the credentials.
+	UniverseDomain string
 
 	// InternalOptions are NOT meant to be set directly by consumers of this
 	// package, they should only be set by generated client code.
@@ -89,6 +95,9 @@ func (o *Options) client() *http.Client {
 func (o *Options) validate() error {
 	if o == nil {
 		return errors.New("grpctransport: opts required to be non-nil")
+	}
+	if o.InternalOptions != nil && o.InternalOptions.SkipValidation {
+		return nil
 	}
 	hasCreds := o.Credentials != nil ||
 		(o.DetectOpts != nil && len(o.DetectOpts.CredentialsJSON) > 0) ||
@@ -137,13 +146,17 @@ type InternalOptions struct {
 	// DefaultAudience specifies a default audience to be used as the audience
 	// field ("aud") for the JWT token authentication.
 	DefaultAudience string
-	// DefaultEndpoint specifies the default endpoint.
-	DefaultEndpoint string
+	// DefaultEndpointTemplate combined with UniverseDomain specifies
+	// the default endpoint.
+	DefaultEndpointTemplate string
 	// DefaultMTLSEndpoint specifies the default mTLS endpoint.
 	DefaultMTLSEndpoint string
 	// DefaultScopes specifies the default OAuth2 scopes to be used for a
 	// service.
 	DefaultScopes []string
+	// SkipValidation bypasses validation on Options. It should only be used
+	// internally for clients that needs more control over their transport.
+	SkipValidation bool
 }
 
 // Dial returns a GRPCClientConnPool that can be used to communicate with a
@@ -162,7 +175,7 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 	}
 	pool := &roundRobinConnPool{}
 	for i := 0; i < opts.PoolSize; i++ {
-		conn, err := dial(ctx, false, opts)
+		conn, err := dial(ctx, secure, opts)
 		if err != nil {
 			// ignore close error, if any
 			defer pool.Close()
@@ -176,12 +189,15 @@ func Dial(ctx context.Context, secure bool, opts *Options) (GRPCClientConnPool, 
 // return a GRPCClientConnPool if pool == 1 or else a pool of of them if >1
 func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, error) {
 	tOpts := &transport.Options{
-		Endpoint: opts.Endpoint,
-		Client:   opts.client(),
+		Endpoint:       opts.Endpoint,
+		Client:         opts.client(),
+		UniverseDomain: opts.UniverseDomain,
 	}
 	if io := opts.InternalOptions; io != nil {
-		tOpts.DefaultEndpoint = io.DefaultEndpoint
+		tOpts.DefaultEndpointTemplate = io.DefaultEndpointTemplate
 		tOpts.DefaultMTLSEndpoint = io.DefaultMTLSEndpoint
+		tOpts.EnableDirectPath = io.EnableDirectPath
+		tOpts.EnableDirectPathXds = io.EnableDirectPathXds
 	}
 	transportCreds, endpoint, err := transport.GetGRPCTransportCredsAndEndpoint(tOpts)
 	if err != nil {
@@ -200,12 +216,16 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	// Authentication can only be sent when communicating over a secure connection.
 	if !opts.DisableAuthentication {
 		metadata := opts.Metadata
-		creds, err := credentials.DetectDefault(opts.resolveDetectOptions())
-		if err != nil {
-			return nil, err
-		}
+
+		var creds *auth.Credentials
 		if opts.Credentials != nil {
 			creds = opts.Credentials
+		} else {
+			var err error
+			creds, err = credentials.DetectDefault(opts.resolveDetectOptions())
+			if err != nil {
+				return nil, err
+			}
 		}
 
 		qp, err := creds.QuotaProjectID(ctx)
@@ -218,11 +238,11 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			}
 			metadata[quotaProjectHeaderKey] = qp
 		}
-
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcCredentialsProvider{
-				creds:    creds,
-				metadata: metadata,
+				creds:                creds,
+				metadata:             metadata,
+				clientUniverseDomain: opts.UniverseDomain,
 			}),
 		)
 
@@ -246,10 +266,29 @@ type grpcCredentialsProvider struct {
 	secure bool
 
 	// Additional metadata attached as headers.
-	metadata map[string]string
+	metadata             map[string]string
+	clientUniverseDomain string
+}
+
+// getClientUniverseDomain returns the default service domain for a given Cloud universe.
+// The default value is "googleapis.com". This is the universe domain
+// configured for the client, which will be compared to the universe domain
+// that is separately configured for the credentials.
+func (c *grpcCredentialsProvider) getClientUniverseDomain() string {
+	if c.clientUniverseDomain == "" {
+		return internal.DefaultUniverseDomain
+	}
+	return c.clientUniverseDomain
 }
 
 func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ...string) (map[string]string, error) {
+	credentialsUniverseDomain, err := c.creds.UniverseDomain(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err := transport.ValidateUniverseDomain(c.getClientUniverseDomain(), credentialsUniverseDomain); err != nil {
+		return nil, err
+	}
 	token, err := c.creds.Token(ctx)
 	if err != nil {
 		return nil, err
@@ -260,17 +299,26 @@ func (c *grpcCredentialsProvider) GetRequestMetadata(ctx context.Context, uri ..
 			return nil, fmt.Errorf("unable to transfer credentials PerRPCCredentials: %v", err)
 		}
 	}
-	metadata := map[string]string{
-		"authorization": token.Type + " " + token.Value,
-	}
+	metadata := make(map[string]string, len(c.metadata)+1)
+	setAuthMetadata(token, metadata)
 	for k, v := range c.metadata {
 		metadata[k] = v
 	}
 	return metadata, nil
 }
 
-func (tp *grpcCredentialsProvider) RequireTransportSecurity() bool {
-	return tp.secure
+// setAuthMetadata uses the provided token to set the Authorization metadata.
+// If the token.Type is empty, the type is assumed to be Bearer.
+func setAuthMetadata(token *auth.Token, m map[string]string) {
+	typ := token.Type
+	if typ == "" {
+		typ = internal.TokenTypeBearer
+	}
+	m["authorization"] = typ + " " + token.Value
+}
+
+func (c *grpcCredentialsProvider) RequireTransportSecurity() bool {
+	return c.secure
 }
 
 func addOCStatsHandler(dialOpts []grpc.DialOption, opts *Options) []grpc.DialOption {

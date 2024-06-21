@@ -23,6 +23,7 @@ option php_namespace = "Google\\Cloud\\Firestore\\Tests\\Conformance";
 option csharp_namespace = "Google.Cloud.Firestore.Tests.Proto";
 option java_outer_classname = "TestDefinition";
 option java_package = "com.google.cloud.conformance.firestore.v1";
+option go_package = "cloud.google.com/go/firestore/internal/conformance";
 
 import "google/firestore/v1/common.proto";
 import "google/firestore/v1/document.proto";

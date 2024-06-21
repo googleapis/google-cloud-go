@@ -1,0 +1,33 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.reports.v1beta",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/reports/apiv1beta",
+  "services": {
+    "ReportService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ReportClient",
+          "rpcs": {
+            "Search": {
+              "methods": [
+                "Search"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ReportClient",
+          "rpcs": {
+            "Search": {
+              "methods": [
+                "Search"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

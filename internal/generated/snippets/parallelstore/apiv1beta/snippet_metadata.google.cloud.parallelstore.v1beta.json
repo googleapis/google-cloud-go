@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/parallelstore/apiv1beta",
-    "version": "0.1.1",
+    "version": "0.3.0",
     "language": "GO",
     "apis": [
       {
@@ -194,6 +194,52 @@
       ]
     },
     {
+      "regionTag": "parallelstore_v1beta_generated_Parallelstore_ExportData_sync",
+      "title": "parallelstore ExportData Sample",
+      "description": "ExportData exportData copies data from Parallelstore to Cloud Storage",
+      "file": "Client/ExportData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ExportData",
+        "fullName": "google.cloud.parallelstore.v1beta.Client.ExportData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parallelstorepb.ExportDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ExportDataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ExportData",
+          "fullName": "google.cloud.parallelstore.v1beta.Parallelstore.ExportData",
+          "service": {
+            "shortName": "Parallelstore",
+            "fullName": "google.cloud.parallelstore.v1beta.Parallelstore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "parallelstore_v1beta_generated_Parallelstore_GetInstance_sync",
       "title": "parallelstore GetInstance Sample",
       "description": "GetInstance gets details of a single Instance.",
@@ -332,6 +378,52 @@
       ]
     },
     {
+      "regionTag": "parallelstore_v1beta_generated_Parallelstore_ImportData_sync",
+      "title": "parallelstore ImportData Sample",
+      "description": "ImportData importData copies data from Cloud Storage to Parallelstore.",
+      "file": "Client/ImportData/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ImportData",
+        "fullName": "google.cloud.parallelstore.v1beta.Client.ImportData",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "parallelstorepb.ImportDataRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ImportDataOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.cloud.parallelstore.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ImportData",
+          "fullName": "google.cloud.parallelstore.v1beta.Parallelstore.ImportData",
+          "service": {
+            "shortName": "Parallelstore",
+            "fullName": "google.cloud.parallelstore.v1beta.Parallelstore"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "parallelstore_v1beta_generated_Parallelstore_ListInstances_sync",
       "title": "parallelstore ListInstances Sample",
       "description": "ListInstances lists Instances in a given project and location.",
@@ -372,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -418,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -464,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

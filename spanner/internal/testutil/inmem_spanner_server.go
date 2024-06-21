@@ -28,21 +28,21 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/ptypes"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	gstatus "google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-var (
-	// KvMeta is the Metadata for mocked KV table.
-	KvMeta = spannerpb.ResultSetMetadata{
+// KvMeta is the Metadata for mocked KV table.
+func KvMeta() *spannerpb.ResultSetMetadata {
+	return &spannerpb.ResultSetMetadata{
 		RowType: &spannerpb.StructType{
 			Fields: []*spannerpb.StructType_Field{
 				{
@@ -56,7 +56,7 @@ var (
 			},
 		},
 	}
-)
+}
 
 // StatementResultType indicates the type of result returned by a SQL
 // statement.
@@ -555,9 +555,9 @@ func (s *inMemSpannerServer) updateSessionLastUseTime(session string) {
 	s.sessionLastUseTime[session] = time.Now()
 }
 
-func getCurrentTimestamp() *timestamp.Timestamp {
+func getCurrentTimestamp() *timestamppb.Timestamp {
 	t := time.Now()
-	return &timestamp.Timestamp{Seconds: t.Unix(), Nanos: int32(t.Nanosecond())}
+	return &timestamppb.Timestamp{Seconds: t.Unix(), Nanos: int32(t.Nanosecond())}
 }
 
 // Gets the transaction id from the transaction selector. If the selector
@@ -620,7 +620,7 @@ func (s *inMemSpannerServer) getTransactionByID(session *spannerpb.Session, id [
 func newAbortedErrorWithMinimalRetryDelay() error {
 	st := gstatus.New(codes.Aborted, "Transaction has been aborted")
 	retry := &errdetails.RetryInfo{
-		RetryDelay: ptypes.DurationProto(time.Nanosecond),
+		RetryDelay: durationpb.New(time.Nanosecond),
 	}
 	st, _ = st.WithDetails(retry)
 	return st.Err()
@@ -730,8 +730,9 @@ func (s *inMemSpannerServer) BatchCreateSessions(ctx context.Context, req *spann
 	sessionsToCreate := req.SessionCount
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	// return a non-retryable error if the limit is reached
 	if s.maxSessionsReturnedByServerInTotal > int32(0) && int32(len(s.sessions)) >= s.maxSessionsReturnedByServerInTotal {
-		return nil, gstatus.Error(codes.ResourceExhausted, "No more sessions available")
+		return nil, gstatus.Error(codes.OutOfRange, "No more sessions available")
 	}
 	if sessionsToCreate > s.maxSessionsReturnedByServerPerBatchRequest {
 		sessionsToCreate = s.maxSessionsReturnedByServerPerBatchRequest

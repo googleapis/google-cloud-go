@@ -609,6 +609,12 @@ func ExampleCloudChannelClient_ListChannelPartnerLinks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListChannelPartnerLinksResponse)
 	}
 }
 
@@ -640,6 +646,12 @@ func ExampleCloudChannelClient_ListChannelPartnerRepricingConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListChannelPartnerRepricingConfigsResponse)
 	}
 }
 
@@ -671,6 +683,12 @@ func ExampleCloudChannelClient_ListCustomerRepricingConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListCustomerRepricingConfigsResponse)
 	}
 }
 
@@ -702,6 +720,12 @@ func ExampleCloudChannelClient_ListCustomers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListCustomersResponse)
 	}
 }
 
@@ -733,6 +757,12 @@ func ExampleCloudChannelClient_ListEntitlementChanges() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListEntitlementChangesResponse)
 	}
 }
 
@@ -764,6 +794,12 @@ func ExampleCloudChannelClient_ListEntitlements() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListEntitlementsResponse)
 	}
 }
 
@@ -795,6 +831,12 @@ func ExampleCloudChannelClient_ListOffers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListOffersResponse)
 	}
 }
 
@@ -826,6 +868,12 @@ func ExampleCloudChannelClient_ListProducts() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListProductsResponse)
 	}
 }
 
@@ -857,6 +905,12 @@ func ExampleCloudChannelClient_ListPurchasableOffers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListPurchasableOffersResponse)
 	}
 }
 
@@ -888,6 +942,12 @@ func ExampleCloudChannelClient_ListPurchasableSkus() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListPurchasableSkusResponse)
 	}
 }
 
@@ -919,6 +979,12 @@ func ExampleCloudChannelClient_ListSkuGroupBillableSkus() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListSkuGroupBillableSkusResponse)
 	}
 }
 
@@ -950,6 +1016,12 @@ func ExampleCloudChannelClient_ListSkuGroups() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListSkuGroupsResponse)
 	}
 }
 
@@ -981,6 +1053,12 @@ func ExampleCloudChannelClient_ListSkus() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListSkusResponse)
 	}
 }
 
@@ -1012,6 +1090,12 @@ func ExampleCloudChannelClient_ListSubscribers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListSubscribersResponse)
 	}
 }
 
@@ -1043,6 +1127,12 @@ func ExampleCloudChannelClient_ListTransferableOffers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListTransferableOffersResponse)
 	}
 }
 
@@ -1074,6 +1164,12 @@ func ExampleCloudChannelClient_ListTransferableSkus() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*channelpb.ListTransferableSkusResponse)
 	}
 }
 
@@ -1524,5 +1620,11 @@ func ExampleCloudChannelClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

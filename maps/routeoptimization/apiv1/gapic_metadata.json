@@ -1,0 +1,53 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.routeoptimization.v1",
+  "libraryPackage": "cloud.google.com/go/maps/routeoptimization/apiv1",
+  "services": {
+    "RouteOptimization": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchOptimizeTours": {
+              "methods": [
+                "BatchOptimizeTours"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "OptimizeTours": {
+              "methods": [
+                "OptimizeTours"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchOptimizeTours": {
+              "methods": [
+                "BatchOptimizeTours"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "OptimizeTours": {
+              "methods": [
+                "OptimizeTours"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

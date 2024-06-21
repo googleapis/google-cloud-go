@@ -24,10 +24,10 @@ import (
 	"cloud.google.com/go/pubsub"
 	api "cloud.google.com/go/pubsublite/apiv1"
 	"cloud.google.com/go/pubsublite/pscompat"
-	"github.com/golang/protobuf/ptypes/timestamp"
 	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func ExamplePublisherClient_Publish() {
@@ -232,7 +232,7 @@ func ExampleEncodeEventTimeAttribute() {
 	}
 	defer publisher.Stop()
 
-	v, err := pscompat.EncodeEventTimeAttribute(&timestamp.Timestamp{
+	v, err := pscompat.EncodeEventTimeAttribute(&timestamppb.Timestamp{
 		Seconds: 1672531200,
 		Nanos:   500000000,
 	})
@@ -324,6 +324,7 @@ func ExampleSubscriberClient_Receive_errorHandling() {
 			m.Ack()
 		})
 		if err != nil {
+			cancel()
 			fmt.Printf("Subscriber client stopped receiving due to error: %v\n", err)
 			if errors.Is(err, pscompat.ErrBackendUnavailable) {
 				// TODO: Alert if necessary. Receive can be retried.

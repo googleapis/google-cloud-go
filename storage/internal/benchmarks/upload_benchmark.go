@@ -48,8 +48,8 @@ func uploadBenchmark(ctx context.Context, uopts uploadOpts) (elapsedTime time.Du
 	var span trace.Span
 	ctx, span = otel.GetTracerProvider().Tracer(tracerName).Start(ctx, "upload")
 	span.SetAttributes(
-		attribute.KeyValue{"bucket", attribute.StringValue(uopts.bucket)},
-		attribute.KeyValue{"chunk_size", attribute.Int64Value(uopts.params.chunkSize)},
+		attribute.KeyValue{Key: "bucket", Value: attribute.StringValue(uopts.bucket)},
+		attribute.KeyValue{Key: "chunk_size", Value: attribute.Int64Value(uopts.params.chunkSize)},
 	)
 	defer span.End()
 

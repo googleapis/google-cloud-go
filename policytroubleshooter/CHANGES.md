@@ -2,6 +2,13 @@
 
 
 
+## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.10.4...policytroubleshooter/v1.10.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **policytroubleshooter:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.10.4](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.10.3...policytroubleshooter/v1.10.4) (2024-03-14)
 
 

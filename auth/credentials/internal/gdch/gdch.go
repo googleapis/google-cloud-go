@@ -29,7 +29,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 	"cloud.google.com/go/auth/internal/jwt"
 )
 
@@ -54,12 +54,12 @@ type Options struct {
 
 // NewTokenProvider returns a [cloud.google.com/go/auth.TokenProvider] from a
 // GDCH cred file.
-func NewTokenProvider(f *internaldetect.GDCHServiceAccountFile, o *Options) (auth.TokenProvider, error) {
+func NewTokenProvider(f *credsfile.GDCHServiceAccountFile, o *Options) (auth.TokenProvider, error) {
 	if !gdchSupportFormatVersions[f.FormatVersion] {
-		return nil, fmt.Errorf("detect: unsupported gdch_service_account format %q", f.FormatVersion)
+		return nil, fmt.Errorf("credentials: unsupported gdch_service_account format %q", f.FormatVersion)
 	}
 	if o.STSAudience == "" {
-		return nil, errors.New("detect: STSAudience must be set for the GDCH auth flows")
+		return nil, errors.New("credentials: STSAudience must be set for the GDCH auth flows")
 	}
 	pk, err := internal.ParseKey([]byte(f.PrivateKey))
 	if err != nil {
@@ -86,7 +86,7 @@ func loadCertPool(path string) (*x509.CertPool, error) {
 	pool := x509.NewCertPool()
 	pem, err := os.ReadFile(path)
 	if err != nil {
-		return nil, fmt.Errorf("detect: failed to read certificate: %w", err)
+		return nil, fmt.Errorf("credentials: failed to read certificate: %w", err)
 	}
 	pool.AppendCertsFromPEM(pem)
 	return pool, nil
@@ -131,12 +131,12 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 	v.Set("subject_token_type", subjectTokenType)
 	resp, err := g.client.PostForm(g.tokenURL, v)
 	if err != nil {
-		return nil, fmt.Errorf("detect: cannot fetch token: %w", err)
+		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)
 	}
 	defer resp.Body.Close()
 	body, err := internal.ReadAll(resp.Body)
 	if err != nil {
-		return nil, fmt.Errorf("detect: cannot fetch token: %w", err)
+		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)
 	}
 	if c := resp.StatusCode; c < http.StatusOK || c > http.StatusMultipleChoices {
 		return nil, &auth.Error{
@@ -151,7 +151,7 @@ func (g gdchProvider) Token(ctx context.Context) (*auth.Token, error) {
 		ExpiresIn   int64  `json:"expires_in"` // relative seconds from now
 	}
 	if err := json.Unmarshal(body, &tokenRes); err != nil {
-		return nil, fmt.Errorf("detect: cannot fetch token: %w", err)
+		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)
 	}
 	token := &auth.Token{
 		Value: tokenRes.AccessToken,

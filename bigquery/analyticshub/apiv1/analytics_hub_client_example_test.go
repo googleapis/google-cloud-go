@@ -311,6 +311,12 @@ func ExampleClient_ListDataExchanges() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*analyticshubpb.ListDataExchangesResponse)
 	}
 }
 
@@ -342,6 +348,12 @@ func ExampleClient_ListListings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*analyticshubpb.ListListingsResponse)
 	}
 }
 
@@ -373,6 +385,12 @@ func ExampleClient_ListOrgDataExchanges() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*analyticshubpb.ListOrgDataExchangesResponse)
 	}
 }
 
@@ -404,6 +422,12 @@ func ExampleClient_ListSharedResourceSubscriptions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*analyticshubpb.ListSharedResourceSubscriptionsResponse)
 	}
 }
 
@@ -435,6 +459,12 @@ func ExampleClient_ListSubscriptions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*analyticshubpb.ListSubscriptionsResponse)
 	}
 }
 

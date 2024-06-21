@@ -1,6 +1,26 @@
 # Changes
 
 
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.13.0...secretmanager/v1.13.1) (2024-05-22)
+
+
+### Bug Fixes
+
+* **secretmanager:** Enable cloud.google.com/go/auth ([#10248](https://github.com/googleapis/google-cloud-go/issues/10248)) ([532d8fb](https://github.com/googleapis/google-cloud-go/commit/532d8fb10a75186ca71ebf46ae73ecd09918c103))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.12.0...secretmanager/v1.13.0) (2024-05-01)
+
+
+### Features
+
+* **secretmanager:** Add Secret Version Delayed Destroy changes for client libraries ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **secretmanager:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.11.6...secretmanager/v1.12.0) (2024-03-19)
 
 

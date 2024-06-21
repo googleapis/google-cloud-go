@@ -24,9 +24,6 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/longrunning/autogen/longrunningpb"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	"github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
@@ -34,7 +31,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
 )
 
 type getterService struct {
@@ -68,8 +67,8 @@ func (s *getterService) sleeper() sleeper {
 }
 
 func TestWait(t *testing.T) {
-	responseDur := ptypes.DurationProto(42 * time.Second)
-	responseAny, err := ptypes.MarshalAny(responseDur)
+	responseDur := durationpb.New(42 * time.Second)
+	responseAny, err := anypb.New(responseDur)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -98,7 +97,7 @@ func TestWait(t *testing.T) {
 		t.Fatal("operation should not have completed yet")
 	}
 
-	var resp duration.Duration
+	var resp durationpb.Duration
 	bo := gax.Backoff{
 		Initial: 1 * time.Second,
 		Max:     3 * time.Second,
@@ -107,7 +106,7 @@ func TestWait(t *testing.T) {
 		t.Fatal(err)
 	}
 	if !proto.Equal(&resp, responseDur) {
-		t.Errorf("response, got %v, want %v", resp, responseDur)
+		t.Errorf("response, got %v, want %v", &resp, responseDur)
 	}
 	if !op.Done() {
 		t.Errorf("operation should have completed")

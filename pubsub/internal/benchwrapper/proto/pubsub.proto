@@ -17,6 +17,7 @@ syntax = "proto3";
 package pubsub_bench;
 
 option java_multiple_files = true;
+option go_package = "cloud.google.com/go/pubsub/internal/benchwrapper/proto;pubsub_bench";
 
 message PubsubRecv {
   // The subscription identifier corresponding to number of messages sent.

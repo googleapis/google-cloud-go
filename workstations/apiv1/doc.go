@@ -20,8 +20,6 @@
 // Allows administrators to create managed developer environments in the
 // cloud.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

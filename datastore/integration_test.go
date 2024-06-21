@@ -32,6 +32,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/rpcreplay"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
@@ -232,7 +233,8 @@ func TestIntegration_NewClient(t *testing.T) {
 }
 
 func TestIntegration_Basics(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	defer cancel()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
@@ -308,7 +310,8 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 }
 
 func TestIntegration_TopLevelKeyLoaded(t *testing.T) {
-	ctx, _ := context.WithTimeout(context.Background(), time.Second*20)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+	defer cancel()
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
@@ -753,6 +756,256 @@ func TestIntegration_Filters(t *testing.T) {
 	})
 }
 
+func populateData(t *testing.T, client *Client, childrenCount int, time int64, testKey string) ([]*Key, *Key, func()) {
+	ctx := context.Background()
+	parent := NameKey("SQParent", keyPrefix+testKey+suffix, nil)
+
+	children := []*SQChild{}
+
+	for i := 0; i < childrenCount; i++ {
+		children = append(children, &SQChild{I: i, T: time, U: time, V: 1.5, W: "str"})
+	}
+	keys := make([]*Key, childrenCount)
+	for i := range keys {
+		keys[i] = NameKey("SQChild", "sqChild"+fmt.Sprint(i), parent)
+	}
+	keys, err := client.PutMulti(ctx, keys, children)
+	if err != nil {
+		t.Fatalf("client.PutMulti: %v", err)
+	}
+
+	cleanup := func() {
+		err := client.DeleteMulti(ctx, keys)
+		if err != nil {
+			t.Errorf("client.DeleteMulti: %v", err)
+		}
+	}
+	return keys, parent, cleanup
+}
+
+type RunTransactionResult struct {
+	runTime float64
+	err     error
+}
+
+func TestIntegration_BeginLaterPerf(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	runOptions := []bool{true, false} // whether BeginLater transaction option is used
+	var avgRunTimes [2]float64        // In seconds
+	numRepetitions := 10
+	numKeys := 10
+
+	res := make(chan RunTransactionResult)
+	for i, runOption := range runOptions {
+		sumRunTime := float64(0)
+
+		// Create client
+		ctx := context.Background()
+		client := newTestClient(ctx, t)
+		defer client.Close()
+
+		// Populate data
+		now := timeNow.Truncate(time.Millisecond).Unix()
+		keys, _, cleanupData := populateData(t, client, numKeys, now, "BeginLaterPerf"+fmt.Sprint(runOption)+fmt.Sprint(now))
+		defer cleanupData()
+
+		for rep := 0; rep < numRepetitions; rep++ {
+			go runTransaction(ctx, client, keys, res, runOption, t)
+		}
+		for rep := 0; rep < numRepetitions; rep++ {
+			runTransactionResult := <-res
+			if runTransactionResult.err != nil {
+				t.Fatal(runTransactionResult.err)
+			}
+			sumRunTime += runTransactionResult.runTime
+		}
+
+		avgRunTimes[i] = sumRunTime / float64(numRepetitions)
+	}
+	improvement := ((avgRunTimes[1] - avgRunTimes[0]) / avgRunTimes[1]) * 100
+	if improvement < 0 {
+		t.Logf("Run times:: with BeginLater: %.3fs, without BeginLater: %.3fs. improvement: %.2f%%", avgRunTimes[0], avgRunTimes[1], improvement)
+		t.Fatal("No perf improvement because of new transaction consistency type.")
+	}
+}
+
+func runTransaction(ctx context.Context, client *Client, keys []*Key, res chan RunTransactionResult, beginLater bool, t *testing.T) {
+
+	numKeys := len(keys)
+	txOpts := []TransactionOption{}
+	if beginLater {
+		txOpts = append(txOpts, BeginLater)
+	}
+
+	start := time.Now()
+	// Create transaction
+	tx, err := client.NewTransaction(ctx, txOpts...)
+	if err != nil {
+		runTransactionResult := RunTransactionResult{
+			err: fmt.Errorf("Failed to create transaction: %v", err),
+		}
+		res <- runTransactionResult
+		return
+	}
+
+	// Perform operations in transaction
+	dst := make([]*SQChild, numKeys)
+	if err := tx.GetMulti(keys, dst); err != nil {
+		runTransactionResult := RunTransactionResult{
+			err: fmt.Errorf("GetMulti got: %v, want: nil", err),
+		}
+		res <- runTransactionResult
+		return
+	}
+	if _, err := tx.PutMulti(keys, dst); err != nil {
+		runTransactionResult := RunTransactionResult{
+			err: fmt.Errorf("PutMulti got: %v, want: nil", err),
+		}
+		res <- runTransactionResult
+		return
+	}
+
+	// Commit the transaction
+	if _, err := tx.Commit(); err != nil {
+		runTransactionResult := RunTransactionResult{
+			err: fmt.Errorf("Commit got: %v, want: nil", err),
+		}
+		res <- runTransactionResult
+		return
+	}
+
+	runTransactionResult := RunTransactionResult{
+		runTime: time.Since(start).Seconds(),
+	}
+	res <- runTransactionResult
+}
+
+func TestIntegration_BeginLater(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	wantAggResult := AggregationResult(map[string]interface{}{
+		"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+		"sum":   &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+		"avg":   &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 1}},
+	})
+
+	mockErr := errors.New("Mock error")
+	testcases := []struct {
+		desc              string
+		options           []TransactionOption
+		hasReadOnlyOption bool
+		failTransaction   bool
+	}{
+		{
+			desc:              "Failed transaction with BeginLater, MaxAttempts(2), ReadOnly options",
+			options:           []TransactionOption{BeginLater, MaxAttempts(2), ReadOnly},
+			hasReadOnlyOption: true,
+			failTransaction:   true,
+		},
+		{
+			desc:              "BeginLater, MaxAttempts(2), ReadOnly",
+			options:           []TransactionOption{BeginLater, MaxAttempts(2), ReadOnly},
+			hasReadOnlyOption: true,
+			failTransaction:   false,
+		},
+		{
+			desc:              "BeginLater, MaxAttempts(2)",
+			options:           []TransactionOption{BeginLater, MaxAttempts(2)},
+			hasReadOnlyOption: false,
+		},
+		{
+			desc:              "BeginLater, ReadOnly",
+			options:           []TransactionOption{BeginLater, ReadOnly},
+			hasReadOnlyOption: true,
+		},
+	}
+
+	for _, testcase := range testcases {
+		// Populate data
+		now := timeNow.Truncate(time.Millisecond).Unix()
+		keys, parent, cleanupData := populateData(t, client, 3, now, "BeginLater")
+
+		testutil.Retry(t, 5, 10*time.Second, func(r *testutil.R) {
+			_, err := client.RunInTransaction(ctx, func(tx *Transaction) error {
+				query := NewQuery("SQChild").Ancestor(parent).FilterField("T", "=", now).Transaction(tx)
+				dst := []*SQChild{}
+				if _, err := client.GetAll(ctx, query, &dst); err != nil {
+					return err
+				}
+
+				aggQuery := query.NewAggregationQuery().
+					WithCount("count").
+					WithSum("I", "sum").
+					WithAvg("I", "avg")
+				gotAggResult, err := client.RunAggregationQuery(ctx, aggQuery)
+				if err != nil {
+					return err
+				}
+				if !reflect.DeepEqual(gotAggResult, wantAggResult) {
+					return fmt.Errorf("Mismatch in aggregation result got: %+v, want: %+v", gotAggResult, wantAggResult)
+				}
+
+				if !testcase.hasReadOnlyOption {
+					v := &SQChild{I: 22, T: now, U: now, V: 1.5, W: "str"}
+					if _, err := tx.Put(keys[0], v); err != nil {
+						return err
+					}
+
+					if err := tx.Delete(keys[1]); err != nil {
+						return err
+					}
+				}
+				if testcase.failTransaction {
+					// Deliberately, fail the transaction to rollback it
+					return mockErr
+				}
+				return nil
+			}, testcase.options...)
+
+			if !testcase.failTransaction {
+				if err != nil {
+					r.Errorf("%v got: %v, want: nil", testcase.desc, err)
+				}
+				if !testcase.hasReadOnlyOption {
+					// Transactions are atomic. Check if Put and Delete succeeded ensuring they were run as transaction
+					verifyBeginLater(r, testcase.desc+" Committed Put", client, parent, now, 22, 1)
+					verifyBeginLater(r, testcase.desc+" Committed Delete", client, parent, now, 1, 0)
+				}
+			} else {
+				if err == nil {
+					r.Errorf("%v got: nil, want: %v", testcase.desc, mockErr)
+				}
+				if !testcase.hasReadOnlyOption {
+					// Transactions are atomic. Check if Put and Delete rollbacked ensuring they were run as transaction
+					verifyBeginLater(r, testcase.desc+" Rollbacked Put", client, parent, now, 22, 0)
+					verifyBeginLater(r, testcase.desc+" Rollbacked Delete", client, parent, now, 1, 1)
+				}
+			}
+		})
+		cleanupData()
+	}
+}
+
+func verifyBeginLater(r *testutil.R, errPrefix string, client *Client, parent *Key, tvalue int64, ivalue, wantDstLen int) {
+	ctx := context.Background()
+	query := NewQuery("SQChild").Ancestor(parent).FilterField("T", "=", tvalue).FilterField("I", "=", ivalue)
+	dst := []*SQChild{}
+	_, err := client.GetAll(ctx, query, &dst)
+	if err != nil {
+		r.Errorf("%v GetAll got: %v, want: nil", errPrefix, err)
+	}
+	if len(dst) != wantDstLen {
+		r.Errorf("%v len(dst) got: %v, want: %v", errPrefix, len(dst), wantDstLen)
+	}
+}
+
 func TestIntegration_AggregationQueriesInTransaction(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t)
@@ -988,6 +1241,98 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 		})
 	}
 
+}
+
+func TestIntegration_RunAggregationQueryWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	_, _, now, parent, cleanup := createTestEntities(ctx, t, client, "RunAggregationQueryWithOptions", 3)
+	defer cleanup()
+
+	aggQuery := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).NewAggregationQuery().
+		WithSum("I", "i_sum").WithAvg("I", "i_avg").WithCount("count")
+	wantAggResult := map[string]interface{}{
+		"i_sum": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 6}},
+		"i_avg": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: 2}},
+		"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 3}},
+	}
+
+	testCases := []struct {
+		desc        string
+		wantFailure bool
+		wantErrMsg  string
+		wantRes     AggregationWithOptionsResult
+		opts        []RunOption
+	}{
+		{
+			desc: "No options",
+			wantRes: AggregationWithOptionsResult{
+				Result: wantAggResult,
+			},
+		},
+		{
+			desc: "ExplainOptions.Analyze is false",
+			wantRes: AggregationWithOptionsResult{
+				ExplainMetrics: &ExplainMetrics{
+					PlanSummary: &PlanSummary{
+						IndexesUsed: []*map[string]interface{}{
+							{
+								"properties":  "(T ASC, I ASC, __name__ ASC)",
+								"query_scope": "Includes ancestors",
+							},
+						},
+					},
+				},
+			},
+			opts: []RunOption{ExplainOptions{}},
+		},
+		{
+			desc: "ExplainOptions.Analyze is true",
+			wantRes: AggregationWithOptionsResult{
+				Result: wantAggResult,
+				ExplainMetrics: &ExplainMetrics{
+					PlanSummary: &PlanSummary{
+						IndexesUsed: []*map[string]interface{}{
+							{
+								"properties":  "(T ASC, I ASC, __name__ ASC)",
+								"query_scope": "Includes ancestors",
+							},
+						},
+					},
+					ExecutionStats: &ExecutionStats{
+						ReadOperations:  1,
+						ResultsReturned: 1,
+						DebugStats: &map[string]interface{}{
+							"documents_scanned":     "0",
+							"index_entries_scanned": "3",
+						},
+					},
+				},
+			},
+			opts: []RunOption{ExplainOptions{Analyze: true}},
+		},
+	}
+
+	for _, testcase := range testCases {
+		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			gotRes, gotErr := client.RunAggregationQueryWithOptions(ctx, aggQuery, testcase.opts...)
+			if gotErr != nil {
+				r.Errorf("err: got %v, want: nil", gotErr)
+			}
+
+			if gotErr == nil && !testutil.Equal(gotRes.Result, testcase.wantRes.Result,
+				cmpopts.IgnoreFields(ExplainMetrics{})) {
+				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes, testcase.wantRes)
+				return
+			}
+
+			if err := cmpExplainMetrics(gotRes.ExplainMetrics, testcase.wantRes.ExplainMetrics); err != nil {
+				r.Errorf("%q: Mismatch in ExplainMetrics %+v", testcase.desc, err)
+			}
+		})
+	}
 }
 
 type ckey struct{}
@@ -1304,6 +1649,189 @@ func TestIntegration_GetAllWithFieldMismatch(t *testing.T) {
 	if _, ok := err.(*ErrFieldMismatch); !ok {
 		t.Errorf("client.GetAll: got err=%v, want ErrFieldMismatch", err)
 	}
+}
+
+func createTestEntities(ctx context.Context, t *testing.T, client *Client, partialNameKey string, count int) ([]*Key, []SQChild, int64, *Key, func()) {
+	parent := NameKey("SQParent", keyPrefix+partialNameKey+suffix, nil)
+	now := timeNow.Truncate(time.Millisecond).Unix()
+
+	entities := []SQChild{}
+	for i := 0; i < count; i++ {
+		entities = append(entities, SQChild{I: i + 1, T: now, U: now, V: 1.5, W: "str"})
+	}
+
+	keys := make([]*Key, len(entities))
+	for i := range keys {
+		keys[i] = IncompleteKey("SQChild", parent)
+	}
+
+	// Create entities
+	keys, err := client.PutMulti(ctx, keys, entities)
+	if err != nil {
+		t.Fatalf("client.PutMulti: %v", err)
+	}
+	return keys, entities, now, parent, func() {
+		err := client.DeleteMulti(ctx, keys)
+		if err != nil {
+			t.Errorf("client.DeleteMulti: %v", err)
+		}
+	}
+}
+
+type runWithOptionsTestcase struct {
+	desc               string
+	wantKeys           []*Key
+	wantExplainMetrics *ExplainMetrics
+	wantEntities       []SQChild
+	opts               []RunOption
+}
+
+func getRunWithOptionsTestcases(ctx context.Context, t *testing.T, client *Client, partialNameKey string, count int) ([]runWithOptionsTestcase, int64, *Key, func()) {
+	keys, entities, now, parent, cleanup := createTestEntities(ctx, t, client, partialNameKey, count)
+	return []runWithOptionsTestcase{
+		{
+			desc:         "No ExplainOptions",
+			wantKeys:     keys,
+			wantEntities: entities,
+		},
+		{
+			desc: "ExplainOptions.Analyze is false",
+			opts: []RunOption{ExplainOptions{}},
+			wantExplainMetrics: &ExplainMetrics{
+				PlanSummary: &PlanSummary{
+					IndexesUsed: []*map[string]interface{}{
+						{
+							"properties":  "(T ASC, I ASC, __name__ ASC)",
+							"query_scope": "Includes ancestors",
+						},
+					},
+				},
+			},
+		},
+		{
+			desc:     "ExplainOptions.Analyze is true",
+			opts:     []RunOption{ExplainOptions{Analyze: true}},
+			wantKeys: keys,
+			wantExplainMetrics: &ExplainMetrics{
+				ExecutionStats: &ExecutionStats{
+					ReadOperations:  int64(count),
+					ResultsReturned: int64(count),
+					DebugStats: &map[string]interface{}{
+						"documents_scanned":     fmt.Sprint(count),
+						"index_entries_scanned": fmt.Sprint(count),
+					},
+				},
+				PlanSummary: &PlanSummary{
+					IndexesUsed: []*map[string]interface{}{
+						{
+							"properties":  "(T ASC, I ASC, __name__ ASC)",
+							"query_scope": "Includes ancestors",
+						},
+					},
+				},
+			},
+			wantEntities: entities,
+		},
+	}, now, parent, cleanup
+}
+
+func TestIntegration_GetAllWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+	testcases, now, parent, cleanup := getRunWithOptionsTestcases(ctx, t, client, "GetAllWithOptions", 3)
+	defer cleanup()
+	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
+	for _, testcase := range testcases {
+		var gotSQChildsFromGetAll []SQChild
+		gotRes, gotErr := client.GetAllWithOptions(ctx, query, &gotSQChildsFromGetAll, testcase.opts...)
+		if gotErr != nil {
+			t.Errorf("%v err: got: %+v, want: nil", testcase.desc, gotErr)
+		}
+		if !testutil.Equal(gotSQChildsFromGetAll, testcase.wantEntities) {
+			t.Errorf("%v entities: got: %+v, want: %+v", testcase.desc, gotSQChildsFromGetAll, testcase.wantEntities)
+		}
+		if !testutil.Equal(gotRes.Keys, testcase.wantKeys) {
+			t.Errorf("%v keys: got: %+v, want: %+v", testcase.desc, gotRes.Keys, testcase.wantKeys)
+		}
+		if err := cmpExplainMetrics(gotRes.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
+			t.Errorf("%v %+v", testcase.desc, err)
+		}
+	}
+}
+
+func TestIntegration_RunWithOptions(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+	testcases, now, parent, cleanup := getRunWithOptionsTestcases(ctx, t, client, "RunWithOptions", 3)
+	defer cleanup()
+	query := NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Order("I")
+	for _, testcase := range testcases {
+		var gotSQChildsFromRun []SQChild
+		iter := client.RunWithOptions(ctx, query, testcase.opts...)
+		for {
+			var gotSQChild SQChild
+			_, err := iter.Next(&gotSQChild)
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Errorf("%v iter.Next: %v", testcase.desc, err)
+			}
+			gotSQChildsFromRun = append(gotSQChildsFromRun, gotSQChild)
+		}
+		if !testutil.Equal(gotSQChildsFromRun, testcase.wantEntities) {
+			t.Errorf("%v entities: got: %+v, want: %+v", testcase.desc, gotSQChildsFromRun, testcase.wantEntities)
+		}
+
+		if err := cmpExplainMetrics(iter.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
+			t.Errorf("%v %+v", testcase.desc, err)
+		}
+	}
+}
+
+func cmpExplainMetrics(got *ExplainMetrics, want *ExplainMetrics) error {
+	if (got != nil && want == nil) || (got == nil && want != nil) {
+		return fmt.Errorf("ExplainMetrics: got: %+v, want: %+v", got, want)
+	}
+	if got == nil {
+		return nil
+	}
+	if !testutil.Equal(got.PlanSummary, want.PlanSummary) {
+		return fmt.Errorf("Plan: got: %+v, want: %+v", got.PlanSummary, want.PlanSummary)
+	}
+	if err := cmpExecutionStats(got.ExecutionStats, want.ExecutionStats); err != nil {
+		return err
+	}
+	return nil
+}
+
+func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
+	if (got != nil && want == nil) || (got == nil && want != nil) {
+		return fmt.Errorf("ExecutionStats: got: %+v, want: %+v", got, want)
+	}
+	if got == nil {
+		return nil
+	}
+
+	// Compare all fields except DebugStats
+	if !testutil.Equal(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats", "ExecutionDuration")) {
+		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s", testutil.Diff(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats")))
+	}
+
+	// Compare DebugStats
+	gotDebugStats := *got.DebugStats
+	for wantK, wantV := range *want.DebugStats {
+		// ExecutionStats.Debugstats has some keys whose values cannot be predicted. So, those values have not been included in want
+		// Here, compare only those values included in want
+		gotV, ok := gotDebugStats[wantK]
+		if !ok || !testutil.Equal(gotV, wantV) {
+			return fmt.Errorf("ExecutionStats.DebugStats: wantKey: %v  gotValue: %+v, wantValue: %+v", wantK, gotV, wantV)
+		}
+	}
+
+	return nil
 }
 
 func TestIntegration_KindlessQueries(t *testing.T) {

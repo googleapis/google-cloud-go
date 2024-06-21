@@ -44,25 +44,22 @@ var (
 	fullyQualifiedSubName   = fmt.Sprintf("projects/%s/subscriptions/%s", projName, subName)
 )
 
-func TestSplitRequestIDs(t *testing.T) {
+func TestMakeBatches(t *testing.T) {
 	t.Parallel()
-	ids := []string{"aaaa", "bbbb", "cccc", "dddd", "eeee"}
-	for _, test := range []struct {
-		ids        []string
-		splitIndex int
+	ids := []string{"a", "b", "c", "d", "e"}
+	for i, test := range []struct {
+		ids  []string
+		want [][]string
 	}{
-		{[]string{}, 0}, // empty slice, no split
-		{ids, 2},        // slice of size 5, split at index 2
-		{ids[:2], 2},    // slice of size 3, split at index 2
-		{ids[:1], 1},    // slice of size 1, split at index 1
+		{[]string{}, [][]string{}},                       // empty slice
+		{ids, [][]string{{"a", "b"}, {"c", "d"}, {"e"}}}, // slice of size 5
+		{ids[:3], [][]string{{"a", "b"}, {"c"}}},         // slice of size 3
+		{ids[:1], [][]string{{"a"}}},                     // slice of size 1
 	} {
-		got1, got2 := splitRequestIDs(test.ids, 2)
-		want1, want2 := test.ids[:test.splitIndex], test.ids[test.splitIndex:]
-		if !testutil.Equal(len(got1), len(want1)) {
-			t.Errorf("%v, 1: got %v, want %v", test, got1, want1)
-		}
-		if !testutil.Equal(len(got2), len(want2)) {
-			t.Errorf("%v, 2: got %v, want %v", test, got2, want2)
+		got := makeBatches(test.ids, 2)
+		want := test.want
+		if !testutil.Equal(len(got), len(want)) {
+			t.Errorf("test %d: %v, got %v, want %v", i, test, got, want)
 		}
 	}
 }
@@ -261,10 +258,8 @@ func startReceiving(ctx context.Context, t *testing.T, s *Subscription, recvdWg 
 			recvdWg.Done()
 		}
 	})
-	if err != nil {
-		if status.Code(err) != codes.Canceled {
-			t.Error(err)
-		}
+	if err != nil && !errors.Is(err, context.Canceled) {
+		t.Error(err)
 	}
 }
 
@@ -397,7 +392,7 @@ func TestIterator_ModifyAckContextDeadline(t *testing.T) {
 	err = s.Receive(cctx, func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
-	if err != nil {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("Got error in Receive: %v", err)
 	}
 

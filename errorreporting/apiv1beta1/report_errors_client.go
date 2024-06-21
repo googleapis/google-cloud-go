@@ -48,6 +48,7 @@ type ReportErrorsCallOptions struct {
 func defaultReportErrorsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("clouderrorreporting.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
@@ -248,6 +249,7 @@ func NewReportErrorsRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultReportErrorsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://clouderrorreporting.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://clouderrorreporting.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://clouderrorreporting.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),

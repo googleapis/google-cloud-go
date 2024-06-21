@@ -55,6 +55,11 @@
                 "GenerateAccessToken"
               ]
             },
+            "GenerateOfflineCredential": {
+              "methods": [
+                "GenerateOfflineCredential"
+              ]
+            },
             "GetCluster": {
               "methods": [
                 "GetCluster"
@@ -78,6 +83,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetServerConfig": {
+              "methods": [
+                "GetServerConfig"
               ]
             },
             "GetVpnConnection": {
@@ -123,6 +133,11 @@
             "UpdateNodePool": {
               "methods": [
                 "UpdateNodePool"
+              ]
+            },
+            "UpgradeCluster": {
+              "methods": [
+                "UpgradeCluster"
               ]
             }
           }
@@ -175,6 +190,11 @@
                 "GenerateAccessToken"
               ]
             },
+            "GenerateOfflineCredential": {
+              "methods": [
+                "GenerateOfflineCredential"
+              ]
+            },
             "GetCluster": {
               "methods": [
                 "GetCluster"
@@ -198,6 +218,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetServerConfig": {
+              "methods": [
+                "GetServerConfig"
               ]
             },
             "GetVpnConnection": {
@@ -243,6 +268,11 @@
             "UpdateNodePool": {
               "methods": [
                 "UpdateNodePool"
+              ]
+            },
+            "UpgradeCluster": {
+              "methods": [
+                "UpgradeCluster"
               ]
             }
           }

@@ -20,8 +20,6 @@
 // A unified platform that helps you accelerate your end-to-end cloud journey
 // from your current on-premises or cloud environments to Google Cloud.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

@@ -61,7 +61,7 @@ func (c *Options) validate() bool {
 // configured with the provided options.
 func NewTokenProvider(opts *Options) (auth.TokenProvider, error) {
 	if !opts.validate() {
-		return nil, errors.New("detect: invalid external_account_authorized_user configuration")
+		return nil, errors.New("credentials: invalid external_account_authorized_user configuration")
 	}
 
 	tp := &tokenProvider{
@@ -95,7 +95,7 @@ func (tp *tokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 		return nil, err
 	}
 	if stsResponse.ExpiresIn < 0 {
-		return nil, errors.New("detect: invalid expiry from security token service")
+		return nil, errors.New("credentials: invalid expiry from security token service")
 	}
 
 	// guarded by the wrapping with CachedTokenProvider

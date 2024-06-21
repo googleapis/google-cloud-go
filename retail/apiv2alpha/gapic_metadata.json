@@ -49,6 +49,60 @@
         }
       }
     },
+    "BranchService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BranchClient",
+          "rpcs": {
+            "GetBranch": {
+              "methods": [
+                "GetBranch"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListBranches": {
+              "methods": [
+                "ListBranches"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BranchClient",
+          "rpcs": {
+            "GetBranch": {
+              "methods": [
+                "GetBranch"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListBranches": {
+              "methods": [
+                "ListBranches"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "CatalogService": {
       "clients": {
         "grpc": {
@@ -711,6 +765,120 @@
             "UpdateProduct": {
               "methods": [
                 "UpdateProduct"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ProjectService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ProjectClient",
+          "rpcs": {
+            "AcceptTerms": {
+              "methods": [
+                "AcceptTerms"
+              ]
+            },
+            "EnrollSolution": {
+              "methods": [
+                "EnrollSolution"
+              ]
+            },
+            "GetAlertConfig": {
+              "methods": [
+                "GetAlertConfig"
+              ]
+            },
+            "GetLoggingConfig": {
+              "methods": [
+                "GetLoggingConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProject": {
+              "methods": [
+                "GetProject"
+              ]
+            },
+            "ListEnrolledSolutions": {
+              "methods": [
+                "ListEnrolledSolutions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateAlertConfig": {
+              "methods": [
+                "UpdateAlertConfig"
+              ]
+            },
+            "UpdateLoggingConfig": {
+              "methods": [
+                "UpdateLoggingConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ProjectClient",
+          "rpcs": {
+            "AcceptTerms": {
+              "methods": [
+                "AcceptTerms"
+              ]
+            },
+            "EnrollSolution": {
+              "methods": [
+                "EnrollSolution"
+              ]
+            },
+            "GetAlertConfig": {
+              "methods": [
+                "GetAlertConfig"
+              ]
+            },
+            "GetLoggingConfig": {
+              "methods": [
+                "GetLoggingConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetProject": {
+              "methods": [
+                "GetProject"
+              ]
+            },
+            "ListEnrolledSolutions": {
+              "methods": [
+                "ListEnrolledSolutions"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateAlertConfig": {
+              "methods": [
+                "UpdateAlertConfig"
+              ]
+            },
+            "UpdateLoggingConfig": {
+              "methods": [
+                "UpdateLoggingConfig"
               ]
             }
           }

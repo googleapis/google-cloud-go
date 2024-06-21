@@ -19,7 +19,7 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	pb "github.com/golang/protobuf/ptypes/struct"
+	pb "google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestDecodeToMap(t *testing.T) {
@@ -27,21 +27,23 @@ func TestDecodeToMap(t *testing.T) {
 		t.Errorf("DecodeToMap(nil) = %v, want nil", got)
 	}
 	nullv := &pb.Value{Kind: &pb.Value_NullValue{}}
-	stringv := &pb.Value{Kind: &pb.Value_StringValue{"x"}}
-	boolv := &pb.Value{Kind: &pb.Value_BoolValue{true}}
-	numberv := &pb.Value{Kind: &pb.Value_NumberValue{2.7}}
+	stringv := &pb.Value{Kind: &pb.Value_StringValue{StringValue: "x"}}
+	boolv := &pb.Value{Kind: &pb.Value_BoolValue{BoolValue: true}}
+	numberv := &pb.Value{Kind: &pb.Value_NumberValue{NumberValue: 2.7}}
 	in := &pb.Struct{Fields: map[string]*pb.Value{
 		"n": nullv,
 		"s": stringv,
 		"b": boolv,
 		"f": numberv,
-		"l": {Kind: &pb.Value_ListValue{&pb.ListValue{
-			Values: []*pb.Value{nullv, stringv, boolv, numberv},
-		}}},
-		"S": {Kind: &pb.Value_StructValue{&pb.Struct{Fields: map[string]*pb.Value{
-			"n1": nullv,
-			"b1": boolv,
-		}}}},
+		"l": {Kind: &pb.Value_ListValue{
+			ListValue: &pb.ListValue{
+				Values: []*pb.Value{nullv, stringv, boolv, numberv},
+			}}},
+		"S": {Kind: &pb.Value_StructValue{
+			StructValue: &pb.Struct{Fields: map[string]*pb.Value{
+				"n1": nullv,
+				"b1": boolv,
+			}}}},
 	}}
 	want := map[string]interface{}{
 		"n": nil,

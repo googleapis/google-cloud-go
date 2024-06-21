@@ -70,7 +70,7 @@ func ExchangeToken(ctx context.Context, opts *Options) (*TokenResponse, error) {
 	if opts.ExtraOpts != nil {
 		opts, err := json.Marshal(opts.ExtraOpts)
 		if err != nil {
-			return nil, fmt.Errorf("detect: failed to marshal additional options: %w", err)
+			return nil, fmt.Errorf("credentials: failed to marshal additional options: %w", err)
 		}
 		data.Set("options", string(opts))
 	}
@@ -83,7 +83,7 @@ func doRequest(ctx context.Context, opts *Options, data url.Values) (*TokenRespo
 
 	req, err := http.NewRequestWithContext(ctx, "POST", opts.Endpoint, strings.NewReader(encodedData))
 	if err != nil {
-		return nil, fmt.Errorf("detect: failed to properly build http request: %w", err)
+		return nil, fmt.Errorf("credentials: failed to properly build http request: %w", err)
 
 	}
 	for key, list := range opts.Headers {
@@ -95,7 +95,7 @@ func doRequest(ctx context.Context, opts *Options, data url.Values) (*TokenRespo
 
 	resp, err := opts.Client.Do(req)
 	if err != nil {
-		return nil, fmt.Errorf("detect: invalid response from Secure Token Server: %w", err)
+		return nil, fmt.Errorf("credentials: invalid response from Secure Token Server: %w", err)
 	}
 	defer resp.Body.Close()
 
@@ -104,11 +104,11 @@ func doRequest(ctx context.Context, opts *Options, data url.Values) (*TokenRespo
 		return nil, err
 	}
 	if c := resp.StatusCode; c < http.StatusOK || c > http.StatusMultipleChoices {
-		return nil, fmt.Errorf("detect: status code %d: %s", c, body)
+		return nil, fmt.Errorf("credentials: status code %d: %s", c, body)
 	}
 	var stsResp TokenResponse
 	if err := json.Unmarshal(body, &stsResp); err != nil {
-		return nil, fmt.Errorf("detect: failed to unmarshal response body from Secure Token Server: %w", err)
+		return nil, fmt.Errorf("credentials: failed to unmarshal response body from Secure Token Server: %w", err)
 	}
 
 	return &stsResp, nil

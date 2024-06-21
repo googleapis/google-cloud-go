@@ -21,8 +21,8 @@ You can verify the name of the docker container name can be found in the
 In the `google-cloud-go` root directory:
 
 ```bash
-docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
-docker run --user $(id -u):$(id -g) --rm -v $(pwd):/repo -w /repo gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-latest
+docker run --user $(id -u):$(id -g) --rm -v $(pwd):/repo -w /repo gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-latest
 ```
 
 ## Making changes, rebuilding the docker container and updating the OwlBot SHA
@@ -59,15 +59,14 @@ the OwlBot lock file.
 
 After making changes to this package land in `main`, a new Docker image will be
 built and pushed automatically. To update the image version used by OwlBot, run
-the following commands (_you will need Docker installed and running_):
+the following command (_you will need Docker installed and running_):
 
 ```sh
-docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
-LATEST=`docker inspect --format='{{index .RepoDigests 0}}' gcr.io/cloud-devrel-public-resources/owlbot-go:latest`
-sed -i -e 's/sha256.*/'${LATEST#*@}'/g' ./.github/.OwlBot.lock.yaml
+docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-latest
 ```
 
-_Note: If run on macOS, the `sed -i` flag will need a `''` after it._
+Extract the `sha256` Digest from the logs emitted by the `pull` and set it as
+the digest in the [lockfile](../../.github/.OwlBot.lock.yaml).
 
 Send a pull request with the updated `.github/.OwlBot.lock.yaml`.
 

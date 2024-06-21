@@ -537,6 +537,12 @@ func ExampleRegistryClient_ListApiDeploymentRevisions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiDeploymentRevisionsResponse)
 	}
 }
 
@@ -568,6 +574,12 @@ func ExampleRegistryClient_ListApiDeployments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiDeploymentsResponse)
 	}
 }
 
@@ -599,6 +611,12 @@ func ExampleRegistryClient_ListApiSpecRevisions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiSpecRevisionsResponse)
 	}
 }
 
@@ -630,6 +648,12 @@ func ExampleRegistryClient_ListApiSpecs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiSpecsResponse)
 	}
 }
 
@@ -661,6 +685,12 @@ func ExampleRegistryClient_ListApiVersions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiVersionsResponse)
 	}
 }
 
@@ -692,6 +722,12 @@ func ExampleRegistryClient_ListApis() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApisResponse)
 	}
 }
 
@@ -723,6 +759,12 @@ func ExampleRegistryClient_ListArtifacts() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListArtifactsResponse)
 	}
 }
 
@@ -1004,6 +1046,12 @@ func ExampleRegistryClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -1181,5 +1229,11 @@ func ExampleRegistryClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

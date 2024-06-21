@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/apphub/v0.1.0...apphub/v0.1.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **apphub:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## 0.1.0 (2024-03-12)
 
 

@@ -38,7 +38,7 @@ func TestWriteBatch(t *testing.T) {
 						},
 					},
 					CurrentDocument: &pb.Precondition{
-						ConditionType: &pb.Precondition_Exists{false},
+						ConditionType: &pb.Precondition_Exists{Exists: false},
 					},
 				},
 				{ // Set
@@ -63,7 +63,7 @@ func TestWriteBatch(t *testing.T) {
 					},
 					UpdateMask: &pb.DocumentMask{FieldPaths: []string{"`*`"}},
 					CurrentDocument: &pb.Precondition{
-						ConditionType: &pb.Precondition_Exists{true},
+						ConditionType: &pb.Precondition_Exists{Exists: true},
 					},
 				},
 			},

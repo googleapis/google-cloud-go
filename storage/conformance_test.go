@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
@@ -28,6 +29,7 @@ import (
 
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -172,7 +174,22 @@ func TestSigningV4Conformance(t *testing.T) {
 					style = BucketBoundHostname(tc.BucketBoundHostname)
 				}
 
-				gotURL, err := SignedURL(tc.Bucket, tc.Object, &SignedURLOptions{
+				t.Setenv("STORAGE_EMULATOR_HOST", tc.EmulatorHostname)
+
+				opts := []option.ClientOption{option.WithoutAuthentication()}
+				if tc.ClientEndpoint != "" {
+					opts = append(opts, option.WithEndpoint(tc.ClientEndpoint))
+				}
+				if tc.UniverseDomain != "" {
+					opts = append(opts, option.WithUniverseDomain(tc.UniverseDomain))
+				}
+
+				c, err := NewClient(context.Background(), opts...)
+				if err != nil {
+					t.Fatalf("NewClient: %v", err)
+				}
+
+				gotURL, err := c.Bucket(tc.Bucket).SignedURL(tc.Object, &SignedURLOptions{
 					GoogleAccessID:  googleAccessID,
 					PrivateKey:      []byte(privateKey),
 					Method:          tc.Method,
@@ -182,6 +199,7 @@ func TestSigningV4Conformance(t *testing.T) {
 					QueryParameters: qp,
 					Style:           style,
 					Insecure:        tc.Scheme == "http",
+					Hostname:        tc.Hostname,
 				})
 				if err != nil {
 					t.Fatal(err)

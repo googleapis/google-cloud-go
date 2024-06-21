@@ -301,6 +301,12 @@ func ExampleServiceManagerClient_ListServiceConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicemanagementpb.ListServiceConfigsResponse)
 	}
 }
 
@@ -332,6 +338,12 @@ func ExampleServiceManagerClient_ListServiceRollouts() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicemanagementpb.ListServiceRolloutsResponse)
 	}
 }
 
@@ -363,6 +375,12 @@ func ExampleServiceManagerClient_ListServices() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicemanagementpb.ListServicesResponse)
 	}
 }
 
@@ -529,5 +547,11 @@ func ExampleServiceManagerClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

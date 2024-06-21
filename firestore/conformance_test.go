@@ -17,13 +17,13 @@
 package firestore
 
 import (
-	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
 	"math"
+	"os"
 	"path"
 	"path/filepath"
 	"strings"
@@ -32,12 +32,12 @@ import (
 
 	fspb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	pb "cloud.google.com/go/firestore/internal/conformance"
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
-	ts "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/encoding/protojson"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
+	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestConformance(t *testing.T) {
@@ -56,13 +56,13 @@ func TestConformance(t *testing.T) {
 			continue
 		}
 
-		inBytes, err := ioutil.ReadFile(filepath.Join(dir, f.Name()))
+		inBytes, err := os.ReadFile(filepath.Join(dir, f.Name()))
 		if err != nil {
 			t.Fatalf("%s: %v", f.Name(), err)
 		}
 
 		var tf pb.TestFile
-		if err := jsonpb.Unmarshal(bytes.NewReader(inBytes), &tf); err != nil {
+		if err := protojson.Unmarshal(inBytes, &tf); err != nil {
 			t.Fatalf("unmarshalling %s: %v", f.Name(), err)
 		}
 
@@ -99,11 +99,12 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 		}
 		srv.addRPC(req, []interface{}{
 			&fspb.BatchGetDocumentsResponse{
-				Result: &fspb.BatchGetDocumentsResponse_Found{&fspb.Document{
-					Name:       typedTestcase.Get.DocRefPath,
-					CreateTime: &ts.Timestamp{},
-					UpdateTime: &ts.Timestamp{},
-				}},
+				Result: &fspb.BatchGetDocumentsResponse_Found{
+					Found: &fspb.Document{
+						Name:       typedTestcase.Get.DocRefPath,
+						CreateTime: &ts.Timestamp{},
+						UpdateTime: &ts.Timestamp{},
+					}},
 				ReadTime: &ts.Timestamp{},
 			},
 		})
@@ -191,7 +192,7 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 		got, checkErr := q.toProto()
 		if err := check(checkErr, typedTestcase.Query.IsError); err == nil && checkErr == nil {
 			if want := typedTestcase.Query.Query; !proto.Equal(got, want) {
-				return fmt.Errorf("got:  %s\nwant: %s", proto.MarshalTextString(got), proto.MarshalTextString(want))
+				return fmt.Errorf("got:  %s\nwant: %s", prototext.Format(got), prototext.Format(want))
 			}
 		}
 
@@ -205,7 +206,7 @@ func runTest(test *pb.Test, c *Client, srv *mockServer) error {
 		}
 		srv.addRPC(&fspb.ListenRequest{
 			Database:     "projects/projectID/databases/(default)",
-			TargetChange: &fspb.ListenRequest_AddTarget{iter.ws.target},
+			TargetChange: &fspb.ListenRequest_AddTarget{AddTarget: iter.ws.target},
 		}, rs)
 		got, err := nSnapshots(iter, len(typedTestcase.Listen.Snapshots))
 		if err != nil {
@@ -364,11 +365,10 @@ func convertPrecondition(fp *fspb.Precondition) ([]Precondition, error) {
 	case *fspb.Precondition_Exists:
 		pc = exists(fp.Exists)
 	case *fspb.Precondition_UpdateTime:
-		tm, err := ptypes.Timestamp(fp.UpdateTime)
-		if err != nil {
+		if err := fp.UpdateTime.CheckValid(); err != nil {
 			return nil, err
 		}
-		pc = LastUpdateTime(tm)
+		pc = LastUpdateTime(fp.UpdateTime.AsTime())
 	default:
 		return nil, fmt.Errorf("unknown precondition type %T", fp)
 	}

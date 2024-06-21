@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.4...securesourcemanager/v0.1.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.3...securesourcemanager/v0.1.4) (2024-03-14)
 
 

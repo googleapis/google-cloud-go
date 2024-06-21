@@ -18,12 +18,12 @@
 // Generative Language API.
 //
 // The Gemini API allows developers to build generative AI applications using
-// Gemini models. Gemini is our most capable model in the world, built from
-// the ground up to be multimodal. It can generalize and seamlessly
-// understand, operate across, and combine different types of information.
-// You can use the Gemini API for use cases like reasoning across text and
-// images, content generation, dialogue agents, summarization and
-// classification systems, and more.
+// Gemini models. Gemini is our most capable model, built from the ground up
+// to be multimodal. It can generalize and seamlessly understand, operate
+// across, and combine different types of information including language,
+// images, audio, video, and code. You can use the Gemini API for use cases
+// like reasoning across text and images, content generation, dialogue
+// agents, summarization and classification systems, and more.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

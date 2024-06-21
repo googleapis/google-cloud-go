@@ -21,7 +21,7 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
-	dpb "github.com/golang/protobuf/ptypes/duration"
+	dpb "google.golang.org/protobuf/types/known/durationpb"
 	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 

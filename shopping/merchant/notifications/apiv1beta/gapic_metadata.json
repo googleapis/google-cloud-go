@@ -1,0 +1,73 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.notifications.v1beta",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/notifications/apiv1beta",
+  "services": {
+    "NotificationsApiService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "NotificationsApiClient",
+          "rpcs": {
+            "CreateNotificationSubscription": {
+              "methods": [
+                "CreateNotificationSubscription"
+              ]
+            },
+            "DeleteNotificationSubscription": {
+              "methods": [
+                "DeleteNotificationSubscription"
+              ]
+            },
+            "GetNotificationSubscription": {
+              "methods": [
+                "GetNotificationSubscription"
+              ]
+            },
+            "ListNotificationSubscriptions": {
+              "methods": [
+                "ListNotificationSubscriptions"
+              ]
+            },
+            "UpdateNotificationSubscription": {
+              "methods": [
+                "UpdateNotificationSubscription"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "NotificationsApiClient",
+          "rpcs": {
+            "CreateNotificationSubscription": {
+              "methods": [
+                "CreateNotificationSubscription"
+              ]
+            },
+            "DeleteNotificationSubscription": {
+              "methods": [
+                "DeleteNotificationSubscription"
+              ]
+            },
+            "GetNotificationSubscription": {
+              "methods": [
+                "GetNotificationSubscription"
+              ]
+            },
+            "ListNotificationSubscriptions": {
+              "methods": [
+                "ListNotificationSubscriptions"
+              ]
+            },
+            "UpdateNotificationSubscription": {
+              "methods": [
+                "UpdateNotificationSubscription"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

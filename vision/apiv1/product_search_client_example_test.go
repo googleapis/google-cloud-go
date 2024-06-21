@@ -359,6 +359,12 @@ func ExampleProductSearchClient_ListProductSets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionpb.ListProductSetsResponse)
 	}
 }
 
@@ -390,6 +396,12 @@ func ExampleProductSearchClient_ListProducts() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionpb.ListProductsResponse)
 	}
 }
 
@@ -421,6 +433,12 @@ func ExampleProductSearchClient_ListProductsInProductSet() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionpb.ListProductsInProductSetResponse)
 	}
 }
 
@@ -452,6 +470,12 @@ func ExampleProductSearchClient_ListReferenceImages() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*visionpb.ListReferenceImagesResponse)
 	}
 }
 

@@ -254,7 +254,7 @@ func TestPublishTimeout(t *testing.T) {
 	select {
 	case <-r.Ready():
 		_, err = r.Get(ctx)
-		if err != context.DeadlineExceeded {
+		if !errors.Is(err, context.DeadlineExceeded) {
 			t.Fatalf("got %v, want context.DeadlineExceeded", err)
 		}
 	case <-time.After(2 * topic.PublishSettings.Timeout):
@@ -745,5 +745,28 @@ func TestPublishOrderingNotEnabled(t *testing.T) {
 	res := publishSingleMessageWithKey(ctx, topic, "test", "non-existent-key")
 	if _, err := res.Get(ctx); !errors.Is(err, errTopicOrderingNotEnabled) {
 		t.Errorf("got %v, want errTopicOrderingNotEnabled", err)
+	}
+}
+
+func TestPublishCompression(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "topic-compression")
+	defer topic.Stop()
+
+	topic.PublishSettings.EnableCompression = true
+	topic.PublishSettings.CompressionBytesThreshold = 50
+
+	const messageSizeBytes = 1000
+
+	msg := &Message{Data: bytes.Repeat([]byte{'A'}, int(messageSizeBytes))}
+	res := topic.Publish(ctx, msg)
+
+	_, err := res.Get(ctx)
+	if err != nil {
+		t.Errorf("publish result got err: %v", err)
 	}
 }

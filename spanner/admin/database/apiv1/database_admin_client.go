@@ -540,7 +540,7 @@ type internalDatabaseAdminClient interface {
 //
 //	update the schema of pre-existing databases
 //
-//	create, delete and list backups for a database
+//	create, delete, copy and list backups for a database
 //
 //	restore a database from an existing backup
 type DatabaseAdminClient struct {
@@ -589,8 +589,8 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 // have a name of the format <database_name>/operations/<operation_id> and
 // can be used to track preparation of the database. The
 // metadata field type is
-// CreateDatabaseMetadata. The
-// response field type is
+// CreateDatabaseMetadata.
+// The response field type is
 // Database, if successful.
 func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
 	return c.internalClient.CreateDatabase(ctx, req, opts...)
@@ -663,7 +663,8 @@ func (c *DatabaseAdminClient) UpdateDatabaseOperation(name string) *UpdateDataba
 // the format <database_name>/operations/<operation_id> and can be used to
 // track execution of the schema change(s). The
 // metadata field type is
-// UpdateDatabaseDdlMetadata.  The operation has no response.
+// UpdateDatabaseDdlMetadata.
+// The operation has no response.
 func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
 	return c.internalClient.UpdateDatabaseDdl(ctx, req, opts...)
 }
@@ -733,12 +734,12 @@ func (c *DatabaseAdminClient) TestIamPermissions(ctx context.Context, req *iampb
 // projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>
 // and can be used to track creation of the backup. The
 // metadata field type is
-// CreateBackupMetadata. The
-// response field type is
-// Backup, if successful. Cancelling the returned operation will stop the
-// creation and delete the backup.
-// There can be only one pending backup creation per database. Backup creation
-// of different databases can run concurrently.
+// CreateBackupMetadata.
+// The response field type is
+// Backup, if successful.
+// Cancelling the returned operation will stop the creation and delete the
+// backup. There can be only one pending backup creation per database. Backup
+// creation of different databases can run concurrently.
 func (c *DatabaseAdminClient) CreateBackup(ctx context.Context, req *databasepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
 	return c.internalClient.CreateBackup(ctx, req, opts...)
 }
@@ -758,9 +759,10 @@ func (c *DatabaseAdminClient) CreateBackupOperation(name string) *CreateBackupOp
 // The metadata field type is
 // CopyBackupMetadata.
 // The response field type is
-// Backup, if successful. Cancelling the returned operation will stop the
-// copying and delete the backup.
-// Concurrent CopyBackup requests can run on the same source backup.
+// Backup, if successful.
+// Cancelling the returned operation will stop the copying and delete the
+// destination backup. Concurrent CopyBackup requests can run on the same
+// source backup.
 func (c *DatabaseAdminClient) CopyBackup(ctx context.Context, req *databasepb.CopyBackupRequest, opts ...gax.CallOption) (*CopyBackupOperation, error) {
 	return c.internalClient.CopyBackup(ctx, req, opts...)
 }
@@ -771,17 +773,20 @@ func (c *DatabaseAdminClient) CopyBackupOperation(name string) *CopyBackupOperat
 	return c.internalClient.CopyBackupOperation(name)
 }
 
-// GetBackup gets metadata on a pending or completed Backup.
+// GetBackup gets metadata on a pending or completed
+// Backup.
 func (c *DatabaseAdminClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	return c.internalClient.GetBackup(ctx, req, opts...)
 }
 
-// UpdateBackup updates a pending or completed Backup.
+// UpdateBackup updates a pending or completed
+// Backup.
 func (c *DatabaseAdminClient) UpdateBackup(ctx context.Context, req *databasepb.UpdateBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	return c.internalClient.UpdateBackup(ctx, req, opts...)
 }
 
-// DeleteBackup deletes a pending or completed Backup.
+// DeleteBackup deletes a pending or completed
+// Backup.
 func (c *DatabaseAdminClient) DeleteBackup(ctx context.Context, req *databasepb.DeleteBackupRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteBackup(ctx, req, opts...)
 }
@@ -906,7 +911,7 @@ type databaseAdminGRPCClient struct {
 //
 //	update the schema of pre-existing databases
 //
-//	create, delete and list backups for a database
+//	create, delete, copy and list backups for a database
 //
 //	restore a database from an existing backup
 func NewDatabaseAdminClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
@@ -963,7 +968,9 @@ func (c *databaseAdminGRPCClient) Connection() *grpc.ClientConn {
 func (c *databaseAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1002,7 +1009,7 @@ type databaseAdminRESTClient struct {
 //
 //	update the schema of pre-existing databases
 //
-//	create, delete and list backups for a database
+//	create, delete, copy and list backups for a database
 //
 //	restore a database from an existing backup
 func NewDatabaseAdminRESTClient(ctx context.Context, opts ...option.ClientOption) (*DatabaseAdminClient, error) {
@@ -1050,7 +1057,9 @@ func defaultDatabaseAdminRESTClientOptions() []option.ClientOption {
 func (c *databaseAdminRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1757,8 +1766,8 @@ func (c *databaseAdminRESTClient) ListDatabases(ctx context.Context, req *databa
 // have a name of the format <database_name>/operations/<operation_id> and
 // can be used to track preparation of the database. The
 // metadata field type is
-// CreateDatabaseMetadata. The
-// response field type is
+// CreateDatabaseMetadata.
+// The response field type is
 // Database, if successful.
 func (c *databaseAdminRESTClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -2012,7 +2021,8 @@ func (c *databaseAdminRESTClient) UpdateDatabase(ctx context.Context, req *datab
 // the format <database_name>/operations/<operation_id> and can be used to
 // track execution of the schema change(s). The
 // metadata field type is
-// UpdateDatabaseDdlMetadata.  The operation has no response.
+// UpdateDatabaseDdlMetadata.
+// The operation has no response.
 func (c *databaseAdminRESTClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2416,12 +2426,12 @@ func (c *databaseAdminRESTClient) TestIamPermissions(ctx context.Context, req *i
 // projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>
 // and can be used to track creation of the backup. The
 // metadata field type is
-// CreateBackupMetadata. The
-// response field type is
-// Backup, if successful. Cancelling the returned operation will stop the
-// creation and delete the backup.
-// There can be only one pending backup creation per database. Backup creation
-// of different databases can run concurrently.
+// CreateBackupMetadata.
+// The response field type is
+// Backup, if successful.
+// Cancelling the returned operation will stop the creation and delete the
+// backup. There can be only one pending backup creation per database. Backup
+// creation of different databases can run concurrently.
 func (c *databaseAdminRESTClient) CreateBackup(ctx context.Context, req *databasepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetBackup()
@@ -2442,6 +2452,11 @@ func (c *databaseAdminRESTClient) CreateBackup(ctx context.Context, req *databas
 	params.Add("encryptionConfig.encryptionType", fmt.Sprintf("%v", req.GetEncryptionConfig().GetEncryptionType()))
 	if req.GetEncryptionConfig().GetKmsKeyName() != "" {
 		params.Add("encryptionConfig.kmsKeyName", fmt.Sprintf("%v", req.GetEncryptionConfig().GetKmsKeyName()))
+	}
+	if items := req.GetEncryptionConfig().GetKmsKeyNames(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("encryptionConfig.kmsKeyNames", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2506,9 +2521,10 @@ func (c *databaseAdminRESTClient) CreateBackup(ctx context.Context, req *databas
 // The metadata field type is
 // CopyBackupMetadata.
 // The response field type is
-// Backup, if successful. Cancelling the returned operation will stop the
-// copying and delete the backup.
-// Concurrent CopyBackup requests can run on the same source backup.
+// Backup, if successful.
+// Cancelling the returned operation will stop the copying and delete the
+// destination backup. Concurrent CopyBackup requests can run on the same
+// source backup.
 func (c *databaseAdminRESTClient) CopyBackup(ctx context.Context, req *databasepb.CopyBackupRequest, opts ...gax.CallOption) (*CopyBackupOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -2578,7 +2594,8 @@ func (c *databaseAdminRESTClient) CopyBackup(ctx context.Context, req *databasep
 	}, nil
 }
 
-// GetBackup gets metadata on a pending or completed Backup.
+// GetBackup gets metadata on a pending or completed
+// Backup.
 func (c *databaseAdminRESTClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -2638,7 +2655,8 @@ func (c *databaseAdminRESTClient) GetBackup(ctx context.Context, req *databasepb
 	return resp, nil
 }
 
-// UpdateBackup updates a pending or completed Backup.
+// UpdateBackup updates a pending or completed
+// Backup.
 func (c *databaseAdminRESTClient) UpdateBackup(ctx context.Context, req *databasepb.UpdateBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetBackup()
@@ -2712,7 +2730,8 @@ func (c *databaseAdminRESTClient) UpdateBackup(ctx context.Context, req *databas
 	return resp, nil
 }
 
-// DeleteBackup deletes a pending or completed Backup.
+// DeleteBackup deletes a pending or completed
+// Backup.
 func (c *databaseAdminRESTClient) DeleteBackup(ctx context.Context, req *databasepb.DeleteBackupRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

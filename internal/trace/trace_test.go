@@ -63,7 +63,7 @@ func TestStartSpan_OpenCensus(t *testing.T) {
 	if IsOpenTelemetryTracingEnabled() {
 		t.Errorf("got true, want false")
 	}
-	spans := te.Spans
+	spans := te.Spans()
 	if len(spans) != 1 {
 		t.Fatalf("got %d, want 1", len(spans))
 	}

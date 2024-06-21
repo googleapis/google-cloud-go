@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/maps/routeoptimization/apiv1",
+    "version": "1.11.1",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.maps.routeoptimization.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "routeoptimization_v1_generated_RouteOptimization_BatchOptimizeTours_sync",
+      "title": "routeoptimization BatchOptimizeTours Sample",
+      "description": "BatchOptimizeTours optimizes vehicle tours for one or more `OptimizeToursRequest`\nmessages as a batch.\n\nThis method is a Long Running Operation (LRO). The inputs for optimization\n(`OptimizeToursRequest` messages) and outputs (`OptimizeToursResponse`\nmessages) are read/written from/to Cloud Storage in user-specified\nformat. Like the `OptimizeTours` method, each `OptimizeToursRequest`\ncontains a `ShipmentModel` and returns an `OptimizeToursResponse`\ncontaining `ShipmentRoute`s, which are a set of routes to be performed by\nvehicles minimizing the overall cost.",
+      "file": "Client/BatchOptimizeTours/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BatchOptimizeTours",
+        "fullName": "google.maps.routeoptimization.v1.Client.BatchOptimizeTours",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "routeoptimizationpb.BatchOptimizeToursRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BatchOptimizeToursOperation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.routeoptimization.v1.Client"
+        },
+        "method": {
+          "shortName": "BatchOptimizeTours",
+          "fullName": "google.maps.routeoptimization.v1.RouteOptimization.BatchOptimizeTours",
+          "service": {
+            "shortName": "RouteOptimization",
+            "fullName": "google.maps.routeoptimization.v1.RouteOptimization"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "routeoptimization_v1_generated_RouteOptimization_GetOperation_sync",
+      "title": "routeoptimization GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.maps.routeoptimization.v1.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.routeoptimization.v1.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "routeoptimization_v1_generated_RouteOptimization_OptimizeTours_sync",
+      "title": "routeoptimization OptimizeTours Sample",
+      "description": "OptimizeTours sends an `OptimizeToursRequest` containing a `ShipmentModel` and returns an\n`OptimizeToursResponse` containing `ShipmentRoute`s, which are a set of\nroutes to be performed by vehicles minimizing the overall cost.\n\nA `ShipmentModel` model consists mainly of `Shipment`s that need to be\ncarried out and `Vehicle`s that can be used to transport the `Shipment`s.\nThe `ShipmentRoute`s assign `Shipment`s to `Vehicle`s. More specifically,\nthey assign a series of `Visit`s to each vehicle, where a `Visit`\ncorresponds to a `VisitRequest`, which is a pickup or delivery for a\n`Shipment`.\n\nThe goal is to provide an assignment of `ShipmentRoute`s to `Vehicle`s that\nminimizes the total cost where cost has many components defined in the\n`ShipmentModel`.",
+      "file": "Client/OptimizeTours/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "OptimizeTours",
+        "fullName": "google.maps.routeoptimization.v1.Client.OptimizeTours",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "routeoptimizationpb.OptimizeToursRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*routeoptimizationpb.OptimizeToursResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.maps.routeoptimization.v1.Client"
+        },
+        "method": {
+          "shortName": "OptimizeTours",
+          "fullName": "google.maps.routeoptimization.v1.RouteOptimization.OptimizeTours",
+          "service": {
+            "shortName": "RouteOptimization",
+            "fullName": "google.maps.routeoptimization.v1.RouteOptimization"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

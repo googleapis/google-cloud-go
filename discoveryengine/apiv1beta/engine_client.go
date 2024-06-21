@@ -47,13 +47,17 @@ var newEngineClientHook clientHook
 
 // EngineCallOptions contains the retry settings for each method of EngineClient.
 type EngineCallOptions struct {
-	CreateEngine   []gax.CallOption
-	DeleteEngine   []gax.CallOption
-	UpdateEngine   []gax.CallOption
-	GetEngine      []gax.CallOption
-	ListEngines    []gax.CallOption
-	GetOperation   []gax.CallOption
-	ListOperations []gax.CallOption
+	CreateEngine    []gax.CallOption
+	DeleteEngine    []gax.CallOption
+	UpdateEngine    []gax.CallOption
+	GetEngine       []gax.CallOption
+	ListEngines     []gax.CallOption
+	PauseEngine     []gax.CallOption
+	ResumeEngine    []gax.CallOption
+	TuneEngine      []gax.CallOption
+	CancelOperation []gax.CallOption
+	GetOperation    []gax.CallOption
+	ListOperations  []gax.CallOption
 }
 
 func defaultEngineGRPCClientOptions() []option.ClientOption {
@@ -77,6 +81,21 @@ func defaultEngineCallOptions() *EngineCallOptions {
 		UpdateEngine: []gax.CallOption{},
 		GetEngine:    []gax.CallOption{},
 		ListEngines:  []gax.CallOption{},
+		PauseEngine:  []gax.CallOption{},
+		ResumeEngine: []gax.CallOption{},
+		TuneEngine:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -111,6 +130,20 @@ func defaultEngineRESTCallOptions() *EngineCallOptions {
 		UpdateEngine: []gax.CallOption{},
 		GetEngine:    []gax.CallOption{},
 		ListEngines:  []gax.CallOption{},
+		PauseEngine:  []gax.CallOption{},
+		ResumeEngine: []gax.CallOption{},
+		TuneEngine:   []gax.CallOption{},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -148,6 +181,11 @@ type internalEngineClient interface {
 	UpdateEngine(context.Context, *discoveryenginepb.UpdateEngineRequest, ...gax.CallOption) (*discoveryenginepb.Engine, error)
 	GetEngine(context.Context, *discoveryenginepb.GetEngineRequest, ...gax.CallOption) (*discoveryenginepb.Engine, error)
 	ListEngines(context.Context, *discoveryenginepb.ListEnginesRequest, ...gax.CallOption) *EngineIterator
+	PauseEngine(context.Context, *discoveryenginepb.PauseEngineRequest, ...gax.CallOption) (*discoveryenginepb.Engine, error)
+	ResumeEngine(context.Context, *discoveryenginepb.ResumeEngineRequest, ...gax.CallOption) (*discoveryenginepb.Engine, error)
+	TuneEngine(context.Context, *discoveryenginepb.TuneEngineRequest, ...gax.CallOption) (*TuneEngineOperation, error)
+	TuneEngineOperation(name string) *TuneEngineOperation
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -229,6 +267,38 @@ func (c *EngineClient) GetEngine(ctx context.Context, req *discoveryenginepb.Get
 // associated with the project.
 func (c *EngineClient) ListEngines(ctx context.Context, req *discoveryenginepb.ListEnginesRequest, opts ...gax.CallOption) *EngineIterator {
 	return c.internalClient.ListEngines(ctx, req, opts...)
+}
+
+// PauseEngine pauses the training of an existing engine. Only applicable if
+// SolutionType is
+// SOLUTION_TYPE_RECOMMENDATION.
+func (c *EngineClient) PauseEngine(ctx context.Context, req *discoveryenginepb.PauseEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
+	return c.internalClient.PauseEngine(ctx, req, opts...)
+}
+
+// ResumeEngine resumes the training of an existing engine. Only applicable if
+// SolutionType is
+// SOLUTION_TYPE_RECOMMENDATION.
+func (c *EngineClient) ResumeEngine(ctx context.Context, req *discoveryenginepb.ResumeEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
+	return c.internalClient.ResumeEngine(ctx, req, opts...)
+}
+
+// TuneEngine tunes an existing engine. Only applicable if
+// SolutionType is
+// SOLUTION_TYPE_RECOMMENDATION.
+func (c *EngineClient) TuneEngine(ctx context.Context, req *discoveryenginepb.TuneEngineRequest, opts ...gax.CallOption) (*TuneEngineOperation, error) {
+	return c.internalClient.TuneEngine(ctx, req, opts...)
+}
+
+// TuneEngineOperation returns a new TuneEngineOperation from a given name.
+// The name must be that of a previously created TuneEngineOperation, possibly from a different process.
+func (c *EngineClient) TuneEngineOperation(name string) *TuneEngineOperation {
+	return c.internalClient.TuneEngineOperation(name)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *EngineClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -324,7 +394,9 @@ func (c *engineGRPCClient) Connection() *grpc.ClientConn {
 func (c *engineGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -402,7 +474,9 @@ func defaultEngineRESTClientOptions() []option.ClientOption {
 func (c *engineRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -539,6 +613,76 @@ func (c *engineGRPCClient) ListEngines(ctx context.Context, req *discoveryengine
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *engineGRPCClient) PauseEngine(ctx context.Context, req *discoveryenginepb.PauseEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).PauseEngine[0:len((*c.CallOptions).PauseEngine):len((*c.CallOptions).PauseEngine)], opts...)
+	var resp *discoveryenginepb.Engine
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.engineClient.PauseEngine(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *engineGRPCClient) ResumeEngine(ctx context.Context, req *discoveryenginepb.ResumeEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ResumeEngine[0:len((*c.CallOptions).ResumeEngine):len((*c.CallOptions).ResumeEngine)], opts...)
+	var resp *discoveryenginepb.Engine
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.engineClient.ResumeEngine(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *engineGRPCClient) TuneEngine(ctx context.Context, req *discoveryenginepb.TuneEngineRequest, opts ...gax.CallOption) (*TuneEngineOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).TuneEngine[0:len((*c.CallOptions).TuneEngine):len((*c.CallOptions).TuneEngine)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.engineClient.TuneEngine(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &TuneEngineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *engineGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *engineGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
@@ -968,6 +1112,262 @@ func (c *engineRESTClient) ListEngines(ctx context.Context, req *discoveryengine
 	return it
 }
 
+// PauseEngine pauses the training of an existing engine. Only applicable if
+// SolutionType is
+// SOLUTION_TYPE_RECOMMENDATION.
+func (c *engineRESTClient) PauseEngine(ctx context.Context, req *discoveryenginepb.PauseEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:pause", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).PauseEngine[0:len((*c.CallOptions).PauseEngine):len((*c.CallOptions).PauseEngine)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.Engine{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ResumeEngine resumes the training of an existing engine. Only applicable if
+// SolutionType is
+// SOLUTION_TYPE_RECOMMENDATION.
+func (c *engineRESTClient) ResumeEngine(ctx context.Context, req *discoveryenginepb.ResumeEngineRequest, opts ...gax.CallOption) (*discoveryenginepb.Engine, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:resume", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).ResumeEngine[0:len((*c.CallOptions).ResumeEngine):len((*c.CallOptions).ResumeEngine)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &discoveryenginepb.Engine{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TuneEngine tunes an existing engine. Only applicable if
+// SolutionType is
+// SOLUTION_TYPE_RECOMMENDATION.
+func (c *engineRESTClient) TuneEngine(ctx context.Context, req *discoveryenginepb.TuneEngineRequest, opts ...gax.CallOption) (*TuneEngineOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:tune", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	return &TuneEngineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *engineRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
+}
+
 // GetOperation is a utility method from google.longrunning.Operations.
 func (c *engineRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1151,6 +1551,24 @@ func (c *engineGRPCClient) DeleteEngineOperation(name string) *DeleteEngineOpera
 func (c *engineRESTClient) DeleteEngineOperation(name string) *DeleteEngineOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteEngineOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// TuneEngineOperation returns a new TuneEngineOperation from a given name.
+// The name must be that of a previously created TuneEngineOperation, possibly from a different process.
+func (c *engineGRPCClient) TuneEngineOperation(name string) *TuneEngineOperation {
+	return &TuneEngineOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// TuneEngineOperation returns a new TuneEngineOperation from a given name.
+// The name must be that of a previously created TuneEngineOperation, possibly from a different process.
+func (c *engineRESTClient) TuneEngineOperation(name string) *TuneEngineOperation {
+	override := fmt.Sprintf("/v1beta/%s", name)
+	return &TuneEngineOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

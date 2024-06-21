@@ -58,7 +58,7 @@ type PublishTime time.Time
 func (p PublishTime) setRequest(req *pb.SeekSubscriptionRequest) {
 	req.Target = &pb.SeekSubscriptionRequest_TimeTarget{
 		TimeTarget: &pb.TimeTarget{
-			Time: &pb.TimeTarget_PublishTime{tspb.New(time.Time(p))},
+			Time: &pb.TimeTarget_PublishTime{PublishTime: tspb.New(time.Time(p))},
 		},
 	}
 }
@@ -70,7 +70,7 @@ type EventTime time.Time
 func (e EventTime) setRequest(req *pb.SeekSubscriptionRequest) {
 	req.Target = &pb.SeekSubscriptionRequest_TimeTarget{
 		TimeTarget: &pb.TimeTarget{
-			Time: &pb.TimeTarget_EventTime{tspb.New(time.Time(e))},
+			Time: &pb.TimeTarget_EventTime{EventTime: tspb.New(time.Time(e))},
 		},
 	}
 }

@@ -384,6 +384,12 @@ func ExampleMetastoreClient_ListCatalogs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*biglakepb.ListCatalogsResponse)
 	}
 }
 
@@ -415,6 +421,12 @@ func ExampleMetastoreClient_ListDatabases() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*biglakepb.ListDatabasesResponse)
 	}
 }
 
@@ -446,6 +458,12 @@ func ExampleMetastoreClient_ListLocks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*biglakepb.ListLocksResponse)
 	}
 }
 
@@ -477,6 +495,12 @@ func ExampleMetastoreClient_ListTables() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*biglakepb.ListTablesResponse)
 	}
 }
 

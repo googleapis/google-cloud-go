@@ -213,7 +213,8 @@ func (e *EmulatedEnv) AdminClientOptions() (context.Context, []option.ClientOpti
 		headersInterceptor.UnaryInterceptors())...)
 
 	timeout := 20 * time.Second
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	_ = cancel // ignore for test
 
 	o = append(o, option.WithGRPCDialOption(grpc.WithBlock()))
 	conn, err := gtransport.DialInsecure(ctx, o...)
@@ -252,7 +253,8 @@ func (e *EmulatedEnv) NewClient() (*Client, error) {
 		headersInterceptor.UnaryInterceptors())...)
 
 	timeout := 20 * time.Second
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	_ = cancel // ignore for test
 
 	o = append(o, option.WithGRPCDialOption(grpc.WithBlock()))
 	o = append(o, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

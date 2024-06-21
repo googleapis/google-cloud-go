@@ -49,39 +49,40 @@ var newBackupForGKEClientHook clientHook
 
 // BackupForGKECallOptions contains the retry settings for each method of BackupForGKEClient.
 type BackupForGKECallOptions struct {
-	CreateBackupPlan   []gax.CallOption
-	ListBackupPlans    []gax.CallOption
-	GetBackupPlan      []gax.CallOption
-	UpdateBackupPlan   []gax.CallOption
-	DeleteBackupPlan   []gax.CallOption
-	CreateBackup       []gax.CallOption
-	ListBackups        []gax.CallOption
-	GetBackup          []gax.CallOption
-	UpdateBackup       []gax.CallOption
-	DeleteBackup       []gax.CallOption
-	ListVolumeBackups  []gax.CallOption
-	GetVolumeBackup    []gax.CallOption
-	CreateRestorePlan  []gax.CallOption
-	ListRestorePlans   []gax.CallOption
-	GetRestorePlan     []gax.CallOption
-	UpdateRestorePlan  []gax.CallOption
-	DeleteRestorePlan  []gax.CallOption
-	CreateRestore      []gax.CallOption
-	ListRestores       []gax.CallOption
-	GetRestore         []gax.CallOption
-	UpdateRestore      []gax.CallOption
-	DeleteRestore      []gax.CallOption
-	ListVolumeRestores []gax.CallOption
-	GetVolumeRestore   []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
+	CreateBackupPlan          []gax.CallOption
+	ListBackupPlans           []gax.CallOption
+	GetBackupPlan             []gax.CallOption
+	UpdateBackupPlan          []gax.CallOption
+	DeleteBackupPlan          []gax.CallOption
+	CreateBackup              []gax.CallOption
+	ListBackups               []gax.CallOption
+	GetBackup                 []gax.CallOption
+	UpdateBackup              []gax.CallOption
+	DeleteBackup              []gax.CallOption
+	ListVolumeBackups         []gax.CallOption
+	GetVolumeBackup           []gax.CallOption
+	CreateRestorePlan         []gax.CallOption
+	ListRestorePlans          []gax.CallOption
+	GetRestorePlan            []gax.CallOption
+	UpdateRestorePlan         []gax.CallOption
+	DeleteRestorePlan         []gax.CallOption
+	CreateRestore             []gax.CallOption
+	ListRestores              []gax.CallOption
+	GetRestore                []gax.CallOption
+	UpdateRestore             []gax.CallOption
+	DeleteRestore             []gax.CallOption
+	ListVolumeRestores        []gax.CallOption
+	GetVolumeRestore          []gax.CallOption
+	GetBackupIndexDownloadUrl []gax.CallOption
+	GetLocation               []gax.CallOption
+	ListLocations             []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	TestIamPermissions        []gax.CallOption
+	CancelOperation           []gax.CallOption
+	DeleteOperation           []gax.CallOption
+	GetOperation              []gax.CallOption
+	ListOperations            []gax.CallOption
 }
 
 func defaultBackupForGKEGRPCClientOptions() []option.ClientOption {
@@ -280,6 +281,18 @@ func defaultBackupForGKECallOptions() *BackupForGKECallOptions {
 				})
 			}),
 		},
+		GetBackupIndexDownloadUrl: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -462,6 +475,17 @@ func defaultBackupForGKERESTCallOptions() *BackupForGKECallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetBackupIndexDownloadUrl: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		GetIamPolicy:       []gax.CallOption{},
@@ -515,6 +539,7 @@ type internalBackupForGKEClient interface {
 	DeleteRestoreOperation(name string) *DeleteRestoreOperation
 	ListVolumeRestores(context.Context, *gkebackuppb.ListVolumeRestoresRequest, ...gax.CallOption) *VolumeRestoreIterator
 	GetVolumeRestore(context.Context, *gkebackuppb.GetVolumeRestoreRequest, ...gax.CallOption) (*gkebackuppb.VolumeRestore, error)
+	GetBackupIndexDownloadUrl(context.Context, *gkebackuppb.GetBackupIndexDownloadUrlRequest, ...gax.CallOption) (*gkebackuppb.GetBackupIndexDownloadUrlResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -759,6 +784,11 @@ func (c *BackupForGKEClient) GetVolumeRestore(ctx context.Context, req *gkebacku
 	return c.internalClient.GetVolumeRestore(ctx, req, opts...)
 }
 
+// GetBackupIndexDownloadUrl retrieve the link to the backupIndex.
+func (c *BackupForGKEClient) GetBackupIndexDownloadUrl(ctx context.Context, req *gkebackuppb.GetBackupIndexDownloadUrlRequest, opts ...gax.CallOption) (*gkebackuppb.GetBackupIndexDownloadUrlResponse, error) {
+	return c.internalClient.GetBackupIndexDownloadUrl(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *BackupForGKEClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -904,7 +934,9 @@ func (c *backupForGKEGRPCClient) Connection() *grpc.ClientConn {
 func (c *backupForGKEGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -982,7 +1014,9 @@ func defaultBackupForGKERESTClientOptions() []option.ClientOption {
 func (c *backupForGKERESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1615,6 +1649,24 @@ func (c *backupForGKEGRPCClient) GetVolumeRestore(ctx context.Context, req *gkeb
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.backupForGKEClient.GetVolumeRestore(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *backupForGKEGRPCClient) GetBackupIndexDownloadUrl(ctx context.Context, req *gkebackuppb.GetBackupIndexDownloadUrlRequest, opts ...gax.CallOption) (*gkebackuppb.GetBackupIndexDownloadUrlResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup", url.QueryEscape(req.GetBackup()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupIndexDownloadUrl[0:len((*c.CallOptions).GetBackupIndexDownloadUrl):len((*c.CallOptions).GetBackupIndexDownloadUrl)], opts...)
+	var resp *gkebackuppb.GetBackupIndexDownloadUrlResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.backupForGKEClient.GetBackupIndexDownloadUrl(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -3642,6 +3694,66 @@ func (c *backupForGKERESTClient) GetVolumeRestore(ctx context.Context, req *gkeb
 	return resp, nil
 }
 
+// GetBackupIndexDownloadUrl retrieve the link to the backupIndex.
+func (c *backupForGKERESTClient) GetBackupIndexDownloadUrl(ctx context.Context, req *gkebackuppb.GetBackupIndexDownloadUrlRequest, opts ...gax.CallOption) (*gkebackuppb.GetBackupIndexDownloadUrlResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getBackupIndexDownloadUrl", req.GetBackup())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup", url.QueryEscape(req.GetBackup()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupIndexDownloadUrl[0:len((*c.CallOptions).GetBackupIndexDownloadUrl):len((*c.CallOptions).GetBackupIndexDownloadUrl)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &gkebackuppb.GetBackupIndexDownloadUrlResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *backupForGKERESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -4054,7 +4166,7 @@ func (c *backupForGKERESTClient) DeleteOperation(ctx context.Context, req *longr
 	if err != nil {
 		return err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")

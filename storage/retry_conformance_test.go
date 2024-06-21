@@ -21,29 +21,41 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
 	"strings"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
+	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 )
 
-var (
-	// Resource vars for retry tests
-	bucketIDs           = uid.NewSpace("bucket", nil)
-	objectIDs           = uid.NewSpace("object", nil)
-	notificationIDs     = uid.NewSpace("notification", nil)
+const (
 	projectID           = "my-project-id"
 	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
-	randomBytesToWrite  = []byte("abcdef")
-	randomBytes9MB      = generateRandomBytes(size9MB)
-	size9MB             = 9437184 // 9 MiB
+	MiB                 = 1 << 10 << 10
+)
+
+var (
+	// Resource vars for retry tests
+	bucketIDs       = uid.NewSpace("bucket", nil)
+	objectIDs       = uid.NewSpace("object", nil)
+	notificationIDs = uid.NewSpace("notification", nil)
+
+	size9MiB           = 9 * MiB
+	randomBytesToWrite = []byte("abcdef")
+	// A 3 MiB object is large enough to span several messages and trigger a
+	// resumable upload in the Go library (with chunksize set to 2MiB). We use
+	// this in tests that require a larger object that can be less than 9MiB.
+	randomBytes3MiB = generateRandomBytes(3 * MiB)
+	// A 9 MiB object is required for "storage.resumable.upload"-specific tests,
+	// because there is a test that test errors after the first 8MiB.
+	randomBytes9MiB = generateRandomBytes(size9MiB)
 )
 
 type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions bool) error
@@ -200,8 +212,21 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
-			wr, err := io.Copy(ioutil.Discard, r)
+			wr, err := r.WriteTo(io.Discard)
 			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return err
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// This tests downloads by calling Reader.Read rather than Reader.WriteTo.
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			// Use ReadAll because it calls Read implicitly, not WriteTo.
+			b, err := io.ReadAll(r)
+			if got, want := len(b), len(randomBytesToWrite); got != want {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return err
@@ -222,7 +247,7 @@ var methods = map[string][]retryFunc{
 			if err != nil {
 				return err
 			}
-			wr, err := io.Copy(ioutil.Discard, r)
+			wr, err := io.Copy(io.Discard, r)
 			if got, want := wr, len(randomBytesToWrite); got != int64(want) {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
@@ -231,9 +256,34 @@ var methods = map[string][]retryFunc{
 	},
 	"storage.objects.download": {
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Before running the test method, populate a large test object.
+			objName := objectIDs.New()
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes3MiB); err != nil {
+				return fmt.Errorf("failed to create large object pre test, err: %v", err)
+			}
+			// Download the large test object for the S8 download method group.
+			r, err := c.Bucket(fs.bucket.Name).Object(objName).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			defer r.Close()
+			data, err := io.ReadAll(r)
+			if err != nil {
+				return fmt.Errorf("failed to ReadAll, err: %v", err)
+			}
+			if got, want := len(data), 3*MiB; got != want {
+				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			if got, want := data, randomBytes3MiB; !bytes.Equal(got, want) {
+				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
+			}
+			return nil
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			// Test download via Reader.WriteTo.
 			// Before running the test method, populate a large test object of 9 MiB.
 			objName := objectIDs.New()
-			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes3MiB); err != nil {
 				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
 			}
 			// Download the large test object for the S8 download method group.
@@ -242,24 +292,25 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 			defer r.Close()
-			data, err := ioutil.ReadAll(r)
+			var data bytes.Buffer
+			_, err = r.WriteTo(&data)
 			if err != nil {
 				return fmt.Errorf("failed to ReadAll, err: %v", err)
 			}
-			if got, want := len(data), size9MB; got != want {
+			if got, want := data.Len(), 3*MiB; got != want {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
-			if got, want := data, randomBytes9MB; !bytes.Equal(got, want) {
+			if got, want := data.Bytes(), randomBytes3MiB; !bytes.Equal(got, want) {
 				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return nil
 		},
 		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			// Test JSON reads.
-			// Before running the test method, populate a large test object of 9 MiB.
+			// Before running the test method, populate a large test object.
 			objName := objectIDs.New()
-			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes9MB); err != nil {
-				return fmt.Errorf("failed to create 9 MiB large object pre test, err: %v", err)
+			if err := uploadTestObject(fs.bucket.Name, objName, randomBytes3MiB); err != nil {
+				return fmt.Errorf("failed to create large object pre test, err: %v", err)
 			}
 
 			client, ok := c.tc.(*httpStorageClient)
@@ -278,14 +329,14 @@ var methods = map[string][]retryFunc{
 				return err
 			}
 			defer r.Close()
-			data, err := ioutil.ReadAll(r)
+			data, err := io.ReadAll(r)
 			if err != nil {
 				return fmt.Errorf("failed to ReadAll, err: %v", err)
 			}
-			if got, want := len(data), size9MB; got != want {
+			if got, want := len(data), 3*MiB; got != want {
 				return fmt.Errorf("body length mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
-			if got, want := data, randomBytes9MB; !bytes.Equal(got, want) {
+			if got, want := data, randomBytes3MiB; !bytes.Equal(got, want) {
 				return fmt.Errorf("body mismatch\ngot:\n%v\n\nwant:\n%v", got, want)
 			}
 			return nil
@@ -376,6 +427,7 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	"storage.objects.insert": {
+		// Single-shot upload that is sent in a single message.
 		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			obj := c.Bucket(fs.bucket.Name).Object("new-object.txt")
 
@@ -385,6 +437,44 @@ var methods = map[string][]retryFunc{
 
 			objW := obj.NewWriter(ctx)
 			if _, err := io.Copy(objW, strings.NewReader("object body")); err != nil {
+				return fmt.Errorf("io.Copy: %v", err)
+			}
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+			return nil
+		},
+		// Single-shot upload that spans several GRPC message sends (we send
+		// storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES=2MiB per msg).
+		// This is needed to cover all error code paths.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object("new-object.txt")
+
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			objW := obj.NewWriter(ctx)
+			if _, err := objW.Write(randomBytes3MiB); err != nil {
+				return fmt.Errorf("io.Copy: %v", err)
+			}
+			if err := objW.Close(); err != nil {
+				return fmt.Errorf("Writer.Close: %v", err)
+			}
+			return nil
+		},
+		// Resumable upload.
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			obj := c.Bucket(fs.bucket.Name).Object("new-object.txt")
+
+			if preconditions {
+				obj = obj.If(Conditions{DoesNotExist: true})
+			}
+
+			objW := obj.NewWriter(ctx)
+			objW.ChunkSize = 2 * MiB
+
+			if _, err := objW.Write(randomBytes3MiB); err != nil {
 				return fmt.Errorf("io.Copy: %v", err)
 			}
 			if err := objW.Close(); err != nil {
@@ -403,7 +493,7 @@ var methods = map[string][]retryFunc{
 			// Set Writer.ChunkSize to 2 MiB to perform resumable uploads.
 			w.ChunkSize = 2097152
 
-			if _, err := w.Write(randomBytes9MB); err != nil {
+			if _, err := w.Write(randomBytes9MiB); err != nil {
 				return fmt.Errorf("writing object: %v", err)
 			}
 			if err := w.Close(); err != nil {
@@ -488,6 +578,9 @@ var methods = map[string][]retryFunc{
 }
 
 func TestRetryConformance(t *testing.T) {
+	// This endpoint is used only to call the testbench retry test API, which is HTTP
+	// based. The endpoint called by the client library is determined inside of the
+	// client constructor and will differ depending on the transport.
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
@@ -521,12 +614,8 @@ func TestRetryConformance(t *testing.T) {
 					for i, fn := range methods[methodName] {
 						transports := []string{"http", "grpc"}
 						for _, transport := range transports {
-							if transport == "grpc" && method.Name == "storage.objects.insert" {
-								t.Skip("Implementation in testbench pending: https://github.com/googleapis/storage-testbench/issues/568")
-							}
 							testName := fmt.Sprintf("%v-%v-%v-%v-%v", transport, retryTest.Id, instructions.Instructions, methodName, i)
 							t.Run(testName, func(t *testing.T) {
-
 								// Create the retry subtest
 								subtest := &emulatorTest{T: t, name: testName, host: endpoint}
 								subtest.create(map[string][]string{
@@ -675,7 +764,7 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 
 	et.host.Path = "retry_test"
 	resp, err := c.Post(et.host.String(), "application/json", buf)
-	if resp.StatusCode == 501 {
+	if resp != nil && resp.StatusCode == 501 {
 		et.T.Skip("This retry test case is not yet supported in the testbench.")
 	}
 	if err != nil || resp.StatusCode != 200 {
@@ -709,6 +798,8 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 			et.Fatalf("GRPC transportClient: %v", err)
 		}
 	}
+	// Reduce backoff to get faster test execution.
+	transportClient.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
 	et.transportClient = transportClient
 }
 

@@ -1,0 +1,53 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.shopping.merchant.promotions.v1beta",
+  "libraryPackage": "cloud.google.com/go/shopping/merchant/promotions/apiv1beta",
+  "services": {
+    "PromotionsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetPromotion": {
+              "methods": [
+                "GetPromotion"
+              ]
+            },
+            "InsertPromotion": {
+              "methods": [
+                "InsertPromotion"
+              ]
+            },
+            "ListPromotions": {
+              "methods": [
+                "ListPromotions"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetPromotion": {
+              "methods": [
+                "GetPromotion"
+              ]
+            },
+            "InsertPromotion": {
+              "methods": [
+                "InsertPromotion"
+              ]
+            },
+            "ListPromotions": {
+              "methods": [
+                "ListPromotions"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

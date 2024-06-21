@@ -18,7 +18,7 @@ import (
 	"context"
 
 	"cloud.google.com/go/spanner/admin/instance/apiv1/instancepb"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 // InMemInstanceAdminServer contains the InstanceAdminServer interface plus a couple

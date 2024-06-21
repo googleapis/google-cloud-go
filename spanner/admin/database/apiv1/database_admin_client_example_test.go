@@ -324,6 +324,12 @@ func ExampleDatabaseAdminClient_ListBackupOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListBackupOperationsResponse)
 	}
 }
 
@@ -355,6 +361,12 @@ func ExampleDatabaseAdminClient_ListBackups() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListBackupsResponse)
 	}
 }
 
@@ -386,6 +398,12 @@ func ExampleDatabaseAdminClient_ListDatabaseOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListDatabaseOperationsResponse)
 	}
 }
 
@@ -417,6 +435,12 @@ func ExampleDatabaseAdminClient_ListDatabaseRoles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListDatabaseRolesResponse)
 	}
 }
 
@@ -448,6 +472,12 @@ func ExampleDatabaseAdminClient_ListDatabases() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListDatabasesResponse)
 	}
 }
 
@@ -713,5 +743,11 @@ func ExampleDatabaseAdminClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

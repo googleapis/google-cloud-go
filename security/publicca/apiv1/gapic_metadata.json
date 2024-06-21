@@ -1,0 +1,33 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.security.publicca.v1",
+  "libraryPackage": "cloud.google.com/go/security/publicca/apiv1",
+  "services": {
+    "PublicCertificateAuthorityService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PublicCertificateAuthorityClient",
+          "rpcs": {
+            "CreateExternalAccountKey": {
+              "methods": [
+                "CreateExternalAccountKey"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "PublicCertificateAuthorityClient",
+          "rpcs": {
+            "CreateExternalAccountKey": {
+              "methods": [
+                "CreateExternalAccountKey"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1210,7 +1210,7 @@ func (c *CertificateAuthorityClient) DeleteCaPoolOperation(name string) *DeleteC
 
 // FetchCaCerts fetchCaCerts returns the current trust anchor for the
 // CaPool. This will include CA
-// certificate chains for all Certificate Authorities in the ENABLED,
+// certificate chains for all certificate authorities in the ENABLED,
 // DISABLED, or STAGED states.
 func (c *CertificateAuthorityClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	return c.internalClient.FetchCaCerts(ctx, req, opts...)
@@ -1435,7 +1435,9 @@ func (c *certificateAuthorityGRPCClient) Connection() *grpc.ClientConn {
 func (c *certificateAuthorityGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1514,7 +1516,9 @@ func defaultCertificateAuthorityRESTClientOptions() []option.ClientOption {
 func (c *certificateAuthorityRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -3951,7 +3955,7 @@ func (c *certificateAuthorityRESTClient) DeleteCaPool(ctx context.Context, req *
 
 // FetchCaCerts fetchCaCerts returns the current trust anchor for the
 // CaPool. This will include CA
-// certificate chains for all Certificate Authorities in the ENABLED,
+// certificate chains for all certificate authorities in the ENABLED,
 // DISABLED, or STAGED states.
 func (c *certificateAuthorityRESTClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}

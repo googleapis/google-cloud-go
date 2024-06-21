@@ -74,8 +74,12 @@ func TestGolden(t *testing.T) {
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			GenprotoPkgMigration["example.com/old/foo"] = Pkg{
+			GenprotoPkgMigration["example.com/old/foo/v1"] = Pkg{
 				ImportPath: "example.com/new/foopb",
+				Status:     tc.status,
+			}
+			GenprotoPkgMigration["example.com/old/bar/v1/bar"] = Pkg{
+				ImportPath: "example.com/new/barpb",
 				Status:     tc.status,
 			}
 			var w bytes.Buffer

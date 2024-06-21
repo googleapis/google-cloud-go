@@ -73,11 +73,12 @@ func TestRetryApply(t *testing.T) {
 
 	errCount := 0
 	code := codes.Unavailable // Will be retried
+	errMsg := ""
 	// Intercept requests and return an error or defer to the underlying handler
 	errInjector := func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 		if strings.HasSuffix(info.FullMethod, "MutateRow") && errCount < 3 {
 			errCount++
-			return nil, status.Errorf(code, "")
+			return nil, status.Errorf(code, errMsg)
 		}
 		return handler(ctx, req)
 	}
@@ -127,6 +128,29 @@ func TestRetryApply(t *testing.T) {
 	}
 
 	errCount = 0
+	code = codes.Internal // Will be retried
+	errMsg = "stream terminated by RST_STREAM"
+	if err := tbl.Apply(ctx, "row", mut); err != nil {
+		t.Errorf("applying single mutation with retries: %v", err)
+	}
+	row, err = tbl.ReadRow(ctx, "row")
+	if err != nil {
+		t.Errorf("reading single value with retries: %v", err)
+	}
+	if row == nil {
+		t.Errorf("applying single mutation with retries: could not read back row")
+	}
+
+	errCount = 0
+	errMsg = ""
+	code = codes.Internal // Won't be retried
+	errMsg = "Placeholder message"
+	if err := tbl.Apply(ctx, "row", condMut); err == nil {
+		t.Errorf("conditionally mutating row with no retries: no error")
+	}
+
+	errCount = 0
+	errMsg = ""
 	code = codes.FailedPrecondition // Won't be retried
 	if err := tbl.Apply(ctx, "row", condMut); err == nil {
 		t.Errorf("conditionally mutating row with no retries: no error")

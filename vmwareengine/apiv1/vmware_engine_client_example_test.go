@@ -701,6 +701,12 @@ func ExampleClient_FetchNetworkPolicyExternalAddresses() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.FetchNetworkPolicyExternalAddressesResponse)
 	}
 }
 
@@ -1162,6 +1168,12 @@ func ExampleClient_ListClusters() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListClustersResponse)
 	}
 }
 
@@ -1193,6 +1205,12 @@ func ExampleClient_ListExternalAccessRules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListExternalAccessRulesResponse)
 	}
 }
 
@@ -1224,6 +1242,12 @@ func ExampleClient_ListExternalAddresses() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListExternalAddressesResponse)
 	}
 }
 
@@ -1255,6 +1279,12 @@ func ExampleClient_ListHcxActivationKeys() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListHcxActivationKeysResponse)
 	}
 }
 
@@ -1286,6 +1316,12 @@ func ExampleClient_ListLoggingServers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListLoggingServersResponse)
 	}
 }
 
@@ -1317,6 +1353,12 @@ func ExampleClient_ListManagementDnsZoneBindings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListManagementDnsZoneBindingsResponse)
 	}
 }
 
@@ -1348,6 +1390,12 @@ func ExampleClient_ListNetworkPeerings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListNetworkPeeringsResponse)
 	}
 }
 
@@ -1379,6 +1427,12 @@ func ExampleClient_ListNetworkPolicies() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListNetworkPoliciesResponse)
 	}
 }
 
@@ -1410,6 +1464,12 @@ func ExampleClient_ListNodeTypes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListNodeTypesResponse)
 	}
 }
 
@@ -1441,6 +1501,12 @@ func ExampleClient_ListNodes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListNodesResponse)
 	}
 }
 
@@ -1472,6 +1538,12 @@ func ExampleClient_ListPeeringRoutes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListPeeringRoutesResponse)
 	}
 }
 
@@ -1503,6 +1575,12 @@ func ExampleClient_ListPrivateClouds() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListPrivateCloudsResponse)
 	}
 }
 
@@ -1534,6 +1612,12 @@ func ExampleClient_ListPrivateConnectionPeeringRoutes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListPrivateConnectionPeeringRoutesResponse)
 	}
 }
 
@@ -1565,6 +1649,12 @@ func ExampleClient_ListPrivateConnections() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListPrivateConnectionsResponse)
 	}
 }
 
@@ -1596,6 +1686,12 @@ func ExampleClient_ListSubnets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListSubnetsResponse)
 	}
 }
 
@@ -1627,6 +1723,12 @@ func ExampleClient_ListVmwareEngineNetworks() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*vmwareenginepb.ListVmwareEngineNetworksResponse)
 	}
 }
 
@@ -2243,6 +2345,12 @@ func ExampleClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -2397,5 +2505,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

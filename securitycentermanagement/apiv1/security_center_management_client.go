@@ -63,6 +63,9 @@ type CallOptions struct {
 	UpdateEventThreatDetectionCustomModule             []gax.CallOption
 	DeleteEventThreatDetectionCustomModule             []gax.CallOption
 	ValidateEventThreatDetectionCustomModule           []gax.CallOption
+	GetSecurityCenterService                           []gax.CallOption
+	ListSecurityCenterServices                         []gax.CallOption
+	UpdateSecurityCenterService                        []gax.CallOption
 	GetLocation                                        []gax.CallOption
 	ListLocations                                      []gax.CallOption
 }
@@ -257,8 +260,11 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		GetSecurityCenterService:    []gax.CallOption{},
+		ListSecurityCenterServices:  []gax.CallOption{},
+		UpdateSecurityCenterService: []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
 	}
 }
 
@@ -426,8 +432,11 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
-		GetLocation:   []gax.CallOption{},
-		ListLocations: []gax.CallOption{},
+		GetSecurityCenterService:    []gax.CallOption{},
+		ListSecurityCenterServices:  []gax.CallOption{},
+		UpdateSecurityCenterService: []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
 	}
 }
 
@@ -454,6 +463,9 @@ type internalClient interface {
 	UpdateEventThreatDetectionCustomModule(context.Context, *securitycentermanagementpb.UpdateEventThreatDetectionCustomModuleRequest, ...gax.CallOption) (*securitycentermanagementpb.EventThreatDetectionCustomModule, error)
 	DeleteEventThreatDetectionCustomModule(context.Context, *securitycentermanagementpb.DeleteEventThreatDetectionCustomModuleRequest, ...gax.CallOption) error
 	ValidateEventThreatDetectionCustomModule(context.Context, *securitycentermanagementpb.ValidateEventThreatDetectionCustomModuleRequest, ...gax.CallOption) (*securitycentermanagementpb.ValidateEventThreatDetectionCustomModuleResponse, error)
+	GetSecurityCenterService(context.Context, *securitycentermanagementpb.GetSecurityCenterServiceRequest, ...gax.CallOption) (*securitycentermanagementpb.SecurityCenterService, error)
+	ListSecurityCenterServices(context.Context, *securitycentermanagementpb.ListSecurityCenterServicesRequest, ...gax.CallOption) *SecurityCenterServiceIterator
+	UpdateSecurityCenterService(context.Context, *securitycentermanagementpb.UpdateSecurityCenterServiceRequest, ...gax.CallOption) (*securitycentermanagementpb.SecurityCenterService, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
@@ -619,6 +631,22 @@ func (c *Client) ValidateEventThreatDetectionCustomModule(ctx context.Context, r
 	return c.internalClient.ValidateEventThreatDetectionCustomModule(ctx, req, opts...)
 }
 
+// GetSecurityCenterService gets service settings for the specified Security Command Center service.
+func (c *Client) GetSecurityCenterService(ctx context.Context, req *securitycentermanagementpb.GetSecurityCenterServiceRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityCenterService, error) {
+	return c.internalClient.GetSecurityCenterService(ctx, req, opts...)
+}
+
+// ListSecurityCenterServices returns a list of all Security Command Center services for the given
+// parent.
+func (c *Client) ListSecurityCenterServices(ctx context.Context, req *securitycentermanagementpb.ListSecurityCenterServicesRequest, opts ...gax.CallOption) *SecurityCenterServiceIterator {
+	return c.internalClient.ListSecurityCenterServices(ctx, req, opts...)
+}
+
+// UpdateSecurityCenterService updates a Security Command Center service using the given update mask.
+func (c *Client) UpdateSecurityCenterService(ctx context.Context, req *securitycentermanagementpb.UpdateSecurityCenterServiceRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityCenterService, error) {
+	return c.internalClient.UpdateSecurityCenterService(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -695,7 +723,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -757,7 +787,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1250,6 +1282,88 @@ func (c *gRPCClient) ValidateEventThreatDetectionCustomModule(ctx context.Contex
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.ValidateEventThreatDetectionCustomModule(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetSecurityCenterService(ctx context.Context, req *securitycentermanagementpb.GetSecurityCenterServiceRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityCenterService, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetSecurityCenterService[0:len((*c.CallOptions).GetSecurityCenterService):len((*c.CallOptions).GetSecurityCenterService)], opts...)
+	var resp *securitycentermanagementpb.SecurityCenterService
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetSecurityCenterService(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListSecurityCenterServices(ctx context.Context, req *securitycentermanagementpb.ListSecurityCenterServicesRequest, opts ...gax.CallOption) *SecurityCenterServiceIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListSecurityCenterServices[0:len((*c.CallOptions).ListSecurityCenterServices):len((*c.CallOptions).ListSecurityCenterServices)], opts...)
+	it := &SecurityCenterServiceIterator{}
+	req = proto.Clone(req).(*securitycentermanagementpb.ListSecurityCenterServicesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.SecurityCenterService, string, error) {
+		resp := &securitycentermanagementpb.ListSecurityCenterServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListSecurityCenterServices(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetSecurityCenterServices(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateSecurityCenterService(ctx context.Context, req *securitycentermanagementpb.UpdateSecurityCenterServiceRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityCenterService, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "security_center_service.name", url.QueryEscape(req.GetSecurityCenterService().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSecurityCenterService[0:len((*c.CallOptions).UpdateSecurityCenterService):len((*c.CallOptions).UpdateSecurityCenterService)], opts...)
+	var resp *securitycentermanagementpb.SecurityCenterService
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateSecurityCenterService(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -2615,6 +2729,233 @@ func (c *restClient) ValidateEventThreatDetectionCustomModule(ctx context.Contex
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetSecurityCenterService gets service settings for the specified Security Command Center service.
+func (c *restClient) GetSecurityCenterService(ctx context.Context, req *securitycentermanagementpb.GetSecurityCenterServiceRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityCenterService, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetSecurityCenterService[0:len((*c.CallOptions).GetSecurityCenterService):len((*c.CallOptions).GetSecurityCenterService)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycentermanagementpb.SecurityCenterService{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListSecurityCenterServices returns a list of all Security Command Center services for the given
+// parent.
+func (c *restClient) ListSecurityCenterServices(ctx context.Context, req *securitycentermanagementpb.ListSecurityCenterServicesRequest, opts ...gax.CallOption) *SecurityCenterServiceIterator {
+	it := &SecurityCenterServiceIterator{}
+	req = proto.Clone(req).(*securitycentermanagementpb.ListSecurityCenterServicesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycentermanagementpb.SecurityCenterService, string, error) {
+		resp := &securitycentermanagementpb.ListSecurityCenterServicesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/securityCenterServices", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetSecurityCenterServices(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateSecurityCenterService updates a Security Command Center service using the given update mask.
+func (c *restClient) UpdateSecurityCenterService(ctx context.Context, req *securitycentermanagementpb.UpdateSecurityCenterServiceRequest, opts ...gax.CallOption) (*securitycentermanagementpb.SecurityCenterService, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetSecurityCenterService()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetSecurityCenterService().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "security_center_service.name", url.QueryEscape(req.GetSecurityCenterService().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateSecurityCenterService[0:len((*c.CallOptions).UpdateSecurityCenterService):len((*c.CallOptions).UpdateSecurityCenterService)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &securitycentermanagementpb.SecurityCenterService{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}

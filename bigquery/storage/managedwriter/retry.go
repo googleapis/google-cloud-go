@@ -130,13 +130,23 @@ func (sr *statelessRetryer) Retry(err error, attemptCount int) (time.Duration, b
 // our bidi stream to close/reopen based on the responses error.  Errors here signal that no
 // further appends will succeed.
 func shouldReconnect(err error) bool {
-	var knownErrors = []error{
-		io.EOF,
-		status.Error(codes.Unavailable, "the connection is draining"), // errStreamDrain in gRPC transport
+
+	// io.EOF is the typical not connected signal.
+	if errors.Is(err, io.EOF) {
+		return true
 	}
-	for _, ke := range knownErrors {
-		if errors.Is(err, ke) {
-			return true
+	// Backend responses that trigger reconnection on send.
+	reconnectCodes := []codes.Code{
+		codes.Aborted,
+		codes.Canceled,
+		codes.Unavailable,
+		codes.DeadlineExceeded,
+	}
+	if s, ok := status.FromError(err); ok {
+		for _, c := range reconnectCodes {
+			if s.Code() == c {
+				return true
+			}
 		}
 	}
 	return false

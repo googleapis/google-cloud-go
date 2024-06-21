@@ -167,6 +167,12 @@ func ExampleClient_AnalyzeOrgPolicies() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*assetpb.AnalyzeOrgPoliciesResponse)
 	}
 }
 
@@ -198,6 +204,12 @@ func ExampleClient_AnalyzeOrgPolicyGovernedAssets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*assetpb.AnalyzeOrgPolicyGovernedAssetsResponse)
 	}
 }
 
@@ -229,6 +241,12 @@ func ExampleClient_AnalyzeOrgPolicyGovernedContainers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*assetpb.AnalyzeOrgPolicyGovernedContainersResponse)
 	}
 }
 
@@ -486,6 +504,12 @@ func ExampleClient_ListAssets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*assetpb.ListAssetsResponse)
 	}
 }
 
@@ -542,6 +566,12 @@ func ExampleClient_ListSavedQueries() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*assetpb.ListSavedQueriesResponse)
 	}
 }
 
@@ -598,6 +628,12 @@ func ExampleClient_SearchAllIamPolicies() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*assetpb.SearchAllIamPoliciesResponse)
 	}
 }
 
@@ -629,6 +665,12 @@ func ExampleClient_SearchAllResources() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*assetpb.SearchAllResourcesResponse)
 	}
 }
 

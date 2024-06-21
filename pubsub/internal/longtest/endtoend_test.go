@@ -16,6 +16,7 @@ package longtest_test
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log"
 	"math/rand"
@@ -29,8 +30,6 @@ import (
 	"cloud.google.com/go/pubsub"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 const (
@@ -303,7 +302,7 @@ func (c *consumer) consume(ctx context.Context, t *testing.T, sub *pubsub.Subscr
 		prev := c.totalRecvd
 		err := sub.Receive(ctx2, c.process)
 		t.Logf("%s: end receive; read %d", id, c.totalRecvd-prev)
-		if serr, _ := status.FromError(err); err != nil && serr.Code() != codes.Canceled {
+		if err != nil && !errors.Is(err, context.Canceled) {
 			panic(err)
 		}
 		select {

@@ -202,8 +202,7 @@ type tEmbed1 struct {
 }
 
 type tEmbed2 struct {
-	Y int `json:"Dup"`  // takes precedence over tEmbed1.Dup because it is tagged
-	Z int `json:"Dup2"` // same name as tEmbed1.X and both tagged, so ignored
+	Y int `json:"Dup"` // takes precedence over tEmbed1.Dup because it is tagged
 }
 
 func jsonTagParser(t reflect.StructTag) (name string, keep bool, other interface{}, err error) {
@@ -233,9 +232,10 @@ func TestFieldsWithTags(t *testing.T) {
 		field("NoTag", int(0), 0),
 		tfield("tag", int(0), 1),
 		tfield("anon", Anonymous(0), 2),
-		tfield("em", Embed{}, 4),
-		tfield("Tag", int(0), 6),
-		field("Empty", int(0), 7),
+		tfield("em", Embed{}, 3),
+		tfield("Tag", int(0), 5),
+		field("Empty", int(0), 6),
+		tfield("Dup2", int(0), 7, 1),
 		tfield("Dup", int(0), 8, 0),
 	}
 	if msg, ok := compareFields(got, want); !ok {
@@ -258,7 +258,6 @@ func TestAgainstJSONEncodingWithTags(t *testing.T) {
 		},
 		tEmbed2: tEmbed2{
 			Y: 7,
-			Z: 8,
 		},
 	}
 	var want S2

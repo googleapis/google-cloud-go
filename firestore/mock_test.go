@@ -25,10 +25,11 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/prototext"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 type mockServer struct {
@@ -107,8 +108,8 @@ func (s *mockServer) popRPC(gotReq proto.Message) (interface{}, error) {
 
 		if !proto.Equal(gotReq, ri.wantReq) {
 			return nil, fmt.Errorf("mockServer: bad request\ngot:\n%T\n%s\nwant:\n%T\n%s",
-				gotReq, proto.MarshalTextString(gotReq),
-				ri.wantReq, proto.MarshalTextString(ri.wantReq))
+				gotReq, prototext.Format(gotReq),
+				ri.wantReq, prototext.Format(ri.wantReq))
 		}
 	}
 	resp := s.resps[0]
@@ -236,12 +237,12 @@ func (s *mockServer) BeginTransaction(_ context.Context, req *pb.BeginTransactio
 	return res.(*pb.BeginTransactionResponse), nil
 }
 
-func (s *mockServer) Rollback(_ context.Context, req *pb.RollbackRequest) (*empty.Empty, error) {
+func (s *mockServer) Rollback(_ context.Context, req *pb.RollbackRequest) (*emptypb.Empty, error) {
 	res, err := s.popRPC(req)
 	if err != nil {
 		return nil, err
 	}
-	return res.(*empty.Empty), nil
+	return res.(*emptypb.Empty), nil
 }
 
 func (s *mockServer) Listen(stream pb.Firestore_ListenServer) error {
