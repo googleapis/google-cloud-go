@@ -173,6 +173,11 @@ type internalClient interface {
 // resource is not in a Cloud Organization.
 // For all requests, returns a google.rpc.Status with
 // google.rpc.Code.INVALID_ARGUMENT if the request is malformed.
+// (== deprecation_description Resource Settings is deprecated. As of November
+// 7, 2023, no organizations will be onboarded for any of the enabled settings,
+// and the service will be shut down on October 1, 2024. ==)
+//
+// Deprecated: ResourceSettingsService may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -269,6 +274,11 @@ type gRPCClient struct {
 // resource is not in a Cloud Organization.
 // For all requests, returns a google.rpc.Status with
 // google.rpc.Code.INVALID_ARGUMENT if the request is malformed.
+// (== deprecation_description Resource Settings is deprecated. As of November
+// 7, 2023, no organizations will be onboarded for any of the enabled settings,
+// and the service will be shut down on October 1, 2024. ==)
+//
+// Deprecated: ResourceSettingsService may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -311,7 +321,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -349,6 +361,11 @@ type restClient struct {
 // resource is not in a Cloud Organization.
 // For all requests, returns a google.rpc.Status with
 // google.rpc.Code.INVALID_ARGUMENT if the request is malformed.
+// (== deprecation_description Resource Settings is deprecated. As of November
+// 7, 2023, no organizations will be onboarded for any of the enabled settings,
+// and the service will be shut down on October 1, 2024. ==)
+//
+// Deprecated: ResourceSettingsService may be removed in a future version.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -384,7 +401,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when

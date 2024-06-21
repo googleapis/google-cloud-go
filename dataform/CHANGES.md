@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.4](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.9.3...dataform/v0.9.4) (2024-05-01)
+
+
+### Bug Fixes
+
+* **dataform:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.9.3](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.9.2...dataform/v0.9.3) (2024-03-14)
 
 

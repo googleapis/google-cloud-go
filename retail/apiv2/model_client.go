@@ -190,7 +190,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 	}
 }
 
-// internalModelClient is an interface that defines the methods available from Retail API.
+// internalModelClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalModelClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -209,7 +209,7 @@ type internalModelClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ModelClient is a client for interacting with Retail API.
+// ModelClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for performing CRUD operations on models.
@@ -328,7 +328,7 @@ func (c *ModelClient) ListOperations(ctx context.Context, req *longrunningpb.Lis
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// modelGRPCClient is a client for interacting with Retail API over gRPC transport.
+// modelGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type modelGRPCClient struct {
@@ -424,7 +424,9 @@ func (c *modelGRPCClient) Connection() *grpc.ClientConn {
 func (c *modelGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when

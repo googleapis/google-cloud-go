@@ -496,6 +496,12 @@ func ExampleClient_ListApplications() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apphubpb.ListApplicationsResponse)
 	}
 }
 
@@ -527,6 +533,12 @@ func ExampleClient_ListDiscoveredServices() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apphubpb.ListDiscoveredServicesResponse)
 	}
 }
 
@@ -558,6 +570,12 @@ func ExampleClient_ListDiscoveredWorkloads() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apphubpb.ListDiscoveredWorkloadsResponse)
 	}
 }
 
@@ -589,6 +607,12 @@ func ExampleClient_ListServiceProjectAttachments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apphubpb.ListServiceProjectAttachmentsResponse)
 	}
 }
 
@@ -620,6 +644,12 @@ func ExampleClient_ListServices() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apphubpb.ListServicesResponse)
 	}
 }
 
@@ -651,6 +681,12 @@ func ExampleClient_ListWorkloads() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apphubpb.ListWorkloadsResponse)
 	}
 }
 
@@ -872,6 +908,12 @@ func ExampleClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -1049,5 +1091,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

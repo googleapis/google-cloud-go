@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -329,7 +330,9 @@ func (c *featurestoreOnlineServingGRPCClient) Connection() *grpc.ClientConn {
 func (c *featurestoreOnlineServingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -391,7 +394,9 @@ func defaultFeaturestoreOnlineServingRESTClientOptions() []option.ClientOption {
 func (c *featurestoreOnlineServingRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -839,7 +844,7 @@ func (c *streamingReadFeatureValuesRESTClient) Trailer() metadata.MD {
 
 func (c *streamingReadFeatureValuesRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadFeatureValuesRESTClient) Context() context.Context {
@@ -848,12 +853,12 @@ func (c *streamingReadFeatureValuesRESTClient) Context() context.Context {
 
 func (c *streamingReadFeatureValuesRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadFeatureValuesRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // WriteFeatureValues writes Feature values of one or more entities of an EntityType.

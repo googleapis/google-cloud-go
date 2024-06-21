@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.8](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.7...cloudtasks/v1.12.8) (2024-05-01)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.12.7](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.6...cloudtasks/v1.12.7) (2024-03-14)
 
 

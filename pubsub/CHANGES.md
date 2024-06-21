@@ -1,5 +1,36 @@
 # Changes
 
+## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.38.0...pubsub/v1.39.0) (2024-06-18)
+
+
+### Features
+
+* **pubsub/pstest:** Add support to register other servers into grpc.Server ([#9722](https://github.com/googleapis/google-cloud-go/issues/9722)) ([db8216e](https://github.com/googleapis/google-cloud-go/commit/db8216e54c8d9d23dd90bc47a081eb2754f7c92a))
+* **pubsub:** Add service_account_email for export subscriptions ([92dc381](https://github.com/googleapis/google-cloud-go/commit/92dc381da281197567a2c9eb8dc941292000a3da))
+* **pubsub:** Batch receipt modacks ([#10234](https://github.com/googleapis/google-cloud-go/issues/10234)) ([4c2cd10](https://github.com/googleapis/google-cloud-go/commit/4c2cd10fb73b7167c15d6dc24162ad0dac01ce8e))
+* **pubsub:** Make lease management RPCs concurrent ([#10238](https://github.com/googleapis/google-cloud-go/issues/10238)) ([426a8c2](https://github.com/googleapis/google-cloud-go/commit/426a8c27a9d11f24e8c331b6375f87d29829e021))
+
+
+### Bug Fixes
+
+* **pubsub:** Closes [#10094](https://github.com/googleapis/google-cloud-go/issues/10094) - memory leak in pubsub receive ([#10153](https://github.com/googleapis/google-cloud-go/issues/10153)) ([66581c4](https://github.com/googleapis/google-cloud-go/commit/66581c44f2309984475fe5053fa11707f6f93b8d))
+
+## [1.38.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.37.0...pubsub/v1.38.0) (2024-05-06)
+
+
+### Features
+
+* **pubsub:** Add custom datetime format for Cloud Storage subscriptions ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+* **pubsub:** Support publisher compression ([#9711](https://github.com/googleapis/google-cloud-go/issues/9711)) ([4940c3c](https://github.com/googleapis/google-cloud-go/commit/4940c3c5ab31b6e66ec8f29f9cf60298f8de630a))
+* **pubsub:** Use Streaming Pull response for ordering check ([#9682](https://github.com/googleapis/google-cloud-go/issues/9682)) ([7bf4904](https://github.com/googleapis/google-cloud-go/commit/7bf49049cdc44ca260d1c1354bc7661de9ed8585))
+
+
+### Bug Fixes
+
+* **pubsub:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **pubsub:** Respect gRPC dial option when PUBSUB_EMULATOR_HOST is set ([#10040](https://github.com/googleapis/google-cloud-go/issues/10040)) ([95bf6b2](https://github.com/googleapis/google-cloud-go/commit/95bf6b255d8ff7bb385567da498b90252efb338f))
+* **pubsub:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.36.2...pubsub/v1.37.0) (2024-03-07)
 
 
@@ -577,4 +608,3 @@ Small fix to a package name.
 
 This is the first tag to carve out pubsub as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-

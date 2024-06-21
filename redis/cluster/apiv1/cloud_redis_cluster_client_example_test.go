@@ -143,6 +143,31 @@ func ExampleCloudRedisClusterClient_GetCluster() {
 	_ = resp
 }
 
+func ExampleCloudRedisClusterClient_GetClusterCertificateAuthority() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := cluster.NewCloudRedisClusterClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &clusterpb.GetClusterCertificateAuthorityRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/redis/cluster/apiv1/clusterpb#GetClusterCertificateAuthorityRequest.
+	}
+	resp, err := c.GetClusterCertificateAuthority(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCloudRedisClusterClient_ListClusters() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -171,6 +196,12 @@ func ExampleCloudRedisClusterClient_ListClusters() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*clusterpb.ListClustersResponse)
 	}
 }
 
@@ -257,6 +288,12 @@ func ExampleCloudRedisClusterClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -359,5 +396,11 @@ func ExampleCloudRedisClusterClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

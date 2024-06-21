@@ -52,6 +52,7 @@ type PersistentResourceCallOptions struct {
 	ListPersistentResources  []gax.CallOption
 	DeletePersistentResource []gax.CallOption
 	UpdatePersistentResource []gax.CallOption
+	RebootPersistentResource []gax.CallOption
 	GetLocation              []gax.CallOption
 	ListLocations            []gax.CallOption
 	GetIamPolicy             []gax.CallOption
@@ -85,6 +86,7 @@ func defaultPersistentResourceCallOptions() *PersistentResourceCallOptions {
 		ListPersistentResources:  []gax.CallOption{},
 		DeletePersistentResource: []gax.CallOption{},
 		UpdatePersistentResource: []gax.CallOption{},
+		RebootPersistentResource: []gax.CallOption{},
 		GetLocation:              []gax.CallOption{},
 		ListLocations:            []gax.CallOption{},
 		GetIamPolicy:             []gax.CallOption{},
@@ -105,6 +107,7 @@ func defaultPersistentResourceRESTCallOptions() *PersistentResourceCallOptions {
 		ListPersistentResources:  []gax.CallOption{},
 		DeletePersistentResource: []gax.CallOption{},
 		UpdatePersistentResource: []gax.CallOption{},
+		RebootPersistentResource: []gax.CallOption{},
 		GetLocation:              []gax.CallOption{},
 		ListLocations:            []gax.CallOption{},
 		GetIamPolicy:             []gax.CallOption{},
@@ -131,6 +134,8 @@ type internalPersistentResourceClient interface {
 	DeletePersistentResourceOperation(name string) *DeletePersistentResourceOperation
 	UpdatePersistentResource(context.Context, *aiplatformpb.UpdatePersistentResourceRequest, ...gax.CallOption) (*UpdatePersistentResourceOperation, error)
 	UpdatePersistentResourceOperation(name string) *UpdatePersistentResourceOperation
+	RebootPersistentResource(context.Context, *aiplatformpb.RebootPersistentResourceRequest, ...gax.CallOption) (*RebootPersistentResourceOperation, error)
+	RebootPersistentResourceOperation(name string) *RebootPersistentResourceOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -224,6 +229,17 @@ func (c *PersistentResourceClient) UpdatePersistentResource(ctx context.Context,
 // The name must be that of a previously created UpdatePersistentResourceOperation, possibly from a different process.
 func (c *PersistentResourceClient) UpdatePersistentResourceOperation(name string) *UpdatePersistentResourceOperation {
 	return c.internalClient.UpdatePersistentResourceOperation(name)
+}
+
+// RebootPersistentResource reboots a PersistentResource.
+func (c *PersistentResourceClient) RebootPersistentResource(ctx context.Context, req *aiplatformpb.RebootPersistentResourceRequest, opts ...gax.CallOption) (*RebootPersistentResourceOperation, error) {
+	return c.internalClient.RebootPersistentResource(ctx, req, opts...)
+}
+
+// RebootPersistentResourceOperation returns a new RebootPersistentResourceOperation from a given name.
+// The name must be that of a previously created RebootPersistentResourceOperation, possibly from a different process.
+func (c *PersistentResourceClient) RebootPersistentResourceOperation(name string) *RebootPersistentResourceOperation {
+	return c.internalClient.RebootPersistentResourceOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -375,7 +391,9 @@ func (c *persistentResourceGRPCClient) Connection() *grpc.ClientConn {
 func (c *persistentResourceGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -452,7 +470,9 @@ func defaultPersistentResourceRESTClientOptions() []option.ClientOption {
 func (c *persistentResourceRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -589,6 +609,26 @@ func (c *persistentResourceGRPCClient) UpdatePersistentResource(ctx context.Cont
 		return nil, err
 	}
 	return &UpdatePersistentResourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *persistentResourceGRPCClient) RebootPersistentResource(ctx context.Context, req *aiplatformpb.RebootPersistentResourceRequest, opts ...gax.CallOption) (*RebootPersistentResourceOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).RebootPersistentResource[0:len((*c.CallOptions).RebootPersistentResource):len((*c.CallOptions).RebootPersistentResource)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.persistentResourceClient.RebootPersistentResource(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RebootPersistentResourceOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -1166,6 +1206,71 @@ func (c *persistentResourceRESTClient) UpdatePersistentResource(ctx context.Cont
 
 	override := fmt.Sprintf("/ui/%s", resp.GetName())
 	return &UpdatePersistentResourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// RebootPersistentResource reboots a PersistentResource.
+func (c *persistentResourceRESTClient) RebootPersistentResource(ctx context.Context, req *aiplatformpb.RebootPersistentResourceRequest, opts ...gax.CallOption) (*RebootPersistentResourceOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:reboot", req.GetName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &RebootPersistentResourceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
@@ -1828,6 +1933,24 @@ func (c *persistentResourceGRPCClient) DeletePersistentResourceOperation(name st
 func (c *persistentResourceRESTClient) DeletePersistentResourceOperation(name string) *DeletePersistentResourceOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &DeletePersistentResourceOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// RebootPersistentResourceOperation returns a new RebootPersistentResourceOperation from a given name.
+// The name must be that of a previously created RebootPersistentResourceOperation, possibly from a different process.
+func (c *persistentResourceGRPCClient) RebootPersistentResourceOperation(name string) *RebootPersistentResourceOperation {
+	return &RebootPersistentResourceOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// RebootPersistentResourceOperation returns a new RebootPersistentResourceOperation from a given name.
+// The name must be that of a previously created RebootPersistentResourceOperation, possibly from a different process.
+func (c *persistentResourceRESTClient) RebootPersistentResourceOperation(name string) *RebootPersistentResourceOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &RebootPersistentResourceOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

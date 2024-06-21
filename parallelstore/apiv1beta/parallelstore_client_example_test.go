@@ -118,6 +118,36 @@ func ExampleClient_DeleteInstance() {
 	}
 }
 
+func ExampleClient_ExportData() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := parallelstore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &parallelstorepb.ExportDataRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/parallelstore/apiv1beta/parallelstorepb#ExportDataRequest.
+	}
+	op, err := c.ExportData(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetInstance() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -136,6 +166,36 @@ func ExampleClient_GetInstance() {
 		// See https://pkg.go.dev/cloud.google.com/go/parallelstore/apiv1beta/parallelstorepb#GetInstanceRequest.
 	}
 	resp, err := c.GetInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ImportData() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := parallelstore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &parallelstorepb.ImportDataRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/parallelstore/apiv1beta/parallelstorepb#ImportDataRequest.
+	}
+	op, err := c.ImportData(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -171,6 +231,12 @@ func ExampleClient_ListInstances() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*parallelstorepb.ListInstancesResponse)
 	}
 }
 
@@ -257,6 +323,12 @@ func ExampleClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -359,5 +431,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

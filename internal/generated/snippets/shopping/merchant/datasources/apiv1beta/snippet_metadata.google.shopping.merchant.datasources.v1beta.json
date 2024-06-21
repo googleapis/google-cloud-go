@@ -1,0 +1,289 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/datasources/apiv1beta",
+    "version": "0.8.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.datasources.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_DataSourcesService_CreateDataSource_sync",
+      "title": "merchantapi CreateDataSource Sample",
+      "description": "CreateDataSource creates the new data source configuration for the given account.",
+      "file": "Client/CreateDataSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataSource",
+        "fullName": "google.shopping.merchant.datasources.v1beta.Client.CreateDataSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datasourcespb.CreateDataSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datasourcespb.DataSource",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.datasources.v1beta.Client"
+        },
+        "method": {
+          "shortName": "CreateDataSource",
+          "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService.CreateDataSource",
+          "service": {
+            "shortName": "DataSourcesService",
+            "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_DataSourcesService_DeleteDataSource_sync",
+      "title": "merchantapi DeleteDataSource Sample",
+      "description": "DeleteDataSource deletes a data source from your Merchant Center account.",
+      "file": "Client/DeleteDataSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataSource",
+        "fullName": "google.shopping.merchant.datasources.v1beta.Client.DeleteDataSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datasourcespb.DeleteDataSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.datasources.v1beta.Client"
+        },
+        "method": {
+          "shortName": "DeleteDataSource",
+          "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService.DeleteDataSource",
+          "service": {
+            "shortName": "DataSourcesService",
+            "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_DataSourcesService_FetchDataSource_sync",
+      "title": "merchantapi FetchDataSource Sample",
+      "description": "FetchDataSource performs the data fetch immediately (even outside fetch schedule) on a\ndata source from your Merchant Center Account. If you need to call\nthis method more than once per day, you should use the Products service to\nupdate your product data instead.\nThis method only works on data sources with a file input set.",
+      "file": "Client/FetchDataSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "FetchDataSource",
+        "fullName": "google.shopping.merchant.datasources.v1beta.Client.FetchDataSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datasourcespb.FetchDataSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.datasources.v1beta.Client"
+        },
+        "method": {
+          "shortName": "FetchDataSource",
+          "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService.FetchDataSource",
+          "service": {
+            "shortName": "DataSourcesService",
+            "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_DataSourcesService_GetDataSource_sync",
+      "title": "merchantapi GetDataSource Sample",
+      "description": "GetDataSource retrieves the data source configuration for the given account.",
+      "file": "Client/GetDataSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataSource",
+        "fullName": "google.shopping.merchant.datasources.v1beta.Client.GetDataSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datasourcespb.GetDataSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datasourcespb.DataSource",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.datasources.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetDataSource",
+          "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService.GetDataSource",
+          "service": {
+            "shortName": "DataSourcesService",
+            "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_DataSourcesService_ListDataSources_sync",
+      "title": "merchantapi ListDataSources Sample",
+      "description": "ListDataSources lists the configurations for data sources for the given account.",
+      "file": "Client/ListDataSources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataSources",
+        "fullName": "google.shopping.merchant.datasources.v1beta.Client.ListDataSources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datasourcespb.ListDataSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataSourceIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.datasources.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListDataSources",
+          "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService.ListDataSources",
+          "service": {
+            "shortName": "DataSourcesService",
+            "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_DataSourcesService_UpdateDataSource_sync",
+      "title": "merchantapi UpdateDataSource Sample",
+      "description": "UpdateDataSource updates the existing data source configuration. The fields that are\nset in the update mask but not provided in the resource will be deleted.",
+      "file": "Client/UpdateDataSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataSource",
+        "fullName": "google.shopping.merchant.datasources.v1beta.Client.UpdateDataSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datasourcespb.UpdateDataSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datasourcespb.DataSource",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.datasources.v1beta.Client"
+        },
+        "method": {
+          "shortName": "UpdateDataSource",
+          "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService.UpdateDataSource",
+          "service": {
+            "shortName": "DataSourcesService",
+            "fullName": "google.shopping.merchant.datasources.v1beta.DataSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

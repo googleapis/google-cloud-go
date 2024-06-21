@@ -1,5 +1,12 @@
 # Changes
 
+## [0.23.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.1...analytics/v0.23.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **analytics:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.23.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.0...analytics/v0.23.1) (2024-03-14)
 
 

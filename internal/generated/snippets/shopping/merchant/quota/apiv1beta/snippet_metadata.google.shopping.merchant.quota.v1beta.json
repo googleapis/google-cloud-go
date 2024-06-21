@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/quota/apiv1beta",
+    "version": "0.8.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.quota.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_QuotaService_ListQuotaGroups_sync",
+      "title": "merchantapi ListQuotaGroups Sample",
+      "description": "ListQuotaGroups lists the daily call quota and usage per group for your Merchant\nCenter account.",
+      "file": "Client/ListQuotaGroups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListQuotaGroups",
+        "fullName": "google.shopping.merchant.quota.v1beta.Client.ListQuotaGroups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "quotapb.ListQuotaGroupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "QuotaGroupIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.quota.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListQuotaGroups",
+          "fullName": "google.shopping.merchant.quota.v1beta.QuotaService.ListQuotaGroups",
+          "service": {
+            "shortName": "QuotaService",
+            "fullName": "google.shopping.merchant.quota.v1beta.QuotaService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

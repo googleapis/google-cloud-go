@@ -22,9 +22,8 @@ import (
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/fields"
-	"github.com/golang/protobuf/ptypes"
-	ts "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/type/latlng"
+	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var nullValue = &pb.Value{ValueType: &pb.Value_NullValue{}}
@@ -61,31 +60,27 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 	}
 	switch x := vi.(type) {
 	case []byte:
-		return &pb.Value{ValueType: &pb.Value_BytesValue{x}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_BytesValue{BytesValue: x}}, false, nil
 	case time.Time:
-		ts, err := ptypes.TimestampProto(x)
-		if err != nil {
-			return nil, false, err
-		}
-		return &pb.Value{ValueType: &pb.Value_TimestampValue{ts}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: ts.New(x)}}, false, nil
 	case *ts.Timestamp:
 		if x == nil {
 			// gRPC doesn't like nil oneofs. Use NullValue.
 			return nullValue, false, nil
 		}
-		return &pb.Value{ValueType: &pb.Value_TimestampValue{x}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: x}}, false, nil
 	case *latlng.LatLng:
 		if x == nil {
 			// gRPC doesn't like nil oneofs. Use NullValue.
 			return nullValue, false, nil
 		}
-		return &pb.Value{ValueType: &pb.Value_GeoPointValue{x}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_GeoPointValue{GeoPointValue: x}}, false, nil
 	case *DocumentRef:
 		if x == nil {
 			// gRPC doesn't like nil oneofs. Use NullValue.
 			return nullValue, false, nil
 		}
-		return &pb.Value{ValueType: &pb.Value_ReferenceValue{x.Path}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: x.Path}}, false, nil
 		// Do not add bool, string, int, etc. to this switch; leave them in the
 		// reflect-based switch below. Moving them here would drop support for
 		// types whose underlying types are those primitives.
@@ -94,15 +89,15 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 	}
 	switch v.Kind() {
 	case reflect.Bool:
-		return &pb.Value{ValueType: &pb.Value_BooleanValue{v.Bool()}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_BooleanValue{BooleanValue: v.Bool()}}, false, nil
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		return &pb.Value{ValueType: &pb.Value_IntegerValue{v.Int()}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: v.Int()}}, false, nil
 	case reflect.Uint8, reflect.Uint16, reflect.Uint32:
-		return &pb.Value{ValueType: &pb.Value_IntegerValue{int64(v.Uint())}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: int64(v.Uint())}}, false, nil
 	case reflect.Float32, reflect.Float64:
-		return &pb.Value{ValueType: &pb.Value_DoubleValue{v.Float()}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: v.Float()}}, false, nil
 	case reflect.String:
-		return &pb.Value{ValueType: &pb.Value_StringValue{v.String()}}, false, nil
+		return &pb.Value{ValueType: &pb.Value_StringValue{StringValue: v.String()}}, false, nil
 	case reflect.Array:
 		return arrayToProtoValue(v)
 	case reflect.Slice:
@@ -141,7 +136,7 @@ func arrayToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 		}
 		vals[i] = val
 	}
-	return &pb.Value{ValueType: &pb.Value_ArrayValue{&pb.ArrayValue{Values: vals}}}, false, nil
+	return &pb.Value{ValueType: &pb.Value_ArrayValue{ArrayValue: &pb.ArrayValue{Values: vals}}}, false, nil
 }
 
 // sliceToProtoValue converts a slice to a Firestore Value protobuf and reports
@@ -195,7 +190,7 @@ func mapToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 		// The entire map consisted of transform values.
 		pv = nil
 	} else {
-		pv = &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: m}}}
+		pv = &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: m}}}
 	}
 	return pv, sawTransform, nil
 }
@@ -244,7 +239,7 @@ func structToProtoValue(v reflect.Value) (*pb.Value, bool, error) {
 		// The entire struct consisted of ServerTimestamp or omitempty values.
 		pv = nil
 	} else {
-		pv = &pb.Value{ValueType: &pb.Value_MapValue{&pb.MapValue{Fields: m}}}
+		pv = &pb.Value{ValueType: &pb.Value_MapValue{MapValue: &pb.MapValue{Fields: m}}}
 	}
 	return pv, sawTransform, nil
 }

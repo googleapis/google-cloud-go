@@ -24,11 +24,11 @@ import (
 	"cloud.google.com/go/auth/credentials/internal/gdch"
 	"cloud.google.com/go/auth/credentials/internal/impersonate"
 	internalauth "cloud.google.com/go/auth/internal"
-	"cloud.google.com/go/auth/internal/internaldetect"
+	"cloud.google.com/go/auth/internal/credsfile"
 )
 
 func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
-	fileType, err := internaldetect.ParseFileType(b)
+	fileType, err := credsfile.ParseFileType(b)
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +36,8 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	var projectID, quotaProjectID, universeDomain string
 	var tp auth.TokenProvider
 	switch fileType {
-	case internaldetect.ServiceAccountKey:
-		f, err := internaldetect.ParseServiceAccount(b)
+	case credsfile.ServiceAccountKey:
+		f, err := credsfile.ParseServiceAccount(b)
 		if err != nil {
 			return nil, err
 		}
@@ -46,9 +46,9 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		projectID = f.ProjectID
-		universeDomain = f.UniverseDomain
-	case internaldetect.UserCredentialsKey:
-		f, err := internaldetect.ParseUserCredentials(b)
+		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
+	case credsfile.UserCredentialsKey:
+		f, err := credsfile.ParseUserCredentials(b)
 		if err != nil {
 			return nil, err
 		}
@@ -57,8 +57,9 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		quotaProjectID = f.QuotaProjectID
-	case internaldetect.ExternalAccountKey:
-		f, err := internaldetect.ParseExternalAccount(b)
+		universeDomain = f.UniverseDomain
+	case credsfile.ExternalAccountKey:
+		f, err := credsfile.ParseExternalAccount(b)
 		if err != nil {
 			return nil, err
 		}
@@ -67,9 +68,9 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		quotaProjectID = f.QuotaProjectID
-		universeDomain = f.UniverseDomain
-	case internaldetect.ExternalAccountAuthorizedUserKey:
-		f, err := internaldetect.ParseExternalAccountAuthorizedUser(b)
+		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
+	case credsfile.ExternalAccountAuthorizedUserKey:
+		f, err := credsfile.ParseExternalAccountAuthorizedUser(b)
 		if err != nil {
 			return nil, err
 		}
@@ -78,8 +79,9 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		quotaProjectID = f.QuotaProjectID
-	case internaldetect.ImpersonatedServiceAccountKey:
-		f, err := internaldetect.ParseImpersonatedServiceAccount(b)
+		universeDomain = f.UniverseDomain
+	case credsfile.ImpersonatedServiceAccountKey:
+		f, err := credsfile.ParseImpersonatedServiceAccount(b)
 		if err != nil {
 			return nil, err
 		}
@@ -87,9 +89,9 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 		if err != nil {
 			return nil, err
 		}
-		universeDomain = f.UniverseDomain
-	case internaldetect.GDCHServiceAccountKey:
-		f, err := internaldetect.ParseGDCHServiceAccount(b)
+		universeDomain = resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
+	case credsfile.GDCHServiceAccountKey:
+		f, err := credsfile.ParseGDCHServiceAccount(b)
 		if err != nil {
 			return nil, err
 		}
@@ -98,8 +100,9 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 			return nil, err
 		}
 		projectID = f.Project
+		universeDomain = f.UniverseDomain
 	default:
-		return nil, fmt.Errorf("detect: unsupported filetype %q", fileType)
+		return nil, fmt.Errorf("credentials: unsupported filetype %q", fileType)
 	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
@@ -112,7 +115,18 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	}), nil
 }
 
-func handleServiceAccount(f *internaldetect.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
+// resolveUniverseDomain returns optsUniverseDomain if non-empty, in order to
+// support configuring universe-specific credentials in code. Auth flows
+// unsupported for universe domain should not use this func, but should instead
+// simply set the file universe domain on the credentials.
+func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string {
+	if optsUniverseDomain != "" {
+		return optsUniverseDomain
+	}
+	return fileUniverseDomain
+}
+
+func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	if opts.UseSelfSignedJWT {
 		return configureSelfSignedJWT(f, opts)
 	}
@@ -123,6 +137,7 @@ func handleServiceAccount(f *internaldetect.ServiceAccountFile, opts *DetectOpti
 		Scopes:       opts.scopes(),
 		TokenURL:     f.TokenURL,
 		Subject:      opts.Subject,
+		Client:       opts.client(),
 	}
 	if opts2LO.TokenURL == "" {
 		opts2LO.TokenURL = jwtTokenURL
@@ -130,7 +145,7 @@ func handleServiceAccount(f *internaldetect.ServiceAccountFile, opts *DetectOpti
 	return auth.New2LOTokenProvider(opts2LO)
 }
 
-func handleUserCredential(f *internaldetect.UserCredentialsFile, opts *DetectOptions) (auth.TokenProvider, error) {
+func handleUserCredential(f *credsfile.UserCredentialsFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	opts3LO := &auth.Options3LO{
 		ClientID:         f.ClientID,
 		ClientSecret:     f.ClientSecret,
@@ -140,30 +155,33 @@ func handleUserCredential(f *internaldetect.UserCredentialsFile, opts *DetectOpt
 		AuthStyle:        auth.StyleInParams,
 		EarlyTokenExpiry: opts.EarlyTokenRefresh,
 		RefreshToken:     f.RefreshToken,
+		Client:           opts.client(),
 	}
 	return auth.New3LOTokenProvider(opts3LO)
 }
 
-func handleExternalAccount(f *internaldetect.ExternalAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
+func handleExternalAccount(f *credsfile.ExternalAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	externalOpts := &externalaccount.Options{
 		Audience:                       f.Audience,
 		SubjectTokenType:               f.SubjectTokenType,
 		TokenURL:                       f.TokenURL,
 		TokenInfoURL:                   f.TokenInfoURL,
 		ServiceAccountImpersonationURL: f.ServiceAccountImpersonationURL,
-		ServiceAccountImpersonationLifetimeSeconds: f.ServiceAccountImpersonation.TokenLifetimeSeconds,
-		ClientSecret:             f.ClientSecret,
-		ClientID:                 f.ClientID,
-		CredentialSource:         f.CredentialSource,
-		QuotaProjectID:           f.QuotaProjectID,
-		Scopes:                   opts.scopes(),
-		WorkforcePoolUserProject: f.WorkforcePoolUserProject,
-		Client:                   opts.client(),
+		ClientSecret:                   f.ClientSecret,
+		ClientID:                       f.ClientID,
+		CredentialSource:               f.CredentialSource,
+		QuotaProjectID:                 f.QuotaProjectID,
+		Scopes:                         opts.scopes(),
+		WorkforcePoolUserProject:       f.WorkforcePoolUserProject,
+		Client:                         opts.client(),
+	}
+	if f.ServiceAccountImpersonation != nil {
+		externalOpts.ServiceAccountImpersonationLifetimeSeconds = f.ServiceAccountImpersonation.TokenLifetimeSeconds
 	}
 	return externalaccount.NewTokenProvider(externalOpts)
 }
 
-func handleExternalAccountAuthorizedUser(f *internaldetect.ExternalAccountAuthorizedUserFile, opts *DetectOptions) (auth.TokenProvider, error) {
+func handleExternalAccountAuthorizedUser(f *credsfile.ExternalAccountAuthorizedUserFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	externalOpts := &externalaccountuser.Options{
 		Audience:     f.Audience,
 		RefreshToken: f.RefreshToken,
@@ -177,7 +195,7 @@ func handleExternalAccountAuthorizedUser(f *internaldetect.ExternalAccountAuthor
 	return externalaccountuser.NewTokenProvider(externalOpts)
 }
 
-func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
+func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	if f.ServiceAccountImpersonationURL == "" || f.CredSource == nil {
 		return nil, errors.New("missing 'source_credentials' field or 'service_account_impersonation_url' in credentials")
 	}
@@ -195,7 +213,7 @@ func handleImpersonatedServiceAccount(f *internaldetect.ImpersonatedServiceAccou
 	})
 }
 
-func handleGDCHServiceAccount(f *internaldetect.GDCHServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
+func handleGDCHServiceAccount(f *credsfile.GDCHServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	return gdch.NewTokenProvider(f, &gdch.Options{
 		STSAudience: opts.STSAudience,
 		Client:      opts.client(),

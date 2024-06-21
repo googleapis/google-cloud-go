@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.25.1",
+    "version": "1.27.0",
     "language": "GO",
     "apis": [
       {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -512,7 +512,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -696,7 +696,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1110,7 +1110,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1432,7 +1432,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1754,7 +1754,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -1800,7 +1800,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2122,7 +2122,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2214,7 +2214,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2306,7 +2306,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -2628,7 +2628,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3226,7 +3226,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -3778,7 +3778,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4330,7 +4330,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4468,7 +4468,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4652,7 +4652,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -4974,7 +4974,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5250,7 +5250,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5664,7 +5664,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5710,7 +5710,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5756,7 +5756,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -5894,7 +5894,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6078,7 +6078,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6262,7 +6262,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6354,7 +6354,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6538,7 +6538,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -6998,7 +6998,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7188,6 +7188,236 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Cancel_sync",
+      "title": "compute Cancel Sample",
+      "description": "Cancel cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Cancel/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Cancel",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Cancel",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.CancelInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Cancel",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Cancel",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Delete",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns all of the details about the specified resize request.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InstanceGroupManagerResizeRequest",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Get",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a new resize request that starts provisioning VMs immediately or queues VM creation.",
+      "file": "InstanceGroupManagerResizeRequestsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertInstanceGroupManagerResizeRequestRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.Insert",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceGroupManagerResizeRequests_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of resize requests that are contained in the managed instance group.",
+      "file": "InstanceGroupManagerResizeRequestsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListInstanceGroupManagerResizeRequestsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "InstanceGroupManagerResizeRequestIterator",
+        "client": {
+          "shortName": "InstanceGroupManagerResizeRequestsClient",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequestsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests.List",
+          "service": {
+            "shortName": "InstanceGroupManagerResizeRequests",
+            "fullName": "google.cloud.compute.v1.InstanceGroupManagerResizeRequests"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceGroupManagers_AbandonInstances_sync",
       "title": "compute AbandonInstances Sample",
       "description": "AbandonInstances flags the specified instances to be removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.",
@@ -7274,7 +7504,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7642,7 +7872,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7688,7 +7918,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7734,7 +7964,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -7780,7 +8010,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8194,7 +8424,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8378,7 +8608,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8424,7 +8654,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8522,6 +8752,98 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_InstanceSettingsService_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get get Instance settings.",
+      "file": "InstanceSettingsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.InstanceSettingsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetInstanceSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.InstanceSettings",
+        "client": {
+          "shortName": "InstanceSettingsClient",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsService.Get",
+          "service": {
+            "shortName": "InstanceSettingsService",
+            "fullName": "google.cloud.compute.v1.InstanceSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_InstanceSettingsService_Patch_sync",
+      "title": "compute Patch Sample",
+      "description": "Patch patch Instance settings",
+      "file": "InstanceSettingsClient/Patch/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Patch",
+        "fullName": "google.cloud.compute.v1.InstanceSettingsClient.Patch",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PatchInstanceSettingRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "InstanceSettingsClient",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsClient"
+        },
+        "method": {
+          "shortName": "Patch",
+          "fullName": "google.cloud.compute.v1.InstanceSettingsService.Patch",
+          "service": {
+            "shortName": "InstanceSettingsService",
+            "fullName": "google.cloud.compute.v1.InstanceSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_InstanceTemplates_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves the list of all InstanceTemplates resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
@@ -8562,7 +8884,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -8792,7 +9114,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -9022,7 +9344,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -9666,7 +9988,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -9712,7 +10034,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11138,7 +11460,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11368,7 +11690,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11552,7 +11874,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11736,7 +12058,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -11920,7 +12242,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -12012,7 +12334,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -12288,7 +12610,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -12702,7 +13024,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13024,7 +13346,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13162,7 +13484,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13254,7 +13576,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13300,7 +13622,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13530,7 +13852,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13714,7 +14036,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -13944,7 +14266,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -14220,7 +14542,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -14266,7 +14588,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -14772,7 +15094,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15324,7 +15646,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15370,7 +15692,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15646,7 +15968,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15922,7 +16244,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -15968,7 +16290,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16004,6 +16326,52 @@
         "method": {
           "shortName": "Patch",
           "fullName": "google.cloud.compute.v1.NodeGroups.Patch",
+          "service": {
+            "shortName": "NodeGroups",
+            "fullName": "google.cloud.compute.v1.NodeGroups"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_NodeGroups_PerformMaintenance_sync",
+      "title": "compute PerformMaintenance Sample",
+      "description": "PerformMaintenance perform maintenance on a subset of nodes in the node group.",
+      "file": "NodeGroupsClient/PerformMaintenance/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "PerformMaintenance",
+        "fullName": "google.cloud.compute.v1.NodeGroupsClient.PerformMaintenance",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.PerformMaintenanceNodeGroupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "NodeGroupsClient",
+          "fullName": "google.cloud.compute.v1.NodeGroupsClient"
+        },
+        "method": {
+          "shortName": "PerformMaintenance",
+          "fullName": "google.cloud.compute.v1.NodeGroups.PerformMaintenance",
           "service": {
             "shortName": "NodeGroups",
             "fullName": "google.cloud.compute.v1.NodeGroups"
@@ -16244,7 +16612,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16474,7 +16842,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16612,7 +16980,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16704,7 +17072,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16750,7 +17118,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -16934,7 +17302,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -17348,7 +17716,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -17394,7 +17762,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -17900,7 +18268,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -18038,7 +18406,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -18268,7 +18636,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -18544,7 +18912,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -18912,7 +19280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -18958,7 +19326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -19234,7 +19602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -19372,7 +19740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -19510,7 +19878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -19878,7 +20246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20476,7 +20844,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -20706,7 +21074,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -21212,7 +21580,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -21258,7 +21626,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -21304,7 +21672,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -21350,7 +21718,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -21764,7 +22132,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -21810,7 +22178,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -22040,7 +22408,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -22316,7 +22684,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -22730,7 +23098,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -22776,7 +23144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -23282,7 +23650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -23742,7 +24110,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -23880,7 +24248,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -24202,7 +24570,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -24524,7 +24892,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -24708,7 +25076,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -24984,7 +25352,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25214,7 +25582,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25536,7 +25904,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25720,7 +26088,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25904,7 +26272,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -25996,7 +26364,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -26042,7 +26410,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -26272,7 +26640,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -26502,7 +26870,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -26732,7 +27100,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -26916,7 +27284,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27100,7 +27468,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27238,7 +27606,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27560,7 +27928,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27652,7 +28020,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -27882,7 +28250,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -28158,7 +28526,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -28388,7 +28756,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -28848,7 +29216,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29032,7 +29400,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29216,7 +29584,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29262,7 +29630,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29446,7 +29814,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29544,6 +29912,604 @@
       ]
     },
     {
+      "regionTag": "compute_v1_generated_StoragePoolTypes_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves an aggregated list of storage pool types. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "StoragePoolTypesClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.StoragePoolTypesClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListStoragePoolTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolTypesScopedListPairIterator",
+        "client": {
+          "shortName": "StoragePoolTypesClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypesClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypes.AggregatedList",
+          "service": {
+            "shortName": "StoragePoolTypes",
+            "fullName": "google.cloud.compute.v1.StoragePoolTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePoolTypes_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns the specified storage pool type.",
+      "file": "StoragePoolTypesClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.StoragePoolTypesClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetStoragePoolTypeRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.StoragePoolType",
+        "client": {
+          "shortName": "StoragePoolTypesClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypesClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypes.Get",
+          "service": {
+            "shortName": "StoragePoolTypes",
+            "fullName": "google.cloud.compute.v1.StoragePoolTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePoolTypes_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of storage pool types available to the specified project.",
+      "file": "StoragePoolTypesClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.StoragePoolTypesClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListStoragePoolTypesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolTypeIterator",
+        "client": {
+          "shortName": "StoragePoolTypesClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypesClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.StoragePoolTypes.List",
+          "service": {
+            "shortName": "StoragePoolTypes",
+            "fullName": "google.cloud.compute.v1.StoragePoolTypes"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_AggregatedList_sync",
+      "title": "compute AggregatedList Sample",
+      "description": "AggregatedList retrieves an aggregated list of storage pools. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
+      "file": "StoragePoolsClient/AggregatedList/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AggregatedList",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.AggregatedList",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.AggregatedListStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolsScopedListPairIterator",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "AggregatedList",
+          "fullName": "google.cloud.compute.v1.StoragePools.AggregatedList",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Delete_sync",
+      "title": "compute Delete Sample",
+      "description": "Delete deletes the specified storage pool. Deleting a storagePool removes its data permanently and is irreversible. However, deleting a storagePool does not delete any snapshots previously made from the storagePool. You must separately delete snapshots.",
+      "file": "StoragePoolsClient/Delete/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Delete",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Delete",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.DeleteStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Delete",
+          "fullName": "google.cloud.compute.v1.StoragePools.Delete",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Get_sync",
+      "title": "compute Get Sample",
+      "description": "Get returns a specified storage pool. Gets a list of available storage pools by making a list() request.",
+      "file": "StoragePoolsClient/Get/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Get",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Get",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.StoragePool",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Get",
+          "fullName": "google.cloud.compute.v1.StoragePools.Get",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_GetIamPolicy_sync",
+      "title": "compute GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.",
+      "file": "StoragePoolsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.GetIamPolicyStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.compute.v1.StoragePools.GetIamPolicy",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Insert_sync",
+      "title": "compute Insert Sample",
+      "description": "Insert creates a storage pool in the specified project using the data in the request.",
+      "file": "StoragePoolsClient/Insert/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Insert",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Insert",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.InsertStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Insert",
+          "fullName": "google.cloud.compute.v1.StoragePools.Insert",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_List_sync",
+      "title": "compute List Sample",
+      "description": "List retrieves a list of storage pools contained within the specified zone.",
+      "file": "StoragePoolsClient/List/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "List",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.List",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolIterator",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "List",
+          "fullName": "google.cloud.compute.v1.StoragePools.List",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_ListDisks_sync",
+      "title": "compute ListDisks Sample",
+      "description": "ListDisks lists the disks in a specified storage pool.",
+      "file": "StoragePoolsClient/ListDisks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDisks",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.ListDisks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.ListDisksStoragePoolsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StoragePoolDiskIterator",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "ListDisks",
+          "fullName": "google.cloud.compute.v1.StoragePools.ListDisks",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_SetIamPolicy_sync",
+      "title": "compute SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.",
+      "file": "StoragePoolsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.SetIamPolicyStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.compute.v1.StoragePools.SetIamPolicy",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_TestIamPermissions_sync",
+      "title": "compute TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "StoragePoolsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.TestIamPermissionsStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.compute.v1.StoragePools.TestIamPermissions",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "compute_v1_generated_StoragePools_Update_sync",
+      "title": "compute Update Sample",
+      "description": "Update updates the specified storagePool with the data included in the request. The update is performed only on selected fields included as part of update-mask. Only the following fields can be modified: size_tb and provisioned_iops.",
+      "file": "StoragePoolsClient/Update/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Update",
+        "fullName": "google.cloud.compute.v1.StoragePoolsClient.Update",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "computepb.UpdateStoragePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*Operation",
+        "client": {
+          "shortName": "StoragePoolsClient",
+          "fullName": "google.cloud.compute.v1.StoragePoolsClient"
+        },
+        "method": {
+          "shortName": "Update",
+          "fullName": "google.cloud.compute.v1.StoragePools.Update",
+          "service": {
+            "shortName": "StoragePools",
+            "fullName": "google.cloud.compute.v1.StoragePools"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "compute_v1_generated_Subnetworks_AggregatedList_sync",
       "title": "compute AggregatedList Sample",
       "description": "AggregatedList retrieves an aggregated list of subnetworks. To prevent failure, Google recommends that you set the `returnPartialSuccess` parameter to `true`.",
@@ -29584,7 +30550,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29860,7 +30826,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -29906,7 +30872,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30274,7 +31240,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30366,7 +31332,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30550,7 +31516,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30688,7 +31654,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -30872,7 +31838,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -31194,7 +32160,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -31378,7 +32344,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -31562,7 +32528,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -31792,7 +32758,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -32160,7 +33126,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -32436,7 +33402,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -32620,7 +33586,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -32758,7 +33724,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -32942,7 +33908,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -33034,7 +34000,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -33264,7 +34230,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -33448,7 +34414,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -33678,7 +34644,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -33816,7 +34782,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -34000,7 +34966,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -34184,7 +35150,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -34322,7 +35288,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

@@ -106,6 +106,31 @@ func ExampleClient_CancelDlpJob() {
 	}
 }
 
+func ExampleClient_CreateConnection() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.CreateConnectionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#CreateConnectionRequest.
+	}
+	resp, err := c.CreateConnection(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateDeidentifyTemplate() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -281,6 +306,29 @@ func ExampleClient_DeidentifyContent() {
 	_ = resp
 }
 
+func ExampleClient_DeleteConnection() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.DeleteConnectionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeleteConnectionRequest.
+	}
+	err = c.DeleteConnection(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_DeleteDeidentifyTemplate() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -419,6 +467,29 @@ func ExampleClient_DeleteStoredInfoType() {
 	}
 }
 
+func ExampleClient_DeleteTableDataProfile() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.DeleteTableDataProfileRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeleteTableDataProfileRequest.
+	}
+	err = c.DeleteTableDataProfile(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_FinishDlpJob() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -460,6 +531,31 @@ func ExampleClient_GetColumnDataProfile() {
 		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#GetColumnDataProfileRequest.
 	}
 	resp, err := c.GetColumnDataProfile(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetConnection() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.GetConnectionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#GetConnectionRequest.
+	}
+	resp, err := c.GetConnection(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -770,6 +866,49 @@ func ExampleClient_ListColumnDataProfiles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListColumnDataProfilesResponse)
+	}
+}
+
+func ExampleClient_ListConnections() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.ListConnectionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListConnectionsRequest.
+	}
+	it := c.ListConnections(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListConnectionsResponse)
 	}
 }
 
@@ -801,6 +940,12 @@ func ExampleClient_ListDeidentifyTemplates() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListDeidentifyTemplatesResponse)
 	}
 }
 
@@ -832,6 +977,12 @@ func ExampleClient_ListDiscoveryConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListDiscoveryConfigsResponse)
 	}
 }
 
@@ -863,6 +1014,12 @@ func ExampleClient_ListDlpJobs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListDlpJobsResponse)
 	}
 }
 
@@ -919,6 +1076,12 @@ func ExampleClient_ListInspectTemplates() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListInspectTemplatesResponse)
 	}
 }
 
@@ -950,6 +1113,12 @@ func ExampleClient_ListJobTriggers() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListJobTriggersResponse)
 	}
 }
 
@@ -981,6 +1150,12 @@ func ExampleClient_ListProjectDataProfiles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListProjectDataProfilesResponse)
 	}
 }
 
@@ -1012,6 +1187,12 @@ func ExampleClient_ListStoredInfoTypes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListStoredInfoTypesResponse)
 	}
 }
 
@@ -1043,6 +1224,12 @@ func ExampleClient_ListTableDataProfiles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListTableDataProfilesResponse)
 	}
 }
 
@@ -1089,6 +1276,68 @@ func ExampleClient_ReidentifyContent() {
 		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ReidentifyContentRequest.
 	}
 	resp, err := c.ReidentifyContent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_SearchConnections() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.SearchConnectionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#SearchConnectionsRequest.
+	}
+	it := c.SearchConnections(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.SearchConnectionsResponse)
+	}
+}
+
+func ExampleClient_UpdateConnection() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.UpdateConnectionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#UpdateConnectionRequest.
+	}
+	resp, err := c.UpdateConnection(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

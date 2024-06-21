@@ -64,16 +64,16 @@ func (cs computeProvider) Token(ctx context.Context) (*auth.Token, error) {
 		v.Set("scopes", strings.Join(cs.scopes, ","))
 		tokenURI.RawQuery = v.Encode()
 	}
-	tokenJSON, err := metadata.Get(tokenURI.String())
+	tokenJSON, err := metadata.GetWithContext(ctx, tokenURI.String())
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("credentials: cannot fetch token: %w", err)
 	}
 	var res metadataTokenResp
 	if err := json.NewDecoder(strings.NewReader(tokenJSON)).Decode(&res); err != nil {
-		return nil, fmt.Errorf("detect: invalid token JSON from metadata: %w", err)
+		return nil, fmt.Errorf("credentials: invalid token JSON from metadata: %w", err)
 	}
 	if res.ExpiresInSec == 0 || res.AccessToken == "" {
-		return nil, errors.New("detect: incomplete token received from metadata")
+		return nil, errors.New("credentials: incomplete token received from metadata")
 	}
 	return &auth.Token{
 		Value:    res.AccessToken,

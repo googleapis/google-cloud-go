@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/spanner/admin/database/apiv1",
-    "version": "1.60.0",
+    "version": "1.63.0",
     "language": "GO",
     "apis": [
       {
@@ -59,7 +59,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_CopyBackup_sync",
       "title": "spanner CopyBackup Sample",
-      "description": "CopyBackup starts copying a Cloud Spanner Backup.\nThe returned backup [long-running operation][google.longrunning.Operation]\nwill have a name of the format\n`projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>`\nand can be used to track copying of the backup. The operation is associated\nwith the destination backup.\nThe [metadata][google.longrunning.Operation.metadata] field type is\n[CopyBackupMetadata][google.spanner.admin.database.v1.CopyBackupMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Backup][google.spanner.admin.database.v1.Backup], if successful. Cancelling the returned operation will stop the\ncopying and delete the backup.\nConcurrent CopyBackup requests can run on the same source backup.",
+      "description": "CopyBackup starts copying a Cloud Spanner Backup.\nThe returned backup [long-running operation][google.longrunning.Operation]\nwill have a name of the format\n`projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>`\nand can be used to track copying of the backup. The operation is associated\nwith the destination backup.\nThe [metadata][google.longrunning.Operation.metadata] field type is\n[CopyBackupMetadata][google.spanner.admin.database.v1.CopyBackupMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Backup][google.spanner.admin.database.v1.Backup], if successful.\nCancelling the returned operation will stop the copying and delete the\ndestination backup. Concurrent CopyBackup requests can run on the same\nsource backup.",
       "file": "DatabaseAdminClient/CopyBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -105,7 +105,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_CreateBackup_sync",
       "title": "spanner CreateBackup Sample",
-      "description": "CreateBackup starts creating a new Cloud Spanner Backup.\nThe returned backup [long-running operation][google.longrunning.Operation]\nwill have a name of the format\n`projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>`\nand can be used to track creation of the backup. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateBackupMetadata][google.spanner.admin.database.v1.CreateBackupMetadata]. The\n[response][google.longrunning.Operation.response] field type is\n[Backup][google.spanner.admin.database.v1.Backup], if successful. Cancelling the returned operation will stop the\ncreation and delete the backup.\nThere can be only one pending backup creation per database. Backup creation\nof different databases can run concurrently.",
+      "description": "CreateBackup starts creating a new Cloud Spanner Backup.\nThe returned backup [long-running operation][google.longrunning.Operation]\nwill have a name of the format\n`projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>`\nand can be used to track creation of the backup. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateBackupMetadata][google.spanner.admin.database.v1.CreateBackupMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Backup][google.spanner.admin.database.v1.Backup], if successful.\nCancelling the returned operation will stop the creation and delete the\nbackup. There can be only one pending backup creation per database. Backup\ncreation of different databases can run concurrently.",
       "file": "DatabaseAdminClient/CreateBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -151,7 +151,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_CreateDatabase_sync",
       "title": "spanner CreateDatabase Sample",
-      "description": "CreateDatabase creates a new Cloud Spanner database and starts to prepare it for serving.\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format `<database_name>/operations/<operation_id>` and\ncan be used to track preparation of the database. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata]. The\n[response][google.longrunning.Operation.response] field type is\n[Database][google.spanner.admin.database.v1.Database], if successful.",
+      "description": "CreateDatabase creates a new Cloud Spanner database and starts to prepare it for serving.\nThe returned [long-running operation][google.longrunning.Operation] will\nhave a name of the format `<database_name>/operations/<operation_id>` and\ncan be used to track preparation of the database. The\n[metadata][google.longrunning.Operation.metadata] field type is\n[CreateDatabaseMetadata][google.spanner.admin.database.v1.CreateDatabaseMetadata].\nThe [response][google.longrunning.Operation.response] field type is\n[Database][google.spanner.admin.database.v1.Database], if successful.",
       "file": "DatabaseAdminClient/CreateDatabase/main.go",
       "language": "GO",
       "clientMethod": {
@@ -197,7 +197,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_DeleteBackup_sync",
       "title": "spanner DeleteBackup Sample",
-      "description": "DeleteBackup deletes a pending or completed [Backup][google.spanner.admin.database.v1.Backup].",
+      "description": "DeleteBackup deletes a pending or completed\n[Backup][google.spanner.admin.database.v1.Backup].",
       "file": "DatabaseAdminClient/DeleteBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -332,7 +332,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_GetBackup_sync",
       "title": "spanner GetBackup Sample",
-      "description": "GetBackup gets metadata on a pending or completed [Backup][google.spanner.admin.database.v1.Backup].",
+      "description": "GetBackup gets metadata on a pending or completed\n[Backup][google.spanner.admin.database.v1.Backup].",
       "file": "DatabaseAdminClient/GetBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -600,7 +600,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -646,7 +646,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -692,7 +692,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -738,7 +738,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -784,7 +784,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -830,7 +830,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -976,7 +976,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_UpdateBackup_sync",
       "title": "spanner UpdateBackup Sample",
-      "description": "UpdateBackup updates a pending or completed [Backup][google.spanner.admin.database.v1.Backup].",
+      "description": "UpdateBackup updates a pending or completed\n[Backup][google.spanner.admin.database.v1.Backup].",
       "file": "DatabaseAdminClient/UpdateBackup/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1068,7 +1068,7 @@
     {
       "regionTag": "spanner_v1_generated_DatabaseAdmin_UpdateDatabaseDdl_sync",
       "title": "spanner UpdateDatabaseDdl Sample",
-      "description": "UpdateDatabaseDdl updates the schema of a Cloud Spanner database by\ncreating/altering/dropping tables, columns, indexes, etc. The returned\n[long-running operation][google.longrunning.Operation] will have a name of\nthe format `<database_name>/operations/<operation_id>` and can be used to\ntrack execution of the schema change(s). The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateDatabaseDdlMetadata][google.spanner.admin.database.v1.UpdateDatabaseDdlMetadata].  The operation has no response.",
+      "description": "UpdateDatabaseDdl updates the schema of a Cloud Spanner database by\ncreating/altering/dropping tables, columns, indexes, etc. The returned\n[long-running operation][google.longrunning.Operation] will have a name of\nthe format `<database_name>/operations/<operation_id>` and can be used to\ntrack execution of the schema change(s). The\n[metadata][google.longrunning.Operation.metadata] field type is\n[UpdateDatabaseDdlMetadata][google.spanner.admin.database.v1.UpdateDatabaseDdlMetadata].\nThe operation has no response.",
       "file": "DatabaseAdminClient/UpdateDatabaseDdl/main.go",
       "language": "GO",
       "clientMethod": {

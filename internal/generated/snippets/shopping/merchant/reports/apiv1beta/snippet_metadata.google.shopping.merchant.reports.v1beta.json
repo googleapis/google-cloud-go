@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/reports/apiv1beta",
+    "version": "0.8.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.reports.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_ReportService_Search_sync",
+      "title": "merchantapi Search Sample",
+      "description": "Search retrieves a report defined by a search query. The response might contain\nfewer rows than specified by `page_size`. Rely on `next_page_token` to\ndetermine if there are more rows to be requested.",
+      "file": "ReportClient/Search/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "Search",
+        "fullName": "google.shopping.merchant.reports.v1beta.ReportClient.Search",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "reportspb.SearchRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ReportRowIterator",
+        "client": {
+          "shortName": "ReportClient",
+          "fullName": "google.shopping.merchant.reports.v1beta.ReportClient"
+        },
+        "method": {
+          "shortName": "Search",
+          "fullName": "google.shopping.merchant.reports.v1beta.ReportService.Search",
+          "service": {
+            "shortName": "ReportService",
+            "fullName": "google.shopping.merchant.reports.v1beta.ReportService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
