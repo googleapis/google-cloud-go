@@ -353,9 +353,9 @@ func errInlineBeginTransactionFailed() error {
 // If no row is present with the given key, then ReadRow returns an error(spanner.ErrRowNotFound) where
 // spanner.ErrCode(err) is codes.NotFound.
 //
-// To check if the error is spanner.ErrRecordNotFound:
+// To check if the error is spanner.ErrRowNotFound:
 //
-//	if errors.Is(err, ErrRecordNotFound) {
+//	if errors.Is(err, spanner.ErrRowNotFound) {
 //			...
 //	}
 func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
@@ -367,9 +367,9 @@ func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns
 // If no row is present with the given key, then ReadRowWithOptions returns an error where
 // spanner.ErrCode(err) is codes.NotFound.
 //
-// To check if the error is spanner.ErrRecordNotFound:
+// To check if the error is spanner.ErrRowNotFound:
 //
-//	if errors.Is(err, ErrRecordNotFound) {
+//	if errors.Is(err, spanner.ErrRowNotFound) {
 //			...
 //	}
 func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key Key, columns []string, opts *ReadOptions) (*Row, error) {
@@ -391,9 +391,9 @@ func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key K
 // If no row is present with the given index, then ReadRowUsingIndex returns an
 // error(spanner.ErrRowNotFound) where spanner.ErrCode(err) is codes.NotFound.
 //
-// To check if the error is spanner.ErrRecordNotFound:
+// To check if the error is spanner.ErrRowNotFound:
 //
-//	if errors.Is(err, ErrRecordNotFound) {
+//	if errors.Is(err, spanner.ErrRowNotFound) {
 //			...
 //	}
 //
