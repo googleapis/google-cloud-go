@@ -3,7 +3,7 @@ module cloud.google.com/go/spanner
 go 1.20
 
 require (
-	cloud.google.com/go v0.115.0
+	cloud.google.com/go v0.114.0
 	cloud.google.com/go/iam v1.1.8
 	cloud.google.com/go/longrunning v0.5.7
 	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.5.0

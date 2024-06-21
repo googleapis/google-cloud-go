@@ -52,8 +52,8 @@ type CachedContent struct {
 	//	*CachedContent_ExpireTime
 	//	*CachedContent_Ttl
 	Expiration isCachedContent_Expiration `protobuf_oneof:"expiration"`
-	// Immutable. Identifier. The resource name of the cached content
-	// Format:
+	// Immutable. Identifier. The server-generated resource name of the cached
+	// content Format:
 	// projects/{project}/locations/{location}/cachedContents/{cached_content}
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Immutable. The name of the publisher model to use for cached content.

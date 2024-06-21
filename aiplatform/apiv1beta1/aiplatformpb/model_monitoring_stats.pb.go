@@ -455,7 +455,8 @@ type ModelMonitoringStatsDataPoint_TypedValue_DistributionDataValue struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// tensorflow.metadata.v0.DatasetFeatureStatistics format.
+	// Predictive monitoring drift distribution in
+	// `tensorflow.metadata.v0.DatasetFeatureStatistics` format.
 	Distribution *structpb.Value `protobuf:"bytes,1,opt,name=distribution,proto3" json:"distribution,omitempty"`
 	// Distribution distance deviation from the current dataset's statistics
 	// to baseline dataset's statistics.
