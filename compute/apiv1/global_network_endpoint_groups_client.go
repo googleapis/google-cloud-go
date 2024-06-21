@@ -236,6 +236,7 @@ func defaultGlobalNetworkEndpointGroupsRESTClientOptions() []option.ClientOption
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
