@@ -320,7 +320,10 @@ func (c *CloudControlsPartnerCoreClient) GetPartnerPermissions(ctx context.Conte
 	return c.internalClient.GetPartnerPermissions(ctx, req, opts...)
 }
 
-// ListAccessApprovalRequests lists access requests associated with a workload
+// ListAccessApprovalRequests deprecated: Only returns access approval requests directly associated with
+// an assured workload folder.
+//
+// Deprecated: ListAccessApprovalRequests may be removed in a future version.
 func (c *CloudControlsPartnerCoreClient) ListAccessApprovalRequests(ctx context.Context, req *cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest, opts ...gax.CallOption) *AccessApprovalRequestIterator {
 	return c.internalClient.ListAccessApprovalRequests(ctx, req, opts...)
 }
@@ -1134,7 +1137,10 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartnerPermissions(ctx context.C
 	return resp, nil
 }
 
-// ListAccessApprovalRequests lists access requests associated with a workload
+// ListAccessApprovalRequests deprecated: Only returns access approval requests directly associated with
+// an assured workload folder.
+//
+// Deprecated: ListAccessApprovalRequests may be removed in a future version.
 func (c *cloudControlsPartnerCoreRESTClient) ListAccessApprovalRequests(ctx context.Context, req *cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest, opts ...gax.CallOption) *AccessApprovalRequestIterator {
 	it := &AccessApprovalRequestIterator{}
 	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest)
