@@ -1731,6 +1731,9 @@ func TestIntegration_Reads(t *testing.T) {
 	if ErrCode(err) != codes.NotFound {
 		t.Fatalf("got %v, want NotFound", err)
 	}
+	if !errors.Is(err, ErrRecordNotFound) {
+		t.Fatalf("got %v, want spanner.ErrRecordNotFound", err)
+	}
 	verifyDirectPathRemoteAddress(t)
 
 	// Index point read.
@@ -1750,6 +1753,9 @@ func TestIntegration_Reads(t *testing.T) {
 	_, err = client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v999"}, testTableColumns)
 	if ErrCode(err) != codes.NotFound {
 		t.Fatalf("got %v, want NotFound", err)
+	}
+	if !errors.Is(err, ErrRecordNotFound) {
+		t.Fatalf("got %v, want spanner.ErrRecordNotFound", err)
 	}
 	verifyDirectPathRemoteAddress(t)
 	rangeReads(ctx, t, client)
