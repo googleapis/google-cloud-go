@@ -111,6 +111,7 @@ var (
 )
 
 // OnGCE reports whether this process is running on Google Compute Engine.
+// Works for Cloud Run as well.
 func OnGCE() bool {
 	onGCEOnce.Do(initOnGCE)
 	return onGCE
