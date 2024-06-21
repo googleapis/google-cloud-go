@@ -927,23 +927,19 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	numMsgs := len(bms)
 	pbMsgs := make([]*pb.PubsubMessage, numMsgs)
 	var orderingKey string
-<<<<<<< HEAD
 	if numMsgs != 0 {
 		// extract the ordering key for this batch. since
 		// messages in the same batch share the same ordering
 		// key, it doesn't matter which we read from.
 		orderingKey = bms[0].msg.OrderingKey
 	}
-=======
 	batchSize := 0
->>>>>>> 2003148b71a734afd5c31a0106e5204414ece6e9
 	for i, bm := range bms {
 		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-<<<<<<< HEAD
 		if bm.msg.Attributes != nil {
 			ctx = otel.GetTextMapPropagator().Extract(ctx, newMessageCarrier(bm.msg))
 		}
@@ -951,9 +947,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		pSpan.SetAttributes(attribute.Int(numBatchedMessagesAttribute, numMsgs))
 		defer bm.span.End()
 		defer pSpan.End()
-=======
 		batchSize = batchSize + proto.Size(pbMsgs[i])
->>>>>>> 2003148b71a734afd5c31a0106e5204414ece6e9
 		bm.msg = nil // release bm.msg for GC
 	}
 
