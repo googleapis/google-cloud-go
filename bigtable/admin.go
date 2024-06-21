@@ -733,8 +733,8 @@ func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, po
 	return ac.SetGCPolicyWithOptions(ctx, table, family, policy)
 }
 
-// SetType specifies the type of all values in a column family. Currently, only
-// non-aggregate type is supported.
+// SetValueType specifies the type of all values in a column family. Currently,
+// only non-aggregate type is supported.
 func (ac *AdminClient) SetValueType(ctx context.Context, table, family string, valueType Type) error {
 	return ac.setValueTypeImpl(ctx, table, family, valueType)
 }
