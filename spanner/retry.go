@@ -58,24 +58,23 @@ func onCodes(bo gax.Backoff, cc ...codes.Code) gax.Retryer {
 // Retry returns the retry delay returned by Cloud Spanner if that is present.
 // Otherwise it returns the retry delay calculated by the generic gax Retryer.
 func(r *spannerRetryer) Retry(err error)(time.Duration, bool) {
-  if status
-    .Code(err) == codes.Internal &&
-        !strings.Contains(err.Error(), "stream terminated by RST_STREAM") &&
-        // See b/25451313.
-        !strings.Contains(err.Error(), "HTTP/2 error code: INTERNAL_ERROR") &&
-        // See b/27794742.
-        !strings.Contains(err.Error(),
+	  if status.Code(err) == codes.Internal &&
+	        !strings.Contains(err.Error(), "stream terminated by RST_STREAM") &&
+		// See b/25451313.
+	        !strings.Contains(err.Error(), "HTTP/2 error code: INTERNAL_ERROR") &&
+		// See b/27794742.
+	        !strings.Contains(err.Error(),
                           "Connection closed with unknown cause") &&
-        !strings.Contains(err.Error(),
+		!strings.Contains(err.Error(),
                           "Received unexpected EOS on DATA frame from server"){
-            return 0, false}
+            return 0, false
+	}
 
-         delay,
-        shouldRetry : = r.Retryer.Retry(err) if !shouldRetry {
-      return 0, false
-    }
-  if serverDelay
-    , hasServerDelay : = ExtractRetryDelay(err);
+         delay, shouldRetry := r.Retryer.Retry(err)
+	 if !shouldRetry {
+	      return 0, false
+	}
+  if serverDelay, hasServerDelay := ExtractRetryDelay(err);
   hasServerDelay { delay = serverDelay }
   return delay, true
 }
@@ -135,23 +134,20 @@ return funcWithRetry(ctx)
 
 // ExtractRetryDelay extracts retry backoff from a *spanner.Error if present.
 func ExtractRetryDelay(err error)(time.Duration, bool) {
-  var se *Error var s *status.Status
+  var se *Error
+  var s *status.Status
       // Unwrap status error.
       if errorAs (err, &se) {
     s = status.Convert(se.Unwrap())
-  }
-  else {
+  } else {
     s = status.Convert(err)
   }
-  if s
-    == nil { return 0, false }
-        for
-          _, detail : = range s.Details() {
-            if retryInfo
-              , ok : = detail.(*errdetails.RetryInfo);
+  if s == nil { return 0, false }
+        for _, detail := range s.Details() {
+            if retryInfo, ok := detail.(*errdetails.RetryInfo);
             ok {
-              delay,
-                  err : = ptypes.Duration(retryInfo.RetryDelay) if err != nil {
+              delay, err := ptypes.Duration(retryInfo.RetryDelay)
+	      if err != nil {
                 return 0, false
               }
               return delay, true

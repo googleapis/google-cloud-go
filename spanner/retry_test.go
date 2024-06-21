@@ -16,126 +16,128 @@ limitations under the License.
 
 package spanner
 
-import(
-    "context"
-    "testing"
-    "time"
+import (
+	"context"
+	"testing"
+	"time"
 
-    "github.com/golang/protobuf/ptypes"
-    "github.com/googleapis/gax-go/v2" edpb
-    "google.golang.org/genproto/googleapis/rpc/errdetails"
-    "google.golang.org/grpc/codes"
-    "google.golang.org/grpc/status")
+	"github.com/googleapis/gax-go/v2"
+	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
+)
 
-    func TestRetryInfo(t *testing.T) {
-s:
-  = status.New(codes.Aborted, "") s, err : = s.WithDetails(&edpb.RetryInfo{
-    RetryDelay : ptypes.DurationProto(time.Second),
-  }) if err != nil{t.Fatalf("Error setting retry details: %v", err)} gotDelay,
-                                         ok
-      : = ExtractRetryDelay(
-              toSpannerErrorWithCommitInfo(s.Err(), true)) if !ok ||
-          !testEqual(time.Second, gotDelay) {
-    t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay,
-             time.Second)
-  }
+func TestRetryInfo(t *testing.T) {
+	s := status.New(codes.Aborted, "")
+	s, err := s.WithDetails(&edpb.RetryInfo{
+		RetryDelay: durationpb.New(time.Second),
+	})
+	if err != nil {
+		t.Fatalf("Error setting retry details: %v", err)
+	}
+	gotDelay, ok := ExtractRetryDelay(toSpannerErrorWithCommitInfo(s.Err(), true))
+	if !ok || !testEqual(time.Second, gotDelay) {
+		t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay, time.Second)
+	}
 }
 
 func TestRetryInfoResourceExhausted(t *testing.T) {
-s:
-  = status.New(codes.ResourceExhausted, "") s,
-      err : = s.WithDetails(&edpb.RetryInfo{
-        RetryDelay : ptypes.DurationProto(time.Second),
-      }) if err !=
-              nil{t.Fatalf("Error setting retry details: %v", err)} gotDelay,
-          ok : = ExtractRetryDelay(
-                     toSpannerErrorWithCommitInfo(s.Err(), true)) if !ok ||
-                 !testEqual(time.Second, gotDelay) {
-    t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay,
-             time.Second)
-  }
+        s := status.New(codes.ResourceExhausted, "")
+        s, err := s.WithDetails(&edpb.RetryInfo{
+                RetryDelay: durationpb.New(time.Second),
+        })
+        if err != nil {
+                t.Fatalf("Error setting retry details: %v", err)
+        }
+        gotDelay, ok := ExtractRetryDelay(toSpannerErrorWithCommitInfo(s.Err(), true))
+        if !ok || !testEqual(time.Second, gotDelay) {
+                t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay, time.Second)
+        }
 }
 
 func TestRetryInfoInWrappedError(t *testing.T) {
-s:
-  = status.New(codes.Aborted, "") s, err : = s.WithDetails(&edpb.RetryInfo{
-    RetryDelay : ptypes.DurationProto(time.Second),
-  }) if err != nil{t.Fatalf("Error setting retry details: %v", err)} gotDelay,
-                                         ok
-      : = ExtractRetryDelay(&wrappedTestError{
-            wrapped : toSpannerErrorWithCommitInfo(s.Err(), true),
-            msg : "Error that is wrapping a Spanner error"
-          }, ) if !ok ||
-          !testEqual(time.Second, gotDelay) {
-    t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay,
-             time.Second)
-  }
+	s := status.New(codes.Aborted, "")
+	s, err := s.WithDetails(&edpb.RetryInfo{
+		RetryDelay: durationpb.New(time.Second),
+	})
+	if err != nil {
+		t.Fatalf("Error setting retry details: %v", err)
+	}
+	gotDelay, ok := ExtractRetryDelay(
+		&wrappedTestError{wrapped: toSpannerErrorWithCommitInfo(s.Err(), true), msg: "Error that is wrapping a Spanner error"},
+	)
+	if !ok || !testEqual(time.Second, gotDelay) {
+		t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay, time.Second)
+	}
 }
 
 func TestRetryInfoInWrappedErrorResourceExhausted(t *testing.T) {
-s:
-  = status.New(codes.ResourceExhausted, "") s,
-      err : = s.WithDetails(&edpb.RetryInfo{
-        RetryDelay : ptypes.DurationProto(time.Second),
-      }) if err !=
-              nil{t.Fatalf("Error setting retry details: %v", err)} gotDelay,
-          ok : = ExtractRetryDelay(&wrappedTestError{
-                   wrapped : toSpannerErrorWithCommitInfo(s.Err(), true),
-                   msg : "Error that is wrapping a Spanner error"
-                 }, ) if !ok ||
-                 !testEqual(time.Second, gotDelay) {
-    t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay,
-             time.Second)
-  }
+        s := status.New(codes.ResourceExhausted, "")
+        s, err := s.WithDetails(&edpb.RetryInfo{
+                RetryDelay: durationpb.New(time.Second),
+        })
+        if err != nil {
+                t.Fatalf("Error setting retry details: %v", err)
+        }
+        gotDelay, ok := ExtractRetryDelay(
+                &wrappedTestError{wrapped: toSpannerErrorWithCommitInfo(s.Err(), true), msg: "Error that is wrapping a Spanner error"},
+        )
+        if !ok || !testEqual(time.Second, gotDelay) {
+                t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay, time.Second)
+        }
 }
 
+
 func TestRetryInfoTransactionOutcomeUnknownError(t *testing.T) {
-err:
-  = toSpannerErrorWithCommitInfo(context.DeadlineExceeded, true) if gotDelay,
-      ok : = ExtractRetryDelay(err);
-  ok{t.Errorf("Got unexpected delay\nGot: %v\nWant: %v", gotDelay, 0)} want
-      : = &TransactionOutcomeUnknownError {
-    status.FromContextError(context.DeadlineExceeded).Err()
-  }
-  if !testEqual (err.(*Error).err.Error(), want.Error()) {
-    t.Errorf("Missing expected TransactionOutcomeUnknownError wrapped error")
-  }
+	err := toSpannerErrorWithCommitInfo(context.DeadlineExceeded, true)
+	if gotDelay, ok := ExtractRetryDelay(err); ok {
+		t.Errorf("Got unexpected delay\nGot: %v\nWant: %v", gotDelay, 0)
+	}
+	want := &TransactionOutcomeUnknownError{status.FromContextError(context.DeadlineExceeded).Err()}
+	if !testEqual(err.(*Error).err.Error(), want.Error()) {
+		t.Errorf("Missing expected TransactionOutcomeUnknownError wrapped error")
+	}
 }
 
 func TestRetryerRespectsServerDelay(t *testing.T) {
-  t.Parallel() serverDelay : = 50 *time.Millisecond s
-      : = status.New(codes.Aborted, "transaction was aborted") s,
-                           err
-      : = s.WithDetails(&edpb.RetryInfo{
-        RetryDelay : ptypes.DurationProto(serverDelay),
-      }) if err != nil{t.Fatalf("Error setting retry details: %v", err)} retryer
-      : = onCodes(gax.Backoff{}, codes.Aborted) err =
-            toSpannerErrorWithCommitInfo(s.Err(), true) maxSeenDelay,
-                           shouldRetry : = retryer.Retry(err) if !shouldRetry {
-    t.Fatalf("expected shouldRetry to be true")
-  }
-  if maxSeenDelay
-    != serverDelay {
-      t.Fatalf("Retry delay mismatch:\ngot: %v\nwant: %v", maxSeenDelay,
-               serverDelay)
-    }
+	t.Parallel()
+	serverDelay := 50 * time.Millisecond
+	s := status.New(codes.Aborted, "transaction was aborted")
+	s, err := s.WithDetails(&edpb.RetryInfo{
+		RetryDelay: durationpb.New(serverDelay),
+	})
+	if err != nil {
+		t.Fatalf("Error setting retry details: %v", err)
+	}
+	retryer := onCodes(gax.Backoff{}, codes.Aborted)
+	err = toSpannerErrorWithCommitInfo(s.Err(), true)
+	maxSeenDelay, shouldRetry := retryer.Retry(err)
+	if !shouldRetry {
+		t.Fatalf("expected shouldRetry to be true")
+	}
+	if maxSeenDelay != serverDelay {
+		t.Fatalf("Retry delay mismatch:\ngot: %v\nwant: %v", maxSeenDelay, serverDelay)
+	}
 }
 
 func TestRetryerRespectsServerDelayResourceExhausted(t *testing.T) {
-  t.Parallel() serverDelay : = 50 *time.Millisecond s
-      : = status.New(codes.ResourceExhausted, "transaction failed fast") s,
-                           err
-      : = s.WithDetails(&edpb.RetryInfo{
-        RetryDelay : ptypes.DurationProto(serverDelay),
-      }) if err != nil{t.Fatalf("Error setting retry details: %v", err)} retryer
-      : = onCodes(gax.Backoff{}, codes.ResourceExhausted) err =
-            toSpannerErrorWithCommitInfo(s.Err(), true) maxSeenDelay,
-                           shouldRetry : = retryer.Retry(err) if !shouldRetry {
-    t.Fatalf("expected shouldRetry to be true")
-  }
-  if maxSeenDelay
-    != serverDelay {
-      t.Fatalf("Retry delay mismatch:\ngot: %v\nwant: %v", maxSeenDelay,
-               serverDelay)
-    }
+        t.Parallel()
+        serverDelay := 50 * time.Millisecond
+        s := status.New(codes.ResourceExhausted, "transaction was aborted")
+        s, err := s.WithDetails(&edpb.RetryInfo{
+                RetryDelay: durationpb.New(serverDelay),
+        })
+        if err != nil {
+                t.Fatalf("Error setting retry details: %v", err)
+        }
+        retryer := onCodes(gax.Backoff{}, codes.ResourceExhausted)
+        err = toSpannerErrorWithCommitInfo(s.Err(), true)
+        maxSeenDelay, shouldRetry := retryer.Retry(err)
+        if !shouldRetry {
+                t.Fatalf("expected shouldRetry to be true")
+        }
+        if maxSeenDelay != serverDelay {
+                t.Fatalf("Retry delay mismatch:\ngot: %v\nwant: %v", maxSeenDelay, serverDelay)
+        }
 }
