@@ -552,6 +552,15 @@ func TestComputeTokenProvider_NonBlockingRefresh(t *testing.T) {
 	if want := "2"; freshToken2.Value != want {
 		t.Errorf("got %q, want %q", freshToken2.Value, want)
 	}
+	// Allow time for 2nd async refresh.
+	time.Sleep(100 * time.Millisecond)
+	freshToken3, err := tp.Token(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	if want := "3"; freshToken3.Value != want {
+		t.Errorf("got %q, want %q", freshToken3.Value, want)
+	}
 }
 func TestComputeTokenProvider_BlockingRefresh(t *testing.T) {
 	// Freeze now for consistent results.

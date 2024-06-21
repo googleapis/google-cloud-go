@@ -27,8 +27,6 @@ import (
 
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/jwt"
-
-	"golang.org/x/sync/singleflight"
 )
 
 const (
@@ -43,10 +41,6 @@ const (
 	// so we give it 15 seconds to refresh it's cache before attempting to refresh a token.
 	defaultExpiryDelta = 225 * time.Second
 
-	// nonBlockingRefreshKey is the singleflight uniqueness key for asynchronous
-	// refresh of a token. It can be any value, since there is only one
-	// cachedTokenProvider.cachedToken.
-	nonBlockingRefreshKey = "computeProvider"
 	// nonBlockingRefreshTimeout is the timeout for asynchronous refresh of a
 	// token.
 	nonBlockingRefreshTimeout = 30 * time.Second
@@ -288,9 +282,12 @@ type cachedTokenProvider struct {
 	autoRefresh     bool
 	expireEarly     time.Duration
 	blockingRefresh bool
-	// loadGroup ensures that the non-blocking refresh will only happen on one
-	// goroutine, even if multiple callers have entered the Token method.
-	loadGroup singleflight.Group
+	// isRefreshRunning ensures that the non-blocking refresh will only be
+	// attempted once, even if multiple callers enter the Token method.
+	isRefreshRunning bool
+	// isRefreshErr ensures that the non-blocking refresh will only be attempted
+	// once per refresh window if an error is encountered.
+	isRefreshErr bool
 
 	mu          sync.Mutex
 	cachedToken *Token
@@ -310,13 +307,8 @@ func (c *cachedTokenProvider) tokenNonBlocking(ctx context.Context) (*Token, err
 		defer c.mu.Unlock()
 		return c.cachedToken, nil
 	case stale:
-		// Call singleflight's DoChan (via tokenAsync) but discard the returned
-		// chan. In order to return an err from tokenAsync, we would need to
-		// wait on chan and read its err. Instead, allow all requests during
-		// the refresh window to join serial attempts managed by singleflight.
-		//  If all fail, the invalid case should return the same error.
 		c.tokenAsync(ctx)
-		// Return the stale token immediately to not block customer requests to Cloud services
+		// Return the stale token immediately to not block customer requests to Cloud services.
 		c.mu.Lock()
 		defer c.mu.Unlock()
 		return c.cachedToken, nil
@@ -344,30 +336,41 @@ func (c *cachedTokenProvider) tokenState() tokenState {
 	return fresh
 }
 
-// tokenAsync uses singleflight to ensure that only one async token fetch
+// tokenAsync uses a bool to ensure that only one non-blocking token refresh
 // happens at a time, even if multiple callers have entered this function
 // concurrently. This avoids creating an arbitrary number of concurrent
-// goroutines.
-func (c *cachedTokenProvider) tokenAsync(ctx context.Context) <-chan singleflight.Result {
-	return c.loadGroup.DoChan(nonBlockingRefreshKey, func() (entry any, err error) {
+// goroutines. Retries should be attempted and managed within the Token method.
+// If the refresh attempt fails, no further attempts are made until the refresh
+// window expires and the token enters the invalid state, at which point the
+// blocking call to Token should likely return the same error on the main goroutine.
+func (c *cachedTokenProvider) tokenAsync(ctx context.Context) {
+	fn := func() {
+		c.mu.Lock()
+		c.isRefreshRunning = true
+		c.mu.Unlock()
 		t, err := c.tp.Token(ctx)
-		if err != nil {
-			// In order to return this err to callers of the main goroutine, a
-			// call to tokenAsync would need to wait on the returned chan and
-			// read its err. Currently, it is ignored in tokenNonBlocking, above.
-			return nil, err
-		}
-
 		c.mu.Lock()
 		defer c.mu.Unlock()
+		c.isRefreshRunning = false
+		if err != nil {
+			// Discard errors from the non-blocking refresh, but prevent further
+			// attempts.
+			c.isRefreshErr = true
+			return
+		}
 		c.cachedToken = t
-		return t, nil
-	})
+	}
+	c.mu.Lock()
+	if !c.isRefreshRunning && !c.isRefreshErr {
+		go fn()
+	}
+	defer c.mu.Unlock()
 }
 
 func (c *cachedTokenProvider) tokenBlocking(ctx context.Context) (*Token, error) {
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	c.isRefreshErr = false
 	if c.cachedToken.IsValid() || !c.autoRefresh {
 		return c.cachedToken, nil
 	}
