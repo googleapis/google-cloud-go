@@ -28,7 +28,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/propagation"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 )
 
@@ -379,7 +379,7 @@ func getPublishSpanAttributes(dst string, msg *Message, attrs ...attribute.KeyVa
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingMessageID(msg.ID),
-			semconv.MessagingMessagePayloadSizeBytes(len(msg.Data)),
+			semconv.MessagingMessageBodySize(msgSize),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(attrs...),
@@ -393,7 +393,7 @@ func getSubscriberOpts(dst string, msg *Message, attrs ...attribute.KeyValue) []
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingMessageID(msg.ID),
-			semconv.MessagingMessagePayloadSizeBytes(len(msg.Data)),
+			semconv.MessagingMessageBodySize(msgSize),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(attrs...),

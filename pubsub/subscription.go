@@ -30,7 +30,7 @@ import (
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	gax "github.com/googleapis/gax-go/v2"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
@@ -1458,7 +1458,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 									eventString = eventNackCalled
 								}
 								ps.AddEvent(eventString)
-								ps.SetAttributes(semconv.MessagingOperationProcess)
+								// This is the process operation, but is currently named "Deliver". Replace once
+								// updated here: https://github.com/open-telemetry/opentelemetry-go/blob/eb6bd28f3288b173d148c67f9ed45390594abdc2/semconv/v1.26.0/attribute_group.go#L5240
+								ps.SetAttributes(semconv.MessagingOperationTypeDeliver)
 								ps.End()
 								old(ackID, ack, r, receiveTime)
 							}

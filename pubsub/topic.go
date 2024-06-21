@@ -33,7 +33,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.25.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc"
@@ -769,7 +769,11 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		OrderingKey: msg.OrderingKey,
 	})
 	if t.enableTracing {
+<<<<<<< Updated upstream
 		createSpan.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(len(msg.Data)))
+=======
+		createSpan.SetAttributes(semconv.MessagingMessageBodySizeKey.Int(msgSize))
+>>>>>>> Stashed changes
 	}
 
 	t.initBundler()

@@ -31,7 +31,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.22.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -640,7 +640,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 					subscribeSpan := s.(trace.Span)
 					defer subscribeSpan.End()
 					defer subscribeSpan.SetAttributes(attribute.String(resultAttribute, resultAcked))
-					subscribeSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+					subscribeSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(ackIDs))))
 					defer subscribeSpan.AddEvent(eventAckEnd)
 					if subscribeSpan.SpanContext().IsSampled() {
 						links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
@@ -656,7 +656,7 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 			opts = append(opts, trace.WithLinks(links...))
 			ctx, ackSpan = startSpan(context.Background(), ackSpanName, it.subID, opts...)
 			defer ackSpan.End()
-			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
+			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(len(ackIDs)),
 				semconv.CodeFunction("sendAck"))
 		}
 		return it.subc.Acknowledge(ctx, &pb.AcknowledgeRequest{

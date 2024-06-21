@@ -34,7 +34,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
-	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -97,8 +97,8 @@ func TestTrace_PublishSpan(t *testing.T) {
 				attribute.String(orderingAttribute, m.OrderingKey),
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
-				semconv.MessagingMessagePayloadSizeBytesKey.Int(len(m.Data)),
 				semconv.MessagingSystemKey.String(pubsubSemConvName),
+				semconv.MessagingMessageBodySize(msgSize),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -334,7 +334,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			Name:     fmt.Sprintf("%s %s", subID, processSpanName),
 			SpanKind: trace.SpanKindInternal,
 			Attributes: []attribute.KeyValue{
-				semconv.MessagingOperationProcess,
+				semconv.MessagingOperationTypeDeliver,
 			},
 			Events: []sdktrace.Event{
 				{
@@ -360,8 +360,8 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				attribute.String(ackIDAttribute, "m0"),
 				attribute.String(orderingAttribute, m.OrderingKey),
 				attribute.String(resultAttribute, resultAcked),
-				semconv.MessagingMessagePayloadSizeBytesKey.Int(len(m.Data)),
 				semconv.MessagingSystem(pubsubSemConvName),
+				semconv.MessagingMessageBodySize(msgSize),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -575,7 +575,7 @@ func getPublishSpanStubsWithError(topicID string, m *Message, err error) tracete
 				semconv.CodeFunction("Publish"),
 				semconv.MessagingDestinationName(topicID),
 				semconv.MessagingMessageIDKey.String(""),
-				semconv.MessagingMessagePayloadSizeBytesKey.Int(len(m.Data)),
+				semconv.MessagingMessageBodySize(msgSize),
 				attribute.String(orderingAttribute, m.OrderingKey),
 				semconv.MessagingSystem(pubsubSemConvName),
 			},
