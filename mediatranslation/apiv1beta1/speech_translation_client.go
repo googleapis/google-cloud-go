@@ -44,6 +44,7 @@ func defaultSpeechTranslationGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://mediatranslation.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
