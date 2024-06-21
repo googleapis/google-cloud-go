@@ -29,7 +29,6 @@ import (
 
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -127,7 +126,7 @@ func TestInvoke(t *testing.T) {
 		{
 			desc:              "non-retriable error not retried when policy is RetryAlways",
 			count:             2,
-			initialErr:        xerrors.Errorf("non-retriable error: %w", &googleapi.Error{Code: 400}),
+			initialErr:        fmt.Errorf("non-retriable error: %w", &googleapi.Error{Code: 400}),
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry:             &retryConfig{policy: RetryAlways},
@@ -423,12 +422,12 @@ func TestShouldRetry(t *testing.T) {
 		},
 		{
 			desc:        "wrapped retryable error",
-			inputErr:    xerrors.Errorf("Test unwrapping of a temporary error: %w", &googleapi.Error{Code: 500}),
+			inputErr:    fmt.Errorf("Test unwrapping of a temporary error: %w", &googleapi.Error{Code: 500}),
 			shouldRetry: true,
 		},
 		{
 			desc:        "wrapped non-retryable error",
-			inputErr:    xerrors.Errorf("Test unwrapping of a non-retriable error: %w", &googleapi.Error{Code: 400}),
+			inputErr:    fmt.Errorf("Test unwrapping of a non-retriable error: %w", &googleapi.Error{Code: 400}),
 			shouldRetry: false,
 		},
 		{
