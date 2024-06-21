@@ -28,8 +28,8 @@ import (
 )
 
 var (
-	// ErrRecordNotFound record not found error
-	ErrRecordNotFound = errors.New("record not found")
+	// ErrRowNotFound record not found error
+	ErrRowNotFound = errors.New("record not found")
 )
 
 // Error is the structured error returned by Cloud Spanner client.
