@@ -21,13 +21,12 @@
 package cloudcontrolspartnerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -131,7 +130,7 @@ type AccessApprovalRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/accessApprovalRequests/{access_approval_request}.
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/accessApprovalRequests/{access_approval_request}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The time at which approval was requested.
 	RequestTime *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=request_time,json=requestTime,proto3" json:"request_time,omitempty"`
@@ -210,7 +209,7 @@ type ListAccessApprovalRequestsRequest struct {
 
 	// Required. Parent resource
 	// Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of access requests to return. The service may
 	// return fewer than this value. If unspecified, at most 500 access requests

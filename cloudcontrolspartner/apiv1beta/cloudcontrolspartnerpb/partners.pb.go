@@ -21,13 +21,12 @@
 package cloudcontrolspartnerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -107,7 +106,7 @@ type Partner struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. The resource name of the partner.
-	// Format: organizations/{organization}/locations/{location}/partner
+	// Format: `organizations/{organization}/locations/{location}/partner`
 	// Example: "organizations/123456/locations/us-central1/partner"
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// List of SKUs the partner is offering
@@ -214,7 +213,8 @@ type GetPartnerRequest struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Format: organizations/{organization}/locations/{location}/partner
+	// Required. Format:
+	// `organizations/{organization}/locations/{location}/partner`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

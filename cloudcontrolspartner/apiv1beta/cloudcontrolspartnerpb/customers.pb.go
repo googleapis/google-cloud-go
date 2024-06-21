@@ -21,13 +21,12 @@
 package cloudcontrolspartnerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -97,7 +96,7 @@ type Customer struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}
+	// `organizations/{organization}/locations/{location}/customers/{customer}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The customer organization's display name. E.g. "google.com".
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
@@ -174,7 +173,7 @@ type ListCustomersRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Parent resource
-	// Format: organizations/{organization}/locations/{location}
+	// Format: `organizations/{organization}/locations/{location}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of Customers to return. The service may return fewer
 	// than this value. If unspecified, at most 500 Customers will be returned.
@@ -330,7 +329,7 @@ type GetCustomerRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}
+	// `organizations/{organization}/locations/{location}/customers/{customer}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

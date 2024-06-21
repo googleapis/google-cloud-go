@@ -21,12 +21,11 @@
 package cloudcontrolspartnerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -104,7 +103,7 @@ type EkmConnections struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/ekmConnections
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/ekmConnections`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The EKM connections associated with the workload
 	EkmConnections []*EkmConnection `protobuf:"bytes,2,rep,name=ekm_connections,json=ekmConnections,proto3" json:"ekm_connections,omitempty"`
@@ -163,7 +162,7 @@ type GetEkmConnectionsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/ekmConnections
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/ekmConnections`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

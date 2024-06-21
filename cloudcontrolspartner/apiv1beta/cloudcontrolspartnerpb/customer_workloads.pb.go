@@ -21,13 +21,12 @@
 package cloudcontrolspartnerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -169,7 +168,7 @@ type Workload struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Folder id this workload is associated with
 	FolderId int64 `protobuf:"varint,2,opt,name=folder_id,json=folderId,proto3" json:"folder_id,omitempty"`
@@ -292,7 +291,7 @@ type ListWorkloadsRequest struct {
 
 	// Required. Parent resource
 	// Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}
+	// `organizations/{organization}/locations/{location}/customers/{customer}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of workloads to return. The service may return fewer
 	// than this value. If unspecified, at most 500 workloads will be returned.
@@ -448,7 +447,7 @@ type GetWorkloadRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

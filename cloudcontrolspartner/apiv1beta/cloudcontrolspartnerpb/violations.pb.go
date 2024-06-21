@@ -21,14 +21,13 @@
 package cloudcontrolspartnerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -172,7 +171,7 @@ type Violation struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/violations/{violation}
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/violations/{violation}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. Description for the Violation.
 	// e.g. OrgPolicy gcp.resourceLocations has non compliant value.
@@ -192,9 +191,9 @@ type Violation struct {
 	// Output only. Immutable. Name of the OrgPolicy which was modified with
 	// non-compliant change and resulted this violation. Format:
 	//
-	//	projects/{project_number}/policies/{constraint_name}
-	//	folders/{folder_id}/policies/{constraint_name}
-	//	organizations/{organization_id}/policies/{constraint_name}
+	//	`projects/{project_number}/policies/{constraint_name}`
+	//	`folders/{folder_id}/policies/{constraint_name}`
+	//	`organizations/{organization_id}/policies/{constraint_name}`
 	NonCompliantOrgPolicy string `protobuf:"bytes,8,opt,name=non_compliant_org_policy,json=nonCompliantOrgPolicy,proto3" json:"non_compliant_org_policy,omitempty"`
 	// The folder_id of the violation
 	FolderId int64 `protobuf:"varint,9,opt,name=folder_id,json=folderId,proto3" json:"folder_id,omitempty"`
@@ -312,7 +311,7 @@ type ListViolationsRequest struct {
 
 	// Required. Parent resource
 	// Format
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// Optional. The maximum number of customers row to return. The service may
 	// return fewer than this value. If unspecified, at most 10 customers will be
@@ -480,7 +479,7 @@ type GetViolationRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/violations/{violation}
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/violations/{violation}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

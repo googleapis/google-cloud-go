@@ -21,12 +21,11 @@
 package cloudcontrolspartnerpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -103,7 +102,7 @@ type PartnerPermissions struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Identifier. Format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/partnerPermissions
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/partnerPermissions`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// The partner permissions granted for the workload
 	PartnerPermissions []PartnerPermissions_Permission `protobuf:"varint,2,rep,packed,name=partner_permissions,json=partnerPermissions,proto3,enum=google.cloud.cloudcontrolspartner.v1beta.PartnerPermissions_Permission" json:"partner_permissions,omitempty"`
@@ -162,7 +161,7 @@ type GetPartnerPermissionsRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Name of the resource to get in the format:
-	// organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/partnerPermissions
+	// `organizations/{organization}/locations/{location}/customers/{customer}/workloads/{workload}/partnerPermissions`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 
