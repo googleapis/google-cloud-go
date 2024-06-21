@@ -41,10 +41,6 @@ const (
 	// so we give it 15 seconds to refresh it's cache before attempting to refresh a token.
 	defaultExpiryDelta = 225 * time.Second
 
-	// nonBlockingRefreshTimeout is the timeout for asynchronous refresh of a
-	// token.
-	nonBlockingRefreshTimeout = 30 * time.Second
-
 	universeDomainDefault = "googleapis.com"
 )
 
@@ -102,7 +98,7 @@ type Token struct {
 // expired. A token is considered expired if [Token.Expiry] has passed or will
 // pass in the next 225 seconds.
 func (t *Token) IsValid() bool {
-	return t.isValidWithEarlyExpiry(defaultExpiryDelta) // TODO(quartzmo): investigate why EarlyTokenRefresh, ExpireEarly isn't used here. Bug?
+	return t.isValidWithEarlyExpiry(defaultExpiryDelta)
 }
 
 func (t *Token) isValidWithEarlyExpiry(earlyExpiry time.Duration) bool {
@@ -282,15 +278,15 @@ type cachedTokenProvider struct {
 	autoRefresh     bool
 	expireEarly     time.Duration
 	blockingRefresh bool
+
+	mu          sync.Mutex
+	cachedToken *Token
 	// isRefreshRunning ensures that the non-blocking refresh will only be
 	// attempted once, even if multiple callers enter the Token method.
 	isRefreshRunning bool
 	// isRefreshErr ensures that the non-blocking refresh will only be attempted
 	// once per refresh window if an error is encountered.
 	isRefreshErr bool
-
-	mu          sync.Mutex
-	cachedToken *Token
 }
 
 func (c *cachedTokenProvider) Token(ctx context.Context) (*Token, error) {
@@ -312,10 +308,8 @@ func (c *cachedTokenProvider) tokenNonBlocking(ctx context.Context) (*Token, err
 		c.mu.Lock()
 		defer c.mu.Unlock()
 		return c.cachedToken, nil
-	case invalid:
+	default: // invalid
 		return c.tokenBlocking(ctx)
-	default:
-		panic("unreachable")
 	}
 }
 
@@ -361,10 +355,10 @@ func (c *cachedTokenProvider) tokenAsync(ctx context.Context) {
 		c.cachedToken = t
 	}
 	c.mu.Lock()
+	defer c.mu.Unlock()
 	if !c.isRefreshRunning && !c.isRefreshErr {
 		go fn()
 	}
-	defer c.mu.Unlock()
 }
 
 func (c *cachedTokenProvider) tokenBlocking(ctx context.Context) (*Token, error) {
