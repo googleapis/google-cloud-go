@@ -177,9 +177,13 @@ type GenerationConfig struct {
 	// Optional. Stop sequences.
 	StopSequences []string
 	HarmCat       HarmCategory
-	FinishReason  FinishReason
-	CitMet        *CitationMetadata
-	TopK          *int32
+	// The reason for finishing.
+	FinishReason FinishReason
+	CitMet       *CitationMetadata
+	// Multiple lines of
+	// documentation for this
+	// field.
+	TopK *int32
 }
 
 func (v *GenerationConfig) toProto() *pb.GenerationConfig {
