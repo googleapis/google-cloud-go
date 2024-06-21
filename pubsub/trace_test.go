@@ -98,7 +98,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingSystemKey.String(pubsubSemConvName),
-				semconv.MessagingMessageBodySize(msgSize),
+				semconv.MessagingMessageBodySize(len(m.Data)),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -131,7 +131,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 		tracetest.SpanStub{
 			Name: fmt.Sprintf("%s %s", topicID, publishRPCSpanName),
 			Attributes: []attribute.KeyValue{
-				semconv.MessagingSystem(pubsubSemConvName),
+				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingDestinationName(topicID),
 				semconv.CodeFunction("publishMessageBundle"),
 				semconv.MessagingBatchMessageCount(1),
@@ -360,8 +360,8 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				attribute.String(ackIDAttribute, "m0"),
 				attribute.String(orderingAttribute, m.OrderingKey),
 				attribute.String(resultAttribute, resultAcked),
-				semconv.MessagingSystem(pubsubSemConvName),
-				semconv.MessagingMessageBodySize(msgSize),
+				semconv.MessagingSystemGCPPubsub,
+				semconv.MessagingMessageBodySize(len(m.Data)),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -417,7 +417,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			Attributes: []attribute.KeyValue{
 				semconv.CodeFunction("sendAck"),
 				semconv.MessagingBatchMessageCount(1),
-				semconv.MessagingSystem(pubsubSemConvName),
+				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingDestinationName(subID),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
@@ -445,7 +445,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				attribute.Bool(receiptModackAttribute, true),
 				attribute.Int(ackDeadlineSecAttribute, 10),
 				semconv.MessagingBatchMessageCount(1),
-				semconv.MessagingSystem(pubsubSemConvName),
+				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingDestinationName(subID),
 			},
 		},
@@ -575,9 +575,9 @@ func getPublishSpanStubsWithError(topicID string, m *Message, err error) tracete
 				semconv.CodeFunction("Publish"),
 				semconv.MessagingDestinationName(topicID),
 				semconv.MessagingMessageIDKey.String(""),
-				semconv.MessagingMessageBodySize(msgSize),
+				semconv.MessagingMessageBodySize(len(m.Data)),
 				attribute.String(orderingAttribute, m.OrderingKey),
-				semconv.MessagingSystem(pubsubSemConvName),
+				semconv.MessagingSystemGCPPubsub,
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",

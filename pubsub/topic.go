@@ -769,11 +769,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		OrderingKey: msg.OrderingKey,
 	})
 	if t.enableTracing {
-<<<<<<< Updated upstream
-		createSpan.SetAttributes(semconv.MessagingMessagePayloadSizeBytesKey.Int(len(msg.Data)))
-=======
 		createSpan.SetAttributes(semconv.MessagingMessageBodySizeKey.Int(msgSize))
->>>>>>> Stashed changes
 	}
 
 	t.initBundler()

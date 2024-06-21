@@ -379,7 +379,7 @@ func getPublishSpanAttributes(dst string, msg *Message, attrs ...attribute.KeyVa
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingMessageID(msg.ID),
-			semconv.MessagingMessageBodySize(msgSize),
+			semconv.MessagingMessageBodySize(len(msg.Data)),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(attrs...),
@@ -393,7 +393,7 @@ func getSubscriberOpts(dst string, msg *Message, attrs ...attribute.KeyValue) []
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingMessageID(msg.ID),
-			semconv.MessagingMessageBodySize(msgSize),
+			semconv.MessagingMessageBodySize(len(msg.Data)),
 			attribute.String(orderingAttribute, msg.OrderingKey),
 		),
 		trace.WithAttributes(attrs...),
