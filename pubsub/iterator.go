@@ -743,12 +743,8 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 	}, func(ctx context.Context, toSend []string) {
 		if deadline == 0 {
 			recordStat(it.ctx, NackCount, int64(len(toSend)))
-			eventStart = eventNackStart
-			eventEnd = eventNackEnd
 		} else {
 			recordStat(it.ctx, ModAckCount, int64(len(toSend)))
-			eventStart = eventModackStart
-			eventEnd = eventModackEnd
 		}
 		addModAcks(toSend, deadlineSec)
 	})

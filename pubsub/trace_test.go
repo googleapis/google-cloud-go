@@ -97,15 +97,27 @@ func TestTrace_PublishSpan(t *testing.T) {
 				attribute.String(orderingAttribute, m.OrderingKey),
 				// Hardcoded since the fake server always returns m0 first.
 				semconv.MessagingMessageIDKey.String("m0"),
-				semconv.MessagingSystemKey.String(pubsubSemConvName),
+				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingMessageBodySize(len(m.Data)),
 			},
 			Events: []sdktrace.Event{
 				{
 					Name: eventPublishStart,
+					Attributes: []attribute.KeyValue{
+						semconv.MessagingBatchMessageCount(1),
+					},
 				},
 				{
 					Name: eventPublishEnd,
+				},
+			},
+			Links: []sdktrace.Link{
+				{
+					SpanContext: trace.NewSpanContext(trace.SpanContextConfig{
+						TraceID:    [16]byte{(byte(2))},
+						SpanID:     [8]byte{(byte(4))},
+						TraceFlags: 1,
+					}),
 				},
 			},
 			ChildSpanCount: 2,
@@ -281,8 +293,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	defer srv.Close()
 
 	// For subscribe spans, we'll publish before setting the tracer provider
-	// so we don't trace the publish spans. Context propagation will be tested
-	// at a later time.
+	// so we don't trace the publish spans. Context propagation is tested separately.
 	m := &Message{
 		Data:        []byte("test"),
 		OrderingKey: "my-key",
@@ -325,6 +336,8 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	ctx, cancel := context.WithCancel(ctx)
 
 	sub.Receive(ctx, func(ctx context.Context, m *Message) {
+		// Add artificial processsing time so the message isn't acked before the modack can be sent out.
+		time.Sleep(1 * time.Second)
 		m.Ack()
 		cancel()
 	})
@@ -508,20 +521,25 @@ func TestTrace_TracingNotEnabled(t *testing.T) {
 
 func spanStubComparer(a, b tracetest.SpanStub) bool {
 	if a.Name != b.Name {
+		fmt.Printf("a.Name: %s\nb.Name: %s\n", a.Name, b.Name)
 		return false
 	}
 	if a.ChildSpanCount != b.ChildSpanCount {
+		fmt.Printf("a.ChildSpanCount: %d\nb.ChildSpanCount: %d\n", a.ChildSpanCount, b.ChildSpanCount)
 		return false
 	}
 	as := attribute.NewSet(a.Attributes...)
 	bs := attribute.NewSet(b.Attributes...)
 	if !as.Equals(&bs) {
+		fmt.Printf("a.Attributes: %+v\nb.Attributes: %+v\n", as, bs)
 		return false
 	}
 	if a.InstrumentationLibrary != b.InstrumentationLibrary {
+		fmt.Printf("a.InstrumentationLibrary: %v\nb.InstrumentationLibrary: %v\n", a.InstrumentationLibrary, b.InstrumentationLibrary)
 		return false
 	}
 	if a.Status != b.Status {
+		fmt.Printf("a.Status: %v\nb.Status: %v\n", a.Status, b.Status)
 		return false
 	}
 	return true
@@ -551,8 +569,12 @@ func getSpans(e *tracetest.InMemoryExporter) tracetest.SpanStubs {
 
 func compareSpans(t *testing.T, got, want tracetest.SpanStubs) {
 	if len(got) != len(want) {
-		t.Logf("got spans: %+v\n", got)
-		t.Logf("expected spans: %+v\n", want)
+		for _, span := range got {
+			t.Logf("got: %s\n", span.Name)
+		}
+		for _, span := range want {
+			t.Logf("want: %s\n", span.Name)
+		}
 		t.Errorf("got %d spans, want %d", len(got), len(want))
 	}
 	opts := []cmp.Option{

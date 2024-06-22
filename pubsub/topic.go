@@ -769,7 +769,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		OrderingKey: msg.OrderingKey,
 	})
 	if t.enableTracing {
-		createSpan.SetAttributes(semconv.MessagingMessageBodySizeKey.Int(msgSize))
+		createSpan.SetAttributes(semconv.MessagingMessageBodySize(len(msg.Data)))
 	}
 
 	t.initBundler()
