@@ -1,6 +1,42 @@
 # Changelog
 
 
+## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.6...batch/v1.8.7) (2024-06-05)
+
+
+### Documentation
+
+* **batch:** Documentation improvements ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+## [1.8.6](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.5...batch/v1.8.6) (2024-05-16)
+
+
+### Documentation
+
+* **batch:** Refine description for field `task_execution` ([292e812](https://github.com/googleapis/google-cloud-go/commit/292e81231b957ae7ac243b47b8926564cee35920))
+
+## [1.8.5](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.4...batch/v1.8.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **batch:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **batch:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+
+### Documentation
+
+* **batch:** Update description on allowed_locations in LocationPolicy field ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **batch:** Update description on allowed_locations in LocationPolicy field ([#9777](https://github.com/googleapis/google-cloud-go/issues/9777)) ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+## [1.8.4](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.3...batch/v1.8.4) (2024-04-15)
+
+
+### Documentation
+
+* **batch:** State one Resource Allowance per region per project limitation on v1alpha ([dbcdfd7](https://github.com/googleapis/google-cloud-go/commit/dbcdfd7843be16573b1683466852242a84891456))
+* **batch:** Update comments on ServiceAccount email and scopes fields ([#9734](https://github.com/googleapis/google-cloud-go/issues/9734)) ([4d5a342](https://github.com/googleapis/google-cloud-go/commit/4d5a3429cec6816d50bdf284063dddf1971b79cf))
+
 ## [1.8.3](https://github.com/googleapis/google-cloud-go/compare/batch/v1.8.2...batch/v1.8.3) (2024-03-14)
 
 
@@ -221,4 +257,3 @@
 ### Features
 
 * **batch:** start generating apiv1 ([#6145](https://github.com/googleapis/google-cloud-go/issues/6145)) ([41525fa](https://github.com/googleapis/google-cloud-go/commit/41525fab52da7e913f3593e89cef91c022898be3))
-

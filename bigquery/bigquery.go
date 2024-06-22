@@ -249,8 +249,12 @@ func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons
 
 var (
 	defaultRetryReasons = []string{"backendError", "rateLimitExceeded"}
-	jobRetryReasons     = []string{"backendError", "rateLimitExceeded", "internalError"}
-	retry5xxCodes       = []int{
+
+	// These reasons are used exclusively for enqueuing jobs (jobs.insert and jobs.query).
+	// Using them for polling may cause unwanted retries until context deadline/cancellation/etc.
+	jobRetryReasons = []string{"backendError", "rateLimitExceeded", "jobRateLimitExceeded", "internalError"}
+
+	retry5xxCodes = []int{
 		http.StatusInternalServerError,
 		http.StatusBadGateway,
 		http.StatusServiceUnavailable,

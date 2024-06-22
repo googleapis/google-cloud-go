@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.2](https://github.com/googleapis/google-cloud-go/compare/apps/v0.4.1...apps/v0.4.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **apps:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.4.1](https://github.com/googleapis/google-cloud-go/compare/apps/v0.4.0...apps/v0.4.1) (2024-03-12)
 
 
@@ -44,4 +51,3 @@
 * **apps:** New clients ([#9142](https://github.com/googleapis/google-cloud-go/issues/9142)) ([8095c6e](https://github.com/googleapis/google-cloud-go/commit/8095c6ee342d9cca812c966b708ba48398fd91ed))
 
 ## Changes
-

@@ -1,5 +1,38 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.1...securitycentermanagement/v0.3.0) (2024-06-18)
+
+
+### Features
+
+* **securitycentermanagement:** Add an INGEST_ONLY EnablementState ([abac5c6](https://github.com/googleapis/google-cloud-go/commit/abac5c6eec859477c6d390b116ea8954213ba585))
+
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.0...securitycentermanagement/v0.2.1) (2024-06-10)
+
+
+### Documentation
+
+* **securitycentermanagement:** Minor docs formatting in `UpdateSecurityCenterServiceRequest.validate_only` ([4c102b7](https://github.com/googleapis/google-cloud-go/commit/4c102b732826222a1b1648bf51d3df7e9f97d1f5))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.8...securitycentermanagement/v0.2.0) (2024-05-29)
+
+
+### Features
+
+* **securitycentermanagement:** Adding support for new Security Center Management Apis ([#10247](https://github.com/googleapis/google-cloud-go/issues/10247)) ([b19dd34](https://github.com/googleapis/google-cloud-go/commit/b19dd340b13e247fa80f8ab7868294cf53e50450))
+
+
+### Documentation
+
+* **securitycentermanagement:** Update comment formatting throughout API ([b19dd34](https://github.com/googleapis/google-cloud-go/commit/b19dd340b13e247fa80f8ab7868294cf53e50450))
+
+## [0.1.8](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.7...securitycentermanagement/v0.1.8) (2024-05-01)
+
+
+### Bug Fixes
+
+* **securitycentermanagement:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.1.7](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.1.6...securitycentermanagement/v0.1.7) (2024-03-25)
 
 
@@ -58,4 +91,3 @@
 * **securitycentermanagement:** Security Center Management API ([#9068](https://github.com/googleapis/google-cloud-go/issues/9068)) ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
 
 ## Changes
-

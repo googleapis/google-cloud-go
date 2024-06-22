@@ -1,0 +1,290 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/conversions/apiv1beta",
+    "version": "0.8.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.conversions.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_ConversionSourcesService_CreateConversionSource_sync",
+      "title": "merchantapi CreateConversionSource Sample",
+      "description": "CreateConversionSource creates a new conversion source.",
+      "file": "ConversionSourcesClient/CreateConversionSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateConversionSource",
+        "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient.CreateConversionSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "conversionspb.CreateConversionSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*conversionspb.ConversionSource",
+        "client": {
+          "shortName": "ConversionSourcesClient",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient"
+        },
+        "method": {
+          "shortName": "CreateConversionSource",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService.CreateConversionSource",
+          "service": {
+            "shortName": "ConversionSourcesService",
+            "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ConversionSourcesService_DeleteConversionSource_sync",
+      "title": "merchantapi DeleteConversionSource Sample",
+      "description": "DeleteConversionSource archives an existing conversion source. If the conversion source is a\nMerchant Center Destination, it will be recoverable for 30 days. If the\nconversion source is a Google Analytics Link, it will be deleted\nimmediately and can be restored by creating a new one.",
+      "file": "ConversionSourcesClient/DeleteConversionSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteConversionSource",
+        "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient.DeleteConversionSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "conversionspb.DeleteConversionSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConversionSourcesClient",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient"
+        },
+        "method": {
+          "shortName": "DeleteConversionSource",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService.DeleteConversionSource",
+          "service": {
+            "shortName": "ConversionSourcesService",
+            "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ConversionSourcesService_GetConversionSource_sync",
+      "title": "merchantapi GetConversionSource Sample",
+      "description": "GetConversionSource fetches a conversion source.",
+      "file": "ConversionSourcesClient/GetConversionSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetConversionSource",
+        "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient.GetConversionSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "conversionspb.GetConversionSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*conversionspb.ConversionSource",
+        "client": {
+          "shortName": "ConversionSourcesClient",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient"
+        },
+        "method": {
+          "shortName": "GetConversionSource",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService.GetConversionSource",
+          "service": {
+            "shortName": "ConversionSourcesService",
+            "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ConversionSourcesService_ListConversionSources_sync",
+      "title": "merchantapi ListConversionSources Sample",
+      "description": "ListConversionSources retrieves the list of conversion sources the caller has access to.",
+      "file": "ConversionSourcesClient/ListConversionSources/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListConversionSources",
+        "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient.ListConversionSources",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "conversionspb.ListConversionSourcesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ConversionSourceIterator",
+        "client": {
+          "shortName": "ConversionSourcesClient",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient"
+        },
+        "method": {
+          "shortName": "ListConversionSources",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService.ListConversionSources",
+          "service": {
+            "shortName": "ConversionSourcesService",
+            "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ConversionSourcesService_UndeleteConversionSource_sync",
+      "title": "merchantapi UndeleteConversionSource Sample",
+      "description": "UndeleteConversionSource re-enables an archived conversion source. Only Available for Merchant\nCenter Destination conversion sources.",
+      "file": "ConversionSourcesClient/UndeleteConversionSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteConversionSource",
+        "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient.UndeleteConversionSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "conversionspb.UndeleteConversionSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*conversionspb.ConversionSource",
+        "client": {
+          "shortName": "ConversionSourcesClient",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient"
+        },
+        "method": {
+          "shortName": "UndeleteConversionSource",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService.UndeleteConversionSource",
+          "service": {
+            "shortName": "ConversionSourcesService",
+            "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ConversionSourcesService_UpdateConversionSource_sync",
+      "title": "merchantapi UpdateConversionSource Sample",
+      "description": "UpdateConversionSource updates information of an existing conversion source. Available only for\nMerchant Center Destination conversion sources.",
+      "file": "ConversionSourcesClient/UpdateConversionSource/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateConversionSource",
+        "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient.UpdateConversionSource",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "conversionspb.UpdateConversionSourceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*conversionspb.ConversionSource",
+        "client": {
+          "shortName": "ConversionSourcesClient",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesClient"
+        },
+        "method": {
+          "shortName": "UpdateConversionSource",
+          "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService.UpdateConversionSource",
+          "service": {
+            "shortName": "ConversionSourcesService",
+            "fullName": "google.shopping.merchant.conversions.v1beta.ConversionSourcesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

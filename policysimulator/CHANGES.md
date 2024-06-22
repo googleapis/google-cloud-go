@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.4...policysimulator/v0.2.5) (2024-05-01)
+
+
+### Bug Fixes
+
+* **policysimulator:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.3...policysimulator/v0.2.4) (2024-03-14)
 
 
@@ -50,4 +57,3 @@
 * **policysimulator:** Start generating apiv1 ([#8340](https://github.com/googleapis/google-cloud-go/issues/8340)) ([a41e5ec](https://github.com/googleapis/google-cloud-go/commit/a41e5eca56246e83670d5c0d043d7ab78db47042))
 
 ## Changes
-

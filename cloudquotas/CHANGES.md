@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.2.0...cloudquotas/v0.2.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+
+### Documentation
+
+* **cloudquotas:** Update contact_email doc to not check permission of the email account ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.1.3...cloudquotas/v0.2.0) (2024-04-15)
+
+
+### Features
+
+* **cloudquotas:** Add `rollout_info` field to `QuotaDetails` message ([2cdc40a](https://github.com/googleapis/google-cloud-go/commit/2cdc40a0b4288f5ab5f2b2b8f5c1d6453a9c81ec))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.1.2...cloudquotas/v0.1.3) (2024-03-27)
 
 
@@ -34,4 +53,3 @@
 * **cloudquotas:** New clients ([#9222](https://github.com/googleapis/google-cloud-go/issues/9222)) ([57e2d7b](https://github.com/googleapis/google-cloud-go/commit/57e2d7bd2730b4acd18eac0e3a18e682b51c3e03))
 
 ## Changes
-

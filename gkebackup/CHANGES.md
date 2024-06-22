@@ -2,6 +2,29 @@
 
 
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.4.1...gkebackup/v1.5.0) (2024-05-22)
+
+
+### Features
+
+* **gkebackup:** Add fine-grained restore ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **gkebackup:** Add gitops ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **gkebackup:** Add restore order ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **gkebackup:** Add strict-permissive mode ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+* **gkebackup:** Add volume restore flexibility ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+
+
+### Documentation
+
+* **gkebackup:** Update duration comment to include new validation from smart scheduling ([a07781a](https://github.com/googleapis/google-cloud-go/commit/a07781a7a28a9895f776742b3bdf1be963ce95e9))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.4.0...gkebackup/v1.4.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **gkebackup:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.3.6...gkebackup/v1.4.0) (2024-03-27)
 
 
@@ -125,4 +148,3 @@
 ### Features
 
 * **gkebackup:** start generating apiv1 ([#6031](https://github.com/googleapis/google-cloud-go/issues/6031)) ([4816e84](https://github.com/googleapis/google-cloud-go/commit/4816e84076d62c0952eec0a7de80a230dc9074fe))
-

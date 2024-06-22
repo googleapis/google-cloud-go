@@ -1,0 +1,198 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/products/apiv1beta",
+    "version": "0.8.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.products.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProductInputsService_DeleteProductInput_sync",
+      "title": "merchantapi DeleteProductInput Sample",
+      "description": "DeleteProductInput deletes a product input from your Merchant Center account.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the processed product can be retrieved.",
+      "file": "ProductInputsClient/DeleteProductInput/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteProductInput",
+        "fullName": "google.shopping.merchant.products.v1beta.ProductInputsClient.DeleteProductInput",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "productspb.DeleteProductInputRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ProductInputsClient",
+          "fullName": "google.shopping.merchant.products.v1beta.ProductInputsClient"
+        },
+        "method": {
+          "shortName": "DeleteProductInput",
+          "fullName": "google.shopping.merchant.products.v1beta.ProductInputsService.DeleteProductInput",
+          "service": {
+            "shortName": "ProductInputsService",
+            "fullName": "google.shopping.merchant.products.v1beta.ProductInputsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProductInputsService_InsertProductInput_sync",
+      "title": "merchantapi InsertProductInput Sample",
+      "description": "InsertProductInput uploads a product input to your Merchant Center account. If an input\nwith the same contentLanguage, offerId, and dataSource already exists,\nthis method replaces that entry.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the processed product can be retrieved.",
+      "file": "ProductInputsClient/InsertProductInput/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertProductInput",
+        "fullName": "google.shopping.merchant.products.v1beta.ProductInputsClient.InsertProductInput",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "productspb.InsertProductInputRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*productspb.ProductInput",
+        "client": {
+          "shortName": "ProductInputsClient",
+          "fullName": "google.shopping.merchant.products.v1beta.ProductInputsClient"
+        },
+        "method": {
+          "shortName": "InsertProductInput",
+          "fullName": "google.shopping.merchant.products.v1beta.ProductInputsService.InsertProductInput",
+          "service": {
+            "shortName": "ProductInputsService",
+            "fullName": "google.shopping.merchant.products.v1beta.ProductInputsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProductsService_GetProduct_sync",
+      "title": "merchantapi GetProduct Sample",
+      "description": "GetProduct retrieves the processed product from your Merchant Center account.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the updated final product can be retrieved.",
+      "file": "Client/GetProduct/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProduct",
+        "fullName": "google.shopping.merchant.products.v1beta.Client.GetProduct",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "productspb.GetProductRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*productspb.Product",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.products.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetProduct",
+          "fullName": "google.shopping.merchant.products.v1beta.ProductsService.GetProduct",
+          "service": {
+            "shortName": "ProductsService",
+            "fullName": "google.shopping.merchant.products.v1beta.ProductsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProductsService_ListProducts_sync",
+      "title": "merchantapi ListProducts Sample",
+      "description": "ListProducts lists the processed products in your Merchant Center account. The response\nmight contain fewer items than specified by pageSize. Rely on pageToken to\ndetermine if there are more items to be requested.\n\nAfter inserting, updating, or deleting a product input, it may take several\nminutes before the updated processed product can be retrieved.",
+      "file": "Client/ListProducts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListProducts",
+        "fullName": "google.shopping.merchant.products.v1beta.Client.ListProducts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "productspb.ListProductsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProductIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.products.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListProducts",
+          "fullName": "google.shopping.merchant.products.v1beta.ProductsService.ListProducts",
+          "service": {
+            "shortName": "ProductsService",
+            "fullName": "google.shopping.merchant.products.v1beta.ProductsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

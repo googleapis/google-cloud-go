@@ -48,6 +48,8 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	control "cloud.google.com/go/storage/control/apiv2"
+	"cloud.google.com/go/storage/control/apiv2/controlpb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -56,7 +58,6 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
-	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/api/transport"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -88,6 +89,7 @@ var (
 	newTestClient func(ctx context.Context, opts ...option.ClientOption) (*Client, error)
 	replaying     bool
 	testTime      time.Time
+	controlClient *control.StorageControlClient
 )
 
 func TestMain(m *testing.M) {
@@ -195,6 +197,12 @@ func initIntegrationTest() func() error {
 			return func() error { return nil }
 		}
 		defer client.Close()
+		// Create storage control client; in some cases this is needed for test
+		// setup and cleanup.
+		controlClient, err = control.NewStorageControlClient(ctx)
+		if err != nil {
+			log.Fatalf("NewStorageControlClient: %v", err)
+		}
 		if err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", bucketName, err)
 		}
@@ -206,7 +214,7 @@ func initIntegrationTest() func() error {
 }
 
 func initUIDsAndRand(t time.Time) {
-	uidSpace = uid.NewSpace("", &uid.Options{Time: t, Short: true})
+	uidSpace = uid.NewSpace("", &uid.Options{Time: t})
 	bucketName = testPrefix + uidSpace.New()
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
 	grpcBucketName = grpcTestPrefix + uidSpace.New()
@@ -284,6 +292,13 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 				bucket = grpcBucketName
 				prefix = grpcTestPrefix
 			}
+
+			// Don't let any individual test run more than 5 minutes. This eases debugging if
+			// test runs get stalled out.
+			ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+			t.Cleanup(func() {
+				cancel()
+			})
 
 			test(t, ctx, bucket, prefix, client)
 		})
@@ -443,12 +458,12 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 				b := client.Bucket(newBucketName)
 
 				if err := b.Create(ctx, projectID, test.attrs); err != nil {
-					t.Fatalf("bucket create: %v", err)
+					t.Fatalf("BucketHandle.Create(%q): %v", newBucketName, err)
 				}
 
 				gotAttrs, err := b.Attrs(ctx)
 				if err != nil {
-					t.Fatalf("bucket attrs: %v", err)
+					t.Fatalf("BucketHandle.Attrs(%q): %v", newBucketName, err)
 				}
 
 				// All newly created buckets should conform to the following:
@@ -484,7 +499,7 @@ func TestIntegration_BucketCreateDelete(t *testing.T) {
 
 				// Delete the bucket and check that the deletion was succesful
 				if err := b.Delete(ctx); err != nil {
-					t.Fatalf("bucket delete: %v", err)
+					t.Fatalf("BucketHandle.Delete(%q): %v", newBucketName, err)
 				}
 				_, err = b.Attrs(ctx)
 				if err != ErrBucketNotExist {
@@ -622,6 +637,15 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		attrs = h.mustUpdateBucket(b, ua, attrs.MetaGeneration)
 		if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
 			t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+		}
+
+		// Empty update should succeed without changing the bucket.
+		gotAttrs, err := b.Update(ctx, BucketAttrsToUpdate{})
+		if err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if !testutil.Equal(attrs, gotAttrs) {
+			t.Fatalf("empty update: got %v, want %v", gotAttrs, attrs)
 		}
 	})
 }
@@ -984,6 +1008,50 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 		}
 		if err := o.Generation(gen).Delete(ctx); err != nil {
 			t.Fatalf("final delete failed: %v", err)
+		}
+	})
+}
+
+func TestIntegration_HierarchicalNamespace(t *testing.T) {
+	ctx := skipJSONReads(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, prefix string, client *Client) {
+		h := testHelper{t}
+
+		// Create a bucket with HNS enabled.
+		hnsBucketName := prefix + uidSpace.New()
+		bkt := client.Bucket(hnsBucketName)
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			UniformBucketLevelAccess: UniformBucketLevelAccess{Enabled: true},
+			HierarchicalNamespace:    &HierarchicalNamespace{Enabled: true},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("bkt(%q).Attrs: %v", hnsBucketName, err)
+		}
+
+		if got, want := (attrs.HierarchicalNamespace), (&HierarchicalNamespace{Enabled: true}); cmp.Diff(got, want) != "" {
+			t.Errorf("HierarchicalNamespace: got %+v, want %+v", got, want)
+		}
+
+		// Folder creation should work on HNS bucket, but not on standard bucket.
+		req := &controlpb.CreateFolderRequest{
+			Parent:   fmt.Sprintf("projects/_/buckets/%v", hnsBucketName),
+			FolderId: "foo/",
+			Folder:   &controlpb.Folder{},
+		}
+		if _, err := controlClient.CreateFolder(ctx, req); err != nil {
+			t.Errorf("creating folder in bucket %q: %v", hnsBucketName, err)
+		}
+
+		req2 := &controlpb.CreateFolderRequest{
+			Parent:   fmt.Sprintf("projects/_/buckets/%v", bucket),
+			FolderId: "foo/",
+			Folder:   &controlpb.Folder{},
+		}
+		if _, err := controlClient.CreateFolder(ctx, req2); status.Code(err) != codes.FailedPrecondition {
+			t.Errorf("creating folder in non-HNS bucket %q: got error %v, want FailedPrecondition", bucket, err)
 		}
 	})
 }
@@ -1448,19 +1516,21 @@ func TestIntegration_ObjectIterationManagedFolder(t *testing.T) {
 			contents[obj] = c
 		}
 
-		// Create a managed folder. This requires using the Apiary client as this is not available
-		// in the veneer layer.
-		// TODO: change to use storage control client once available.
-		call := client.raw.ManagedFolders.Insert(newBucketName, &raw.ManagedFolder{Name: "mf"})
-		mf, err := call.Context(ctx).Do()
+		req := &controlpb.CreateManagedFolderRequest{
+			Parent:          fmt.Sprintf("projects/_/buckets/%s", newBucketName),
+			ManagedFolder:   &controlpb.ManagedFolder{},
+			ManagedFolderId: "mf",
+		}
+		mf, err := controlClient.CreateManagedFolder(ctx, req)
 		if err != nil {
 			t.Fatalf("creating managed folder: %v", err)
 		}
 
 		t.Cleanup(func() {
-			// TODO: add this cleanup logic to killBucket as well once gRPC support is available.
-			call := client.raw.ManagedFolders.Delete(newBucketName, mf.Name)
-			call.Context(ctx).Do()
+			req := &controlpb.DeleteManagedFolderRequest{
+				Name: mf.Name,
+			}
+			controlClient.DeleteManagedFolder(ctx, req)
 		})
 
 		// Test that managed folders are only included when IncludeFoldersAsPrefixes is set.
@@ -1609,6 +1679,17 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 		}
 		if !updated.Created.Before(updated.Updated) {
 			t.Errorf("updated.Updated should be newer than update.Created")
+		}
+
+		// Test empty update. Most fields should be unchanged, but updating will
+		// increase the metageneration and update time.
+		wantAttrs := updated
+		gotAttrs, err := o.Update(ctx, ObjectAttrsToUpdate{})
+		if err != nil {
+			t.Fatalf("empty update: %v", err)
+		}
+		if diff := testutil.Diff(gotAttrs, wantAttrs, cmpopts.IgnoreFields(ObjectAttrs{}, "Etag", "Metageneration", "Updated")); diff != "" {
+			t.Errorf("empty update: got=-, want=+:\n%s", diff)
 		}
 	})
 }
@@ -3046,7 +3127,7 @@ func TestIntegration_RequesterPaysOwner(t *testing.T) {
 		} {
 			t.Run(test.desc, func(t *testing.T) {
 				h := testHelper{t}
-				ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+				ctx, cancel := context.WithTimeout(ctx, time.Minute)
 				defer cancel()
 
 				printTestCase := func() string {
@@ -3746,8 +3827,7 @@ func TestIntegration_UpdateCORS(t *testing.T) {
 				bkt := client.Bucket(prefix + uidSpace.New())
 				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{CORS: initialSettings})
 				defer h.mustDeleteBucket(bkt)
-				// Set VersioningEnabled so that we don't send an empty update/patch request, which is invalid for gRPC
-				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{CORS: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
 				attrs := h.mustBucketAttrs(bkt)
 				if diff := testutil.Diff(attrs.CORS, test.want); diff != "" {
 					t.Errorf("input: %v\ngot=-, want=+:\n%s", test.input, diff)
@@ -3976,8 +4056,7 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 				bkt := client.Bucket(prefix + uidSpace.New())
 				h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{RetentionPolicy: initial})
 				defer h.mustDeleteBucket(bkt)
-				// Set VersioningEnabled so that we don't send an empty update request, which is invalid for gRPC
-				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input, VersioningEnabled: false}, h.mustBucketAttrs(bkt).MetaGeneration)
+				h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: test.input}, h.mustBucketAttrs(bkt).MetaGeneration)
 
 				attrs := h.mustBucketAttrs(bkt)
 				if attrs.RetentionPolicy != nil && attrs.RetentionPolicy.EffectiveTime.Unix() == 0 {
@@ -4260,6 +4339,149 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 		// We should be able to delete the object as normal since retention was removed
 		if err := objectWithRetentionOnUpdate.Delete(ctx); err != nil {
 			t.Errorf("object.Delete:%v", err)
+		}
+	})
+}
+
+func TestIntegration_SoftDelete(t *testing.T) {
+	multiTransportTest(skipJSONReads(context.Background(), "does not test reads"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		testStart := time.Now()
+
+		policy := &SoftDeletePolicy{
+			RetentionDuration: time.Hour * 24 * 8,
+		}
+
+		b := client.Bucket(prefix + uidSpace.New())
+
+		// Create bucket with soft delete policy.
+		if err := b.Create(ctx, testutil.ProjID(), &BucketAttrs{SoftDeletePolicy: policy}); err != nil {
+			t.Fatalf("error creating bucket with soft delete policy set: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(b) })
+
+		// Get bucket's soft delete policy and confirm accuracy.
+		attrs, err := b.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("b.Attrs(%q): %v", b.name, err)
+		}
+
+		got := attrs.SoftDeletePolicy
+		if got == nil {
+			t.Fatal("got nil soft delete policy")
+		}
+		if got.RetentionDuration != policy.RetentionDuration {
+			t.Fatalf("mismatching retention duration; got soft delete policy: %+v, expected: %+v", got, policy)
+		}
+		if got.EffectiveTime.Before(testStart) {
+			t.Fatalf("effective time of soft delete policy should not be in the past, got: %v, test start: %v", got.EffectiveTime, testStart.UTC())
+		}
+
+		// Create a second bucket with an empty soft delete policy to verify
+		// that this leads to no retention.
+		b2 := client.Bucket(prefix + uidSpace.New())
+		if err := b2.Create(ctx, testutil.ProjID(), &BucketAttrs{SoftDeletePolicy: &SoftDeletePolicy{}}); err != nil {
+			t.Fatalf("error creating bucket with soft delete disabled: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(b2) })
+
+		attrs2, err := b2.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("Attrs(%q): %v", b2.name, err)
+		}
+		if got, expect := attrs2.SoftDeletePolicy.RetentionDuration, time.Duration(0); got != expect {
+			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+		}
+
+		// Update the soft delete policy of the original bucket.
+		policy.RetentionDuration = time.Hour * 24 * 9
+
+		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})
+		if err != nil {
+			t.Fatalf("b.Update: %v", err)
+		}
+
+		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, policy.RetentionDuration; got != expect {
+			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+		}
+
+		// Create 2 objects and delete one of them.
+		deletedObject := b.Object("soft-delete" + uidSpaceObjects.New())
+		liveObject := b.Object("not-soft-delete" + uidSpaceObjects.New())
+
+		h.mustWrite(deletedObject.NewWriter(ctx), []byte("soft-deleted"))
+		h.mustWrite(liveObject.NewWriter(ctx), []byte("soft-delete"))
+		t.Cleanup(func() {
+			h.mustDeleteObject(liveObject)
+			h.mustDeleteObject(deletedObject)
+		})
+
+		h.mustDeleteObject(deletedObject)
+
+		var gen int64
+		// List soft deleted objects.
+		it := b.Objects(ctx, &Query{SoftDeleted: true})
+		var gotNames []string
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			gotNames = append(gotNames, attrs.Name)
+
+			// Get the generation here as the test will fail if there is more than one object
+			gen = attrs.Generation
+		}
+		if len(gotNames) != 1 || gotNames[0] != deletedObject.ObjectName() {
+			t.Fatalf("list soft deleted objects; got: %v, expected only one object named: %s", gotNames, deletedObject.ObjectName())
+		}
+
+		// List live objects.
+		gotNames = []string{}
+		it = b.Objects(ctx, nil)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			gotNames = append(gotNames, attrs.Name)
+		}
+		if len(gotNames) != 1 || gotNames[0] != liveObject.ObjectName() {
+			t.Fatalf("list objects that are not soft deleted; got: %v, expected only one object named: %s", gotNames, liveObject.ObjectName())
+		}
+
+		// Get a soft deleted object and check soft and hard delete times.
+		oAttrs, err := deletedObject.Generation(gen).SoftDeleted().Attrs(ctx)
+		if err != nil {
+			t.Fatalf("deletedObject.SoftDeleted().Attrs: %v", err)
+		}
+		if oAttrs.SoftDeleteTime.Before(testStart) {
+			t.Fatalf("SoftDeleteTime of soft deleted object should not be in the past, got: %v, test start: %v", oAttrs.SoftDeleteTime, testStart.UTC())
+		}
+		if got, expected := oAttrs.HardDeleteTime, oAttrs.SoftDeleteTime.Add(policy.RetentionDuration); !expected.Equal(got) {
+			t.Fatalf("HardDeleteTime of soft deleted object should be equal to SoftDeleteTime+RetentionDuration, got: %v, expected: %v", got, expected)
+		}
+
+		// Restore a soft deleted object.
+		_, err = deletedObject.Generation(gen).Restore(ctx, &RestoreOptions{CopySourceACL: true})
+		if err != nil {
+			t.Fatalf("Object(deletedObject).Restore: %v", err)
+		}
+
+		// Update the soft delete policy to remove it.
+		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: &SoftDeletePolicy{}})
+		if err != nil {
+			t.Fatalf("b.Update: %v", err)
+		}
+
+		if got, expect := attrs.SoftDeletePolicy.RetentionDuration, time.Duration(0); got != expect {
+			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
 		}
 	})
 }
@@ -5240,6 +5462,11 @@ func TestIntegration_Scopes(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_WithCreds(t *testing.T) {
+	// Skip before getting creds if running with -short
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
 	ctx := context.Background()
 
 	creds, err := findTestCredentials(ctx, "GCLOUD_TESTS_GOLANG_KEY", ScopeFullControl, "https://www.googleapis.com/auth/cloud-platform")
@@ -5271,6 +5498,11 @@ func TestIntegration_SignedURL_WithCreds(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
+	// Skip before getting creds if running with -short
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
 	ctx := context.Background()
 
 	// Create another client to test the sign byte function as well
@@ -5311,6 +5543,11 @@ func TestIntegration_SignedURL_DefaultSignBytes(t *testing.T) {
 }
 
 func TestIntegration_PostPolicyV4_WithCreds(t *testing.T) {
+	// Skip before getting creds if running with -short
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
 	// By default we are authed with a token source, so don't have the context to
 	// read some of the fields from the keyfile.
 	// Here we explictly send the key to the client.
@@ -5498,7 +5735,7 @@ func TestIntegration_OCTracing(t *testing.T) {
 		bkt := client.Bucket(bucket)
 		bkt.Attrs(ctx)
 
-		if len(te.Spans) == 0 {
+		if len(te.Spans()) == 0 {
 			t.Fatalf("Expected some spans to be created, but got %d", 0)
 		}
 	})
@@ -5619,14 +5856,14 @@ type testHelper struct {
 func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttrs) {
 	h.t.Helper()
 	if err := b.Create(context.Background(), projID, attrs); err != nil {
-		h.t.Fatalf("bucket create: %v", err)
+		h.t.Fatalf("BucketHandle(%q).Create: %v", b.BucketName(), err)
 	}
 }
 
 func (h testHelper) mustDeleteBucket(b *BucketHandle) {
 	h.t.Helper()
 	if err := b.Delete(context.Background()); err != nil {
-		h.t.Fatalf("bucket delete: %v", err)
+		h.t.Fatalf("BucketHandle(%q).Delete: %v", b.BucketName(), err)
 	}
 }
 
@@ -5634,7 +5871,7 @@ func (h testHelper) mustBucketAttrs(b *BucketHandle) *BucketAttrs {
 	h.t.Helper()
 	attrs, err := b.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("bucket attrs: %v", err)
+		h.t.Fatalf("BucketHandle(%q).Attrs: %v", b.BucketName(), err)
 	}
 	return attrs
 }
@@ -5644,7 +5881,15 @@ func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate, me
 	h.t.Helper()
 	attrs, err := b.If(BucketConditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("update: %v", err)
+		var apiErr *apierror.APIError
+		if ok := errors.As(err, &apiErr); ok {
+			// Update may already have succeeded with retry; if so, log and grab attrs.
+			if apiErr.HTTPCode() == http.StatusPreconditionFailed || apiErr.GRPCStatus().Code() == codes.FailedPrecondition {
+				log.Println("bucket update failed due to precondition; likely succeeded but retried - grabbing attrs instead")
+				return h.mustBucketAttrs(b)
+			}
+		}
+		h.t.Fatalf("BucketHandle(%q).Update: %v", b.BucketName(), err)
 	}
 	return attrs
 }
@@ -5653,7 +5898,7 @@ func (h testHelper) mustObjectAttrs(o *ObjectHandle) *ObjectAttrs {
 	h.t.Helper()
 	attrs, err := o.Attrs(context.Background())
 	if err != nil {
-		h.t.Fatalf("object attrs: %v", err)
+		h.t.Fatalf("get object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return attrs
 }
@@ -5668,7 +5913,7 @@ func (h testHelper) mustDeleteObject(o *ObjectHandle) {
 				return
 			}
 		}
-		h.t.Fatalf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
+		h.t.Fatalf("delete object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 }
 
@@ -5677,7 +5922,7 @@ func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate, me
 	h.t.Helper()
 	attrs, err := o.If(Conditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
-		h.t.Fatalf("update: %v", err)
+		h.t.Fatalf("update object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return attrs
 }
@@ -5686,10 +5931,10 @@ func (h testHelper) mustWrite(w *Writer, data []byte) {
 	h.t.Helper()
 	if _, err := w.Write(data); err != nil {
 		w.Close()
-		h.t.Fatalf("write: %v", err)
+		h.t.Fatalf("write object %q to bucket %q: %v", w.o.ObjectName(), w.o.BucketName(), err)
 	}
 	if err := w.Close(); err != nil {
-		h.t.Fatalf("close write: %v", err)
+		h.t.Fatalf("close write object %q to bucket %q: %v", w.o.ObjectName(), w.o.BucketName(), err)
 	}
 }
 
@@ -5718,7 +5963,7 @@ func deleteObjectIfExists(o *ObjectHandle, retryOpts ...RetryOption) error {
 				return nil
 			}
 		}
-		return fmt.Errorf("delete object %s from bucket %s: %v", o.ObjectName(), o.BucketName(), err)
+		return fmt.Errorf("delete object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return nil
 }
@@ -5834,6 +6079,59 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 			return fmt.Errorf("deleting %q: %v", bucketName+"/"+objAttrs.Name, err)
 		}
 	}
+	// Delete any managed folders.
+	req := &controlpb.ListManagedFoldersRequest{
+		Parent: fmt.Sprintf("projects/_/buckets/%s", bucketName),
+	}
+	mfIt := controlClient.ListManagedFolders(ctx, req)
+	for {
+		resp, err := mfIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		// Buckets without UBLA will return this error for MF ops; skip.
+		if status.Code(err) == codes.FailedPrecondition {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		deleteReq := &controlpb.DeleteManagedFolderRequest{
+			Name:          resp.Name,
+			AllowNonEmpty: true,
+		}
+		err = controlClient.DeleteManagedFolder(ctx, deleteReq)
+		if err != nil {
+			return err
+		}
+	}
+
+	// Delete any folders.
+	listFoldersReq := &controlpb.ListFoldersRequest{
+		Parent: fmt.Sprintf("projects/_/buckets/%s", bucketName),
+	}
+	folderIt := controlClient.ListFolders(ctx, listFoldersReq)
+	for {
+		resp, err := folderIt.Next()
+		if err == iterator.Done {
+			break
+		}
+		// Buckets without UBLA will return this error for Folder ops; skip.
+		if status.Code(err) == codes.FailedPrecondition {
+			break
+		}
+		if err != nil {
+			return err
+		}
+		deleteFolderReq := &controlpb.DeleteFolderRequest{
+			Name: resp.Name,
+		}
+		err = controlClient.DeleteFolder(ctx, deleteFolderReq)
+		if err != nil {
+			return err
+		}
+	}
+
 	// GCS is eventually consistent, so this delete may fail because the
 	// replica still sees an object in the bucket. We log the error and expect
 	// a later test run to delete the bucket.

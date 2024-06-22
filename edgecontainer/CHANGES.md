@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.1](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.2.0...edgecontainer/v1.2.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **edgecontainer:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.1.6...edgecontainer/v1.2.0) (2024-03-25)
 
 
@@ -100,4 +107,3 @@
 * **edgecontainer:** Start generating apiv1 ([#6694](https://github.com/googleapis/google-cloud-go/issues/6694)) ([6bc9b69](https://github.com/googleapis/google-cloud-go/commit/6bc9b69ca4dd910a9801f07bbc2b8abfdabe8628))
 
 ## Changes
-

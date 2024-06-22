@@ -1,0 +1,153 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/promotions/apiv1beta",
+    "version": "0.8.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.promotions.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_PromotionsService_GetPromotion_sync",
+      "title": "merchantapi GetPromotion Sample",
+      "description": "GetPromotion retrieves the promotion from your Merchant Center account.\n\nAfter inserting or updating a promotion input, it may take several\nminutes before the updated promotion can be retrieved.",
+      "file": "Client/GetPromotion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetPromotion",
+        "fullName": "google.shopping.merchant.promotions.v1beta.Client.GetPromotion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "promotionspb.GetPromotionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*promotionspb.Promotion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.promotions.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetPromotion",
+          "fullName": "google.shopping.merchant.promotions.v1beta.PromotionsService.GetPromotion",
+          "service": {
+            "shortName": "PromotionsService",
+            "fullName": "google.shopping.merchant.promotions.v1beta.PromotionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_PromotionsService_InsertPromotion_sync",
+      "title": "merchantapi InsertPromotion Sample",
+      "description": "InsertPromotion inserts a promotion for your Merchant Center account. If the promotion\nalready exists, then it updates the promotion instead.",
+      "file": "Client/InsertPromotion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertPromotion",
+        "fullName": "google.shopping.merchant.promotions.v1beta.Client.InsertPromotion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "promotionspb.InsertPromotionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*promotionspb.Promotion",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.promotions.v1beta.Client"
+        },
+        "method": {
+          "shortName": "InsertPromotion",
+          "fullName": "google.shopping.merchant.promotions.v1beta.PromotionsService.InsertPromotion",
+          "service": {
+            "shortName": "PromotionsService",
+            "fullName": "google.shopping.merchant.promotions.v1beta.PromotionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_PromotionsService_ListPromotions_sync",
+      "title": "merchantapi ListPromotions Sample",
+      "description": "ListPromotions lists the promotions in your Merchant Center account. The\nresponse might contain fewer items than specified by `pageSize`. Rely on\n`pageToken` to determine if there are more items to be requested.\n\nAfter inserting or updating a promotion, it may take several minutes before\nthe updated processed promotion can be retrieved.",
+      "file": "Client/ListPromotions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPromotions",
+        "fullName": "google.shopping.merchant.promotions.v1beta.Client.ListPromotions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "promotionspb.ListPromotionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "PromotionIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.promotions.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListPromotions",
+          "fullName": "google.shopping.merchant.promotions.v1beta.PromotionsService.ListPromotions",
+          "service": {
+            "shortName": "PromotionsService",
+            "fullName": "google.shopping.merchant.promotions.v1beta.PromotionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

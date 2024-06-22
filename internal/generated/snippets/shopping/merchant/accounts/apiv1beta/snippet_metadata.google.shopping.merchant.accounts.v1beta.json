@@ -1,0 +1,1989 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+    "version": "0.8.2",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.shopping.merchant.accounts.v1beta",
+        "version": "v1beta"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountIssueService_ListAccountIssues_sync",
+      "title": "merchantapi ListAccountIssues Sample",
+      "description": "ListAccountIssues lists all account issues of a Merchant Center account.",
+      "file": "AccountIssueClient/ListAccountIssues/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccountIssues",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AccountIssueClient.ListAccountIssues",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListAccountIssuesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccountIssueIterator",
+        "client": {
+          "shortName": "AccountIssueClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountIssueClient"
+        },
+        "method": {
+          "shortName": "ListAccountIssues",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountIssueService.ListAccountIssues",
+          "service": {
+            "shortName": "AccountIssueService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountIssueService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountTaxService_GetAccountTax_sync",
+      "title": "merchantapi GetAccountTax Sample",
+      "description": "GetAccountTax returns the tax rules that match the conditions of GetAccountTaxRequest",
+      "file": "AccountTaxClient/GetAccountTax/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAccountTax",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxClient.GetAccountTax",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetAccountTaxRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.AccountTax",
+        "client": {
+          "shortName": "AccountTaxClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxClient"
+        },
+        "method": {
+          "shortName": "GetAccountTax",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxService.GetAccountTax",
+          "service": {
+            "shortName": "AccountTaxService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountTaxService_ListAccountTax_sync",
+      "title": "merchantapi ListAccountTax Sample",
+      "description": "ListAccountTax lists the tax settings of the sub-accounts only in your\nMerchant Center account.\nThis method can only be called on a multi-client account, otherwise it'll\nreturn an error.",
+      "file": "AccountTaxClient/ListAccountTax/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccountTax",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxClient.ListAccountTax",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListAccountTaxRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccountTaxIterator",
+        "client": {
+          "shortName": "AccountTaxClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxClient"
+        },
+        "method": {
+          "shortName": "ListAccountTax",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxService.ListAccountTax",
+          "service": {
+            "shortName": "AccountTaxService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountTaxService_UpdateAccountTax_sync",
+      "title": "merchantapi UpdateAccountTax Sample",
+      "description": "UpdateAccountTax updates the tax settings of the account.",
+      "file": "AccountTaxClient/UpdateAccountTax/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAccountTax",
+        "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxClient.UpdateAccountTax",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateAccountTaxRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.AccountTax",
+        "client": {
+          "shortName": "AccountTaxClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxClient"
+        },
+        "method": {
+          "shortName": "UpdateAccountTax",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxService.UpdateAccountTax",
+          "service": {
+            "shortName": "AccountTaxService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountTaxService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountsService_CreateAndConfigureAccount_sync",
+      "title": "merchantapi CreateAndConfigureAccount Sample",
+      "description": "CreateAndConfigureAccount creates a standalone Merchant Center account with additional configuration.\nAdds the user that makes the request as an admin for the new account.",
+      "file": "Client/CreateAndConfigureAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateAndConfigureAccount",
+        "fullName": "google.shopping.merchant.accounts.v1beta.Client.CreateAndConfigureAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.CreateAndConfigureAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Account",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.accounts.v1beta.Client"
+        },
+        "method": {
+          "shortName": "CreateAndConfigureAccount",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService.CreateAndConfigureAccount",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountsService_DeleteAccount_sync",
+      "title": "merchantapi DeleteAccount Sample",
+      "description": "DeleteAccount deletes the specified account regardless of its type: standalone, MCA or\nsub-account. Deleting an MCA leads to the deletion of all of its\nsub-accounts. Executing this method requires admin access.",
+      "file": "Client/DeleteAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteAccount",
+        "fullName": "google.shopping.merchant.accounts.v1beta.Client.DeleteAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.DeleteAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.accounts.v1beta.Client"
+        },
+        "method": {
+          "shortName": "DeleteAccount",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService.DeleteAccount",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountsService_GetAccount_sync",
+      "title": "merchantapi GetAccount Sample",
+      "description": "GetAccount retrieves an account from your Merchant Center account.\nAfter inserting, updating, or deleting an account, it may take several\nminutes before changes take effect.",
+      "file": "Client/GetAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetAccount",
+        "fullName": "google.shopping.merchant.accounts.v1beta.Client.GetAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Account",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.accounts.v1beta.Client"
+        },
+        "method": {
+          "shortName": "GetAccount",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService.GetAccount",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountsService_ListAccounts_sync",
+      "title": "merchantapi ListAccounts Sample",
+      "description": "ListAccounts lists accounts accessible to the calling user and matching the\nconstraints of the request such as page size or filters.\nThis is not just listing the sub-accounts of an MCA, but all accounts the\ncalling user has access to including other MCAs, linked accounts,\nstandalone accounts and so on.",
+      "file": "Client/ListAccounts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListAccounts",
+        "fullName": "google.shopping.merchant.accounts.v1beta.Client.ListAccounts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListAccountsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccountIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.accounts.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListAccounts",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService.ListAccounts",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountsService_ListSubAccounts_sync",
+      "title": "merchantapi ListSubAccounts Sample",
+      "description": "ListSubAccounts list all sub-accounts for a given multi client account. This is a\nconvenience wrapper for the more powerful `ListAccounts` method. This\nmethod will produce the same results as calling `ListsAccounts` with the\nfollowing filter: \n`relationship(providerId={parent} AND service(type=\"ACCOUNT_AGGREGATION\"))`",
+      "file": "Client/ListSubAccounts/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSubAccounts",
+        "fullName": "google.shopping.merchant.accounts.v1beta.Client.ListSubAccounts",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListSubAccountsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "AccountIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.accounts.v1beta.Client"
+        },
+        "method": {
+          "shortName": "ListSubAccounts",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService.ListSubAccounts",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_AccountsService_UpdateAccount_sync",
+      "title": "merchantapi UpdateAccount Sample",
+      "description": "UpdateAccount updates an account regardless of its type: standalone, MCA or sub-account.\nExecuting this method requires admin access.",
+      "file": "Client/UpdateAccount/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateAccount",
+        "fullName": "google.shopping.merchant.accounts.v1beta.Client.UpdateAccount",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateAccountRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Account",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.shopping.merchant.accounts.v1beta.Client"
+        },
+        "method": {
+          "shortName": "UpdateAccount",
+          "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService.UpdateAccount",
+          "service": {
+            "shortName": "AccountsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.AccountsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_BusinessIdentityService_GetBusinessIdentity_sync",
+      "title": "merchantapi GetBusinessIdentity Sample",
+      "description": "GetBusinessIdentity retrieves the business identity of an account.",
+      "file": "BusinessIdentityClient/GetBusinessIdentity/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBusinessIdentity",
+        "fullName": "google.shopping.merchant.accounts.v1beta.BusinessIdentityClient.GetBusinessIdentity",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetBusinessIdentityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.BusinessIdentity",
+        "client": {
+          "shortName": "BusinessIdentityClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.BusinessIdentityClient"
+        },
+        "method": {
+          "shortName": "GetBusinessIdentity",
+          "fullName": "google.shopping.merchant.accounts.v1beta.BusinessIdentityService.GetBusinessIdentity",
+          "service": {
+            "shortName": "BusinessIdentityService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.BusinessIdentityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_BusinessIdentityService_UpdateBusinessIdentity_sync",
+      "title": "merchantapi UpdateBusinessIdentity Sample",
+      "description": "UpdateBusinessIdentity updates the business identity of an account. Executing this method requires\nadmin access.",
+      "file": "BusinessIdentityClient/UpdateBusinessIdentity/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBusinessIdentity",
+        "fullName": "google.shopping.merchant.accounts.v1beta.BusinessIdentityClient.UpdateBusinessIdentity",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateBusinessIdentityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.BusinessIdentity",
+        "client": {
+          "shortName": "BusinessIdentityClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.BusinessIdentityClient"
+        },
+        "method": {
+          "shortName": "UpdateBusinessIdentity",
+          "fullName": "google.shopping.merchant.accounts.v1beta.BusinessIdentityService.UpdateBusinessIdentity",
+          "service": {
+            "shortName": "BusinessIdentityService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.BusinessIdentityService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_BusinessInfoService_GetBusinessInfo_sync",
+      "title": "merchantapi GetBusinessInfo Sample",
+      "description": "GetBusinessInfo retrieves the business info of an account.",
+      "file": "BusinessInfoClient/GetBusinessInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBusinessInfo",
+        "fullName": "google.shopping.merchant.accounts.v1beta.BusinessInfoClient.GetBusinessInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetBusinessInfoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.BusinessInfo",
+        "client": {
+          "shortName": "BusinessInfoClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.BusinessInfoClient"
+        },
+        "method": {
+          "shortName": "GetBusinessInfo",
+          "fullName": "google.shopping.merchant.accounts.v1beta.BusinessInfoService.GetBusinessInfo",
+          "service": {
+            "shortName": "BusinessInfoService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.BusinessInfoService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_BusinessInfoService_UpdateBusinessInfo_sync",
+      "title": "merchantapi UpdateBusinessInfo Sample",
+      "description": "UpdateBusinessInfo updates the business info of an account. Executing this method requires\nadmin access.",
+      "file": "BusinessInfoClient/UpdateBusinessInfo/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBusinessInfo",
+        "fullName": "google.shopping.merchant.accounts.v1beta.BusinessInfoClient.UpdateBusinessInfo",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateBusinessInfoRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.BusinessInfo",
+        "client": {
+          "shortName": "BusinessInfoClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.BusinessInfoClient"
+        },
+        "method": {
+          "shortName": "UpdateBusinessInfo",
+          "fullName": "google.shopping.merchant.accounts.v1beta.BusinessInfoService.UpdateBusinessInfo",
+          "service": {
+            "shortName": "BusinessInfoService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.BusinessInfoService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_EmailPreferencesService_GetEmailPreferences_sync",
+      "title": "merchantapi GetEmailPreferences Sample",
+      "description": "GetEmailPreferences returns the email preferences for a Merchant Center account user.\n\nUse the name=accounts/*/users/me/emailPreferences alias to get preferences\nfor the authenticated user.",
+      "file": "EmailPreferencesClient/GetEmailPreferences/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetEmailPreferences",
+        "fullName": "google.shopping.merchant.accounts.v1beta.EmailPreferencesClient.GetEmailPreferences",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetEmailPreferencesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.EmailPreferences",
+        "client": {
+          "shortName": "EmailPreferencesClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.EmailPreferencesClient"
+        },
+        "method": {
+          "shortName": "GetEmailPreferences",
+          "fullName": "google.shopping.merchant.accounts.v1beta.EmailPreferencesService.GetEmailPreferences",
+          "service": {
+            "shortName": "EmailPreferencesService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.EmailPreferencesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_EmailPreferencesService_UpdateEmailPreferences_sync",
+      "title": "merchantapi UpdateEmailPreferences Sample",
+      "description": "UpdateEmailPreferences updates the email preferences for a Merchant Center account user. MCA users\nshould specify the MCA account rather than a sub-account of the MCA.\n\nPreferences which are not explicitly selected in the update mask will not\nbe updated.\n\nIt is invalid for updates to specify an UNCONFIRMED opt-in status value.\n\nUse the name=accounts/*/users/me/emailPreferences alias to update\npreferences\nfor the authenticated user.",
+      "file": "EmailPreferencesClient/UpdateEmailPreferences/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateEmailPreferences",
+        "fullName": "google.shopping.merchant.accounts.v1beta.EmailPreferencesClient.UpdateEmailPreferences",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateEmailPreferencesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.EmailPreferences",
+        "client": {
+          "shortName": "EmailPreferencesClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.EmailPreferencesClient"
+        },
+        "method": {
+          "shortName": "UpdateEmailPreferences",
+          "fullName": "google.shopping.merchant.accounts.v1beta.EmailPreferencesService.UpdateEmailPreferences",
+          "service": {
+            "shortName": "EmailPreferencesService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.EmailPreferencesService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_HomepageService_ClaimHomepage_sync",
+      "title": "merchantapi ClaimHomepage Sample",
+      "description": "ClaimHomepage claims a store's homepage. Executing this method requires admin access.\n\nIf the homepage is already claimed, this will recheck the\nverification (unless the merchant is exempted from claiming, which also\nexempts from verification) and return a successful response. If ownership\ncan no longer be verified, it will return an error, but it won't clear the\nclaim. In case of failure, a canonical error message will be returned: \n* PERMISSION_DENIED: user doesn't have the necessary permissions on this\nMC account;\n* FAILED_PRECONDITION: \n- The account is not a Merchant Center account;\n- MC account doesn't have a homepage;\n- claiming failed (in this case the error message will contain more\ndetails).",
+      "file": "HomepageClient/ClaimHomepage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ClaimHomepage",
+        "fullName": "google.shopping.merchant.accounts.v1beta.HomepageClient.ClaimHomepage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ClaimHomepageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Homepage",
+        "client": {
+          "shortName": "HomepageClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.HomepageClient"
+        },
+        "method": {
+          "shortName": "ClaimHomepage",
+          "fullName": "google.shopping.merchant.accounts.v1beta.HomepageService.ClaimHomepage",
+          "service": {
+            "shortName": "HomepageService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.HomepageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_HomepageService_GetHomepage_sync",
+      "title": "merchantapi GetHomepage Sample",
+      "description": "GetHomepage retrieves a store's homepage.",
+      "file": "HomepageClient/GetHomepage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetHomepage",
+        "fullName": "google.shopping.merchant.accounts.v1beta.HomepageClient.GetHomepage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetHomepageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Homepage",
+        "client": {
+          "shortName": "HomepageClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.HomepageClient"
+        },
+        "method": {
+          "shortName": "GetHomepage",
+          "fullName": "google.shopping.merchant.accounts.v1beta.HomepageService.GetHomepage",
+          "service": {
+            "shortName": "HomepageService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.HomepageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_HomepageService_UnclaimHomepage_sync",
+      "title": "merchantapi UnclaimHomepage Sample",
+      "description": "UnclaimHomepage unclaims a store's homepage. Executing this method requires admin access.",
+      "file": "HomepageClient/UnclaimHomepage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UnclaimHomepage",
+        "fullName": "google.shopping.merchant.accounts.v1beta.HomepageClient.UnclaimHomepage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UnclaimHomepageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Homepage",
+        "client": {
+          "shortName": "HomepageClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.HomepageClient"
+        },
+        "method": {
+          "shortName": "UnclaimHomepage",
+          "fullName": "google.shopping.merchant.accounts.v1beta.HomepageService.UnclaimHomepage",
+          "service": {
+            "shortName": "HomepageService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.HomepageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_HomepageService_UpdateHomepage_sync",
+      "title": "merchantapi UpdateHomepage Sample",
+      "description": "UpdateHomepage updates a store's homepage. Executing this method requires admin access.",
+      "file": "HomepageClient/UpdateHomepage/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateHomepage",
+        "fullName": "google.shopping.merchant.accounts.v1beta.HomepageClient.UpdateHomepage",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateHomepageRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Homepage",
+        "client": {
+          "shortName": "HomepageClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.HomepageClient"
+        },
+        "method": {
+          "shortName": "UpdateHomepage",
+          "fullName": "google.shopping.merchant.accounts.v1beta.HomepageService.UpdateHomepage",
+          "service": {
+            "shortName": "HomepageService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.HomepageService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_GetOnlineReturnPolicy_sync",
+      "title": "merchantapi GetOnlineReturnPolicy Sample",
+      "description": "GetOnlineReturnPolicy gets an existing return policy.",
+      "file": "OnlineReturnPolicyClient/GetOnlineReturnPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOnlineReturnPolicy",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient.GetOnlineReturnPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetOnlineReturnPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.OnlineReturnPolicy",
+        "client": {
+          "shortName": "OnlineReturnPolicyClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient"
+        },
+        "method": {
+          "shortName": "GetOnlineReturnPolicy",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService.GetOnlineReturnPolicy",
+          "service": {
+            "shortName": "OnlineReturnPolicyService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_OnlineReturnPolicyService_ListOnlineReturnPolicies_sync",
+      "title": "merchantapi ListOnlineReturnPolicies Sample",
+      "description": "ListOnlineReturnPolicies lists all existing return policies.",
+      "file": "OnlineReturnPolicyClient/ListOnlineReturnPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOnlineReturnPolicies",
+        "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient.ListOnlineReturnPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListOnlineReturnPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OnlineReturnPolicyIterator",
+        "client": {
+          "shortName": "OnlineReturnPolicyClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyClient"
+        },
+        "method": {
+          "shortName": "ListOnlineReturnPolicies",
+          "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService.ListOnlineReturnPolicies",
+          "service": {
+            "shortName": "OnlineReturnPolicyService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProgramsService_DisableProgram_sync",
+      "title": "merchantapi DisableProgram Sample",
+      "description": "DisableProgram disable participation in the specified program for the account. Executing\nthis method requires admin access.",
+      "file": "ProgramsClient/DisableProgram/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DisableProgram",
+        "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsClient.DisableProgram",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.DisableProgramRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Program",
+        "client": {
+          "shortName": "ProgramsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsClient"
+        },
+        "method": {
+          "shortName": "DisableProgram",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsService.DisableProgram",
+          "service": {
+            "shortName": "ProgramsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProgramsService_EnableProgram_sync",
+      "title": "merchantapi EnableProgram Sample",
+      "description": "EnableProgram enable participation in the specified program for the account. Executing\nthis method requires admin access.",
+      "file": "ProgramsClient/EnableProgram/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "EnableProgram",
+        "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsClient.EnableProgram",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.EnableProgramRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Program",
+        "client": {
+          "shortName": "ProgramsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsClient"
+        },
+        "method": {
+          "shortName": "EnableProgram",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsService.EnableProgram",
+          "service": {
+            "shortName": "ProgramsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProgramsService_GetProgram_sync",
+      "title": "merchantapi GetProgram Sample",
+      "description": "GetProgram retrieves the specified program for the account.",
+      "file": "ProgramsClient/GetProgram/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetProgram",
+        "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsClient.GetProgram",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetProgramRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Program",
+        "client": {
+          "shortName": "ProgramsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsClient"
+        },
+        "method": {
+          "shortName": "GetProgram",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsService.GetProgram",
+          "service": {
+            "shortName": "ProgramsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ProgramsService_ListPrograms_sync",
+      "title": "merchantapi ListPrograms Sample",
+      "description": "ListPrograms retrieves all programs for the account.",
+      "file": "ProgramsClient/ListPrograms/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListPrograms",
+        "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsClient.ListPrograms",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListProgramsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "ProgramIterator",
+        "client": {
+          "shortName": "ProgramsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsClient"
+        },
+        "method": {
+          "shortName": "ListPrograms",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsService.ListPrograms",
+          "service": {
+            "shortName": "ProgramsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.ProgramsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_RegionsService_CreateRegion_sync",
+      "title": "merchantapi CreateRegion Sample",
+      "description": "CreateRegion creates a region definition in your Merchant Center account. Executing this\nmethod requires admin access.",
+      "file": "RegionsClient/CreateRegion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateRegion",
+        "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient.CreateRegion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.CreateRegionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Region",
+        "client": {
+          "shortName": "RegionsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient"
+        },
+        "method": {
+          "shortName": "CreateRegion",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService.CreateRegion",
+          "service": {
+            "shortName": "RegionsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_RegionsService_DeleteRegion_sync",
+      "title": "merchantapi DeleteRegion Sample",
+      "description": "DeleteRegion deletes a region definition from your Merchant Center account. Executing\nthis method requires admin access.",
+      "file": "RegionsClient/DeleteRegion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteRegion",
+        "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient.DeleteRegion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.DeleteRegionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "RegionsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient"
+        },
+        "method": {
+          "shortName": "DeleteRegion",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService.DeleteRegion",
+          "service": {
+            "shortName": "RegionsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_RegionsService_GetRegion_sync",
+      "title": "merchantapi GetRegion Sample",
+      "description": "GetRegion retrieves a region defined in your Merchant Center account.",
+      "file": "RegionsClient/GetRegion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetRegion",
+        "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient.GetRegion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetRegionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Region",
+        "client": {
+          "shortName": "RegionsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient"
+        },
+        "method": {
+          "shortName": "GetRegion",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService.GetRegion",
+          "service": {
+            "shortName": "RegionsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_RegionsService_ListRegions_sync",
+      "title": "merchantapi ListRegions Sample",
+      "description": "ListRegions lists the regions in your Merchant Center account.",
+      "file": "RegionsClient/ListRegions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListRegions",
+        "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient.ListRegions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListRegionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RegionIterator",
+        "client": {
+          "shortName": "RegionsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient"
+        },
+        "method": {
+          "shortName": "ListRegions",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService.ListRegions",
+          "service": {
+            "shortName": "RegionsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_RegionsService_UpdateRegion_sync",
+      "title": "merchantapi UpdateRegion Sample",
+      "description": "UpdateRegion updates a region definition in your Merchant Center account. Executing this\nmethod requires admin access.",
+      "file": "RegionsClient/UpdateRegion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateRegion",
+        "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient.UpdateRegion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateRegionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.Region",
+        "client": {
+          "shortName": "RegionsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsClient"
+        },
+        "method": {
+          "shortName": "UpdateRegion",
+          "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService.UpdateRegion",
+          "service": {
+            "shortName": "RegionsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.RegionsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ShippingSettingsService_GetShippingSettings_sync",
+      "title": "merchantapi GetShippingSettings Sample",
+      "description": "GetShippingSettings retrieve shipping setting information.",
+      "file": "ShippingSettingsClient/GetShippingSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetShippingSettings",
+        "fullName": "google.shopping.merchant.accounts.v1beta.ShippingSettingsClient.GetShippingSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetShippingSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.ShippingSettings",
+        "client": {
+          "shortName": "ShippingSettingsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ShippingSettingsClient"
+        },
+        "method": {
+          "shortName": "GetShippingSettings",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ShippingSettingsService.GetShippingSettings",
+          "service": {
+            "shortName": "ShippingSettingsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.ShippingSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_ShippingSettingsService_InsertShippingSettings_sync",
+      "title": "merchantapi InsertShippingSettings Sample",
+      "description": "InsertShippingSettings replace the shipping setting of a merchant with the request shipping\nsetting. Executing this method requires admin access.",
+      "file": "ShippingSettingsClient/InsertShippingSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "InsertShippingSettings",
+        "fullName": "google.shopping.merchant.accounts.v1beta.ShippingSettingsClient.InsertShippingSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.InsertShippingSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.ShippingSettings",
+        "client": {
+          "shortName": "ShippingSettingsClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ShippingSettingsClient"
+        },
+        "method": {
+          "shortName": "InsertShippingSettings",
+          "fullName": "google.shopping.merchant.accounts.v1beta.ShippingSettingsService.InsertShippingSettings",
+          "service": {
+            "shortName": "ShippingSettingsService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.ShippingSettingsService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_TermsOfServiceAgreementStateService_GetTermsOfServiceAgreementState_sync",
+      "title": "merchantapi GetTermsOfServiceAgreementState Sample",
+      "description": "GetTermsOfServiceAgreementState returns the state of a terms of service agreement.",
+      "file": "TermsOfServiceAgreementStateClient/GetTermsOfServiceAgreementState/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTermsOfServiceAgreementState",
+        "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateClient.GetTermsOfServiceAgreementState",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetTermsOfServiceAgreementStateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.TermsOfServiceAgreementState",
+        "client": {
+          "shortName": "TermsOfServiceAgreementStateClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateClient"
+        },
+        "method": {
+          "shortName": "GetTermsOfServiceAgreementState",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateService.GetTermsOfServiceAgreementState",
+          "service": {
+            "shortName": "TermsOfServiceAgreementStateService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_TermsOfServiceAgreementStateService_RetrieveForApplicationTermsOfServiceAgreementState_sync",
+      "title": "merchantapi RetrieveForApplicationTermsOfServiceAgreementState Sample",
+      "description": "RetrieveForApplicationTermsOfServiceAgreementState retrieves the state of the agreement for the application terms of service.",
+      "file": "TermsOfServiceAgreementStateClient/RetrieveForApplicationTermsOfServiceAgreementState/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveForApplicationTermsOfServiceAgreementState",
+        "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateClient.RetrieveForApplicationTermsOfServiceAgreementState",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.RetrieveForApplicationTermsOfServiceAgreementStateRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.TermsOfServiceAgreementState",
+        "client": {
+          "shortName": "TermsOfServiceAgreementStateClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateClient"
+        },
+        "method": {
+          "shortName": "RetrieveForApplicationTermsOfServiceAgreementState",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateService.RetrieveForApplicationTermsOfServiceAgreementState",
+          "service": {
+            "shortName": "TermsOfServiceAgreementStateService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceAgreementStateService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_TermsOfServiceService_AcceptTermsOfService_sync",
+      "title": "merchantapi AcceptTermsOfService Sample",
+      "description": "AcceptTermsOfService accepts a `TermsOfService`. Executing this method requires admin access.",
+      "file": "TermsOfServiceClient/AcceptTermsOfService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "AcceptTermsOfService",
+        "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceClient.AcceptTermsOfService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.AcceptTermsOfServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "TermsOfServiceClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceClient"
+        },
+        "method": {
+          "shortName": "AcceptTermsOfService",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceService.AcceptTermsOfService",
+          "service": {
+            "shortName": "TermsOfServiceService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_TermsOfServiceService_GetTermsOfService_sync",
+      "title": "merchantapi GetTermsOfService Sample",
+      "description": "GetTermsOfService retrieves the `TermsOfService` associated with the provided version.",
+      "file": "TermsOfServiceClient/GetTermsOfService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTermsOfService",
+        "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceClient.GetTermsOfService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetTermsOfServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.TermsOfService",
+        "client": {
+          "shortName": "TermsOfServiceClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceClient"
+        },
+        "method": {
+          "shortName": "GetTermsOfService",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceService.GetTermsOfService",
+          "service": {
+            "shortName": "TermsOfServiceService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_TermsOfServiceService_RetrieveLatestTermsOfService_sync",
+      "title": "merchantapi RetrieveLatestTermsOfService Sample",
+      "description": "RetrieveLatestTermsOfService retrieves the latest version of the `TermsOfService` for a given `kind` and\n`region_code`.",
+      "file": "TermsOfServiceClient/RetrieveLatestTermsOfService/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RetrieveLatestTermsOfService",
+        "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceClient.RetrieveLatestTermsOfService",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.RetrieveLatestTermsOfServiceRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.TermsOfService",
+        "client": {
+          "shortName": "TermsOfServiceClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceClient"
+        },
+        "method": {
+          "shortName": "RetrieveLatestTermsOfService",
+          "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceService.RetrieveLatestTermsOfService",
+          "service": {
+            "shortName": "TermsOfServiceService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.TermsOfServiceService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_UserService_CreateUser_sync",
+      "title": "merchantapi CreateUser Sample",
+      "description": "CreateUser creates a Merchant Center account user. Executing this method requires\nadmin access.",
+      "file": "UserClient/CreateUser/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateUser",
+        "fullName": "google.shopping.merchant.accounts.v1beta.UserClient.CreateUser",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.CreateUserRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.User",
+        "client": {
+          "shortName": "UserClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserClient"
+        },
+        "method": {
+          "shortName": "CreateUser",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserService.CreateUser",
+          "service": {
+            "shortName": "UserService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.UserService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_UserService_DeleteUser_sync",
+      "title": "merchantapi DeleteUser Sample",
+      "description": "DeleteUser deletes a Merchant Center account user. Executing this method requires\nadmin access.",
+      "file": "UserClient/DeleteUser/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteUser",
+        "fullName": "google.shopping.merchant.accounts.v1beta.UserClient.DeleteUser",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.DeleteUserRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "UserClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserClient"
+        },
+        "method": {
+          "shortName": "DeleteUser",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserService.DeleteUser",
+          "service": {
+            "shortName": "UserService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.UserService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_UserService_GetUser_sync",
+      "title": "merchantapi GetUser Sample",
+      "description": "GetUser retrieves a Merchant Center account user.",
+      "file": "UserClient/GetUser/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetUser",
+        "fullName": "google.shopping.merchant.accounts.v1beta.UserClient.GetUser",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.GetUserRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.User",
+        "client": {
+          "shortName": "UserClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserClient"
+        },
+        "method": {
+          "shortName": "GetUser",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserService.GetUser",
+          "service": {
+            "shortName": "UserService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.UserService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_UserService_ListUsers_sync",
+      "title": "merchantapi ListUsers Sample",
+      "description": "ListUsers lists all users of a Merchant Center account.",
+      "file": "UserClient/ListUsers/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListUsers",
+        "fullName": "google.shopping.merchant.accounts.v1beta.UserClient.ListUsers",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.ListUsersRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UserIterator",
+        "client": {
+          "shortName": "UserClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserClient"
+        },
+        "method": {
+          "shortName": "ListUsers",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserService.ListUsers",
+          "service": {
+            "shortName": "UserService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.UserService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "merchantapi_v1beta_generated_UserService_UpdateUser_sync",
+      "title": "merchantapi UpdateUser Sample",
+      "description": "UpdateUser updates a Merchant Center account user. Executing this method requires\nadmin access.",
+      "file": "UserClient/UpdateUser/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateUser",
+        "fullName": "google.shopping.merchant.accounts.v1beta.UserClient.UpdateUser",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "accountspb.UpdateUserRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*accountspb.User",
+        "client": {
+          "shortName": "UserClient",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserClient"
+        },
+        "method": {
+          "shortName": "UpdateUser",
+          "fullName": "google.shopping.merchant.accounts.v1beta.UserService.UpdateUser",
+          "service": {
+            "shortName": "UserService",
+            "fullName": "google.shopping.merchant.accounts.v1beta.UserService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}
