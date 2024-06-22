@@ -33,7 +33,8 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
-	semconv "go.opentelemetry.io/otel/semconv/v1.25.0"
+	"go.opentelemetry.io/otel/attribute"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/grpc"
@@ -975,7 +976,12 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 
 		// Add the reverse link to createSpan(s) of publish RPC span.
 		for _, bm := range bms {
-			bm.createSpan.AddLink(trace.Link{SpanContext: pSpan.SpanContext()})
+			bm.createSpan.AddLink(trace.Link{
+				SpanContext: pSpan.SpanContext(),
+				Attributes: []attribute.KeyValue{
+					semconv.MessagingOperationName(publishRPCSpanName),
+				},
+			})
 		}
 	}
 	var batchSize int

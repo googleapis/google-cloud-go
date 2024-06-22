@@ -31,7 +31,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
-	semconv "go.opentelemetry.io/otel/semconv/v1.22.0"
+	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -662,7 +662,12 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 				semconv.CodeFunction("sendAck"))
 
 			for _, s := range subscribeSpans {
-				s.AddLink(trace.Link{SpanContext: ackSpan.SpanContext()})
+				s.AddLink(trace.Link{
+					SpanContext: ackSpan.SpanContext(),
+					Attributes: []attribute.KeyValue{
+						semconv.MessagingOperationName(ackSpanName),
+					},
+				})
 			}
 		}
 		return it.subc.Acknowledge(ctx, &pb.AcknowledgeRequest{
@@ -738,7 +743,12 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 			mSpan.SetAttributes(semconv.MessagingBatchMessageCount(len(ackIDs)),
 				semconv.CodeFunction("sendModAck"))
 			for _, s := range subscribeSpans {
-				s.AddLink(trace.Link{SpanContext: mSpan.SpanContext()})
+				s.AddLink(trace.Link{
+					SpanContext: mSpan.SpanContext(),
+					Attributes: []attribute.KeyValue{
+						semconv.MessagingOperationName(modackSpanName),
+					},
+				})
 			}
 		}
 
