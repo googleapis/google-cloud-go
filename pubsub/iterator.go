@@ -632,17 +632,19 @@ func (it *messageIterator) sendAckWithFunc(m map[string]*AckResult, ackFunc ackF
 func (it *messageIterator) sendAck(m map[string]*AckResult) {
 	it.sendAckWithFunc(m, func(ctx context.Context, subName string, ackIDs []string) error {
 		var links []trace.Link
+		subscribeSpans := make([]trace.Span, 0, len(ackIDs))
 		if it.enableTracing {
 			for _, ackID := range ackIDs {
 				// get the main subscribe span context for this ackID for otel tracing.
 				s, ok := it.activeSpans.LoadAndDelete(ackID)
 				if ok {
 					subscribeSpan := s.(trace.Span)
-					defer subscribeSpan.End()
-					defer subscribeSpan.SetAttributes(attribute.String(resultAttribute, resultAcked))
-					subscribeSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(ackIDs))))
-					defer subscribeSpan.AddEvent(eventAckEnd)
 					if subscribeSpan.SpanContext().IsSampled() {
+						defer subscribeSpan.End()
+						defer subscribeSpan.SetAttributes(attribute.String(resultAttribute, resultAcked))
+						subscribeSpans = append(subscribeSpans, subscribeSpan)
+						subscribeSpan.AddEvent(eventAckStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(ackIDs))))
+						defer subscribeSpan.AddEvent(eventAckEnd)
 						links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
 					}
 				} else {
@@ -658,6 +660,10 @@ func (it *messageIterator) sendAck(m map[string]*AckResult) {
 			defer ackSpan.End()
 			ackSpan.SetAttributes(semconv.MessagingBatchMessageCount(len(ackIDs)),
 				semconv.CodeFunction("sendAck"))
+
+			for _, s := range subscribeSpans {
+				s.AddLink(trace.Link{SpanContext: ackSpan.SpanContext()})
+			}
 		}
 		return it.subc.Acknowledge(ctx, &pb.AcknowledgeRequest{
 			Subscription: it.subName,
@@ -688,8 +694,8 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 		eventEnd = eventModackEnd
 	}
 	it.sendAckWithFunc(m, func(ctx context.Context, subName string, ackIDs []string) error {
-		numBatch := len(ackIDs)
-		links := make([]trace.Link, 0, numBatch)
+		links := make([]trace.Link, 0, len(ackIDs))
+		subscribeSpans := make([]trace.Span, 0, len(ackIDs))
 		for _, ackID := range ackIDs {
 			if it.enableTracing {
 				// get the parent span context for this ackID for otel tracing.
@@ -706,16 +712,16 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 					continue
 				}
 				subscribeSpan := s.(trace.Span)
+				subscribeSpans = append(subscribeSpans, subscribeSpan)
 				if isNack {
 					defer subscribeSpan.End()
 					defer subscribeSpan.SetAttributes(attribute.String(resultAttribute, resultNacked))
 				}
-				subscribeSpan.AddEvent(eventStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(numBatch)))
+				subscribeSpan.AddEvent(eventStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(ackIDs))))
 				defer subscribeSpan.AddEvent(eventEnd)
 				if subscribeSpan.IsRecording() {
 					links = append(links, trace.Link{SpanContext: subscribeSpan.SpanContext()})
 				}
-
 			}
 		}
 		var mSpan trace.Span
@@ -729,8 +735,11 @@ func (it *messageIterator) sendModAck(m map[string]*AckResult, deadline time.Dur
 					attribute.Int(ackDeadlineSecAttribute, int(deadlineSec)),
 					attribute.Bool(receiptModackAttribute, isReceipt))
 			}
-			mSpan.SetAttributes(semconv.MessagingBatchMessageCount(numBatch),
+			mSpan.SetAttributes(semconv.MessagingBatchMessageCount(len(ackIDs)),
 				semconv.CodeFunction("sendModAck"))
+			for _, s := range subscribeSpans {
+				s.AddLink(trace.Link{SpanContext: mSpan.SpanContext()})
+			}
 		}
 
 		return it.subc.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{

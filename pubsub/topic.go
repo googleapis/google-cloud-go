@@ -967,10 +967,16 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		topicID := getIDFromFQN(t.name)
 		var pSpan trace.Span
 		opts := getCommonOptions(topicID)
+		// Add link to publish RPC span of createSpan(s).
 		opts = append(opts, trace.WithLinks(links...))
 		ctx, pSpan = startSpan(ctx, publishRPCSpanName, topicID, opts...)
 		pSpan.SetAttributes(semconv.MessagingBatchMessageCount(numMsgs), semconv.CodeFunction("publishMessageBundle"))
 		defer pSpan.End()
+
+		// Add the reverse link to createSpan(s) of publish RPC span.
+		for _, bm := range bms {
+			bm.createSpan.AddLink(trace.Link{SpanContext: pSpan.SpanContext()})
+		}
 	}
 	var batchSize int
 	for i, bm := range bms {
