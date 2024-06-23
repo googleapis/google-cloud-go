@@ -190,6 +190,8 @@ func pvDurationFromProto(d *durationpb.Duration) time.Duration {
 	}
 	return d.AsDuration()
 }
+
+type pvPanic error
 `
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("mismatch (-want, _got):\n%s", diff)

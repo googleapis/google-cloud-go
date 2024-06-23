@@ -10,6 +10,7 @@ import (
 	pb "example.com/basic"
 	"github.com/googleapis/gax-go/v2/apierror"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/genproto/googleapis/type/date"
 	gstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -343,7 +344,7 @@ func pvMapToStructPB(m map[string]any) *structpb.Struct {
 	}
 	s, err := structpb.NewStruct(m)
 	if err != nil {
-		panic(fmt.Errorf("support.MapToProto: %w", err))
+		panic(pvPanic(fmt.Errorf("pvMapToStructPB: %w", err)))
 	}
 	return s
 }
@@ -392,3 +393,5 @@ func pvDurationFromProto(d *durationpb.Duration) time.Duration {
 	}
 	return d.AsDuration()
 }
+
+type pvPanic error
