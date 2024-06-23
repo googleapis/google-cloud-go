@@ -28,12 +28,12 @@ import (
 
 func TestTransformMapValues(t *testing.T) {
 	var from map[string]int
-	got := TransformMapValues(from, strconv.Itoa)
+	got := pvTransformMapValues(from, strconv.Itoa)
 	if got != nil {
 		t.Fatalf("got %v, want nil", got)
 	}
 	from = map[string]int{"one": 1, "two": 2}
-	got = TransformMapValues(from, strconv.Itoa)
+	got = pvTransformMapValues(from, strconv.Itoa)
 	want := map[string]string{"one": "1", "two": "2"}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
@@ -57,7 +57,7 @@ func TestAPIError(t *testing.T) {
 		Details: []*anypb.Any{pbany},
 	}
 
-	ae := APIErrorFromProto(s)
+	ae := pvAPIErrorFromProto(s)
 	if ae == nil {
 		t.Fatal("got nil")
 	}
@@ -72,7 +72,7 @@ func TestAPIError(t *testing.T) {
 		t.Errorf("got %q, want %q", g, reason)
 	}
 
-	gps := APIErrorToProto(ae)
+	gps := pvAPIErrorToProto(ae)
 	if !cmp.Equal(gps, s, cmpopts.IgnoreUnexported(spb.Status{}, anypb.Any{})) {
 		t.Errorf("\ngot  %s\nwant %s", gps, s)
 	}
