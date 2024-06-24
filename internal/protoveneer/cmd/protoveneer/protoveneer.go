@@ -888,7 +888,7 @@ var externalTypes = []*externalType{
 	{
 		qualifiedName: "civil.Date",
 		replaces:      "*date.Date",
-		importPaths:   []string{"cloud.google.com/go/civil"},
+		importPaths:   []string{"cloud.google.com/go/civil", "google.golang.org/genproto/googleapis/type/date"},
 		convertTo:     "pvCivilDateToProto",
 		convertFrom:   "pvCivilDateFromProto",
 	},
@@ -968,25 +968,69 @@ func generateSupportFunctions(w io.Writer, need map[string]bool) error {
 	// writing the ones whose names are in need.
 	code := supportCode
 	for {
-		inds := startFuncRegexp.FindStringSubmatchIndex(code)
-		if inds == nil {
+		starts := startFuncRegexp.FindStringSubmatchIndex(code)
+		if starts == nil {
 			break
 		}
 		end := endFuncRegexp.FindStringIndex(code)
 		if end == nil {
 			return errors.New("generateSupportFunctions: missing function end")
 		}
-		// inds[0] to inds[1]: entire start regexp
-		// inds[2] to inds[3]: function name
+		// starts[0] to starts[1]: entire start regexp
+		// starts[2] to starts[3]: function name
 		// end[1]: index of newline after '}'.
-		name := code[inds[2]:inds[3]]
+		name := code[starts[2]:starts[3]]
 		if need[name] {
-			fmt.Fprintf(w, "\n%s\n", code[inds[0]:end[1]])
+			comment, err := extractFunctionComment(code, starts[0])
+			if err != nil {
+				return err
+			}
+			if _, err := fmt.Fprintf(w, "\n%s%s\n", comment, code[starts[0]:end[1]]); err != nil {
+				return err
+			}
 		}
 		// Move past match.
 		code = code[end[1]:]
 	}
-	return nil
+
+	// Keep in sync with the type in internal/support/support.go
+	_, err := fmt.Fprintf(w, `
+// pvPanic wraps panics from support functions.
+// User-provided functions in the same package can also use it.
+// It allows callers to distinguish conversion function panics from other panics.
+type pvPanic error
+
+// pvCatchPanic recovers from panics of type pvPanic and
+// returns an error instead.
+func pvCatchPanic[T any](f func() T) (_ T, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return f(), nil
+}
+`)
+	return err
+}
+
+// extractFunctionComment returns the top-level comment for the function
+// beginning at code[funcStart].
+func extractFunctionComment(code string, funcStart int) (string, error) {
+	// Take advantage of the facts that every support function has a doc comment,
+	// and all functions are separated by at least one empty line.
+
+	// Search backwards for a blank line.
+	for i := funcStart; i > 0; i-- {
+		if code[i] == '\n' && code[i-1] == '\n' {
+			return code[i+1 : funcStart], nil
+		}
+	}
+	return "", fmt.Errorf("could not find comment before function at %d", funcStart)
 }
 
 ////////////////////////////////////////////////////////////////
