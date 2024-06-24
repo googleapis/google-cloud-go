@@ -428,6 +428,26 @@ func ExampleObjectHandle_NewWriter() {
 	_ = wc // TODO: Use the Writer.
 }
 
+func ExampleObjectHandle_OverrideUnlockedRetention() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Overriding the retention policy is required to shorten the retention period
+	// for an object.
+	retainUntilDate := time.Now().Add(24 * time.Hour)
+	uattrs := storage.ObjectAttrsToUpdate{
+		Retention: &storage.ObjectRetention{
+			Mode:        "Unlocked",
+			RetainUntil: retainUntilDate,
+		},
+	}
+	if _, err := client.Bucket("bucketname").Object("filename1").OverrideUnlockedRetention(true).Update(ctx, uattrs); err != nil {
+		// TODO: handle error.
+	}
+}
+
 func ExampleWriter_Write() {
 	ctx := context.Background()
 	client, err := storage.NewClient(ctx)
