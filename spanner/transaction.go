@@ -339,12 +339,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 // errRowNotFound returns error for not being able to read the row identified by
 // key.
 func errRowNotFound(table string, key Key) error {
-	return spannerErrorf(codes.NotFound, "row not found(Table: %v, PrimaryKey: %v)", table, key)
+	err := spannerErrorf(codes.NotFound, "row not found(Table: %v, PrimaryKey: %v)", table, key)
+	err.(*Error).err = ErrRowNotFound
+	return err
 }
 
 // errRowNotFoundByIndex returns error for not being able to read the row by index.
 func errRowNotFoundByIndex(table string, key Key, index string) error {
-	return spannerErrorf(codes.NotFound, "row not found(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
+	err := spannerErrorf(codes.NotFound, "row not found(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
+	err.(*Error).err = ErrRowNotFound
+	return err
 }
 
 // errMultipleRowsFound returns error for receiving more than one row when reading a single row using an index.
@@ -359,8 +363,14 @@ func errInlineBeginTransactionFailed() error {
 
 // ReadRow reads a single row from the database.
 //
-// If no row is present with the given key, then ReadRow returns an error where
+// If no row is present with the given key, then ReadRow returns an error(spanner.ErrRowNotFound) where
 // spanner.ErrCode(err) is codes.NotFound.
+//
+// To check if the error is spanner.ErrRowNotFound:
+//
+//	if errors.Is(err, spanner.ErrRowNotFound) {
+//			...
+//	}
 func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
 	return t.ReadRowWithOptions(ctx, table, key, columns, nil)
 }
@@ -369,6 +379,12 @@ func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns
 //
 // If no row is present with the given key, then ReadRowWithOptions returns an error where
 // spanner.ErrCode(err) is codes.NotFound.
+//
+// To check if the error is spanner.ErrRowNotFound:
+//
+//	if errors.Is(err, spanner.ErrRowNotFound) {
+//			...
+//	}
 func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key Key, columns []string, opts *ReadOptions) (*Row, error) {
 	iter := t.ReadWithOptions(ctx, table, key, columns, opts)
 	defer iter.Stop()
@@ -386,7 +402,13 @@ func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key K
 // ReadRowUsingIndex reads a single row from the database using an index.
 //
 // If no row is present with the given index, then ReadRowUsingIndex returns an
-// error where spanner.ErrCode(err) is codes.NotFound.
+// error(spanner.ErrRowNotFound) where spanner.ErrCode(err) is codes.NotFound.
+//
+// To check if the error is spanner.ErrRowNotFound:
+//
+//	if errors.Is(err, spanner.ErrRowNotFound) {
+//			...
+//	}
 //
 // If more than one row received with the given index, then ReadRowUsingIndex
 // returns an error where spanner.ErrCode(err) is codes.FailedPrecondition.

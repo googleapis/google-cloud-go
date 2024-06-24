@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.1...securitycentermanagement/v0.3.0) (2024-06-18)
+
+
+### Features
+
+* **securitycentermanagement:** Add an INGEST_ONLY EnablementState ([abac5c6](https://github.com/googleapis/google-cloud-go/commit/abac5c6eec859477c6d390b116ea8954213ba585))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.0...securitycentermanagement/v0.2.1) (2024-06-10)
 
 
