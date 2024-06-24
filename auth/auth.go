@@ -231,9 +231,9 @@ type CachedTokenProviderOptions struct {
 	// should be refreshed. If unset, the default value is 3 minutes and 45
 	// seconds. Optional.
 	ExpireEarly time.Duration
-	// BlockingRefresh configures a synchronous workflow that refreshes
+	// DisableAsyncRefresh configures a synchronous workflow that refreshes
 	// stale tokens while blocking. The default is false. Optional.
-	BlockingRefresh bool
+	DisableAsyncRefresh bool
 }
 
 func (ctpo *CachedTokenProviderOptions) autoRefresh() bool {
@@ -254,7 +254,7 @@ func (ctpo *CachedTokenProviderOptions) blockingRefresh() bool {
 	if ctpo == nil {
 		return false
 	}
-	return ctpo.BlockingRefresh
+	return ctpo.DisableAsyncRefresh
 }
 
 // NewCachedTokenProvider wraps a [TokenProvider] to cache the tokens returned

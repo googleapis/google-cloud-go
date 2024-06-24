@@ -570,8 +570,8 @@ func TestComputeTokenProvider_BlockingRefresh(t *testing.T) {
 	timeNow = func() time.Time { return now }
 	defer func() { timeNow = time.Now }()
 	tp := NewCachedTokenProvider(&countingTestProvider{count: 1}, &CachedTokenProviderOptions{
-		BlockingRefresh: true,
-		DisableAutoRefresh: true,
+		DisableAsyncRefresh: true,
+		DisableAutoRefresh:  true,
 		// EarlyTokenRefresh ensures that token with expiry 1 second from now is already stale.
 		ExpireEarly: 2 * time.Millisecond,
 	})
