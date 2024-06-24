@@ -989,14 +989,29 @@ func generateSupportFunctions(w io.Writer, need map[string]bool) error {
 		code = code[end[1]:]
 	}
 
-	// Generate a type that wraps panics from support functions.
-	// User-provided functions in the same package can also use it.
-	// It allows callers to distinguish conversion function panics from other panics.
 	// Keep in sync with the type in internal/support/support.go
-	if _, err := fmt.Fprintf(w, "\ntype pvPanic error\n"); err != nil {
-		return err
-	}
-	return nil
+	_, err := fmt.Fprintf(w, `
+// pvPanic wraps panics from support functions.
+// User-provided functions in the same package can also use it.
+// It allows callers to distinguish conversion function panics from other panics.
+type pvPanic error
+
+// pvCatchPanic recovers from panics of type pvPanic and
+// returns an error instead.
+func pvCatchPanic[T any](f func() T) (_ T, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return f(), nil
+}
+`)
+	return err
 }
 
 ////////////////////////////////////////////////////////////////
