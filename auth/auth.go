@@ -262,7 +262,7 @@ func (ctpo *CachedTokenProviderOptions) blockingRefresh() bool {
 // (non-blocking mode) within a window that starts 3 minutes and 45 seconds
 // before they expire. The asynchronous (non-blocking) refresh can be changed to
 // a synchronous (blocking) refresh using the
-// CachedTokenProviderOptions.BlockingRefresh option. The time-before-expiry
+// CachedTokenProviderOptions.DisableAsyncRefresh option. The time-before-expiry
 // duration can be configured using the CachedTokenProviderOptions.ExpireEarly
 // option.
 func NewCachedTokenProvider(tp TokenProvider, opts *CachedTokenProviderOptions) TokenProvider {
