@@ -176,6 +176,8 @@ func TestGenerateSupportFunctions(t *testing.T) {
 	}
 	got := buf.String()
 	want := `
+// pvAddrOrNil returns nil if x is the zero value for T,
+// or &x otherwise.
 func pvAddrOrNil[T comparable](x T) *T {
 	var z T
 	if x == z {
@@ -184,6 +186,7 @@ func pvAddrOrNil[T comparable](x T) *T {
 	return &x
 }
 
+// pvDurationFromProto converts a Duration proto to a time.Duration.
 func pvDurationFromProto(d *durationpb.Duration) time.Duration {
 	if d == nil {
 		return 0
