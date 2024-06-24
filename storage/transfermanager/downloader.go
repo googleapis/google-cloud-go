@@ -219,10 +219,6 @@ func (d *Downloader) queueShards(in *DownloadObjectInput, gen int64, shards int)
 	in.Generation = &gen
 
 	// Queue remaining shards.
-	// We could optimize for zero-initialized DownloadBuffers if we queue the last
-	// shard first (so the buffer grows to the appropriate length),
-	// but that might affect file performance (if implementation
-	// prefers ordered writes).
 	for i := 1; i < shards; i++ {
 		newShard := in // this is fine, since the input should only differ in the shard num
 		newShard.shard = i
@@ -293,7 +289,10 @@ func NewDownloader(c *storage.Client, opts ...Option) (*Downloader, error) {
 }
 
 // DownloadRange specifies the object range.
-// Transcoded objects do not support ranged reads.
+// If the object's metadata property "Content-Encoding" is set to "gzip" or
+// satisfies decompressive transcoding per https://cloud.google.com/storage/docs/transcoding
+// that file will be served back whole, regardless of the requested range as
+// Google Cloud Storage dictates.
 type DownloadRange struct {
 	// Offset is the starting offset (inclusive) from with the object is read.
 	// If offset is negative, the object is not sharded and is read by a single
