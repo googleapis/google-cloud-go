@@ -186,7 +186,8 @@ type ReadOptions struct {
 	// An option to control the order in which rows are returned from a read.
 	OrderBy sppb.ReadRequest_OrderBy
 
-	// A lock hint mechanism to use for this request.
+	// A lock hint mechanism to use for this request. This setting is only applicable for
+	// read-write transaction as as read-only transactions do not take locks.
 	LockHint sppb.ReadRequest_LockHint
 }
 
