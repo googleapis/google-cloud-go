@@ -246,20 +246,23 @@ var (
 	StringTargetType DecimalTargetType = "STRING"
 )
 
+// ColumnNameCharacterMap is used to specific column naming behavior for load jobs.
 type ColumnNameCharacterMap string
 
 var (
 
-	// Default value (unspecified).
+	// UnspecifiedColumnNameCharacterMap is the unspecified default value.
 	UnspecifiedColumnNameCharacterMap ColumnNameCharacterMap = "COLUMN_NAME_CHARACTER_MAP_UNSPECIFIED"
 
-	// Support flexible column names. Invalid column names will be rejected.
+	// StrictColumnNameCharacterMap indicates support for flexible column names.
+	// Invalid column names will be rejected.
 	StrictColumnNameCharacterMap ColumnNameCharacterMap = "STRICT"
 
-	// Support alphanumeric + underscore characters and names must start with a letter or underscore.
+	// V1ColumnNameCharacterMap indicates support for alphanumeric + underscore characters and names must start with a letter or underscore.
 	// Invalid column names will be normalized.
 	V1ColumnNameCharacterMap ColumnNameCharacterMap = "V1"
 
-	// Support flexible column names. Invalid column names will be normalized.
+	// V2ColumnNameCharacterMap indicates support for flexible column names.
+	// Invalid column names will be normalized.
 	V2ColumnNameCharacterMap ColumnNameCharacterMap = "V2"
 )
