@@ -888,7 +888,7 @@ var externalTypes = []*externalType{
 	{
 		qualifiedName: "civil.Date",
 		replaces:      "*date.Date",
-		importPaths:   []string{"cloud.google.com/go/civil"},
+		importPaths:   []string{"cloud.google.com/go/civil", "google.golang.org/genproto/googleapis/type/date"},
 		convertTo:     "pvCivilDateToProto",
 		convertFrom:   "pvCivilDateFromProto",
 	},
@@ -981,12 +981,37 @@ func generateSupportFunctions(w io.Writer, need map[string]bool) error {
 		// end[1]: index of newline after '}'.
 		name := code[inds[2]:inds[3]]
 		if need[name] {
-			fmt.Fprintf(w, "\n%s\n", code[inds[0]:end[1]])
+			if _, err := fmt.Fprintf(w, "\n%s\n", code[inds[0]:end[1]]); err != nil {
+				return err
+			}
 		}
 		// Move past match.
 		code = code[end[1]:]
 	}
-	return nil
+
+	// Keep in sync with the type in internal/support/support.go
+	_, err := fmt.Fprintf(w, `
+// pvPanic wraps panics from support functions.
+// User-provided functions in the same package can also use it.
+// It allows callers to distinguish conversion function panics from other panics.
+type pvPanic error
+
+// pvCatchPanic recovers from panics of type pvPanic and
+// returns an error instead.
+func pvCatchPanic[T any](f func() T) (_ T, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return f(), nil
+}
+`)
+	return err
 }
 
 ////////////////////////////////////////////////////////////////

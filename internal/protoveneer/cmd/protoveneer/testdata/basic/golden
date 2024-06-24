@@ -10,6 +10,7 @@ import (
 	pb "example.com/basic"
 	"github.com/googleapis/gax-go/v2/apierror"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/genproto/googleapis/type/date"
 	gstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/structpb"
@@ -343,7 +344,7 @@ func pvMapToStructPB(m map[string]any) *structpb.Struct {
 	}
 	s, err := structpb.NewStruct(m)
 	if err != nil {
-		panic(fmt.Errorf("support.MapToProto: %w", err))
+		panic(pvPanic(fmt.Errorf("pvMapToStructPB: %w", err)))
 	}
 	return s
 }
@@ -391,4 +392,24 @@ func pvDurationFromProto(d *durationpb.Duration) time.Duration {
 		return 0
 	}
 	return d.AsDuration()
+}
+
+// pvPanic wraps panics from support functions.
+// User-provided functions in the same package can also use it.
+// It allows callers to distinguish conversion function panics from other panics.
+type pvPanic error
+
+// pvCatchPanic recovers from panics of type pvPanic and
+// returns an error instead.
+func pvCatchPanic[T any](f func() T) (_ T, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return f(), nil
 }

@@ -190,6 +190,26 @@ func pvDurationFromProto(d *durationpb.Duration) time.Duration {
 	}
 	return d.AsDuration()
 }
+
+// pvPanic wraps panics from support functions.
+// User-provided functions in the same package can also use it.
+// It allows callers to distinguish conversion function panics from other panics.
+type pvPanic error
+
+// pvCatchPanic recovers from panics of type pvPanic and
+// returns an error instead.
+func pvCatchPanic[T any](f func() T) (_ T, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return f(), nil
+}
 `
 	if diff := cmp.Diff(want, got); diff != "" {
 		t.Errorf("mismatch (-want, _got):\n%s", diff)
