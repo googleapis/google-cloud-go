@@ -84,6 +84,7 @@ func TestRunTransaction(t *testing.T) {
 		},
 		&pb.CommitResponse{CommitTime: aTimestamp3},
 	)
+	var commitTime time.Time
 	err = c.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
 		docref := c.Collection("C").Doc("a")
 		doc, err := tx.Get(docref)
@@ -95,9 +96,14 @@ func TestRunTransaction(t *testing.T) {
 			return err
 		}
 		return tx.Update(docref, []Update{{Path: "count", Value: count.(int64) + 1}})
-	})
+	}, GetCommitTime(&commitTime))
 	if err != nil {
 		t.Fatal(err)
+	}
+
+	// validate commit time
+	if commitTime != aTimestamp3.AsTime() {
+		t.Fatalf("commit time %v should equal %v", commitTime, aTimestamp3)
 	}
 
 	// Query
