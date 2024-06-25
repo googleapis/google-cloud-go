@@ -19,12 +19,16 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"math"
+	"os"
+	"path/filepath"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/storage"
 	"github.com/googleapis/gax-go/v2/callctx"
+	"google.golang.org/api/iterator"
 )
 
 // Downloader manages a set of parallelized downloads.
@@ -66,6 +70,82 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 
 	input.ctx = ctx
 	d.addInput(input)
+	return nil
+}
+
+// DownloadDirectory queues the download of a set of objects to a local path.
+// This will initiate the download but is non-blocking; call Downloader.Results
+// or use the callback to process the result. DownloadDirectory is thread-safe
+// and can be called simultaneously from different goroutines.
+// DownloadDirectory will resolve any filters on the input and create the needed
+// directory structure locally as the operations progress.
+// Note: DownloadDirectory overwrites existing files in the directory.
+func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirectoryInput) error {
+	if d.config.asynchronous && input.Callback == nil {
+		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
+	}
+	if !d.config.asynchronous && input.Callback != nil {
+		return errors.New("transfermanager: input.Callback must be nil unless the WithCallbacks option is set")
+	}
+
+	select {
+	case <-d.doneReceivingInputs:
+		return errors.New("transfermanager: WaitAndClose called before DownloadDirectory")
+	default:
+	}
+
+	objectsToQueue := []DownloadObjectInput{}
+	query := &storage.Query{
+		Prefix:      input.Prefix,
+		StartOffset: input.StartOffset,
+		EndOffset:   input.EndOffset,
+		MatchGlob:   input.MatchGlob,
+	}
+	if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+		return fmt.Errorf("transfermanager: DownloadDirectory query.SetAttrSelection: %w", err)
+	}
+
+	it := d.client.Bucket(input.Bucket).Objects(ctx, query)
+
+	// TODO: Clean up any created directory structure on failure.
+
+	attrs, err := it.Next()
+	for err != iterator.Done {
+		if err != nil {
+			return fmt.Errorf("transfermanager: DownloadDirectory failed to list objects: %w", err)
+		}
+
+		// Add generation?
+
+		object := attrs.Name
+
+		// Make sure all directories in the object path exist.
+		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(object))
+		err = os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
+		if err != nil {
+			return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", objDirectory, err)
+		}
+
+		// Create file to download to.
+		filePath := filepath.Join(input.LocalDirectory, object)
+		f, fErr := os.Create(filePath)
+		if fErr != nil {
+			return fmt.Errorf("transfermanager: DownloadDirectory failed to create file(%q): %w", filePath, fErr)
+		}
+
+		objectsToQueue = append(objectsToQueue, DownloadObjectInput{
+			Bucket:      input.Bucket,
+			Object:      attrs.Name,
+			Destination: f,
+			Callback:    input.Callback,
+			ctx:         ctx,
+			directory:   true,
+		})
+
+		attrs, err = it.Next()
+	}
+
+	d.addNewInputs(objectsToQueue)
 	return nil
 }
 
@@ -143,7 +223,23 @@ func (d *Downloader) addInput(input *DownloadObjectInput) {
 	d.inputsMu.Unlock()
 }
 
+// addNewInputs adds a slice of inputs to the downloader.
+// This should only be used to queue new objects.
+func (d *Downloader) addNewInputs(inputs []DownloadObjectInput) {
+	d.downloadsInProgress.Add(len(inputs))
+
+	d.inputsMu.Lock()
+	d.inputs = append(d.inputs, inputs...)
+	d.inputsMu.Unlock()
+}
+
 func (d *Downloader) addResult(input *DownloadObjectInput, result *DownloadOutput) {
+	if input.directory {
+		f := input.Destination.(*os.File)
+		if err := f.Close(); err != nil && result.Err == nil {
+			result.Err = fmt.Errorf("closing file(%q): %w", f.Name(), err)
+		}
+	}
 	// TODO: check checksum if full object
 
 	if d.config.asynchronous {
@@ -330,6 +426,7 @@ type DownloadObjectInput struct {
 	cancelCtx    context.CancelCauseFunc
 	shard        int // the piece of the object range that should be downloaded
 	shardOutputs chan<- *DownloadOutput
+	directory    bool // input was queued by calling DownloadDirectory
 }
 
 // downloadShard will read a specific object piece into in.Destination.
@@ -400,6 +497,40 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 
 	out.Attrs = &r.Attrs
 	return
+}
+
+// DownloadObjectInput is the input for a directory to download.
+type DownloadDirectoryInput struct {
+	// Required fields.
+	Bucket         string
+	LocalDirectory string
+
+	// Prefix is the prefix filter to download objects whose names begin with this.
+	// Optional.
+	Prefix string
+
+	// StartOffset is used to filter results to objects whose names are
+	// lexicographically equal to or after startOffset. If endOffset is also set,
+	// the objects listed will have names between startOffset (inclusive) and
+	// endOffset (exclusive).
+	StartOffset string
+
+	// EndOffset is used to filter results to objects whose names are
+	// lexicographically before endOffset. If startOffset is also set, the
+	// objects listed will have names between startOffset (inclusive) and
+	// endOffset (exclusive). Optional.
+	EndOffset string
+
+	// MatchGlob is a glob pattern used to filter results (for example, foo*bar). See
+	// https://cloud.google.com/storage/docs/json_api/v1/objects/list#list-object-glob
+	// for syntax details. Optional.
+	MatchGlob string
+
+	// Callback will run after each object in the directory as selected by the
+	// provided filters is finished downloading. It must be set if and only if
+	// the [WithCallbacks] option is set.
+	// WaitAndClose will wait for all callbacks to finish.
+	Callback func(*DownloadOutput)
 }
 
 // DownloadOutput provides output for a single object download, including all
