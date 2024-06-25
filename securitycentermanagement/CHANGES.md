@@ -1,5 +1,6 @@
 # Changelog
 
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.1...securitycentermanagement/v0.3.0) (2024-06-18)
 
 
