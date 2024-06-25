@@ -80,9 +80,11 @@ func DetectDefault(opts *DetectOptions) (*auth.Credentials, error) {
 		return readCredentialsFile(opts.CredentialsFile, opts)
 	}
 	if filename := os.Getenv(credsfile.GoogleAppCredsEnvVar); filename != "" {
-		if creds, err := readCredentialsFile(filename, opts); err == nil {
-			return creds, err
+		creds, err := readCredentialsFile(filename, opts)
+		if err != nil {
+			return nil, err
 		}
+		return creds, nil
 	}
 
 	fileName := credsfile.GetWellKnownFileName()
