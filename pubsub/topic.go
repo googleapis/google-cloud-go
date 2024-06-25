@@ -747,7 +747,8 @@ var errTopicOrderingNotEnabled = errors.New("Topic.EnableMessageOrdering=false, 
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	var createSpan trace.Span
 	if t.enableTracing {
-		ctx, createSpan = startCreateSpan(ctx, msg, t.ID())
+		opts := getPublishSpanAttributes(t.c.projectID, t.ID(), msg)
+		ctx, createSpan = startSpan(ctx, createSpanName, t.ID(), opts...)
 		createSpan.SetAttributes(semconv.CodeFunction("Publish"))
 	}
 	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
@@ -965,9 +966,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			links = append(links, trace.Link{SpanContext: bm.createSpan.SpanContext()})
 		}
 
-		topicID := getIDFromFQN(t.name)
+		projectID, topicID := parseResourceName(t.name)
 		var pSpan trace.Span
-		opts := getCommonOptions(topicID)
+		opts := getCommonOptions(projectID, topicID)
 		// Add link to publish RPC span of createSpan(s).
 		opts = append(opts, trace.WithLinks(links...))
 		ctx, pSpan = startSpan(ctx, publishRPCSpanName, topicID, opts...)
@@ -975,13 +976,15 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		defer pSpan.End()
 
 		// Add the reverse link to createSpan(s) of publish RPC span.
-		for _, bm := range bms {
-			bm.createSpan.AddLink(trace.Link{
-				SpanContext: pSpan.SpanContext(),
-				Attributes: []attribute.KeyValue{
-					semconv.MessagingOperationName(publishRPCSpanName),
-				},
-			})
+		if pSpan.SpanContext().IsSampled() {
+			for _, bm := range bms {
+				bm.createSpan.AddLink(trace.Link{
+					SpanContext: pSpan.SpanContext(),
+					Attributes: []attribute.KeyValue{
+						semconv.MessagingOperationName(publishRPCSpanName),
+					},
+				})
+			}
 		}
 	}
 	var batchSize int

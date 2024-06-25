@@ -318,8 +318,6 @@ func injectPropagation(ctx context.Context, msg *Message) {
 }
 
 const (
-	pubsubSemConvName = "gcp_pubsub"
-
 	// publish span names
 	createSpanName     = "create"
 	publishFCSpanName  = "publisher flow control"
@@ -352,13 +350,13 @@ const (
 	resultExpired = "expired"
 
 	// custom pubsub specific attributes
+	gcpProjectIDAttribute    = "gcp.project_id"
 	pubsubPrefix             = "messaging.gcp_pubsub."
 	orderingAttribute        = pubsubPrefix + "message.ordering_key"
 	deliveryAttemptAttribute = pubsubPrefix + "message.delivery_attempt"
 	eosAttribute             = pubsubPrefix + "exactly_once_delivery"
 	ackIDAttribute           = pubsubPrefix + "message.ack_id"
 	resultAttribute          = pubsubPrefix + "result"
-	ackDeadlineSecAttribute  = pubsubPrefix + "ack_deadline_seconds"
 	receiptModackAttribute   = pubsubPrefix + "is_receipt_modack"
 )
 
@@ -370,12 +368,7 @@ func startSpan(ctx context.Context, spanType, resourceID string, opts ...trace.S
 	return tracer().Start(ctx, spanName, opts...)
 }
 
-func startCreateSpan(ctx context.Context, m *Message, topicID string) (context.Context, trace.Span) {
-	opts := getPublishSpanAttributes(topicID, m)
-	return tracer().Start(ctx, fmt.Sprintf("%s %s", topicID, createSpanName), opts...)
-}
-
-func getPublishSpanAttributes(dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
+func getPublishSpanAttributes(project, dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingMessageID(msg.ID),
@@ -385,11 +378,11 @@ func getPublishSpanAttributes(dst string, msg *Message, attrs ...attribute.KeyVa
 		trace.WithAttributes(attrs...),
 		trace.WithSpanKind(trace.SpanKindProducer),
 	}
-	opts = append(opts, getCommonOptions(dst)...)
+	opts = append(opts, getCommonOptions(project, dst)...)
 	return opts
 }
 
-func getSubscriberOpts(dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
+func getSubscriberOpts(project, dst string, msg *Message, attrs ...attribute.KeyValue) []trace.SpanStartOption {
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
 			semconv.MessagingMessageID(msg.ID),
@@ -402,14 +395,15 @@ func getSubscriberOpts(dst string, msg *Message, attrs ...attribute.KeyValue) []
 	if msg.DeliveryAttempt != nil {
 		opts = append(opts, trace.WithAttributes(attribute.Int(deliveryAttemptAttribute, *msg.DeliveryAttempt)))
 	}
-	opts = append(opts, getCommonOptions(dst)...)
+	opts = append(opts, getCommonOptions(project, dst)...)
 	return opts
 }
 
-func getCommonOptions(destination string) []trace.SpanStartOption {
+func getCommonOptions(projectID, destination string) []trace.SpanStartOption {
 	opts := []trace.SpanStartOption{
 		trace.WithAttributes(
-			semconv.MessagingSystemKey.String(pubsubSemConvName),
+			attribute.String(gcpProjectIDAttribute, projectID),
+			semconv.MessagingSystemGCPPubsub,
 			semconv.MessagingDestinationName(destination),
 		),
 	}

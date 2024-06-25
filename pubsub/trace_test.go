@@ -99,6 +99,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 				semconv.MessagingMessageIDKey.String("m0"),
 				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingMessageBodySize(len(m.Data)),
+				attribute.String(gcpProjectIDAttribute, projName),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -147,6 +148,7 @@ func TestTrace_PublishSpan(t *testing.T) {
 				semconv.MessagingDestinationName(topicID),
 				semconv.CodeFunction("publishMessageBundle"),
 				semconv.MessagingBatchMessageCount(1),
+				attribute.String(gcpProjectIDAttribute, projName),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
@@ -456,7 +458,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 			Attributes: []attribute.KeyValue{
 				semconv.CodeFunction("sendModAck"),
 				attribute.Bool(receiptModackAttribute, true),
-				attribute.Int(ackDeadlineSecAttribute, 10),
+				semconv.MessagingGCPPubsubMessageAckDeadline(10),
 				semconv.MessagingBatchMessageCount(1),
 				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingDestinationName(subID),
@@ -600,6 +602,7 @@ func getPublishSpanStubsWithError(topicID string, m *Message, err error) tracete
 				semconv.MessagingMessageBodySize(len(m.Data)),
 				attribute.String(orderingAttribute, m.OrderingKey),
 				semconv.MessagingSystemGCPPubsub,
+				attribute.String(gcpProjectIDAttribute, projName),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",

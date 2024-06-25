@@ -19,7 +19,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"log"
 	"strings"
 	"sync"
 	"time"
@@ -57,7 +56,7 @@ type Subscription struct {
 
 	// enableTracing enable OTel tracing of Pub/Sub messages on this subscription.
 	// This is configured at client instantiation, and allows
-	// dsabling of tracing even when a tracer provider is detectd.
+	// dsabling of tracing even when a tracer provider is detected.
 	enableTracing bool
 }
 
@@ -1406,10 +1405,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						if ok {
 							sc := c.(trace.Span)
 							otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
-						} else {
-							log.Printf("pubsub: subscriber concurrency control failed to load ackID(%s) from activeSpans map", ackh.ackID)
+							_, ccSpan = startSpan(otelCtx, ccSpanName, "")
 						}
-						_, ccSpan = startSpan(otelCtx, ccSpanName, "")
 					}
 					// Use the original user defined ctx for this operation so the acquire operation can be cancelled.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
@@ -1420,7 +1417,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					if iter.enableTracing {
+					if iter.enableTracing && ccSpan.IsRecording() {
 						ccSpan.End()
 					}
 
@@ -1442,12 +1439,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					msgLen := len(msg.Data)
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						m := msg.(*Message)
-						if iter.enableTracing {
-							schedulerSpan.End()
-						}
 						defer wg.Done()
 						var ps trace.Span
 						if iter.enableTracing {
+							schedulerSpan.End()
 							otelCtx, ps = startSpan(otelCtx, processSpanName, s.ID())
 							old := ackh.doneFunc
 							ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
