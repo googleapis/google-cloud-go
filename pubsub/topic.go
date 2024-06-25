@@ -881,11 +881,11 @@ func (t *Topic) initBundler() {
 	}
 
 	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
-		// TODO(jba): use a context detached from the one passed to NewClient.
-		ctx2 := context.TODO()
+		// Use a context detached from the one passed to NewClient.
+		ctx := context.Background()
 		if timeout != 0 {
 			var cancel func()
-			ctx2, cancel = context.WithTimeout(ctx2, timeout)
+			ctx, cancel = context.WithTimeout(ctx, timeout)
 			defer cancel()
 		}
 		bmsgs := bundle.([]*bundledMessage)
@@ -897,7 +897,7 @@ func (t *Topic) initBundler() {
 				defer m.createSpan.AddEvent(eventPublishEnd)
 			}
 		}
-		t.publishMessageBundle(ctx2, bmsgs)
+		t.publishMessageBundle(ctx, bmsgs)
 	})
 	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
 	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold

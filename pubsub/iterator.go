@@ -116,6 +116,7 @@ type messageIterator struct {
 	enableTracing bool
 	// This maps trace ackID (string) to root subscribe spans(trace.Span), used for otel tracing.
 	// Active ackIDs in this map should also exist 1:1 with ids in keepAliveDeadlines.
+	// Elements are removed when messages are acked, nacked, or expired in iterator.handleKeepAlives()
 	activeSpans sync.Map
 }
 

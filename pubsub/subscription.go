@@ -54,9 +54,9 @@ type Subscription struct {
 	mu            sync.Mutex
 	receiveActive bool
 
-	// enableTracing enable OTel tracing of Pub/Sub messages on this subscription.
+	// enableTracing enable otel tracing of Pub/Sub messages on this subscription.
 	// This is configured at client instantiation, and allows
-	// dsabling of tracing even when a tracer provider is detected.
+	// disabling of tracing even when a tracer provider is detected.
 	enableTracing bool
 }
 
@@ -1397,15 +1397,20 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// otelCtx is used to relate the main subscribe span to the other subspans in the subscribe side.
 					// We don't want to override the ctx passed into Receive, which is necessary for user-initiated cancellations.
 					// This context is passed into the callback (regardless of if tracing is enabled). Thus, it shadows ctx2 so
-					// the callback cancellable.
+					// the callback is cancellable.
 					otelCtx := ctx2
+					// Stores if message is sampled or not.
+					var messageSampled bool
 					var ccSpan trace.Span
 					if iter.enableTracing {
 						c, ok := iter.activeSpans.Load(ackh.ackID)
 						if ok {
 							sc := c.(trace.Span)
 							otelCtx = trace.ContextWithSpanContext(otelCtx, sc.SpanContext())
+							// Don't override otelCtx here since the parent of subsequent spans
+							// should be the subscribe span still.
 							_, ccSpan = startSpan(otelCtx, ccSpanName, "")
+							messageSampled = true
 						}
 					}
 					// Use the original user defined ctx for this operation so the acquire operation can be cancelled.
@@ -1417,7 +1422,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					if iter.enableTracing && ccSpan.IsRecording() {
+					if iter.enableTracing && messageSampled {
 						ccSpan.End()
 					}
 
@@ -1432,7 +1437,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
 					var schedulerSpan trace.Span
-					if iter.enableTracing {
+					if iter.enableTracing && messageSampled {
 						_, schedulerSpan = startSpan(otelCtx, scheduleSpanName, "")
 					}
 					iter.orderingMu.RUnlock()
@@ -1441,7 +1446,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						m := msg.(*Message)
 						defer wg.Done()
 						var ps trace.Span
-						if iter.enableTracing {
+						if iter.enableTracing && messageSampled {
 							schedulerSpan.End()
 							otelCtx, ps = startSpan(otelCtx, processSpanName, s.ID())
 							old := ackh.doneFunc
