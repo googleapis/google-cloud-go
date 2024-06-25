@@ -499,7 +499,7 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 	return
 }
 
-// DownloadObjectInput is the input for a directory to download.
+// DownloadDirectoryInput is the input for a directory to download.
 type DownloadDirectoryInput struct {
 	// Required fields.
 	Bucket         string
