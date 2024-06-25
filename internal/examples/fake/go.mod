@@ -4,13 +4,13 @@ go 1.20
 
 require (
 	cloud.google.com/go/translate v1.10.3
-	google.golang.org/api v0.185.0
+	google.golang.org/api v0.186.0
 	google.golang.org/grpc v1.64.0
 )
 
 require (
 	cloud.google.com/go v0.115.0 // indirect
-	cloud.google.com/go/auth v0.5.1 // indirect
+	cloud.google.com/go/auth v0.6.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	cloud.google.com/go/longrunning v0.5.6 // indirect
