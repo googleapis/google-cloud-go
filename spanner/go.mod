@@ -6,12 +6,16 @@ require (
 	cloud.google.com/go v0.114.0
 	cloud.google.com/go/iam v1.1.8
 	cloud.google.com/go/longrunning v0.5.7
+	cloud.google.com/go/monitoring v1.19.0
 	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.5.0
 	github.com/google/go-cmp v0.6.0
+	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.12.4
 	go.opencensus.io v0.24.0
-	go.opentelemetry.io/otel v1.24.0
-	go.opentelemetry.io/otel/metric v1.24.0
+	go.opentelemetry.io/otel v1.27.0 // Use older version compatible with Go 1.20
+	go.opentelemetry.io/otel/metric v1.27.0 // Use older version compatible with Go 1.20
+	go.opentelemetry.io/otel/sdk v1.27.0 // indirect; Use older version compatible with Go 1.20
+	go.opentelemetry.io/otel/sdk/metric v1.24.0 // Use older version compatible with Go 1.20
 	golang.org/x/oauth2 v0.21.0
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028
 	google.golang.org/api v0.184.0
@@ -40,8 +44,7 @@ require (
 	github.com/googleapis/enterprise-certificate-proxy v0.3.2 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.49.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0 // indirect
-	go.opentelemetry.io/otel/sdk v1.24.0 // indirect
-	go.opentelemetry.io/otel/trace v1.24.0 // indirect
+	go.opentelemetry.io/otel/trace v1.27.0 // indirect
 	golang.org/x/crypto v0.24.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
 	golang.org/x/sync v0.7.0 // indirect
