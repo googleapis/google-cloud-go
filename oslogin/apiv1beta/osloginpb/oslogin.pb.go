@@ -21,11 +21,8 @@
 package osloginpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	commonpb "cloud.google.com/go/oslogin/common/commonpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -893,10 +892,7 @@ type SignSshPublicKeyRequest struct {
 
 	// The SSH public key to sign.
 	SshPublicKey string `protobuf:"bytes,1,opt,name=ssh_public_key,json=sshPublicKey,proto3" json:"ssh_public_key,omitempty"`
-	// The parent project and zone for the signing request. This is needed to
-	// properly ensure per-organization ISS processing and potentially to provide
-	// for the possibility of zone-specific certificates used in the signing
-	// process.
+	// The parent project and region for the signing request.
 	Parent string `protobuf:"bytes,2,opt,name=parent,proto3" json:"parent,omitempty"`
 }
 
