@@ -79,6 +79,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://securitycentermanagement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -778,6 +779,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://securitycentermanagement.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -2772,6 +2774,9 @@ func (c *restClient) GetSecurityCenterService(ctx context.Context, req *security
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetShowEligibleModulesOnly() {
+		params.Add("showEligibleModulesOnly", fmt.Sprintf("%v", req.GetShowEligibleModulesOnly()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2851,6 +2856,9 @@ func (c *restClient) ListSecurityCenterServices(ctx context.Context, req *securi
 		}
 		if req.GetPageToken() != "" {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetShowEligibleModulesOnly() {
+			params.Add("showEligibleModulesOnly", fmt.Sprintf("%v", req.GetShowEligibleModulesOnly()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
