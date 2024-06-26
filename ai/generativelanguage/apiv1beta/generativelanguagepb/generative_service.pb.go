@@ -22,15 +22,14 @@ package generativelanguagepb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -122,7 +121,7 @@ const (
 	// Prompt was blocked due to safety reasons. You can inspect
 	// `safety_ratings` to understand which safety category blocked it.
 	GenerateContentResponse_PromptFeedback_SAFETY GenerateContentResponse_PromptFeedback_BlockReason = 1
-	// Prompt was blocked due to unknown reaasons.
+	// Prompt was blocked due to unknown reasons.
 	GenerateContentResponse_PromptFeedback_OTHER GenerateContentResponse_PromptFeedback_BlockReason = 2
 )
 
