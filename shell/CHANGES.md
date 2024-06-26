@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.8](https://github.com/googleapis/google-cloud-go/compare/shell/v1.7.7...shell/v1.7.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **shell:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/shell/v1.7.6...shell/v1.7.7) (2024-05-01)
 
 
@@ -113,4 +120,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out shell as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

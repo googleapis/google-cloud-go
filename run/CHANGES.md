@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.3.8](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.7...run/v1.3.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **run:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.3.7](https://github.com/googleapis/google-cloud-go/compare/run/v1.3.6...run/v1.3.7) (2024-05-01)
 
 
@@ -199,4 +206,3 @@
 ### Features
 
 * **run:** start generating apiv2 ([#5825](https://github.com/googleapis/google-cloud-go/issues/5825)) ([2602a20](https://github.com/googleapis/google-cloud-go/commit/2602a20ca8eba1ba2b1e59bb27a7b44132d63032))
-

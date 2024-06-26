@@ -1,5 +1,18 @@
 # Changes
 
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.30.0...securitycenter/v1.31.0) (2024-06-26)
+
+
+### Features
+
+* **securitycenter:** Add toxic_combination and group_memberships fields to finding ([7ca4fa3](https://github.com/googleapis/google-cloud-go/commit/7ca4fa38519b24acde1675724edcde7b99fb32ee))
+* **securitycenter:** Add toxic_combination and group_memberships fields to finding ([7ca4fa3](https://github.com/googleapis/google-cloud-go/commit/7ca4fa38519b24acde1675724edcde7b99fb32ee))
+
+
+### Bug Fixes
+
+* **securitycenter:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.29.0...securitycenter/v1.30.0) (2024-05-01)
 
 
@@ -293,4 +306,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out securitycenter as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

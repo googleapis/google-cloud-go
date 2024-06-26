@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.14.6...networkconnectivity/v1.14.7) (2024-06-26)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.14.6](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.14.5...networkconnectivity/v1.14.6) (2024-05-01)
 
 
@@ -172,4 +179,3 @@
 
 This is the first tag to carve out networkconnectivity as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

@@ -1,5 +1,12 @@
 # Changes
 
+## [0.23.3](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.2...analytics/v0.23.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **analytics:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [0.23.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.1...analytics/v0.23.2) (2024-05-01)
 
 
@@ -264,4 +271,3 @@
 
 This is the first tag to carve out analytics as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
