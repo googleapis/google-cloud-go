@@ -1,6 +1,7 @@
 # Changelog
 
 
+
 ## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.3...edgenetwork/v0.2.4) (2024-05-01)
 
 
