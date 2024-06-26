@@ -616,7 +616,6 @@ func TestIntegration_QueryRunOptions(t *testing.T) {
 	}()
 
 	for _, testcase := range testcases {
-		gotSnapshots := []*DocumentSnapshot{}
 		gotIDs := []string{}
 		gotDocIter := coll.WithRunOptions(testcase.opts...).Documents(ctx)
 		for {
@@ -627,7 +626,6 @@ func TestIntegration_QueryRunOptions(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%v: Failed to get next document: %+v\n", testcase.desc, err)
 			}
-			gotSnapshots = append(gotSnapshots, gotDocSnap)
 			gotIDs = append(gotIDs, gotDocSnap.Ref.ID)
 		}
 
@@ -1474,6 +1472,49 @@ func TestIntegration_RunTransaction(t *testing.T) {
 
 	t.Cleanup(func() {
 		deleteDocuments([]*DocumentRef{patDoc})
+	})
+}
+
+func TestIntegration_RunTransactionWithExplainOptions(t *testing.T) {
+	ctx := context.Background()
+	client := integrationClient(t)
+	testcases, wantDocRefs := getRunWithOptionsTestcases(t)
+	numDocs := len(wantDocRefs)
+	for _, testcase := range testcases {
+		t.Run(testcase.desc, func(t *testing.T) {
+			err := client.RunTransaction(ctx, func(_ context.Context, tx *Transaction) error {
+				docIter := tx.Documents(iColl.WithRunOptions(testcase.opts...))
+				docsRead := 0
+				for {
+					_, err := docIter.Next()
+					if err == iterator.Done {
+						break
+					}
+					if err != nil {
+						return fmt.Errorf("Next got %+v, want %+v", err, nil)
+					}
+
+					docsRead++
+					// There are documents available in the iterator,
+					// explainMetrics should be nil
+					if docsRead < numDocs && docIter.ExplainMetrics != nil {
+						return fmt.Errorf("ExplainMetrics got %+v, want %+v", docIter.ExplainMetrics, nil)
+					}
+				}
+
+				if err := cmpExplainMetrics(docIter.ExplainMetrics, testcase.wantExplainMetrics); err != nil {
+					return fmt.Errorf("ExplainMetrics %+v", err)
+				}
+				return nil
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+
+	t.Cleanup(func() {
+		deleteDocuments(wantDocRefs)
 	})
 }
 
@@ -2839,6 +2880,14 @@ func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
 		"weight_sum1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(1.5)}},
 		"weight_avg1": &pb.Value{ValueType: &pb.Value_DoubleValue{DoubleValue: float64(0.5)}},
 	}
+	wantPlanSummary := &PlanSummary{
+		IndexesUsed: []*map[string]interface{}{
+			{
+				"properties":  "(weight ASC, __name__ ASC)",
+				"query_scope": "Collection",
+			},
+		},
+	}
 
 	testcases := []struct {
 		desc       string
@@ -2855,14 +2904,27 @@ func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
 		{
 			desc: "ExplainOptions.Analyze is false",
 			wantRes: &AggregationWithOptionsResult{
-				Result: aggResult,
+				ExplainMetrics: &ExplainMetrics{
+					PlanSummary: wantPlanSummary,
+				},
 			},
-			opts: []RunOption{ExplainOptions{}},
+			opts: []RunOption{ExplainOptions{Analyze: false}},
 		},
 		{
 			desc: "ExplainOptions.Analyze is true",
 			wantRes: &AggregationWithOptionsResult{
 				Result: aggResult,
+				ExplainMetrics: &ExplainMetrics{
+					ExecutionStats: &ExecutionStats{
+						ReadOperations:  int64(1),
+						ResultsReturned: int64(1),
+						DebugStats: &map[string]interface{}{
+							"documents_scanned":     fmt.Sprint(0),
+							"index_entries_scanned": fmt.Sprint(3),
+						},
+					},
+					PlanSummary: wantPlanSummary,
+				},
 			},
 			opts: []RunOption{ExplainOptions{Analyze: true}},
 		},
@@ -2870,7 +2932,7 @@ func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
 
 	for _, testcase := range testcases {
 		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
-			gotRes, gotErr := aggQuery.GetWithOptions(ctx)
+			gotRes, gotErr := aggQuery.GetWithOptions(ctx, testcase.opts...)
 
 			gotErrMsg := ""
 			if gotErr != nil {
@@ -2883,10 +2945,8 @@ func TestIntegration_AggregationQueriesWithRunOptions(t *testing.T) {
 				r.Errorf("%s: Mismatch in error got: %v, want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
 				return
 			}
-
-			if !testutil.Equal(gotRes.Result, testcase.wantRes.Result,
-				cmpopts.IgnoreFields(ExplainMetrics{})) {
-				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes, testcase.wantRes)
+			if !gotFailed && !testutil.Equal(gotRes.Result, testcase.wantRes.Result) {
+				r.Errorf("%q: Mismatch in aggregation result got: %v, want: %v", testcase.desc, gotRes.Result, testcase.wantRes.Result)
 				return
 			}
 
@@ -2905,7 +2965,7 @@ func cmpExplainMetrics(got *ExplainMetrics, want *ExplainMetrics) error {
 		return nil
 	}
 	if !testutil.Equal(got.PlanSummary, want.PlanSummary) {
-		return fmt.Errorf("Plan: got: %+v, want: %+v, diff: %+v", got.PlanSummary, want.PlanSummary, testutil.Diff(got.PlanSummary, want.PlanSummary))
+		return fmt.Errorf("PlanSummary diff (-want +got): %+v", testutil.Diff(got.PlanSummary, want.PlanSummary))
 	}
 	if err := cmpExecutionStats(got.ExecutionStats, want.ExecutionStats); err != nil {
 		return err
@@ -2923,7 +2983,7 @@ func cmpExecutionStats(got *ExecutionStats, want *ExecutionStats) error {
 
 	// Compare all fields except DebugStats
 	if !testutil.Equal(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats", "ExecutionDuration")) {
-		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s", testutil.Diff(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats")))
+		return fmt.Errorf("ExecutionStats: mismatch (-want +got):\n%s", testutil.Diff(want, got, cmpopts.IgnoreFields(ExecutionStats{}, "DebugStats", "ExecutionDuration")))
 	}
 
 	// Compare DebugStats

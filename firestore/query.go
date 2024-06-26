@@ -1656,7 +1656,7 @@ func (a *AggregationQuery) GetWithOptions(ctx context.Context, opts ...RunOption
 	}
 
 	aro = &AggregationWithOptionsResult{}
-	resp := make(AggregationResult)
+	var resp AggregationResult
 
 	for {
 		res, err := stream.Recv()
@@ -1667,6 +1667,9 @@ func (a *AggregationQuery) GetWithOptions(ctx context.Context, opts ...RunOption
 			return nil, err
 		}
 		if res.Result != nil {
+			if resp == nil {
+				resp = make(AggregationResult)
+			}
 			f := res.Result.AggregateFields
 
 			for k, v := range f {
