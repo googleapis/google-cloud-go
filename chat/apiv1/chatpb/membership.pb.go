@@ -21,14 +21,13 @@
 package chatpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -300,8 +299,6 @@ type Membership_Member struct {
 
 type Membership_GroupMember struct {
 	// The Google Group the membership corresponds to.
-	// Only supports read operations. Other operations, like
-	// creating or updating a membership, aren't currently supported.
 	GroupMember *Group `protobuf:"bytes,5,opt,name=group_member,json=groupMember,proto3,oneof"`
 }
 
