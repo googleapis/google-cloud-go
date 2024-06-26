@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.2...shopping/v0.8.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **shopping:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.1...shopping/v0.8.2) (2024-06-18)
 
 
@@ -151,4 +158,3 @@
 * **shopping:** New clients ([#8699](https://github.com/googleapis/google-cloud-go/issues/8699)) ([0e43b40](https://github.com/googleapis/google-cloud-go/commit/0e43b40184bacac8d355ea2cfd00ebe58bd9e30b))
 
 ## Changes
-

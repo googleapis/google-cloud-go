@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.3...securityposture/v0.1.4) (2024-06-26)
+
+
+### Bug Fixes
+
+* **securityposture:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [0.1.3](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.2...securityposture/v0.1.3) (2024-05-01)
 
 
@@ -29,4 +36,3 @@
 * **securityposture:** New clients ([#9289](https://github.com/googleapis/google-cloud-go/issues/9289)) ([4a756bc](https://github.com/googleapis/google-cloud-go/commit/4a756bca314daa87101bfad16d2b8b2c352f0a4c))
 
 ## Changes
-

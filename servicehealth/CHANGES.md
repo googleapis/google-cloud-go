@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.0.0...servicehealth/v1.0.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **servicehealth:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v0.1.4...servicehealth/v1.0.0) (2024-05-16)
 
 
@@ -50,4 +57,3 @@
 * **servicehealth:** New clients ([#9245](https://github.com/googleapis/google-cloud-go/issues/9245)) ([2868a43](https://github.com/googleapis/google-cloud-go/commit/2868a43805e87ec51bfb816ecb3289c4c0e6bc09))
 
 ## Changes
-
