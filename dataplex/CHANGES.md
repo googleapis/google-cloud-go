@@ -1,6 +1,14 @@
 # Changes
 
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.16.0...dataplex/v1.16.1) (2024-06-18)
+
+
+### Documentation
+
+* **dataplex:** Clarify DataQualityRule.sql_assertion descriptions ([abac5c6](https://github.com/googleapis/google-cloud-go/commit/abac5c6eec859477c6d390b116ea8954213ba585))
+* **dataplex:** Fix links to RuleType proto references ([abac5c6](https://github.com/googleapis/google-cloud-go/commit/abac5c6eec859477c6d390b116ea8954213ba585))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.15.1...dataplex/v1.16.0) (2024-05-08)
 
 
@@ -251,3 +259,4 @@
 ## v0.1.0
 
 - feat(dataplex): start generating clients
+

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.36.0...container/v1.37.0) (2024-06-12)
+
+
+### Features
+
+* **container:** Enable REST transport for google/container/v1 ([#10356](https://github.com/googleapis/google-cloud-go/issues/10356)) ([fc9e895](https://github.com/googleapis/google-cloud-go/commit/fc9e895c460d6911edbe0b47d8fc689cf76a4a58))
+
 ## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.35.1...container/v1.36.0) (2024-06-10)
 
 
@@ -407,3 +414,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out container as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+

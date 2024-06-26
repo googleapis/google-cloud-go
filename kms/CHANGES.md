@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.17.1...kms/v1.18.0) (2024-06-20)
+
+
+### Features
+
+* **kms:** Support Key Access Justifications policy configuration ([#10398](https://github.com/googleapis/google-cloud-go/issues/10398)) ([4fa4308](https://github.com/googleapis/google-cloud-go/commit/4fa43082511e153044084c1e6736553de41a9894))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/kms/v1.17.0...kms/v1.17.1) (2024-05-22)
 
 
@@ -238,3 +245,4 @@ Stabilize GA surface.
 
 This is the first tag to carve out kms as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
+
