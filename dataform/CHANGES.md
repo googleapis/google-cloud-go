@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.5](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.9.4...dataform/v0.9.5) (2024-06-26)
+
+
+### Bug Fixes
+
+* **dataform:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [0.9.4](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.9.3...dataform/v0.9.4) (2024-05-01)
 
 
@@ -119,4 +126,3 @@
 
 * **dataform:** remove unused filter field from alpha2 version of API before release ([8a1ad06](https://github.com/googleapis/google-cloud-go/commit/8a1ad06572a65afa91a0a77a85b849e766876671))
 * **dataform:** start generating apiv1alpha2 ([#6299](https://github.com/googleapis/google-cloud-go/issues/6299)) ([1c434c6](https://github.com/googleapis/google-cloud-go/commit/1c434c6657b9bd8529760681c95aef9373c66120))
-

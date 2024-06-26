@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.9](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.8...cloudtasks/v1.12.9) (2024-06-26)
+
+
+### Bug Fixes
+
+* **cloudtasks:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.12.8](https://github.com/googleapis/google-cloud-go/compare/cloudtasks/v1.12.7...cloudtasks/v1.12.8) (2024-05-01)
 
 
@@ -162,4 +169,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out cloudtasks as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

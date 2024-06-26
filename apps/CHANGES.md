@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.3](https://github.com/googleapis/google-cloud-go/compare/apps/v0.4.2...apps/v0.4.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **apps:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [0.4.2](https://github.com/googleapis/google-cloud-go/compare/apps/v0.4.1...apps/v0.4.2) (2024-05-01)
 
 
@@ -51,4 +58,3 @@
 * **apps:** New clients ([#9142](https://github.com/googleapis/google-cloud-go/issues/9142)) ([8095c6e](https://github.com/googleapis/google-cloud-go/commit/8095c6ee342d9cca812c966b708ba48398fd91ed))
 
 ## Changes
-

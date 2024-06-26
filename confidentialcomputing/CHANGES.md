@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.5.2](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.5.1...confidentialcomputing/v1.5.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **confidentialcomputing:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/confidentialcomputing/v1.5.0...confidentialcomputing/v1.5.1) (2024-05-01)
 
 
@@ -120,4 +127,3 @@
 ### Features
 
 * **confidentialcomputing:** Start generating apiv1alpha1 ([#7846](https://github.com/googleapis/google-cloud-go/issues/7846)) ([d0a5d6e](https://github.com/googleapis/google-cloud-go/commit/d0a5d6eda292a7c87ec6d1a4147b037970242641))
-
