@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
+	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
@@ -50,6 +51,11 @@ type Subscription struct {
 
 	mu            sync.Mutex
 	receiveActive bool
+
+	// clientID to be used across all streaming pull connections that are created.
+	// This indicates to the server that any guarantees made for a stream that
+	// disconnected will be made for the stream that is created to replace it.
+	clientID string
 }
 
 // Subscription creates a reference to a subscription.
@@ -60,8 +66,9 @@ func (c *Client) Subscription(id string) *Subscription {
 // SubscriptionInProject creates a reference to a subscription in a given project.
 func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
 	return &Subscription{
-		c:    c,
-		name: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id),
+		c:        c,
+		name:     fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id),
+		clientID: uuid.NewString(),
 	}
 }
 
@@ -1280,6 +1287,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxOutstandingMessages: maxCount,
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
+		clientID:               s.clientID,
 	}
 	fc := newSubscriptionFlowController(FlowControlSettings{
 		MaxOutstandingMessages: maxCount,
@@ -1446,4 +1454,5 @@ type pullOptions struct {
 	maxOutstandingMessages int
 	maxOutstandingBytes    int
 	useLegacyFlowControl   bool
+	clientID               string
 }
