@@ -7,6 +7,7 @@ require (
 	cloud.google.com/go/iam v1.1.8
 	cloud.google.com/go/kms v1.17.1
 	github.com/google/go-cmp v0.6.0
+	github.com/google/uuid v1.6.0
 	github.com/googleapis/gax-go/v2 v2.12.5
 	go.einride.tech/aip v0.67.1
 	go.opencensus.io v0.24.0
