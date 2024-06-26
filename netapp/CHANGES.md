@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.1.0...netapp/v1.1.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **netapp:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.0.0...netapp/v1.1.0) (2024-05-22)
 
 
@@ -94,4 +101,3 @@
 * **netapp:** Start generating apiv1 ([#8353](https://github.com/googleapis/google-cloud-go/issues/8353)) ([f609b3c](https://github.com/googleapis/google-cloud-go/commit/f609b3cf831fb89c45386f81d0047560120cb3f4))
 
 ## Changes
-
