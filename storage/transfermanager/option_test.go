@@ -26,6 +26,7 @@ func TestApply(t *testing.T) {
 		WithWorkers(3),
 		WithPerOpTimeout(time.Hour),
 		WithCallbacks(),
+		WithPartSize(30),
 	}
 	var got transferManagerConfig
 	for _, opt := range opts {
@@ -35,6 +36,7 @@ func TestApply(t *testing.T) {
 		numWorkers:          3,
 		perOperationTimeout: time.Hour,
 		asynchronous:        true,
+		partSize:            30,
 	}
 
 	if got != want {
