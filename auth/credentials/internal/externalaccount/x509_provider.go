@@ -23,6 +23,12 @@ import (
 	"cloud.google.com/go/auth/internal/transport/cert"
 )
 
+// x509Provider implements the subjectTokenProvider type for
+// x509 workload identity credentials. Because x509 credentials
+// rely on an mTLS connection to represent the 3rd party identity
+// rather than a subject token, this provider will always return
+// an empty string when a subject token is requested by the external account
+// token provider.
 type x509Provider struct {
 }
 
@@ -34,6 +40,8 @@ func (xp *x509Provider) subjectToken(ctx context.Context) (string, error) {
 	return "", nil
 }
 
+// createX509Client creates a new client that is configured with mTLS, using the
+// certificate configuration specified in the credential source.
 func createX509Client(certificateConfigLocation string) (*http.Client, error) {
 	certProvider, err := cert.NewWorkloadX509CertProvider(certificateConfigLocation)
 	if err != nil {
@@ -45,7 +53,7 @@ func createX509Client(certificateConfigLocation string) (*http.Client, error) {
 		GetClientCertificate: certProvider,
 	}
 
-	// Create client with default settings plus the X509 workload certs
+	// Create a client with default settings plus the X509 workload cert and key.
 	client := &http.Client{
 		Transport: trans,
 		Timeout:   30 * time.Second,

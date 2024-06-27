@@ -195,6 +195,8 @@ func (o *Options) client() (*http.Client, error) {
 		return o.Client, nil
 	}
 
+	// If the client was a default client, and a certificate source is present, validate and
+	// use that certificate source to create a new mTLS client.
 	cert := o.CredentialSource.Certificate
 	if !cert.UseDefaultCertificateConfig && cert.CertificateConfigLocation == "" {
 		return nil, errors.New("credentials: \"certificate\" object must either specify a certificate_config_location or use_default_certificate_config should be true")
