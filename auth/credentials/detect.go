@@ -34,8 +34,10 @@ const (
 	jwtTokenURL = "https://oauth2.googleapis.com/token"
 
 	// Google's OAuth 2.0 default endpoints.
-	googleAuthURL      = "https://accounts.google.com/o/oauth2/auth"
-	googleTokenURL     = "https://oauth2.googleapis.com/token"
+	googleAuthURL  = "https://accounts.google.com/o/oauth2/auth"
+	googleTokenURL = "https://oauth2.googleapis.com/token"
+
+	// GoogleMTLSTokenURL is Google's default OAuth2.0 mTLS endpoint.
 	GoogleMTLSTokenURL = "https://oauth2.mtls.googleapis.com/token"
 
 	// Help on default credentials
