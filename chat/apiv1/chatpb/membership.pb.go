@@ -300,8 +300,6 @@ type Membership_Member struct {
 
 type Membership_GroupMember struct {
 	// The Google Group the membership corresponds to.
-	// Only supports read operations. Other operations, like
-	// creating or updating a membership, aren't currently supported.
 	GroupMember *Group `protobuf:"bytes,5,opt,name=group_member,json=groupMember,proto3,oneof"`
 }
 
