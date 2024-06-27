@@ -609,6 +609,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 	}
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -635,6 +636,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -706,6 +708,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t, nil
@@ -740,6 +743,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 	t.txReadOnly.disableRouteToLeader = true
 	t.txReadOnly.qo.DirectedReadOptions = c.dro
 	t.txReadOnly.ro.DirectedReadOptions = c.dro
+	t.txReadOnly.ro.LockHint = sppb.ReadRequest_LOCK_HINT_UNSPECIFIED
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t

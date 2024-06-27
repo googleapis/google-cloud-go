@@ -1088,7 +1088,7 @@ type Accelerator struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// The accelerator type string (for example, "nvidia-tesla-k80").
+	// The accelerator type string (for example, "nvidia-tesla-t4").
 	//
 	// Only NVIDIA GPU accelerators are currently supported. If an NVIDIA GPU is
 	// attached, the required runtime libraries will be made available to all

@@ -1,6 +1,23 @@
 # Changes
 
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.16.1...dataplex/v1.17.0) (2024-06-26)
+
+
+### Features
+
+* **dataplex:** Exposing EntrySource.location field that contains location of a resource in the source system ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Bug Fixes
+
+* **dataplex:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+
+### Documentation
+
+* **dataplex:** Scrub descriptions for GenerateDataQualityRules ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.16.0...dataplex/v1.16.1) (2024-06-18)
 
 

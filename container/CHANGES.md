@@ -1,5 +1,12 @@
 # Changes
 
+## [1.37.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.37.0...container/v1.37.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **container:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.36.0...container/v1.37.0) (2024-06-12)
 
 

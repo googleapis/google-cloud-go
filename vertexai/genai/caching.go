@@ -22,7 +22,6 @@ import (
 
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
-	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/api/iterator"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -183,7 +182,7 @@ func populateCachedContentFrom(v *CachedContent, p *pb.CachedContent) {
 	}
 	switch e := p.Expiration.(type) {
 	case *pb.CachedContent_ExpireTime:
-		v.Expiration.ExpireTime = support.TimeFromProto(e.ExpireTime)
+		v.Expiration.ExpireTime = pvTimeFromProto(e.ExpireTime)
 	case *pb.CachedContent_Ttl:
 		v.Expiration.TTL = e.Ttl.AsDuration()
 	default:
