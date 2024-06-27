@@ -2,6 +2,13 @@
 
 
 
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.1...maps/v1.11.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **maps:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/maps/v1.11.0...maps/v1.11.1) (2024-06-10)
 
 

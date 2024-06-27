@@ -2,6 +2,13 @@
 
 
 
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.13.1...secretmanager/v1.13.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **secretmanager:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/secretmanager/v1.13.0...secretmanager/v1.13.1) (2024-05-22)
 
 

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.4.2](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.4.1...advisorynotifications/v1.4.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.4.0...advisorynotifications/v1.4.1) (2024-05-01)
 
 

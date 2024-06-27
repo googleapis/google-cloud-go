@@ -1,5 +1,17 @@
 # Changes
 
+## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.19.0...monitoring/v1.20.0) (2024-06-26)
+
+
+### Features
+
+* **monitoring/apiv3:** Add support to add links in AlertPolicy ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Bug Fixes
+
+* **monitoring:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.18.2...monitoring/v1.19.0) (2024-05-01)
 
 

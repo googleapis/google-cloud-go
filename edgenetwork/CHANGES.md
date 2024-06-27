@@ -1,6 +1,14 @@
 # Changelog
 
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.4...edgenetwork/v1.0.0) (2024-06-26)
+
+
+### Miscellaneous Chores
+
+* **edgenetwork:** Release v1.0.0 ([#10445](https://github.com/googleapis/google-cloud-go/issues/10445)) ([1cf83a8](https://github.com/googleapis/google-cloud-go/commit/1cf83a8056d3a10d9513563e0eba058bf7a19f5b))
+
 ## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/edgenetwork/v0.2.3...edgenetwork/v0.2.4) (2024-05-01)
 
 

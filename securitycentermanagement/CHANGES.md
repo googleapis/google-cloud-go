@@ -1,6 +1,20 @@
 # Changelog
 
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.3.0...securitycentermanagement/v1.0.0) (2024-06-26)
+
+
+### Features
+
+* **securitycentermanagement:** Add `show_eligible_modules_only` field to `GetSecurityCenterServiceRequest` message ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **securitycentermanagement:** Add `TOXIC_COMBINATION` to `FindingClass` enum ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Miscellaneous Chores
+
+* **securitycentermanagement:** Release v1.0.0 ([#10447](https://github.com/googleapis/google-cloud-go/issues/10447)) ([c8b65e4](https://github.com/googleapis/google-cloud-go/commit/c8b65e41ec3a90ba854ee28a26260892dfb8e846))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/securitycentermanagement/v0.2.1...securitycentermanagement/v0.3.0) (2024-06-18)
 
 

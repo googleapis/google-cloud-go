@@ -1,6 +1,13 @@
 # Changes
 
 
+## [2.13.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.13.0...recaptchaenterprise/v2.13.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [2.13.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.12.0...recaptchaenterprise/v2.13.0) (2024-05-01)
 
 
