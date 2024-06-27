@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.4](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.3...translate/v1.10.4) (2024-06-26)
+
+
+### Bug Fixes
+
+* **translate:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/translate/v1.10.2...translate/v1.10.3) (2024-05-01)
 
 
@@ -149,4 +156,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out translate as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

@@ -1,5 +1,12 @@
 # Changes
 
+## [2.8.3](https://github.com/googleapis/google-cloud-go/compare/vision/v2.8.2...vision/v2.8.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **vision:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [2.8.2](https://github.com/googleapis/google-cloud-go/compare/vision/v2.8.1...vision/v2.8.2) (2024-05-01)
 
 
@@ -156,4 +163,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out vision as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

@@ -1,6 +1,14 @@
 # Changelog
 
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.5...securesourcemanager/v1.0.0) (2024-06-26)
+
+
+### Miscellaneous Chores
+
+* **securesourcemanager:** Release v1.0.0 ([#10446](https://github.com/googleapis/google-cloud-go/issues/10446)) ([752601c](https://github.com/googleapis/google-cloud-go/commit/752601cec9ec5ebbc240b197d81e07cf6b537c6d))
+
 ## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.4...securesourcemanager/v0.1.5) (2024-05-01)
 
 

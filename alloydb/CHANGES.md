@@ -2,6 +2,13 @@
 
 
 
+## [1.10.3](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.2...alloydb/v1.10.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **alloydb:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.10.2](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.10.1...alloydb/v1.10.2) (2024-05-01)
 
 
@@ -162,4 +169,3 @@
 * **alloydb:** Start generating apiv1, apiv1beta, apiv1alpha ([#7503](https://github.com/googleapis/google-cloud-go/issues/7503)) ([25e8426](https://github.com/googleapis/google-cloud-go/commit/25e842659ef5c3941717827459e6524f024e5a26))
 
 ## Changes
-

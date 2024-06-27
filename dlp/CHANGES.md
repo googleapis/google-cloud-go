@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.14.0...dlp/v1.14.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **dlp:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/dlp/v1.13.0...dlp/v1.14.0) (2024-05-29)
 
 
@@ -175,4 +182,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out dlp as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

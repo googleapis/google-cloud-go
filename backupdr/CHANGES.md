@@ -1,6 +1,21 @@
 # Changelog
 
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v0.1.1...backupdr/v1.0.0) (2024-06-26)
+
+
+### Features
+
+* **backupdr:** A new field `satisfies_pzi` is added ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **backupdr:** A new field `satisfies_pzs` is added ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **backupdr:** Updated documentation URI ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Miscellaneous Chores
+
+* **backupdr:** Release v1.0.0 ([#10442](https://github.com/googleapis/google-cloud-go/issues/10442)) ([5e4167f](https://github.com/googleapis/google-cloud-go/commit/5e4167fea3bb4a4a54ce893f000e4e4c46307435))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/backupdr/v0.1.0...backupdr/v0.1.1) (2024-05-01)
 
 
