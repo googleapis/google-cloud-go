@@ -708,6 +708,9 @@ func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, po
 }
 
 func (ac *AdminClient) setValueTypeImpl(ctx context.Context, table, family string, valueType Type) error {
+	if valueType == nil {
+		return fmt.Errorf("value type must be non nil")
+	}
 	if _, ok := valueType.proto().GetKind().(*btapb.Type_AggregateType); ok {
 		return fmt.Errorf("update family value type to aggregate type is unsupported")
 	}

@@ -426,6 +426,11 @@ func TestTableAdmin_SetType(t *testing.T) {
 			familyType: StringType{Encoding: StringUtf8Encoding{}},
 			hasError:   false,
 		},
+		{
+			desc:       "Update with nil type",
+			familyType: nil,
+			hasError:   true,
+		},
 	} {
 		mock := &mockTableAdminClock{}
 		c := setupTableClient(t, mock)
