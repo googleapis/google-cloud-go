@@ -22,7 +22,9 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/spanner"
@@ -143,18 +145,13 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 		return outcomeSender.FinishWithError(err)
 	}
 
-	if !h.CloudTraceCheckAllowed {
-		trace.SetOpenTelemetryTracingEnabledField(false)
-	}
 	// Create a span for the systest action.
 	ctx = trace.StartSpan(ctx, fmt.Sprintf("systestaction_%v", actionType))
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	if trace.IsOpenTelemetryTracingEnabled() && h.CloudTraceCheckAllowed {
-		spanContext := ottrace.SpanContextFromContext(ctx)
-		if spanContext.IsSampled() && len(h.exportedTraces) < MAX_TRACE_CHECKS_PER_STREAMING_REQUEST && actionType != "Admin" && actionType != "Mutation" {
-			h.exportedTraces = append(h.exportedTraces, spanContext.TraceID().String())
-		}
+	spanContext := ottrace.SpanContextFromContext(ctx)
+	if h.CloudTraceCheckAllowed && spanContext.IsSampled() && len(h.exportedTraces) < MAX_TRACE_CHECKS_PER_STREAMING_REQUEST && (actionType == "Read" || actionType == "Query" || actionType == "Dml") {
+		h.exportedTraces = append(h.exportedTraces, spanContext.TraceID().String())
 	}
 
 	// Create a channel to receive the error from the goroutine.
@@ -195,7 +192,7 @@ func (h *CloudStreamHandler) verifyCloudTraceExportedTraces(ctx context.Context)
 		return nil
 	}
 	log.Printf("start verification of exported cloud traces: len:%v, trace_ids:%v\n", len(h.exportedTraces), h.exportedTraces)
-	// time.Sleep(10 * time.Second)
+	time.Sleep(20 * time.Second)
 	for _, traceId := range h.exportedTraces {
 		getTraceRequest := &tracepb.GetTraceRequest{
 			ProjectId: "spanner-cloud-systest",
@@ -206,8 +203,14 @@ func (h *CloudStreamHandler) verifyCloudTraceExportedTraces(ctx context.Context)
 			log.Printf("failed to get trace_id %v using GetTrace api: %v", traceId, err)
 			return err
 		}
-		if len(resp.Spans) == 0 {
-			return fmt.Errorf("no trace found with trace_id: %v", traceId)
+		spannerLayerSpanPresent := false
+		for _, span := range resp.Spans {
+			if strings.Contains(span.Name, "/Spanner.") {
+				spannerLayerSpanPresent = true
+			}
+		}
+		if !spannerLayerSpanPresent {
+			return fmt.Errorf("no internal span found for trace_id: %v", traceId)
 		}
 	}
 	return nil

@@ -25,7 +25,7 @@ import (
 	"google.golang.org/api/option"
 )
 
-const MAX_CLOUD_TRACE_CHECK_LIMIT = 20
+const MAX_CLOUD_TRACE_CHECK_LIMIT = 10
 
 // CloudProxyServer holds the cloud executor server.
 type CloudProxyServer struct {
@@ -50,11 +50,11 @@ func (s *CloudProxyServer) ExecuteActionAsync(inputStream executorpb.SpannerExec
 		ServerContext:          s.serverContext,
 		Options:                s.options,
 		TraceClientOptions:     s.traceClientOptions,
-		CloudTraceCheckAllowed: s.cloudTraceCheckCount < MAX_CLOUD_TRACE_CHECK_LIMIT,
+		CloudTraceCheckAllowed: (s.cloudTraceCheckCount < MAX_CLOUD_TRACE_CHECK_LIMIT),
 	}
-	err := handler.Execute()
-	if err != nil {
-		s.cloudTraceCheckCount += handler.GetCompletedCloudTraceCheckCount()
+	if err := handler.Execute(); err != nil {
+		return err
 	}
-	return err
+	s.cloudTraceCheckCount += handler.GetCompletedCloudTraceCheckCount()
+	return nil
 }
