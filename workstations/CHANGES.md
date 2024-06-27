@@ -2,6 +2,13 @@
 
 
 
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.0.0...workstations/v1.0.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **workstations:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.6...workstations/v1.0.0) (2024-05-16)
 
 

@@ -23,8 +23,6 @@
 // apart from the Storage API. Separating these operations from the Storage
 // API improves API standardization and lets you run faster releases.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference
