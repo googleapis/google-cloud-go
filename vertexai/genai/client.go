@@ -30,7 +30,6 @@ import (
 	aiplatform "cloud.google.com/go/aiplatform/apiv1beta1"
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/vertexai/internal"
-	"cloud.google.com/go/vertexai/internal/support"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
@@ -208,9 +207,9 @@ func (m *GenerativeModel) generateContent(ctx context.Context, req *pb.GenerateC
 func (m *GenerativeModel) newGenerateContentRequest(contents ...*Content) *pb.GenerateContentRequest {
 	return &pb.GenerateContentRequest{
 		Model:             m.fullName,
-		Contents:          support.TransformSlice(contents, (*Content).toProto),
-		SafetySettings:    support.TransformSlice(m.SafetySettings, (*SafetySetting).toProto),
-		Tools:             support.TransformSlice(m.Tools, (*Tool).toProto),
+		Contents:          pvTransformSlice(contents, (*Content).toProto),
+		SafetySettings:    pvTransformSlice(m.SafetySettings, (*SafetySetting).toProto),
+		Tools:             pvTransformSlice(m.Tools, (*Tool).toProto),
 		ToolConfig:        m.ToolConfig.toProto(),
 		GenerationConfig:  m.GenerationConfig.toProto(),
 		SystemInstruction: m.SystemInstruction.toProto(),
@@ -296,7 +295,7 @@ func (m *GenerativeModel) newCountTokensRequest(contents ...*Content) *pb.CountT
 	return &pb.CountTokensRequest{
 		Endpoint: m.fullName,
 		Model:    m.fullName,
-		Contents: support.TransformSlice(contents, (*Content).toProto),
+		Contents: pvTransformSlice(contents, (*Content).toProto),
 	}
 }
 

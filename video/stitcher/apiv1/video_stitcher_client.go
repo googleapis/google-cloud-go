@@ -86,6 +86,7 @@ func defaultVideoStitcherGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://videostitcher.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

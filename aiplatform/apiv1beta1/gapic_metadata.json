@@ -5574,6 +5574,11 @@
                 "StreamGenerateContent"
               ]
             },
+            "StreamRawPredict": {
+              "methods": [
+                "StreamRawPredict"
+              ]
+            },
             "StreamingPredict": {
               "methods": [
                 "StreamingPredict"
@@ -5697,6 +5702,11 @@
             "StreamGenerateContent": {
               "methods": [
                 "StreamGenerateContent"
+              ]
+            },
+            "StreamRawPredict": {
+              "methods": [
+                "StreamRawPredict"
               ]
             },
             "StreamingPredict": {

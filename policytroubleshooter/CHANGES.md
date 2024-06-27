@@ -2,6 +2,13 @@
 
 
 
+## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.10.5...policytroubleshooter/v1.10.6) (2024-06-26)
+
+
+### Bug Fixes
+
+* **policytroubleshooter:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.10.5](https://github.com/googleapis/google-cloud-go/compare/policytroubleshooter/v1.10.4...policytroubleshooter/v1.10.5) (2024-05-01)
 
 

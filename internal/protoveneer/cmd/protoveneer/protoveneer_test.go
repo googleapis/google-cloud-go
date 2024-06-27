@@ -15,6 +15,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"flag"
 	"os"
@@ -41,13 +42,15 @@ func TestGeneration(t *testing.T) {
 				dir := filepath.Join("testdata", e.Name())
 				configFile := filepath.Join(dir, "config.yaml")
 				goldenFile := filepath.Join(dir, "golden")
-				outFile := filepath.Join(dir, e.Name()+"_veneer.gen.go")
+				// Don't use t.TempDir, because it will be removed even if -keep is set.
+				outDir := os.TempDir()
+				outFile := filepath.Join(outDir, e.Name()+"_veneer.gen.go")
 				if *keep {
 					t.Logf("keeping %s", outFile)
 				} else {
 					defer os.Remove(outFile)
 				}
-				if err := run(ctx, configFile, dir, dir); err != nil {
+				if err := run(ctx, configFile, dir, outDir); err != nil {
 					t.Fatal(err)
 				}
 				if *update {
@@ -159,5 +162,59 @@ func TestInStdLib(t *testing.T) {
 		if got != test.want {
 			t.Errorf("%s: got %t, want %t", test.path, got, test.want)
 		}
+	}
+}
+
+func TestGenerateSupportFunctions(t *testing.T) {
+	var buf bytes.Buffer
+	need := map[string]bool{
+		"pvDurationFromProto": true,
+		"pvAddrOrNil":         true,
+	}
+	if err := generateSupportFunctions(&buf, need); err != nil {
+		t.Fatal(err)
+	}
+	got := buf.String()
+	want := `
+// pvAddrOrNil returns nil if x is the zero value for T,
+// or &x otherwise.
+func pvAddrOrNil[T comparable](x T) *T {
+	var z T
+	if x == z {
+		return nil
+	}
+	return &x
+}
+
+// pvDurationFromProto converts a Duration proto to a time.Duration.
+func pvDurationFromProto(d *durationpb.Duration) time.Duration {
+	if d == nil {
+		return 0
+	}
+	return d.AsDuration()
+}
+
+// pvPanic wraps panics from support functions.
+// User-provided functions in the same package can also use it.
+// It allows callers to distinguish conversion function panics from other panics.
+type pvPanic error
+
+// pvCatchPanic recovers from panics of type pvPanic and
+// returns an error instead.
+func pvCatchPanic[T any](f func() T) (_ T, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return f(), nil
+}
+`
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("mismatch (-want, _got):\n%s", diff)
 	}
 }

@@ -4377,7 +4377,23 @@ func TestIntegration_SoftDelete(t *testing.T) {
 			t.Fatalf("effective time of soft delete policy should not be in the past, got: %v, test start: %v", got.EffectiveTime, testStart.UTC())
 		}
 
-		// Update the soft delete policy.
+		// Create a second bucket with an empty soft delete policy to verify
+		// that this leads to no retention.
+		b2 := client.Bucket(prefix + uidSpace.New())
+		if err := b2.Create(ctx, testutil.ProjID(), &BucketAttrs{SoftDeletePolicy: &SoftDeletePolicy{}}); err != nil {
+			t.Fatalf("error creating bucket with soft delete disabled: %v", err)
+		}
+		t.Cleanup(func() { h.mustDeleteBucket(b2) })
+
+		attrs2, err := b2.Attrs(ctx)
+		if err != nil {
+			t.Fatalf("Attrs(%q): %v", b2.name, err)
+		}
+		if got, expect := attrs2.SoftDeletePolicy.RetentionDuration, time.Duration(0); got != expect {
+			t.Fatalf("mismatching retention duration; got: %+v, expected: %+v", got, expect)
+		}
+
+		// Update the soft delete policy of the original bucket.
 		policy.RetentionDuration = time.Hour * 24 * 9
 
 		attrs, err = b.Update(ctx, BucketAttrsToUpdate{SoftDeletePolicy: policy})

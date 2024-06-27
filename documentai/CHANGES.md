@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.30.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.1...documentai/v1.30.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **documentai:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.30.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.0...documentai/v1.30.1) (2024-06-20)
+
+
+### Documentation
+
+* **documentai:** Update the comment to add a note about `documentai.processors.create` permission ([4fa4308](https://github.com/googleapis/google-cloud-go/commit/4fa43082511e153044084c1e6736553de41a9894))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.29.0...documentai/v1.30.0) (2024-06-05)
 
 

@@ -1,5 +1,17 @@
 # Changes
 
+## [2.5.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.4.2...dataproc/v2.5.0) (2024-06-26)
+
+
+### Features
+
+* **dataproc:** Add the cohort and auto tuning configuration to the batch's RuntimeConfig ([#10424](https://github.com/googleapis/google-cloud-go/issues/10424)) ([2d5a9ad](https://github.com/googleapis/google-cloud-go/commit/2d5a9adcd6ee4803dd58b925b93bc0b51ec2b720))
+
+
+### Bug Fixes
+
+* **dataproc:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [2.4.2](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.4.1...dataproc/v2.4.2) (2024-05-01)
 
 

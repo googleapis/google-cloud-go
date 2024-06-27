@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.8](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.0.7...storageinsights/v1.0.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **storageinsights:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.0.7](https://github.com/googleapis/google-cloud-go/compare/storageinsights/v1.0.6...storageinsights/v1.0.7) (2024-05-01)
 
 

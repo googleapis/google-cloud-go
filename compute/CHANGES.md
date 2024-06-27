@@ -1,5 +1,12 @@
 # Changes
 
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.0...compute/v1.27.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **compute:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.26.0...compute/v1.27.0) (2024-05-16)
 
 
