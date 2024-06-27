@@ -24,26 +24,42 @@ import (
 	"log"
 	"sync"
 
+	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/actions"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
-	"go.opentelemetry.io/otel"
+	"cloud.google.com/go/trace/apiv1/tracepb"
+	ottrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
+const MAX_TRACE_CHECKS_PER_STREAMING_REQUEST = 5
+
 // CloudStreamHandler handles a streaming ExecuteActions request by performing incoming
 // actions. It maintains a state associated with the request, such as current transaction.
 type CloudStreamHandler struct {
 	// members below should be set by the caller
-	Stream        executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer
-	ServerContext context.Context
-	Options       []option.ClientOption
+	Stream                 executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer
+	ServerContext          context.Context
+	Options                []option.ClientOption
+	TraceClientOptions     []option.ClientOption
+	CloudTraceCheckAllowed bool // indicates whether cloud trace checks can be performed
 	// members below represent internal state
 	executionFlowContext *actions.ExecutionFlowContext
 	mu                   sync.Mutex // protects mutable internal state
+	exportedTraces       []string   // traces that will be checked using cloud trace api
+}
+
+// GetCompletedCloudTraceCheckCount returns the number of Cloud Trace checks performed for
+// streaming ExecuteActions request.
+func (h *CloudStreamHandler) GetCompletedCloudTraceCheckCount() int {
+	if h.executionFlowContext.TraceClient == nil {
+		return 0
+	}
+	return len(h.exportedTraces)
 }
 
 // Execute executes the given ExecuteActions request, blocking until it's done. It takes care of
@@ -74,10 +90,21 @@ func (h *CloudStreamHandler) Execute() error {
 	for {
 		req, err := h.Stream.Recv()
 		if err == io.EOF {
+			// Verify the traces exported to Cloud Trace.
+			if h.CloudTraceCheckAllowed {
+				if err = h.verifyCloudTraceExportedTraces(ctx); err != nil {
+					log.Printf("Verification failed for exported traces: %v", err)
+					return err
+				}
+			}
 			log.Println("Client called Done, half-closed the stream")
 			if h.executionFlowContext != nil && h.executionFlowContext.DbClient != nil {
 				log.Println("Closing the client object in execution flow context")
 				h.executionFlowContext.DbClient.Close()
+			}
+			if h.executionFlowContext != nil && h.executionFlowContext.TraceClient != nil {
+				log.Println("Closing the trace client in execution flow context")
+				h.executionFlowContext.TraceClient.Close()
 			}
 			break
 		}
@@ -111,17 +138,24 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 	}
 
 	// Get a new action handler based on the input action.
-	actionHandler, err := h.newActionHandler(inputAction, outcomeSender)
+	actionType, actionHandler, err := h.newActionHandler(inputAction, outcomeSender)
 	if err != nil {
 		return outcomeSender.FinishWithError(err)
 	}
-	actionHandlerType := actionHandlerType(inputAction)
 
-	tracer := otel.Tracer("nareshz-systest.com/trace")
-
+	if !h.CloudTraceCheckAllowed {
+		trace.SetOpenTelemetryTracingEnabledField(false)
+	}
 	// Create a span for the systest action.
-	ctx, span := tracer.Start(ctx, fmt.Sprintf("systestaction_%v", actionHandlerType))
-	defer span.End()
+	ctx = trace.StartSpan(ctx, fmt.Sprintf("systestaction_%v", actionType))
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	if trace.IsOpenTelemetryTracingEnabled() && h.CloudTraceCheckAllowed {
+		spanContext := ottrace.SpanContextFromContext(ctx)
+		if spanContext.IsSampled() && len(h.exportedTraces) < MAX_TRACE_CHECKS_PER_STREAMING_REQUEST && actionType != "Admin" && actionType != "Mutation" {
+			h.exportedTraces = append(h.exportedTraces, spanContext.TraceID().String())
+		}
+	}
 
 	// Create a channel to receive the error from the goroutine.
 	errCh := make(chan error, 1)
@@ -150,59 +184,61 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 	}
 }
 
-// newActionHandler instantiates an actionHandler for executing the given action.
-func actionHandlerType(action *executorpb.SpannerAction) string {
-	switch action.GetAction().(type) {
-	case *executorpb.SpannerAction_Start:
-		return "SpannerAction_Start"
-	case *executorpb.SpannerAction_Finish:
-		return "SpannerAction_Finish"
-	case *executorpb.SpannerAction_Admin:
-		return "SpannerAction_Admin"
-	case *executorpb.SpannerAction_Read:
-		return "SpannerAction_Read"
-	case *executorpb.SpannerAction_Query:
-		return "SpannerAction_Query"
-	case *executorpb.SpannerAction_Mutation:
-		return "SpannerAction_Mutation"
-	case *executorpb.SpannerAction_Write:
-		return "SpannerAction_Write"
-	case *executorpb.SpannerAction_Dml:
-		return "SpannerAction_Dml"
-	case *executorpb.SpannerAction_StartBatchTxn:
-		return "SpannerAction_StartBatchTxn"
-	case *executorpb.SpannerAction_GenerateDbPartitionsRead:
-		return "SpannerAction_GenerateDbPartitionsRead"
-	case *executorpb.SpannerAction_GenerateDbPartitionsQuery:
-		return "SpannerAction_GenerateDbPartitionsQuery"
-	case *executorpb.SpannerAction_ExecutePartition:
-		return "SpannerAction_ExecutePartition"
-	case *executorpb.SpannerAction_PartitionedUpdate:
-		return "SpannerAction_PartitionedUpdate"
-	case *executorpb.SpannerAction_CloseBatchTxn:
-		return "SpannerAction_CloseBatchTxn"
-	case *executorpb.SpannerAction_BatchDml:
-		return "SpannerAction_BatchDml"
-	default:
-		return "SpannerAction_default"
+// verifyCloudTraceExportedTraces fetches the traces exported from client application  using
+// Cloud Trace API to cross verify if end to end tracing is working or not.
+func (h *CloudStreamHandler) verifyCloudTraceExportedTraces(ctx context.Context) error {
+	if len(h.exportedTraces) == 0 {
+		return nil
 	}
+	if h.executionFlowContext.TraceClient == nil {
+		log.Println("trace client not found")
+		return nil
+	}
+	log.Printf("start verification of exported cloud traces: len:%v, trace_ids:%v\n", len(h.exportedTraces), h.exportedTraces)
+	// time.Sleep(10 * time.Second)
+	for _, traceId := range h.exportedTraces {
+		getTraceRequest := &tracepb.GetTraceRequest{
+			ProjectId: "spanner-cloud-systest",
+			TraceId:   traceId,
+		}
+		resp, err := h.executionFlowContext.TraceClient.GetTrace(ctx, getTraceRequest)
+		if err != nil {
+			log.Printf("error while calling GetTrace api: %v", err)
+			return err
+		}
+		spanNamesCommaSeperated := ""
+		for i, span := range resp.Spans {
+			if i > 0 {
+				spanNamesCommaSeperated = spanNamesCommaSeperated + "," + span.Name
+			} else {
+				spanNamesCommaSeperated = span.Name
+			}
+		}
+		log.Printf("Trace_id:%v Spans:%v\n", traceId, spanNamesCommaSeperated)
+		if len(resp.Spans) == 0 {
+			return fmt.Errorf("no trace found with trace_id: %v", traceId)
+		}
+	}
+	log.Println("all traces were exported successfully")
+	return nil
 }
 
 // newActionHandler instantiates an actionHandler for executing the given action.
-func (h *CloudStreamHandler) newActionHandler(action *executorpb.SpannerAction, outcomeSender *outputstream.OutcomeSender) (cloudActionHandler, error) {
+func (h *CloudStreamHandler) newActionHandler(action *executorpb.SpannerAction, outcomeSender *outputstream.OutcomeSender) (string, cloudActionHandler, error) {
 	if action.DatabasePath != "" {
 		h.executionFlowContext.Database = action.DatabasePath
 	}
 	switch action.GetAction().(type) {
 	case *executorpb.SpannerAction_Start:
-		return &actions.StartTxnHandler{
-			Action:        action.GetStart(),
-			FlowContext:   h.executionFlowContext,
-			OutcomeSender: outcomeSender,
-			Options:       h.Options,
+		return "Start", &actions.StartTxnHandler{
+			Action:             action.GetStart(),
+			FlowContext:        h.executionFlowContext,
+			OutcomeSender:      outcomeSender,
+			Options:            h.Options,
+			TraceClientOptions: h.TraceClientOptions,
 		}, nil
 	case *executorpb.SpannerAction_Finish:
-		return &actions.FinishTxnHandler{
+		return "Finish", &actions.FinishTxnHandler{
 			Action:        action.GetFinish(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
@@ -214,82 +250,83 @@ func (h *CloudStreamHandler) newActionHandler(action *executorpb.SpannerAction, 
 			OutcomeSender: outcomeSender,
 			Options:       h.Options,
 		}
-		return adminAction, nil
+		return "Admin", adminAction, nil
 	case *executorpb.SpannerAction_Read:
-		return &actions.ReadActionHandler{
+		return "Read", &actions.ReadActionHandler{
 			Action:        action.GetRead(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_Query:
-		return &actions.QueryActionHandler{
+		return "Query", &actions.QueryActionHandler{
 			Action:        action.GetQuery(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_Mutation:
-		return &actions.MutationActionHandler{
+		return "Mutation", &actions.MutationActionHandler{
 			Action:        action.GetMutation(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_Write:
-		return &actions.WriteActionHandler{
+		return "Write", &actions.WriteActionHandler{
 			Action:        action.GetWrite().GetMutation(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_Dml:
-		return &actions.DmlActionHandler{
+		return "Dml", &actions.DmlActionHandler{
 			Action:        action.GetDml(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_StartBatchTxn:
-		return &actions.StartBatchTxnHandler{
-			Action:        action.GetStartBatchTxn(),
-			FlowContext:   h.executionFlowContext,
-			OutcomeSender: outcomeSender,
-			Options:       h.Options,
+		return "StartBatchTxn", &actions.StartBatchTxnHandler{
+			Action:             action.GetStartBatchTxn(),
+			FlowContext:        h.executionFlowContext,
+			OutcomeSender:      outcomeSender,
+			Options:            h.Options,
+			TraceClientOptions: h.TraceClientOptions,
 		}, nil
 	case *executorpb.SpannerAction_GenerateDbPartitionsRead:
-		return &actions.PartitionReadActionHandler{
+		return "GenerateDbPartitionsRead", &actions.PartitionReadActionHandler{
 			Action:        action.GetGenerateDbPartitionsRead(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_GenerateDbPartitionsQuery:
-		return &actions.PartitionQueryActionHandler{
+		return "GenerateDbPartitionsQuery", &actions.PartitionQueryActionHandler{
 			Action:        action.GetGenerateDbPartitionsQuery(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_ExecutePartition:
-		return &actions.ExecutePartition{
+		return "ExecutePartition", &actions.ExecutePartition{
 			Action:        action.GetExecutePartition(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_PartitionedUpdate:
-		return &actions.PartitionedUpdate{
+		return "PartitionedUpdate", &actions.PartitionedUpdate{
 			Action:        action.GetPartitionedUpdate(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_CloseBatchTxn:
-		return &actions.CloseBatchTxnHandler{
+		return "CloseBatchTxn", &actions.CloseBatchTxnHandler{
 			Action:        action.GetCloseBatchTxn(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	case *executorpb.SpannerAction_BatchDml:
-		return &actions.BatchDmlHandler{
+		return "BatchDml", &actions.BatchDmlHandler{
 			Action:        action.GetBatchDml(),
 			FlowContext:   h.executionFlowContext,
 			OutcomeSender: outcomeSender,
 		}, nil
 	default:
-		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("not implemented yet %T", action.GetAction()))
+		return "", nil, status.Error(codes.Unimplemented, fmt.Sprintf("not implemented yet %T", action.GetAction()))
 	}
 }
 

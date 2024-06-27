@@ -25,24 +25,36 @@ import (
 	"google.golang.org/api/option"
 )
 
+const MAX_CLOUD_TRACE_CHECK_LIMIT = 20
+
 // CloudProxyServer holds the cloud executor server.
 type CloudProxyServer struct {
-	serverContext context.Context
-	options       []option.ClientOption
+	// members below should be set by the caller
+	serverContext      context.Context
+	options            []option.ClientOption
+	traceClientOptions []option.ClientOption
+	// members below represent internal state
+	cloudTraceCheckCount int
 }
 
 // NewCloudProxyServer initializes and returns a new CloudProxyServer instance.
-func NewCloudProxyServer(ctx context.Context, opts []option.ClientOption) (*CloudProxyServer, error) {
-	return &CloudProxyServer{serverContext: ctx, options: opts}, nil
+func NewCloudProxyServer(ctx context.Context, opts []option.ClientOption, traceClientOpts []option.ClientOption) (*CloudProxyServer, error) {
+	return &CloudProxyServer{serverContext: ctx, options: opts, traceClientOptions: traceClientOpts, cloudTraceCheckCount: 0}, nil
 }
 
 // ExecuteActionAsync is implementation of ExecuteActionAsync in SpannerExecutorProxyServer. It's a
 // streaming method in which client and server exchange SpannerActions and SpannerActionOutcomes.
 func (s *CloudProxyServer) ExecuteActionAsync(inputStream executorpb.SpannerExecutorProxy_ExecuteActionAsyncServer) error {
 	handler := &inputstream.CloudStreamHandler{
-		Stream:        inputStream,
-		ServerContext: s.serverContext,
-		Options:       s.options,
+		Stream:                 inputStream,
+		ServerContext:          s.serverContext,
+		Options:                s.options,
+		TraceClientOptions:     s.traceClientOptions,
+		CloudTraceCheckAllowed: s.cloudTraceCheckCount < MAX_CLOUD_TRACE_CHECK_LIMIT,
 	}
-	return handler.Execute()
+	err := handler.Execute()
+	if err != nil {
+		s.cloudTraceCheckCount += handler.GetCompletedCloudTraceCheckCount()
+	}
+	return err
 }

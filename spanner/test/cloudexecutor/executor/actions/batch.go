@@ -23,6 +23,7 @@ import (
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
+	trace "cloud.google.com/go/trace/apiv1"
 	"google.golang.org/api/option"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc/codes"
@@ -31,10 +32,11 @@ import (
 
 // StartBatchTxnHandler holds the necessary components and options required for start batch transaction action.
 type StartBatchTxnHandler struct {
-	Action        *executorpb.StartBatchTransactionAction
-	FlowContext   *ExecutionFlowContext
-	OutcomeSender *outputstream.OutcomeSender
-	Options       []option.ClientOption
+	Action             *executorpb.StartBatchTransactionAction
+	FlowContext        *ExecutionFlowContext
+	OutcomeSender      *outputstream.OutcomeSender
+	Options            []option.ClientOption
+	TraceClientOptions []option.ClientOption
 }
 
 // ExecuteAction that starts a batch transaction
@@ -50,10 +52,16 @@ func (h *StartBatchTxnHandler) ExecuteAction(ctx context.Context) error {
 		return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Error(codes.InvalidArgument, "database path must be set for this action")))
 	}
 
-	client, err := spanner.NewClient(ctx, h.FlowContext.Database, h.Options...)
+	client, err := spanner.NewClientWithConfig(ctx, h.FlowContext.Database, spanner.ClientConfig{SessionPoolConfig: spanner.DefaultSessionPoolConfig, DisableRouteToLeader: false, EnableEndToEndTracing: true}, h.Options...)
 	if err != nil {
 		return h.OutcomeSender.FinishWithError(err)
 	}
+	// Create a trace client to read the traces from Cloud Trace.
+	traceClient, err := trace.NewClient(ctx, h.TraceClientOptions...)
+	if err != nil {
+		return h.OutcomeSender.FinishWithError(err)
+	}
+	h.FlowContext.TraceClient = traceClient
 	var txn *spanner.BatchReadOnlyTransaction
 	if h.Action.GetBatchTxnTime() != nil {
 		timestamp := time.Unix(h.Action.GetBatchTxnTime().Seconds, int64(h.Action.GetBatchTxnTime().Nanos))
