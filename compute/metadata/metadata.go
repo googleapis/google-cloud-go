@@ -110,7 +110,7 @@ var (
 	onGCE     bool
 )
 
-// OnGCE reports whether this process is running on Google Compute Engine.
+// OnGCE reports whether this process is running on Google Compute Platforms.
 // NOTE: True returned from `OnGCE` does not guarantee that the metadata server
 // is accessible from this process and have all the metadata defined.
 func OnGCE() bool {

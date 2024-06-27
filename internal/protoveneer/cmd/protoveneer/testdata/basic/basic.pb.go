@@ -96,9 +96,10 @@ type GenerationConfig struct {
 	// Optional. Stop sequences.
 	StopSequences []string `protobuf:"bytes,6,rep,name=stop_sequences,json=stopSequences,proto3" json:"stop_sequences,omitempty"`
 	HarmCat       HarmCategory
-	FinishReason  Candidate_FinishReason
-	CitMet        *CitationMetadata
-	TopK          *float32
+	// Bad doc that doesn't make sense.
+	FinishReason Candidate_FinishReason
+	CitMet       *CitationMetadata
+	TopK         *float32
 }
 
 // A collection of source attributions for a piece of content.

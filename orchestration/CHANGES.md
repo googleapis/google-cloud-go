@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.2...orchestration/v1.9.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **orchestration:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.9.2](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.1...orchestration/v1.9.2) (2024-05-01)
 
 

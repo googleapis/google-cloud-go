@@ -12,7 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package support provides support functions for protoveneer.
+// Package support provides support functions for protoveneer. The protoveneer binary
+// embeds it and extracts the needed functions when generating code.
+//
+// This package should not be imported. It is written as an ordinary Go package so
+// it can be edited and tested with standard tools.
+//
+// The symbols begin with "pv" to reduce the chance of collision when the generated
+// code is combined with user-written code in the same package.
 package support
 
 import (
@@ -29,9 +36,9 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// TransformSlice applies f to each element of from and returns
+// pvTransformSlice applies f to each element of from and returns
 // a new slice with the results.
-func TransformSlice[From, To any](from []From, f func(From) To) []To {
+func pvTransformSlice[From, To any](from []From, f func(From) To) []To {
 	if from == nil {
 		return nil
 	}
@@ -42,9 +49,9 @@ func TransformSlice[From, To any](from []From, f func(From) To) []To {
 	return to
 }
 
-// TransformMapValues applies f to each value of from, returning a new map.
+// pvTransformMapValues applies f to each value of from, returning a new map.
 // It does not change the keys.
-func TransformMapValues[K comparable, VFrom, VTo any](from map[K]VFrom, f func(VFrom) VTo) map[K]VTo {
+func pvTransformMapValues[K comparable, VFrom, VTo any](from map[K]VFrom, f func(VFrom) VTo) map[K]VTo {
 	if from == nil {
 		return nil
 	}
@@ -55,9 +62,9 @@ func TransformMapValues[K comparable, VFrom, VTo any](from map[K]VFrom, f func(V
 	return to
 }
 
-// AddrOrNil returns nil if x is the zero value for T,
+// pvAddrOrNil returns nil if x is the zero value for T,
 // or &x otherwise.
-func AddrOrNil[T comparable](x T) *T {
+func pvAddrOrNil[T comparable](x T) *T {
 	var z T
 	if x == z {
 		return nil
@@ -65,9 +72,9 @@ func AddrOrNil[T comparable](x T) *T {
 	return &x
 }
 
-// DerefOrZero returns the zero value for T if x is nil,
+// pvDerefOrZero returns the zero value for T if x is nil,
 // or *x otherwise.
-func DerefOrZero[T any](x *T) T {
+func pvDerefOrZero[T any](x *T) T {
 	if x == nil {
 		var z T
 		return z
@@ -75,8 +82,8 @@ func DerefOrZero[T any](x *T) T {
 	return *x
 }
 
-// CivilDateToProto converts a civil.Date to a date.Date.
-func CivilDateToProto(d civil.Date) *date.Date {
+// pvCivilDateToProto converts a civil.Date to a date.Date.
+func pvCivilDateToProto(d civil.Date) *date.Date {
 	return &date.Date{
 		Year:  int32(d.Year),
 		Month: int32(d.Month),
@@ -84,8 +91,8 @@ func CivilDateToProto(d civil.Date) *date.Date {
 	}
 }
 
-// CivilDateFromProto converts a date.Date to a civil.Date.
-func CivilDateFromProto(p *date.Date) civil.Date {
+// pvCivilDateFromProto converts a date.Date to a civil.Date.
+func pvCivilDateFromProto(p *date.Date) civil.Date {
 	if p == nil {
 		return civil.Date{}
 	}
@@ -96,52 +103,52 @@ func CivilDateFromProto(p *date.Date) civil.Date {
 	}
 }
 
-// MapToStructPB converts a map into a structpb.Struct.
-func MapToStructPB(m map[string]any) *structpb.Struct {
+// pvMapToStructPB converts a map into a structpb.Struct.
+func pvMapToStructPB(m map[string]any) *structpb.Struct {
 	if m == nil {
 		return nil
 	}
 	s, err := structpb.NewStruct(m)
 	if err != nil {
-		panic(fmt.Errorf("support.MapToProto: %w", err))
+		panic(pvPanic(fmt.Errorf("pvMapToStructPB: %w", err)))
 	}
 	return s
 }
 
-// MapFromStructPB converts a structpb.Struct to a map.
-func MapFromStructPB(p *structpb.Struct) map[string]any {
+// pvMapFromStructPB converts a structpb.Struct to a map.
+func pvMapFromStructPB(p *structpb.Struct) map[string]any {
 	if p == nil {
 		return nil
 	}
 	return p.AsMap()
 }
 
-// TimeToProto converts a time.Time into a Timestamp.
-func TimeToProto(t time.Time) *timestamppb.Timestamp {
+// pvTimeToProto converts a time.Time into a Timestamp.
+func pvTimeToProto(t time.Time) *timestamppb.Timestamp {
 	if t.IsZero() {
 		return nil
 	}
 	return timestamppb.New(t)
 }
 
-// TimeFromProto converts a Timestamp into a time.Time.
-func TimeFromProto(ts *timestamppb.Timestamp) time.Time {
+// pvTimeFromProto converts a Timestamp into a time.Time.
+func pvTimeFromProto(ts *timestamppb.Timestamp) time.Time {
 	if ts == nil {
 		return time.Time{}
 	}
 	return ts.AsTime()
 }
 
-// APIErrorToProto converts an APIError to a proto Status.
-func APIErrorToProto(ae *apierror.APIError) *spb.Status {
+// pvAPIErrorToProto converts an APIError to a proto Status.
+func pvAPIErrorToProto(ae *apierror.APIError) *spb.Status {
 	if ae == nil {
 		return nil
 	}
 	return ae.GRPCStatus().Proto()
 }
 
-// APIErrorFromProto converts a proto Status to an APIError.
-func APIErrorFromProto(s *spb.Status) *apierror.APIError {
+// pvAPIErrorFromProto converts a proto Status to an APIError.
+func pvAPIErrorFromProto(s *spb.Status) *apierror.APIError {
 	err := gstatus.ErrorProto(s)
 	aerr, ok := apierror.ParseError(err, true)
 	if !ok {
@@ -151,10 +158,14 @@ func APIErrorFromProto(s *spb.Status) *apierror.APIError {
 	return aerr
 }
 
-// DurationFromProto converts a Duration proto to a time.Duration.
-func DurationFromProto(d *durationpb.Duration) time.Duration {
+// pvDurationFromProto converts a Duration proto to a time.Duration.
+func pvDurationFromProto(d *durationpb.Duration) time.Duration {
 	if d == nil {
 		return 0
 	}
 	return d.AsDuration()
 }
+
+// So callers can distinguish pv function panics from other panics.
+// Keep in sync with the type generated by protoveneer.
+type pvPanic error
