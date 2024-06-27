@@ -203,23 +203,13 @@ func (h *CloudStreamHandler) verifyCloudTraceExportedTraces(ctx context.Context)
 		}
 		resp, err := h.executionFlowContext.TraceClient.GetTrace(ctx, getTraceRequest)
 		if err != nil {
-			log.Printf("error while calling GetTrace api: %v", err)
+			log.Printf("failed to get trace_id %v using GetTrace api: %v", traceId, err)
 			return err
 		}
-		spanNamesCommaSeperated := ""
-		for i, span := range resp.Spans {
-			if i > 0 {
-				spanNamesCommaSeperated = spanNamesCommaSeperated + "," + span.Name
-			} else {
-				spanNamesCommaSeperated = span.Name
-			}
-		}
-		log.Printf("Trace_id:%v Spans:%v\n", traceId, spanNamesCommaSeperated)
 		if len(resp.Spans) == 0 {
 			return fmt.Errorf("no trace found with trace_id: %v", traceId)
 		}
 	}
-	log.Println("all traces were exported successfully")
 	return nil
 }
 
