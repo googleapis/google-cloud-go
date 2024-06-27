@@ -232,7 +232,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	}
 
 	// Ensure the token exchange HTTP transport uses the same ClientCertProvider as the GRPC API transport.
-	opts.ClientCertProvider, err = transport.GetClientCertificateSource(tOpts)
+	opts.ClientCertProvider, err = transport.GetClientCertificateProvider(tOpts)
 	if err != nil {
 		return nil, err
 	}
