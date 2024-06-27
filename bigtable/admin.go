@@ -686,6 +686,9 @@ func IgnoreWarnings() GCPolicyOption {
 }
 
 func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, policy GCPolicy, opts ...GCPolicyOption) error {
+	if policy == nil {
+		return fmt.Errorf("policy cannot be nil")
+	}
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
