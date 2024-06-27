@@ -1022,6 +1022,51 @@ func TestMinOpenedSessions(t *testing.T) {
 	}
 }
 
+// TestPositiveNumInUseSessions tests that num_in_use session should always be greater than 0.
+func TestPositiveNumInUseSessions(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MinOpened:                 1,
+				healthCheckSampleInterval: time.Millisecond,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+	defer sp.close(ctx)
+	// Take ten sessions from session pool and recycle them.
+	var shs []*sessionHandle
+	for i := 0; i < 10; i++ {
+		sh, err := sp.take(ctx)
+		if err != nil {
+			t.Fatalf("failed to get session(%v): %v", i, err)
+		}
+		shs = append(shs, sh)
+	}
+	for _, sh := range shs {
+		sh.recycle()
+	}
+
+	for sp.idleList.Len() != 1 {
+		continue
+	}
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	if int64(sp.numInUse) < 0 {
+		t.Fatal("numInUse must be >= 0")
+	}
+	// There should be still one session left in either the idle list or in one
+	// of the other opened states due to the min open sessions constraint.
+	if (sp.idleList.Len() +
+		int(sp.createReqs)) != 1 {
+		t.Fatalf(
+			"got %v sessions in idle lists, want 1. Opened: %d, Creation: %d",
+			sp.idleList.Len(), sp.numOpened, sp.createReqs)
+	}
+}
+
 // TestMaxBurst tests max burst constraint.
 func TestMaxBurst(t *testing.T) {
 	t.Parallel()
