@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.12.6](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.5...language/v1.12.6) (2024-06-26)
+
+
+### Bug Fixes
+
+* **language:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.12.5](https://github.com/googleapis/google-cloud-go/compare/language/v1.12.4...language/v1.12.5) (2024-05-01)
 
 

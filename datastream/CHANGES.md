@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.10.6...datastream/v1.10.7) (2024-06-26)
+
+
+### Bug Fixes
+
+* **datastream:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.10.5...datastream/v1.10.6) (2024-05-01)
 
 

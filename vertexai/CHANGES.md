@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.11.0...vertexai/v0.12.0) (2024-06-12)
+
+
+### Features
+
+* **vertexai/genai:** Add MergedResponse method to GenerateContentResponseIterator ([#10355](https://github.com/googleapis/google-cloud-go/issues/10355)) ([9d365d1](https://github.com/googleapis/google-cloud-go/commit/9d365d113bd9c89beed640fb3de17747ab580993))
+
 ## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.10.0...vertexai/v0.11.0) (2024-06-11)
 
 

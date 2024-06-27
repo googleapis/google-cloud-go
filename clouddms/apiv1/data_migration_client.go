@@ -104,6 +104,7 @@ func defaultDataMigrationGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://datamigration.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

@@ -926,10 +926,10 @@ func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
 	if p.TrackSessionHandles || p.ActionOnInactiveTransaction == Warn || p.ActionOnInactiveTransaction == WarnAndClose || p.ActionOnInactiveTransaction == Close {
 		p.mu.Lock()
 		sh.trackedSessionHandle = p.trackedSessionHandles.PushBack(sh)
-		p.mu.Unlock()
 		if p.TrackSessionHandles {
 			sh.stack = debug.Stack()
 		}
+		p.mu.Unlock()
 	}
 	return sh
 }

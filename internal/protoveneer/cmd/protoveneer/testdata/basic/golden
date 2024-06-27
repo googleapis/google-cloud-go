@@ -8,9 +8,13 @@ import (
 
 	"cloud.google.com/go/civil"
 	pb "example.com/basic"
-	"example.com/protoveneer/support"
 	"github.com/googleapis/gax-go/v2/apierror"
+	spb "google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/genproto/googleapis/type/date"
+	gstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Blob contains raw media bytes.
@@ -59,9 +63,9 @@ func (v *Citation) toProto() *pb.Citation {
 	}
 	return &pb.Citation{
 		Uri:             v.URI,
-		PublicationDate: support.CivilDateToProto(v.PublicationDate),
-		Struct:          support.MapToStructPB(v.Struct),
-		CreateTime:      support.TimeToProto(v.CreateTime),
+		PublicationDate: pvCivilDateToProto(v.PublicationDate),
+		Struct:          pvMapToStructPB(v.Struct),
+		CreateTime:      pvTimeToProto(v.CreateTime),
 	}
 }
 
@@ -71,9 +75,9 @@ func (Citation) fromProto(p *pb.Citation) *Citation {
 	}
 	return &Citation{
 		URI:             p.Uri,
-		PublicationDate: support.CivilDateFromProto(p.PublicationDate),
-		Struct:          support.MapFromStructPB(p.Struct),
-		CreateTime:      support.TimeFromProto(p.CreateTime),
+		PublicationDate: pvCivilDateFromProto(p.PublicationDate),
+		Struct:          pvMapFromStructPB(p.Struct),
+		CreateTime:      pvTimeFromProto(p.CreateTime),
 	}
 }
 
@@ -89,8 +93,8 @@ func (v *CitationMetadata) toProto() *pb.CitationMetadata {
 		return nil
 	}
 	return &pb.CitationMetadata{
-		Citations: support.TransformSlice(v.Citations, (*Citation).toProto),
-		CitMap:    support.TransformMapValues(v.CitMap, (*Citation).toProto),
+		Citations: pvTransformSlice(v.Citations, (*Citation).toProto),
+		CitMap:    pvTransformMapValues(v.CitMap, (*Citation).toProto),
 	}
 }
 
@@ -99,8 +103,8 @@ func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
 		return nil
 	}
 	return &CitationMetadata{
-		Citations: support.TransformSlice(p.Citations, (Citation{}).fromProto),
-		CitMap:    support.TransformMapValues(p.CitMap, (Citation{}).fromProto),
+		Citations: pvTransformSlice(p.Citations, (Citation{}).fromProto),
+		CitMap:    pvTransformMapValues(p.CitMap, (Citation{}).fromProto),
 	}
 }
 
@@ -115,7 +119,7 @@ func (v *File) toProto() *pb.File {
 		return nil
 	}
 	return &pb.File{
-		Error: support.APIErrorToProto(v.Error),
+		Error: pvAPIErrorToProto(v.Error),
 		Dur:   durationpb.New(v.Dur),
 	}
 }
@@ -125,8 +129,8 @@ func (File) fromProto(p *pb.File) *File {
 		return nil
 	}
 	return &File{
-		Error: support.APIErrorFromProto(p.Error),
-		Dur:   support.DurationFromProto(p.Dur),
+		Error: pvAPIErrorFromProto(p.Error),
+		Dur:   pvDurationFromProto(p.Dur),
 	}
 }
 
@@ -177,9 +181,13 @@ type GenerationConfig struct {
 	// Optional. Stop sequences.
 	StopSequences []string
 	HarmCat       HarmCategory
-	FinishReason  FinishReason
-	CitMet        *CitationMetadata
-	TopK          *int32
+	// The reason for finishing.
+	FinishReason FinishReason
+	CitMet       *CitationMetadata
+	// Multiple lines of
+	// documentation for this
+	// field.
+	TopK *int32
 }
 
 func (v *GenerationConfig) toProto() *pb.GenerationConfig {
@@ -187,8 +195,8 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		return nil
 	}
 	return &pb.GenerationConfig{
-		Temperature:    support.AddrOrNil(v.Temperature),
-		CandidateCount: support.AddrOrNil(v.CandidateCount),
+		Temperature:    pvAddrOrNil(v.Temperature),
+		CandidateCount: pvAddrOrNil(v.CandidateCount),
 		StopSequences:  v.StopSequences,
 		HarmCat:        pb.HarmCategory(v.HarmCat),
 		FinishReason:   pb.Candidate_FinishReason(v.FinishReason),
@@ -202,8 +210,8 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		return nil
 	}
 	return &GenerationConfig{
-		Temperature:    support.DerefOrZero(p.Temperature),
-		CandidateCount: support.DerefOrZero(p.CandidateCount),
+		Temperature:    pvDerefOrZero(p.Temperature),
+		CandidateCount: pvDerefOrZero(p.CandidateCount),
 		StopSequences:  p.StopSequences,
 		HarmCat:        HarmCategory(p.HarmCat),
 		FinishReason:   FinishReason(p.FinishReason),
@@ -271,4 +279,154 @@ func (Pop) fromProto(p *pb.Pop) *Pop {
 	}
 	popYFrom(v, p)
 	return v
+}
+
+// pvTransformSlice applies f to each element of from and returns
+// a new slice with the results.
+func pvTransformSlice[From, To any](from []From, f func(From) To) []To {
+	if from == nil {
+		return nil
+	}
+	to := make([]To, len(from))
+	for i, e := range from {
+		to[i] = f(e)
+	}
+	return to
+}
+
+// pvTransformMapValues applies f to each value of from, returning a new map.
+// It does not change the keys.
+func pvTransformMapValues[K comparable, VFrom, VTo any](from map[K]VFrom, f func(VFrom) VTo) map[K]VTo {
+	if from == nil {
+		return nil
+	}
+	to := map[K]VTo{}
+	for k, v := range from {
+		to[k] = f(v)
+	}
+	return to
+}
+
+// pvAddrOrNil returns nil if x is the zero value for T,
+// or &x otherwise.
+func pvAddrOrNil[T comparable](x T) *T {
+	var z T
+	if x == z {
+		return nil
+	}
+	return &x
+}
+
+// pvDerefOrZero returns the zero value for T if x is nil,
+// or *x otherwise.
+func pvDerefOrZero[T any](x *T) T {
+	if x == nil {
+		var z T
+		return z
+	}
+	return *x
+}
+
+// pvCivilDateToProto converts a civil.Date to a date.Date.
+func pvCivilDateToProto(d civil.Date) *date.Date {
+	return &date.Date{
+		Year:  int32(d.Year),
+		Month: int32(d.Month),
+		Day:   int32(d.Day),
+	}
+}
+
+// pvCivilDateFromProto converts a date.Date to a civil.Date.
+func pvCivilDateFromProto(p *date.Date) civil.Date {
+	if p == nil {
+		return civil.Date{}
+	}
+	return civil.Date{
+		Year:  int(p.Year),
+		Month: time.Month(p.Month),
+		Day:   int(p.Day),
+	}
+}
+
+// pvMapToStructPB converts a map into a structpb.Struct.
+func pvMapToStructPB(m map[string]any) *structpb.Struct {
+	if m == nil {
+		return nil
+	}
+	s, err := structpb.NewStruct(m)
+	if err != nil {
+		panic(pvPanic(fmt.Errorf("pvMapToStructPB: %w", err)))
+	}
+	return s
+}
+
+// pvMapFromStructPB converts a structpb.Struct to a map.
+func pvMapFromStructPB(p *structpb.Struct) map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.AsMap()
+}
+
+// pvTimeToProto converts a time.Time into a Timestamp.
+func pvTimeToProto(t time.Time) *timestamppb.Timestamp {
+	if t.IsZero() {
+		return nil
+	}
+	return timestamppb.New(t)
+}
+
+// pvTimeFromProto converts a Timestamp into a time.Time.
+func pvTimeFromProto(ts *timestamppb.Timestamp) time.Time {
+	if ts == nil {
+		return time.Time{}
+	}
+	return ts.AsTime()
+}
+
+// pvAPIErrorToProto converts an APIError to a proto Status.
+func pvAPIErrorToProto(ae *apierror.APIError) *spb.Status {
+	if ae == nil {
+		return nil
+	}
+	return ae.GRPCStatus().Proto()
+}
+
+// pvAPIErrorFromProto converts a proto Status to an APIError.
+func pvAPIErrorFromProto(s *spb.Status) *apierror.APIError {
+	err := gstatus.ErrorProto(s)
+	aerr, ok := apierror.ParseError(err, true)
+	if !ok {
+		// Should be impossible.
+		return nil
+	}
+	return aerr
+}
+
+// pvDurationFromProto converts a Duration proto to a time.Duration.
+func pvDurationFromProto(d *durationpb.Duration) time.Duration {
+	if d == nil {
+		return 0
+	}
+	return d.AsDuration()
+}
+
+// pvPanic wraps panics from support functions.
+// User-provided functions in the same package can also use it.
+// It allows callers to distinguish conversion function panics from other panics.
+type pvPanic error
+
+// pvCatchPanic recovers from panics of type pvPanic and
+// returns an error instead.
+func pvCatchPanic[T any](f func() T) (_ T, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return f(), nil
 }

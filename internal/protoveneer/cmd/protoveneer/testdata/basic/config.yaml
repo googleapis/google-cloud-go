@@ -14,7 +14,6 @@
 
 package: basic
 protoImportPath: example.com/basic
-supportImportPath: example.com/protoveneer/support
 
 types:
     HarmCategory:
@@ -40,6 +39,12 @@ types:
         TopK:
           type: '*int32'
           convertToFrom: int32pToFloat32p, float32pToInt32p
+          doc: |
+            Multiple lines of
+            documentation for this
+            field.
+        FinishReason:
+          doc: 'The reason for finishing.'
 
     Citation:
       docVerb: contains

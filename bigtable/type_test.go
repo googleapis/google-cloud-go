@@ -50,6 +50,23 @@ func TestInt64Proto(t *testing.T) {
 	}
 }
 
+func TestStringProto(t *testing.T) {
+	want := &btapb.Type{
+		Kind: &btapb.Type_StringType{
+			StringType: &btapb.Type_String{
+				Encoding: &btapb.Type_String_Encoding{
+					Encoding: &btapb.Type_String_Encoding_Utf8Raw_{},
+				},
+			},
+		},
+	}
+
+	got := StringType{}.proto()
+	if !proto.Equal(got, want) {
+		t.Errorf("got type %v, want: %v", got, want)
+	}
+}
+
 func TestAggregateProto(t *testing.T) {
 	want := &btapb.Type{
 		Kind: &btapb.Type_AggregateType{
