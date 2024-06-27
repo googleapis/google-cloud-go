@@ -1049,7 +1049,13 @@ func TestPositiveNumInUseSessions(t *testing.T) {
 		sh.recycle()
 	}
 
-	for sp.idleList.Len() != 1 {
+	for true {
+		sp.mu.Lock()
+		if sp.idleList.Len() == 1 {
+			sp.mu.Unlock()
+			break
+		}
+		sp.mu.Unlock()
 		continue
 	}
 	sp.mu.Lock()

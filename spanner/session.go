@@ -1152,8 +1152,10 @@ func (p *sessionPool) remove(s *session, isExpire bool) bool {
 	if s.invalidate() {
 		// Decrease the number of opened sessions.
 		p.numOpened--
-		// Decrease the number of sessions in use.
-		p.decNumInUseLocked(ctx)
+		// Decrease the number of sessions in use, only when not from idle list.
+		if !isExpire {
+			p.decNumInUseLocked(ctx)
+		}
 		p.recordStat(ctx, OpenSessionCount, int64(p.numOpened))
 		// Broadcast that a session has been destroyed.
 		close(p.mayGetSession)
