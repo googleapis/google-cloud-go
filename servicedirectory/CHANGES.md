@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.8](https://github.com/googleapis/google-cloud-go/compare/servicedirectory/v1.11.7...servicedirectory/v1.11.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **servicedirectory:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.11.7](https://github.com/googleapis/google-cloud-go/compare/servicedirectory/v1.11.6...servicedirectory/v1.11.7) (2024-05-16)
 
 

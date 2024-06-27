@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/retail/v1.17.0...retail/v1.17.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **retail:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.16.2...retail/v1.17.0) (2024-06-10)
 
 

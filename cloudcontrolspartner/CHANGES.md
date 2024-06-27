@@ -1,6 +1,20 @@
 # Changelog
 
 
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/cloudcontrolspartner/v0.2.1...cloudcontrolspartner/v1.0.0) (2024-06-26)
+
+
+### Documentation
+
+* **cloudcontrolspartner:** Mark the accessApprovalRequests.list method as deprecated ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **cloudcontrolspartner:** Mark the accessApprovalRequests.list method as deprecated ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Miscellaneous Chores
+
+* **cloudcontrolspartner:** Release v1.0.0 ([#10443](https://github.com/googleapis/google-cloud-go/issues/10443)) ([2980bd1](https://github.com/googleapis/google-cloud-go/commit/2980bd1a8ef6c5a990a1311ab756a9669bedd291))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/cloudcontrolspartner/v0.2.0...cloudcontrolspartner/v0.2.1) (2024-05-01)
 
 
