@@ -120,8 +120,8 @@ func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 		tlsConfig := &tls.Config{
 			GetClientCertificate: o.ClientCertProvider,
 		}
-		do.Client = detect.CustomHTTPClient(tlsConfig)
-		do.TokenURL = detect.GetGoogleMtlsTokenURL()
+		do.Client = transport.DefaultHTTPClientWithTLS(tlsConfig)
+		do.TokenURL = detect.GoogleMTLSTokenURL
 	}
 	return do
 }

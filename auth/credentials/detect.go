@@ -16,11 +16,9 @@ package credentials
 
 import (
 	"context"
-	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net"
 	"net/http"
 	"os"
 	"time"
@@ -38,7 +36,7 @@ const (
 	// Google's OAuth 2.0 default endpoints.
 	googleAuthURL      = "https://accounts.google.com/o/oauth2/auth"
 	googleTokenURL     = "https://oauth2.googleapis.com/token"
-	googleMtlsTokenURL = "https://oauth2.mtls.googleapis.com/token"
+	GoogleMTLSTokenURL = "https://oauth2.mtls.googleapis.com/token"
 
 	// Help on default credentials
 	adcSetupURL = "https://cloud.google.com/docs/authentication/external/set-up-adc"
@@ -251,33 +249,5 @@ func clientCredConfigFromJSON(b []byte, opts *DetectOptions) *auth.Options3LO {
 		// TODO(codyoss): refactor this out. We need to add in auto-detection
 		// for this use case.
 		AuthStyle: auth.StyleInParams,
-	}
-}
-
-// GetGoogleMtlsTokenURL returns the mTLS token exchange URL
-func GetGoogleMtlsTokenURL() string {
-	return googleMtlsTokenURL
-}
-
-// CustomHTTPClient constructs an HTTPClient using the provided tlsConfig, to support mTLS.
-func CustomHTTPClient(tlsConfig *tls.Config) *http.Client {
-	trans := baseTransport()
-	trans.TLSClientConfig = tlsConfig
-	return &http.Client{Transport: trans}
-}
-
-func baseTransport() *http.Transport {
-	return &http.Transport{
-		Proxy: http.ProxyFromEnvironment,
-		DialContext: (&net.Dialer{
-			Timeout:   30 * time.Second,
-			KeepAlive: 30 * time.Second,
-			DualStack: true,
-		}).DialContext,
-		MaxIdleConns:          100,
-		MaxIdleConnsPerHost:   100,
-		IdleConnTimeout:       90 * time.Second,
-		TLSHandshakeTimeout:   10 * time.Second,
-		ExpectContinueTimeout: 1 * time.Second,
 	}
 }

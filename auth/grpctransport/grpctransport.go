@@ -22,7 +22,7 @@ import (
 	"net/http"
 
 	"cloud.google.com/go/auth"
-	detect "cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/transport"
 	"go.opencensus.io/plugin/ocgrpc"
@@ -81,7 +81,7 @@ type Options struct {
 	ClientCertProvider ClientCertProvider
 	// DetectOpts configures settings for detect Application Default
 	// Credentials.
-	DetectOpts *detect.DetectOptions
+	DetectOpts *credentials.DetectOptions
 	// UniverseDomain is the default service domain for a given Cloud universe.
 	// The default value is "googleapis.com". This is the universe domain
 	// configured for the client, which will be compared to the universe domain
@@ -118,7 +118,7 @@ func (o *Options) validate() error {
 	return nil
 }
 
-func (o *Options) resolveDetectOptions() *detect.DetectOptions {
+func (o *Options) resolveDetectOptions() *credentials.DetectOptions {
 	io := o.InternalOptions
 	// soft-clone these so we are not updating a ref the user holds and may reuse
 	do := transport.CloneDetectOptions(o.DetectOpts)
@@ -139,8 +139,8 @@ func (o *Options) resolveDetectOptions() *detect.DetectOptions {
 		tlsConfig := &tls.Config{
 			GetClientCertificate: o.ClientCertProvider,
 		}
-		do.Client = detect.CustomHTTPClient(tlsConfig)
-		do.TokenURL = detect.GetGoogleMtlsTokenURL()
+		do.Client = transport.DefaultHTTPClientWithTLS(tlsConfig)
+		do.TokenURL = credentials.GoogleMTLSTokenURL
 	}
 	return do
 }
@@ -246,7 +246,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			creds = opts.Credentials
 		} else {
 			var err error
-			creds, err = detect.DetectDefault(opts.resolveDetectOptions())
+			creds, err = credentials.DetectDefault(opts.resolveDetectOptions())
 			if err != nil {
 				return nil, err
 			}
