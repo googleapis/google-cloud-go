@@ -197,6 +197,7 @@ func (sh *sessionHandle) destroy() {
 		p.trackedSessionHandles.Remove(tracked)
 		p.mu.Unlock()
 	}
+	// since sessionHandle is always used by Transactions we can safely destroy the session with wasInUse=true
 	s.destroy(false, true)
 }
 
@@ -900,14 +901,14 @@ func (p *sessionPool) close(ctx context.Context) {
 	wg := sync.WaitGroup{}
 	for _, s := range allSessions {
 		wg.Add(1)
-		go deleteSession(ctx, s, &wg)
+		go closeSession(ctx, s, &wg)
 	}
 	wg.Wait()
 }
 
-func deleteSession(ctx context.Context, s *session, wg *sync.WaitGroup) {
+func closeSession(ctx context.Context, s *session, wg *sync.WaitGroup) {
 	defer wg.Done()
-	s.destroyWithContext(ctx, false, true)
+	s.destroyWithContext(ctx, false, false)
 }
 
 // errInvalidSessionPool is the error for using an invalid session pool.
