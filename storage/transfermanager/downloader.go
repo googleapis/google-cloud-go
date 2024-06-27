@@ -31,6 +31,10 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+// ErrDownloaderClosed indicates that the Downloader has already been closed and
+// must not be used for new operations.
+var ErrDownloaderClosed = errors.New("transfermanager: Downloader used after WaitAndClose was called")
+
 // Downloader manages a set of parallelized downloads.
 type Downloader struct {
 	client              *storage.Client
@@ -55,11 +59,11 @@ type Downloader struct {
 // set on the ctx may time out before the download even starts. To set a timeout
 // that starts with the download, use the [WithPerOpTimeout()] option.
 func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectInput) error {
-	if d.config.asynchronous && input.Callback == nil {
-		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
+	if d.closed() {
+		return ErrDownloaderClosed
 	}
-	if !d.config.asynchronous && input.Callback != nil {
-		return errors.New("transfermanager: input.Callback must be nil unless the WithCallbacks option is set")
+	if err := d.validateObjectInput(input); err != nil {
+		return err
 	}
 
 	select {
@@ -81,17 +85,11 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 // directory structure locally as the operations progress.
 // Note: DownloadDirectory overwrites existing files in the directory.
 func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirectoryInput) error {
-	if d.config.asynchronous && input.Callback == nil {
-		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
+	if d.closed() {
+		return ErrDownloaderClosed
 	}
-	if !d.config.asynchronous && input.Callback != nil {
-		return errors.New("transfermanager: input.Callback must be nil unless the WithCallbacks option is set")
-	}
-
-	select {
-	case <-d.doneReceivingInputs:
-		return errors.New("transfermanager: WaitAndClose called before DownloadDirectory")
-	default:
+	if err := d.validateDirectoryInput(input); err != nil {
+		return err
 	}
 
 	objectsToQueue := []DownloadObjectInput{}
@@ -105,29 +103,30 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		return fmt.Errorf("transfermanager: DownloadDirectory query.SetAttrSelection: %w", err)
 	}
 
-	it := d.client.Bucket(input.Bucket).Objects(ctx, query)
-
 	// TODO: Clean up any created directory structure on failure.
 
-	attrs, err := it.Next()
-	for err != iterator.Done {
+	it := d.client.Bucket(input.Bucket).Objects(ctx, query)
+
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
 		if err != nil {
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to list objects: %w", err)
 		}
 
-		// Add generation?
-
 		object := attrs.Name
+		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(object))
+		filePath := filepath.Join(input.LocalDirectory, object)
 
 		// Make sure all directories in the object path exist.
-		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(object))
 		err = os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
 		if err != nil {
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", objDirectory, err)
 		}
 
 		// Create file to download to.
-		filePath := filepath.Join(input.LocalDirectory, object)
 		f, fErr := os.Create(filePath)
 		if fErr != nil {
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to create file(%q): %w", filePath, fErr)
@@ -141,8 +140,6 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 			ctx:         ctx,
 			directory:   true,
 		})
-
-		attrs, err = it.Next()
 	}
 
 	d.addNewInputs(objectsToQueue)
@@ -356,6 +353,35 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, outs <-chan *Download
 	d.addResult(in, shardOut)
 }
 
+func (d *Downloader) validateObjectInput(in *DownloadObjectInput) error {
+	if d.config.asynchronous && in.Callback == nil {
+		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
+	}
+	if !d.config.asynchronous && in.Callback != nil {
+		return errors.New("transfermanager: input.Callback must be nil unless the WithCallbacks option is set")
+	}
+	return nil
+}
+
+func (d *Downloader) validateDirectoryInput(in *DownloadDirectoryInput) error {
+	if d.config.asynchronous && in.Callback == nil {
+		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
+	}
+	if !d.config.asynchronous && in.Callback != nil {
+		return errors.New("transfermanager: input.Callback must be nil unless the WithCallbacks option is set")
+	}
+	return nil
+}
+
+func (d *Downloader) closed() bool {
+	select {
+	case <-d.doneReceivingInputs:
+		return true
+	default:
+		return false
+	}
+}
+
 // NewDownloader creates a new Downloader to add operations to.
 // Choice of transport, etc is configured on the client that's passed in.
 // The returned Downloader can be shared across goroutines to initiate downloads.
@@ -501,8 +527,11 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 
 // DownloadDirectoryInput is the input for a directory to download.
 type DownloadDirectoryInput struct {
-	// Required fields.
-	Bucket         string
+	// Bucket is the bucket in GCS to download from. Required.
+	Bucket string
+	// LocalDirectory specifies the directory to download the matched objects
+	// to. Relative paths are allowed. The directory will be created if it does
+	// not already exist. Required.
 	LocalDirectory string
 
 	// Prefix is the prefix filter to download objects whose names begin with this.
