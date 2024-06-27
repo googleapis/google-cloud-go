@@ -194,13 +194,14 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 				// Create meter provider options for custom meter provider
 				stdoutMpOpts := metric.WithReader(periodicReaderStdout)
-				mpOpts, err := WithBuiltIn(ctx, project, stdoutMpOpts)
+				builtInMpOpts, err := BuiltInMeterProviderOptions(project)
 				if err != nil {
 					t.Fatalf("WithBuiltIn failed: %v", err)
 				}
+				mpopts := append(builtInMpOpts, stdoutMpOpts)
 
 				// Create custom meter provider which exports to stdout and GCM
-				customMeterProvider = sdkmetric.NewMeterProvider(mpOpts...)
+				customMeterProvider = sdkmetric.NewMeterProvider(mpopts...)
 
 				test.config = ClientConfig{
 					MetricsProvider: CustomOpenTelemetryMetricsProvider{
@@ -302,14 +303,17 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 func TestToOtelMetricAttrs(t *testing.T) {
 	mt := builtinMetricsTracer{
-		tableName:    "my-table",
-		appProfileID: "my-app-profile",
-		method:       "ReadRows",
-		isStreaming:  true,
-		status:       codes.OK.String(),
-		headerMD:     testHeaderMD,
-		trailerMD:    &metadata.MD{},
-		attemptCount: 1,
+		tableName:   "my-table",
+		method:      "ReadRows",
+		isStreaming: true,
+		currOp: opTracer{
+			status: codes.OK.String(),
+			currAttempt: attemptTracer{
+				headerMD:  testHeaderMD,
+				trailerMD: &metadata.MD{},
+			},
+			attemptCount: 1,
+		},
 	}
 	tests := []struct {
 		desc       string
@@ -326,7 +330,7 @@ func TestToOtelMetricAttrs(t *testing.T) {
 				attribute.String(monitoredResLabelKeyTable, "my-table"),
 				attribute.String(metricLabelKeyMethod, "ReadRows"),
 				attribute.Bool(metricLabelKeyStreamingOperation, true),
-				attribute.String(metricLabelKeyOperationStatus, codes.OK.String()),
+				attribute.String(metricLabelKeyStatus, codes.OK.String()),
 				attribute.String(monitoredResLabelKeyCluster, clusterID1),
 				attribute.String(monitoredResLabelKeyZone, zoneID1),
 			},
@@ -337,14 +341,14 @@ func TestToOtelMetricAttrs(t *testing.T) {
 			mt:         mt,
 			metricName: "unknown_metric",
 			wantAttrs:  nil,
-			wantError:  fmt.Errorf("Unable to create attributes list for unknown metric: unknown_metric"),
+			wantError:  fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
 		},
 	}
 
 	lessKeyValue := func(a, b attribute.KeyValue) bool { return a.Key < b.Key }
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			gotAttrs, gotErr := test.mt.toOtelMetricAttrs(test.metricName)
+			gotAttrs, gotErr := test.mt.toOtelMetricAttrs(test.metricName, mt.currOp.currAttempt.headerMD, mt.currOp.currAttempt.trailerMD, mt.currOp.status)
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
@@ -426,11 +430,15 @@ func TestGetServerLatency(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			mt := builtinMetricsTracer{
-				headerMD:  test.headerMD,
-				trailerMD: test.trailerMD,
+				currOp: opTracer{
+					currAttempt: attemptTracer{
+						headerMD:  test.headerMD,
+						trailerMD: test.trailerMD,
+					},
+				},
 			}
 
-			gotLatency, gotErr := mt.getServerLatency()
+			gotLatency, gotErr := getServerLatency(mt.currOp.currAttempt.headerMD, mt.currOp.currAttempt.trailerMD)
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
@@ -508,11 +516,15 @@ func TestGetLocation(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
 			mt := builtinMetricsTracer{
-				headerMD:  test.headerMD,
-				trailerMD: test.trailerMD,
+				currOp: opTracer{
+					currAttempt: attemptTracer{
+						headerMD:  test.headerMD,
+						trailerMD: test.trailerMD,
+					},
+				},
 			}
 
-			gotCluster, gotZone, gotErr := mt.getLocation()
+			gotCluster, gotZone, gotErr := getLocation(mt.currOp.currAttempt.headerMD, mt.currOp.currAttempt.trailerMD)
 			if gotCluster != test.wantCluster {
 				t.Errorf("cluster got: %v, want: %v", gotCluster, test.wantCluster)
 			}

@@ -94,14 +94,19 @@ type CustomOpenTelemetryMetricsProvider struct {
 
 func (CustomOpenTelemetryMetricsProvider) isMetricsProvider() {}
 
-// WithBuiltIn takes in meter provider options and appends built in metrics periodic reader with exporter
-func WithBuiltIn(ctx context.Context, project string, opts ...sdkmetric.Option) ([]sdkmetric.Option, error) {
-	opt, err := getBuiltInMeterProviderOptions(ctx, project)
+// BuiltInMeterProviderOptions returns built in metrics periodic reader with exporter
+func BuiltInMeterProviderOptions(project string) ([]sdkmetric.Option, error) {
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
 	if err != nil {
-		return opts, err
+		return nil, err
 	}
-	opts = append(opts, opt)
-	return opts, err
+
+	return []sdkmetric.Option{sdkmetric.WithReader(
+		sdkmetric.NewPeriodicReader(
+			defaultExporter,
+			sdkmetric.WithInterval(defaultSamplePeriod),
+		),
+	)}, nil
 }
 
 // NewClient creates a new Client for a given project and instance.
@@ -354,17 +359,17 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable.ReadRows")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	metricsTracer := t.newBuiltinMetricsTracer(ctx, true)
-	defer metricsTracer.recordOperationCompletion()
+	mt := t.newBuiltinMetricsTracer(ctx, true)
+	defer recordOperationCompletion(mt)
 
-	err = t.readRows(ctx, arg, f, metricsTracer, opts...)
-	return metricsTracer.recordAndConvertErr(err)
+	err = t.readRows(ctx, arg, f, mt, opts...)
+	return mt.setOpStatus(err)
 }
 
 func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *builtinMetricsTracer, opts ...ReadOption) (err error) {
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
-	err = mt.gaxInvokeWithRecorder(ctx, "ReadRows", func(ctx context.Context, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, mt, "ReadRows", func(ctx context.Context, _ gax.CallSettings) error {
 		req := &btpb.ReadRowsRequest{
 			AppProfileId: t.c.appProfile,
 		}
@@ -403,18 +408,18 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 			cr = newChunkReader()
 		}
 
-		*mt.headerMD, err = stream.Header()
+		*mt.currOp.currAttempt.headerMD, err = stream.Header()
 		if err != nil {
 			return err
 		}
 		for {
 			res, err := stream.Recv()
 			if err == io.EOF {
-				*mt.trailerMD = stream.Trailer()
+				*mt.currOp.currAttempt.trailerMD = stream.Trailer()
 				break
 			}
 			if err != nil {
-				*mt.trailerMD = stream.Trailer()
+				*mt.currOp.currAttempt.trailerMD = stream.Trailer()
 				// Reset arg for next Invoke call.
 				if arg == nil {
 					// Should be lowest possible key value, an empty byte array
@@ -450,7 +455,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 					cancel()
 					for {
 						if _, err := stream.Recv(); err != nil {
-							*mt.trailerMD = stream.Trailer()
+							*mt.currOp.currAttempt.trailerMD = stream.Trailer()
 							// The stream has ended. We don't return an error
 							// because the caller has intentionally interrupted the scan.
 							return nil
@@ -992,12 +997,11 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/Apply")
 	defer func() { trace.EndSpan(ctx, err) }()
+	mt := t.newBuiltinMetricsTracer(ctx, false)
+	defer recordOperationCompletion(mt)
 
-	metricsTracer := t.newBuiltinMetricsTracer(ctx, false)
-	defer metricsTracer.recordOperationCompletion()
-
-	err = t.apply(ctx, metricsTracer, row, m, opts...)
-	return metricsTracer.recordAndConvertErr(err)
+	err = t.apply(ctx, mt, row, m, opts...)
+	return mt.setOpStatus(err)
 }
 
 func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string, m *Mutation, opts ...ApplyOption) (err error) {
@@ -1023,9 +1027,9 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 			callOptions = retryOptions
 		}
 		var res *btpb.MutateRowResponse
-		err := mt.gaxInvokeWithRecorder(ctx, "MutateRow", func(ctx context.Context, _ gax.CallSettings) error {
+		err := gaxInvokeWithRecorder(ctx, mt, "MutateRow", func(ctx context.Context, _ gax.CallSettings) error {
 			var err error
-			res, err = t.c.client.MutateRow(ctx, req, grpc.Header(mt.headerMD), grpc.Trailer(mt.trailerMD))
+			res, err = t.c.client.MutateRow(ctx, req, grpc.Header(mt.currOp.currAttempt.headerMD), grpc.Trailer(mt.currOp.currAttempt.trailerMD))
 			return err
 		}, callOptions...)
 		if err == nil {
@@ -1060,9 +1064,9 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 		callOptions = retryOptions
 	}
 	var cmRes *btpb.CheckAndMutateRowResponse
-	err = mt.gaxInvokeWithRecorder(ctx, "CheckAndMutateRow", func(ctx context.Context, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, mt, "CheckAndMutateRow", func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
-		cmRes, err = t.c.client.CheckAndMutateRow(ctx, req, grpc.Header(mt.headerMD), grpc.Trailer(mt.trailerMD))
+		cmRes, err = t.c.client.CheckAndMutateRow(ctx, req, grpc.Header(mt.currOp.currAttempt.headerMD), grpc.Trailer(mt.currOp.currAttempt.trailerMD))
 		return err
 	}, callOptions...)
 	if err == nil {
@@ -1201,13 +1205,13 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	ctx = trace.StartSpan(ctx, method)
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	metricsTracer := t.newBuiltinMetricsTracer(ctx, true)
-	defer metricsTracer.recordOperationCompletion()
-	errs, err = t.applyBulk(ctx, metricsTracer, rowKeys, muts, opts...)
-	return errs, metricsTracer.recordAndConvertErr(err)
+	mt := t.newBuiltinMetricsTracer(ctx, true)
+	defer recordOperationCompletion(mt)
+	errs, err = t.applyBulk(ctx, mt, rowKeys, muts, opts...)
+	return errs, mt.setOpStatus(err)
 }
 
-func (t *Table) applyBulk(ctx context.Context, metricsTracer *builtinMetricsTracer, rowKeys []string, muts []*Mutation, opts ...ApplyOption) (errs []error, err error) {
+func (t *Table) applyBulk(ctx context.Context, mt *builtinMetricsTracer, rowKeys []string, muts []*Mutation, opts ...ApplyOption) (errs []error, err error) {
 	if len(rowKeys) != len(muts) {
 		return nil, fmt.Errorf("mismatched rowKeys and mutation array lengths: %d, %d", len(rowKeys), len(muts))
 	}
@@ -1223,10 +1227,10 @@ func (t *Table) applyBulk(ctx context.Context, metricsTracer *builtinMetricsTrac
 
 	for _, group := range groupEntries(origEntries, maxMutations) {
 		attrMap := make(map[string]interface{})
-		err = metricsTracer.gaxInvokeWithRecorder(ctx, "MutateRows", func(ctx context.Context, _ gax.CallSettings) error {
+		err = gaxInvokeWithRecorder(ctx, mt, "MutateRows", func(ctx context.Context, _ gax.CallSettings) error {
 			attrMap["rowCount"] = len(group)
 			trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
-			err := t.doApplyBulk(ctx, group, metricsTracer, opts...)
+			err := t.doApplyBulk(ctx, group, mt, opts...)
 			if err != nil {
 				// We want to retry the entire request with the current group
 				return err
@@ -1298,15 +1302,15 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, mt *buil
 	if err != nil {
 		return err
 	}
-	*mt.headerMD, err = stream.Header()
+	*mt.currOp.currAttempt.headerMD, err = stream.Header()
 	for {
 		res, err := stream.Recv()
 		if err == io.EOF {
-			*mt.trailerMD = stream.Trailer()
+			*mt.currOp.currAttempt.trailerMD = stream.Trailer()
 			break
 		}
 		if err != nil {
-			*mt.trailerMD = stream.Trailer()
+			*mt.currOp.currAttempt.trailerMD = stream.Trailer()
 			return err
 		}
 
@@ -1379,11 +1383,11 @@ func (ts Timestamp) TruncateToMilliseconds() Timestamp {
 func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadModifyWrite) (Row, error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 
-	metricsTracer := t.newBuiltinMetricsTracer(ctx, false)
-	defer metricsTracer.recordOperationCompletion()
+	mt := t.newBuiltinMetricsTracer(ctx, false)
+	defer recordOperationCompletion(mt)
 
-	updatedRow, err := t.applyReadModifyWrite(ctx, metricsTracer, row, m)
-	return updatedRow, metricsTracer.recordAndConvertErr(err)
+	updatedRow, err := t.applyReadModifyWrite(ctx, mt, row, m)
+	return updatedRow, mt.setOpStatus(err)
 }
 
 func (t *Table) applyReadModifyWrite(ctx context.Context, mt *builtinMetricsTracer, row string, m *ReadModifyWrite) (Row, error) {
@@ -1399,8 +1403,8 @@ func (t *Table) applyReadModifyWrite(ctx context.Context, mt *builtinMetricsTrac
 	}
 
 	var r Row
-	err := mt.gaxInvokeWithRecorder(ctx, "ReadModifyWriteRow", func(ctx context.Context, _ gax.CallSettings) error {
-		res, err := t.c.client.ReadModifyWriteRow(ctx, req, grpc.Header(mt.headerMD), grpc.Trailer(mt.trailerMD))
+	err := gaxInvokeWithRecorder(ctx, mt, "ReadModifyWriteRow", func(ctx context.Context, _ gax.CallSettings) error {
+		res, err := t.c.client.ReadModifyWriteRow(ctx, req, grpc.Header(mt.currOp.currAttempt.headerMD), grpc.Trailer(mt.currOp.currAttempt.trailerMD))
 		if err != nil {
 			return err
 		}
@@ -1458,16 +1462,16 @@ func (m *ReadModifyWrite) Increment(family, column string, delta int64) {
 func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 
-	metricsTracer := t.newBuiltinMetricsTracer(ctx, true)
-	defer metricsTracer.recordOperationCompletion()
+	mt := t.newBuiltinMetricsTracer(ctx, true)
+	defer recordOperationCompletion(mt)
 
-	rowKeys, err := t.sampleRowKeys(ctx, metricsTracer)
-	return rowKeys, metricsTracer.recordAndConvertErr(err)
+	rowKeys, err := t.sampleRowKeys(ctx, mt)
+	return rowKeys, mt.setOpStatus(err)
 }
 
 func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]string, error) {
 	var sampledRowKeys []string
-	err := mt.gaxInvokeWithRecorder(ctx, "SampleRowKeys", func(ctx context.Context, _ gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "SampleRowKeys", func(ctx context.Context, _ gax.CallSettings) error {
 		sampledRowKeys = nil
 		req := &btpb.SampleRowKeysRequest{
 			AppProfileId: t.c.appProfile,
@@ -1484,15 +1488,15 @@ func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]
 		if err != nil {
 			return err
 		}
-		*mt.headerMD, err = stream.Header()
+		*mt.currOp.currAttempt.headerMD, err = stream.Header()
 		for {
 			res, err := stream.Recv()
 			if err == io.EOF {
-				*mt.trailerMD = stream.Trailer()
+				*mt.currOp.currAttempt.trailerMD = stream.Trailer()
 				break
 			}
 			if err != nil {
-				*mt.trailerMD = stream.Trailer()
+				*mt.currOp.currAttempt.trailerMD = stream.Trailer()
 				return err
 			}
 
@@ -1510,6 +1514,6 @@ func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]
 }
 
 func (t *Table) newBuiltinMetricsTracer(ctx context.Context, isStreaming bool) *builtinMetricsTracer {
-	mt := t.c.metricsTracerFactory.newBuiltinMetricsTracer(ctx, t.table, t.c.appProfile, isStreaming)
+	mt := t.c.metricsTracerFactory.newBuiltinMetricsTracer(ctx, t.table, isStreaming)
 	return &mt
 }

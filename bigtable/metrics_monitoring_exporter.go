@@ -14,6 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+// This is a modified version of https://github.com/GoogleCloudPlatform/opentelemetry-operations-go/blob/exporter/metric/v0.46.0/exporter/metric/metric.go
+
 package bigtable
 
 import (
@@ -113,7 +115,7 @@ func (me *monitoringExporter) Export(ctx context.Context, rm *otelmetricdata.Res
 
 // Temporality returns the Temporality to use for an instrument kind.
 func (me *monitoringExporter) Temporality(ik otelmetric.InstrumentKind) otelmetricdata.Temporality {
-	return otelmetric.DefaultTemporalitySelector(ik)
+	return otelmetricdata.CumulativeTemporality
 }
 
 // Aggregation returns the Aggregation to use for an instrument kind.
@@ -178,6 +180,26 @@ func (me *monitoringExporter) recordToMpb(metrics otelmetricdata.Metrics, attrib
 	}, mr
 }
 
+func (me *monitoringExporter) recordsToTspbs(rm *otelmetricdata.ResourceMetrics) ([]*monitoringpb.TimeSeries, error) {
+	var (
+		tss  []*monitoringpb.TimeSeries
+		errs []error
+	)
+	for _, scope := range rm.ScopeMetrics {
+		if scope.Scope.Name != builtInMetricsMeterName {
+			// Filter out metric data for instruments that are not part of the bigtable builtin metrics
+			continue
+		}
+		for _, metrics := range scope.Metrics {
+			ts, err := me.recordToTspb(metrics)
+			errs = append(errs, err)
+			tss = append(tss, ts...)
+		}
+	}
+
+	return tss, errors.Join(errs...)
+}
+
 // recordToTspb converts record to TimeSeries proto type with common resource.
 // ref. https://cloud.google.com/monitoring/api/ref_v3/rest/v3/TimeSeries
 func (me *monitoringExporter) recordToTspb(m otelmetricdata.Metrics) ([]*monitoringpb.TimeSeries, error) {
@@ -214,26 +236,6 @@ func (me *monitoringExporter) recordToTspb(m otelmetricdata.Metrics) ([]*monitor
 	default:
 		errs = append(errs, errUnexpectedAggregationKind{kind: reflect.TypeOf(m.Data).String()})
 	}
-	return tss, errors.Join(errs...)
-}
-
-func (me *monitoringExporter) recordsToTspbs(rm *otelmetricdata.ResourceMetrics) ([]*monitoringpb.TimeSeries, error) {
-	var (
-		tss  []*monitoringpb.TimeSeries
-		errs []error
-	)
-	for _, scope := range rm.ScopeMetrics {
-		if scope.Scope.Name != builtInMetricsMeterName {
-			// Filter out metric data for instruments that are not part of the bigtable builtin metrics
-			continue
-		}
-		for _, metrics := range scope.Metrics {
-			ts, err := me.recordToTspb(metrics)
-			errs = append(errs, err)
-			tss = append(tss, ts...)
-		}
-	}
-
 	return tss, errors.Join(errs...)
 }
 
