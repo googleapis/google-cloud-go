@@ -31,10 +31,6 @@ import (
 	"google.golang.org/api/iterator"
 )
 
-// ErrDownloaderClosed indicates that the Downloader has already been closed and
-// must not be used for new operations.
-var ErrDownloaderClosed = errors.New("transfermanager: Downloader used after WaitAndClose was called")
-
 // Downloader manages a set of parallelized downloads.
 type Downloader struct {
 	client              *storage.Client
@@ -60,16 +56,10 @@ type Downloader struct {
 // that starts with the download, use the [WithPerOpTimeout()] option.
 func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectInput) error {
 	if d.closed() {
-		return ErrDownloaderClosed
+		return errors.New("transfermanager: Downloader used after WaitAndClose was called")
 	}
 	if err := d.validateObjectInput(input); err != nil {
 		return err
-	}
-
-	select {
-	case <-d.doneReceivingInputs:
-		return errors.New("transfermanager: WaitAndClose called before DownloadObject")
-	default:
 	}
 
 	input.ctx = ctx
@@ -86,7 +76,7 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 // Note: DownloadDirectory overwrites existing files in the directory.
 func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirectoryInput) error {
 	if d.closed() {
-		return ErrDownloaderClosed
+		return errors.New("transfermanager: Downloader used after WaitAndClose was called")
 	}
 	if err := d.validateDirectoryInput(input); err != nil {
 		return err
@@ -530,8 +520,9 @@ type DownloadDirectoryInput struct {
 	// Bucket is the bucket in GCS to download from. Required.
 	Bucket string
 	// LocalDirectory specifies the directory to download the matched objects
-	// to. Relative paths are allowed. The directory will be created if it does
-	// not already exist. Required.
+	// to. Relative paths are allowed. The directory structure and contents
+	// must not be modified while the download is in progress.
+	// The directory will be created if it does not already exist. Required.
 	LocalDirectory string
 
 	// Prefix is the prefix filter to download objects whose names begin with this.
@@ -539,9 +530,9 @@ type DownloadDirectoryInput struct {
 	Prefix string
 
 	// StartOffset is used to filter results to objects whose names are
-	// lexicographically equal to or after startOffset. If endOffset is also set,
-	// the objects listed will have names between startOffset (inclusive) and
-	// endOffset (exclusive).
+	// lexicographically equal to or after startOffset. If endOffset is also
+	// set, the objects listed will have names between startOffset (inclusive)
+	// and endOffset (exclusive). Optional.
 	StartOffset string
 
 	// EndOffset is used to filter results to objects whose names are
