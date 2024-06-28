@@ -49,7 +49,7 @@ type ReceiveScheduler struct {
 //
 // The workers arg is the number of concurrent calls to handle. If the workers
 // arg is 0, then a healthy default of 10 workers is used. If less than 0, this
-// will be set to an large number, similar to PublishScheduler's handler limit.
+// will be set to a large number, similar to PublishScheduler's handler limit.
 func NewReceiveScheduler(workers int) *ReceiveScheduler {
 	if workers == 0 {
 		workers = 10

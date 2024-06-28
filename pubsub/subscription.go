@@ -941,9 +941,10 @@ type ReceiveSettings struct {
 	// Synchronous mode does not work with exactly once delivery.
 	Synchronous bool
 
-	// MaxCallbacks configures the maximum number of callbacks to issue at once.
-	// This setting used to be configured by MaxOutstandingMessages, but now
-	// is used only for server side flow control.
+	// MaxCallbacks configures the maximum number of callbacks invoked at once.
+	// If MaxCallbacks is 0, the value will be a multiplier of MaxOutstandingMessages.
+	// If the value is negative, then there will be no limit on the number of
+	// callbacks invoked concurrently.
 	MaxCallbacks int
 }
 
@@ -974,7 +975,6 @@ var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9, // 1G
 	NumGoroutines:          10,
-	MaxCallbacks:           1000,
 }
 
 // Delete deletes the subscription.
@@ -1260,6 +1260,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	if maxBytes == 0 {
 		maxBytes = DefaultReceiveSettings.MaxOutstandingBytes
 	}
+	maxCallbacks := s.ReceiveSettings.MaxCallbacks
+	if maxCallbacks == 0 {
+		maxCallbacks = 2 * serverMaxMessages
+	}
 	maxExt := s.ReceiveSettings.MaxExtension
 	if maxExt == 0 {
 		maxExt = DefaultReceiveSettings.MaxExtension
@@ -1298,14 +1302,14 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		clientID:               s.clientID,
 	}
 	fc := newSubscriptionFlowController(FlowControlSettings{
-		MaxOutstandingMessages: s.ReceiveSettings.MaxCallbacks,
+		MaxOutstandingMessages: maxCallbacks,
 		// TODO(hongalex): introduce client side setting for this, relegating
 		// maxBytes for server side flow control only.
 		MaxOutstandingBytes:   maxBytes,
 		LimitExceededBehavior: FlowControlBlock,
 	})
 
-	sched := scheduler.NewReceiveScheduler(s.ReceiveSettings.MaxCallbacks)
+	sched := scheduler.NewReceiveScheduler(maxCallbacks)
 
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.
