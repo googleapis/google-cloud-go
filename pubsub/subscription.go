@@ -945,6 +945,7 @@ type ReceiveSettings struct {
 	// If MaxCallbacks is 0, the value will be a multiplier of MaxOutstandingMessages.
 	// If the value is negative, then there will be no limit on the number of
 	// callbacks invoked concurrently.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
 	MaxCallbacks int
 }
 
