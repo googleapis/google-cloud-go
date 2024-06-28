@@ -890,11 +890,13 @@ type ReceiveSettings struct {
 	// which will be added in a future release.
 	MinExtensionPeriod time.Duration
 
-	// MaxOutstandingMessages is the maximum number of unprocessed messages
-	// (unacknowledged but not yet expired). If MaxOutstandingMessages is 0, it
+	// MaxOutstandingMessages is the maximum number of messages to pull from the server
+	// via a single stream. If MaxOutstandingMessages is 0, it
 	// will be treated as if it were DefaultReceiveSettings.MaxOutstandingMessages.
 	// If the value is negative, then there will be no limit on the number of
-	// unprocessed messages.
+	// messages pulled.
+	// This does not configure the number of messages processed concurrently,
+	// for that use MaxCallbacks.
 	MaxOutstandingMessages int
 
 	// MaxOutstandingBytes is the maximum size of unprocessed messages
@@ -938,6 +940,11 @@ type ReceiveSettings struct {
 	// Synchronous to false.
 	// Synchronous mode does not work with exactly once delivery.
 	Synchronous bool
+
+	// MaxCallbacks configures the maximum number of callbacks to issue at once.
+	// This setting used to be configured by MaxOutstandingMessages, but now
+	// is used only for server side flow control.
+	MaxCallbacks int
 }
 
 // For synchronous receive, the time to wait if we are already processing
@@ -967,6 +974,7 @@ var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9, // 1G
 	NumGoroutines:          10,
+	MaxCallbacks:           1000,
 }
 
 // Delete deletes the subscription.
@@ -1244,9 +1252,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
 	// TODO(hongalex): move settings check to a helper function to make it more testable
-	maxCount := s.ReceiveSettings.MaxOutstandingMessages
-	if maxCount == 0 {
-		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
+	serverMaxMessages := s.ReceiveSettings.MaxOutstandingMessages
+	if serverMaxMessages == 0 {
+		serverMaxMessages = DefaultReceiveSettings.MaxOutstandingMessages
 	}
 	maxBytes := s.ReceiveSettings.MaxOutstandingBytes
 	if maxBytes == 0 {
@@ -1282,20 +1290,22 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxExtension:           maxExt,
 		maxExtensionPeriod:     maxExtPeriod,
 		minExtensionPeriod:     minExtPeriod,
-		maxPrefetch:            trunc32(int64(maxCount)),
+		maxPrefetch:            trunc32(int64(serverMaxMessages)),
 		synchronous:            s.ReceiveSettings.Synchronous,
-		maxOutstandingMessages: maxCount,
+		maxOutstandingMessages: serverMaxMessages,
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 		clientID:               s.clientID,
 	}
 	fc := newSubscriptionFlowController(FlowControlSettings{
-		MaxOutstandingMessages: maxCount,
-		MaxOutstandingBytes:    maxBytes,
-		LimitExceededBehavior:  FlowControlBlock,
+		MaxOutstandingMessages: s.ReceiveSettings.MaxCallbacks,
+		// TODO(hongalex): introduce client side setting for this, relegating
+		// maxBytes for server side flow control only.
+		MaxOutstandingBytes:   maxBytes,
+		LimitExceededBehavior: FlowControlBlock,
 	})
 
-	sched := scheduler.NewReceiveScheduler(maxCount)
+	sched := scheduler.NewReceiveScheduler(s.ReceiveSettings.MaxCallbacks)
 
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.
@@ -1382,7 +1392,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				}
 				for i, msg := range msgs {
 					msg := msg
-					// TODO(jba): call acquire closer to when the message is allocated.
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {
