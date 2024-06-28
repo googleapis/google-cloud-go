@@ -234,6 +234,11 @@
                 "TestIamPermissions"
               ]
             },
+            "UpdateDeploymentResourcePool": {
+              "methods": [
+                "UpdateDeploymentResourcePool"
+              ]
+            },
             "WaitOperation": {
               "methods": [
                 "WaitOperation"
