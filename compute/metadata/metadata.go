@@ -596,6 +596,8 @@ func (c *Client) Email(serviceAccount string) (string, error) {
 }
 
 // EmailWithContext returns the email address associated with the service account.
+// The serviceAccount parameter default value (empty string or "default" value)
+// will use the instance's main account.
 func (c *Client) EmailWithContext(ctx context.Context, serviceAccount string) (string, error) {
 	if serviceAccount == "" {
 		serviceAccount = "default"
