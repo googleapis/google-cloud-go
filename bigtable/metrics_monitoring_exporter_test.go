@@ -365,7 +365,7 @@ func TestRecordToMpb(t *testing.T) {
 		},
 	}
 
-	gotMetric, gotMonitoredResource := me.recordToMpb(inputMetrics, inputAttributes)
+	gotMetric, gotMonitoredResource := me.recordToMetricAndMonitoredResourcePbs(inputMetrics, inputAttributes)
 	if !reflect.DeepEqual(wantMetric, gotMetric) {
 		t.Errorf("Metric: expected: %v, actual: %v", wantMetric, gotMetric)
 	}

@@ -26,7 +26,7 @@ require (
 	cloud.google.com/go/monitoring v1.19.0
 	github.com/google/uuid v1.6.0
 	go.opentelemetry.io/otel/exporters/stdout/stdoutmetric v1.24.0 // Use older version compatible with Go 1.20
-	google.golang.org/genproto/googleapis/api v0.0.0-20240521202816-d264139d666e
+	google.golang.org/genproto/googleapis/api v0.0.0-20240617180043-68d350f18fd4
 )
 
 require (
@@ -56,5 +56,4 @@ require (
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20240617180043-68d350f18fd4 // indirect
 )

@@ -126,7 +126,7 @@ func (me *monitoringExporter) Aggregation(ik otelmetric.InstrumentKind) otelmetr
 // exportTimeSeries create TimeSeries from the records in cps.
 // res should be the common resource among all TimeSeries, such as instance id, application name and so on.
 func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetricdata.ResourceMetrics) error {
-	tss, err := me.recordsToTspbs(rm)
+	tss, err := me.recordsToTimeSeriesPbs(rm)
 	if len(tss) == 0 {
 		return err
 	}
@@ -150,8 +150,8 @@ func (me *monitoringExporter) exportTimeSeries(ctx context.Context, rm *otelmetr
 	return errors.Join(errs...)
 }
 
-// recordToMpb converts data from records to Metric and Monitored resource proto type for Cloud Monitoring.
-func (me *monitoringExporter) recordToMpb(metrics otelmetricdata.Metrics, attributes attribute.Set) (*googlemetricpb.Metric, *monitoredrespb.MonitoredResource) {
+// recordToMetricAndMonitoredResourcePbs converts data from records to Metric and Monitored resource proto type for Cloud Monitoring.
+func (me *monitoringExporter) recordToMetricAndMonitoredResourcePbs(metrics otelmetricdata.Metrics, attributes attribute.Set) (*googlemetricpb.Metric, *monitoredrespb.MonitoredResource) {
 	mr := &monitoredrespb.MonitoredResource{
 		Type:   bigtableResourceType,
 		Labels: map[string]string{},
@@ -180,7 +180,7 @@ func (me *monitoringExporter) recordToMpb(metrics otelmetricdata.Metrics, attrib
 	}, mr
 }
 
-func (me *monitoringExporter) recordsToTspbs(rm *otelmetricdata.ResourceMetrics) ([]*monitoringpb.TimeSeries, error) {
+func (me *monitoringExporter) recordsToTimeSeriesPbs(rm *otelmetricdata.ResourceMetrics) ([]*monitoringpb.TimeSeries, error) {
 	var (
 		tss  []*monitoringpb.TimeSeries
 		errs []error
@@ -191,7 +191,7 @@ func (me *monitoringExporter) recordsToTspbs(rm *otelmetricdata.ResourceMetrics)
 			continue
 		}
 		for _, metrics := range scope.Metrics {
-			ts, err := me.recordToTspb(metrics)
+			ts, err := me.recordToTimeSeriesPb(metrics)
 			errs = append(errs, err)
 			tss = append(tss, ts...)
 		}
@@ -200,9 +200,9 @@ func (me *monitoringExporter) recordsToTspbs(rm *otelmetricdata.ResourceMetrics)
 	return tss, errors.Join(errs...)
 }
 
-// recordToTspb converts record to TimeSeries proto type with common resource.
+// recordToTimeSeriesPb converts record to TimeSeries proto type with common resource.
 // ref. https://cloud.google.com/monitoring/api/ref_v3/rest/v3/TimeSeries
-func (me *monitoringExporter) recordToTspb(m otelmetricdata.Metrics) ([]*monitoringpb.TimeSeries, error) {
+func (me *monitoringExporter) recordToTimeSeriesPb(m otelmetricdata.Metrics) ([]*monitoringpb.TimeSeries, error) {
 	var tss []*monitoringpb.TimeSeries
 	var errs []error
 	if m.Data == nil {
@@ -211,7 +211,7 @@ func (me *monitoringExporter) recordToTspb(m otelmetricdata.Metrics) ([]*monitor
 	switch a := m.Data.(type) {
 	case otelmetricdata.Histogram[float64]:
 		for _, point := range a.DataPoints {
-			metric, mr := me.recordToMpb(m, point.Attributes)
+			metric, mr := me.recordToMetricAndMonitoredResourcePbs(m, point.Attributes)
 			ts, err := histogramToTimeSeries(point, m, mr)
 			if err != nil {
 				errs = append(errs, err)
@@ -222,7 +222,7 @@ func (me *monitoringExporter) recordToTspb(m otelmetricdata.Metrics) ([]*monitor
 		}
 	case otelmetricdata.Sum[int64]:
 		for _, point := range a.DataPoints {
-			metric, mr := me.recordToMpb(m, point.Attributes)
+			metric, mr := me.recordToMetricAndMonitoredResourcePbs(m, point.Attributes)
 			var ts *monitoringpb.TimeSeries
 			var err error
 			ts, err = sumToTimeSeries[int64](point, m, mr)
