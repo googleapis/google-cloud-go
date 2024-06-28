@@ -24,16 +24,17 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/structpb"
 )
 
 func TestTransformMapValues(t *testing.T) {
 	var from map[string]int
-	got := TransformMapValues(from, strconv.Itoa)
+	got := pvTransformMapValues(from, strconv.Itoa)
 	if got != nil {
 		t.Fatalf("got %v, want nil", got)
 	}
 	from = map[string]int{"one": 1, "two": 2}
-	got = TransformMapValues(from, strconv.Itoa)
+	got = pvTransformMapValues(from, strconv.Itoa)
 	want := map[string]string{"one": "1", "two": "2"}
 	if !reflect.DeepEqual(got, want) {
 		t.Errorf("got %v, want %v", got, want)
@@ -57,7 +58,7 @@ func TestAPIError(t *testing.T) {
 		Details: []*anypb.Any{pbany},
 	}
 
-	ae := APIErrorFromProto(s)
+	ae := pvAPIErrorFromProto(s)
 	if ae == nil {
 		t.Fatal("got nil")
 	}
@@ -72,8 +73,29 @@ func TestAPIError(t *testing.T) {
 		t.Errorf("got %q, want %q", g, reason)
 	}
 
-	gps := APIErrorToProto(ae)
+	gps := pvAPIErrorToProto(ae)
 	if !cmp.Equal(gps, s, cmpopts.IgnoreUnexported(spb.Status{}, anypb.Any{})) {
 		t.Errorf("\ngot  %s\nwant %s", gps, s)
 	}
+}
+
+func TestPanic(t *testing.T) {
+	_, err := mapToStructErr(map[string]any{"c": make(chan int)})
+	if err == nil {
+		t.Fatal("got nil, want error")
+	}
+	t.Logf("%s", err)
+}
+
+func mapToStructErr(m map[string]any) (_ *structpb.Struct, err error) {
+	defer func() {
+		if r := recover(); r != nil {
+			if _, ok := r.(pvPanic); ok {
+				err = r.(error)
+			} else {
+				panic(r)
+			}
+		}
+	}()
+	return pvMapToStructPB(m), nil
 }

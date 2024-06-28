@@ -1,5 +1,17 @@
 # Changes
 
+## [1.13.4](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.13.3...oslogin/v1.13.4) (2024-06-26)
+
+
+### Bug Fixes
+
+* **oslogin:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+
+### Documentation
+
+* **oslogin:** A comment for field `parent` in message `.google.cloud.oslogin.v1beta.SignSshPublicKeyRequest` is changed ([#10427](https://github.com/googleapis/google-cloud-go/issues/10427)) ([7ca4fa3](https://github.com/googleapis/google-cloud-go/commit/7ca4fa38519b24acde1675724edcde7b99fb32ee))
+
 ## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/oslogin/v1.13.2...oslogin/v1.13.3) (2024-05-01)
 
 
