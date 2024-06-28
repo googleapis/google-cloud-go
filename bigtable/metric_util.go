@@ -1,3 +1,19 @@
+/*
+Copyright 2024 Google LLC
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+*/
+
 package bigtable
 
 import (
@@ -10,8 +26,13 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-// get GFE latency from response metadata
-func getServerLatency(headerMD *metadata.MD, trailerMD *metadata.MD) (float64, error) {
+const (
+	defaultCluster = "unspecified"
+	defaultZone    = "global"
+)
+
+// get GFE latency in ms from response metadata
+func getServerLatency(headerMD metadata.MD, trailerMD metadata.MD) (float64, error) {
 	serverTimingStr := ""
 
 	// Check whether server latency available in response header metadata
@@ -42,7 +63,7 @@ func getServerLatency(headerMD *metadata.MD, trailerMD *metadata.MD) (float64, e
 }
 
 // Obtain cluster and zone from response metadata
-func getLocation(headerMD *metadata.MD, trailerMD *metadata.MD) (string, string, error) {
+func getLocation(headerMD metadata.MD, trailerMD metadata.MD) (string, string, error) {
 	var locationMetadata []string
 
 	// Check whether location metadata available in response header metadata
@@ -59,14 +80,14 @@ func getLocation(headerMD *metadata.MD, trailerMD *metadata.MD) (string, string,
 	}
 
 	if len(locationMetadata) < 1 {
-		return "", "", fmt.Errorf("Failed to get location metadata")
+		return defaultCluster, defaultZone, fmt.Errorf("failed to get location metadata")
 	}
 
 	// Unmarshal binary location metadata
 	responseParams := &btpb.ResponseParams{}
 	err := proto.Unmarshal([]byte(locationMetadata[0]), responseParams)
 	if err != nil {
-		return "", "", err
+		return defaultCluster, defaultZone, err
 	}
 
 	return responseParams.GetClusterId(), responseParams.GetZoneId(), nil

@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -29,6 +30,7 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -94,7 +96,31 @@ type CustomOpenTelemetryMetricsProvider struct {
 
 func (CustomOpenTelemetryMetricsProvider) isMetricsProvider() {}
 
-// BuiltInMeterProviderOptions returns built in metrics periodic reader with exporter
+/*
+BuiltInMeterProviderOptions returns built in metrics periodic reader with Google Cloud Monitoring exporter
+
+This functionality is needed for cases where end users want to export metrics to their own metrics
+aggregator in addition to the Google Cloud Monitoring. To accompish this, end users would use this
+method to create options to be passed in to the OpenTelemretry which in turn gets passed in as an
+option to bigtable client for example:
+
+	builtInMeterProviderOpts, err := BuiltInMeterProviderOptions(project)
+	if err != nil {
+		// Handle error
+	}
+	meterProviderOpts := append(builtInMeterProviderOpts, usersMeterProviderOpts...)
+
+	// Create custom meter provider which exports to user's metrics aggregator and GCM
+	customMeterProvider = sdkmetric.NewMeterProvider(meterProviderOpts...)
+
+	clientConfig := ClientConfig{
+		MetricsProvider: CustomOpenTelemetryMetricsProvider{
+			MeterProvider: customMeterProvider,
+		},
+	}
+
+	client, err := NewClientWithConfig(context.Background(), project, instance, clientConfig)
+*/
 func BuiltInMeterProviderOptions(project string) ([]sdkmetric.Option, error) {
 	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
 	if err != nil {
@@ -139,8 +165,14 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
+	metricsProvider := config.MetricsProvider
+	if emulatorAddr := os.Getenv("BIGTABLE_EMULATOR_HOST"); emulatorAddr != "" {
+		// Do not emit metrics when emulator is being used
+		metricsProvider = NoopMetricsProvider{}
+	}
+
 	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, config.MetricsProvider)
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(ctx, project, instance, config.AppProfile, metricsProvider)
 	if err != nil {
 		return nil, err
 	}
@@ -363,13 +395,14 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 	defer recordOperationCompletion(mt)
 
 	err = t.readRows(ctx, arg, f, mt, opts...)
-	return mt.setOpStatus(err)
+	processedErr := processErr(mt, err)
+	return processedErr
 }
 
 func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *builtinMetricsTracer, opts ...ReadOption) (err error) {
 	var prevRowKey string
 	attrMap := make(map[string]interface{})
-	err = gaxInvokeWithRecorder(ctx, mt, "ReadRows", func(ctx context.Context, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, mt, "ReadRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		req := &btpb.ReadRowsRequest{
 			AppProfileId: t.c.appProfile,
 		}
@@ -408,18 +441,17 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 			cr = newChunkReader()
 		}
 
-		*mt.currOp.currAttempt.headerMD, err = stream.Header()
-		if err != nil {
-			return err
-		}
+		// Ignore error since header is only being used to record builtin metrics
+		// Failure to record metrics should not fail the operation
+		*headerMD, _ = stream.Header()
 		for {
 			res, err := stream.Recv()
 			if err == io.EOF {
-				*mt.currOp.currAttempt.trailerMD = stream.Trailer()
+				*trailerMD = stream.Trailer()
 				break
 			}
 			if err != nil {
-				*mt.currOp.currAttempt.trailerMD = stream.Trailer()
+				*trailerMD = stream.Trailer()
 				// Reset arg for next Invoke call.
 				if arg == nil {
 					// Should be lowest possible key value, an empty byte array
@@ -455,7 +487,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *
 					cancel()
 					for {
 						if _, err := stream.Recv(); err != nil {
-							*mt.currOp.currAttempt.trailerMD = stream.Trailer()
+							*trailerMD = stream.Trailer()
 							// The stream has ended. We don't return an error
 							// because the caller has intentionally interrupted the scan.
 							return nil
@@ -1001,7 +1033,8 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	defer recordOperationCompletion(mt)
 
 	err = t.apply(ctx, mt, row, m, opts...)
-	return mt.setOpStatus(err)
+	processedErr := processErr(mt, err)
+	return processedErr
 }
 
 func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string, m *Mutation, opts ...ApplyOption) (err error) {
@@ -1027,9 +1060,9 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 			callOptions = retryOptions
 		}
 		var res *btpb.MutateRowResponse
-		err := gaxInvokeWithRecorder(ctx, mt, "MutateRow", func(ctx context.Context, _ gax.CallSettings) error {
+		err := gaxInvokeWithRecorder(ctx, mt, "MutateRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 			var err error
-			res, err = t.c.client.MutateRow(ctx, req, grpc.Header(mt.currOp.currAttempt.headerMD), grpc.Trailer(mt.currOp.currAttempt.trailerMD))
+			res, err = t.c.client.MutateRow(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 			return err
 		}, callOptions...)
 		if err == nil {
@@ -1064,9 +1097,9 @@ func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string,
 		callOptions = retryOptions
 	}
 	var cmRes *btpb.CheckAndMutateRowResponse
-	err = gaxInvokeWithRecorder(ctx, mt, "CheckAndMutateRow", func(ctx context.Context, _ gax.CallSettings) error {
+	err = gaxInvokeWithRecorder(ctx, mt, "CheckAndMutateRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		var err error
-		cmRes, err = t.c.client.CheckAndMutateRow(ctx, req, grpc.Header(mt.currOp.currAttempt.headerMD), grpc.Trailer(mt.currOp.currAttempt.trailerMD))
+		cmRes, err = t.c.client.CheckAndMutateRow(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		return err
 	}, callOptions...)
 	if err == nil {
@@ -1205,13 +1238,6 @@ func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutatio
 	ctx = trace.StartSpan(ctx, method)
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	mt := t.newBuiltinMetricsTracer(ctx, true)
-	defer recordOperationCompletion(mt)
-	errs, err = t.applyBulk(ctx, mt, rowKeys, muts, opts...)
-	return errs, mt.setOpStatus(err)
-}
-
-func (t *Table) applyBulk(ctx context.Context, mt *builtinMetricsTracer, rowKeys []string, muts []*Mutation, opts ...ApplyOption) (errs []error, err error) {
 	if len(rowKeys) != len(muts) {
 		return nil, fmt.Errorf("mismatched rowKeys and mutation array lengths: %d, %d", len(rowKeys), len(muts))
 	}
@@ -1226,23 +1252,7 @@ func (t *Table) applyBulk(ctx context.Context, mt *builtinMetricsTracer, rowKeys
 	}
 
 	for _, group := range groupEntries(origEntries, maxMutations) {
-		attrMap := make(map[string]interface{})
-		err = gaxInvokeWithRecorder(ctx, mt, "MutateRows", func(ctx context.Context, _ gax.CallSettings) error {
-			attrMap["rowCount"] = len(group)
-			trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
-			err := t.doApplyBulk(ctx, group, mt, opts...)
-			if err != nil {
-				// We want to retry the entire request with the current group
-				return err
-			}
-			group = t.getApplyBulkRetries(group)
-			if len(group) > 0 && len(idempotentRetryCodes) > 0 {
-				// We have at least one mutation that needs to be retried.
-				// Return an arbitrary error that is retryable according to callOptions.
-				return status.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk")
-			}
-			return nil
-		}, retryOptions...)
+		err := t.applyGroup(ctx, group, opts...)
 		if err != nil {
 			return nil, err
 		}
@@ -1263,6 +1273,32 @@ func (t *Table) applyBulk(ctx context.Context, mt *builtinMetricsTracer, rowKeys
 	return nil, nil
 }
 
+func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...ApplyOption) (err error) {
+	attrMap := make(map[string]interface{})
+	mt := t.newBuiltinMetricsTracer(ctx, true)
+	defer recordOperationCompletion(mt)
+
+	err = gaxInvokeWithRecorder(ctx, mt, "MutateRows", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		attrMap["rowCount"] = len(group)
+		trace.TracePrintf(ctx, attrMap, "Row count in ApplyBulk")
+		err := t.doApplyBulk(ctx, group, headerMD, trailerMD, opts...)
+		if err != nil {
+			// We want to retry the entire request with the current group
+			return err
+		}
+		group = t.getApplyBulkRetries(group)
+		if len(group) > 0 && len(idempotentRetryCodes) > 0 {
+			// We have at least one mutation that needs to be retried.
+			// Return an arbitrary error that is retryable according to callOptions.
+			return status.Errorf(idempotentRetryCodes[0], "Synthetic error: partial failure of ApplyBulk")
+		}
+		return nil
+	}, retryOptions...)
+
+	processedErr := processErr(mt, err)
+	return processedErr
+}
+
 // getApplyBulkRetries returns the entries that need to be retried
 func (t *Table) getApplyBulkRetries(entries []*entryErr) []*entryErr {
 	var retryEntries []*entryErr
@@ -1277,7 +1313,7 @@ func (t *Table) getApplyBulkRetries(entries []*entryErr) []*entryErr {
 }
 
 // doApplyBulk does the work of a single ApplyBulk invocation
-func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, mt *builtinMetricsTracer, opts ...ApplyOption) error {
+func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD, trailerMD *metadata.MD, opts ...ApplyOption) error {
 	after := func(res proto.Message) {
 		for _, o := range opts {
 			o.after(res)
@@ -1302,15 +1338,18 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, mt *buil
 	if err != nil {
 		return err
 	}
-	*mt.currOp.currAttempt.headerMD, err = stream.Header()
+
+	// Ignore error since header is only being used to record builtin metrics
+	// Failure to record metrics should not fail the operation
+	*headerMD, _ = stream.Header()
 	for {
 		res, err := stream.Recv()
 		if err == io.EOF {
-			*mt.currOp.currAttempt.trailerMD = stream.Trailer()
+			*trailerMD = stream.Trailer()
 			break
 		}
 		if err != nil {
-			*mt.currOp.currAttempt.trailerMD = stream.Trailer()
+			*trailerMD = stream.Trailer()
 			return err
 		}
 
@@ -1387,7 +1426,8 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 	defer recordOperationCompletion(mt)
 
 	updatedRow, err := t.applyReadModifyWrite(ctx, mt, row, m)
-	return updatedRow, mt.setOpStatus(err)
+	processedErr := processErr(mt, err)
+	return updatedRow, processedErr
 }
 
 func (t *Table) applyReadModifyWrite(ctx context.Context, mt *builtinMetricsTracer, row string, m *ReadModifyWrite) (Row, error) {
@@ -1403,8 +1443,8 @@ func (t *Table) applyReadModifyWrite(ctx context.Context, mt *builtinMetricsTrac
 	}
 
 	var r Row
-	err := gaxInvokeWithRecorder(ctx, mt, "ReadModifyWriteRow", func(ctx context.Context, _ gax.CallSettings) error {
-		res, err := t.c.client.ReadModifyWriteRow(ctx, req, grpc.Header(mt.currOp.currAttempt.headerMD), grpc.Trailer(mt.currOp.currAttempt.trailerMD))
+	err := gaxInvokeWithRecorder(ctx, mt, "ReadModifyWriteRow", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
+		res, err := t.c.client.ReadModifyWriteRow(ctx, req, grpc.Header(headerMD), grpc.Trailer(trailerMD))
 		if err != nil {
 			return err
 		}
@@ -1466,12 +1506,13 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 	defer recordOperationCompletion(mt)
 
 	rowKeys, err := t.sampleRowKeys(ctx, mt)
-	return rowKeys, mt.setOpStatus(err)
+	processedErr := processErr(mt, err)
+	return rowKeys, processedErr
 }
 
 func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]string, error) {
 	var sampledRowKeys []string
-	err := gaxInvokeWithRecorder(ctx, mt, "SampleRowKeys", func(ctx context.Context, _ gax.CallSettings) error {
+	err := gaxInvokeWithRecorder(ctx, mt, "SampleRowKeys", func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error {
 		sampledRowKeys = nil
 		req := &btpb.SampleRowKeysRequest{
 			AppProfileId: t.c.appProfile,
@@ -1488,15 +1529,18 @@ func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]
 		if err != nil {
 			return err
 		}
-		*mt.currOp.currAttempt.headerMD, err = stream.Header()
+
+		// Ignore error since header is only being used to record builtin metrics
+		// Failure to record metrics should not fail the operation
+		*headerMD, _ = stream.Header()
 		for {
 			res, err := stream.Recv()
 			if err == io.EOF {
-				*mt.currOp.currAttempt.trailerMD = stream.Trailer()
+				*trailerMD = stream.Trailer()
 				break
 			}
 			if err != nil {
-				*mt.currOp.currAttempt.trailerMD = stream.Trailer()
+				*trailerMD = stream.Trailer()
 				return err
 			}
 
@@ -1516,4 +1560,107 @@ func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]
 func (t *Table) newBuiltinMetricsTracer(ctx context.Context, isStreaming bool) *builtinMetricsTracer {
 	mt := t.c.metricsTracerFactory.newBuiltinMetricsTracer(ctx, t.table, isStreaming)
 	return &mt
+}
+
+// recordOperationCompletion records as many operation specific metrics as it can
+func recordOperationCompletion(mt *builtinMetricsTracer) {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// Calculate elapsed time
+	elapsedTimeMs := float64(time.Since(mt.currOp.startTime).Nanoseconds()) / 1000000
+
+	// Attributes for operation_latencies
+	// Ignore error seen while creating metric attributes since metric can still
+	// be recorded with rest of the attributes
+	opLatAttrs, _ := mt.toOtelMetricAttrs(metricNameOperationLatencies)
+	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
+
+	// Attributes for retry_count
+	// Ignore error seen while creating metric attributes since metric can still
+	// be recorded with rest of the attributes
+	retryCntAttrs, _ := mt.toOtelMetricAttrs(metricNameRetryCount)
+
+	// Only record when retry count is greater than 0 so the retry
+	// graph will be less confusing
+	if mt.currOp.attemptCount > 1 {
+		mt.instrumentRetryCount.Add(mt.ctx, mt.currOp.attemptCount-1, metric.WithAttributes(retryCntAttrs...))
+	}
+}
+
+// gaxInvokeWithRecorder:
+// - wraps 'f' in a new function 'callWrapper' that:
+//   - updates tracer state and records built in attempt specific metrics
+//   - does not return errors seen while recording the metrics
+//
+// - then, calls gax.Invoke with 'callWrapper' as an argument
+func gaxInvokeWithRecorder(ctx context.Context, mt *builtinMetricsTracer, method string,
+	f func(ctx context.Context, headerMD, trailerMD *metadata.MD, _ gax.CallSettings) error, opts ...gax.CallOption) error {
+
+	mt.method = method
+	callWrapper := func(ctx context.Context, callSettings gax.CallSettings) error {
+		// Increment number of attempts
+		mt.currOp.incrementAttemptCount()
+
+		attemptHeaderMD := metadata.New(nil)
+		attempTrailerMD := metadata.New(nil)
+		mt.currOp.currAttempt = attemptTracer{}
+
+		// record start time
+		mt.currOp.currAttempt.setStartTime(time.Now())
+
+		// f makes calls to CBT service
+		err := f(ctx, &attemptHeaderMD, &attempTrailerMD, callSettings)
+
+		// Set attempt status
+		statusCode, _ := convertToGrpcStatusErr(err)
+		mt.currOp.currAttempt.setStatus(statusCode.String())
+
+		// Get location attributes from metadata and set it in tracer
+		// Ignore get location error since the metric can still be recorded with rest of the attributes
+		clusterID, zoneID, _ := getLocation(attemptHeaderMD, attempTrailerMD)
+		mt.currOp.currAttempt.setClusterID(clusterID)
+		mt.currOp.currAttempt.setZoneID(zoneID)
+
+		// Set server latency in tracer
+		serverLatency, serverLatencyErr := getServerLatency(attemptHeaderMD, attempTrailerMD)
+		mt.currOp.currAttempt.setServerLatencyErr(serverLatencyErr)
+		mt.currOp.currAttempt.setServerLatency(serverLatency)
+
+		// Record attempt specific metrics
+		recordAttemptCompletion(mt)
+		return err
+	}
+	return gax.Invoke(ctx, callWrapper, opts...)
+}
+
+// recordAttemptCompletion records as many attempt specific metrics as it can
+func recordAttemptCompletion(mt *builtinMetricsTracer) {
+	if !mt.builtInEnabled {
+		return
+	}
+
+	// Calculate elapsed time
+	elapsedTime := float64(time.Since(mt.currOp.currAttempt.startTime).Nanoseconds()) / 1000000
+
+	// Attributes for attempt_latencies
+	// Ignore error seen while creating metric attributes since metric can still
+	// be recorded with rest of the attributes
+	attemptLatAttrs, _ := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
+	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
+
+	// Attributes for server_latencies
+	// Ignore error seen while creating metric attributes since metric can still
+	// be recorded with rest of the attributes
+	serverLatAttrs, _ := mt.toOtelMetricAttrs(metricNameServerLatencies)
+	if mt.currOp.currAttempt.serverLatencyErr == nil {
+		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributes(serverLatAttrs...))
+	}
+}
+
+func processErr(mt *builtinMetricsTracer, err error) error {
+	statusCode, statusErr := convertToGrpcStatusErr(err)
+	mt.currOp.setStatus(statusCode.String())
+	return statusErr
 }

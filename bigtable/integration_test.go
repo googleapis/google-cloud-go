@@ -750,20 +750,103 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	wg.Wait()
 }
 
-func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
+func TestIntegration_ExportBuiltInMetrics(t *testing.T) {
 	ctx := context.Background()
+
+	// Reduce sampling period for faster test runs
 	origSamplePeriod := defaultSamplePeriod
 	defaultSamplePeriod = time.Minute
 	defer func() {
 		defaultSamplePeriod = origSamplePeriod
 	}()
-	testStartTime := time.Now()
 
+	// record start time
+	testStartTime := time.Now()
 	tsListStart := &timestamppb.Timestamp{
 		Seconds: testStartTime.Unix(),
 		Nanos:   int32(testStartTime.Nanosecond()),
 	}
 
+	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if testing.Short() || !testEnv.Config().UseProd {
+		t.Skip("Skip long running tests in short mode or non-prod environments")
+	}
+
+	columnFamilyName := "export"
+	if err := adminClient.CreateColumnFamily(ctx, tableName, columnFamilyName); err != nil {
+		t.Fatalf("Creating column family: %v", err)
+	}
+
+	for i := 0; i < 10; i++ {
+		mut := NewMutation()
+		mut.Set(columnFamilyName, "col", 1000, []byte("test"))
+		if err := table.Apply(ctx, fmt.Sprintf("row-%v", i), mut); err != nil {
+			t.Fatalf("Apply: %v", err)
+		}
+	}
+	err = table.ReadRows(ctx, PrefixRange("row-"), func(r Row) bool {
+		return true
+	}, RowFilter(ColumnFilter("col")))
+	if err != nil {
+		t.Fatalf("ReadRows: %v", err)
+	}
+
+	// Validate that metrics are exported
+	elapsedTime := time.Since(testStartTime)
+	if elapsedTime < 2*defaultSamplePeriod {
+		// Ensure at least 2 datapoints are recorded
+		time.Sleep(2*defaultSamplePeriod - elapsedTime)
+	}
+
+	// Sleep some more
+	time.Sleep(30 * time.Second)
+
+	monitoringClient, err := monitoring.NewMetricClient(ctx)
+	if err != nil {
+		t.Errorf("Failed to create metric client: %v", err)
+	}
+	metricNamesValidate := []string{
+		metricNameOperationLatencies,
+		metricNameAttemptLatencies,
+		metricNameServerLatencies,
+	}
+
+	// Try for 5m with 10s sleep between retries
+	testutil.Retry(t, 10, 30*time.Second, func(r *testutil.R) {
+		for _, metricName := range metricNamesValidate {
+			timeListEnd := time.Now()
+			tsListEnd := &timestamppb.Timestamp{
+				Seconds: timeListEnd.Unix(),
+				Nanos:   int32(timeListEnd.Nanosecond()),
+			}
+
+			// ListTimeSeries can list only one metric type at a time.
+			// So, call ListTimeSeries with different metric names
+			iter := monitoringClient.ListTimeSeries(ctx, &monitoringpb.ListTimeSeriesRequest{
+				Name: fmt.Sprintf("projects/%s", testEnv.Config().Project),
+				Interval: &monitoringpb.TimeInterval{
+					StartTime: tsListStart,
+					EndTime:   tsListEnd,
+				},
+				Filter: fmt.Sprintf("metric.type = starts_with(\"bigtable.googleapis.com/client/%v\")", metricName),
+			})
+
+			// Assert at least 1 datapoint was exported
+			_, err := iter.Next()
+			if err != nil {
+				r.Errorf("%v not exported\n", metricName)
+			}
+		}
+	})
+}
+
+func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
+	ctx := context.Background()
 	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
@@ -914,51 +997,6 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		t.Fatalf("No errors for bad bulk mutation")
 	} else if status[0] == nil || status[1] == nil {
 		t.Fatalf("No error for bad bulk mutation")
-	}
-
-	// Validate that metrics are exported
-	elapsedTime := time.Since(testStartTime)
-	if elapsedTime < 2*defaultSamplePeriod {
-		// Ensure at least 2 datapoints are recorded
-		time.Sleep(2*defaultSamplePeriod - elapsedTime)
-	}
-
-	timeListEnd := time.Now()
-	tsListEnd := &timestamppb.Timestamp{
-		Seconds: timeListEnd.Unix(),
-		Nanos:   int32(timeListEnd.Nanosecond()),
-	}
-
-	monitoringClient, err := monitoring.NewMetricClient(ctx)
-	if err != nil {
-		t.Errorf("Failed to create metric client: %v", err)
-	}
-
-	metricNamesValidate := []string{
-		metricNameOperationLatencies,
-		metricNameAttemptLatencies,
-		metricNameServerLatencies,
-	}
-	for _, metricName := range metricNamesValidate {
-		// ListTimeSeries can list only one metric type at a time.
-		// So, call ListTimeSeries with different metric names
-		iter := monitoringClient.ListTimeSeries(ctx, &monitoringpb.ListTimeSeriesRequest{
-			Name: fmt.Sprintf("projects/%s", testEnv.Config().Project),
-			Interval: &monitoringpb.TimeInterval{
-				StartTime: tsListStart,
-				EndTime:   tsListEnd,
-			},
-			Filter: fmt.Sprintf("metric.type = starts_with(\"bigtable.googleapis.com/client/%v\")", metricName),
-		})
-
-		// Assert at least 1 datapoint was exported
-		_, err := iter.Next()
-		if testEnv.Config().UseProd && err != nil {
-			t.Errorf("%v not exported\n", metricName)
-		}
-		if !testEnv.Config().UseProd && err != iterator.Done {
-			t.Errorf("%v should not be exported when using emulator\n", metricName)
-		}
 	}
 }
 

@@ -198,10 +198,10 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 				if err != nil {
 					t.Fatalf("WithBuiltIn failed: %v", err)
 				}
-				mpopts := append(builtInMpOpts, stdoutMpOpts)
+				mpOpts := append(builtInMpOpts, stdoutMpOpts)
 
 				// Create custom meter provider which exports to stdout and GCM
-				customMeterProvider = sdkmetric.NewMeterProvider(mpopts...)
+				customMeterProvider = sdkmetric.NewMeterProvider(mpOpts...)
 
 				test.config = ClientConfig{
 					MetricsProvider: CustomOpenTelemetryMetricsProvider{
@@ -223,8 +223,8 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 
 			gotClient := tbl.c
 
-			if gotClient.metricsTracerFactory.builtinEnabled != test.wantBuiltinEnabled {
-				t.Errorf("builtinEnabled: got: %v, want: %v", gotClient.metricsTracerFactory.builtinEnabled, test.wantBuiltinEnabled)
+			if gotClient.metricsTracerFactory.enabled != test.wantBuiltinEnabled {
+				t.Errorf("builtinEnabled: got: %v, want: %v", gotClient.metricsTracerFactory.enabled, test.wantBuiltinEnabled)
 			}
 
 			if diff := testutil.Diff(gotClient.metricsTracerFactory.clientAttributes, wantClientAttributes,
@@ -309,8 +309,9 @@ func TestToOtelMetricAttrs(t *testing.T) {
 		currOp: opTracer{
 			status: codes.OK.String(),
 			currAttempt: attemptTracer{
-				headerMD:  testHeaderMD,
-				trailerMD: &metadata.MD{},
+				startTime: time.Now(),
+				clusterID: "my-cluster",
+				zoneID:    "my-zone",
 			},
 			attemptCount: 1,
 		},
@@ -348,7 +349,7 @@ func TestToOtelMetricAttrs(t *testing.T) {
 	lessKeyValue := func(a, b attribute.KeyValue) bool { return a.Key < b.Key }
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			gotAttrs, gotErr := test.mt.toOtelMetricAttrs(test.metricName, mt.currOp.currAttempt.headerMD, mt.currOp.currAttempt.trailerMD, mt.currOp.status)
+			gotAttrs, gotErr := test.mt.toOtelMetricAttrs(test.metricName)
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
@@ -363,38 +364,38 @@ func TestToOtelMetricAttrs(t *testing.T) {
 
 func TestGetServerLatency(t *testing.T) {
 	invalidFormat := "invalid format"
-	invalidFormatMD := &metadata.MD{
+	invalidFormatMD := metadata.MD{
 		serverTimingMDKey: []string{invalidFormat},
 	}
 	invalidFormatErr := fmt.Errorf("strconv.ParseFloat: parsing %q: invalid syntax", invalidFormat)
 
 	tests := []struct {
 		desc        string
-		headerMD    *metadata.MD
-		trailerMD   *metadata.MD
+		headerMD    metadata.MD
+		trailerMD   metadata.MD
 		wantLatency float64
 		wantError   error
 	}{
 		{
 			desc:        "No server latency in header or trailer",
-			headerMD:    &metadata.MD{},
-			trailerMD:   &metadata.MD{},
+			headerMD:    metadata.MD{},
+			trailerMD:   metadata.MD{},
 			wantLatency: 0,
 			wantError:   fmt.Errorf("strconv.ParseFloat: parsing \"\": invalid syntax"),
 		},
 		{
 			desc: "Server latency in header",
-			headerMD: &metadata.MD{
+			headerMD: metadata.MD{
 				serverTimingMDKey: []string{"gfet4t7; dur=1234"},
 			},
-			trailerMD:   &metadata.MD{},
+			trailerMD:   metadata.MD{},
 			wantLatency: 1234,
 			wantError:   nil,
 		},
 		{
 			desc:     "Server latency in trailer",
-			headerMD: &metadata.MD{},
-			trailerMD: &metadata.MD{
+			headerMD: metadata.MD{},
+			trailerMD: metadata.MD{
 				serverTimingMDKey: []string{"gfet4t7; dur=5678"},
 			},
 			wantLatency: 5678,
@@ -402,10 +403,10 @@ func TestGetServerLatency(t *testing.T) {
 		},
 		{
 			desc: "Server latency in both header and trailer",
-			headerMD: &metadata.MD{
+			headerMD: metadata.MD{
 				serverTimingMDKey: []string{"gfet4t7; dur=1234"},
 			},
-			trailerMD: &metadata.MD{
+			trailerMD: metadata.MD{
 				serverTimingMDKey: []string{"gfet4t7; dur=5678"},
 			},
 			wantLatency: 1234,
@@ -414,13 +415,13 @@ func TestGetServerLatency(t *testing.T) {
 		{
 			desc:        "Invalid server latency format in header",
 			headerMD:    invalidFormatMD,
-			trailerMD:   &metadata.MD{},
+			trailerMD:   metadata.MD{},
 			wantLatency: 0,
 			wantError:   invalidFormatErr,
 		},
 		{
 			desc:        "Invalid server latency format in trailer",
-			headerMD:    &metadata.MD{},
+			headerMD:    metadata.MD{},
 			trailerMD:   invalidFormatMD,
 			wantLatency: 0,
 			wantError:   invalidFormatErr,
@@ -429,16 +430,7 @@ func TestGetServerLatency(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			mt := builtinMetricsTracer{
-				currOp: opTracer{
-					currAttempt: attemptTracer{
-						headerMD:  test.headerMD,
-						trailerMD: test.trailerMD,
-					},
-				},
-			}
-
-			gotLatency, gotErr := getServerLatency(mt.currOp.currAttempt.headerMD, mt.currOp.currAttempt.trailerMD)
+			gotLatency, gotErr := getServerLatency(test.headerMD, test.trailerMD)
 			if !equalErrs(gotErr, test.wantError) {
 				t.Errorf("error got: %v, want: %v", gotErr, test.wantError)
 			}
@@ -453,58 +445,58 @@ func TestGetLocation(t *testing.T) {
 	invalidFormatErr := "cannot parse invalid wire-format data"
 	tests := []struct {
 		desc        string
-		headerMD    *metadata.MD
-		trailerMD   *metadata.MD
+		headerMD    metadata.MD
+		trailerMD   metadata.MD
 		wantCluster string
 		wantZone    string
 		wantError   error
 	}{
 		{
 			desc:        "No location metadata in header or trailer",
-			headerMD:    &metadata.MD{},
-			trailerMD:   &metadata.MD{},
+			headerMD:    metadata.MD{},
+			trailerMD:   metadata.MD{},
 			wantCluster: "",
 			wantZone:    "",
 			wantError:   fmt.Errorf("Failed to get location metadata"),
 		},
 		{
 			desc:        "Location metadata in header",
-			headerMD:    testHeaderMD,
-			trailerMD:   &metadata.MD{},
+			headerMD:    *testHeaderMD,
+			trailerMD:   metadata.MD{},
 			wantCluster: clusterID1,
 			wantZone:    zoneID1,
 			wantError:   nil,
 		},
 		{
 			desc:        "Location metadata in trailer",
-			headerMD:    &metadata.MD{},
-			trailerMD:   testTrailerMD,
+			headerMD:    metadata.MD{},
+			trailerMD:   *testTrailerMD,
 			wantCluster: clusterID2,
 			wantZone:    zoneID1,
 			wantError:   nil,
 		},
 		{
 			desc:        "Location metadata in both header and trailer",
-			headerMD:    testHeaderMD,
-			trailerMD:   testTrailerMD,
+			headerMD:    *testHeaderMD,
+			trailerMD:   *testTrailerMD,
 			wantCluster: clusterID1,
 			wantZone:    zoneID1,
 			wantError:   nil,
 		},
 		{
 			desc: "Invalid location metadata format in header",
-			headerMD: &metadata.MD{
+			headerMD: metadata.MD{
 				locationMDKey: []string{"invalid format"},
 			},
-			trailerMD:   &metadata.MD{},
+			trailerMD:   metadata.MD{},
 			wantCluster: "",
 			wantZone:    "",
 			wantError:   fmt.Errorf(invalidFormatErr),
 		},
 		{
 			desc:     "Invalid location metadata format in trailer",
-			headerMD: &metadata.MD{},
-			trailerMD: &metadata.MD{
+			headerMD: metadata.MD{},
+			trailerMD: metadata.MD{
 				locationMDKey: []string{"invalid format"},
 			},
 			wantCluster: "",
@@ -515,16 +507,7 @@ func TestGetLocation(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			mt := builtinMetricsTracer{
-				currOp: opTracer{
-					currAttempt: attemptTracer{
-						headerMD:  test.headerMD,
-						trailerMD: test.trailerMD,
-					},
-				},
-			}
-
-			gotCluster, gotZone, gotErr := getLocation(mt.currOp.currAttempt.headerMD, mt.currOp.currAttempt.trailerMD)
+			gotCluster, gotZone, gotErr := getLocation(test.headerMD, test.trailerMD)
 			if gotCluster != test.wantCluster {
 				t.Errorf("cluster got: %v, want: %v", gotCluster, test.wantCluster)
 			}
