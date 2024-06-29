@@ -888,7 +888,8 @@ type ExecStepTaskOutput struct {
 
 	// Required. The final state of the exec step.
 	State ExecStepTaskOutput_State `protobuf:"varint,1,opt,name=state,proto3,enum=google.cloud.osconfig.agentendpoint.v1.ExecStepTaskOutput_State" json:"state,omitempty"`
-	// Required. The exit code received from the script which ran as part of the exec step.
+	// Required. The exit code received from the script which ran as part of the
+	// exec step.
 	ExitCode int32 `protobuf:"varint,2,opt,name=exit_code,json=exitCode,proto3" json:"exit_code,omitempty"`
 }
 

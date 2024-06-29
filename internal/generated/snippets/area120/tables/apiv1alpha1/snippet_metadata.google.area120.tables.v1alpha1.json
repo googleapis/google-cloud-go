@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/area120/tables/apiv1alpha1",
-    "version": "0.8.7",
+    "version": "0.8.8",
     "language": "GO",
     "apis": [
       {
