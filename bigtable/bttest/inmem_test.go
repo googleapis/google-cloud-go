@@ -1794,7 +1794,7 @@ func TestFilters(t *testing.T) {
 	}
 }
 
-func TestMutateRowsAggregate(t *testing.T) {
+func TestMutateRowsAggregate_AddToCell(t *testing.T) {
 	ctx := context.Background()
 
 	s := &server{
@@ -1858,6 +1858,96 @@ func TestMutateRowsAggregate(t *testing.T) {
 				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
 				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
 				Input:           &btpb.Value{Kind: &btpb.Value_IntValue{IntValue: 2}},
+			}},
+		}},
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	mock := &MockReadRowsServer{}
+	err = s.ReadRows(&btpb.ReadRowsRequest{
+		TableName: tblInfo.GetName(),
+		Rows: &btpb.RowSet{
+			RowKeys: [][]byte{
+				[]byte("row1"),
+			},
+		}}, mock)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got := mock.responses[0]
+
+	if !bytes.Equal(got.Chunks[0].Value, binary.BigEndian.AppendUint64([]byte{}, 3)) {
+		t.Error()
+	}
+}
+
+func TestMutateRowsAggregate_MergeToCell(t *testing.T) {
+	ctx := context.Background()
+
+	s := &server{
+		tables: make(map[string]*table),
+	}
+
+	tblInfo, err := populateTable(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.ModifyColumnFamilies(ctx, &btapb.ModifyColumnFamiliesRequest{
+		Name: tblInfo.Name,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id: "sum",
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{
+				Create: &btapb.ColumnFamily{
+					ValueType: &btapb.Type{
+						Kind: &btapb.Type_AggregateType{
+							AggregateType: &btapb.Type_Aggregate{
+								InputType: &btapb.Type{
+									Kind: &btapb.Type_Int64Type{},
+								},
+								Aggregator: &btapb.Type_Aggregate_Sum_{
+									Sum: &btapb.Type_Aggregate_Sum{},
+								},
+							},
+						},
+					},
+				},
+			}},
+		}})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.MutateRow(ctx, &btpb.MutateRowRequest{
+		TableName: tblInfo.GetName(),
+		RowKey:    []byte("row1"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_MergeToCell_{MergeToCell: &btpb.Mutation_MergeToCell{
+				FamilyName:      "sum",
+				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
+				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
+				Input:           &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: binary.BigEndian.AppendUint64([]byte{}, 1)}},
+			}},
+		}},
+	})
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.MutateRow(ctx, &btpb.MutateRowRequest{
+		TableName: tblInfo.GetName(),
+		RowKey:    []byte("row1"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_MergeToCell_{MergeToCell: &btpb.Mutation_MergeToCell{
+				FamilyName:      "sum",
+				ColumnQualifier: &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: []byte("col1")}},
+				Timestamp:       &btpb.Value{Kind: &btpb.Value_RawTimestampMicros{RawTimestampMicros: 0}},
+				Input:           &btpb.Value{Kind: &btpb.Value_RawValue{RawValue: binary.BigEndian.AppendUint64([]byte{}, 2)}},
 			}},
 		}},
 	})
