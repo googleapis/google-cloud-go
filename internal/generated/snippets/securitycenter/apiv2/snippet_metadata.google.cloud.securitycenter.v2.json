@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/securitycenter/apiv2",
-    "version": "1.30.0",
+    "version": "1.31.0",
     "language": "GO",
     "apis": [
       {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/texttospeech/apiv1",
-    "version": "1.7.7",
+    "version": "1.7.8",
     "language": "GO",
     "apis": [
       {

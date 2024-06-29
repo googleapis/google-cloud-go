@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/policysimulator/apiv1",
-    "version": "0.2.5",
+    "version": "0.2.6",
     "language": "GO",
     "apis": [
       {
