@@ -191,7 +191,7 @@ func NewServer(laddr string) (*Server, error) {
 	s := &Server{
 		Addr: l.Addr().String(),
 		l:    l,
-		srv:  grpc.NewServer(),
+		srv:  grpc.NewServer(grpc.WaitForHandlers(true)),
 		s: &server{
 			logf: func(format string, args ...interface{}) {
 				log.Printf("spannertest.inmem: "+format, args...)
