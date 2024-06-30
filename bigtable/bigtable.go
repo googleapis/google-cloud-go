@@ -1233,9 +1233,8 @@ type entryErr struct {
 //
 // Conditional mutations cannot be applied in bulk and providing one will result in an error.
 func (t *Table) ApplyBulk(ctx context.Context, rowKeys []string, muts []*Mutation, opts ...ApplyOption) (errs []error, err error) {
-	method := "cloud.google.com/go/bigtable/Apply"
 	ctx = mergeOutgoingMetadata(ctx, t.md)
-	ctx = trace.StartSpan(ctx, method)
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable/ApplyBulk")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if len(rowKeys) != len(muts) {

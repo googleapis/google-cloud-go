@@ -341,8 +341,13 @@ func TestToOtelMetricAttrs(t *testing.T) {
 			desc:       "Unknown metric",
 			mt:         mt,
 			metricName: "unknown_metric",
-			wantAttrs:  nil,
-			wantError:  fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
+			wantAttrs: []attribute.KeyValue{
+				attribute.String(monitoredResLabelKeyTable, "my-table"),
+				attribute.String(metricLabelKeyMethod, "ReadRows"),
+				attribute.String(monitoredResLabelKeyCluster, clusterID1),
+				attribute.String(monitoredResLabelKeyZone, zoneID1),
+			},
+			wantError: fmt.Errorf("unable to create attributes list for unknown metric: unknown_metric"),
 		},
 	}
 
@@ -455,9 +460,9 @@ func TestGetLocation(t *testing.T) {
 			desc:        "No location metadata in header or trailer",
 			headerMD:    metadata.MD{},
 			trailerMD:   metadata.MD{},
-			wantCluster: "",
-			wantZone:    "",
-			wantError:   fmt.Errorf("Failed to get location metadata"),
+			wantCluster: defaultCluster,
+			wantZone:    defaultZone,
+			wantError:   fmt.Errorf("failed to get location metadata"),
 		},
 		{
 			desc:        "Location metadata in header",
@@ -489,8 +494,8 @@ func TestGetLocation(t *testing.T) {
 				locationMDKey: []string{"invalid format"},
 			},
 			trailerMD:   metadata.MD{},
-			wantCluster: "",
-			wantZone:    "",
+			wantCluster: defaultCluster,
+			wantZone:    defaultZone,
 			wantError:   fmt.Errorf(invalidFormatErr),
 		},
 		{
@@ -499,8 +504,8 @@ func TestGetLocation(t *testing.T) {
 			trailerMD: metadata.MD{
 				locationMDKey: []string{"invalid format"},
 			},
-			wantCluster: "",
-			wantZone:    "",
+			wantCluster: defaultCluster,
+			wantZone:    defaultZone,
 			wantError:   fmt.Errorf(invalidFormatErr),
 		},
 	}
