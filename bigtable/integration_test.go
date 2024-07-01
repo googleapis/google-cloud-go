@@ -64,10 +64,10 @@ var (
 		"j§adams":     {"gwashington", "tjefferson"},
 	}
 
-	clusterUIDSpace  = uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
-	tableNameSpace   = uid.NewSpace("cbt-test", &uid.Options{Short: true})
-	myTableName      = fmt.Sprintf("mytable-%d", time.Now().Unix())
-	myOtherTableName = fmt.Sprintf("myothertable-%d", time.Now().Unix())
+	clusterUIDSpace       = uid.NewSpace(prefixOfClusterResources, &uid.Options{Short: true})
+	tableNameSpace        = uid.NewSpace("cbt-test", &uid.Options{Short: true})
+	myTableNameSpace      = uid.NewSpace("mytable", &uid.Options{Short: true})
+	myOtherTableNameSpace = uid.NewSpace("myothertable", &uid.Options{Short: true})
 )
 
 func populatePresidentsGraph(table *Table) error {
@@ -1554,6 +1554,7 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 	}
 	defer adminClient.Close()
 
+	myTableName := myTableNameSpace.New()
 	tableConf := TableConf{
 		TableID: myTableName,
 		Families: map[string]GCPolicy{
@@ -1567,13 +1568,13 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		t.Fatalf("Create table from config: %v", err)
 	}
 
-	table, err := adminClient.TableInfo(ctx, myTableName)
+	table, err := adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.DeletionProtection != Protected {
-		t.Errorf("Expect table deletion protection to be enabled for table: %v", myTableName)
+		t.Errorf("Expect table deletion protection to be enabled for table: %v", tableConf.TableID)
 	}
 
 	// Check if the deletion protection works properly
@@ -1584,17 +1585,17 @@ func TestIntegration_TableDeletionProtection(t *testing.T) {
 		t.Errorf("We shouldn't be able to delete the table when the deletion protection is enabled for table %v", myTableName)
 	}
 
-	if err := adminClient.UpdateTableWithDeletionProtection(ctx, myTableName, Unprotected); err != nil {
+	if err := adminClient.UpdateTableWithDeletionProtection(ctx, tableConf.TableID, Unprotected); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.DeletionProtection != Unprotected {
-		t.Errorf("Expect table deletion protection to be disabled for table: %v", myTableName)
+		t.Errorf("Expect table deletion protection to be disabled for table: %v", tableConf.TableID)
 	}
 
 	if err := adminClient.DeleteColumnFamily(ctx, tableConf.TableID, "fam1"); err != nil {
@@ -1634,6 +1635,7 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 		t.Fatalf("ChangeStreamRetention not valid: %v", err)
 	}
 
+	myTableName := myTableNameSpace.New()
 	tableConf := TableConf{
 		TableID: myTableName,
 		Families: map[string]GCPolicy{
@@ -1647,13 +1649,13 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 		t.Fatalf("Create table from config: %v", err)
 	}
 
-	table, err := adminClient.TableInfo(ctx, myTableName)
+	table, err := adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.ChangeStreamRetention != changeStreamRetention {
-		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	// Update retention
@@ -1662,31 +1664,31 @@ func TestIntegration_EnableChangeStream(t *testing.T) {
 		t.Fatalf("ChangeStreamRetention not valid: %v", err)
 	}
 
-	if err := adminClient.UpdateTableWithChangeStream(ctx, myTableName, changeStreamRetention); err != nil {
+	if err := adminClient.UpdateTableWithChangeStream(ctx, tableConf.TableID, changeStreamRetention); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.ChangeStreamRetention != changeStreamRetention {
-		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table change stream to be enabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	// Disable change stream
-	if err := adminClient.UpdateTableDisableChangeStream(ctx, myTableName); err != nil {
+	if err := adminClient.UpdateTableDisableChangeStream(ctx, tableConf.TableID); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.ChangeStreamRetention != nil {
-		t.Errorf("Expect table change stream to be disabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table change stream to be disabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	if err = adminClient.DeleteTable(ctx, tableConf.TableID); err != nil {
@@ -1739,6 +1741,7 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 	}
 	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
 
+	myTableName := myTableNameSpace.New()
 	tableConf := TableConf{
 		TableID: myTableName,
 		Families: map[string]GCPolicy{
@@ -1751,22 +1754,22 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 	if err := adminClient.CreateTableFromConf(ctx, &tableConf); err != nil {
 		t.Fatalf("Create table from config: %v", err)
 	}
-	defer deleteTable(ctx, t, adminClient, myTableName)
+	defer deleteTable(ctx, t, adminClient, tableConf.TableID)
 
-	table, err := adminClient.TableInfo(ctx, myTableName)
+	table, err := adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.AutomatedBackupConfig == nil {
-		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect Automated Backup Policy to be enabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 	tableAbp := table.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
 	if !equalOptionalDuration(tableAbp.Frequency, automatedBackupPolicy.Frequency) {
-		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect automated backup policy frequency to be set for table: %v has info: %v", tableConf.TableID, table)
 	}
 	if !equalOptionalDuration(tableAbp.RetentionPeriod, automatedBackupPolicy.RetentionPeriod) {
-		t.Errorf("Expect automated backup policy retention period to be set for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect automated backup policy retention period to be set for table: %v has info: %v", tableConf.TableID, table)
 	}
 
 	// Test update automated backup policy
@@ -1795,39 +1798,39 @@ func TestIntegration_AutomatedBackups(t *testing.T) {
 			bkpPolicy: TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency},
 		},
 	} {
-		if gotErr := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, myTableName, testcase.bkpPolicy); err != nil {
+		if gotErr := adminClient.UpdateTableWithAutomatedBackupPolicy(ctx, tableConf.TableID, testcase.bkpPolicy); err != nil {
 			t.Fatalf("%v: Update table from config: %v", testcase.desc, gotErr)
 		}
 
-		gotTable, gotErr := adminClient.TableInfo(ctx, myTableName)
+		gotTable, gotErr := adminClient.TableInfo(ctx, tableConf.TableID)
 		if gotErr != nil {
 			t.Fatalf("%v: Getting table info: %v", testcase.desc, gotErr)
 		}
 		if gotTable.AutomatedBackupConfig == nil {
-			t.Errorf("%v: Expect Automated Backup Policy to be enabled for table: %v has info: %v", testcase.desc, myTableName, gotTable)
+			t.Errorf("%v: Expect Automated Backup Policy to be enabled for table: %v has info: %v", testcase.desc, tableConf.TableID, gotTable)
 		}
 
 		gotTableAbp := gotTable.AutomatedBackupConfig.(*TableAutomatedBackupPolicy)
 		if testcase.bkpPolicy.Frequency != nil && !equalOptionalDuration(gotTableAbp.Frequency, testcase.bkpPolicy.Frequency) {
-			t.Errorf("%v: Expect automated backup policy frequency to be set for table: %v has info: %v", testcase.desc, myTableName, table)
+			t.Errorf("%v: Expect automated backup policy frequency to be set for table: %v has info: %v", testcase.desc, tableConf.TableID, table)
 		}
 		if testcase.bkpPolicy.RetentionPeriod != nil && !equalOptionalDuration(gotTableAbp.RetentionPeriod, testcase.bkpPolicy.RetentionPeriod) {
-			t.Errorf("%v: Expect automated backup policy retention period to be set for table: %v has info: %v", testcase.desc, myTableName, table)
+			t.Errorf("%v: Expect automated backup policy retention period to be set for table: %v has info: %v", testcase.desc, tableConf.TableID, table)
 		}
 	}
 
 	// Test disable automated backups
-	if err := adminClient.UpdateTableDisableAutomatedBackupPolicy(ctx, myTableName); err != nil {
+	if err := adminClient.UpdateTableDisableAutomatedBackupPolicy(ctx, tableConf.TableID); err != nil {
 		t.Fatalf("Update table from config: %v", err)
 	}
 
-	table, err = adminClient.TableInfo(ctx, myTableName)
+	table, err = adminClient.TableInfo(ctx, tableConf.TableID)
 	if err != nil {
 		t.Fatalf("Getting table info: %v", err)
 	}
 
 	if table.AutomatedBackupConfig != nil {
-		t.Errorf("Expect table automated backups to be disabled for table: %v has info: %v", myTableName, table)
+		t.Errorf("Expect table automated backups to be disabled for table: %v has info: %v", tableConf.TableID, table)
 	}
 }
 
@@ -1888,15 +1891,15 @@ func TestIntegration_Admin(t *testing.T) {
 		return true
 	}
 
+	myTableName := myTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myTableName)
-
-	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
+	myOtherTableName := myOtherTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myOtherTableName)
-
-	if err := adminClient.CreateTable(ctx, myOtherTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myOtherTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2049,8 +2052,9 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 	defer adminClient.Close()
 
+	myTableName := myTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myTableName)
-	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2092,7 +2096,7 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	cluster := testEnv.Config().Cluster
 
 	defer deleteTable(ctx, t, adminClient, table)
-	if err := adminClient.CreateTable(ctx, table); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2160,7 +2164,7 @@ func TestIntegration_AuthorizedViewIAM(t *testing.T) {
 	table := testEnv.Config().Table
 
 	defer deleteTable(ctx, t, adminClient, table)
-	if err := adminClient.CreateTable(ctx, table); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2388,7 +2392,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
 	defer deleteTable(ctx, t, adminClient, table)
-	if err := adminClient.CreateTable(ctx, table); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -2983,9 +2987,9 @@ func TestIntegration_Granularity(t *testing.T) {
 		return true
 	}
 
+	myTableName := myTableNameSpace.New()
 	defer deleteTable(ctx, t, adminClient, myTableName)
-
-	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
@@ -4092,7 +4096,7 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		tableName = testEnv.Config().Table
 	}
 
-	if err := adminClient.CreateTable(ctx, tableName); err != nil {
+	if err := createTableWithRetry(ctx, t, adminClient, tableName); err != nil {
 		cancel()
 		t.Logf("Error creating table: %v", err)
 		return nil, nil, nil, nil, "", nil, err
@@ -4115,6 +4119,18 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		client.Close()
 		adminClient.Close()
 	}, nil
+}
+
+func createTableWithRetry(ctx context.Context, t *testing.T, adminClient *AdminClient, tableName string) error {
+	var err error
+	testutil.Retry(t, 3, 10*time.Second, func(r *testutil.R) {
+		err = nil
+		if err := adminClient.CreateTable(ctx, tableName); err != nil {
+			err = fmt.Errorf("Error creating table: %v", err)
+			r.Errorf(err.Error())
+		}
+	})
+	return err
 }
 
 func formatReadItem(ri ReadItem) string {
