@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/beyondcorp/appgateways/apiv1",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "language": "GO",
     "apis": [
       {

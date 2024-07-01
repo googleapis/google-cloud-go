@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/clouddms/apiv1",
-    "version": "1.7.6",
+    "version": "1.7.7",
     "language": "GO",
     "apis": [
       {
