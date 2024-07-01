@@ -85,7 +85,7 @@ func (r *spannerRetryer) Retry(err error) (time.Duration, bool) {
 // a minimum of 10ms and maximum of 32s. There is no delay before the retry if
 // the error was Session not found or failed inline begin transaction.
 func runWithRetryOnAbortedOrFailedInlineBeginOrSessionNotFound(ctx context.Context, f func(context.Context) error) error {
-	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.Internal)
+	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.ResourceExhausted, codes.Internal)
 	funcWithRetry := func(ctx context.Context) error {
 		for {
 			err := f(ctx)
