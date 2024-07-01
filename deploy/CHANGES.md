@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.1...deploy/v1.19.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **deploy:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/deploy/v1.19.0...deploy/v1.19.1) (2024-06-26)
 
 

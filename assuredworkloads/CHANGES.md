@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.11.9](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.11.8...assuredworkloads/v1.11.9) (2024-07-01)
+
+
+### Bug Fixes
+
+* **assuredworkloads:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.11.8](https://github.com/googleapis/google-cloud-go/compare/assuredworkloads/v1.11.7...assuredworkloads/v1.11.8) (2024-06-26)
 
 

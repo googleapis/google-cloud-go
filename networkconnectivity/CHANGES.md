@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.8](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.14.7...networkconnectivity/v1.14.8) (2024-07-01)
+
+
+### Bug Fixes
+
+* **networkconnectivity:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.14.7](https://github.com/googleapis/google-cloud-go/compare/networkconnectivity/v1.14.6...networkconnectivity/v1.14.7) (2024-06-26)
 
 
