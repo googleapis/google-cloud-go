@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/scheduler/apiv1",
-    "version": "1.10.8",
+    "version": "1.10.9",
     "language": "GO",
     "apis": [
       {

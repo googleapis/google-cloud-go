@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkehub/apiv1beta1",
-    "version": "0.14.7",
+    "version": "0.14.8",
     "language": "GO",
     "apis": [
       {

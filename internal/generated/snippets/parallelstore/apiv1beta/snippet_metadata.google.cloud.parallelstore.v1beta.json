@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/parallelstore/apiv1beta",
-    "version": "0.3.0",
+    "version": "0.3.1",
     "language": "GO",
     "apis": [
       {

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/video/stitcher/apiv1",
-    "version": "1.21.0",
+    "version": "1.21.1",
     "language": "GO",
     "apis": [
       {
