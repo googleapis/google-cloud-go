@@ -3962,6 +3962,58 @@ func TestIntegration_DataAuthorizedView(t *testing.T) {
 	}
 }
 
+func TestIntegration_TestUpdateColumnFamilyValueType(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support update column family operation")
+	}
+
+	timeout := 15 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		ColumnFamilies: map[string]Family{
+			"cf": {
+				GCPolicy: MaxVersionsPolicy(1),
+			},
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Create table from TableConf error: %v", err)
+	}
+	// Clean-up
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	// Update column family type to aggregate type should not be successful
+	err = adminClient.SetValueType(ctx, tblConf.TableID, "cf", AggregateType{
+		Input: Int64Type{}, Aggregator: SumAggregator{},
+	})
+	if err == nil {
+		t.Fatalf("Update family type to aggregate type should not be successful")
+	}
+
+	// Update column family type to string type should be successful
+	err = adminClient.SetValueType(ctx, tblConf.TableID, "cf", StringType{
+		Encoding: StringUtf8Encoding{},
+	})
+	if err != nil {
+		t.Fatalf("Failed to update value type of family: %v", err)
+	}
+}
+
 // TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
 func TestIntegration_DirectPathFallback(t *testing.T) {
 	ctx := context.Background()
