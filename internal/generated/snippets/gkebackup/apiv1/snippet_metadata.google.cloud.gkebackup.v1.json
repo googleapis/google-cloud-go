@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkebackup/apiv1",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "language": "GO",
     "apis": [
       {

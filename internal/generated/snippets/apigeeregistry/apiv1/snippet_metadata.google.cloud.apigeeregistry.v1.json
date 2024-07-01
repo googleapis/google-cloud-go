@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apigeeregistry/apiv1",
-    "version": "0.8.5",
+    "version": "0.8.6",
     "language": "GO",
     "apis": [
       {
