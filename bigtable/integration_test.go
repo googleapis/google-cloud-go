@@ -4122,12 +4122,15 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 }
 
 func createTableWithRetry(ctx context.Context, t *testing.T, adminClient *AdminClient, tableName string) error {
+	// Error seen on last create attempt
 	var err error
+
 	testutil.Retry(t, 3, 10*time.Second, func(r *testutil.R) {
-		err = nil
-		if err := adminClient.CreateTable(ctx, tableName); err != nil {
-			err = fmt.Errorf("Error creating table: %v", err)
-			r.Errorf(err.Error())
+		createErr := adminClient.CreateTable(ctx, tableName)
+		err = createErr
+
+		if createErr != nil {
+			r.Errorf(createErr.Error())
 		}
 	})
 	return err
