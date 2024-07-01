@@ -3973,6 +3973,8 @@ func TestIntegration_CustomTime(t *testing.T) {
 		obj := bkt.Object("custom-time-obj")
 		w := obj.NewWriter(ctx)
 		ct := time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC)
+		// CustomTime should be at millisecond precision so ensure that this is tested.
+		ct = ct.Add(5 * time.Millisecond)
 		w.ObjectAttrs.CustomTime = ct
 		h.mustWrite(w, randomContents())
 
@@ -3982,8 +3984,8 @@ func TestIntegration_CustomTime(t *testing.T) {
 			if err != nil {
 				return fmt.Errorf("failed to get object attrs: %v", err)
 			}
-			if got := attrs.CustomTime; got != want {
-				return fmt.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+			if diff := cmp.Diff(attrs.CustomTime, want); diff != "" {
+				return fmt.Errorf("CustomTime not set correctly: %v", diff)
 			}
 			return nil
 		}
@@ -3992,8 +3994,9 @@ func TestIntegration_CustomTime(t *testing.T) {
 			t.Fatalf("checking CustomTime: %v", err)
 		}
 
-		// Update CustomTime to the future should succeed.
-		laterTime := ct.Add(10 * time.Hour)
+		// Update CustomTime to the future should succeed. Include milliseconds
+		// to test that these are set correctly.
+		laterTime := ct.Add(10 * time.Hour).Add(10 * time.Millisecond)
 		if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: laterTime}); err != nil {
 			t.Fatalf("updating CustomTime: %v", err)
 		}
