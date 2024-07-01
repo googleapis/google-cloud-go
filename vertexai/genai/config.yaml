@@ -3,7 +3,6 @@
 package: genai
 
 protoImportPath: cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb
-supportImportPath: cloud.google.com/go/vertexai/internal/support
 
 types:
     HarmCategory:

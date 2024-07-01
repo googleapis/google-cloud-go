@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.6...clouddms/v1.7.7) (2024-06-26)
+
+
+### Bug Fixes
+
+* **clouddms:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.5...clouddms/v1.7.6) (2024-05-01)
 
 

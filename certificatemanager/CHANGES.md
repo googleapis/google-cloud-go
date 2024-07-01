@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.1...certificatemanager/v1.8.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **certificatemanager:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/certificatemanager/v1.8.0...certificatemanager/v1.8.1) (2024-05-01)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [0.5.8](https://github.com/googleapis/google-cloud-go/compare/longrunning/v0.5.7...longrunning/v0.5.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **longrunning:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [0.5.7](https://github.com/googleapis/google-cloud-go/compare/longrunning/v0.5.6...longrunning/v0.5.7) (2024-05-01)
 
 

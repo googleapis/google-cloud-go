@@ -248,20 +248,22 @@ func (WindowsUpdateSettings_Classification) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_osconfig_agentendpoint_v1_patch_jobs_proto_rawDescGZIP(), []int{5, 0}
 }
 
-// The interpreter used to execute the a file.
+// The interpreter used to run the file.
 type ExecStepConfig_Interpreter int32
 
 const (
-	// Deprecated, defaults to NONE for compatibility reasons.
+	// If the interpreter is not specified, the value defaults to `NONE`.
 	ExecStepConfig_INTERPRETER_UNSPECIFIED ExecStepConfig_Interpreter = 0
-	// Invalid for a Windows ExecStepConfig. For a Linux ExecStepConfig, the
-	// interpreter will be parsed from the shebang line of the script if
-	// unspecified.
+	// Indicates that the file is run as follows on each operating system:
+	// + For Linux VMs, the file is ran as an executable and the interpreter
+	// might be parsed from the [shebang
+	// line](https://wikipedia.org/wiki/Shebang_(Unix)) of the file.
+	// + For Windows VM, this value is not supported.
 	ExecStepConfig_NONE ExecStepConfig_Interpreter = 3
-	// Indicates that the script will be run with /bin/sh on Linux and cmd
-	// on windows.
+	// Indicates that the file is run with `/bin/sh` on Linux and `cmd`
+	// on Windows.
 	ExecStepConfig_SHELL ExecStepConfig_Interpreter = 1
-	// Indicates that the file will be run with PowerShell.
+	// Indicates that the file is run with PowerShell.
 	ExecStepConfig_POWERSHELL ExecStepConfig_Interpreter = 2
 )
 
