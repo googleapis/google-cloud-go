@@ -686,6 +686,9 @@ func IgnoreWarnings() GCPolicyOption {
 }
 
 func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, policy GCPolicy, opts ...GCPolicyOption) error {
+	if policy == nil {
+		return fmt.Errorf("policy cannot be nil")
+	}
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 
@@ -707,11 +710,39 @@ func (ac *AdminClient) setGCPolicy(ctx context.Context, table, family string, po
 	return err
 }
 
+func (ac *AdminClient) setValueTypeImpl(ctx context.Context, table, family string, valueType Type) error {
+	if valueType == nil {
+		return fmt.Errorf("value type must be non nil")
+	}
+	if _, ok := valueType.proto().GetKind().(*btapb.Type_AggregateType); ok {
+		return fmt.Errorf("update family value type to aggregate type is unsupported")
+	}
+
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+
+	req := &btapb.ModifyColumnFamiliesRequest{
+		Name: prefix + "/tables/" + table,
+		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
+			Id:  family,
+			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Update{Update: &btapb.ColumnFamily{ValueType: valueType.proto()}},
+		}},
+	}
+	_, err := ac.tClient.ModifyColumnFamilies(ctx, req)
+	return err
+}
+
 // SetGCPolicy specifies which cells in a column family should be garbage collected.
 // GC executes opportunistically in the background; table reads may return data
 // matching the GC policy.
 func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, policy GCPolicy) error {
 	return ac.SetGCPolicyWithOptions(ctx, table, family, policy)
+}
+
+// SetValueType specifies the type of all values in a column family. Currently,
+// only non-aggregate type is supported.
+func (ac *AdminClient) SetValueType(ctx context.Context, table, family string, valueType Type) error {
+	return ac.setValueTypeImpl(ctx, table, family, valueType)
 }
 
 // SetGCPolicyWithOptions is similar to SetGCPolicy but allows passing options
