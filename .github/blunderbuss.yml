@@ -25,6 +25,7 @@ assign_issues_by:
   - 'api: spanner'
   to:
   - harshachinta
+  - rahul2393
 - labels:
   - 'api: logging'
   - 'api: clouderrorreporting'
