@@ -389,6 +389,28 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	}
 }
 
+func TestGRPCKeyProvider_GetRequestMetadata(t *testing.T) {
+	apiKey := "MY_API_KEY"
+	reason := "MY_REQUEST_REASON"
+	ts := grpcKeyProvider{
+		apiKey: apiKey,
+		metadata: map[string]string{
+			"X-goog-request-reason": reason,
+		},
+	}
+	got, err := ts.GetRequestMetadata(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"X-goog-api-key":        ts.apiKey,
+		"X-goog-request-reason": reason,
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("mismatch (-want +got):\n%s", diff)
+	}
+}
+
 type staticTP struct {
 	tok *auth.Token
 }
