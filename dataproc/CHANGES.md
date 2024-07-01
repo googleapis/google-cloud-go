@@ -1,5 +1,12 @@
 # Changes
 
+## [2.5.1](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.5.0...dataproc/v2.5.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **dataproc/v2:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [2.5.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.4.2...dataproc/v2.5.0) (2024-06-26)
 
 
