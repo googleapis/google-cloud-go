@@ -53,7 +53,7 @@ func TestConformance(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer conn.Close()
-	c, err := NewClient(ctx, "some-project", "some-instance", option.WithGRPCConn(conn))
+	c, err := NewClientWithConfig(ctx, "some-project", "some-instance", disableMetricsConfig, option.WithGRPCConn(conn))
 	if err != nil {
 		t.Fatal(err)
 	}

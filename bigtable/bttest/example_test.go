@@ -56,7 +56,7 @@ func ExampleNewServer() {
 		log.Fatalln(err)
 	}
 
-	client, err := bigtable.NewClient(ctx, proj, instance, option.WithGRPCConn(conn))
+	client, err := bigtable.NewClientWithConfig(ctx, proj, instance, bigtable.ClientConfig{MetricsProvider: bigtable.NoopMetricsProvider{}}, option.WithGRPCConn(conn))
 	if err != nil {
 		log.Fatalln(err)
 	}
