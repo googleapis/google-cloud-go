@@ -3,12 +3,12 @@ module cloud.google.com/go/retail
 go 1.20
 
 require (
-	cloud.google.com/go/longrunning v0.5.7
+	cloud.google.com/go/longrunning v0.5.8
 	github.com/googleapis/gax-go/v2 v2.12.5
 	google.golang.org/api v0.186.0
 	google.golang.org/genproto v0.0.0-20240617180043-68d350f18fd4
-	google.golang.org/genproto/googleapis/api v0.0.0-20240617180043-68d350f18fd4
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240617180043-68d350f18fd4
+	google.golang.org/genproto/googleapis/api v0.0.0-20240701130421-f6361c86f094
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240701130421-f6361c86f094
 	google.golang.org/grpc v1.64.0
 	google.golang.org/protobuf v1.34.2
 )
