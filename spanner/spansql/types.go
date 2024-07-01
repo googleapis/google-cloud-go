@@ -1276,8 +1276,12 @@ func (wd WatchDef) Pos() Position { return wd.Position }
 func (wd *WatchDef) clearOffset() { wd.Position.Offset = 0 }
 
 type ChangeStreamOptions struct {
-	RetentionPeriod  *string
-	ValueCaptureType *string
+	RetentionPeriod   *string
+	ValueCaptureType  *string
+	ExcludeTTLDeletes IsExpr
+	ExcludeInsert     IsExpr
+	ExcludeUpdate     IsExpr
+	ExcludeDelete     IsExpr
 }
 
 // AlterStatistics represents an ALTER STATISTICS statement.
