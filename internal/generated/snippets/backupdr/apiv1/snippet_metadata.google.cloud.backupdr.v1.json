@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/backupdr/apiv1",
-    "version": "0.1.1",
+    "version": "1.0.0",
     "language": "GO",
     "apis": [
       {

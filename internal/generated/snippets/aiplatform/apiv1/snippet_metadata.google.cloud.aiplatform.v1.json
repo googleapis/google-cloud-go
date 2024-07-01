@@ -1986,6 +1986,52 @@
       ]
     },
     {
+      "regionTag": "aiplatform_v1_generated_DeploymentResourcePoolService_UpdateDeploymentResourcePool_sync",
+      "title": "aiplatform UpdateDeploymentResourcePool Sample",
+      "description": "UpdateDeploymentResourcePool update a DeploymentResourcePool.",
+      "file": "DeploymentResourcePoolClient/UpdateDeploymentResourcePool/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDeploymentResourcePool",
+        "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolClient.UpdateDeploymentResourcePool",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "aiplatformpb.UpdateDeploymentResourcePoolRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateDeploymentResourcePoolOperation",
+        "client": {
+          "shortName": "DeploymentResourcePoolClient",
+          "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolClient"
+        },
+        "method": {
+          "shortName": "UpdateDeploymentResourcePool",
+          "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolService.UpdateDeploymentResourcePool",
+          "service": {
+            "shortName": "DeploymentResourcePoolService",
+            "fullName": "google.cloud.aiplatform.v1.DeploymentResourcePoolService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "aiplatform_v1_generated_DeploymentResourcePoolService_WaitOperation_sync",
       "title": "aiplatform WaitOperation Sample",
       "description": "WaitOperation is a utility method from google.longrunning.Operations.",

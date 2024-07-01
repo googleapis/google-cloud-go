@@ -21,6 +21,9 @@ import (
 	"net/http"
 	"testing"
 	"time"
+
+	"cloud.google.com/go/auth/internal"
+	"cloud.google.com/go/auth/internal/transport/cert"
 )
 
 const (
@@ -622,6 +625,77 @@ func TestGetGRPCTransportCredsAndEndpoint_UniverseDomain(t *testing.T) {
 			} else {
 				if tc.wantEndpoint != endpoint {
 					t.Errorf("want endpoint: %s, got %s", tc.wantEndpoint, endpoint)
+				}
+			}
+		})
+	}
+}
+
+func TestGetClientCertificateProvider(t *testing.T) {
+	testCases := []struct {
+		name             string
+		opts             *Options
+		useCertEnvVar    string
+		wantCertProvider cert.Provider
+		wantErr          error
+	}{
+		{
+			name: "UseCertEnvVar false, Domain is GDU",
+			opts: &Options{
+				UniverseDomain:     internal.DefaultUniverseDomain,
+				ClientCertProvider: fakeClientCertSource,
+				Endpoint:           testRegularEndpoint,
+			},
+			useCertEnvVar:    "false",
+			wantCertProvider: nil,
+		},
+		{
+			name: "UseCertEnvVar unset, Domain is not GDU",
+			opts: &Options{
+				UniverseDomain:     testUniverseDomain,
+				ClientCertProvider: fakeClientCertSource,
+				Endpoint:           testOverrideEndpoint,
+			},
+			useCertEnvVar:    "unset",
+			wantCertProvider: nil,
+		},
+		{
+			name: "UseCertEnvVar unset, Domain is GDU",
+			opts: &Options{
+				UniverseDomain:     internal.DefaultUniverseDomain,
+				ClientCertProvider: fakeClientCertSource,
+				Endpoint:           testRegularEndpoint,
+			},
+			useCertEnvVar:    "unset",
+			wantCertProvider: fakeClientCertSource,
+		},
+		{
+			name: "UseCertEnvVar true, Domain is not GDU",
+			opts: &Options{
+				UniverseDomain:     testUniverseDomain,
+				ClientCertProvider: fakeClientCertSource,
+				Endpoint:           testOverrideEndpoint,
+			},
+			useCertEnvVar:    "true",
+			wantCertProvider: fakeClientCertSource,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			if tc.useCertEnvVar != "unset" {
+				t.Setenv(googleAPIUseCertSource, tc.useCertEnvVar)
+			}
+			certProvider, err := GetClientCertificateProvider(tc.opts)
+			if err != nil {
+				if err != tc.wantErr {
+					t.Fatalf("err: %v", err)
+				}
+			} else {
+				want := fmt.Sprintf("%v", tc.wantCertProvider)
+				got := fmt.Sprintf("%v", certProvider)
+				if want != got {
+					t.Errorf("want cert provider: %v, got %v", want, got)
 				}
 			}
 		})
