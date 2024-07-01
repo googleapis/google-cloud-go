@@ -41,7 +41,7 @@ require (
 	cloud.google.com/go/dataform v0.9.4
 	cloud.google.com/go/datafusion v1.7.7
 	cloud.google.com/go/datalabeling v0.8.7
-	cloud.google.com/go/dataplex v1.16.0
+	cloud.google.com/go/dataplex v1.16.1
 	cloud.google.com/go/dataproc/v2 v2.4.2
 	cloud.google.com/go/dataqna v0.8.7
 	cloud.google.com/go/datastore v1.17.1
@@ -50,7 +50,7 @@ require (
 	cloud.google.com/go/dialogflow v1.54.0
 	cloud.google.com/go/discoveryengine v0.0.0-00010101000000-000000000000
 	cloud.google.com/go/dlp v1.14.0
-	cloud.google.com/go/documentai v1.30.0
+	cloud.google.com/go/documentai v1.30.1
 	cloud.google.com/go/domains v0.9.7
 	cloud.google.com/go/edgecontainer v1.2.1
 	cloud.google.com/go/errorreporting v0.3.0
@@ -68,7 +68,7 @@ require (
 	cloud.google.com/go/iap v1.9.6
 	cloud.google.com/go/ids v1.4.7
 	cloud.google.com/go/iot v1.7.7
-	cloud.google.com/go/kms v1.17.1
+	cloud.google.com/go/kms v1.18.0
 	cloud.google.com/go/language v1.12.5
 	cloud.google.com/go/lifesciences v0.9.7
 	cloud.google.com/go/logging v1.10.0
@@ -91,7 +91,7 @@ require (
 	cloud.google.com/go/phishingprotection v0.8.7
 	cloud.google.com/go/policytroubleshooter v1.10.5
 	cloud.google.com/go/privatecatalog v0.9.7
-	cloud.google.com/go/pubsub v1.38.0
+	cloud.google.com/go/pubsub v1.39.0
 	cloud.google.com/go/pubsublite v1.8.2
 	cloud.google.com/go/recaptchaenterprise/v2 v2.13.0
 	cloud.google.com/go/recommendationengine v0.8.7
@@ -131,8 +131,8 @@ require (
 	cloud.google.com/go/workflows v1.12.6
 	cloud.google.com/go/workstations v0.0.0-00010101000000-000000000000
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
-	google.golang.org/api v0.186.0
-	google.golang.org/genproto v0.0.0-20240617180043-68d350f18fd4
+	google.golang.org/api v0.187.0
+	google.golang.org/genproto v0.0.0-20240624140628-dc46fd24d27d
 )
 
 require (
@@ -170,7 +170,7 @@ require (
 )
 
 require (
-	cloud.google.com/go/auth v0.6.0 // indirect
+	cloud.google.com/go/auth v0.6.1 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -194,7 +194,7 @@ require (
 	golang.org/x/sys v0.21.0 // indirect
 	golang.org/x/text v0.16.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240617180043-68d350f18fd4 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240624140628-dc46fd24d27d // indirect
 	google.golang.org/grpc v1.64.0 // indirect
 )
 
