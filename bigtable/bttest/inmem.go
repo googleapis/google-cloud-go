@@ -42,6 +42,7 @@ import (
 	"math"
 	"math/rand"
 	"net"
+	"os"
 	"regexp"
 	"sort"
 	"strings"
@@ -108,7 +109,15 @@ type server struct {
 // The Server will be listening for gRPC connections, without TLS,
 // on the provided address. The resolved address is named by the Addr field.
 func NewServer(laddr string, opt ...grpc.ServerOption) (*Server, error) {
-	l, err := net.Listen("tcp", laddr)
+	var l net.Listener
+	var err error
+
+	// If the address contains slashes, listen on a unix domain socket instead.
+	if strings.Contains(laddr, "/") {
+		l, err = net.Listen("unix", laddr)
+	} else {
+		l, err = net.Listen("tcp", laddr)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -141,6 +150,11 @@ func (s *Server) Close() {
 
 	s.srv.Stop()
 	s.l.Close()
+
+	// clean up unix socket
+	if strings.Contains(s.Addr, "/") {
+		_ = os.Remove(s.Addr)
+	}
 }
 
 func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest) (*btapb.Table, error) {
