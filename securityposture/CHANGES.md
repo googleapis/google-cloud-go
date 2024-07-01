@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.4...securityposture/v0.1.5) (2024-07-01)
+
+
+### Bug Fixes
+
+* **securityposture:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [0.1.4](https://github.com/googleapis/google-cloud-go/compare/securityposture/v0.1.3...securityposture/v0.1.4) (2024-06-26)
 
 
