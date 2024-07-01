@@ -192,7 +192,7 @@ func (h *CloudStreamHandler) verifyCloudTraceExportedTraces(ctx context.Context)
 		return nil
 	}
 	log.Printf("start verification of exported cloud traces: len:%v, trace_ids:%v\n", len(h.exportedTraces), h.exportedTraces)
-	time.Sleep(20 * time.Second)
+	time.Sleep(10 * time.Second)
 	for _, traceId := range h.exportedTraces {
 		getTraceRequest := &tracepb.GetTraceRequest{
 			ProjectId: "spanner-cloud-systest",
@@ -202,6 +202,17 @@ func (h *CloudStreamHandler) verifyCloudTraceExportedTraces(ctx context.Context)
 		if err != nil {
 			log.Printf("failed to get trace_id %v using GetTrace api: %v", traceId, err)
 			return err
+		}
+		// Check if gRPC layer trace spans are present. Spans in gRPC layer have method
+		// name called in span name.
+		grpcLayerSpanPresent := false
+		for _, span := range resp.Spans {
+			if strings.Contains(span.Name, "google.spanner.v1.Spanner") {
+				grpcLayerSpanPresent = true
+			}
+		}
+		if !grpcLayerSpanPresent {
+			continue
 		}
 		spannerLayerSpanPresent := false
 		for _, span := range resp.Spans {
