@@ -21,14 +21,13 @@
 package aiplatformpb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -697,7 +696,7 @@ type RuntimeConfig_CodeInterpreterRuntimeConfig_ struct {
 }
 
 type RuntimeConfig_VertexAiSearchRuntimeConfig struct {
-	// Runtime configuration for Vertext AI Search extension.
+	// Runtime configuration for Vertex AI Search extension.
 	VertexAiSearchRuntimeConfig *RuntimeConfig_VertexAISearchRuntimeConfig `protobuf:"bytes,6,opt,name=vertex_ai_search_runtime_config,json=vertexAiSearchRuntimeConfig,proto3,oneof"`
 }
 
