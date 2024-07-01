@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.0.8](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.7...support/v1.0.8) (2024-07-01)
+
+
+### Bug Fixes
+
+* **support:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.0.7](https://github.com/googleapis/google-cloud-go/compare/support/v1.0.6...support/v1.0.7) (2024-06-26)
 
 

@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.2.2...edgecontainer/v1.2.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **edgecontainer:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.2.2](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.2.1...edgecontainer/v1.2.2) (2024-06-26)
 
 

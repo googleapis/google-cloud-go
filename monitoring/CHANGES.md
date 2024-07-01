@@ -1,5 +1,12 @@
 # Changes
 
+## [1.20.1](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.20.0...monitoring/v1.20.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **monitoring:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.20.0](https://github.com/googleapis/google-cloud-go/compare/monitoring/v1.19.0...monitoring/v1.20.0) (2024-06-26)
 
 

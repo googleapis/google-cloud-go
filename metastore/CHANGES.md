@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.8](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.7...metastore/v1.13.8) (2024-07-01)
+
+
+### Bug Fixes
+
+* **metastore:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.13.7](https://github.com/googleapis/google-cloud-go/compare/metastore/v1.13.6...metastore/v1.13.7) (2024-06-26)
 
 
