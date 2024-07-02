@@ -54,6 +54,8 @@ const (
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
 	prefixOfClusterResources  = "bt-c-"
+	maxCreateAttempts         = 3
+	retryCreateBackoff        = 10 * time.Second
 )
 
 var (
@@ -531,7 +533,8 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	}
 	// Delete non-existing cells, no such column family in this row
 	// Should not delete anything
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "non-existing"); err != nil {
+
+	if err := createColumnFamilyWithRetry(ctx, t, adminClient, tableName, "non-existing"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 	mut = NewMutation()
@@ -582,7 +585,7 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	}
 
 	// Check DeleteCellsInFamily
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "status"); err != nil {
+	if err := createColumnFamilyWithRetry(ctx, t, adminClient, tableName, "status"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 
@@ -4177,8 +4180,23 @@ func createTableWithRetry(ctx context.Context, t *testing.T, adminClient *AdminC
 	// Error seen on last create attempt
 	var err error
 
-	testutil.Retry(t, 3, 10*time.Second, func(r *testutil.R) {
+	testutil.Retry(t, maxCreateAttempts, retryCreateBackoff, func(r *testutil.R) {
 		createErr := adminClient.CreateTable(ctx, tableName)
+		err = createErr
+
+		if createErr != nil {
+			r.Errorf(createErr.Error())
+		}
+	})
+	return err
+}
+
+func createColumnFamilyWithRetry(ctx context.Context, t *testing.T, adminClient *AdminClient, table, family string) error {
+	// Error seen on last create attempt
+	var err error
+
+	testutil.Retry(t, maxCreateAttempts, retryCreateBackoff, func(r *testutil.R) {
+		createErr := adminClient.CreateColumnFamily(ctx, table, family)
 		err = createErr
 
 		if createErr != nil {
