@@ -1,5 +1,17 @@
 # Changes
 
+## [1.26.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.25.0...bigtable/v1.26.0) (2024-07-02)
+
+
+### Features
+
+* **bigtable:** Support update column family's value type to non-aggregate type ([#10410](https://github.com/googleapis/google-cloud-go/issues/10410)) ([df60464](https://github.com/googleapis/google-cloud-go/commit/df604641b70b4c11f119a427c5d620ca63d610f3))
+
+
+### Bug Fixes
+
+* **bigtable:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.25.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.24.0...bigtable/v1.25.0) (2024-06-20)
 
 
