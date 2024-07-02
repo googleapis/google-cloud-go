@@ -776,7 +776,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 	}()
 	// Retry the BeginTransaction call if a 'Session not found' is returned.
 	for {
-		sh, err = t.sp.take(ctx)
+		sh, err = t.sp.takeMultiplexed(ctx)
 		if err != nil {
 			return err
 		}
@@ -866,7 +866,7 @@ func (t *ReadOnlyTransaction) acquireSingleUse(ctx context.Context) (*sessionHan
 				},
 			},
 		}
-		sh, err := t.sp.take(ctx)
+		sh, err := t.sp.takeMultiplexed(ctx)
 		if err != nil {
 			return nil, nil, err
 		}
