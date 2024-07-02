@@ -1,5 +1,18 @@
 # Changes
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.10.0...logging/v1.11.0) (2024-07-02)
+
+
+### Features
+
+* **logging:** OpenTelemetry trace/span ID integration for Go logging library ([#10030](https://github.com/googleapis/google-cloud-go/issues/10030)) ([c6711b8](https://github.com/googleapis/google-cloud-go/commit/c6711b83cb6f9f35032e69a40632b7268fcdbd0a))
+
+
+### Bug Fixes
+
+* **logging:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **logging:** Skip automatic resource detection if a CommonResource ([#10441](https://github.com/googleapis/google-cloud-go/issues/10441)) ([fc4c910](https://github.com/googleapis/google-cloud-go/commit/fc4c91099443385d3052e1d6cf1020c7918c0e5a))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/logging/v1.9.0...logging/v1.10.0) (2024-05-15)
 
 
