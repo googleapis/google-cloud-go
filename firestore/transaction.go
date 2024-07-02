@@ -35,6 +35,7 @@ type Transaction struct {
 	readOnly       bool
 	readAfterWrite bool
 	readSettings   *readSettings
+	explainOptions *ExplainOptions
 }
 
 // A TransactionOption is an option passed to Client.Transaction.
