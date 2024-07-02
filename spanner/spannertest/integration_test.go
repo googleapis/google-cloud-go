@@ -115,7 +115,7 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v
 	srv.SetLogger(t.Logf)
 	dialCtx, cancel := context.WithTimeout(ctx, 1*time.Second)
 	defer cancel()
-	conn, err := grpc.DialContext(dialCtx, srv.Addr, grpc.WithInsecure())
+	conn, err := grpc.DialContext(dialCtx, srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		srv.Close()
 		t.Fatalf("Dialing in-memory fake: %v", err)
