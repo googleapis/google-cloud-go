@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.6.2](https://github.com/googleapis/google-cloud-go/compare/auth/v0.6.1...auth/v0.6.2) (2024-07-02)
+
+
+### Bug Fixes
+
+* **auth/oauth2adapt:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **auth:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **auth:** Check len of slices, not non-nil ([#10483](https://github.com/googleapis/google-cloud-go/issues/10483)) ([0a966a1](https://github.com/googleapis/google-cloud-go/commit/0a966a183e5f0e811977216d736d875b7233e942))
+
 ## [0.6.1](https://github.com/googleapis/google-cloud-go/compare/auth/v0.6.0...auth/v0.6.1) (2024-07-01)
 
 
