@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.8](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.7...storagetransfer/v1.10.8) (2024-07-01)
+
+
+### Bug Fixes
+
+* **storagetransfer:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/storagetransfer/v1.10.6...storagetransfer/v1.10.7) (2024-06-26)
 
 

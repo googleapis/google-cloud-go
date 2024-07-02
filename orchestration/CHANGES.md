@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.9.4](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.3...orchestration/v1.9.4) (2024-07-01)
+
+
+### Bug Fixes
+
+* **orchestration:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.9.3](https://github.com/googleapis/google-cloud-go/compare/orchestration/v1.9.2...orchestration/v1.9.3) (2024-06-26)
 
 

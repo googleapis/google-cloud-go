@@ -1,5 +1,12 @@
 # Changes
 
+## [0.9.9](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.9.8...networksecurity/v0.9.9) (2024-07-01)
+
+
+### Bug Fixes
+
+* **networksecurity:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [0.9.8](https://github.com/googleapis/google-cloud-go/compare/networksecurity/v0.9.7...networksecurity/v0.9.8) (2024-06-26)
 
 
