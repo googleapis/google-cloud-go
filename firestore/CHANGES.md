@@ -1,5 +1,31 @@
 # Changes
 
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.15.0...firestore/v1.16.0) (2024-07-02)
+
+
+### Features
+
+* **firestore/apiv1:** A new message `Backup` is added ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+* **firestore/apiv1:** Add bulk delete api ([#10369](https://github.com/googleapis/google-cloud-go/issues/10369)) ([134f567](https://github.com/googleapis/google-cloud-go/commit/134f567c18892d6050f60ae875a3de7738104da0))
+* **firestore/apiv1:** Add Vector Index API ([f8ff971](https://github.com/googleapis/google-cloud-go/commit/f8ff971366999aefb5eb5189c6c9e2bd76a05d9e))
+* **firestore:** Add new types ExplainOptions, ExplainMetrics, PlanSummary, ExecutionStats ([05f58cc](https://github.com/googleapis/google-cloud-go/commit/05f58ccce530d8a3ab404356929352002d5156ba))
+* **firestore:** Add VectorSearch API ([cddd528](https://github.com/googleapis/google-cloud-go/commit/cddd528a02edae10dde8ba2529922565ef27c418))
+
+
+### Bug Fixes
+
+* **firestore:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **firestore:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+* **firestore:** Move createIndexes calls ([#9714](https://github.com/googleapis/google-cloud-go/issues/9714)) ([d931626](https://github.com/googleapis/google-cloud-go/commit/d9316263ca4ad0667d4a0f886a4977b36585b572))
+* **firestore:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+
+### Documentation
+
+* **firestore/apiv1:** Allow 14 week backup retention for Firestore daily backups ([#9685](https://github.com/googleapis/google-cloud-go/issues/9685)) ([2cdc40a](https://github.com/googleapis/google-cloud-go/commit/2cdc40a0b4288f5ab5f2b2b8f5c1d6453a9c81ec))
+* **firestore/apiv1:** Correct BackupSchedule recurrence docs that mentioned specific time of day ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+* **firestore/apiv1:** Update field api description ([134f567](https://github.com/googleapis/google-cloud-go/commit/134f567c18892d6050f60ae875a3de7738104da0))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.14.0...firestore/v1.15.0) (2024-03-05)
 
 
@@ -192,5 +218,3 @@
 
 This is the first tag to carve out firestore as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
-
-
