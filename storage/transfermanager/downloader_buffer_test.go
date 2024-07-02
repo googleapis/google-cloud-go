@@ -132,7 +132,7 @@ func TestDownloadBufferParallel(t *testing.T) {
 			if err != nil {
 				t.Errorf("b.WriteAt: %v", err)
 			}
-			if n != 5 {
+			if n != step {
 				t.Errorf("expected to write 5 bytes, got %d", n)
 			}
 			wg.Done()

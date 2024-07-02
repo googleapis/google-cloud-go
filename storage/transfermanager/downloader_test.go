@@ -35,7 +35,7 @@ func TestWaitAndClose(t *testing.T) {
 		t.Fatalf("WaitAndClose: %v", err)
 	}
 
-	expectedErr := "transfermanager: WaitAndClose called before DownloadObject"
+	expectedErr := "transfermanager: Downloader used after WaitAndClose was called"
 	err = d.DownloadObject(context.Background(), &DownloadObjectInput{})
 	if err == nil {
 		t.Fatalf("d.DownloadObject err was nil, should be %q", expectedErr)
