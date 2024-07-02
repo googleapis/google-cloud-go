@@ -1,6 +1,37 @@
 # Changes
 
 
+## [1.69.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.68.0...aiplatform/v1.69.0) (2024-07-02)
+
+
+### Features
+
+* **aiplatform:** Add deploy_metadata to PublisherModel.Deploy v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Add encryption_spec to TuningJob ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **aiplatform:** Add enum value MALFORMED_FUNCTION_CALL to `.google.cloud.aiplatform.v1beta1.content.Candidate.FinishReason` ([#10400](https://github.com/googleapis/google-cloud-go/issues/10400)) ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** Add fields grounding_chunks and grounding_supports to GroundingMetadata ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** Add MALFORMED_FUNCTION_CALL to FinishReason ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **aiplatform:** Add preflight_validations to PipelineJob ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+* **aiplatform:** Add private_service_connect_config and service_attachment fields to DedicatedServingEndpoint v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Add satisfies_pzs and satisfies_pzi fields to Model v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Add satisfies_pzs and satisfies_pzi fields to Tensorboard v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+* **aiplatform:** Add streamRawPredict rpc to prediction service ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** Add text field in Segment ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** Add UpdateDeploymentResourcePool method to DeploymentResourcePoolService v1 ([#10454](https://github.com/googleapis/google-cloud-go/issues/10454)) ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+
+
+### Bug Fixes
+
+* **aiplatform:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+
+### Documentation
+
+* **aiplatform:** A comment for field `distibution` in message `.google.cloud.aiplatform.v1beta1.model_monitoring_stats.ModelMonitoringStatsDataPoint` is changed. ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** A comment for field `name` in message `.google.cloud.aiplatform.v1beta1.cached_content.CachedContent` is changed ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** A comment for field `source` in message `.google.cloud.aiplatform.v1beta1.tool.Retrieval` is added. ([2003148](https://github.com/googleapis/google-cloud-go/commit/2003148b71a734afd5c31a0106e5204414ece6e9))
+* **aiplatform:** Update comments of AutoscalingSpec v1 ([6a9c12a](https://github.com/googleapis/google-cloud-go/commit/6a9c12a395245d8500c267437c2dfa897049a719))
+
 ## [1.68.0](https://github.com/googleapis/google-cloud-go/compare/aiplatform/v1.67.0...aiplatform/v1.68.0) (2024-06-11)
 
 
