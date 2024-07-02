@@ -1023,7 +1023,7 @@ func (p *sessionPool) isHealthy(s *session) bool {
 	if s.getNextCheck().Add(2 * p.hc.getInterval()).Before(time.Now()) {
 		if err := s.ping(); isSessionNotFoundError(err) {
 			// The session is already bad, continue to fetch/create a new one.
-			s.destroy(false, true)
+			s.destroy(false, false)
 			return false
 		}
 		p.hc.scheduledHC(s)
