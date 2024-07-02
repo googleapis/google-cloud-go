@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.12.0...vertexai/v0.12.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* **vertexai:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [0.12.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.11.0...vertexai/v0.12.0) (2024-06-12)
 
 
