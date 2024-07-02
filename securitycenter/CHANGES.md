@@ -1,5 +1,24 @@
 # Changes
 
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.31.0...securitycenter/v1.32.0) (2024-07-01)
+
+
+### Features
+
+* **securitycenter:** Added cloud provider field to list findings response ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **securitycenter:** Added http configuration rule to ResourceValueConfig and ValuedResource API methods ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **securitycenter:** Added toxic combination field to finding ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **securitycenter:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+
+### Documentation
+
+* **securitycenter:** Updated comments for ResourceValueConfig ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
 ## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.30.0...securitycenter/v1.31.0) (2024-06-26)
 
 
