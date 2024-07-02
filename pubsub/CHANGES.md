@@ -1,5 +1,12 @@
 # Changes
 
+## [1.40.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.40.0...pubsub/v1.40.1) (2024-07-02)
+
+
+### Bug Fixes
+
+* **pubsub:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.39.0...pubsub/v1.40.0) (2024-06-26)
 
 
