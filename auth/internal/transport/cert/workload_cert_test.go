@@ -34,6 +34,9 @@ func TestWorkloadCertSource_EmptyConfig(t *testing.T) {
 	if err == nil {
 		t.Fatal("got nil, want non-nil error")
 	}
+	if !errors.Is(err, errSourceUnavailable) {
+		t.Errorf("got %v, want errSourceUnavailable", err)
+	}
 	if source != nil {
 		t.Errorf("got %v, want nil source", source)
 	}
