@@ -225,14 +225,14 @@ func (pr *ProfileResponse) HasSourceFile(filename string) error {
 // StartInstance starts a GCE Instance with configs specified by inst,
 // and which runs the startup script specified in inst. If image project
 // is not specified, it defaults to "debian-cloud". If image family is
-// not specified, it defaults to "debian-10".
+// not specified, it defaults to "debian-11".
 func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig) error {
 	imageProject, imageFamily := inst.ImageProject, inst.ImageFamily
 	if imageProject == "" {
 		imageProject = "debian-cloud"
 	}
 	if imageFamily == "" {
-		imageFamily = "debian-10"
+		imageFamily = "debian-11"
 	}
 	img, err := tr.ComputeService.Images.GetFromFamily(imageProject, imageFamily).Context(ctx).Do()
 	if err != nil {
