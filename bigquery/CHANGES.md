@@ -3,6 +3,27 @@
 
 
 
+## [1.62.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.61.0...bigquery/v1.62.0) (2024-07-02)
+
+
+### Features
+
+* **bigquery:** Add rounding mode to FieldSchema ([#10328](https://github.com/googleapis/google-cloud-go/issues/10328)) ([1a9e204](https://github.com/googleapis/google-cloud-go/commit/1a9e204d7752c5bfe9edfd7bc7ee36c5b1385783))
+* **bigquery:** Support column name character map in load jobs ([#10425](https://github.com/googleapis/google-cloud-go/issues/10425)) ([b829327](https://github.com/googleapis/google-cloud-go/commit/b82932789af82b5e0799c20a096aab98132b5eb1))
+
+
+### Bug Fixes
+
+* **bigquery/storage/managedwriter:** Faster context failure on send ([#10169](https://github.com/googleapis/google-cloud-go/issues/10169)) ([1fb0e64](https://github.com/googleapis/google-cloud-go/commit/1fb0e6401d584bf8ede60a170b4d82dc211010b8))
+* **bigquery:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **bigquery:** Empty slice instead of nil slice for primitive repeated fields ([#7315](https://github.com/googleapis/google-cloud-go/issues/7315)) ([b371210](https://github.com/googleapis/google-cloud-go/commit/b3712100831061fea8605e574d482d7f768ecf14))
+
+
+### Documentation
+
+* **bigquery/datatransfer:** Update OAuth links in `CreateTransferConfigRequest` and `UpdateTransferConfigRequest` ([3df3c04](https://github.com/googleapis/google-cloud-go/commit/3df3c04f0dffad3fa2fe272eb7b2c263801b9ada))
+* **bigquery:** Improve Inserter and StructSaver godoc ([#10170](https://github.com/googleapis/google-cloud-go/issues/10170)) ([c1cffb6](https://github.com/googleapis/google-cloud-go/commit/c1cffb63c33ae49f3a705bd0bc7a32cd2b0319bc))
+
 ## [1.61.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.60.0...bigquery/v1.61.0) (2024-04-24)
 
 
