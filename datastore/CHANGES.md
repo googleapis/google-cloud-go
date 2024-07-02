@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.17.1...datastore/v1.17.2) (2024-07-02)
+
+
+### Bug Fixes
+
+* **datastore:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.17.0...datastore/v1.17.1) (2024-06-10)
 
 
