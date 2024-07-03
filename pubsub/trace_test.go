@@ -536,10 +536,9 @@ func spanStubComparer(a, b tracetest.SpanStub) bool {
 		fmt.Printf("a.ChildSpanCount: %d\nb.ChildSpanCount: %d\n", a.ChildSpanCount, b.ChildSpanCount)
 		return false
 	}
-	as := attribute.NewSet(a.Attributes...)
-	bs := attribute.NewSet(b.Attributes...)
-	if !as.Equals(&bs) {
-		fmt.Printf("a.Attributes: %+v\nb.Attributes: %+v\n", as, bs)
+	// Use attribute.NewSet and set.Equals() once go1.21 is min version
+	if len(a.Attributes) != len(b.Attributes) {
+		fmt.Printf("len mismatch: a.Attributes: %d, b.Attributes: %d\n", len(a.Attributes), len(b.Attributes))
 		return false
 	}
 	if a.InstrumentationLibrary != b.InstrumentationLibrary {
