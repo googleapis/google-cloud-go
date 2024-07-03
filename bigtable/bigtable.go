@@ -624,9 +624,9 @@ func (r RowRange) String() string {
 	var endStr string
 	switch r.endBound {
 	case rangeOpen:
-		endStr = r.end + ")"
+		endStr = strconv.Quote(r.end) + ")"
 	case rangeClosed:
-		endStr = r.end + "]"
+		endStr = strconv.Quote(r.end) + "]"
 	case rangeUnbounded:
 		endStr = "∞)"
 	}
