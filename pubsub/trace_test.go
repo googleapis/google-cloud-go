@@ -17,11 +17,10 @@ package pubsub
 import (
 	"context"
 	"fmt"
+	"sort"
 	"sync/atomic"
 	"testing"
 	"time"
-
-	"golang.org/x/exp/slices"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/internal"
@@ -181,10 +180,13 @@ func TestTrace_PublishSpan(t *testing.T) {
 	defer topic.Stop()
 
 	got := getSpans(e)
-	slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
-		return sortSpanStub(a, b)
-	})
-	compareSpans(t, got, expectedSpans)
+	// Implement sortable struct, replace with slices.SortFunc once go 1.21 is min version
+	// slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
+	// 	return sortSpanStub(a, b)
+	// })
+	s := SpanStubs{expectedSpans}
+	sort.Sort(s)
+	compareSpans(t, got, s.SpanStubs)
 }
 
 func TestTrace_PublishSpanError(t *testing.T) {
@@ -467,10 +469,14 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 	}
 
 	got := getSpans(e)
-	slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
-		return sortSpanStub(a, b)
-	})
-	compareSpans(t, got, expectedSpans)
+
+	// Implement sortable struct, replace with slices.SortFunc once go 1.21 is min version
+	// slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
+	// 	return sortSpanStub(a, b)
+	// })
+	s := SpanStubs{expectedSpans}
+	sort.Sort(s)
+	compareSpans(t, got, s.SpanStubs)
 }
 
 func TestTrace_TracingNotEnabled(t *testing.T) {
@@ -562,11 +568,15 @@ func getSpans(e *tracetest.InMemoryExporter) tracetest.SpanStubs {
 	// Wait a fixed amount for spans to be fully exported.
 	time.Sleep(100 * time.Millisecond)
 
-	s := e.GetSpans()
-	slices.SortFunc(s, func(a, b tracetest.SpanStub) int {
-		return sortSpanStub(a, b)
-	})
-	return s
+	spans := e.GetSpans()
+
+	// Implement sortable struct, replace with slices.SortFunc once go 1.21 is min version
+	// slices.SortFunc(s, func(a, b tracetest.SpanStub) int {
+	// 	return sortSpanStub(a, b)
+	// })
+	s := SpanStubs{spans}
+	sort.Sort(s)
+	return s.SpanStubs
 }
 
 func compareSpans(t *testing.T, got, want tracetest.SpanStubs) {
@@ -723,4 +733,20 @@ func BenchmarkNoTracingEnabled(b *testing.B) {
 		}
 
 	}
+}
+
+type SpanStubs struct {
+	tracetest.SpanStubs
+}
+
+func (s SpanStubs) Len() int {
+	return len(s.SpanStubs)
+}
+
+func (s SpanStubs) Swap(i, j int) {
+	s.SpanStubs[i], s.SpanStubs[j] = s.SpanStubs[j], s.SpanStubs[i]
+}
+
+func (s SpanStubs) Less(i, j int) bool {
+	return s.SpanStubs[i].Name < s.SpanStubs[j].Name
 }
