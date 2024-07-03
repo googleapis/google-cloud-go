@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"io/fs"
 	"log"
 	"math/rand"
 	"os"
@@ -45,7 +46,7 @@ const (
 	testPrefix      = "go-integration-test-tm"
 	grpcTestPrefix  = "golang-grpc-test-tm"
 	bucketExpiryAge = 24 * time.Hour
-	maxObjectSize   = 1024 * 1024
+	maxObjectSize   = 1024 // * 1024
 )
 
 var (
@@ -291,6 +292,86 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 			}
 			if !entry.IsDir() && entry.Name() != "objA" && entry.Name() != "objB" {
 				t.Errorf("unexpected file %q in dir", entry.Name())
+			}
+		}
+	})
+}
+
+// TestIntegration_DownloadDirectoryError tests that an error is returned if the
+// file already exists and that any created file structure is deleted as well.
+func TestIntegration_DownloadDirectoryError(t *testing.T) {
+	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
+		localDir := t.TempDir()
+		callbacks := make(chan bool)
+
+		d, err := NewDownloader(c, WithWorkers(2))
+		if err != nil {
+			t.Fatalf("NewDownloader: %v", err)
+		}
+		defer d.WaitAndClose()
+
+		// First download a nested file.
+		obj := "dir/objC"
+		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+			Prefix:         obj,
+			OnObjectDownload: func(got *DownloadOutput) {
+				callbacks <- true
+
+				if got.Err != nil {
+					t.Errorf("result.Err: %v", got.Err)
+				}
+
+				if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+					t.Errorf("expected object size %d, got %d", want, got)
+				}
+			},
+		}); err != nil {
+			t.Fatalf("d.DownloadDirectory: %v", err)
+		}
+
+		// Then add another file and another directory to the temp dir.
+		localNestedDir := "localonly"
+		localFile := "localonly-file"
+
+		f, err := os.Create(filepath.Join(localDir, localFile))
+		if err != nil {
+			t.Errorf("os.Create: %v", err)
+		}
+		if err := f.Close(); err != nil {
+			t.Errorf("f.Close: %v", err)
+		}
+
+		if err := os.Mkdir(filepath.Join(localDir, localNestedDir), fs.ModeDir|fs.ModePerm); err != nil {
+			t.Errorf("os.Mkdir: %v", err)
+		}
+
+		// Now attempt to download the directory; it should fail.
+		<-callbacks
+		err = d.DownloadDirectory(ctx, &DownloadDirectoryInput{
+			Bucket:         tb.bucket,
+			LocalDirectory: localDir,
+		})
+		if !errors.Is(err, os.ErrExist) {
+			t.Errorf("d.DownloadDirectory should have failed with error %q; got %v", os.ErrExist, err)
+		}
+
+		// Check the local directory, it should have the first file, the second and another directory only.
+		expected := []string{obj, localNestedDir, localFile}
+
+		entries, err := os.ReadDir(localDir)
+		if err != nil {
+			t.Errorf("os.ReadDir: %v", err)
+		}
+		if got, want := len(entries), len(expected); got != want {
+			t.Errorf("localDir does not have the expected amount of entries, got %d, want %d", got, want)
+		}
+
+		for _, exp := range expected {
+			_, err := os.Stat(filepath.Join(localDir, exp))
+			if err != nil {
+				t.Errorf("os.Stat: %v", err)
 			}
 		}
 	})
