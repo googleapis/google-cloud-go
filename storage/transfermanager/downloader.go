@@ -139,7 +139,8 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 	}
 
 	if d.config.asynchronous {
-		go input.gatherObjectOutputs(outs, len(inputs))
+		d.downloadsInProgress.Add(1)
+		go d.gatherObjectOutputs(input, outs, len(inputs))
 	}
 	d.addNewInputs(inputs)
 	return nil
@@ -359,6 +360,22 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, outs <-chan *Download
 	d.addResult(in, shardOut)
 }
 
+// gatherObjectOutputs receives from the given channel exactly numObjects times.
+// It will execute the callback once all object outputs are received.
+// It does not do any verification on the outputs nor does it cancel other
+// objects on error.
+func (d *Downloader) gatherObjectOutputs(dirin *DownloadDirectoryInput, gatherOuts <-chan DownloadOutput, numObjects int) {
+	outs := make([]DownloadOutput, 0, numObjects)
+	for i := 0; i < numObjects; i++ {
+		obj := <-gatherOuts
+		outs = append(outs, obj)
+	}
+
+	// All objects have been gathered; execute the callback.
+	dirin.Callback(outs)
+	d.downloadsInProgress.Done()
+}
+
 func (d *Downloader) validateObjectInput(in *DownloadObjectInput) error {
 	if d.config.asynchronous && in.Callback == nil {
 		return errors.New("transfermanager: input.Callback must not be nil when the WithCallbacks option is set")
@@ -567,25 +584,11 @@ type DownloadDirectoryInput struct {
 	// Callback will run after all the objects in the directory as selected by
 	// the provided filters are finished downloading.
 	// It must be set if and only if the [WithCallbacks] option is set.
+	// WaitAndClose will wait for all callbacks to finish.
 	Callback func([]DownloadOutput)
 
 	// OnObjectDownload will run after every finished object download. Optional.
 	OnObjectDownload func(*DownloadOutput)
-}
-
-// gatherObjectOutputs receives from the given channel exactly numObjects times.
-// It will call the callback once all object outputs are received.
-// It does not do any verification on the outputs nor does it cancel other
-// objects on error.
-func (dirin *DownloadDirectoryInput) gatherObjectOutputs(gatherOuts <-chan DownloadOutput, numObjects int) {
-	outs := make([]DownloadOutput, 0, numObjects)
-	for i := 0; i < numObjects; i++ {
-		obj := <-gatherOuts
-		outs = append(outs, obj)
-	}
-
-	// All objects have been gathered; execute the callback.
-	dirin.Callback(outs)
 }
 
 // DownloadOutput provides output for a single object download, including all
