@@ -17,7 +17,7 @@ package pubsub
 import (
 	"context"
 	"fmt"
-	"sort"
+	"slices"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -180,13 +180,10 @@ func TestTrace_PublishSpan(t *testing.T) {
 	defer topic.Stop()
 
 	got := getSpans(e)
-	// Implement sortable struct, replace with slices.SortFunc once go 1.21 is min version
-	// slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
-	// 	return sortSpanStub(a, b)
-	// })
-	s := SpanStubs{expectedSpans}
-	sort.Sort(s)
-	compareSpans(t, got, s.SpanStubs)
+	slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
+		return sortSpanStub(a, b)
+	})
+	compareSpans(t, got, expectedSpans)
 }
 
 func TestTrace_PublishSpanError(t *testing.T) {
@@ -379,6 +376,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				attribute.String(resultAttribute, resultAcked),
 				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingMessageBodySize(len(m.Data)),
+				attribute.String(gcpProjectIDAttribute, projName),
 			},
 			Events: []sdktrace.Event{
 				{
@@ -436,6 +434,7 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				semconv.MessagingBatchMessageCount(1),
 				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingDestinationName(subID),
+				attribute.String(gcpProjectIDAttribute, projName),
 			},
 			InstrumentationLibrary: instrumentation.Scope{
 				Name:    "cloud.google.com/go/pubsub",
@@ -464,19 +463,17 @@ func TestTrace_SubscribeSpans(t *testing.T) {
 				semconv.MessagingBatchMessageCount(1),
 				semconv.MessagingSystemGCPPubsub,
 				semconv.MessagingDestinationName(subID),
+				attribute.String(gcpProjectIDAttribute, projName),
 			},
 		},
 	}
 
 	got := getSpans(e)
 
-	// Implement sortable struct, replace with slices.SortFunc once go 1.21 is min version
-	// slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
-	// 	return sortSpanStub(a, b)
-	// })
-	s := SpanStubs{expectedSpans}
-	sort.Sort(s)
-	compareSpans(t, got, s.SpanStubs)
+	slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
+		return sortSpanStub(a, b)
+	})
+	compareSpans(t, got, expectedSpans)
 }
 
 func TestTrace_TracingNotEnabled(t *testing.T) {
@@ -570,12 +567,10 @@ func getSpans(e *tracetest.InMemoryExporter) tracetest.SpanStubs {
 	spans := e.GetSpans()
 
 	// Implement sortable struct, replace with slices.SortFunc once go 1.21 is min version
-	// slices.SortFunc(s, func(a, b tracetest.SpanStub) int {
-	// 	return sortSpanStub(a, b)
-	// })
-	s := SpanStubs{spans}
-	sort.Sort(s)
-	return s.SpanStubs
+	slices.SortFunc(spans, func(a, b tracetest.SpanStub) int {
+		return sortSpanStub(a, b)
+	})
+	return spans
 }
 
 func compareSpans(t *testing.T, got, want tracetest.SpanStubs) {
@@ -732,20 +727,4 @@ func BenchmarkNoTracingEnabled(b *testing.B) {
 		}
 
 	}
-}
-
-type SpanStubs struct {
-	tracetest.SpanStubs
-}
-
-func (s SpanStubs) Len() int {
-	return len(s.SpanStubs)
-}
-
-func (s SpanStubs) Swap(i, j int) {
-	s.SpanStubs[i], s.SpanStubs[j] = s.SpanStubs[j], s.SpanStubs[i]
-}
-
-func (s SpanStubs) Less(i, j int) bool {
-	return s.SpanStubs[i].Name < s.SpanStubs[j].Name
 }
