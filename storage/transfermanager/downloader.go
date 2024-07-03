@@ -569,7 +569,7 @@ type DownloadDirectoryInput struct {
 	// It must be set if and only if the [WithCallbacks] option is set.
 	Callback func([]DownloadOutput)
 
-	// OnObjectDownload will run after every finished object download.
+	// OnObjectDownload will run after every finished object download. Optional.
 	OnObjectDownload func(*DownloadOutput)
 }
 
