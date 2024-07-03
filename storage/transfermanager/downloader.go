@@ -140,7 +140,7 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 
 	if d.config.asynchronous {
 		d.downloadsInProgress.Add(1)
-		go d.gatherObjectOutputs(inputs, outs, len(inputs))
+		go d.gatherObjectOutputs(input, outs, len(inputs))
 	}
 	d.addNewInputs(inputs)
 	return nil
