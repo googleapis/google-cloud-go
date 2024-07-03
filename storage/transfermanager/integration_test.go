@@ -167,7 +167,7 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 			StartOffset:    "dir/nested/o",
 			EndOffset:      "dir/objC",
 			MatchGlob:      "**obj**",
-			Callback: func(got *DownloadOutput) {
+			OnObjectDownload: func(got *DownloadOutput) {
 				callbackMu.Lock()
 				numCallbacks++
 				callbackMu.Unlock()
@@ -194,6 +194,39 @@ func TestIntegration_DownloadDirectoryAsync(t *testing.T) {
 
 				if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
 					t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+				}
+				got.Object = "modifying this shouldn't be a problem"
+			},
+			Callback: func(outs []DownloadOutput) {
+				if len(outs) != wantObjs {
+					t.Errorf("expected to receive %d results, got %d results", wantObjs, len(outs))
+				}
+
+				for _, got := range outs {
+					if got.Err != nil {
+						t.Errorf("result.Err: %v", got.Err)
+						continue
+					}
+
+					if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+						t.Errorf("expected object size %d, got %d", want, got)
+					}
+
+					path := filepath.Join(localDir, got.Object)
+					f, err := os.Open(path)
+					if err != nil {
+						t.Errorf("os.Open(%q): %v", path, err)
+					}
+					defer f.Close()
+
+					b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
+					if _, err := io.Copy(b, f); err != nil {
+						t.Errorf("io.Copy: %v", err)
+					}
+
+					if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
+						t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+					}
 				}
 			},
 		}); err != nil {

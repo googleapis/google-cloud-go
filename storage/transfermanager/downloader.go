@@ -82,7 +82,6 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		return err
 	}
 
-	objectsToQueue := []DownloadObjectInput{}
 	query := &storage.Query{
 		Prefix:      input.Prefix,
 		StartOffset: input.StartOffset,
@@ -95,8 +94,8 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 
 	// TODO: Clean up any created directory structure on failure.
 
+	objectsToQueue := []string{}
 	it := d.client.Bucket(input.Bucket).Objects(ctx, query)
-
 	for {
 		attrs, err := it.Next()
 		if err == iterator.Done {
@@ -106,12 +105,18 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to list objects: %w", err)
 		}
 
-		object := attrs.Name
+		objectsToQueue = append(objectsToQueue, attrs.Name)
+	}
+
+	outs := make(chan DownloadOutput, len(objectsToQueue))
+	inputs := make([]DownloadObjectInput, 0, len(objectsToQueue))
+
+	for _, object := range objectsToQueue {
 		objDirectory := filepath.Join(input.LocalDirectory, filepath.Dir(object))
 		filePath := filepath.Join(input.LocalDirectory, object)
 
 		// Make sure all directories in the object path exist.
-		err = os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
+		err := os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
 		if err != nil {
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", objDirectory, err)
 		}
@@ -122,17 +127,21 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to create file(%q): %w", filePath, fErr)
 		}
 
-		objectsToQueue = append(objectsToQueue, DownloadObjectInput{
-			Bucket:      input.Bucket,
-			Object:      attrs.Name,
-			Destination: f,
-			Callback:    input.Callback,
-			ctx:         ctx,
-			directory:   true,
+		inputs = append(inputs, DownloadObjectInput{
+			Bucket:                 input.Bucket,
+			Object:                 object,
+			Destination:            f,
+			Callback:               input.OnObjectDownload,
+			ctx:                    ctx,
+			directory:              true,
+			directoryObjectOutputs: outs,
 		})
 	}
 
-	d.addNewInputs(objectsToQueue)
+	if d.config.asynchronous {
+		go input.gatherObjectOutputs(outs, len(inputs))
+	}
+	d.addNewInputs(inputs)
 	return nil
 }
 
@@ -225,6 +234,10 @@ func (d *Downloader) addResult(input *DownloadObjectInput, result *DownloadOutpu
 		f := input.Destination.(*os.File)
 		if err := f.Close(); err != nil && result.Err == nil {
 			result.Err = fmt.Errorf("closing file(%q): %w", f.Name(), err)
+		}
+
+		if d.config.asynchronous {
+			input.directoryObjectOutputs <- *result
 		}
 	}
 	// TODO: check checksum if full object
@@ -438,11 +451,12 @@ type DownloadObjectInput struct {
 	// finish.
 	Callback func(*DownloadOutput)
 
-	ctx          context.Context
-	cancelCtx    context.CancelCauseFunc
-	shard        int // the piece of the object range that should be downloaded
-	shardOutputs chan<- *DownloadOutput
-	directory    bool // input was queued by calling DownloadDirectory
+	ctx                    context.Context
+	cancelCtx              context.CancelCauseFunc
+	shard                  int // the piece of the object range that should be downloaded
+	shardOutputs           chan<- *DownloadOutput
+	directory              bool // input was queued by calling DownloadDirectory
+	directoryObjectOutputs chan<- DownloadOutput
 }
 
 // downloadShard will read a specific object piece into in.Destination.
@@ -519,6 +533,7 @@ func (in *DownloadObjectInput) downloadShard(client *storage.Client, timeout tim
 type DownloadDirectoryInput struct {
 	// Bucket is the bucket in GCS to download from. Required.
 	Bucket string
+
 	// LocalDirectory specifies the directory to download the matched objects
 	// to. Relative paths are allowed. The directory structure and contents
 	// must not be modified while the download is in progress.
@@ -546,11 +561,29 @@ type DownloadDirectoryInput struct {
 	// for syntax details. Optional.
 	MatchGlob string
 
-	// Callback will run after each object in the directory as selected by the
-	// provided filters is finished downloading. It must be set if and only if
-	// the [WithCallbacks] option is set.
-	// WaitAndClose will wait for all callbacks to finish.
-	Callback func(*DownloadOutput)
+	// Callback will run after all the objects in the directory as selected by
+	// the provided filters are finished downloading.
+	// It must be set if and only if the [WithCallbacks] option is set.
+	Callback func([]DownloadOutput)
+
+	// OnObjectDownload will run after every finished object download.
+	// It can only be set if the Downloader has the [WithCallbacks] option set.
+	OnObjectDownload func(*DownloadOutput)
+}
+
+// gatherObjectOutputs receives from the given channel exactly numObjects times.
+// It will call the callback once all object outputs are received.
+// It does not do any verification on the outputs nor does it cancel other
+// objects on error.
+func (dirin *DownloadDirectoryInput) gatherObjectOutputs(gatherOuts <-chan DownloadOutput, numObjects int) {
+	outs := make([]DownloadOutput, 0, numObjects)
+	for i := 0; i < numObjects; i++ {
+		obj := <-gatherOuts
+		outs = append(outs, obj)
+	}
+
+	// All objects have been gathered; execute the callback.
+	dirin.Callback(outs)
 }
 
 // DownloadOutput provides output for a single object download, including all
