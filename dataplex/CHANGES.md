@@ -1,6 +1,35 @@
 # Changes
 
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.17.0...dataplex/v1.18.0) (2024-07-01)
+
+
+### Features
+
+* **dataplex:** Expose data scan execution create time to customers ([#10438](https://github.com/googleapis/google-cloud-go/issues/10438)) ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **dataplex:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.16.1...dataplex/v1.17.0) (2024-06-26)
+
+
+### Features
+
+* **dataplex:** Exposing EntrySource.location field that contains location of a resource in the source system ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Bug Fixes
+
+* **dataplex:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+
+### Documentation
+
+* **dataplex:** Scrub descriptions for GenerateDataQualityRules ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
 ## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.16.0...dataplex/v1.16.1) (2024-06-18)
 
 

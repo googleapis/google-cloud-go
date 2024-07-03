@@ -122,7 +122,7 @@ const (
 	// Prompt was blocked due to safety reasons. You can inspect
 	// `safety_ratings` to understand which safety category blocked it.
 	GenerateContentResponse_PromptFeedback_SAFETY GenerateContentResponse_PromptFeedback_BlockReason = 1
-	// Prompt was blocked due to unknown reaasons.
+	// Prompt was blocked due to unknown reasons.
 	GenerateContentResponse_PromptFeedback_OTHER GenerateContentResponse_PromptFeedback_BlockReason = 2
 )
 

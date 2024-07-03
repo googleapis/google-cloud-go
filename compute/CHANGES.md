@@ -1,5 +1,20 @@
 # Changes
 
+## [1.27.2](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.1...compute/v1.27.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **compute/metadata:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+* **compute:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.27.1](https://github.com/googleapis/google-cloud-go/compare/compute/v1.27.0...compute/v1.27.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **compute:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.27.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.26.0...compute/v1.27.0) (2024-05-16)
 
 

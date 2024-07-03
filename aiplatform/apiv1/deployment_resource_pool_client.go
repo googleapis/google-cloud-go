@@ -44,6 +44,7 @@ type DeploymentResourcePoolCallOptions struct {
 	CreateDeploymentResourcePool []gax.CallOption
 	GetDeploymentResourcePool    []gax.CallOption
 	ListDeploymentResourcePools  []gax.CallOption
+	UpdateDeploymentResourcePool []gax.CallOption
 	DeleteDeploymentResourcePool []gax.CallOption
 	QueryDeployedModels          []gax.CallOption
 	GetLocation                  []gax.CallOption
@@ -77,6 +78,7 @@ func defaultDeploymentResourcePoolCallOptions() *DeploymentResourcePoolCallOptio
 		CreateDeploymentResourcePool: []gax.CallOption{},
 		GetDeploymentResourcePool:    []gax.CallOption{},
 		ListDeploymentResourcePools:  []gax.CallOption{},
+		UpdateDeploymentResourcePool: []gax.CallOption{},
 		DeleteDeploymentResourcePool: []gax.CallOption{},
 		QueryDeployedModels:          []gax.CallOption{},
 		GetLocation:                  []gax.CallOption{},
@@ -101,6 +103,8 @@ type internalDeploymentResourcePoolClient interface {
 	CreateDeploymentResourcePoolOperation(name string) *CreateDeploymentResourcePoolOperation
 	GetDeploymentResourcePool(context.Context, *aiplatformpb.GetDeploymentResourcePoolRequest, ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error)
 	ListDeploymentResourcePools(context.Context, *aiplatformpb.ListDeploymentResourcePoolsRequest, ...gax.CallOption) *DeploymentResourcePoolIterator
+	UpdateDeploymentResourcePool(context.Context, *aiplatformpb.UpdateDeploymentResourcePoolRequest, ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error)
+	UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation
 	DeleteDeploymentResourcePool(context.Context, *aiplatformpb.DeleteDeploymentResourcePoolRequest, ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error)
 	DeleteDeploymentResourcePoolOperation(name string) *DeleteDeploymentResourcePoolOperation
 	QueryDeployedModels(context.Context, *aiplatformpb.QueryDeployedModelsRequest, ...gax.CallOption) *DeployedModelIterator
@@ -175,6 +179,17 @@ func (c *DeploymentResourcePoolClient) GetDeploymentResourcePool(ctx context.Con
 // ListDeploymentResourcePools list DeploymentResourcePools in a location.
 func (c *DeploymentResourcePoolClient) ListDeploymentResourcePools(ctx context.Context, req *aiplatformpb.ListDeploymentResourcePoolsRequest, opts ...gax.CallOption) *DeploymentResourcePoolIterator {
 	return c.internalClient.ListDeploymentResourcePools(ctx, req, opts...)
+}
+
+// UpdateDeploymentResourcePool update a DeploymentResourcePool.
+func (c *DeploymentResourcePoolClient) UpdateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.UpdateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error) {
+	return c.internalClient.UpdateDeploymentResourcePool(ctx, req, opts...)
+}
+
+// UpdateDeploymentResourcePoolOperation returns a new UpdateDeploymentResourcePoolOperation from a given name.
+// The name must be that of a previously created UpdateDeploymentResourcePoolOperation, possibly from a different process.
+func (c *DeploymentResourcePoolClient) UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation {
+	return c.internalClient.UpdateDeploymentResourcePoolOperation(name)
 }
 
 // DeleteDeploymentResourcePool delete a DeploymentResourcePool.
@@ -435,6 +450,26 @@ func (c *deploymentResourcePoolGRPCClient) ListDeploymentResourcePools(ctx conte
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *deploymentResourcePoolGRPCClient) UpdateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.UpdateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deployment_resource_pool.name", url.QueryEscape(req.GetDeploymentResourcePool().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDeploymentResourcePool[0:len((*c.CallOptions).UpdateDeploymentResourcePool):len((*c.CallOptions).UpdateDeploymentResourcePool)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.deploymentResourcePoolClient.UpdateDeploymentResourcePool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateDeploymentResourcePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *deploymentResourcePoolGRPCClient) DeleteDeploymentResourcePool(ctx context.Context, req *aiplatformpb.DeleteDeploymentResourcePoolRequest, opts ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error) {
@@ -743,6 +778,14 @@ func (c *deploymentResourcePoolGRPCClient) CreateDeploymentResourcePoolOperation
 // The name must be that of a previously created DeleteDeploymentResourcePoolOperation, possibly from a different process.
 func (c *deploymentResourcePoolGRPCClient) DeleteDeploymentResourcePoolOperation(name string) *DeleteDeploymentResourcePoolOperation {
 	return &DeleteDeploymentResourcePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDeploymentResourcePoolOperation returns a new UpdateDeploymentResourcePoolOperation from a given name.
+// The name must be that of a previously created UpdateDeploymentResourcePoolOperation, possibly from a different process.
+func (c *deploymentResourcePoolGRPCClient) UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation {
+	return &UpdateDeploymentResourcePoolOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }

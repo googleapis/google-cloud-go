@@ -1,5 +1,19 @@
 # Changes
 
+## [1.23.3](https://github.com/googleapis/google-cloud-go/compare/speech/v1.23.2...speech/v1.23.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **speech:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/speech/v1.23.1...speech/v1.23.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **speech:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.23.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.23.0...speech/v1.23.1) (2024-05-01)
 
 

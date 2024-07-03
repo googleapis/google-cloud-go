@@ -614,8 +614,8 @@ type OSPolicy_Resource_PackageResource struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. The desired state the agent should maintain for this package. The
-	// default is to ensure the package is installed.
+	// Required. The desired state the agent should maintain for this package.
+	// The default is to ensure the package is installed.
 	DesiredState OSPolicy_Resource_PackageResource_DesiredState `protobuf:"varint,1,opt,name=desired_state,json=desiredState,proto3,enum=google.cloud.osconfig.agentendpoint.v1.OSPolicy_Resource_PackageResource_DesiredState" json:"desired_state,omitempty"`
 	// A system package.
 	//
@@ -907,10 +907,10 @@ type OSPolicy_Resource_ExecResource struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. What to run to validate this resource is in the desired state.
-	// An exit code of 100 indicates "in desired state", and exit code of 101
-	// indicates "not in desired state". Any other exit code indicates a
-	// failure running validate.
+	// Required. What to run to validate this resource is in the desired
+	// state. An exit code of 100 indicates "in desired state", and exit code
+	// of 101 indicates "not in desired state". Any other exit code indicates
+	// a failure running validate.
 	Validate *OSPolicy_Resource_ExecResource_Exec `protobuf:"bytes,1,opt,name=validate,proto3" json:"validate,omitempty"`
 	// What to run to bring this resource into the desired state.
 	// A exit code of 100 indicates "success", any other exit code idicates a
@@ -1095,8 +1095,8 @@ type OSPolicy_Resource_File_Remote struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. URI from which to fetch the object. It should contain both the
-	// protocol and path following the format `{protocol}://{location}`.
+	// Required. URI from which to fetch the object. It should contain both
+	// the protocol and path following the format `{protocol}://{location}`.
 	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
 	// SHA256 checksum of the remote file.
 	Sha256Checksum string `protobuf:"bytes,2,opt,name=sha256_checksum,json=sha256Checksum,proto3" json:"sha256_checksum,omitempty"`
@@ -1610,15 +1610,15 @@ type OSPolicy_Resource_RepositoryResource_AptRepository struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. Type of archive files in this repository. The default behavior is
-	// DEB.
+	// Required. Type of archive files in this repository. The default
+	// behavior is DEB.
 	ArchiveType OSPolicy_Resource_RepositoryResource_AptRepository_ArchiveType `protobuf:"varint,1,opt,name=archive_type,json=archiveType,proto3,enum=google.cloud.osconfig.agentendpoint.v1.OSPolicy_Resource_RepositoryResource_AptRepository_ArchiveType" json:"archive_type,omitempty"`
 	// Required. URI for this repository.
 	Uri string `protobuf:"bytes,2,opt,name=uri,proto3" json:"uri,omitempty"`
 	// Required. Distribution of this repository.
 	Distribution string `protobuf:"bytes,3,opt,name=distribution,proto3" json:"distribution,omitempty"`
-	// Required. List of components for this repository. Must contain at least one
-	// item.
+	// Required. List of components for this repository. Must contain at
+	// least one item.
 	Components []string `protobuf:"bytes,4,rep,name=components,proto3" json:"components,omitempty"`
 	// URI of the key file for this repository. The agent maintains a
 	// keyring at /etc/apt/trusted.gpg.d/osconfig_agent_managed.gpg.
@@ -1700,8 +1700,8 @@ type OSPolicy_Resource_RepositoryResource_YumRepository struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. A one word, unique name for this repository. This is  the `repo
-	// id` in the yum config file and also the `display_name` if
+	// Required. A one word, unique name for this repository. This is  the
+	// `repo id` in the yum config file and also the `display_name` if
 	// `display_name` is omitted. This id is also used as the unique
 	// identifier when checking for resource conflicts.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -1781,8 +1781,8 @@ type OSPolicy_Resource_RepositoryResource_ZypperRepository struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// Required. A one word, unique name for this repository. This is the `repo
-	// id` in the zypper config file and also the `display_name` if
+	// Required. A one word, unique name for this repository. This is the
+	// `repo id` in the zypper config file and also the `display_name` if
 	// `display_name` is omitted. This id is also used as the unique
 	// identifier when checking for GuestPolicy conflicts.
 	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`

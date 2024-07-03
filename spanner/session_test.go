@@ -997,7 +997,7 @@ func TestMinOpenedSessions(t *testing.T) {
 
 	// Simulate session expiration.
 	for _, s := range ss {
-		s.destroy(true)
+		s.destroy(true, false)
 	}
 
 	// Wait until the maintainer has had a chance to replenish the pool.
@@ -1019,6 +1019,52 @@ func TestMinOpenedSessions(t *testing.T) {
 		t.Fatalf(
 			"got %v sessions in idle lists, want 1. Opened: %d, Creation: %d",
 			sp.idleList.Len(), sp.numOpened, sp.createReqs)
+	}
+}
+
+// TestPositiveNumInUseSessions tests that num_in_use session should always be greater than 0.
+func TestPositiveNumInUseSessions(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	_, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MinOpened:                 1,
+				healthCheckSampleInterval: time.Millisecond,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+	defer sp.close(ctx)
+	// Take ten sessions from session pool and recycle them.
+	var shs []*sessionHandle
+	for i := 0; i < 10; i++ {
+		sh, err := sp.take(ctx)
+		if err != nil {
+			t.Fatalf("failed to get session(%v): %v", i, err)
+		}
+		shs = append(shs, sh)
+	}
+	for _, sh := range shs {
+		sh.recycle()
+	}
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		if sp.idleList.Len() != 1 {
+			sp.mu.Unlock()
+			return errInvalidSessionPool
+		}
+		sp.mu.Unlock()
+		return nil
+	})
+	sp.mu.Lock()
+	defer sp.mu.Unlock()
+	if int64(sp.numInUse) < 0 {
+		t.Fatal("numInUse must be >= 0")
+	}
+	// There should be still one session left in the idle list.
+	if sp.idleList.Len() != 1 {
+		t.Fatalf("got %v sessions in idle lists, want 1. Opened: %d, Creation: %d", sp.idleList.Len(), sp.numOpened, sp.createReqs)
 	}
 }
 
@@ -1145,11 +1191,11 @@ func TestSessionDestroy(t *testing.T) {
 	}
 	s := sh.session
 	sh.recycle()
-	if d := s.destroy(true); d || !s.isValid() {
-		// Session should be remaining because of min open sessions constraint.
+	if d := s.destroy(true, false); d || !s.isValid() {
+		// Session should be remaining because of min open session's constraint.
 		t.Fatalf("session %s invalid, want it to stay alive. (destroy in expiration mode, success: %v)", s.id, d)
 	}
-	if d := s.destroy(false); !d || s.isValid() {
+	if d := s.destroy(false, true); !d || s.isValid() {
 		// Session should be destroyed.
 		t.Fatalf("failed to destroy session %s. (destroy in default mode, success: %v)", s.id, d)
 	}
