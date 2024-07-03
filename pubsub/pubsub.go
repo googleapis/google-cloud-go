@@ -60,9 +60,12 @@ type ClientConfig struct {
 	PublisherCallOptions  *vkit.PublisherCallOptions
 	SubscriberCallOptions *vkit.SubscriberCallOptions
 
-	// EnableOpenTelemetryTracing enables span creation for this client.
+	// EnableOpenTelemetryTracing enables tracing for this client.
 	// This option allows selectively disabling Pub/Sub traces.
 	// This defaults to false.
+	// OpenTelemetry tracing standards are in active development, and thus
+	// attributes, links, and span names are EXPERIMENTAL and subject to
+	// change or removal without notice.
 	EnableOpenTelemetryTracing bool
 }
 
