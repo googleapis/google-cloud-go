@@ -87,6 +87,8 @@ func TestMain(m *testing.M) {
 func TestIntegration_DownloadDirectory(t *testing.T) {
 	multiTransportTest(context.Background(), t, func(t *testing.T, ctx context.Context, c *storage.Client, tb downloadTestBucket) {
 		localDir := t.TempDir()
+		numCallbacks := 0
+		callbackMu := sync.Mutex{}
 
 		d, err := NewDownloader(c, WithWorkers(8), WithPartSize(maxObjectSize/2))
 		if err != nil {
@@ -96,6 +98,36 @@ func TestIntegration_DownloadDirectory(t *testing.T) {
 		if err := d.DownloadDirectory(ctx, &DownloadDirectoryInput{
 			Bucket:         tb.bucket,
 			LocalDirectory: localDir,
+			OnObjectDownload: func(got *DownloadOutput) {
+				callbackMu.Lock()
+				numCallbacks++
+				callbackMu.Unlock()
+
+				if got.Err != nil {
+					t.Errorf("result.Err: %v", got.Err)
+				}
+
+				if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
+					t.Errorf("expected object size %d, got %d", want, got)
+				}
+
+				path := filepath.Join(localDir, got.Object)
+				f, err := os.Open(path)
+				if err != nil {
+					t.Errorf("os.Open(%q): %v", path, err)
+				}
+				defer f.Close()
+
+				b := bytes.NewBuffer(make([]byte, 0, got.Attrs.Size))
+				if _, err := io.Copy(b, f); err != nil {
+					t.Errorf("io.Copy: %v", err)
+				}
+
+				if wantCRC, gotCRC := tb.contentHashes[got.Object], crc32c(b.Bytes()); gotCRC != wantCRC {
+					t.Errorf("object(%q) at filepath(%q): content crc32c does not match; got: %v, expected: %v", got.Object, path, gotCRC, wantCRC)
+				}
+				got.Object = "modifying this shouldn't be a problem"
+			},
 		}); err != nil {
 			t.Errorf("d.DownloadDirectory: %v", err)
 		}
@@ -107,6 +139,9 @@ func TestIntegration_DownloadDirectory(t *testing.T) {
 
 		if len(results) != len(tb.objects) {
 			t.Errorf("expected to receive %d results, got %d results", len(tb.objects), len(results))
+		}
+		if numCallbacks != len(tb.objects) {
+			t.Errorf("expected to receive %d callbacks, got %d", len(tb.objects), numCallbacks)
 		}
 
 		for _, got := range results {

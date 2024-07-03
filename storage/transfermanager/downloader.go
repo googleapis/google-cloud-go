@@ -230,6 +230,8 @@ func (d *Downloader) addNewInputs(inputs []DownloadObjectInput) {
 }
 
 func (d *Downloader) addResult(input *DownloadObjectInput, result *DownloadOutput) {
+	copiedResult := *result // make a copy so that callbacks do not affect the  result
+
 	if input.directory {
 		f := input.Destination.(*os.File)
 		if err := f.Close(); err != nil && result.Err == nil {
@@ -237,16 +239,17 @@ func (d *Downloader) addResult(input *DownloadObjectInput, result *DownloadOutpu
 		}
 
 		if d.config.asynchronous {
-			input.directoryObjectOutputs <- *result
+			input.directoryObjectOutputs <- copiedResult
 		}
 	}
 	// TODO: check checksum if full object
 
-	if d.config.asynchronous {
+	if d.config.asynchronous || input.directory {
 		input.Callback(result)
-	} else {
+	}
+	if !d.config.asynchronous {
 		d.resultsMu.Lock()
-		d.results = append(d.results, *result)
+		d.results = append(d.results, copiedResult)
 		d.resultsMu.Unlock()
 	}
 
@@ -567,7 +570,6 @@ type DownloadDirectoryInput struct {
 	Callback func([]DownloadOutput)
 
 	// OnObjectDownload will run after every finished object download.
-	// It can only be set if the Downloader has the [WithCallbacks] option set.
 	OnObjectDownload func(*DownloadOutput)
 }
 
