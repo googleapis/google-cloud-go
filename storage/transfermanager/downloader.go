@@ -100,9 +100,8 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		if err != nil {
 			if errors.Is(err, os.ErrNotExist) {
 				return nil
-			} else {
-				return err
 			}
+			return err
 		}
 		if d.IsDir() {
 			localDirSnapshot[path] = true
