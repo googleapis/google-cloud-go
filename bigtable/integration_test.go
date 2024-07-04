@@ -3254,21 +3254,29 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 }
 
-func createInstance(ctx context.Context, testEnv IntegrationEnv, iAdminClient *InstanceAdminClient) (string, string, error) {
-	diffInstance := generateNewInstanceName()
-	diffCluster := clusterUIDSpace.New()
-	conf := &InstanceConf{
-		InstanceId:   diffInstance,
-		ClusterId:    diffCluster,
-		DisplayName:  "different test sourceInstance",
-		Zone:         instanceToCreateZone2,
-		InstanceType: DEVELOPMENT,
-		Labels:       map[string]string{"test-label-key-diff": "test-label-value-diff"},
-	}
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		return "", "", fmt.Errorf("CreateInstance: %v", err)
-	}
-	return diffInstance, diffCluster, nil
+func createInstance(ctx context.Context, t *testing.T, iAdminClient *InstanceAdminClient) (string, string, error) {
+	// Last seen error
+	var err error
+
+	var diffInstance, diffCluster string
+	testutil.Retry(t, 3, 30*time.Second, func(r *testutil.R) {
+		diffInstance = generateNewInstanceName()
+		diffCluster = clusterUIDSpace.New()
+		conf := &InstanceConf{
+			InstanceId:   diffInstance,
+			ClusterId:    diffCluster,
+			DisplayName:  "different test sourceInstance",
+			Zone:         instanceToCreateZone2,
+			InstanceType: DEVELOPMENT,
+			Labels:       map[string]string{"test-label-key-diff": "test-label-value-diff"},
+		}
+		if createErr := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			err = fmt.Errorf("CreateInstance: %v", createErr)
+			defer iAdminClient.DeleteInstance(ctx, diffInstance)
+			r.Errorf(createErr.Error())
+		}
+	})
+	return diffInstance, diffCluster, err
 }
 
 func TestIntegration_AdminCopyBackup(t *testing.T) {
@@ -3359,7 +3367,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	// Add more testcases if instanceToCreate is non-empty string
 	if instanceToCreate != "" {
 		// Create a 2nd instance in 1st destination project
-		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, testEnv, destIAdminClient1)
+		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, t, destIAdminClient1)
 		if err != nil {
 			t.Fatalf("CreateInstance: %v", err)
 		}
@@ -3391,7 +3399,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 		defer destIAdminClient2.Close()
 
 		// Create instance in 2nd project
-		destProj2Inst1, destProj2Inst1Cl1, err := createInstance(ctx, testEnv, destIAdminClient2)
+		destProj2Inst1, destProj2Inst1Cl1, err := createInstance(ctx, t, destIAdminClient2)
 		if err != nil {
 			t.Fatalf("CreateInstance: %v", err)
 		}
@@ -3489,7 +3497,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer iAdminClient.Close()
 
 	// Create different instance to restore table.
-	diffInstance, diffCluster, err := createInstance(ctx, testEnv, iAdminClient)
+	diffInstance, diffCluster, err := createInstance(ctx, t, iAdminClient)
 	if err != nil {
 		t.Fatalf("CreateInstance: %v", err)
 	}
