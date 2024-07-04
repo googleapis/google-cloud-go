@@ -124,7 +124,6 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		if err := filepath.WalkDir(input.LocalDirectory, func(path string, d os.DirEntry, err error) error {
 			if d.IsDir() && !localDirSnapshot[path] {
 				removePaths = append(removePaths, path)
-
 				// We don't need to go into subdirectories, since this directory needs to be removed.
 				return filepath.SkipDir
 			}
@@ -152,6 +151,15 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to list objects: %w", err)
 		}
 
+		// Check if the file exists.
+		// TODO: add skip option.
+		filePath := filepath.Join(input.LocalDirectory, attrs.Name)
+		if _, err := os.Stat(filePath); err == nil {
+			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, os.ErrExist)
+		} else if !errors.Is(err, os.ErrNotExist) {
+			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, err)
+		}
+
 		objectsToQueue = append(objectsToQueue, attrs.Name)
 	}
 
@@ -167,16 +175,6 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		if err != nil {
 			cleanFiles(inputs)
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", objDirectory, err)
-		}
-
-		// Check if the file exists.
-		// TODO: add skip option.
-		if _, err := os.Stat(filePath); err == nil {
-			cleanFiles(inputs)
-			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, os.ErrExist)
-		} else if !errors.Is(err, os.ErrNotExist) {
-			cleanFiles(inputs)
-			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, err)
 		}
 
 		// Create file to download to.
