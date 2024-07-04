@@ -620,8 +620,13 @@ func numShards(attrs *storage.ReaderObjectAttrs, r *DownloadRange, partSize int6
 		return 1
 	}
 
+	// Sharding turned off with partSize < 1.
+	if partSize < 1 {
+		return 1
+	}
+
+	// Divide entire object into shards if no range given.
 	if r == nil {
-		// Divide entire object into shards.
 		return int(math.Ceil(float64(objectSize) / float64(partSize)))
 	}
 	// Negative offset reads the whole object in one go.
@@ -654,6 +659,11 @@ func shardRange(r *DownloadRange, partSize int64, shard int) DownloadRange {
 			Offset: int64(shard) * partSize,
 			Length: partSize,
 		}
+	}
+
+	// No sharding if partSize is less than 1.
+	if partSize < 1 {
+		return *r
 	}
 
 	// Negative offset reads the whole object in one go.
