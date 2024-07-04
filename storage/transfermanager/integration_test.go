@@ -46,7 +46,7 @@ const (
 	testPrefix      = "go-integration-test-tm"
 	grpcTestPrefix  = "golang-grpc-test-tm"
 	bucketExpiryAge = 24 * time.Hour
-	maxObjectSize   = 1024 // * 1024
+	maxObjectSize   = 1024 * 1024
 )
 
 var (
