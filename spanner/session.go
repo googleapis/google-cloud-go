@@ -376,7 +376,7 @@ func (s *session) recycle() {
 		// session pool currently has enough open sessions.
 		s.pool.mu.Unlock()
 		s.destroy(false, true)
-		s.pool.mu.Lock()
+		return
 	}
 	s.pool.decNumInUseLocked(context.Background())
 	s.pool.mu.Unlock()
@@ -1191,6 +1191,11 @@ func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 
 func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
 	p.numInUse--
+	if int64(p.numInUse) < 0 {
+		// print whole call stack trace
+		logf(p.sc.logger, "Number of sessions in use is negative, resetting it to currSessionsCheckedOutLocked. Stack trace: %s", string(debug.Stack()))
+		p.numInUse = p.currSessionsCheckedOutLocked()
+	}
 	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
 	p.recordStat(ctx, ReleasedSessionsCount, 1)
 	if p.otConfig != nil {
