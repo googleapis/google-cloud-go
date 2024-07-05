@@ -342,6 +342,10 @@ func TestIntegration_DownloaderSynchronous(t *testing.T) {
 			if got, want := got.Attrs.Size, tb.objectSizes[got.Object]; want != got {
 				t.Errorf("expected object size %d, got %d", want, got)
 			}
+
+			if got, want := got.Attrs.StartOffset, int64(0); want != got {
+				t.Errorf("expected start offset %d, got %d", want, got)
+			}
 		}
 
 		if len(results) != len(objects) {
