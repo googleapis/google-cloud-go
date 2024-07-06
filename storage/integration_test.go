@@ -5863,7 +5863,9 @@ func (h testHelper) mustCreate(b *BucketHandle, projID string, attrs *BucketAttr
 func (h testHelper) mustDeleteBucket(b *BucketHandle) {
 	h.t.Helper()
 	if err := b.Delete(context.Background()); err != nil {
-		h.t.Fatalf("BucketHandle(%q).Delete: %v", b.BucketName(), err)
+		if !errors.Is(err, ErrBucketNotExist) {
+			h.t.Fatalf("BucketHandle(%q).Delete: %v", b.BucketName(), err)
+		}
 	}
 }
 
