@@ -860,9 +860,21 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 			// Set custom headers passed in via the context. This is only required for XML;
 			// for gRPC & JSON this is handled in the GAPIC and Apiary layers respectively.
 			ctxHeaders := callctx.HeadersFromContext(ctx)
+
 			for k, vals := range ctxHeaders {
-				for _, v := range vals {
-					req.Header.Set(k, v)
+				// Merge x-goog-api-client values
+				if k == xGoogHeaderKey {
+					if len(vals) > 0 {
+						xGoogHeader := vals[0]
+						for _, v := range vals[1:] {
+							xGoogHeader = strings.Join([]string{xGoogHeader, v}, " ")
+						}
+						req.Header.Set(k, xGoogHeader)
+					}
+				} else {
+					for _, v := range vals {
+						req.Header.Set(k, v)
+					}
 				}
 			}
 			return c.hc.Do(req.WithContext(ctx))
