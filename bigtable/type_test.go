@@ -23,8 +23,8 @@ import (
 	"google.golang.org/protobuf/proto"
 )
 
-func TestInt64Proto(t *testing.T) {
-	want := &btapb.Type{
+func aggregateProto() *btapb.Type {
+	return &btapb.Type{
 		Kind: &btapb.Type_Int64Type{
 			Int64Type: &btapb.Type_Int64{
 				Encoding: &btapb.Type_Int64_Encoding{
@@ -43,7 +43,10 @@ func TestInt64Proto(t *testing.T) {
 			},
 		},
 	}
+}
 
+func TestInt64Proto(t *testing.T) {
+	want := aggregateProto()
 	got := Int64Type{}.proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
@@ -98,6 +101,14 @@ func TestAggregateProto(t *testing.T) {
 	}
 
 	got := AggregateType{Input: Int64Type{}, Aggregator: SumAggregator{}}.proto()
+	if !proto.Equal(got, want) {
+		t.Errorf("got type %v, want: %v", got, want)
+	}
+}
+
+func TestProtoBijection(t *testing.T) {
+	want := aggregateProto()
+	got := protoToType(want).proto()
 	if !proto.Equal(got, want) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
