@@ -155,6 +155,9 @@ type unknownAggregator struct {
 }
 
 func (ua unknownAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	if ua.wrapped == nil {
+		return
+	}
 	proto.Aggregator = ua.wrapped.Aggregator
 }
 
@@ -176,7 +179,7 @@ func (agg AggregateType) proto() *btapb.Type {
 
 func protoToType(pb *btapb.Type) Type {
 	if pb == nil {
-		return nil
+		return unknown[btapb.Type]{wrapped: nil}
 	}
 
 	switch t := pb.Kind.(type) {
@@ -192,6 +195,10 @@ func protoToType(pb *btapb.Type) Type {
 }
 
 func bytesEncodingProtoToType(be *btapb.Type_Bytes_Encoding) BytesEncoding {
+	if be == nil {
+		return unknown[btapb.Type_Bytes_Encoding]{wrapped: be}
+	}
+
 	switch be.Encoding.(type) {
 	case *btapb.Type_Bytes_Encoding_Raw_:
 		return RawBytesEncoding{}
@@ -205,6 +212,10 @@ func bytesProtoToType(b *btapb.Type_Bytes) BytesType {
 }
 
 func int64EncodingProtoToEncoding(ie *btapb.Type_Int64_Encoding) Int64Encoding {
+	if ie == nil {
+		return unknown[btapb.Type_Int64_Encoding]{wrapped: ie}
+	}
+
 	switch e := ie.Encoding.(type) {
 	case *btapb.Type_Int64_Encoding_BigEndianBytes_:
 		return BigEndianBytesEncoding{Bytes: bytesProtoToType(e.BigEndianBytes.BytesType)}
@@ -218,8 +229,11 @@ func int64ProtoToType(i *btapb.Type_Int64) Type {
 }
 
 func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
-	it := protoToType(agg.InputType)
+	if agg == nil {
+		return AggregateType{Input: nil, Aggregator: unknownAggregator{wrapped: agg}}
+	}
 
+	it := protoToType(agg.InputType)
 	var aggregator Aggregator
 	switch agg.Aggregator.(type) {
 	case *btapb.Type_Aggregate_Sum_:

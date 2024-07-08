@@ -113,3 +113,52 @@ func TestProtoBijection(t *testing.T) {
 		t.Errorf("got type %v, want: %v", got, want)
 	}
 }
+
+func TestNilChecks(t *testing.T) {
+	// protoToType
+	if val, ok := protoToType(nil).(unknown[btapb.Type]); !ok {
+		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
+	}
+	if val, ok := protoToType(&btapb.Type{}).(unknown[btapb.Type]); !ok {
+		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
+	}
+
+	// bytesEncodingProtoToType
+	if val, ok := bytesEncodingProtoToType(nil).(unknown[btapb.Type_Bytes_Encoding]); !ok {
+		t.Errorf("got: %T, wanted unknown[btapb.Type_Bytes_Encoding]", val)
+	}
+	if val, ok := bytesEncodingProtoToType(&btapb.Type_Bytes_Encoding{}).(unknown[btapb.Type_Bytes_Encoding]); !ok {
+		t.Errorf("got: %T, wanted unknown[btapb.Type_Bytes_Encoding]", val)
+	}
+
+	// int64EncodingProtoToEncoding
+	if val, ok := int64EncodingProtoToEncoding(nil).(unknown[btapb.Type_Int64_Encoding]); !ok {
+		t.Errorf("got: %T, wanted unknown[btapb.Type_Int64_Encoding]", val)
+	}
+	if val, ok := int64EncodingProtoToEncoding(&btapb.Type_Int64_Encoding{}).(unknown[btapb.Type_Int64_Encoding]); !ok {
+		t.Errorf("got: %T, wanted unknown[btapb.Type_Int64_Encoding]", val)
+	}
+
+	// aggregateProtoToType
+	aggType1, ok := aggregateProtoToType(nil).(AggregateType)
+	if !ok {
+		t.Fatalf("got: %T, wanted AggregateType", aggType1)
+	}
+	if val, ok := aggType1.Aggregator.(unknownAggregator); !ok {
+		t.Errorf("got: %T, wanted unknownAggregator", val)
+	}
+	if aggType1.Input != nil {
+		t.Errorf("got: %v, wanted nil", aggType1.Input)
+	}
+
+	aggType2, ok := aggregateProtoToType(&btapb.Type_Aggregate{}).(AggregateType)
+	if !ok {
+		t.Fatalf("got: %T, wanted AggregateType", aggType2)
+	}
+	if val, ok := aggType2.Aggregator.(unknownAggregator); !ok {
+		t.Errorf("got: %T, wanted unknownAggregator", val)
+	}
+	if val, ok := aggType2.Input.(unknown[btapb.Type]); !ok {
+		t.Errorf("got: %T, wanted unknown[btapb.Type]", val)
+	}
+}
