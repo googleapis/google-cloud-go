@@ -419,6 +419,12 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, outs <-chan *Download
 	if len(errs) != 0 {
 		shardOut.Err = fmt.Errorf("download shard errors:\n%w", errors.Join(errs...))
 	}
+	if shardOut.Attrs != nil {
+		shardOut.Attrs.StartOffset = 0
+		if in.Range != nil {
+			shardOut.Attrs.StartOffset = in.Range.Offset
+		}
+	}
 	d.addResult(in, shardOut)
 }
 
