@@ -5920,10 +5920,14 @@ func (h testHelper) mustDeleteObject(o *ObjectHandle) {
 }
 
 // updating an object is conditionally idempotent on metageneration, so we pass that in to enable retries
+// mustUpdateObject will assume success if it receives a failed precondition response.
 func (h testHelper) mustUpdateObject(o *ObjectHandle, ua ObjectAttrsToUpdate, metageneration int64) *ObjectAttrs {
 	h.t.Helper()
 	attrs, err := o.If(Conditions{MetagenerationMatch: metageneration}).Update(context.Background(), ua)
 	if err != nil {
+		if errorIsStatusCode(err, http.StatusPreconditionFailed, codes.FailedPrecondition) {
+			h.t.Logf("update object %q from bucket %q failed due to precondition, assuming success", o.ObjectName(), o.BucketName())
+		}
 		h.t.Fatalf("update object %q from bucket %q: %v", o.ObjectName(), o.BucketName(), err)
 	}
 	return attrs
@@ -6312,6 +6316,13 @@ func extractErrCode(err error) int {
 	}
 
 	return -1
+}
+
+func errorIsStatusCode(err error, httpStatusCode int, grpcStatusCode codes.Code) bool {
+	var httpErr *googleapi.Error
+	var grpcErr *apierror.APIError
+	return (errors.As(err, &httpErr) && httpErr.Code == httpStatusCode) ||
+		(errors.As(err, &grpcErr) && grpcErr.GRPCStatus().Code() == grpcStatusCode)
 }
 
 func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object string, addOwnerEmail string) {
