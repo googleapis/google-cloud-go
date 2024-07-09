@@ -68,16 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &securitycenterpb.BulkMuteFindingsRequest{
+//	req := &securitycenterpb.BatchCreateResourceValueConfigsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#BulkMuteFindingsRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#BatchCreateResourceValueConfigsRequest.
 //	}
-//	op, err := c.BulkMuteFindings(ctx, req)
-//	if err != nil {
-//		// TODO: Handle error.
-//	}
-//
-//	resp, err := op.Wait(ctx)
+//	resp, err := c.BatchCreateResourceValueConfigs(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}
