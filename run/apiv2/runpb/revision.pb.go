@@ -21,11 +21,8 @@
 package runpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	api "google.golang.org/genproto/googleapis/api"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
@@ -35,6 +32,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1078,7 +1077,8 @@ const _ = grpc.SupportPackageIsVersion6
 type RevisionsClient interface {
 	// Gets information about a Revision.
 	GetRevision(ctx context.Context, in *GetRevisionRequest, opts ...grpc.CallOption) (*Revision, error)
-	// Lists Revisions from a given Service, or from a given location.
+	// Lists Revisions from a given Service, or from a given location.  Results
+	// are sorted by creation time, descending.
 	ListRevisions(ctx context.Context, in *ListRevisionsRequest, opts ...grpc.CallOption) (*ListRevisionsResponse, error)
 	// Deletes a Revision.
 	DeleteRevision(ctx context.Context, in *DeleteRevisionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -1123,7 +1123,8 @@ func (c *revisionsClient) DeleteRevision(ctx context.Context, in *DeleteRevision
 type RevisionsServer interface {
 	// Gets information about a Revision.
 	GetRevision(context.Context, *GetRevisionRequest) (*Revision, error)
-	// Lists Revisions from a given Service, or from a given location.
+	// Lists Revisions from a given Service, or from a given location.  Results
+	// are sorted by creation time, descending.
 	ListRevisions(context.Context, *ListRevisionsRequest) (*ListRevisionsResponse, error)
 	// Deletes a Revision.
 	DeleteRevision(context.Context, *DeleteRevisionRequest) (*longrunningpb.Operation, error)
