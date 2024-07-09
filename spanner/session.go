@@ -678,7 +678,10 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 	if config.usedSessionsRatioThreshold == 0 {
 		config.usedSessionsRatioThreshold = DefaultSessionPoolConfig.usedSessionsRatioThreshold
 	}
-
+	isMultiplexed := strings.ToLower(os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"))
+	if isMultiplexed != "" && isMultiplexed != "true" && isMultiplexed != "false" {
+		return nil, spannerErrorf(codes.InvalidArgument, "GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS must be either true or false")
+	}
 	pool := &sessionPool{
 		sc:                       sc,
 		valid:                    true,
@@ -688,7 +691,7 @@ func newSessionPool(sc *sessionClient, config SessionPoolConfig) (*sessionPool, 
 		mw:                       newMaintenanceWindow(config.MaxOpened),
 		rand:                     rand.New(rand.NewSource(time.Now().UnixNano())),
 		otConfig:                 sc.otConfig,
-		enableMultiplexSession:   os.Getenv("GOOGLE_CLOUD_SPANNER_ENABLE_MULTIPLEXED_SESSIONS") == "true" && os.Getenv("GOOGLE_CLOUD_SPANNER_FORCE_DISABLE_MULTIPLEXED_SESSIONS") != "true",
+		enableMultiplexSession:   isMultiplexed == "true",
 	}
 
 	_, instance, database, err := parseDatabaseName(sc.database)
@@ -1206,8 +1209,7 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 			// Multiplexed session is available, get it.
 			s = p.multiplexedSession
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
-				"Acquired session")
-			p.decNumSessionsLocked(ctx) // TODO: add tag to differentiate from normal session.
+				"Acquired multiplexed session")
 		}
 		if s != nil {
 			p.mu.Unlock()
@@ -1246,6 +1248,11 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 			if p.multiplexedSessionCreationError != nil {
 				trace.TracePrintf(ctx, nil, "Error creating multiplexed session: %v", p.multiplexedSessionCreationError)
 				err := p.multiplexedSessionCreationError
+				if isUnimplementedError(err) {
+					p.enableMultiplexSession = false
+					p.mu.Unlock()
+					return p.take(ctx)
+				}
 				p.mu.Unlock()
 				return nil, err
 			}
@@ -1845,6 +1852,18 @@ func isSessionNotFoundError(err error) bool {
 		}
 	}
 	return strings.Contains(err.Error(), "Session not found")
+}
+
+// isUnimplementedError returns true if the error indicates that an gRPC call is
+// aborted on the server side.
+func isUnimplementedError(err error) bool {
+	if err == nil {
+		return false
+	}
+	if ErrCode(err) == codes.Unimplemented {
+		return true
+	}
+	return false
 }
 
 func isFailedInlineBeginTransaction(err error) bool {

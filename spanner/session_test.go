@@ -196,7 +196,11 @@ func TestTakeFromIdleList(t *testing.T) {
 	// Make sure maintainer keeps the idle sessions.
 	server, client, teardown := setupMockedTestServerWithConfig(t,
 		ClientConfig{
-			SessionPoolConfig: SessionPoolConfig{MaxIdle: 10, MaxOpened: 10},
+			SessionPoolConfig: SessionPoolConfig{
+				MaxIdle:                   10,
+				MaxOpened:                 10,
+				healthCheckSampleInterval: 10 * time.Millisecond,
+			},
 		})
 	defer teardown()
 	sp := client.idleSessions

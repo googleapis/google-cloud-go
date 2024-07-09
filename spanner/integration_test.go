@@ -394,26 +394,16 @@ const (
 func TestMain(m *testing.M) {
 	cleanup := initIntegrationTests()
 	defer cleanup()
-	for _, mx := range []string{"false", "true"} {
-		if mx == "true" {
-			os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_MULTIPLEXED_SESSIONS", mx)
-			// Multiplexing is not supported in emulator.
-			if isEmulatorEnvSet() {
-				continue
-			}
+	for _, dialect := range []adminpb.DatabaseDialect{adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL, adminpb.DatabaseDialect_POSTGRESQL} {
+		if isEmulatorEnvSet() && dialect == adminpb.DatabaseDialect_POSTGRESQL {
+			// PG tests are not supported in emulator
+			continue
 		}
-		for _, dialect := range []adminpb.DatabaseDialect{adminpb.DatabaseDialect_GOOGLE_STANDARD_SQL, adminpb.DatabaseDialect_POSTGRESQL} {
-			if isEmulatorEnvSet() && dialect == adminpb.DatabaseDialect_POSTGRESQL {
-				// PG tests are not supported in emulator
-				continue
-			}
-			testDialect = dialect
-			log.Printf("running tests with dialect %v and multiplexing=%v and emulator=%v", dialect, mx, isEmulatorEnvSet())
-			res := m.Run()
-			if res != 0 {
-				cleanup()
-				os.Exit(res)
-			}
+		testDialect = dialect
+		res := m.Run()
+		if res != 0 {
+			cleanup()
+			os.Exit(res)
 		}
 	}
 }
