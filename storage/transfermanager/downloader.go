@@ -520,16 +520,34 @@ type DownloadRange struct {
 
 // DownloadObjectInput is the input for a single object to download.
 type DownloadObjectInput struct {
-	// Required fields
-	Bucket      string
-	Object      string
+	// Bucket is the bucket in GCS to download from. Required.
+	Bucket string
+
+	// Object is the object in GCS to download. Required.
+	Object string
+
+	// Destination is the WriterAt to which the Downloader will write the object
+	// data, such as an [os.File] file handle or a [DownloadBuffer]. Required.
 	Destination io.WriterAt
 
-	// Optional fields
-	Generation    *int64
-	Conditions    *storage.Conditions
+	// Generation, if specified, will request a specific generation of the object.
+	// Optional. By default, the latest generation is downloaded.
+	Generation *int64
+
+	// Conditions constrains the download to act on a specific
+	// generation/metageneration of the object.
+	// Optional.
+	Conditions *storage.Conditions
+
+	// EncryptionKey will be used to decrypt the object's contents.
+	// The encryption key must be a 32-byte AES-256 key.
+	// See https://cloud.google.com/storage/docs/encryption for details.
+	// Optional.
 	EncryptionKey []byte
-	Range         *DownloadRange // if specified, reads only a range
+
+	// Range specifies the range to read of the object.
+	// Optional. If not specified, the entire object will be read.
+	Range *DownloadRange
 
 	// Callback will be run once the object is finished downloading. It must be
 	// set if and only if the [WithCallbacks] option is set; otherwise, it must
