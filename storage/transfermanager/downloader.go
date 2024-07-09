@@ -526,8 +526,8 @@ type DownloadObjectInput struct {
 	// Object is the object in GCS to download. Required.
 	Object string
 
-	// Destination is the WriterAt to which write the bytes, such as an [os.File]
-	// file handle or a [DownloadBuffer]. Required.
+	// Destination is the WriterAt to which the Downloader will write the object
+	// data, such as an [os.File] file handle or a [DownloadBuffer]. Required.
 	Destination io.WriterAt
 
 	// Generation, if specified, will request a specific generation of the object.
