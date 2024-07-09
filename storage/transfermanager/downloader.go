@@ -72,8 +72,10 @@ func (d *Downloader) DownloadObject(ctx context.Context, input *DownloadObjectIn
 // or use the callback to process the result. DownloadDirectory is thread-safe
 // and can be called simultaneously from different goroutines.
 // DownloadDirectory will resolve any filters on the input and create the needed
-// directory structure locally as the operations progress.
-// Note: DownloadDirectory overwrites existing files in the directory.
+// directory structure locally. Do not modify this struture until the download
+// has completed.
+// DownloadDirectory will fail if any of the files it attempts to download
+// already exist in the local directory.
 func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirectoryInput) error {
 	if d.closed() {
 		return errors.New("transfermanager: Downloader used after WaitAndClose was called")
@@ -92,7 +94,51 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		return fmt.Errorf("transfermanager: DownloadDirectory query.SetAttrSelection: %w", err)
 	}
 
-	// TODO: Clean up any created directory structure on failure.
+	// Grab a snapshot of the local directory so we can return to it on error.
+	localDirSnapshot := make(map[string]bool) // stores all filepaths to directories in localdir
+	if err := filepath.WalkDir(input.LocalDirectory, func(path string, d os.DirEntry, err error) error {
+		if err != nil {
+			if errors.Is(err, os.ErrNotExist) {
+				return nil
+			}
+			return err
+		}
+		if d.IsDir() {
+			localDirSnapshot[path] = true
+		}
+		return nil
+	}); err != nil {
+		return fmt.Errorf("transfermanager: local directory walkthrough failed: %w", err)
+	}
+
+	cleanFiles := func(inputs []DownloadObjectInput) error {
+		// Remove all created files.
+		for _, in := range inputs {
+			f := in.Destination.(*os.File)
+			f.Close()
+			os.Remove(f.Name())
+		}
+
+		// Remove all created dirs.
+		var removePaths []string
+		if err := filepath.WalkDir(input.LocalDirectory, func(path string, d os.DirEntry, err error) error {
+			if d.IsDir() && !localDirSnapshot[path] {
+				removePaths = append(removePaths, path)
+				// We don't need to go into subdirectories, since this directory needs to be removed.
+				return filepath.SkipDir
+			}
+			return err
+		}); err != nil {
+			return fmt.Errorf("transfermanager: local directory walkthrough failed: %w", err)
+		}
+
+		for _, path := range removePaths {
+			if err := os.RemoveAll(path); err != nil {
+				return fmt.Errorf("transfermanager: failed to remove directory: %w", err)
+			}
+		}
+		return nil
+	}
 
 	objectsToQueue := []string{}
 	it := d.client.Bucket(input.Bucket).Objects(ctx, query)
@@ -103,6 +149,15 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		}
 		if err != nil {
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to list objects: %w", err)
+		}
+
+		// Check if the file exists.
+		// TODO: add skip option.
+		filePath := filepath.Join(input.LocalDirectory, attrs.Name)
+		if _, err := os.Stat(filePath); err == nil {
+			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, os.ErrExist)
+		} else if !errors.Is(err, os.ErrNotExist) {
+			return fmt.Errorf("transfermanager: failed to create file(%q): %w", filePath, err)
 		}
 
 		objectsToQueue = append(objectsToQueue, attrs.Name)
@@ -118,12 +173,14 @@ func (d *Downloader) DownloadDirectory(ctx context.Context, input *DownloadDirec
 		// Make sure all directories in the object path exist.
 		err := os.MkdirAll(objDirectory, fs.ModeDir|fs.ModePerm)
 		if err != nil {
+			cleanFiles(inputs)
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to make directory(%q): %w", objDirectory, err)
 		}
 
 		// Create file to download to.
 		f, fErr := os.Create(filePath)
 		if fErr != nil {
+			cleanFiles(inputs)
 			return fmt.Errorf("transfermanager: DownloadDirectory failed to create file(%q): %w", filePath, fErr)
 		}
 
@@ -237,6 +294,11 @@ func (d *Downloader) addResult(input *DownloadObjectInput, result *DownloadOutpu
 		f := input.Destination.(*os.File)
 		if err := f.Close(); err != nil && result.Err == nil {
 			result.Err = fmt.Errorf("closing file(%q): %w", f.Name(), err)
+		}
+
+		// Clean up the file if it failed.
+		if result.Err != nil {
+			os.Remove(f.Name())
 		}
 
 		if d.config.asynchronous {
@@ -356,6 +418,12 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, outs <-chan *Download
 	shardOut.Range = in.Range
 	if len(errs) != 0 {
 		shardOut.Err = fmt.Errorf("download shard errors:\n%w", errors.Join(errs...))
+	}
+	if shardOut.Attrs != nil {
+		shardOut.Attrs.StartOffset = 0
+		if in.Range != nil {
+			shardOut.Attrs.StartOffset = in.Range.Offset
+		}
 	}
 	d.addResult(in, shardOut)
 }

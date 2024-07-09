@@ -922,6 +922,10 @@ func (c *Client) UploadAttachment(ctx context.Context, req *chatpb.UploadAttachm
 //
 // Lists spaces visible to the caller or authenticated user. Group chats
 // and DMs aren’t listed until the first message is sent.
+//
+// To list all named spaces by Google Workspace organization, use the
+// spaces.search() (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
+// method using Workspace administrator privileges instead.
 func (c *Client) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	return c.internalClient.ListSpaces(ctx, req, opts...)
 }
@@ -2649,6 +2653,10 @@ func (c *restClient) UploadAttachment(ctx context.Context, req *chatpb.UploadAtt
 //
 // Lists spaces visible to the caller or authenticated user. Group chats
 // and DMs aren’t listed until the first message is sent.
+//
+// To list all named spaces by Google Workspace organization, use the
+// spaces.search() (at https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
+// method using Workspace administrator privileges instead.
 func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	it := &SpaceIterator{}
 	req = proto.Clone(req).(*chatpb.ListSpacesRequest)
