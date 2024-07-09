@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.2.8](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.7...baremetalsolution/v1.2.8) (2024-07-01)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.2.7](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.6...baremetalsolution/v1.2.7) (2024-06-26)
+
+
+### Bug Fixes
+
+* **baremetalsolution:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.2.6](https://github.com/googleapis/google-cloud-go/compare/baremetalsolution/v1.2.5...baremetalsolution/v1.2.6) (2024-05-01)
 
 
@@ -113,4 +127,3 @@
 ### Features
 
 * **baremetalsolution:** start generating apiv2 ([#6147](https://github.com/googleapis/google-cloud-go/issues/6147)) ([5dcbf2f](https://github.com/googleapis/google-cloud-go/commit/5dcbf2f859e2b99e5497d6ac45825a80799f32ab))
-

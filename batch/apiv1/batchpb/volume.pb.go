@@ -51,15 +51,20 @@ type Volume struct {
 	Source isVolume_Source `protobuf_oneof:"source"`
 	// The mount path for the volume, e.g. /mnt/disks/share.
 	MountPath string `protobuf:"bytes,4,opt,name=mount_path,json=mountPath,proto3" json:"mount_path,omitempty"`
-	// For Google Cloud Storage (GCS), mount options are the options supported by
-	// the gcsfuse tool (https://github.com/GoogleCloudPlatform/gcsfuse).
-	// For existing persistent disks, mount options provided by the
-	// mount command (https://man7.org/linux/man-pages/man8/mount.8.html) except
-	// writing are supported. This is due to restrictions of multi-writer mode
-	// (https://cloud.google.com/compute/docs/disks/sharing-disks-between-vms).
-	// For other attached disks and Network File System (NFS), mount options are
-	// these supported by the mount command
-	// (https://man7.org/linux/man-pages/man8/mount.8.html).
+	// Mount options vary based on the type of storage volume:
+	//
+	// * For a Cloud Storage bucket, all the mount options provided
+	// by
+	//
+	//	the [`gcsfuse` tool](https://cloud.google.com/storage/docs/gcsfuse-cli)
+	//	are supported.
+	//   - For an existing persistent disk, all mount options provided by the
+	//     [`mount` command](https://man7.org/linux/man-pages/man8/mount.8.html)
+	//     except writing are supported. This is due to restrictions of
+	//     [multi-writer
+	//     mode](https://cloud.google.com/compute/docs/disks/sharing-disks-between-vms).
+	//   - For any other disk or a Network File System (NFS), all the
+	//     mount options provided by the `mount` command are supported.
 	MountOptions []string `protobuf:"bytes,5,rep,name=mount_options,json=mountOptions,proto3" json:"mount_options,omitempty"`
 }
 

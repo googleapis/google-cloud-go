@@ -1,6 +1,21 @@
 # Changelog
 
 
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v1.0.0...securesourcemanager/v1.0.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **securesourcemanager:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.5...securesourcemanager/v1.0.0) (2024-06-26)
+
+
+### Miscellaneous Chores
+
+* **securesourcemanager:** Release v1.0.0 ([#10446](https://github.com/googleapis/google-cloud-go/issues/10446)) ([752601c](https://github.com/googleapis/google-cloud-go/commit/752601cec9ec5ebbc240b197d81e07cf6b537c6d))
+
 ## [0.1.5](https://github.com/googleapis/google-cloud-go/compare/securesourcemanager/v0.1.4...securesourcemanager/v0.1.5) (2024-05-01)
 
 

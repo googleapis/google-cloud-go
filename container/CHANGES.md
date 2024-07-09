@@ -1,5 +1,19 @@
 # Changes
 
+## [1.37.2](https://github.com/googleapis/google-cloud-go/compare/container/v1.37.1...container/v1.37.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **container:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.37.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.37.0...container/v1.37.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **container:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.37.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.36.0...container/v1.37.0) (2024-06-12)
 
 
@@ -414,4 +428,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out container as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

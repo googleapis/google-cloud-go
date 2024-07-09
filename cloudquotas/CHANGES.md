@@ -1,6 +1,21 @@
 # Changelog
 
 
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.0.0...cloudquotas/v1.0.1) (2024-07-01)
+
+
+### Bug Fixes
+
+* **cloudquotas:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.2.1...cloudquotas/v1.0.0) (2024-06-26)
+
+
+### Miscellaneous Chores
+
+* **cloudquotas:** Release v1.0.0 ([#10444](https://github.com/googleapis/google-cloud-go/issues/10444)) ([4f2cc2b](https://github.com/googleapis/google-cloud-go/commit/4f2cc2b6925486fc5d0c1d16be82604b8c889659))
+
 ## [0.2.1](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v0.2.0...cloudquotas/v0.2.1) (2024-05-01)
 
 

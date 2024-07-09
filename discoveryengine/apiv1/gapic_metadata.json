@@ -25,6 +25,11 @@
                 "GetOperation"
               ]
             },
+            "ImportCompletionSuggestions": {
+              "methods": [
+                "ImportCompletionSuggestions"
+              ]
+            },
             "ImportSuggestionDenyListEntries": {
               "methods": [
                 "ImportSuggestionDenyListEntries"
@@ -33,6 +38,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "PurgeCompletionSuggestions": {
+              "methods": [
+                "PurgeCompletionSuggestions"
               ]
             },
             "PurgeSuggestionDenyListEntries": {
@@ -60,6 +70,11 @@
                 "GetOperation"
               ]
             },
+            "ImportCompletionSuggestions": {
+              "methods": [
+                "ImportCompletionSuggestions"
+              ]
+            },
             "ImportSuggestionDenyListEntries": {
               "methods": [
                 "ImportSuggestionDenyListEntries"
@@ -68,6 +83,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "PurgeCompletionSuggestions": {
+              "methods": [
+                "PurgeCompletionSuggestions"
               ]
             },
             "PurgeSuggestionDenyListEntries": {

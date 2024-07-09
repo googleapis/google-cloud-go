@@ -65,7 +65,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
-	"text/template"
+	"text/template" // NOLINT
 	"unicode"
 )
 

@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.8.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.7.0...ai/v0.8.0) (2024-07-01)
+
+
+### Features
+
+* **ai/generativelanguage:** Add code execution ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **ai/generativelanguage:** Add max_temperature ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Documentation
+
+* **ai/generativelanguage:** Minor fixes ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
 ## [0.7.0](https://github.com/googleapis/google-cloud-go/compare/ai/v0.6.0...ai/v0.7.0) (2024-06-12)
 
 

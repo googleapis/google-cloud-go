@@ -2,6 +2,20 @@
 
 
 
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.0.1...workstations/v1.0.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **workstations:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/workstations/v1.0.0...workstations/v1.0.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **workstations:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/workstations/v0.5.6...workstations/v1.0.0) (2024-05-16)
 
 
@@ -107,4 +121,3 @@
 * **workstations:** Start generating apiv1beta ([#7599](https://github.com/googleapis/google-cloud-go/issues/7599)) ([e3d6afe](https://github.com/googleapis/google-cloud-go/commit/e3d6afe79ddc4579b54934b4884891f35cc3d1a3))
 
 ## Changes
-

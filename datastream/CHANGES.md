@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.10.8](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.10.7...datastream/v1.10.8) (2024-07-01)
+
+
+### Bug Fixes
+
+* **datastream:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.10.7](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.10.6...datastream/v1.10.7) (2024-06-26)
+
+
+### Bug Fixes
+
+* **datastream:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.10.6](https://github.com/googleapis/google-cloud-go/compare/datastream/v1.10.5...datastream/v1.10.6) (2024-05-01)
 
 
@@ -180,4 +194,3 @@
 
 This is the first tag to carve out datastream as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

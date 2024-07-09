@@ -1,6 +1,20 @@
 # Changelog
 
 
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.0.1...commerce/v1.0.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **commerce:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/commerce/v1.0.0...commerce/v1.0.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **commerce:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/commerce/v0.1.6...commerce/v1.0.0) (2024-05-16)
 
 
@@ -64,4 +78,3 @@
 * **commerce:** Start generating apiv1 ([#8322](https://github.com/googleapis/google-cloud-go/issues/8322)) ([db4f48b](https://github.com/googleapis/google-cloud-go/commit/db4f48bc9d5366f524f1fce82f2fea8094ea8c1e))
 
 ## Changes
-

@@ -516,22 +516,22 @@ func TestRowRangeString(t *testing.T) {
 		{
 			desc: "RowRange closed open",
 			rr:   NewClosedOpenRange("a", "b"),
-			str:  "[\"a\",b)",
+			str:  "[\"a\",\"b\")",
 		},
 		{
 			desc: "RowRange open open",
 			rr:   NewOpenRange("c", "d"),
-			str:  "(\"c\",d)",
+			str:  "(\"c\",\"d\")",
 		},
 		{
 			desc: "RowRange closed closed",
 			rr:   NewClosedRange("e", "f"),
-			str:  "[\"e\",f]",
+			str:  "[\"e\",\"f\"]",
 		},
 		{
 			desc: "RowRange open closed",
 			rr:   NewOpenClosedRange("g", "h"),
-			str:  "(\"g\",h]",
+			str:  "(\"g\",\"h\"]",
 		},
 		{
 			desc: "RowRange unbound unbound",
@@ -546,7 +546,7 @@ func TestRowRangeString(t *testing.T) {
 		{
 			desc: "RowRange unbound closed",
 			rr:   InfiniteReverseRange("c"),
-			str:  "(∞,c]",
+			str:  "(∞,\"c\"]",
 		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {

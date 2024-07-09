@@ -1,5 +1,19 @@
 # Changes
 
+## [1.7.2](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.7.1...resourcesettings/v1.7.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **resourcesettings:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.7.0...resourcesettings/v1.7.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **resourcesettings:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/resourcesettings/v1.6.7...resourcesettings/v1.7.0) (2024-06-05)
 
 
@@ -113,4 +127,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out resourcesettings as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

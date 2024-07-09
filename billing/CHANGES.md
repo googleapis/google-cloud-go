@@ -1,5 +1,24 @@
 # Changes
 
+## [1.18.7](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.6...billing/v1.18.7) (2024-07-01)
+
+
+### Bug Fixes
+
+* **billing:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.18.6](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.5...billing/v1.18.6) (2024-06-26)
+
+
+### Bug Fixes
+
+* **billing:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+
+### Documentation
+
+* **billing:** Genereal documentation improvements ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
 ## [1.18.5](https://github.com/googleapis/google-cloud-go/compare/billing/v1.18.4...billing/v1.18.5) (2024-05-01)
 
 
@@ -235,4 +254,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out billing as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-

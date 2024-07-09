@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.2.7](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.6...policysimulator/v0.2.7) (2024-07-01)
+
+
+### Bug Fixes
+
+* **policysimulator:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.5...policysimulator/v0.2.6) (2024-06-26)
+
+
+### Bug Fixes
+
+* **policysimulator:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/policysimulator/v0.2.4...policysimulator/v0.2.5) (2024-05-01)
 
 
@@ -57,4 +71,3 @@
 * **policysimulator:** Start generating apiv1 ([#8340](https://github.com/googleapis/google-cloud-go/issues/8340)) ([a41e5ec](https://github.com/googleapis/google-cloud-go/commit/a41e5eca56246e83670d5c0d043d7ab78db47042))
 
 ## Changes
-

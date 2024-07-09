@@ -1,5 +1,37 @@
 # Changes
 
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.31.0...securitycenter/v1.32.0) (2024-07-01)
+
+
+### Features
+
+* **securitycenter:** Added cloud provider field to list findings response ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **securitycenter:** Added http configuration rule to ResourceValueConfig and ValuedResource API methods ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+* **securitycenter:** Added toxic combination field to finding ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **securitycenter:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+
+### Documentation
+
+* **securitycenter:** Updated comments for ResourceValueConfig ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.30.0...securitycenter/v1.31.0) (2024-06-26)
+
+
+### Features
+
+* **securitycenter:** Add toxic_combination and group_memberships fields to finding ([7ca4fa3](https://github.com/googleapis/google-cloud-go/commit/7ca4fa38519b24acde1675724edcde7b99fb32ee))
+* **securitycenter:** Add toxic_combination and group_memberships fields to finding ([7ca4fa3](https://github.com/googleapis/google-cloud-go/commit/7ca4fa38519b24acde1675724edcde7b99fb32ee))
+
+
+### Bug Fixes
+
+* **securitycenter:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.29.0...securitycenter/v1.30.0) (2024-05-01)
 
 
@@ -293,4 +325,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out securitycenter as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
