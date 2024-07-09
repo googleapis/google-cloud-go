@@ -54,6 +54,8 @@ const (
 	timeUntilResourceCleanup  = time.Hour * 12 // 12 hours
 	prefixOfInstanceResources = "bt-it-"
 	prefixOfClusterResources  = "bt-c-"
+	maxCreateAttempts         = 3
+	retryCreateBackoff        = 10 * time.Second
 )
 
 var (
@@ -531,7 +533,8 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	}
 	// Delete non-existing cells, no such column family in this row
 	// Should not delete anything
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "non-existing"); err != nil {
+
+	if err := createColumnFamilyWithRetry(ctx, t, adminClient, tableName, "non-existing"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 	mut = NewMutation()
@@ -582,7 +585,7 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	}
 
 	// Check DeleteCellsInFamily
-	if err := adminClient.CreateColumnFamily(ctx, tableName, "status"); err != nil {
+	if err := createColumnFamilyWithRetry(ctx, t, adminClient, tableName, "status"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 
@@ -3251,21 +3254,29 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 }
 
-func createInstance(ctx context.Context, testEnv IntegrationEnv, iAdminClient *InstanceAdminClient) (string, string, error) {
-	diffInstance := generateNewInstanceName()
-	diffCluster := clusterUIDSpace.New()
-	conf := &InstanceConf{
-		InstanceId:   diffInstance,
-		ClusterId:    diffCluster,
-		DisplayName:  "different test sourceInstance",
-		Zone:         instanceToCreateZone2,
-		InstanceType: DEVELOPMENT,
-		Labels:       map[string]string{"test-label-key-diff": "test-label-value-diff"},
-	}
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		return "", "", fmt.Errorf("CreateInstance: %v", err)
-	}
-	return diffInstance, diffCluster, nil
+func createInstance(ctx context.Context, t *testing.T, iAdminClient *InstanceAdminClient) (string, string, error) {
+	// Last seen error
+	var err error
+
+	var diffInstance, diffCluster string
+	testutil.Retry(t, 3, 30*time.Second, func(r *testutil.R) {
+		diffInstance = generateNewInstanceName()
+		diffCluster = clusterUIDSpace.New()
+		conf := &InstanceConf{
+			InstanceId:   diffInstance,
+			ClusterId:    diffCluster,
+			DisplayName:  "different test sourceInstance",
+			Zone:         instanceToCreateZone2,
+			InstanceType: DEVELOPMENT,
+			Labels:       map[string]string{"test-label-key-diff": "test-label-value-diff"},
+		}
+		if createErr := iAdminClient.CreateInstance(ctx, conf); err != nil {
+			err = fmt.Errorf("CreateInstance: %v", createErr)
+			defer iAdminClient.DeleteInstance(ctx, diffInstance)
+			r.Errorf(createErr.Error())
+		}
+	})
+	return diffInstance, diffCluster, err
 }
 
 func TestIntegration_AdminCopyBackup(t *testing.T) {
@@ -3356,7 +3367,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 	// Add more testcases if instanceToCreate is non-empty string
 	if instanceToCreate != "" {
 		// Create a 2nd instance in 1st destination project
-		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, testEnv, destIAdminClient1)
+		destProj1Inst2, destProj1Inst2Cl1, err := createInstance(ctx, t, destIAdminClient1)
 		if err != nil {
 			t.Fatalf("CreateInstance: %v", err)
 		}
@@ -3388,7 +3399,7 @@ func TestIntegration_AdminCopyBackup(t *testing.T) {
 		defer destIAdminClient2.Close()
 
 		// Create instance in 2nd project
-		destProj2Inst1, destProj2Inst1Cl1, err := createInstance(ctx, testEnv, destIAdminClient2)
+		destProj2Inst1, destProj2Inst1Cl1, err := createInstance(ctx, t, destIAdminClient2)
 		if err != nil {
 			t.Fatalf("CreateInstance: %v", err)
 		}
@@ -3486,7 +3497,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer iAdminClient.Close()
 
 	// Create different instance to restore table.
-	diffInstance, diffCluster, err := createInstance(ctx, testEnv, iAdminClient)
+	diffInstance, diffCluster, err := createInstance(ctx, t, iAdminClient)
 	if err != nil {
 		t.Fatalf("CreateInstance: %v", err)
 	}
@@ -4177,8 +4188,23 @@ func createTableWithRetry(ctx context.Context, t *testing.T, adminClient *AdminC
 	// Error seen on last create attempt
 	var err error
 
-	testutil.Retry(t, 3, 10*time.Second, func(r *testutil.R) {
+	testutil.Retry(t, maxCreateAttempts, retryCreateBackoff, func(r *testutil.R) {
 		createErr := adminClient.CreateTable(ctx, tableName)
+		err = createErr
+
+		if createErr != nil {
+			r.Errorf(createErr.Error())
+		}
+	})
+	return err
+}
+
+func createColumnFamilyWithRetry(ctx context.Context, t *testing.T, adminClient *AdminClient, table, family string) error {
+	// Error seen on last create attempt
+	var err error
+
+	testutil.Retry(t, maxCreateAttempts, retryCreateBackoff, func(r *testutil.R) {
+		createErr := adminClient.CreateColumnFamily(ctx, table, family)
 		err = createErr
 
 		if createErr != nil {
