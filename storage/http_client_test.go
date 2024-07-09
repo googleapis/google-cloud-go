@@ -46,7 +46,7 @@ func TestSetHeadersFromContext(t *testing.T) {
 			},
 			headersOnCtx: []string{"key-c", "val1", "headerkey-a", "value3"},
 			wantHeaders: http.Header{
-				"Headerkey-A": {"value1", "value2", "value3"},
+				"Headerkey-A": {"value3"},
 				"Headerkey-B": {"v1", "v2"},
 				"Key-C":       {"val1"},
 			},

@@ -1478,7 +1478,8 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 	}, nil
 }
 
-// setHeadersFromCtx sets custom headers passed in via the context on the header.
+// setHeadersFromCtx sets custom headers passed in via the context on the header,
+// replacing any header with the same key (which avoids duplicating invocation headers).
 // This is only required for XML; for gRPC & JSON requests this is handled in
 // the GAPIC and Apiary layers respectively.
 func setHeadersFromCtx(ctx context.Context, header http.Header) {
@@ -1498,7 +1499,7 @@ func setHeadersFromCtx(ctx context.Context, header http.Header) {
 			}
 		} else {
 			for _, v := range vals {
-				header.Add(k, v)
+				header.Set(k, v)
 			}
 		}
 	}
