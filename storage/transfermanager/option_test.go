@@ -48,7 +48,7 @@ func TestApply(t *testing.T) {
 				WithPartSize(30),
 			},
 			want: transferManagerConfig{
-				partSize: 256 * 1024,
+				partSize: 30,
 			},
 		},
 	} {

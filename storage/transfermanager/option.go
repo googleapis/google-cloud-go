@@ -73,19 +73,13 @@ func (wpt withPerOpTimeout) apply(tm *transferManagerConfig) {
 // of the shards to transfer; that is, if the object is larger than partSize,
 // it will be uploaded or downloaded in concurrent pieces of size partSize.
 //
-// The default is 32 MiB for downloads. The minimum partSize allowed is 256kib;
-// positive values smaller than that are equivalent to setting partSize to 256kib.
+// The default is 32 MiB for downloads.
 //
 // To turn off sharding, set partSize to 0.
 //
 // Note that files that support decompressive transcoding will be downloaded in
 // a single piece regardless of the partSize set here.
 func WithPartSize(partSize int64) Option {
-	minimumPartSize := int64(256 * 1024)
-	if partSize > 0 && partSize < minimumPartSize {
-		partSize = minimumPartSize
-	}
-
 	return &withPartSize{partSize: partSize}
 }
 
