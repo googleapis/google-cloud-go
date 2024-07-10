@@ -108,6 +108,14 @@ var (
 	// PublisherOutstandingBytes is a measure of the number of bytes all outstanding publish messages held by the client take up.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	PublisherOutstandingBytes = stats.Int64(statsPrefix+"publisher_outstanding_bytes", "Number of outstanding publish bytes", stats.UnitDimensionless)
+
+	// SubscriberFlowControlMessages is a measure of the number of messages stuck in flow control.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	SubscriberFlowControlMessages = stats.Int64(statsPrefix+"subscriber_flow_controlled_messages", "Number of flow controlled subscriber Pub/Sub messages", stats.UnitDimensionless)
+
+	// SubscriberFlowControlBytes is a measure of the number of outstanding messages held by the client before they are processed.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	SubscriberFlowControlBytes = stats.Int64(statsPrefix+"subscriber_flow_controlled_bytes", "Measure of flow controlled bytes of subscriber Pub/Sub messages", stats.UnitBytes)
 )
 
 var (
@@ -170,6 +178,14 @@ var (
 	// PublisherOutstandingBytesView is the last value of OutstandingBytes
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	PublisherOutstandingBytesView *view.View
+
+	// SubscriberFlowControlMessagesView is the last value of messages stuck in sub flow control.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	SubscriberFlowControlMessagesView *view.View
+
+	// SubscriberFlowControlBytesView is the last value of bytes stuck in sub flow control.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	SubscriberFlowControlBytesView *view.View
 )
 
 func init() {
@@ -188,6 +204,8 @@ func init() {
 	StreamResponseCountView = createCountView(StreamResponseCount, keySubscription)
 	OutstandingMessagesView = createLastValueView(OutstandingMessages, keySubscription)
 	OutstandingBytesView = createLastValueView(OutstandingBytes, keySubscription)
+	SubscriberFlowControlMessagesView = createLastValueView(SubscriberFlowControlMessages, keySubscription)
+	SubscriberFlowControlBytesView = createLastValueView(SubscriberFlowControlBytes, keySubscription)
 
 	DefaultPublishViews = []*view.View{
 		PublishedMessagesView,
@@ -208,6 +226,8 @@ func init() {
 		StreamResponseCountView,
 		OutstandingMessagesView,
 		OutstandingBytesView,
+		SubscriberFlowControlMessagesView,
+		SubscriberFlowControlBytesView,
 	}
 }
 

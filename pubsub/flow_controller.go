@@ -83,6 +83,10 @@ type flowController struct {
 	bytesRemaining int64
 	limitBehavior  LimitExceededBehavior
 	purpose        flowControllerPurpose
+
+	// Represents messages to acquire but is blocked.
+	countAttempted int64
+	bytesAttempted int64
 }
 
 // newFlowController creates a new flowController that ensures no more than

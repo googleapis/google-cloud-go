@@ -21,6 +21,7 @@ import (
 	"io"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"cloud.google.com/go/iam"
@@ -1342,6 +1343,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	ctx2, cancel2 := context.WithCancel(gctx)
 	defer cancel2()
 
+	var countAttempted, bytesAttempted int64
+
 	for i := 0; i < numGoroutines; i++ {
 		// The iterator does not use the context passed to Receive. If it did,
 		// canceling that context would immediately stop the iterator without
@@ -1411,6 +1414,18 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 				default:
 				}
 
+				for _, msg := range msgs {
+					if fc.purpose == flowControllerPurposeSubscription {
+						if fc.semCount != nil {
+							atomic.AddInt64(&countAttempted, 1)
+						}
+						if fc.semSize != nil {
+							atomic.AddInt64(&bytesAttempted, int64(len(msg.Data)))
+						}
+					}
+				}
+				recordStat(ctx, SubscriberFlowControlMessages, atomic.LoadInt64(&countAttempted))
+				recordStat(ctx, SubscriberFlowControlBytes, atomic.LoadInt64(&bytesAttempted))
 				for i, msg := range msgs {
 					msg := msg
 					iter.eoMu.RLock()
@@ -1446,6 +1461,14 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					}
 					if iter.enableTracing && messageSampled {
 						ccSpan.End()
+					}
+					if fc.semCount != nil {
+						messages := atomic.AddInt64(&countAttempted, -1)
+						recordStat(ctx, SubscriberFlowControlMessages, messages)
+					}
+					if fc.semSize != nil {
+						bytes := atomic.AddInt64(&bytesAttempted, -1*int64(len(msg.Data)))
+						recordStat(ctx, SubscriberFlowControlBytes, bytes)
 					}
 
 					wg.Add(1)
