@@ -88,7 +88,11 @@ func setGAPICClient[ClientType sgci](ctx context.Context, pf *ClientType, conf c
 	if err != nil {
 		return err
 	}
-	c.SetGoogleClientInfo("gccl", internal.Version)
+	kvs := []string{"gccl", internal.Version}
+	if conf.ciKey != "" && conf.ciValue != "" {
+		kvs = append(kvs, conf.ciKey, conf.ciValue)
+	}
+	c.SetGoogleClientInfo(kvs...)
 	*pf = c
 	return nil
 }
