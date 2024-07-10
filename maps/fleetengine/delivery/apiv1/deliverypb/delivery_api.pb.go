@@ -22,9 +22,6 @@ package deliverypb
 
 import (
 	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	viewport "google.golang.org/genproto/googleapis/geo/type/viewport"
 	grpc "google.golang.org/grpc"
@@ -33,6 +30,8 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -1739,9 +1738,9 @@ type DeliveryServiceClient interface {
 	GetDeliveryVehicle(ctx context.Context, in *GetDeliveryVehicleRequest, opts ...grpc.CallOption) (*DeliveryVehicle, error)
 	// Writes updated `DeliveryVehicle` data to Fleet Engine, and assigns
 	// `Tasks` to the `DeliveryVehicle`. You cannot update the name of the
-	// `DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`
-	// though, but it must contain all of the `VehicleJourneySegment`s currently
-	// on the `DeliveryVehicle`. The `task_id`s are retrieved from
+	// `DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`,
+	// but it must contain all of the `VehicleJourneySegment`s to be persisted on
+	// the `DeliveryVehicle`. The `task_id`s are retrieved from
 	// `remaining_vehicle_journey_segments`, and their corresponding `Tasks` are
 	// assigned to the `DeliveryVehicle` if they have not yet been assigned.
 	UpdateDeliveryVehicle(ctx context.Context, in *UpdateDeliveryVehicleRequest, opts ...grpc.CallOption) (*DeliveryVehicle, error)
@@ -1867,9 +1866,9 @@ type DeliveryServiceServer interface {
 	GetDeliveryVehicle(context.Context, *GetDeliveryVehicleRequest) (*DeliveryVehicle, error)
 	// Writes updated `DeliveryVehicle` data to Fleet Engine, and assigns
 	// `Tasks` to the `DeliveryVehicle`. You cannot update the name of the
-	// `DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`
-	// though, but it must contain all of the `VehicleJourneySegment`s currently
-	// on the `DeliveryVehicle`. The `task_id`s are retrieved from
+	// `DeliveryVehicle`. You *can* update `remaining_vehicle_journey_segments`,
+	// but it must contain all of the `VehicleJourneySegment`s to be persisted on
+	// the `DeliveryVehicle`. The `task_id`s are retrieved from
 	// `remaining_vehicle_journey_segments`, and their corresponding `Tasks` are
 	// assigned to the `DeliveryVehicle` if they have not yet been assigned.
 	UpdateDeliveryVehicle(context.Context, *UpdateDeliveryVehicleRequest) (*DeliveryVehicle, error)
