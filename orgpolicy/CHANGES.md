@@ -1,5 +1,12 @@
 # Changes
 
+## [1.12.6](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.12.5...orgpolicy/v1.12.6) (2024-07-10)
+
+
+### Bug Fixes
+
+* **orgpolicy:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.12.5](https://github.com/googleapis/google-cloud-go/compare/orgpolicy/v1.12.4...orgpolicy/v1.12.5) (2024-07-01)
 
 
