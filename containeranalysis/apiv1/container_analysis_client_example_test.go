@@ -20,8 +20,8 @@ import (
 	"context"
 
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1"
-	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1"
 	"cloud.google.com/go/iam/apiv1/iampb"
+	containeranalysispb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1"
 )
 
 func ExampleNewClient() {

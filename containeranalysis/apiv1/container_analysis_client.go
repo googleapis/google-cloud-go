@@ -35,9 +35,9 @@ import (
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	SetIamPolicy       []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
+	SetIamPolicy                       []gax.CallOption
+	GetIamPolicy                       []gax.CallOption
+	TestIamPermissions                 []gax.CallOption
 	GetVulnerabilityOccurrencesSummary []gax.CallOption
 }
 
