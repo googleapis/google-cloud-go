@@ -1,5 +1,12 @@
 # Changes
 
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.0...redis/v1.16.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **redis:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.15.0...redis/v1.16.0) (2024-06-05)
 
 

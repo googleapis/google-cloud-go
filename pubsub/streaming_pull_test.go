@@ -318,14 +318,15 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	}
 }
 
-func TestStreamingPullFlowControl(t *testing.T) {
-	// Callback invocations should not occur if flow control limits are exceeded.
+func TestStreamingPullConcurrencyControl(t *testing.T) {
+	// Callback invocations should not occur if concurrency control limits are exceeded.
 	client, server := newMock(t)
 	defer server.srv.Close()
 	defer client.Close()
 	server.addStreamingPullMessages(testMessages)
 	sub := client.Subscription("S")
 	sub.ReceiveSettings.MaxOutstandingMessages = 2
+	sub.ReceiveSettings.MaxCallbacks = 2
 	ctx, cancel := context.WithCancel(context.Background())
 	activec := make(chan int)
 	waitc := make(chan int)
@@ -337,7 +338,7 @@ func TestStreamingPullFlowControl(t *testing.T) {
 			m.Ack()
 		})
 	}()
-	// Here, two callbacks are active. Receive should be blocked in the flow
+	// Here, two callbacks are active. Receive should be blocked in the concurrency
 	// control acquire method on the third message.
 	for i := 0; i < 2; i++ {
 		select {

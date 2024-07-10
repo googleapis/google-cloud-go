@@ -1,5 +1,12 @@
 # Changes
 
+## [1.13.7](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.13.6...eventarc/v1.13.7) (2024-06-26)
+
+
+### Bug Fixes
+
+* **eventarc:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.13.6](https://github.com/googleapis/google-cloud-go/compare/eventarc/v1.13.5...eventarc/v1.13.6) (2024-05-01)
 
 

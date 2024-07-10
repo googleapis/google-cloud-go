@@ -28,6 +28,7 @@ import (
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
+	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
@@ -58,6 +59,10 @@ type Subscription struct {
 	// This is configured at client instantiation, and allows
 	// disabling of tracing even when a tracer provider is detected.
 	enableTracing bool
+	// clientID to be used across all streaming pull connections that are created.
+	// This indicates to the server that any guarantees made for a stream that
+	// disconnected will be made for the stream that is created to replace it.
+	clientID string
 }
 
 // Subscription creates a reference to a subscription.
@@ -76,6 +81,7 @@ func newSubscription(c *Client, name string) *Subscription {
 		name:            name,
 		ReceiveSettings: DefaultReceiveSettings,
 		enableTracing:   c.enableTracing,
+		clientID:        uuid.NewString(),
 	}
 }
 
@@ -897,11 +903,13 @@ type ReceiveSettings struct {
 	// which will be added in a future release.
 	MinExtensionPeriod time.Duration
 
-	// MaxOutstandingMessages is the maximum number of unprocessed messages
-	// (unacknowledged but not yet expired). If MaxOutstandingMessages is 0, it
+	// MaxOutstandingMessages is the maximum number of messages to pull from the server
+	// via a single stream. If MaxOutstandingMessages is 0, it
 	// will be treated as if it were DefaultReceiveSettings.MaxOutstandingMessages.
 	// If the value is negative, then there will be no limit on the number of
-	// unprocessed messages.
+	// messages pulled.
+	// This does not configure the number of messages processed concurrently,
+	// for that use MaxCallbacks.
 	MaxOutstandingMessages int
 
 	// MaxOutstandingBytes is the maximum size of unprocessed messages
@@ -945,6 +953,13 @@ type ReceiveSettings struct {
 	// Synchronous to false.
 	// Synchronous mode does not work with exactly once delivery.
 	Synchronous bool
+
+	// MaxCallbacks configures the maximum number of callbacks invoked at once.
+	// If MaxCallbacks is 0, the value will be a multiplier of MaxOutstandingMessages.
+	// If the value is negative, then there will be no limit on the number of
+	// callbacks invoked concurrently.
+	// It is EXPERIMENTAL and subject to change or removal without notice.
+	MaxCallbacks int
 }
 
 // For synchronous receive, the time to wait if we are already processing
@@ -1251,13 +1266,17 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
 	// TODO(hongalex): move settings check to a helper function to make it more testable
-	maxCount := s.ReceiveSettings.MaxOutstandingMessages
-	if maxCount == 0 {
-		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
+	serverMaxMessages := s.ReceiveSettings.MaxOutstandingMessages
+	if serverMaxMessages == 0 {
+		serverMaxMessages = DefaultReceiveSettings.MaxOutstandingMessages
 	}
 	maxBytes := s.ReceiveSettings.MaxOutstandingBytes
 	if maxBytes == 0 {
 		maxBytes = DefaultReceiveSettings.MaxOutstandingBytes
+	}
+	maxCallbacks := s.ReceiveSettings.MaxCallbacks
+	if maxCallbacks == 0 {
+		maxCallbacks = 2 * serverMaxMessages
 	}
 	maxExt := s.ReceiveSettings.MaxExtension
 	if maxExt == 0 {
@@ -1289,19 +1308,22 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxExtension:           maxExt,
 		maxExtensionPeriod:     maxExtPeriod,
 		minExtensionPeriod:     minExtPeriod,
-		maxPrefetch:            trunc32(int64(maxCount)),
+		maxPrefetch:            trunc32(int64(serverMaxMessages)),
 		synchronous:            s.ReceiveSettings.Synchronous,
-		maxOutstandingMessages: maxCount,
+		maxOutstandingMessages: serverMaxMessages,
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
+		clientID:               s.clientID,
 	}
 	fc := newSubscriptionFlowController(FlowControlSettings{
-		MaxOutstandingMessages: maxCount,
-		MaxOutstandingBytes:    maxBytes,
-		LimitExceededBehavior:  FlowControlBlock,
+		MaxOutstandingMessages: maxCallbacks,
+		// TODO(hongalex): introduce client side setting for this, relegating
+		// maxBytes for server side flow control only.
+		MaxOutstandingBytes:   maxBytes,
+		LimitExceededBehavior: FlowControlBlock,
 	})
 
-	sched := scheduler.NewReceiveScheduler(maxCount)
+	sched := scheduler.NewReceiveScheduler(maxCallbacks)
 
 	// Wait for all goroutines started by Receive to return, so instead of an
 	// obscure goroutine leak we have an obvious blocked call to Receive.
@@ -1514,4 +1536,5 @@ type pullOptions struct {
 	maxOutstandingMessages int
 	maxOutstandingBytes    int
 	useLegacyFlowControl   bool
+	clientID               string
 }
