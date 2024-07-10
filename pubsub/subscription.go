@@ -1396,7 +1396,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					return nil
 				default:
 				}
-				fmt.Printf("iter got %d messages\n", len(msgs))
 				for i, msg := range msgs {
 					msg := msg
 					// TODO(jba): call acquire closer to when the message is allocated.
