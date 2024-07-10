@@ -2,6 +2,13 @@
 
 
 
+## [1.0.2](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.0.1...backupdr/v1.0.2) (2024-07-10)
+
+
+### Bug Fixes
+
+* **backupdr:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.0.1](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.0.0...backupdr/v1.0.1) (2024-07-01)
 
 

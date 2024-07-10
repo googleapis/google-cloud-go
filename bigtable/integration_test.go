@@ -4126,6 +4126,20 @@ func TestIntegration_TestUpdateColumnFamilyValueType(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to update value type of family: %v", err)
 	}
+
+	table, err := adminClient.TableInfo(ctx, tblConf.TableID)
+	if err != nil {
+		t.Fatalf("Failed to get table info: %v", err)
+	}
+	if len(table.FamilyInfos) != 0 {
+		t.Fatalf("Unexpected number of family infos. Got %d, want %d", len(table.FamilyInfos), 0)
+	}
+	if table.FamilyInfos[0].Name != "cf" {
+		t.Errorf("Unexpected family name. Got %q, want %q", table.FamilyInfos[0].Name, "cf")
+	}
+	if _, ok := table.FamilyInfos[0].ValueType.proto().GetKind().(*btapb.Type_StringType); !ok {
+		t.Errorf("Unexpected value type. Got %T, want *btapb.Type_StringType", table.FamilyInfos[0].ValueType.proto().GetKind())
+	}
 }
 
 // TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.

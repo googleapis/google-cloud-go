@@ -1,5 +1,12 @@
 # Changes
 
+## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/security/v1.17.2...security/v1.17.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **security:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/security/v1.17.1...security/v1.17.2) (2024-07-01)
 
 

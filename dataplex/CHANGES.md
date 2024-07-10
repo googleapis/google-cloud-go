@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.18.0...dataplex/v1.18.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* **dataplex:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.17.0...dataplex/v1.18.0) (2024-07-01)
 
 

@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.9](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.8...clouddms/v1.7.9) (2024-07-10)
+
+
+### Bug Fixes
+
+* **clouddms:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.7.8](https://github.com/googleapis/google-cloud-go/compare/clouddms/v1.7.7...clouddms/v1.7.8) (2024-07-01)
 
 
