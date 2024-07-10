@@ -945,6 +945,7 @@ type ReceiveSettings struct {
 	// If MaxCallbacks is 0, the value will be a multiplier of MaxOutstandingMessages.
 	// If the value is negative, then there will be no limit on the number of
 	// callbacks invoked concurrently.
+	//
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	MaxCallbacks int
 }
@@ -1395,8 +1396,12 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					return nil
 				default:
 				}
+				fmt.Printf("iter got %d messages\n", len(msgs))
 				for i, msg := range msgs {
 					msg := msg
+					// TODO(jba): call acquire closer to when the message is allocated.
+					recordStat(ctx, FlowControlledMessages, 1)
+					recordStat(ctx, FlowControlledBytes, int64(len(msg.Data)))
 					if err := fc.acquire(ctx, len(msg.Data)); err != nil {
 						// TODO(jba): test that these "orphaned" messages are nacked immediately when ctx is done.
 						for _, m := range msgs[i:] {
@@ -1405,6 +1410,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
+
 					iter.eoMu.RLock()
 					msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
