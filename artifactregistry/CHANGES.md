@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.12](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.11...artifactregistry/v1.14.12) (2024-07-10)
+
+
+### Bug Fixes
+
+* **artifactregistry:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.14.11](https://github.com/googleapis/google-cloud-go/compare/artifactregistry/v1.14.10...artifactregistry/v1.14.11) (2024-07-01)
 
 

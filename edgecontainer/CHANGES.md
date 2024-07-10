@@ -1,6 +1,13 @@
 # Changelog
 
 
+## [1.2.4](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.2.3...edgecontainer/v1.2.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **edgecontainer:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/edgecontainer/v1.2.2...edgecontainer/v1.2.3) (2024-07-01)
 
 

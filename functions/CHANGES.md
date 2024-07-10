@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.16.5](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.4...functions/v1.16.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* **functions:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.16.4](https://github.com/googleapis/google-cloud-go/compare/functions/v1.16.3...functions/v1.16.4) (2024-07-01)
 
 

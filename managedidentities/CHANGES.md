@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.10](https://github.com/googleapis/google-cloud-go/compare/managedidentities/v1.6.9...managedidentities/v1.6.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **managedidentities:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [1.6.9](https://github.com/googleapis/google-cloud-go/compare/managedidentities/v1.6.8...managedidentities/v1.6.9) (2024-07-01)
 
 
