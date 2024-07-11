@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.8](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.7...apigeeregistry/v0.8.8) (2024-07-10)
+
+
+### Bug Fixes
+
+* **apigeeregistry:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [0.8.7](https://github.com/googleapis/google-cloud-go/compare/apigeeregistry/v0.8.6...apigeeregistry/v0.8.7) (2024-07-01)
 
 
