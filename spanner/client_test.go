@@ -3958,49 +3958,49 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 }
 
-func TestClient_WithEndToEndTracingHeader(t *testing.T) {
+func TestClient_WithServerSideTracingHeader(t *testing.T) {
 	t.Parallel()
 
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
-	wantEndToEndTracing := true
-	config := ClientConfig{EnableEndToEndTracing: wantEndToEndTracing}
+	wantServerSideTracing := true
+	config := ClientConfig{EnableServerSideTracing: wantServerSideTracing}
 	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
-	gotEndToEndTracing := false
-	for _, val := range client.sc.md.Get(endToEndTracingHeader) {
+	gotServerSideTracing := false
+	for _, val := range client.sc.md.Get(serverSideTracingHeader) {
 		if val == "true" {
-			gotEndToEndTracing = true
+			gotServerSideTracing = true
 		}
 	}
-	if gotEndToEndTracing != wantEndToEndTracing {
-		t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, wantEndToEndTracing)
+	if gotServerSideTracing != wantServerSideTracing {
+		t.Fatalf("mismatch in client configuration for property EnableServerSideTracing: got %v, want %v", gotServerSideTracing, wantServerSideTracing)
 	}
 }
 
-func TestClient_WithoutEndToEndTracingHeader(t *testing.T) {
+func TestClient_WithoutServerSideTracingHeader(t *testing.T) {
 	t.Parallel()
 
 	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
 	defer serverTeardown()
 
-	wantEndToEndTracing := false
-	config := ClientConfig{EnableEndToEndTracing: wantEndToEndTracing}
+	wantServerSideTracing := false
+	config := ClientConfig{EnableServerSideTracing: wantServerSideTracing}
 	client, err := makeClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", config, server.ServerAddress, opts...)
 	if err != nil {
 		t.Fatalf("failed to get a client: %v", err)
 	}
-	gotEndToEndTracing := false
-	for _, val := range client.sc.md.Get(endToEndTracingHeader) {
+	gotServerSideTracing := false
+	for _, val := range client.sc.md.Get(serverSideTracingHeader) {
 		if val == "true" {
-			gotEndToEndTracing = true
+			gotServerSideTracing = true
 		}
 	}
-	if gotEndToEndTracing != wantEndToEndTracing {
-		t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotEndToEndTracing, wantEndToEndTracing)
+	if gotServerSideTracing != wantServerSideTracing {
+		t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotServerSideTracing, wantServerSideTracing)
 	}
 }
 
