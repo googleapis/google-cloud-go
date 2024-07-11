@@ -376,7 +376,6 @@ func (s *session) recycle() {
 		// session pool currently has enough open sessions.
 		s.pool.mu.Unlock()
 		s.destroy(false, true)
-		return
 	}
 	s.pool.decNumInUseLocked(context.Background())
 	s.pool.mu.Unlock()
@@ -1464,12 +1463,12 @@ func (hc *healthChecker) healthCheck(s *session) {
 	defer hc.markDone(s)
 	if !s.pool.isValid() {
 		// Session pool is closed, perform a garbage collection.
-		s.destroy(false, true)
+		s.destroy(false, false)
 		return
 	}
 	if err := s.ping(); isSessionNotFoundError(err) {
 		// Ping failed, destroy the session.
-		s.destroy(false, true)
+		s.destroy(false, false)
 	}
 }
 
