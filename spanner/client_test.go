@@ -4000,7 +4000,7 @@ func TestClient_WithoutServerSideTracingHeader(t *testing.T) {
 		}
 	}
 	if gotServerSideTracing != wantServerSideTracing {
-		t.Fatalf("mismatch in client configuration for property EnableEndToEndTracing: got %v, want %v", gotServerSideTracing, wantServerSideTracing)
+		t.Fatalf("mismatch in client configuration for property EnableServerSideTracing: got %v, want %v", gotServerSideTracing, wantServerSideTracing)
 	}
 }
 
