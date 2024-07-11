@@ -12,24 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package support
+//go:build linux
+
+package metadata
 
 import (
-	"reflect"
-	"strconv"
-	"testing"
+	"os"
+	"strings"
 )
 
-func TestTransformMapValues(t *testing.T) {
-	var from map[string]int
-	got := TransformMapValues(from, strconv.Itoa)
-	if got != nil {
-		t.Fatalf("got %v, want nil", got)
-	}
-	from = map[string]int{"one": 1, "two": 2}
-	got = TransformMapValues(from, strconv.Itoa)
-	want := map[string]string{"one": "1", "two": "2"}
-	if !reflect.DeepEqual(got, want) {
-		t.Errorf("got %v, want %v", got, want)
-	}
+func systemInfoSuggestsGCE() bool {
+	b, _ := os.ReadFile("/sys/class/dmi/id/product_name")
+	name := strings.TrimSpace(string(b))
+	return name == "Google" || name == "Google Compute Engine"
 }

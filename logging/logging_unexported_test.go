@@ -86,10 +86,11 @@ func TestLoggerCreation(t *testing.T) {
 		BufferedByteLimit:    DefaultBufferedByteLimit,
 	}
 	for _, test := range []struct {
-		options         []LoggerOption
-		wantLogger      *Logger
-		defaultResource bool
-		wantBundler     *bundler.Bundler
+		options              []LoggerOption
+		wantLogger           *Logger
+		defaultResource      bool
+		wantBundler          *bundler.Bundler
+		testNoDetectResource bool
 	}{
 		{
 			options:         nil,
@@ -106,12 +107,14 @@ func TestLoggerCreation(t *testing.T) {
 				commonResource: nil,
 				commonLabels:   map[string]string{"a": "1"},
 			},
-			wantBundler: defaultBundler,
+			wantBundler:          defaultBundler,
+			testNoDetectResource: true,
 		},
 		{
-			options:     []LoggerOption{CommonResource(customResource)},
-			wantLogger:  &Logger{commonResource: customResource},
-			wantBundler: defaultBundler,
+			options:              []LoggerOption{CommonResource(customResource)},
+			wantLogger:           &Logger{commonResource: customResource},
+			wantBundler:          defaultBundler,
+			testNoDetectResource: true,
 		},
 		{
 			options: []LoggerOption{
@@ -132,6 +135,16 @@ func TestLoggerCreation(t *testing.T) {
 			},
 		},
 	} {
+		detectResourceMock := func() *mrpb.MonitoredResource {
+			t.Errorf("%v: detectResource was called when it shouldn't be", test.options)
+			return nil
+		}
+		realDetectResourceInternal := detectResourceInternal
+
+		if test.testNoDetectResource {
+			SetDetectResourceInternal(detectResourceMock)
+		}
+
 		gotLogger := c.Logger(logID, test.options...)
 		if got, want := gotLogger.commonResource, test.wantLogger.commonResource; !test.defaultResource && !proto.Equal(got, want) {
 			t.Errorf("%v: resource: got %v, want %v", test.options, got, want)
@@ -153,6 +166,10 @@ func TestLoggerCreation(t *testing.T) {
 		}
 		if got, want := gotLogger.bundler.BufferedByteLimit, test.wantBundler.BufferedByteLimit; got != want {
 			t.Errorf("%v: BufferedByteLimit: got %v, want %v", test.options, got, want)
+		}
+
+		if test.testNoDetectResource {
+			SetDetectResourceInternal(realDetectResourceInternal)
 		}
 	}
 }

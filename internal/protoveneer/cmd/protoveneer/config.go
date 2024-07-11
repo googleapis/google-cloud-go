@@ -26,8 +26,6 @@ import (
 type config struct {
 	Package         string
 	ProtoImportPath string `yaml:"protoImportPath"`
-	// Import path for the support package needed by the generated code.
-	SupportImportPath string `yaml:"supportImportPath"`
 
 	// The types to process. Only these types and the types they depend
 	// on will be output.
@@ -69,6 +67,7 @@ type typeConfig struct {
 type fieldConfig struct {
 	Name string // veneer name
 	Type string // veneer type
+	Doc  string // Doc string for the field. Replaces existing doc.
 	// Omit from output.
 	Omit bool
 	// This field is not part of the proto; add it.
