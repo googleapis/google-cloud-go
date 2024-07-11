@@ -4767,6 +4767,9 @@ func TestIntegration_Reader(t *testing.T) {
 						if got, want := rc.ContentType(), "text/plain"; got != want {
 							t.Errorf("ContentType (%q) = %q; want %q", obj, got, want)
 						}
+						if got, want := rc.Attrs.CRC32C, crc32c(contents[obj]); got != want {
+							t.Errorf("CRC32C (%q) = %d; want %d", obj, got, want)
+						}
 						rc.Close()
 
 						// Check early close.
@@ -4830,6 +4833,10 @@ func TestIntegration_Reader(t *testing.T) {
 						}
 						if len(slurp) != int(r.want) {
 							t.Fatalf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", r.desc, r.offset, r.length, len(slurp), r.want)
+						}
+
+						if got, want := rc.Attrs.CRC32C, crc32c(contents[obj]); got != want {
+							t.Errorf("RangeReader CRC32C (%q) = %d; want %d", obj, got, want)
 						}
 
 						switch {
@@ -4912,6 +4919,7 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 			LastModified:    got.LastModified, // ignored, tested separately
 			Generation:      attrs.Generation,
 			Metageneration:  attrs.Metageneration,
+			CRC32C:          crc32c(c),
 		}
 		if got != want {
 			t.Fatalf("got\t%v,\nwanted\t%v", got, want)
@@ -6349,4 +6357,8 @@ func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object 
 			t.Logf("could not delete object: %v", err)
 		}
 	})
+}
+
+func crc32c(b []byte) uint32 {
+	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
 }

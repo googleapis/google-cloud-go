@@ -65,6 +65,10 @@ type ReaderObjectAttrs struct {
 	// meaningful in the context of a particular generation of a
 	// particular object.
 	Metageneration int64
+
+	// CRC32C is the CRC32 checksum of the entire object's content using the
+	// Castagnoli93 polynomial.
+	CRC32C uint32
 }
 
 // NewReader creates a new Reader to read the contents of the
