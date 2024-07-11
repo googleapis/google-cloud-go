@@ -165,8 +165,8 @@ When Entry with an [http.Request] is logged, its Trace, SpanID, and TraceSampled
  2. Trace, SpanID, and TraceSampled fields will be populated from information from the http.Request's [W3C Traceparent]
     or [X-Cloud-Trace-Context] headers, if those headers exist.
 
-Note that if Trace, SpanID, or TraceSampled are explicitly provided within an Entry object, those values will take precedence over values automatically
-extracted from the aforementioned process.
+Note that if Trace, SpanID, or TraceSampled are explicitly provided within an Entry object, then those values take precedence over values automatically
+extracted values.
 
 [http.Request]: https://pkg.go.dev/net/http#Request
 [OpenTelemetry]: https://opentelemetry.io/docs/languages/go/
