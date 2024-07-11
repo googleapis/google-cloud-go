@@ -1,5 +1,12 @@
 # Changes
 
+## [0.3.8](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.7...grafeas/v0.3.8) (2024-07-10)
+
+
+### Bug Fixes
+
+* **grafeas:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
 ## [0.3.7](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.3.6...grafeas/v0.3.7) (2024-07-01)
 
 
