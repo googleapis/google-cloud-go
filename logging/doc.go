@@ -147,7 +147,7 @@ You should observe the child log entries grouped under the parent on the console
 parent entry will not inherit the severity of its children; you must update the
 parent severity yourself.
 
-# Automatic Metadata Extraction
+# Automatic Trace/Span ID Extraction
 
 You can automatically populate the Trace, SpanID, and TraceSampled fields of an Entry object by providing an [http.Request] object
 within the Entry's HTTPRequest field:
@@ -160,8 +160,8 @@ within the Entry's HTTPRequest field:
 
 When Entry with an [http.Request] is logged, its Trace, SpanID, and TraceSampled fields may be automatically populated as follows:
 
- 1. If you are instrumenting your application with [OpenTelemetry] and your http.Request's Context contains an [OpenTelemetry span context],
-    the Entry's Trace, SpanID, and TraceSampled will be populated with information from that span context.
+ 1. If you are instrumenting your application with [OpenTelemetry],
+    the Entry's Trace, SpanID, and TraceSampled will be populated with information from the [http.Request]'s span context.
  2. Trace, SpanID, and TraceSampled fields will be populated from information from the http.Request's [W3C Traceparent]
     or [X-Cloud-Trace-Context] headers, if those headers exist.
 
@@ -170,8 +170,9 @@ extracted values.
 
 [http.Request]: https://pkg.go.dev/net/http#Request
 [OpenTelemetry]: https://opentelemetry.io/docs/languages/go/
-[OpenTelemetry span context]: https://pkg.go.dev/go.opentelemetry.io/otel/trace#SpanContext
 [W3C Traceparent]: https://www.w3.org/TR/trace-context
 [X-Cloud-Trace-Context]: https://cloud.google.com/trace/docs/trace-context#legacy-http-header
+
+[OpenTelemetry span context]: https://pkg.go.dev/go.opentelemetry.io/otel/trace#SpanContext
 */
 package logging // import "cloud.google.com/go/logging"
