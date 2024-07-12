@@ -517,3 +517,5 @@ replace cloud.google.com/go/managedkafka => ../../../managedkafka
 replace cloud.google.com/go/developerconnect => ../../../developerconnect
 
 replace cloud.google.com/go/networkservices => ../../../networkservices
+
+replace cloud.google.com/go/privilegedaccessmanager => ../../../privilegedaccessmanager
