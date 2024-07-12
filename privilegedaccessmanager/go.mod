@@ -1,8 +1,6 @@
 module cloud.google.com/go/privilegedaccessmanager
 
-go 1.21
-
-toolchain go1.21.11
+go 1.20
 
 require (
 	cloud.google.com/go/longrunning v0.5.10
