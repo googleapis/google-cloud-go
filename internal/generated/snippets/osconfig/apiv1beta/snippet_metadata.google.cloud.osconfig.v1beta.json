@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/osconfig/apiv1beta",
-    "version": "$VERSION",
+    "version": "1.13.1",
     "language": "GO",
     "apis": [
       {
