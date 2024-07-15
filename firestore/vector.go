@@ -1,0 +1,121 @@
+// Copyright 2024 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+package firestore
+
+import (
+	"fmt"
+
+	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
+)
+
+const (
+	typeKey       = "__type__"
+	typeValVector = "__vector__"
+	valueKey      = "value"
+)
+
+// VectorType represpresents a vector
+type VectorType interface {
+	isVectorType()
+}
+
+// Vector represents a vector in the form of a float64 array
+type Vector []float64
+
+func (Vector) isVectorType() {}
+
+// vectorToProtoValue returns a Firestore [pb.Value] representing the Vector.
+func vectorToProtoValue(v Vector) *pb.Value {
+	if v == nil {
+		return nullValue
+	}
+	pbVals := make([]*pb.Value, len(v))
+	for i, val := range v {
+		pbVals[i] = floatToProtoValue(float64(val))
+	}
+
+	return &pb.Value{
+		ValueType: &pb.Value_MapValue{
+			MapValue: &pb.MapValue{
+				Fields: map[string]*pb.Value{
+					typeKey: stringToProtoValue(typeValVector),
+					valueKey: {
+						ValueType: &pb.Value_ArrayValue{
+							ArrayValue: &pb.ArrayValue{Values: pbVals},
+						},
+					},
+				},
+			},
+		},
+	}
+}
+
+func vectorFromProtoValue(v *pb.Value) (Vector, error) {
+	/*
+		Vector is stored as:
+		{
+			"__type__": "__vector__",
+			"value": []float64{},
+		}
+		but needs to be returned as firestore.Vector to the user
+	*/
+	if v == nil {
+		return nil, nil
+	}
+	pbMap, ok := v.ValueType.(*pb.Value_MapValue)
+	if !ok {
+		return nil, fmt.Errorf("firestore: cannot convert %v to *pb.Value_MapValue", v.ValueType)
+	}
+	m := pbMap.MapValue.Fields
+	var typeVal string
+	typeVal, err := stringFromProtoValue(m[typeKey])
+	if err != nil {
+		return nil, err
+	}
+	if typeVal != typeValVector {
+		return nil, fmt.Errorf("firestore: value of %v : %v is not %v", typeKey, typeVal, typeValVector)
+	}
+	pbVal, ok := m[valueKey]
+	if !ok {
+		return nil, fmt.Errorf("firestore: %v not present in %v", valueKey, m)
+	}
+
+	pbArr, ok := pbVal.ValueType.(*pb.Value_ArrayValue)
+	if !ok {
+		return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_ArrayValue", pbVal.ValueType)
+	}
+
+	pbArrVals := pbArr.ArrayValue.Values
+	floats := make([]float64, len(pbArrVals))
+	for i, fval := range pbArrVals {
+		dv, ok := fval.ValueType.(*pb.Value_DoubleValue)
+		if !ok {
+			return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_DoubleValue", fval.ValueType)
+		}
+		floats[i] = float64(dv.DoubleValue)
+	}
+	return Vector(floats), nil
+}
+
+func stringFromProtoValue(v *pb.Value) (string, error) {
+	if v == nil {
+		return "", fmt.Errorf("firestore: failed to convert %v to string", v)
+	}
+	sv, ok := v.ValueType.(*pb.Value_StringValue)
+	if !ok {
+		return "", fmt.Errorf("firestore: failed to convert %v to *pb.Value_StringValue", v.ValueType)
+	}
+	return sv.StringValue, nil
+}

@@ -39,10 +39,6 @@ func setReflectFromProtoValue(vDest reflect.Value, vprotoSrc *pb.Value, c *Clien
 		return fmt.Errorf("firestore: cannot set type %s to %s", vDest.Type(), typeString(vprotoSrc))
 	}
 
-	typeErrWithArgs := func(destType string) error {
-		return fmt.Errorf("firestore: cannot set type %s to %s", destType, typeString(vprotoSrc))
-	}
-
 	valTypeSrc := vprotoSrc.ValueType
 	// A Null value sets anything nullable to nil, and has no effect
 	// on anything else.
@@ -104,45 +100,11 @@ func setReflectFromProtoValue(vDest reflect.Value, vprotoSrc *pb.Value, c *Clien
 		return nil
 
 	case typeOfVector:
-		/*
-			Vector is stored as:
-			{
-				"__type__": "__vector__",
-				"value": []float64{},
-			}
-			but needs to be returned as firestore.Vector to the user
-		*/
-
-		// Convert Firestore proto map from Go map
-		vectorMapDest := map[string]interface{}{}
-		vectorMapDestVal := reflect.ValueOf(vectorMapDest)
-		x, ok := valTypeSrc.(*pb.Value_MapValue)
-		if !ok {
-			// Vector not stored as map in Firestore
-			return typeErrWithArgs("Vector")
-		}
-		err := populateMap(vectorMapDestVal, x.MapValue.Fields, c)
+		vector, err := vectorFromProtoValue(vprotoSrc)
 		if err != nil {
 			return err
 		}
-
-		// Convert value at "value" key to array of floats
-		anyArr, isInterfaceArr := vectorMapDest["value"].([]interface{})
-		if !isInterfaceArr {
-			// value at "value" key is not an array
-			return typeErrWithArgs("Vector")
-		}
-		floats := []float64{}
-		for _, v := range anyArr {
-			// Convert each element of []interface{} to float64
-			floatVal, isFloat := v.(float64)
-			if isFloat {
-				floats = append(floats, floatVal)
-			}
-		}
-
-		// Set Vector in destination
-		vDest.Set(reflect.ValueOf(floats))
+		vDest.Set(reflect.ValueOf(vector))
 		return nil
 	}
 

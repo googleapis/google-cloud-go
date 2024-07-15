@@ -366,27 +366,33 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 	return q.fromProto(&runQueryRequest)
 }
 
-// DistanceMeasure is the distance measure to use when comparing vectors.
+// DistanceMeasure is the distance measure to use when comparing vectors with [Query.FindNearest] or [Query.FindNearestPath].
 type DistanceMeasure int32
 
 const (
-	// Measures the EUCLIDEAN distance between the vectors. See
-	// [Euclidean](https://en.wikipedia.org/wiki/Euclidean_distance) to learn
+	// DistanceMeasureEuclidean is used to measures the Euclidean distance between the vectors. See
+	// [Euclidean] to learn
 	// more
-	DistanceMeasureEuclidean DistanceMeasure = 1
+	//
+	// [Euclidean]: https://en.wikipedia.org/wiki/Euclidean_distance
+	DistanceMeasureEuclidean DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_EUCLIDEAN)
 
-	// Compares vectors based on the angle between them, which allows you to
+	// DistanceMeasureEuclidean compares vectors based on the angle between them, which allows you to
 	// measure similarity that isn't based on the vectors magnitude.
-	// We recommend using DOT_PRODUCT with unit normalized vectors instead of
-	// COSINE distance, which is mathematically equivalent with better
+	// We recommend using dot product with unit normalized vectors instead of
+	// cosine distance, which is mathematically equivalent with better
 	// performance. See [Cosine
-	// Similarity](https://en.wikipedia.org/wiki/Cosine_similarity) to learn
+	// Similarity] to learn
 	// more.
-	DistanceMeasureCosine DistanceMeasure = 2
+	//
+	// [Cosine Similarity]: https://en.wikipedia.org/wiki/Cosine_similarity
+	DistanceMeasureCosine DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_COSINE)
 
-	// Similar to cosine but is affected by the magnitude of the vectors. See
-	// [Dot Product](https://en.wikipedia.org/wiki/Dot_product) to learn more.
-	DistanceMeasureDotProduct DistanceMeasure = 3
+	// DistanceMeasureDotProduct is similar to cosine but is affected by the magnitude of the vectors. See
+	// [Dot Product] to learn more.
+	//
+	// [Dot Product]: https://en.wikipedia.org/wiki/Dot_product)
+	DistanceMeasureDotProduct DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_DOT_PRODUCT)
 )
 
 // FindNearestOpts is options to use while building FindNearest vector query
@@ -403,13 +409,13 @@ type VectorQuery struct {
 // FindNearest returns a query that can perform vector distance (similarity) search with given parameters.
 //
 // The returned query, when executed, performs a distance (similarity) search on the specified
-// 'vectorField' against the given 'queryVector' and returns the top documents that are closest
-// to the 'queryVector;.
+// vectorField against the given queryVector and returns the top documents that are closest
+// to the queryVector;.
 //
-// Only documents whose 'vectorField' field is a Vector of the same dimension as 'queryVector'
+// Only documents whose vectorField field is a Vector of the same dimension as queryVector
 // participate in the query, all other documents are ignored.
 //
-// The 'vectorField' argument can be a single field or a dot-separated sequence of
+// The vectorField argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
 func (q Query) FindNearest(vectorField string, queryVector VectorType, options FindNearestOpts) VectorQuery {
 	vq := VectorQuery{
@@ -425,7 +431,7 @@ func (q Query) FindNearest(vectorField string, queryVector VectorType, options F
 	return q.FindNearestPath(fieldPath, queryVector, options)
 }
 
-// FindNearestPath is similar to FindNearest but accepts field path in the form of array of strings
+// FindNearestPath is similar to FindNearest but it accepts [FieldPath]
 func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector VectorType, options FindNearestOpts) VectorQuery {
 	vq := VectorQuery{
 		Query: q,
