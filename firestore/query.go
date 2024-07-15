@@ -377,7 +377,7 @@ const (
 	// [Euclidean]: https://en.wikipedia.org/wiki/Euclidean_distance
 	DistanceMeasureEuclidean DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_EUCLIDEAN)
 
-	// DistanceMeasureEuclidean compares vectors based on the angle between them, which allows you to
+	// DistanceMeasureCosine compares vectors based on the angle between them, which allows you to
 	// measure similarity that isn't based on the vectors magnitude.
 	// We recommend using dot product with unit normalized vectors instead of
 	// cosine distance, which is mathematically equivalent with better
@@ -403,7 +403,7 @@ type FindNearestOpts struct {
 
 // VectorQuery represents a vector query
 type VectorQuery struct {
-	Query
+	q Query
 }
 
 // FindNearest returns a query that can perform vector distance (similarity) search with given parameters.
@@ -419,41 +419,46 @@ type VectorQuery struct {
 // fields, and must not contain any of the runes "˜*/[]".
 func (q Query) FindNearest(vectorField string, queryVector VectorType, options FindNearestOpts) VectorQuery {
 	vq := VectorQuery{
-		Query: q,
+		q: q,
 	}
 
 	// Validate field path
 	fieldPath, err := parseDotSeparatedString(vectorField)
 	if err != nil {
-		vq.Query.err = err
+		vq.q.err = err
 		return vq
 	}
 	return q.FindNearestPath(fieldPath, queryVector, options)
 }
 
+// Documents returns an iterator over the vector query's resulting documents.
+func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
+	return vq.q.Documents(ctx)
+}
+
 // FindNearestPath is similar to FindNearest but it accepts [FieldPath]
 func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector VectorType, options FindNearestOpts) VectorQuery {
 	vq := VectorQuery{
-		Query: q,
+		q: q,
 	}
 	// Convert field path field reference
 	vectorFieldRef, err := fref(vectorFieldPath)
 	if err != nil {
-		vq.Query.err = err
+		vq.q.err = err
 		return vq
 	}
 
 	pbVal, sawTransform, err := toProtoValue(reflect.ValueOf(queryVector))
 	if err != nil {
-		vq.Query.err = err
+		vq.q.err = err
 		return vq
 	}
 	if sawTransform {
-		vq.Query.err = errors.New("firestore: transforms disallowed in query value")
+		vq.q.err = errors.New("firestore: transforms disallowed in query value")
 		return vq
 	}
 
-	vq.Query.findNearest = &pb.StructuredQuery_FindNearest{
+	vq.q.findNearest = &pb.StructuredQuery_FindNearest{
 		VectorField:     vectorFieldRef,
 		QueryVector:     pbVal,
 		Limit:           &wrapperspb.Int32Value{Value: trunc32(options.Limit)},
