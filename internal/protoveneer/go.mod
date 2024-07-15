@@ -7,8 +7,8 @@ require (
 	github.com/google/go-cmp v0.6.0
 	github.com/googleapis/gax-go/v2 v2.12.5
 	google.golang.org/genproto v0.0.0-20240708141625-4ad9e859172b
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240708141625-4ad9e859172b
-	google.golang.org/grpc v1.64.1
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240711142825-46eb208f015d
+	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 	gopkg.in/yaml.v3 v3.0.1
 )

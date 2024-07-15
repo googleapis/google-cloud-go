@@ -4,16 +4,16 @@ go 1.20
 
 require (
 	cloud.google.com/go v0.115.0
-	cloud.google.com/go/compute/metadata v0.4.0
-	cloud.google.com/go/storage v1.42.0
+	cloud.google.com/go/compute/metadata v0.5.0
+	cloud.google.com/go/storage v1.43.0
 	github.com/golang/mock v1.6.0
-	github.com/google/pprof v0.0.0-20240528025155-186aa0362fba
+	github.com/google/pprof v0.0.0-20240711041743-f6c9dda6c6da
 	github.com/googleapis/gax-go/v2 v2.12.5
 	golang.org/x/oauth2 v0.21.0
 	google.golang.org/api v0.188.0
 	google.golang.org/genproto v0.0.0-20240708141625-4ad9e859172b
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240708141625-4ad9e859172b
-	google.golang.org/grpc v1.64.1
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240711142825-46eb208f015d
+	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 )
 

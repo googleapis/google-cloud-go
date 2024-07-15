@@ -3,13 +3,13 @@ module cloud.google.com/go/lifesciences
 go 1.20
 
 require (
-	cloud.google.com/go/longrunning v0.5.9
+	cloud.google.com/go/longrunning v0.5.10
 	github.com/googleapis/gax-go/v2 v2.12.5
 	google.golang.org/api v0.188.0
 	google.golang.org/genproto v0.0.0-20240708141625-4ad9e859172b
-	google.golang.org/genproto/googleapis/api v0.0.0-20240701130421-f6361c86f094
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240708141625-4ad9e859172b
-	google.golang.org/grpc v1.64.1
+	google.golang.org/genproto/googleapis/api v0.0.0-20240711142825-46eb208f015d
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240711142825-46eb208f015d
+	google.golang.org/grpc v1.65.0
 	google.golang.org/protobuf v1.34.2
 )
 

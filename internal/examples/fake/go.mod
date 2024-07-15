@@ -3,9 +3,9 @@ module cloud.google.com/go/internal/examples/fake
 go 1.20
 
 require (
-	cloud.google.com/go/translate v1.10.3
+	cloud.google.com/go/translate v1.10.6
 	google.golang.org/api v0.188.0
-	google.golang.org/grpc v1.64.1
+	google.golang.org/grpc v1.65.0
 )
 
 require (
@@ -13,7 +13,7 @@ require (
 	cloud.google.com/go/auth v0.7.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
 	cloud.google.com/go/compute/metadata v0.4.0 // indirect
-	cloud.google.com/go/longrunning v0.5.6 // indirect
+	cloud.google.com/go/longrunning v0.5.9 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
