@@ -767,7 +767,7 @@ func (p *sessionPool) recordOTStat(ctx context.Context, m metric.Int64Counter, v
 		for _, attr := range attributes {
 			attrs = append(attrs, attr)
 		}
-		m.Add(ctx, val, metric.WithAttributes(attributes...))
+		m.Add(ctx, val, metric.WithAttributes(attrs...))
 	}
 }
 
@@ -1361,7 +1361,7 @@ func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 	p.recordStat(ctx, AcquiredSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 	if p.otConfig != nil {
-		p.recordOTStat(ctx, p.otConfig.acquiredSessionsCount, 1)
+		p.recordOTStat(ctx, p.otConfig.acquiredSessionsCount, 1, attributeKeyIsMultiplexed.String("false"))
 	}
 	if p.numInUse > p.maxNumInUse {
 		p.maxNumInUse = p.numInUse
