@@ -470,7 +470,8 @@ func testDefaultStreamJSONData(ctx context.Context, t *testing.T, mwClient *Clie
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
 
-	md, descriptorProto := setupDynamicDescriptors(t, testdata.ComplexTypeSchema)
+	defStreamName := fmt.Sprintf("%s/streams/_default", TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID))
+	md, descriptorProto := setupDynamicDescriptors(ctx, t, mwClient, defStreamName)
 
 	ms, err := mwClient.NewManagedStream(ctx,
 		WithDestinationTable(TableParentFromParts(testTable.ProjectID, testTable.DatasetID, testTable.TableID)),
