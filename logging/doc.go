@@ -160,7 +160,7 @@ within the Entry's HTTPRequest field:
 
 When Entry with an [http.Request] is logged, its Trace, SpanID, and TraceSampled fields may be automatically populated as follows:
 
- 1. If you are instrumenting your application with [OpenTelemetry],
+ 1. If you are instrumenting your application with [otelhttp],
     the Entry's Trace, SpanID, and TraceSampled will be populated with information from the [http.Request]'s span context.
  2. Trace, SpanID, and TraceSampled fields will be populated from information from the http.Request's [W3C Traceparent]
     or [X-Cloud-Trace-Context] headers, if those headers exist.
@@ -169,7 +169,7 @@ Note that if Trace, SpanID, or TraceSampled are explicitly provided within an En
 extracted values.
 
 [http.Request]: https://pkg.go.dev/net/http#Request
-[OpenTelemetry]: https://opentelemetry.io/docs/languages/go/
+[otelhttp]: https://pkg.go.dev/go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp
 [W3C Traceparent]: https://www.w3.org/TR/trace-context
 [X-Cloud-Trace-Context]: https://cloud.google.com/trace/docs/trace-context#legacy-http-header
 
