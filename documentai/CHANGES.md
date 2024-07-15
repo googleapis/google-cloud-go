@@ -1,6 +1,41 @@
 # Changes
 
 
+## [1.30.4](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.3...documentai/v1.30.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **documentai:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.30.3](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.2...documentai/v1.30.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **documentai:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.30.2](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.1...documentai/v1.30.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **documentai:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.30.1](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.30.0...documentai/v1.30.1) (2024-06-20)
+
+
+### Documentation
+
+* **documentai:** Update the comment to add a note about `documentai.processors.create` permission ([4fa4308](https://github.com/googleapis/google-cloud-go/commit/4fa43082511e153044084c1e6736553de41a9894))
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.29.0...documentai/v1.30.0) (2024-06-05)
+
+
+### Features
+
+* **documentai:** Make Layout Parser generally available in V1 ([#10286](https://github.com/googleapis/google-cloud-go/issues/10286)) ([92dc381](https://github.com/googleapis/google-cloud-go/commit/92dc381da281197567a2c9eb8dc941292000a3da))
+
 ## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.28.1...documentai/v1.29.0) (2024-05-29)
 
 

@@ -46,7 +46,7 @@ func NewClient(tp auth.TokenProvider) *Client {
 
 // GetProject calls the GET project endpoint.
 func (c *Client) GetProject(ctx context.Context, projectID string) error {
-	req, err := http.NewRequest("GET", fmt.Sprintf("https://dns.googleapis.com/dns/v1/projects/%s", projectID), nil)
+	req, err := http.NewRequestWithContext(ctx, "GET", fmt.Sprintf("https://dns.googleapis.com/dns/v1/projects/%s", projectID), nil)
 	if err != nil {
 		return err
 	}

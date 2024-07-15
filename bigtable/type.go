@@ -24,6 +24,14 @@ type Type interface {
 	proto() *btapb.Type
 }
 
+type unknown[T interface{}] struct {
+	wrapped *T
+}
+
+func (u unknown[T]) proto() *T {
+	return u.wrapped
+}
+
 // BytesEncoding represents the encoding of a Bytes type.
 type BytesEncoding interface {
 	proto() *btapb.Type_Bytes_Encoding
@@ -52,6 +60,36 @@ func (bytes BytesType) proto() *btapb.Type {
 		encoding = RawBytesEncoding{}.proto()
 	}
 	return &btapb.Type{Kind: &btapb.Type_BytesType{BytesType: &btapb.Type_Bytes{Encoding: encoding}}}
+}
+
+// StringEncoding represents the encoding of a String.
+type StringEncoding interface {
+	proto() *btapb.Type_String_Encoding
+}
+
+// StringUtf8Encoding represents a string with UTF-8 encoding.
+type StringUtf8Encoding struct {
+}
+
+func (encoding StringUtf8Encoding) proto() *btapb.Type_String_Encoding {
+	return &btapb.Type_String_Encoding{
+		Encoding: &btapb.Type_String_Encoding_Utf8Raw_{},
+	}
+}
+
+// StringType represents a string
+type StringType struct {
+	Encoding StringEncoding
+}
+
+func (str StringType) proto() *btapb.Type {
+	var encoding *btapb.Type_String_Encoding
+	if str.Encoding != nil {
+		encoding = str.Encoding.proto()
+	} else {
+		encoding = StringUtf8Encoding{}.proto()
+	}
+	return &btapb.Type{Kind: &btapb.Type_StringType{StringType: &btapb.Type_String{Encoding: encoding}}}
 }
 
 // Int64Encoding represents the encoding of an Int64 type.
@@ -112,6 +150,17 @@ func (sum SumAggregator) fillProto(proto *btapb.Type_Aggregate) {
 	proto.Aggregator = &btapb.Type_Aggregate_Sum_{Sum: &btapb.Type_Aggregate_Sum{}}
 }
 
+type unknownAggregator struct {
+	wrapped *btapb.Type_Aggregate
+}
+
+func (ua unknownAggregator) fillProto(proto *btapb.Type_Aggregate) {
+	if ua.wrapped == nil {
+		return
+	}
+	proto.Aggregator = ua.wrapped.Aggregator
+}
+
 // AggregateType represents an aggregate.  See types.proto for more details
 // on aggregate types.
 type AggregateType struct {
@@ -126,4 +175,71 @@ func (agg AggregateType) proto() *btapb.Type {
 
 	agg.Aggregator.fillProto(protoAgg)
 	return &btapb.Type{Kind: &btapb.Type_AggregateType{AggregateType: protoAgg}}
+}
+
+func protoToType(pb *btapb.Type) Type {
+	if pb == nil {
+		return unknown[btapb.Type]{wrapped: nil}
+	}
+
+	switch t := pb.Kind.(type) {
+	case *btapb.Type_Int64Type:
+		return int64ProtoToType(t.Int64Type)
+	case *btapb.Type_BytesType:
+		return bytesProtoToType(t.BytesType)
+	case *btapb.Type_AggregateType:
+		return aggregateProtoToType(t.AggregateType)
+	default:
+		return unknown[btapb.Type]{wrapped: pb}
+	}
+}
+
+func bytesEncodingProtoToType(be *btapb.Type_Bytes_Encoding) BytesEncoding {
+	if be == nil {
+		return unknown[btapb.Type_Bytes_Encoding]{wrapped: be}
+	}
+
+	switch be.Encoding.(type) {
+	case *btapb.Type_Bytes_Encoding_Raw_:
+		return RawBytesEncoding{}
+	default:
+		return unknown[btapb.Type_Bytes_Encoding]{wrapped: be}
+	}
+}
+
+func bytesProtoToType(b *btapb.Type_Bytes) BytesType {
+	return BytesType{Encoding: bytesEncodingProtoToType(b.Encoding)}
+}
+
+func int64EncodingProtoToEncoding(ie *btapb.Type_Int64_Encoding) Int64Encoding {
+	if ie == nil {
+		return unknown[btapb.Type_Int64_Encoding]{wrapped: ie}
+	}
+
+	switch e := ie.Encoding.(type) {
+	case *btapb.Type_Int64_Encoding_BigEndianBytes_:
+		return BigEndianBytesEncoding{Bytes: bytesProtoToType(e.BigEndianBytes.BytesType)}
+	default:
+		return unknown[btapb.Type_Int64_Encoding]{wrapped: ie}
+	}
+}
+
+func int64ProtoToType(i *btapb.Type_Int64) Type {
+	return Int64Type{Encoding: int64EncodingProtoToEncoding(i.Encoding)}
+}
+
+func aggregateProtoToType(agg *btapb.Type_Aggregate) Type {
+	if agg == nil {
+		return AggregateType{Input: nil, Aggregator: unknownAggregator{wrapped: agg}}
+	}
+
+	it := protoToType(agg.InputType)
+	var aggregator Aggregator
+	switch agg.Aggregator.(type) {
+	case *btapb.Type_Aggregate_Sum_:
+		aggregator = SumAggregator{}
+	default:
+		aggregator = unknownAggregator{wrapped: agg}
+	}
+	return AggregateType{Input: it, Aggregator: aggregator}
 }

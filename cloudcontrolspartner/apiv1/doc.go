@@ -20,8 +20,6 @@
 // Provides insights about your customers and their Assured Workloads based
 // on your Sovereign Controls by Partners offering.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

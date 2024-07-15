@@ -1,5 +1,40 @@
 # Changes
 
+## [1.16.3](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.2...redis/v1.16.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **redis:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.16.2](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.1...redis/v1.16.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **redis:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/redis/v1.16.0...redis/v1.16.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **redis:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.15.0...redis/v1.16.0) (2024-06-05)
+
+
+### Features
+
+* **redis/cluster:** [Memorystore for Redis Cluster] Add persistence support ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **redis/cluster:** [Memorystore for Redis Cluster] Add support for different node types ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+* **redis/cluster:** [Memorystore for Redis Cluster] Get details of certificate authority from redis cluster ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
+
+### Documentation
+
+* **redis/cluster:** [Memorystore for Redis Cluster] size_gb field shows the size of the cluster rounded up to the next integer, precise_size_gb field will show the exact size of the cluster ([d5150d3](https://github.com/googleapis/google-cloud-go/commit/d5150d34eabac0218cbd16a9bbdaaaf019cf237d))
+
 ## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/redis/v1.14.4...redis/v1.15.0) (2024-05-16)
 
 

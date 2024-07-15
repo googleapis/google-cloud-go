@@ -1,5 +1,13 @@
 # Changes
 
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.17.0...datastore/v1.17.1) (2024-06-10)
+
+
+### Bug Fixes
+
+* **datastore:** Regenerate protos in new namespace ([#10158](https://github.com/googleapis/google-cloud-go/issues/10158)) ([8875511](https://github.com/googleapis/google-cloud-go/commit/8875511ca0c640d1260248f51c7b88e55136cdc6)), refs [#10155](https://github.com/googleapis/google-cloud-go/issues/10155)
+* **datastore:** Update retry transaction logic to be inline with Spanner ([#10349](https://github.com/googleapis/google-cloud-go/issues/10349)) ([5929a6e](https://github.com/googleapis/google-cloud-go/commit/5929a6e67891b425d33128155af5cc76ecfc87a1))
+
 ## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/datastore/v1.16.0...datastore/v1.17.0) (2024-05-08)
 
 
