@@ -37,6 +37,7 @@ import (
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
 	octrace "go.opencensus.io/trace"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc/codes"
@@ -387,6 +388,11 @@ func (s *session) getNextCheck() time.Time {
 func (s *session) recycle() {
 	s.setTransactionID(nil)
 	s.pool.mu.Lock()
+	if s.isMultiplexed {
+		s.pool.decNumMultiplexedInUseLocked(context.Background())
+		s.pool.mu.Unlock()
+		return
+	}
 	if !s.pool.recycleLocked(s) {
 		// s is rejected by its home session pool because it expired and the
 		// session pool currently has enough open sessions.
@@ -621,9 +627,14 @@ type sessionPool struct {
 	// numInUse is the number of sessions that are currently in use (checked out
 	// from the session pool).
 	numInUse uint64
+	// multiplexedSessionInUse is the number of transactions using multiplexed sessions.
+	multiplexedSessionInUse uint64
 	// maxNumInUse is the maximum number of sessions in use concurrently in the
 	// current 10 minute interval.
 	maxNumInUse uint64
+	// maxMultiplexedSessionInUse is the maximum number of multiplexed sessions in use concurrently in the
+	// current 10 minute interval.
+	maxMultiplexedSessionInUse uint64
 	// lastResetTime is the start time of the window for recording maxNumInUse.
 	lastResetTime time.Time
 	// numSessions is the number of sessions that are idle for read/write.
@@ -750,9 +761,13 @@ func (p *sessionPool) recordStat(ctx context.Context, m *stats.Int64Measure, n i
 	recordStat(ctx, m, n)
 }
 
-func (p *sessionPool) recordOTStat(ctx context.Context, m metric.Int64Counter, val int64) {
+func (p *sessionPool) recordOTStat(ctx context.Context, m metric.Int64Counter, val int64, attributes ...attribute.KeyValue) {
 	if m != nil {
-		m.Add(ctx, val, metric.WithAttributes(p.otConfig.attributeMap...))
+		attrs := p.otConfig.attributeMap
+		for _, attr := range attributes {
+			attrs = append(attrs, attr)
+		}
+		m.Add(ctx, val, metric.WithAttributes(attributes...))
 	}
 }
 
@@ -868,7 +883,7 @@ func (p *sessionPool) sessionReady(s *session) {
 		p.hc.register(s)
 		p.multiplexedSession = s
 		p.multiplexedSessionCreationError = nil
-		p.incNumSessionsLocked(context.Background())
+		p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 		close(p.mayGetMultiplexedSession)
 		p.mayGetMultiplexedSession = make(chan struct{})
 		return
@@ -1168,9 +1183,9 @@ func (p *sessionPool) take(ctx context.Context) (*sessionHandle, error) {
 		select {
 		case <-ctx.Done():
 			trace.TracePrintf(ctx, nil, "Context done waiting for session")
-			p.recordStat(ctx, GetSessionTimeoutsCount, 1)
+			p.recordStat(ctx, GetSessionTimeoutsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 			if p.otConfig != nil {
-				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1)
+				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1, attributeKeyIsMultiplexed.String("false"))
 			}
 			p.mu.Lock()
 			p.numWaiters--
@@ -1205,7 +1220,8 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 			p.mu.Unlock()
 			return nil, errInvalidSessionPool
 		}
-		if p.multiplexedSession != nil {
+		// use the multiplex session if it is available and created within the last 4 days.
+		if p.multiplexedSession != nil && p.multiplexedSession.createTime.Add(4*24*time.Hour).After(time.Now()) {
 			// Multiplexed session is available, get it.
 			s = p.multiplexedSession
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
@@ -1220,7 +1236,8 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 			if !p.isHealthy(s) {
 				continue
 			}
-			p.incNumInUse(ctx) // TODO: add tag to differentiate from normal session.
+			p.incNumMultiplexedInUse(ctx)
+
 			return p.newSessionHandle(s), nil
 		}
 
@@ -1235,10 +1252,10 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 		trace.TracePrintf(ctx, nil, "Waiting for multiplexed session to become available")
 		select {
 		case <-ctx.Done():
-			trace.TracePrintf(ctx, nil, "Context done waiting for session")
-			p.recordStat(ctx, GetSessionTimeoutsCount, 1) // TODO: add tag to differentiate from normal session.
+			trace.TracePrintf(ctx, nil, "Context done waiting for multiplexed session")
+			p.recordStat(ctx, GetSessionTimeoutsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 			if p.otConfig != nil {
-				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1) // TODO: add tag to differentiate from normal session.
+				p.recordOTStat(ctx, p.otConfig.getSessionTimeoutsCount, 1, attributeKeyIsMultiplexed.String("true"))
 			}
 			p.mu.Lock()
 			p.mu.Unlock()
@@ -1341,14 +1358,32 @@ func (p *sessionPool) incNumInUse(ctx context.Context) {
 
 func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 	p.numInUse++
-	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
-	p.recordStat(ctx, AcquiredSessionsCount, 1)
+	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
+	p.recordStat(ctx, AcquiredSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 	if p.otConfig != nil {
 		p.recordOTStat(ctx, p.otConfig.acquiredSessionsCount, 1)
 	}
 	if p.numInUse > p.maxNumInUse {
 		p.maxNumInUse = p.numInUse
-		p.recordStat(ctx, MaxInUseSessionsCount, int64(p.maxNumInUse))
+		p.recordStat(ctx, MaxInUseSessionsCount, int64(p.maxNumInUse), tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
+	}
+}
+
+func (p *sessionPool) incNumMultiplexedInUse(ctx context.Context) {
+	p.mu.Lock()
+	p.incNumMultiplexedInUseLocked(ctx)
+	p.mu.Unlock()
+}
+func (p *sessionPool) incNumMultiplexedInUseLocked(ctx context.Context) {
+	p.multiplexedSessionInUse++
+	p.recordStat(ctx, SessionsCount, int64(p.multiplexedSessionInUse), tagNumInUseSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
+	p.recordStat(ctx, AcquiredSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
+	if p.otConfig != nil {
+		p.recordOTStat(ctx, p.otConfig.acquiredSessionsCount, 1, attributeKeyIsMultiplexed.String("true"))
+	}
+	if p.multiplexedSessionInUse > p.maxMultiplexedSessionInUse {
+		p.maxMultiplexedSessionInUse = p.multiplexedSessionInUse
+		p.recordStat(ctx, MaxInUseSessionsCount, int64(p.maxMultiplexedSessionInUse), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 	}
 }
 
@@ -1359,10 +1394,19 @@ func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
 		logf(p.sc.logger, "Number of sessions in use is negative, resetting it to currSessionsCheckedOutLocked. Stack trace: %s", string(debug.Stack()))
 		p.numInUse = p.currSessionsCheckedOutLocked()
 	}
-	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
-	p.recordStat(ctx, ReleasedSessionsCount, 1)
+	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
+	p.recordStat(ctx, ReleasedSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 	if p.otConfig != nil {
-		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1)
+		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1, attributeKeyIsMultiplexed.String("false"))
+	}
+}
+
+func (p *sessionPool) decNumMultiplexedInUseLocked(ctx context.Context) {
+	p.multiplexedSessionInUse--
+	p.recordStat(ctx, SessionsCount, int64(p.multiplexedSessionInUse), tagNumInUseSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
+	p.recordStat(ctx, ReleasedSessionsCount, 1, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
+	if p.otConfig != nil {
+		p.recordOTStat(ctx, p.otConfig.releasedSessionsCount, 1, attributeKeyIsMultiplexed.String("true"))
 	}
 }
 
@@ -1714,7 +1758,9 @@ func (hc *healthChecker) maintainer() {
 		now := time.Now()
 		if now.After(hc.pool.lastResetTime.Add(10 * time.Minute)) {
 			hc.pool.maxNumInUse = hc.pool.numInUse
-			hc.pool.recordStat(context.Background(), MaxInUseSessionsCount, int64(hc.pool.maxNumInUse))
+			hc.pool.maxMultiplexedSessionInUse = hc.pool.multiplexedSessionInUse
+			hc.pool.recordStat(context.Background(), MaxInUseSessionsCount, int64(hc.pool.maxNumInUse), tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
+			hc.pool.recordStat(context.Background(), MaxInUseSessionsCount, int64(hc.pool.maxMultiplexedSessionInUse), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 			hc.pool.lastResetTime = now
 		}
 		hc.pool.mu.Unlock()

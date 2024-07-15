@@ -33,12 +33,13 @@ const OtInstrumentationScope = "cloud.google.com/go"
 const metricsPrefix = "spanner/"
 
 var (
-	attributeKeyClientID   = attribute.Key("client_id")
-	attributeKeyDatabase   = attribute.Key("database")
-	attributeKeyInstance   = attribute.Key("instance_id")
-	attributeKeyLibVersion = attribute.Key("library_version")
-	attributeKeyType       = attribute.Key("type")
-	attributeKeyMethod     = attribute.Key("grpc_client_method")
+	attributeKeyClientID      = attribute.Key("client_id")
+	attributeKeyDatabase      = attribute.Key("database")
+	attributeKeyInstance      = attribute.Key("instance_id")
+	attributeKeyLibVersion    = attribute.Key("library_version")
+	attributeKeyType          = attribute.Key("type")
+	attributeKeyMethod        = attribute.Key("grpc_client_method")
+	attributeKeyIsMultiplexed = attribute.Key("is_multiplexed")
 
 	attributeNumInUseSessions = attributeKeyType.String("num_in_use_sessions")
 	attributeNumSessions      = attributeKeyType.String("num_sessions")
