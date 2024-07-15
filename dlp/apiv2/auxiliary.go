@@ -256,6 +256,53 @@ func (it *DlpJobIterator) takeBuf() interface{} {
 	return b
 }
 
+// FileStoreDataProfileIterator manages a stream of *dlppb.FileStoreDataProfile.
+type FileStoreDataProfileIterator struct {
+	items    []*dlppb.FileStoreDataProfile
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dlppb.FileStoreDataProfile, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *FileStoreDataProfileIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FileStoreDataProfileIterator) Next() (*dlppb.FileStoreDataProfile, error) {
+	var item *dlppb.FileStoreDataProfile
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FileStoreDataProfileIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FileStoreDataProfileIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // InspectTemplateIterator manages a stream of *dlppb.InspectTemplate.
 type InspectTemplateIterator struct {
 	items    []*dlppb.InspectTemplate

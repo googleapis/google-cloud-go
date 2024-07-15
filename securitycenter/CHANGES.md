@@ -1,5 +1,27 @@
 # Changes
 
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.32.0...securitycenter/v1.33.0) (2024-07-10)
+
+
+### Features
+
+* **securitycenter:** Added attack path API methods ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Added cloud provider field to list findings response ([#10506](https://github.com/googleapis/google-cloud-go/issues/10506)) ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Added etd custom module protos and API methods ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Added ResourceValueConfig protos and API methods ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Added toxic combination field to finding ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+
+
+### Bug Fixes
+
+* **securitycenter:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+
+### Documentation
+
+* **securitycenter:** Update examples in comments to use backticks ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **securitycenter:** Update toxic combinations comments ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+
 ## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.31.0...securitycenter/v1.32.0) (2024-07-01)
 
 

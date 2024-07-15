@@ -357,6 +357,19 @@ func TestCalculateRange(t *testing.T) {
 			},
 		},
 		{
+			desc: "sharding turned off",
+			objRange: &DownloadRange{
+				Offset: 1024 * 1024 * 1024 * 1024 / 2,
+				Length: 1024 * 1024 * 1024 * 1024,
+			},
+			partSize: 0,
+			shard:    0,
+			want: DownloadRange{
+				Offset: 1024 * 1024 * 1024 * 1024 / 2,
+				Length: 1024 * 1024 * 1024 * 1024,
+			},
+		},
+		{
 			desc: "large object",
 			objRange: &DownloadRange{
 				Offset: 1024 * 1024 * 1024 * 1024 / 2,

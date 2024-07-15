@@ -1103,7 +1103,8 @@ const _ = grpc.SupportPackageIsVersion6
 type ExecutionsClient interface {
 	// Gets information about an Execution.
 	GetExecution(ctx context.Context, in *GetExecutionRequest, opts ...grpc.CallOption) (*Execution, error)
-	// Lists Executions from a Job.
+	// Lists Executions from a Job. Results are sorted by creation time,
+	// descending.
 	ListExecutions(ctx context.Context, in *ListExecutionsRequest, opts ...grpc.CallOption) (*ListExecutionsResponse, error)
 	// Deletes an Execution.
 	DeleteExecution(ctx context.Context, in *DeleteExecutionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
@@ -1159,7 +1160,8 @@ func (c *executionsClient) CancelExecution(ctx context.Context, in *CancelExecut
 type ExecutionsServer interface {
 	// Gets information about an Execution.
 	GetExecution(context.Context, *GetExecutionRequest) (*Execution, error)
-	// Lists Executions from a Job.
+	// Lists Executions from a Job. Results are sorted by creation time,
+	// descending.
 	ListExecutions(context.Context, *ListExecutionsRequest) (*ListExecutionsResponse, error)
 	// Deletes an Execution.
 	DeleteExecution(context.Context, *DeleteExecutionRequest) (*longrunningpb.Operation, error)
