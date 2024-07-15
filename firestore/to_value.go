@@ -34,6 +34,7 @@ var (
 	typeOfLatLng         = reflect.TypeOf((*latlng.LatLng)(nil))
 	typeOfDocumentRef    = reflect.TypeOf((*DocumentRef)(nil))
 	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
+	typeOfVector         = reflect.TypeOf(Vector{})
 )
 
 // toProtoValue converts a Go value to a Firestore Value protobuf.
@@ -69,6 +70,8 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 			return nullValue, false, nil
 		}
 		return &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: x}}, false, nil
+	case VectorType:
+		return x.toProtoValue()
 	case *latlng.LatLng:
 		if x == nil {
 			// gRPC doesn't like nil oneofs. Use NullValue.

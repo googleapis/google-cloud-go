@@ -61,6 +61,8 @@ type Query struct {
 	// readOptions specifies constraints for reading results from the query
 	// e.g. read time
 	readSettings *readSettings
+
+	findNearest *pb.StructuredQuery_FindNearest
 }
 
 // DocumentID is the special field name representing the ID of a document
@@ -364,6 +366,97 @@ func (q Query) Deserialize(bytes []byte) (Query, error) {
 	return q.fromProto(&runQueryRequest)
 }
 
+// DistanceMeasure is the distance measure to use when comparing vectors.
+type DistanceMeasure int32
+
+const (
+	// Measures the EUCLIDEAN distance between the vectors. See
+	// [Euclidean](https://en.wikipedia.org/wiki/Euclidean_distance) to learn
+	// more
+	DistanceMeasureEuclidean DistanceMeasure = 1
+
+	// Compares vectors based on the angle between them, which allows you to
+	// measure similarity that isn't based on the vectors magnitude.
+	// We recommend using DOT_PRODUCT with unit normalized vectors instead of
+	// COSINE distance, which is mathematically equivalent with better
+	// performance. See [Cosine
+	// Similarity](https://en.wikipedia.org/wiki/Cosine_similarity) to learn
+	// more.
+	DistanceMeasureCosine DistanceMeasure = 2
+
+	// Similar to cosine but is affected by the magnitude of the vectors. See
+	// [Dot Product](https://en.wikipedia.org/wiki/Dot_product) to learn more.
+	DistanceMeasureDotProduct DistanceMeasure = 3
+)
+
+// FindNearestOpts is options to use while building FindNearest vector query
+type FindNearestOpts struct {
+	Limit   int
+	Measure DistanceMeasure
+}
+
+// VectorQuery represents a vector query
+type VectorQuery struct {
+	Query
+}
+
+// FindNearest returns a query that can perform vector distance (similarity) search with given parameters.
+//
+// The returned query, when executed, performs a distance (similarity) search on the specified
+// 'vectorField' against the given 'queryVector' and returns the top documents that are closest
+// to the 'queryVector;.
+//
+// Only documents whose 'vectorField' field is a Vector of the same dimension as 'queryVector'
+// participate in the query, all other documents are ignored.
+//
+// The 'vectorField' argument can be a single field or a dot-separated sequence of
+// fields, and must not contain any of the runes "˜*/[]".
+func (q Query) FindNearest(vectorField string, queryVector VectorType, options FindNearestOpts) VectorQuery {
+	vq := VectorQuery{
+		Query: q,
+	}
+
+	// Validate field path
+	fieldPath, err := parseDotSeparatedString(vectorField)
+	if err != nil {
+		vq.Query.err = err
+		return vq
+	}
+	return q.FindNearestPath(fieldPath, queryVector, options)
+}
+
+// FindNearestPath is similar to FindNearest but accepts field path in the form of array of strings
+func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector VectorType, options FindNearestOpts) VectorQuery {
+	vq := VectorQuery{
+		Query: q,
+	}
+	// Convert field path field reference
+	vectorFieldRef, err := fref(vectorFieldPath)
+	if err != nil {
+		vq.Query.err = err
+		return vq
+	}
+
+	pbVal, sawTransform, err := toProtoValue(reflect.ValueOf(queryVector))
+	if err != nil {
+		vq.Query.err = err
+		return vq
+	}
+	if sawTransform {
+		vq.Query.err = errors.New("firestore: transforms disallowed in query value")
+		return vq
+	}
+
+	vq.Query.findNearest = &pb.StructuredQuery_FindNearest{
+		VectorField:     vectorFieldRef,
+		QueryVector:     pbVal,
+		Limit:           &wrapperspb.Int32Value{Value: trunc32(options.Limit)},
+		DistanceMeasure: pb.StructuredQuery_FindNearest_DistanceMeasure(options.Measure),
+	}
+
+	return vq
+}
+
 // NewAggregationQuery returns an AggregationQuery with this query as its
 // base query.
 func (q *Query) NewAggregationQuery() *AggregationQuery {
@@ -475,6 +568,8 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 		q.limit = limit
 	}
 
+	q.findNearest = pbq.GetFindNearest()
+
 	// NOTE: limit to last isn't part of the proto, this is a client-side concept
 	// 	limitToLast            bool
 	return q, q.err
@@ -556,6 +651,7 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		return nil, err
 	}
 	p.EndAt = cursor
+	p.FindNearest = q.findNearest
 	return p, nil
 }
 

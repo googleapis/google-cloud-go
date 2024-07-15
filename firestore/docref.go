@@ -638,6 +638,28 @@ func (s sentinel) String() string {
 	}
 }
 
+// VectorType represpresents a vector
+type VectorType interface {
+	isVectorType()
+	toProtoValue() (*pb.Value, bool, error)
+}
+
+// Vector represents a vector in the form of a float64 array
+type Vector []float64
+
+func (_ Vector) isVectorType() {}
+
+func (vector Vector) toProtoValue() (*pb.Value, bool, error) {
+	if vector == nil {
+		return nullValue, false, nil
+	}
+
+	vectorMap := map[string]interface{}{}
+	vectorMap["__type__"] = "__vector__"
+	vectorMap["value"] = []float64(vector)
+	return mapToProtoValue(reflect.ValueOf(vectorMap))
+}
+
 // An Update describes an update to a value referred to by a path.
 // An Update should have either a non-empty Path or a non-empty FieldPath,
 // but not both.
