@@ -44,7 +44,10 @@ import (
 	"google.golang.org/grpc/metadata"
 )
 
-const healthCheckIntervalMins = 50
+const (
+	healthCheckIntervalMins  = 50
+	multiplexSessionIdleTime = 7 * 24 * time.Hour
+)
 
 // ActionOnInactiveTransactionKind describes the kind of action taken when there are inactive transactions.
 type ActionOnInactiveTransactionKind int
@@ -1220,8 +1223,8 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 			p.mu.Unlock()
 			return nil, errInvalidSessionPool
 		}
-		// use the multiplex session if it is available and created within the last 4 days.
-		if p.multiplexedSession != nil && p.multiplexedSession.createTime.Add(4*24*time.Hour).After(time.Now()) {
+		// use the multiplex session if it is available
+		if p.multiplexedSession != nil {
 			// Multiplexed session is available, get it.
 			s = p.multiplexedSession
 			trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
@@ -1669,6 +1672,11 @@ func (hc *healthChecker) markDone(s *session) {
 // healthCheck checks the health of the session and pings it if needed.
 func (hc *healthChecker) healthCheck(s *session) {
 	defer hc.markDone(s)
+	// If the session is multiplexed and has been idle for more than 7 days,
+	if s.isMultiplexed && s.createTime.Add(multiplexSessionIdleTime).Before(time.Now()) {
+		go hc.pool.getMultiplexedSession(context.Background())
+		return
+	}
 	if !s.pool.isValid() {
 		// Session pool is closed, perform a garbage collection.
 		s.destroy(false, false)

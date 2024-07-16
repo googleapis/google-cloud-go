@@ -134,7 +134,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 				Data: metricdata.Sum[int64]{
 					DataPoints: []metricdata.DataPoint[int64]{
 						{
-							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String("false"))...),
+							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(isMultiplexEnabled))...),
 							Value:      1,
 						},
 					},
@@ -152,7 +152,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 				Data: metricdata.Sum[int64]{
 					DataPoints: []metricdata.DataPoint[int64]{
 						{
-							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String("false"))...),
+							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(isMultiplexEnabled))...),
 							Value:      1,
 						},
 					},
@@ -242,7 +242,7 @@ func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 		Data: metricdata.Sum[int64]{
 			DataPoints: []metricdata.DataPoint[int64]{
 				{
-					Attributes: attribute.NewSet(getAttributes(client.ClientID())...),
+					Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(isMultiplexEnabled))...),
 					Value:      1,
 				},
 			},

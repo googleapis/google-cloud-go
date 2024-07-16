@@ -22,12 +22,24 @@ package test
 import (
 	"context"
 	"fmt"
+	"os"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/spanner"
 	stestutil "cloud.google.com/go/spanner/internal/testutil"
 )
+
+var (
+	isMultiplexEnabled = getMultiplexEnableFlag()
+)
+
+func getMultiplexEnableFlag() string {
+	if os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_MULTIPLEX_ENABLE") == "true" {
+		return "true"
+	}
+	return "false"
+}
 
 func setupMockedTestServerWithConfig(t *testing.T, config spanner.ClientConfig) (server *stestutil.MockedSpannerInMemTestServer, client *spanner.Client, teardown func()) {
 	server, opts, serverTeardown := stestutil.NewMockedSpannerInMemTestServer(t)
