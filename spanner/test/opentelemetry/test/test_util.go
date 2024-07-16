@@ -35,7 +35,7 @@ var (
 )
 
 func getMultiplexEnableFlag() string {
-	if os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_MULTIPLEX_ENABLE") == "true" {
+	if os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") == "true" {
 		return "true"
 	}
 	return "false"
