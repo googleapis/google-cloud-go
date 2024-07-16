@@ -376,6 +376,7 @@ func (s *session) recycle() {
 		// session pool currently has enough open sessions.
 		s.pool.mu.Unlock()
 		s.destroy(false, true)
+		s.pool.mu.Lock()
 	}
 	s.pool.decNumInUseLocked(context.Background())
 	s.pool.mu.Unlock()
