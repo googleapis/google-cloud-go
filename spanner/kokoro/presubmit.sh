@@ -100,11 +100,12 @@ CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | cut -d/ -f1 | sort -u
 echo "Running tests only in changed submodules: $CHANGED_DIRS"
 for d in $CHANGED_DIRS; do
   # run tests only if spanner module is part of $CHANGED_DIRS
-  if [[ $d == *"spanner"* ]]; then
-    pushd $(dirname $d)
-    runPresubmitTests
-    popd
-    continue
+  if [[ $CHANGED_DIRS =~ spanner ]];then
+    for i in $(find "$d" -name go.mod); do
+      pushd $(dirname $i)
+      runPresubmitTests
+      popd
+    done
   fi
 done
 
