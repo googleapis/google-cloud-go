@@ -397,8 +397,16 @@ func createFromProtoValue(vproto *pb.Value, c *Client) (interface{}, error) {
 			}
 			ret[k] = r
 		}
-		return ret, nil
 
+		typeVal, ok := ret[typeKey]
+		if !ok || typeVal != typeValVector {
+			// Map is not a vector. Return the map
+			return ret, nil
+		}
+
+		// Special handling for vector
+		vector, err := vectorFromProtoValue(vproto)
+		return vector, err
 	default:
 		return nil, fmt.Errorf("firestore: unknown value type %T", v)
 	}

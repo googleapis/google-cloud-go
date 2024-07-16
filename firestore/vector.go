@@ -26,15 +26,8 @@ const (
 	valueKey      = "value"
 )
 
-// VectorType represpresents a vector
-type VectorType interface {
-	isVectorType()
-}
-
-// Vector represents a vector in the form of a float64 array
-type Vector []float64
-
-func (Vector) isVectorType() {}
+// Vector represents a vector in the form of a float32 array
+type Vector []float32
 
 // vectorToProtoValue returns a Firestore [pb.Value] representing the Vector.
 func vectorToProtoValue(v Vector) *pb.Value {
@@ -98,13 +91,13 @@ func vectorFromProtoValue(v *pb.Value) (Vector, error) {
 	}
 
 	pbArrVals := pbArr.ArrayValue.Values
-	floats := make([]float64, len(pbArrVals))
+	floats := make([]float32, len(pbArrVals))
 	for i, fval := range pbArrVals {
 		dv, ok := fval.ValueType.(*pb.Value_DoubleValue)
 		if !ok {
 			return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_DoubleValue", fval.ValueType)
 		}
-		floats[i] = float64(dv.DoubleValue)
+		floats[i] = float32(dv.DoubleValue)
 	}
 	return Vector(floats), nil
 }

@@ -62,7 +62,7 @@ func TestMain(m *testing.M) {
 		if status != 0 {
 			os.Exit(status)
 		}
-		cleanupIntegrationTest()
+		// cleanupIntegrationTest()
 	}
 
 	os.Exit(0)
@@ -75,13 +75,13 @@ const (
 )
 
 var (
-	iClient       *Client
-	iAdminClient  *apiv1.FirestoreAdminClient
-	iColl         *CollectionRef
-	collectionIDs = uid.NewSpace("go-integration-test", nil)
-	wantDBPath    string
-	indexNames    []string
-	testParams    map[string]interface{}
+	iClient          *Client
+	iAdminClient     *apiv1.FirestoreAdminClient
+	iColl            *CollectionRef
+	collectionIDs    = uid.NewSpace("go-integration-test", nil)
+	wantDBPath       string
+	testParams       map[string]interface{}
+	seededFirstIndex bool
 )
 
 func initIntegrationTest() {
@@ -146,16 +146,68 @@ func initIntegrationTest() {
 	integrationTestStruct.Ref = refDoc
 }
 
+type vectorIndex struct {
+	dimension int32
+	fieldPath string
+}
+
+func createVectorIndexes(ctx context.Context, dbPath string, vectorModeIndexes []vectorIndex) []string {
+	indexNames := make([]string, len(vectorModeIndexes))
+	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
+
+	var wg sync.WaitGroup
+
+	// create vectore mode indexes
+	for i, vectorModeIndex := range vectorModeIndexes {
+		wg.Add(1)
+		req := &adminpb.CreateIndexRequest{
+			Parent: indexParent,
+			Index: &adminpb.Index{
+				QueryScope: adminpb.Index_COLLECTION,
+				Fields: []*adminpb.Index_IndexField{
+					{
+						FieldPath: vectorModeIndex.fieldPath,
+						ValueMode: &adminpb.Index_IndexField_VectorConfig_{
+							VectorConfig: &adminpb.Index_IndexField_VectorConfig{
+								Dimension: vectorModeIndex.dimension,
+								Type: &adminpb.Index_IndexField_VectorConfig_Flat{
+									Flat: &adminpb.Index_IndexField_VectorConfig_FlatIndex{},
+								},
+							},
+						},
+					},
+				},
+			},
+		}
+		fmt.Printf("req: %+v\n", req)
+		op, createErr := iAdminClient.CreateIndex(ctx, req)
+		if createErr != nil {
+			log.Fatalf("CreateIndex vectorindexes: %v", createErr)
+		}
+		if i == 0 && !seededFirstIndex {
+			seededFirstIndex = true
+			handleCreateIndexResp(ctx, indexNames, &wg, i, op)
+		} else {
+			go handleCreateIndexResp(ctx, indexNames, &wg, i, op)
+		}
+	}
+
+	wg.Wait()
+	return indexNames
+}
+
 // createIndexes creates composite indexes on provided Firestore database
 // Indexes are required to run queries with composite filters on multiple fields.
 // Without indexes, FailedPrecondition rpc error is seen with
 // desc 'The query requires multiple indexes'.
-func createIndexes(ctx context.Context, dbPath string, indexFields [][]string) {
-	indexNames = make([]string, len(indexFields))
+func createIndexes(ctx context.Context, dbPath string, orderModeindexFields [][]string) []string {
+	indexNames := make([]string, len(orderModeindexFields))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
 
 	var wg sync.WaitGroup
-	for i, fields := range indexFields {
+
+	// Create order mode indexes
+	for i, fields := range orderModeindexFields {
 		wg.Add(1)
 		var adminPbIndexFields []*adminpb.Index_IndexField
 		for _, field := range fields {
@@ -177,17 +229,21 @@ func createIndexes(ctx context.Context, dbPath string, indexFields [][]string) {
 		if createErr != nil {
 			log.Fatalf("CreateIndex: %v", createErr)
 		}
-		if i == 0 {
+		if i == 0 && !seededFirstIndex {
+			seededFirstIndex = true
 			// Seed first index to prevent FirestoreMetadataWrite.BootstrapDatabase Concurrent access error
-			handleCreateIndexResp(ctx, &wg, i, op)
+			handleCreateIndexResp(ctx, indexNames, &wg, i, op)
 		} else {
-			go handleCreateIndexResp(ctx, &wg, i, op)
+			go handleCreateIndexResp(ctx, indexNames, &wg, i, op)
 		}
 	}
+
 	wg.Wait()
+	return indexNames
 }
 
-func handleCreateIndexResp(ctx context.Context, wg *sync.WaitGroup, i int, op *apiv1.CreateIndexOperation) {
+// handleCreateIndexResp handles create index response and puts the created index name at index i in the indexNames array
+func handleCreateIndexResp(ctx context.Context, indexNames []string, wg *sync.WaitGroup, i int, op *apiv1.CreateIndexOperation) {
 	defer wg.Done()
 	createdIndex, waitErr := op.Wait(ctx)
 	if waitErr != nil {
@@ -197,7 +253,7 @@ func handleCreateIndexResp(ctx context.Context, wg *sync.WaitGroup, i int, op *a
 }
 
 // deleteIndexes deletes composite indexes created in createIndexes function
-func deleteIndexes(ctx context.Context) {
+func deleteIndexes(ctx context.Context, indexNames []string) {
 	for _, indexName := range indexNames {
 		err := iAdminClient.DeleteIndex(ctx, &adminpb.DeleteIndexRequest{
 			Name: indexName,
@@ -293,10 +349,6 @@ func deleteDocument(ctx context.Context, docRef *DocumentRef, bulkwriter *BulkWr
 
 func cleanupIntegrationTest() {
 	if iClient != nil {
-		adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-		defer cancel()
-		deleteIndexes(adminCtx)
-
 		ctx := context.Background()
 		deleteCollection(ctx, iColl)
 		iClient.Close()
@@ -346,44 +398,46 @@ var (
 
 	// Use this when writing a doc.
 	integrationTestMap = map[string]interface{}{
-		"int":    1,
-		"int8":   int8(2),
-		"int16":  int16(3),
-		"int32":  int32(4),
-		"int64":  int64(5),
-		"uint8":  uint8(6),
-		"uint16": uint16(7),
-		"uint32": uint32(8),
-		"str":    "two",
-		"bool":   true,
-		"float":  3.14,
-		"null":   nil,
-		"bytes":  []byte("bytes"),
-		"*":      map[string]interface{}{"`": 4},
-		"time":   integrationTime,
-		"geo":    integrationGeo,
-		"ref":    nil, // populated by initIntegrationTest
+		"int":           1,
+		"int8":          int8(2),
+		"int16":         int16(3),
+		"int32":         int32(4),
+		"int64":         int64(5),
+		"uint8":         uint8(6),
+		"uint16":        uint16(7),
+		"uint32":        uint32(8),
+		"str":           "two",
+		"bool":          true,
+		"float":         3.14,
+		"null":          nil,
+		"bytes":         []byte("bytes"),
+		"*":             map[string]interface{}{"`": 4},
+		"time":          integrationTime,
+		"geo":           integrationGeo,
+		"ref":           nil, // populated by initIntegrationTest
+		"embeddedField": Vector{1.0, 2.0, 3.0},
 	}
 
 	// The returned data is slightly different.
 	wantIntegrationTestMap = map[string]interface{}{
-		"int":    int64(1),
-		"int8":   int64(2),
-		"int16":  int64(3),
-		"int32":  int64(4),
-		"int64":  int64(5),
-		"uint8":  int64(6),
-		"uint16": int64(7),
-		"uint32": int64(8),
-		"str":    "two",
-		"bool":   true,
-		"float":  3.14,
-		"null":   nil,
-		"bytes":  []byte("bytes"),
-		"*":      map[string]interface{}{"`": int64(4)},
-		"time":   wantIntegrationTime,
-		"geo":    integrationGeo,
-		"ref":    nil, // populated by initIntegrationTest
+		"int":           int64(1),
+		"int8":          int64(2),
+		"int16":         int64(3),
+		"int32":         int64(4),
+		"int64":         int64(5),
+		"uint8":         int64(6),
+		"uint16":        int64(7),
+		"uint32":        int64(8),
+		"str":           "two",
+		"bool":          true,
+		"float":         3.14,
+		"null":          nil,
+		"bytes":         []byte("bytes"),
+		"*":             map[string]interface{}{"`": int64(4)},
+		"time":          wantIntegrationTime,
+		"geo":           integrationGeo,
+		"ref":           nil, // populated by initIntegrationTest
+		"embeddedField": Vector{1.0, 2.0, 3.0},
 	}
 
 	integrationTestStruct = integrationTestStructType{
@@ -873,7 +927,8 @@ func TestIntegration_QueryDocuments_WhereEntity(t *testing.T) {
 		{"weight", "height"}}
 	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
-	createIndexes(adminCtx, wantDBPath, indexFields)
+	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
+	defer deleteIndexes(adminCtx, indexNames)
 
 	h := testHelper{t}
 	nowTime := time.Now()
@@ -2462,10 +2517,13 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	client := integrationClient(t)
 
 	indexFields := [][]string{
-		{"weight", "model"}}
+		{"weight", "model"},
+		{"weight", "height"},
+	}
 	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
 	defer cancel()
-	createIndexes(adminCtx, wantDBPath, indexFields)
+	indexNames := createIndexes(adminCtx, wantDBPath, indexFields)
+	defer deleteIndexes(adminCtx, indexNames)
 
 	h := testHelper{t}
 	docs := []map[string]interface{}{
@@ -2781,4 +2839,84 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 				tm.UnixNano(), d.ReadTime.UnixNano())
 		}
 	}
+}
+
+func TestIntegration_FindNearest(t *testing.T) {
+	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	defer cancel()
+	indexNames := createVectorIndexes(adminCtx, wantDBPath, []vectorIndex{
+		{
+			fieldPath: "EmbeddedField",
+			dimension: 3,
+		},
+	})
+	// defer deleteIndexes(adminCtx, indexNames)
+	time.Sleep(30 * time.Second)
+	fmt.Printf("indexNames: %+v\n", indexNames)
+	type coffeeBean struct {
+		ID            string
+		EmbeddedField Vector
+	}
+
+	beans := []coffeeBean{
+		{
+			ID:            "Robusta",
+			EmbeddedField: []float32{1, 2, 3},
+		},
+		{
+			ID:            "Excelsa",
+			EmbeddedField: []float32{4, 5, 6},
+		},
+		{
+			ID:            "Arabica",
+			EmbeddedField: []float32{100, 200, 300}, // too far from query vector. not within findNearest limit
+		},
+
+		{
+			ID:            "Liberica",
+			EmbeddedField: []float32{1, 2}, // Not enough dimensions as compared to query vector.
+		},
+	}
+	h := testHelper{t}
+	coll := integrationColl(t)
+	ctx := context.Background()
+	var docRefs []*DocumentRef
+
+	// create documents with vector field
+	for i := 0; i < len(beans); i++ {
+		doc := coll.NewDoc()
+		docRefs = append(docRefs, doc)
+		h.mustCreate(doc, beans[i])
+	}
+
+	// Query documents with a vector field
+	vectorQuery := iColl.FindNearest("EmbeddedField", []float32{1, 2, 3}, FindNearestOpts{
+		Limit:   2,
+		Measure: DistanceMeasureEuclidean,
+	})
+
+	iter := vectorQuery.Documents(ctx)
+	gotDocs, err := iter.GetAll()
+	if err != nil {
+		t.Fatalf("GetAll: %+v", err)
+	}
+
+	if len(gotDocs) != 2 {
+		t.Fatalf("Expected 2 results, got %d", len(gotDocs))
+	}
+
+	for i, doc := range gotDocs {
+		gotBean := coffeeBean{}
+		err := doc.DataTo(&gotBean)
+		if err != nil {
+			t.Errorf("#%v: DataTo: %+v", doc.Ref.ID, err)
+		}
+		if beans[i].ID != gotBean.ID {
+			t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
+		}
+	}
+
+	// t.Cleanup(func() {
+	// 	deleteDocuments(docRefs)
+	// })
 }

@@ -371,8 +371,7 @@ type DistanceMeasure int32
 
 const (
 	// DistanceMeasureEuclidean is used to measures the Euclidean distance between the vectors. See
-	// [Euclidean] to learn
-	// more
+	// [Euclidean] to learn more
 	//
 	// [Euclidean]: https://en.wikipedia.org/wiki/Euclidean_distance
 	DistanceMeasureEuclidean DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_EUCLIDEAN)
@@ -381,9 +380,7 @@ const (
 	// measure similarity that isn't based on the vectors magnitude.
 	// We recommend using dot product with unit normalized vectors instead of
 	// cosine distance, which is mathematically equivalent with better
-	// performance. See [Cosine
-	// Similarity] to learn
-	// more.
+	// performance. See [Cosine Similarity] to learn more.
 	//
 	// [Cosine Similarity]: https://en.wikipedia.org/wiki/Cosine_similarity
 	DistanceMeasureCosine DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_COSINE)
@@ -391,7 +388,7 @@ const (
 	// DistanceMeasureDotProduct is similar to cosine but is affected by the magnitude of the vectors. See
 	// [Dot Product] to learn more.
 	//
-	// [Dot Product]: https://en.wikipedia.org/wiki/Dot_product)
+	// [Dot Product]: https://en.wikipedia.org/wiki/Dot_product
 	DistanceMeasureDotProduct DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_DOT_PRODUCT)
 )
 
@@ -417,7 +414,7 @@ type VectorQuery struct {
 //
 // The vectorField argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
-func (q Query) FindNearest(vectorField string, queryVector VectorType, options FindNearestOpts) VectorQuery {
+func (q Query) FindNearest(vectorField string, queryVector Vector, options FindNearestOpts) VectorQuery {
 	vq := VectorQuery{
 		q: q,
 	}
@@ -437,7 +434,7 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 }
 
 // FindNearestPath is similar to FindNearest but it accepts [FieldPath]
-func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector VectorType, options FindNearestOpts) VectorQuery {
+func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector Vector, options FindNearestOpts) VectorQuery {
 	vq := VectorQuery{
 		q: q,
 	}
@@ -448,19 +445,9 @@ func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector VectorType
 		return vq
 	}
 
-	pbVal, sawTransform, err := toProtoValue(reflect.ValueOf(queryVector))
-	if err != nil {
-		vq.q.err = err
-		return vq
-	}
-	if sawTransform {
-		vq.q.err = errors.New("firestore: transforms disallowed in query value")
-		return vq
-	}
-
 	vq.q.findNearest = &pb.StructuredQuery_FindNearest{
 		VectorField:     vectorFieldRef,
-		QueryVector:     pbVal,
+		QueryVector:     vectorToProtoValue(queryVector),
 		Limit:           &wrapperspb.Int32Value{Value: trunc32(options.Limit)},
 		DistanceMeasure: pb.StructuredQuery_FindNearest_DistanceMeasure(options.Measure),
 	}
