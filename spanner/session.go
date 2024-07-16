@@ -1312,14 +1312,14 @@ func (p *sessionPool) remove(s *session, isExpire bool, wasInUse bool) bool {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	if s.isMultiplexed {
-		p.multiplexedSession = nil
-	} else {
-		if isExpire && (p.numOpened <= p.MinOpened || s.getIdleList() == nil) {
-			// Don't expire session if the session is not in idle list (in use), or
-			// if number of open sessions is going below p.MinOpened.
-			return false
-		}
+		return false
 	}
+	if isExpire && (p.numOpened <= p.MinOpened || s.getIdleList() == nil) {
+		// Don't expire session if the session is not in idle list (in use), or
+		// if number of open sessions is going below p.MinOpened.
+		return false
+	}
+
 	ol := s.setIdleList(nil)
 	ctx := context.Background()
 	// If the session is in the idlelist, remove it.
@@ -1336,12 +1336,6 @@ func (p *sessionPool) remove(s *session, isExpire bool, wasInUse bool) bool {
 			p.decNumInUseLocked(ctx)
 		}
 		p.recordStat(ctx, OpenSessionCount, int64(p.numOpened))
-		// Broadcast that a session has been destroyed.
-		if s.isMultiplexed {
-			close(p.mayGetMultiplexedSession)
-			p.mayGetMultiplexedSession = make(chan struct{})
-			return true
-		}
 		close(p.mayGetSession)
 		p.mayGetSession = make(chan struct{})
 		return true

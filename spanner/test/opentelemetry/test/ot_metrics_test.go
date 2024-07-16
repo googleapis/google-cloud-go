@@ -73,6 +73,14 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 	defer teardown()
 	client.Single().ReadRow(context.Background(), "Users", spanner.Key{"alice"}, []string{"email"})
 
+	expectedOpenSessionCount := int64(25)
+	expectedMaxInUseWithMultiplexed := int64(0)
+	expectedMaxInUse := int64(1)
+	if isMultiplexEnabled == "true" {
+		expectedOpenSessionCount = 0
+		expectedMaxInUse = 0
+		expectedMaxInUseWithMultiplexed = 1
+	}
 	for _, test := range []struct {
 		name           string
 		expectedMetric metricdata.Metrics
@@ -87,7 +95,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 					DataPoints: []metricdata.DataPoint[int64]{
 						{
 							Attributes: attribute.NewSet(getAttributes(client.ClientID())...),
-							Value:      25,
+							Value:      expectedOpenSessionCount,
 						},
 					},
 				},
@@ -118,8 +126,12 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 				Data: metricdata.Gauge[int64]{
 					DataPoints: []metricdata.DataPoint[int64]{
 						{
-							Attributes: attribute.NewSet(getAttributes(client.ClientID())...),
-							Value:      1,
+							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String("false"))...),
+							Value:      expectedMaxInUse,
+						},
+						{
+							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String("true"))...),
+							Value:      expectedMaxInUseWithMultiplexed,
 						},
 					},
 				},
@@ -192,7 +204,7 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 
 	client.Single().ReadRow(context.Background(), "Users", spanner.Key{"alice"}, []string{"email"})
 
-	attributesNumInUseSessions := append(getAttributes(client.ClientID()), attribute.Key("type").String("num_in_use_sessions"))
+	//attributesNumInUseSessions := append(getAttributes(client.ClientID()), attribute.Key("type").String("num_in_use_sessions"))
 	attributesNumSessions := append(getAttributes(client.ClientID()), attribute.Key("type").String("num_sessions"))
 
 	expectedMetricData := metricdata.Metrics{
@@ -202,7 +214,11 @@ func TestOTMetrics_SessionPool_SessionsCount(t *testing.T) {
 		Data: metricdata.Gauge[int64]{
 			DataPoints: []metricdata.DataPoint[int64]{
 				{
-					Attributes: attribute.NewSet(attributesNumInUseSessions...),
+					Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("type").String("num_in_use_sessions"), attribute.Key("is_multiplexed").String("true"))...),
+					Value:      0,
+				},
+				{
+					Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("type").String("num_in_use_sessions"), attribute.Key("is_multiplexed").String("false"))...),
 					Value:      0,
 				},
 				{

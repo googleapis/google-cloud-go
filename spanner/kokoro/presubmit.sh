@@ -13,8 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License..
 
-# TODO(deklerk): Add integration tests when it's secure to do so. b/64723143
-
 # Fail on any error
 set -eo pipefail
 
@@ -30,7 +28,6 @@ export GOCLOUD_HOME=$KOKORO_ARTIFACTS_DIR/google-cloud-go/
 export PATH="$GOPATH/bin:$PATH"
 export GO111MODULE=on
 export GOPROXY=https://proxy.golang.org
-
 # Move code into artifacts dir
 mkdir -p $GOCLOUD_HOME
 git clone . $GOCLOUD_HOME
@@ -47,7 +44,7 @@ exit_code=0
 case $JOB_TYPE in
 integration-with-multiplexed-session )
   GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS=true
-  echo "running presubmits with multiplexed sessions enbled: $GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"
+  echo "running presubmit with multiplexed sessions enabled: $GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS"
   ;;
 esac
 
