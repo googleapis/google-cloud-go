@@ -151,7 +151,7 @@ type vectorIndex struct {
 	fieldPath string
 }
 
-func createVectorIndexes(t *testing.T, ctx context.Context, dbPath string, vectorModeIndexes []vectorIndex) []string {
+func createVectorIndexes(ctx context.Context, t *testing.T, dbPath string, vectorModeIndexes []vectorIndex) []string {
 	collRef := integrationColl(t)
 	indexNames := make([]string, len(vectorModeIndexes))
 	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, collRef.ID)
@@ -2853,7 +2853,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 		cancel()
 	})
 
-	indexNames := createVectorIndexes(t, adminCtx, wantDBPath, []vectorIndex{
+	indexNames := createVectorIndexes(adminCtx, t, wantDBPath, []vectorIndex{
 		{
 			fieldPath: "EmbeddedField",
 			dimension: 3,

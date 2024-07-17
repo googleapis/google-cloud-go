@@ -29,6 +29,7 @@ const (
 // Vector is an embedding vector.
 type Vector []float64
 
+// ToVector converts float32 or float64 slice to Firestore embedding vector.
 func ToVector[fType float32 | float64](arr []fType) Vector {
 	var arrAny interface{}
 	if arrFloat64, ok := arrAny.([]float64); ok {
