@@ -10,14 +10,44 @@
         "grpc": {
           "libraryClient": "FirestoreAdminClient",
           "rpcs": {
+            "BulkDeleteDocuments": {
+              "methods": [
+                "BulkDeleteDocuments"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
               ]
             },
+            "CreateBackupSchedule": {
+              "methods": [
+                "CreateBackupSchedule"
+              ]
+            },
+            "CreateDatabase": {
+              "methods": [
+                "CreateDatabase"
+              ]
+            },
             "CreateIndex": {
               "methods": [
                 "CreateIndex"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteBackupSchedule": {
+              "methods": [
+                "DeleteBackupSchedule"
+              ]
+            },
+            "DeleteDatabase": {
+              "methods": [
+                "DeleteDatabase"
               ]
             },
             "DeleteIndex": {
@@ -33,6 +63,16 @@
             "ExportDocuments": {
               "methods": [
                 "ExportDocuments"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupSchedule": {
+              "methods": [
+                "GetBackupSchedule"
               ]
             },
             "GetDatabase": {
@@ -60,6 +100,16 @@
                 "ImportDocuments"
               ]
             },
+            "ListBackupSchedules": {
+              "methods": [
+                "ListBackupSchedules"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
             "ListDatabases": {
               "methods": [
                 "ListDatabases"
@@ -78,6 +128,161 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "RestoreDatabase": {
+              "methods": [
+                "RestoreDatabase"
+              ]
+            },
+            "UpdateBackupSchedule": {
+              "methods": [
+                "UpdateBackupSchedule"
+              ]
+            },
+            "UpdateDatabase": {
+              "methods": [
+                "UpdateDatabase"
+              ]
+            },
+            "UpdateField": {
+              "methods": [
+                "UpdateField"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FirestoreAdminClient",
+          "rpcs": {
+            "BulkDeleteDocuments": {
+              "methods": [
+                "BulkDeleteDocuments"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBackupSchedule": {
+              "methods": [
+                "CreateBackupSchedule"
+              ]
+            },
+            "CreateDatabase": {
+              "methods": [
+                "CreateDatabase"
+              ]
+            },
+            "CreateIndex": {
+              "methods": [
+                "CreateIndex"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteBackupSchedule": {
+              "methods": [
+                "DeleteBackupSchedule"
+              ]
+            },
+            "DeleteDatabase": {
+              "methods": [
+                "DeleteDatabase"
+              ]
+            },
+            "DeleteIndex": {
+              "methods": [
+                "DeleteIndex"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExportDocuments": {
+              "methods": [
+                "ExportDocuments"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetBackupSchedule": {
+              "methods": [
+                "GetBackupSchedule"
+              ]
+            },
+            "GetDatabase": {
+              "methods": [
+                "GetDatabase"
+              ]
+            },
+            "GetField": {
+              "methods": [
+                "GetField"
+              ]
+            },
+            "GetIndex": {
+              "methods": [
+                "GetIndex"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
+              ]
+            },
+            "ListBackupSchedules": {
+              "methods": [
+                "ListBackupSchedules"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
+            "ListDatabases": {
+              "methods": [
+                "ListDatabases"
+              ]
+            },
+            "ListFields": {
+              "methods": [
+                "ListFields"
+              ]
+            },
+            "ListIndexes": {
+              "methods": [
+                "ListIndexes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RestoreDatabase": {
+              "methods": [
+                "RestoreDatabase"
+              ]
+            },
+            "UpdateBackupSchedule": {
+              "methods": [
+                "UpdateBackupSchedule"
               ]
             },
             "UpdateDatabase": {

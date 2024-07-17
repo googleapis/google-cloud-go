@@ -5,11 +5,90 @@
   "protoPackage": "google.cloud.gkemulticloud.v1",
   "libraryPackage": "cloud.google.com/go/gkemulticloud/apiv1",
   "services": {
+    "AttachedClusters": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AttachedClustersClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAttachedCluster": {
+              "methods": [
+                "CreateAttachedCluster"
+              ]
+            },
+            "DeleteAttachedCluster": {
+              "methods": [
+                "DeleteAttachedCluster"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GenerateAttachedClusterAgentToken": {
+              "methods": [
+                "GenerateAttachedClusterAgentToken"
+              ]
+            },
+            "GenerateAttachedClusterInstallManifest": {
+              "methods": [
+                "GenerateAttachedClusterInstallManifest"
+              ]
+            },
+            "GetAttachedCluster": {
+              "methods": [
+                "GetAttachedCluster"
+              ]
+            },
+            "GetAttachedServerConfig": {
+              "methods": [
+                "GetAttachedServerConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportAttachedCluster": {
+              "methods": [
+                "ImportAttachedCluster"
+              ]
+            },
+            "ListAttachedClusters": {
+              "methods": [
+                "ListAttachedClusters"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateAttachedCluster": {
+              "methods": [
+                "UpdateAttachedCluster"
+              ]
+            }
+          }
+        }
+      }
+    },
     "AwsClusters": {
       "clients": {
         "grpc": {
           "libraryClient": "AwsClustersClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateAwsCluster": {
               "methods": [
                 "CreateAwsCluster"
@@ -30,9 +109,19 @@
                 "DeleteAwsNodePool"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GenerateAwsAccessToken": {
               "methods": [
                 "GenerateAwsAccessToken"
+              ]
+            },
+            "GenerateAwsClusterAgentToken": {
+              "methods": [
+                "GenerateAwsClusterAgentToken"
               ]
             },
             "GetAwsCluster": {
@@ -40,14 +129,29 @@
                 "GetAwsCluster"
               ]
             },
+            "GetAwsJsonWebKeys": {
+              "methods": [
+                "GetAwsJsonWebKeys"
+              ]
+            },
             "GetAwsNodePool": {
               "methods": [
                 "GetAwsNodePool"
               ]
             },
+            "GetAwsOpenIdConfig": {
+              "methods": [
+                "GetAwsOpenIdConfig"
+              ]
+            },
             "GetAwsServerConfig": {
               "methods": [
                 "GetAwsServerConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListAwsClusters": {
@@ -58,6 +162,16 @@
             "ListAwsNodePools": {
               "methods": [
                 "ListAwsNodePools"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RollbackAwsNodePoolUpdate": {
+              "methods": [
+                "RollbackAwsNodePoolUpdate"
               ]
             },
             "UpdateAwsCluster": {
@@ -79,6 +193,11 @@
         "grpc": {
           "libraryClient": "AzureClustersClient",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateAzureClient": {
               "methods": [
                 "CreateAzureClient"
@@ -109,9 +228,19 @@
                 "DeleteAzureNodePool"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GenerateAzureAccessToken": {
               "methods": [
                 "GenerateAzureAccessToken"
+              ]
+            },
+            "GenerateAzureClusterAgentToken": {
+              "methods": [
+                "GenerateAzureClusterAgentToken"
               ]
             },
             "GetAzureClient": {
@@ -124,14 +253,29 @@
                 "GetAzureCluster"
               ]
             },
+            "GetAzureJsonWebKeys": {
+              "methods": [
+                "GetAzureJsonWebKeys"
+              ]
+            },
             "GetAzureNodePool": {
               "methods": [
                 "GetAzureNodePool"
               ]
             },
+            "GetAzureOpenIdConfig": {
+              "methods": [
+                "GetAzureOpenIdConfig"
+              ]
+            },
             "GetAzureServerConfig": {
               "methods": [
                 "GetAzureServerConfig"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "ListAzureClients": {
@@ -147,6 +291,11 @@
             "ListAzureNodePools": {
               "methods": [
                 "ListAzureNodePools"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "UpdateAzureCluster": {

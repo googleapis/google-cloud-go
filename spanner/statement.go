@@ -19,10 +19,10 @@ package spanner
 import (
 	"fmt"
 
-	proto3 "github.com/golang/protobuf/ptypes/struct"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc/codes"
+	proto3 "google.golang.org/protobuf/types/known/structpb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 // A Statement is a SQL query with named parameters.

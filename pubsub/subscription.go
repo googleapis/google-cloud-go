@@ -25,15 +25,16 @@ import (
 
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
-	ipubsub "cloud.google.com/go/internal/pubsub"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"cloud.google.com/go/pubsub/internal/scheduler"
+	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/sync/errgroup"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
-	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
 	durpb "google.golang.org/protobuf/types/known/durationpb"
+	fmpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
 )
@@ -51,7 +52,10 @@ type Subscription struct {
 	mu            sync.Mutex
 	receiveActive bool
 
-	enableOrdering bool
+	// clientID to be used across all streaming pull connections that are created.
+	// This indicates to the server that any guarantees made for a stream that
+	// disconnected will be made for the stream that is created to replace it.
+	clientID string
 }
 
 // Subscription creates a reference to a subscription.
@@ -62,8 +66,9 @@ func (c *Client) Subscription(id string) *Subscription {
 // SubscriptionInProject creates a reference to a subscription in a given project.
 func (c *Client) SubscriptionInProject(id, projectID string) *Subscription {
 	return &Subscription{
-		c:    c,
-		name: fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id),
+		c:        c,
+		name:     fmt.Sprintf("projects/%s/subscriptions/%s", projectID, id),
+		clientID: uuid.NewString(),
 	}
 }
 
@@ -147,6 +152,10 @@ type PushConfig struct {
 	// This field is optional and should be set only by users interested in
 	// authenticated push.
 	AuthenticationMethod AuthenticationMethod
+
+	// The format of the delivered message to the push endpoint is defined by
+	// the chosen wrapper. When unset, `PubsubWrapper` is used.
+	Wrapper Wrapper
 }
 
 func (pc *PushConfig) toProto() *pb.PushConfig {
@@ -164,12 +173,19 @@ func (pc *PushConfig) toProto() *pb.PushConfig {
 		default: // TODO: add others here when GAIC adds more definitions.
 		}
 	}
+	if w := pc.Wrapper; w != nil {
+		switch wt := w.(type) {
+		case *PubsubWrapper:
+			pbCfg.Wrapper = wt.toProto()
+		case *NoWrapper:
+			pbCfg.Wrapper = wt.toProto()
+		default:
+		}
+	}
 	return pbCfg
 }
 
-// AuthenticationMethod is used by push points to verify the source of push requests.
-// This interface defines fields that are part of a closed alpha that may not be accessible
-// to all users.
+// AuthenticationMethod is used by push subscriptions to verify the source of push requests.
 type AuthenticationMethod interface {
 	isAuthMethod() bool
 }
@@ -207,6 +223,49 @@ func (oidcToken *OIDCToken) toProto() *pb.PushConfig_OidcToken_ {
 		OidcToken: &pb.PushConfig_OidcToken{
 			Audience:            oidcToken.Audience,
 			ServiceAccountEmail: oidcToken.ServiceAccountEmail,
+		},
+	}
+}
+
+// Wrapper defines the format of message delivered to push endpoints.
+type Wrapper interface {
+	isWrapper() bool
+}
+
+// PubsubWrapper denotes sending the payload to the push endpoint in the form of the JSON
+// representation of a PubsubMessage
+// (https://cloud.google.com/pubsub/docs/reference/rpc/google.pubsub.v1#pubsubmessage).
+type PubsubWrapper struct{}
+
+var _ Wrapper = (*PubsubWrapper)(nil)
+
+func (p *PubsubWrapper) isWrapper() bool { return true }
+
+func (p *PubsubWrapper) toProto() *pb.PushConfig_PubsubWrapper_ {
+	if p == nil {
+		return nil
+	}
+	return &pb.PushConfig_PubsubWrapper_{
+		PubsubWrapper: &pb.PushConfig_PubsubWrapper{},
+	}
+}
+
+// NoWrapper denotes not wrapping the payload sent to the push endpoint.
+type NoWrapper struct {
+	WriteMetadata bool
+}
+
+var _ Wrapper = (*NoWrapper)(nil)
+
+func (n *NoWrapper) isWrapper() bool { return true }
+
+func (n *NoWrapper) toProto() *pb.PushConfig_NoWrapper_ {
+	if n == nil {
+		return nil
+	}
+	return &pb.PushConfig_NoWrapper_{
+		NoWrapper: &pb.PushConfig_NoWrapper{
+			WriteMetadata: n.WriteMetadata,
 		},
 	}
 }
@@ -265,12 +324,128 @@ func (bc *BigQueryConfig) toProto() *pb.BigQueryConfig {
 	if bc == nil {
 		return nil
 	}
+	// If the config is zero valued, this is the sentinel for
+	// clearing bigquery config and switch back to pull.
+	if *bc == (BigQueryConfig{}) {
+		return nil
+	}
 	pbCfg := &pb.BigQueryConfig{
 		Table:             bc.Table,
 		UseTopicSchema:    bc.UseTopicSchema,
 		WriteMetadata:     bc.WriteMetadata,
 		DropUnknownFields: bc.DropUnknownFields,
 		State:             pb.BigQueryConfig_State(bc.State),
+	}
+	return pbCfg
+}
+
+// CloudStorageConfigState denotes the possible states for a Cloud Storage Subscription.
+type CloudStorageConfigState int
+
+const (
+	// CloudStorageConfigStateUnspecified is the default value. This value is unused.
+	CloudStorageConfigStateUnspecified = iota
+
+	// CloudStorageConfigActive means the subscription can actively send messages to Cloud Storage.
+	CloudStorageConfigActive
+
+	// CloudStorageConfigPermissionDenied means the subscription cannot write to the Cloud storage bucket because of permission denied errors.
+	CloudStorageConfigPermissionDenied
+
+	// CloudStorageConfigNotFound means the subscription cannot write to the Cloud Storage bucket because it does not exist.
+	CloudStorageConfigNotFound
+)
+
+// Configuration options for how to write the message data to Cloud Storage.
+type isCloudStorageOutputFormat interface {
+	isCloudStorageOutputFormat()
+}
+
+// CloudStorageOutputFormatTextConfig is the configuration for writing
+// message data in text format. Message payloads will be written to files
+// as raw text, separated by a newline.
+type CloudStorageOutputFormatTextConfig struct{}
+
+// CloudStorageOutputFormatAvroConfig is the configuration for writing
+// message data in Avro format. Message payloads and metadata will be written
+// to the files as an Avro binary.
+type CloudStorageOutputFormatAvroConfig struct {
+	// When true, write the subscription name, message_id, publish_time,
+	// attributes, and ordering_key as additional fields in the output.
+	WriteMetadata bool
+}
+
+func (*CloudStorageOutputFormatTextConfig) isCloudStorageOutputFormat() {}
+
+func (*CloudStorageOutputFormatAvroConfig) isCloudStorageOutputFormat() {}
+
+// CloudStorageConfig configures the subscription to deliver to Cloud Storage.
+type CloudStorageConfig struct {
+	// User-provided name for the Cloud Storage bucket.
+	// The bucket must be created by the user. The bucket name must be without
+	// any prefix like "gs://". See the [bucket naming
+	// requirements] (https://cloud.google.com/storage/docs/buckets#naming).
+	Bucket string
+
+	// User-provided prefix for Cloud Storage filename. See the [object naming
+	// requirements](https://cloud.google.com/storage/docs/objects#naming).
+	FilenamePrefix string
+
+	// User-provided suffix for Cloud Storage filename. See the [object naming
+	// requirements](https://cloud.google.com/storage/docs/objects#naming).
+	FilenameSuffix string
+
+	// Configuration for how to write message data. Options are
+	// CloudStorageOutputFormat_TextConfig and CloudStorageOutputFormat_AvroConfig.
+	// Defaults to text format.
+	OutputFormat isCloudStorageOutputFormat
+
+	// The maximum duration that can elapse before a new Cloud Storage file is
+	// created. Min 1 minute, max 10 minutes, default 5 minutes. May not exceed
+	// the subscription's acknowledgement deadline.
+	MaxDuration optional.Duration
+
+	// The maximum bytes that can be written to a Cloud Storage file before a new
+	// file is created. Min 1 KB, max 10 GiB. The max_bytes limit may be exceeded
+	// in cases where messages are larger than the limit.
+	MaxBytes int64
+
+	// Output only. An output-only field that indicates whether or not the
+	// subscription can receive messages.
+	State CloudStorageConfigState
+}
+
+func (cs *CloudStorageConfig) toProto() *pb.CloudStorageConfig {
+	if cs == nil {
+		return nil
+	}
+	// For the purposes of the live service, an empty/zero-valued config
+	// is treated the same as nil and clearing this setting.
+	if (CloudStorageConfig{}) == *cs {
+		return nil
+	}
+	var dur *durationpb.Duration
+	if cs.MaxDuration != nil {
+		dur = durationpb.New(optional.ToDuration(cs.MaxDuration))
+	}
+	pbCfg := &pb.CloudStorageConfig{
+		Bucket:         cs.Bucket,
+		FilenamePrefix: cs.FilenamePrefix,
+		FilenameSuffix: cs.FilenameSuffix,
+		MaxDuration:    dur,
+		MaxBytes:       cs.MaxBytes,
+		State:          pb.CloudStorageConfig_State(cs.State),
+	}
+	if out := cs.OutputFormat; out != nil {
+		if _, ok := out.(*CloudStorageOutputFormatTextConfig); ok {
+			pbCfg.OutputFormat = &pb.CloudStorageConfig_TextConfig_{}
+		} else if cfg, ok := out.(*CloudStorageOutputFormatAvroConfig); ok {
+			pbCfg.OutputFormat = &pb.CloudStorageConfig_AvroConfig_{
+				AvroConfig: &pb.CloudStorageConfig_AvroConfig{
+					WriteMetadata: cfg.WriteMetadata,
+				},
+			}
+		}
 	}
 	return pbCfg
 }
@@ -291,7 +466,9 @@ const (
 	SubscriptionStateResourceError
 )
 
-// SubscriptionConfig describes the configuration of a subscription.
+// SubscriptionConfig describes the configuration of a subscription. If none of
+// PushConfig, BigQueryConfig, or CloudStorageConfig is set, then the subscriber will
+// pull and ack messages using API methods. At most one of these fields may be set.
 type SubscriptionConfig struct {
 	// The fully qualified identifier for the subscription, in the format "projects/<projid>/subscriptions/<name>"
 	name string
@@ -300,16 +477,22 @@ type SubscriptionConfig struct {
 	Topic *Topic
 
 	// If push delivery is used with this subscription, this field is
-	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
-	// but not both. If both are empty, then the subscriber will pull and ack
-	// messages using API methods.
+	// used to configure it. At most one of `PushConfig`, `BigQueryConfig`,
+	// or `CloudStorageConfig` can be set. If all are empty, then the
+	// subscriber will pull and ack messages using API methods.
 	PushConfig PushConfig
 
 	// If delivery to BigQuery is used with this subscription, this field is
-	// used to configure it. Either `PushConfig` or `BigQueryConfig` can be set,
-	// but not both. If both are empty, then the subscriber will pull and ack
-	// messages using API methods.
+	// used to configure it. At most one of `PushConfig`, `BigQueryConfig`,
+	// or `CloudStorageConfig` can be set. If all are empty, then the
+	// subscriber will pull and ack messages using API methods.
 	BigQueryConfig BigQueryConfig
+
+	// If delivery to Cloud Storage is used with this subscription, this field is
+	// used to configure it. At most one of `PushConfig`, `BigQueryConfig`,
+	// or `CloudStorageConfig` can be set. If all are empty, then the
+	// subscriber will pull and ack messages using API methods.
+	CloudStorageConfig CloudStorageConfig
 
 	// The default maximum time after a subscriber receives a message before
 	// the subscriber should acknowledge the message. Note: messages which are
@@ -397,8 +580,8 @@ type SubscriptionConfig struct {
 	// by Pub/Sub and have distinct MessageID values.
 	//
 	// Lastly, to guarantee messages have been acked or nacked properly, you must
-	// call Message.AckWithResponse() or Message.NackWithResponse(). These return an
-	// AckResponse which will be ready if the message has been acked (or failed to be acked).
+	// call Message.AckWithResult() or Message.NackWithResult(). These return an
+	// AckResult which will be ready if the message has been acked (or failed to be acked).
 	EnableExactlyOnceDelivery bool
 
 	// State indicates whether or not the subscription can receive messages.
@@ -433,10 +616,8 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	if cfg.PushConfig.Endpoint != "" || len(cfg.PushConfig.Attributes) != 0 || cfg.PushConfig.AuthenticationMethod != nil {
 		pbPushConfig = cfg.PushConfig.toProto()
 	}
-	var pbBigQueryConfig *pb.BigQueryConfig
-	if cfg.BigQueryConfig.Table != "" {
-		pbBigQueryConfig = cfg.BigQueryConfig.toProto()
-	}
+	pbBigQueryConfig := cfg.BigQueryConfig.toProto()
+	pbCloudStorageConfig := cfg.CloudStorageConfig.toProto()
 	var retentionDuration *durpb.Duration
 	if cfg.RetentionDuration != 0 {
 		retentionDuration = durpb.New(cfg.RetentionDuration)
@@ -454,6 +635,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		Topic:                     cfg.Topic.name,
 		PushConfig:                pbPushConfig,
 		BigqueryConfig:            pbBigQueryConfig,
+		CloudStorageConfig:        pbCloudStorageConfig,
 		AckDeadlineSeconds:        trunc32(int64(cfg.AckDeadline.Seconds())),
 		RetainAckedMessages:       cfg.RetainAckedMessages,
 		MessageRetentionDuration:  retentionDuration,
@@ -502,6 +684,9 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	if bq := protoToBQConfig(pbSub.GetBigqueryConfig()); bq != nil {
 		subC.BigQueryConfig = *bq
 	}
+	if cs := protoToStorageConfig(pbSub.GetCloudStorageConfig()); cs != nil {
+		subC.CloudStorageConfig = *cs
+	}
 	return subC, nil
 }
 
@@ -521,6 +706,16 @@ func protoToPushConfig(pbPc *pb.PushConfig) *PushConfig {
 			}
 		}
 	}
+	if w := pbPc.Wrapper; w != nil {
+		switch wt := w.(type) {
+		case *pb.PushConfig_PubsubWrapper_:
+			pc.Wrapper = &PubsubWrapper{}
+		case *pb.PushConfig_NoWrapper_:
+			pc.Wrapper = &NoWrapper{
+				WriteMetadata: wt.NoWrapper.WriteMetadata,
+			}
+		}
+	}
 	return pc
 }
 
@@ -536,6 +731,31 @@ func protoToBQConfig(pbBQ *pb.BigQueryConfig) *BigQueryConfig {
 		State:             BigQueryConfigState(pbBQ.State),
 	}
 	return bq
+}
+
+func protoToStorageConfig(pbCSC *pb.CloudStorageConfig) *CloudStorageConfig {
+	if pbCSC == nil {
+		return nil
+	}
+
+	csc := &CloudStorageConfig{
+		Bucket:         pbCSC.GetBucket(),
+		FilenamePrefix: pbCSC.GetFilenamePrefix(),
+		FilenameSuffix: pbCSC.GetFilenameSuffix(),
+		MaxBytes:       pbCSC.GetMaxBytes(),
+		State:          CloudStorageConfigState(pbCSC.GetState()),
+	}
+	if dur := pbCSC.GetMaxDuration().AsDuration(); dur != 0 {
+		csc.MaxDuration = dur
+	}
+	if out := pbCSC.OutputFormat; out != nil {
+		if _, ok := out.(*pb.CloudStorageConfig_TextConfig_); ok {
+			csc.OutputFormat = &CloudStorageOutputFormatTextConfig{}
+		} else if cfg, ok := out.(*pb.CloudStorageConfig_AvroConfig_); ok {
+			csc.OutputFormat = &CloudStorageOutputFormatAvroConfig{WriteMetadata: cfg.AvroConfig.GetWriteMetadata()}
+		}
+	}
+	return csc
 }
 
 // DeadLetterPolicy specifies the conditions for dead lettering messages in
@@ -580,7 +800,7 @@ type RetryPolicy struct {
 	// given message. Value should be between 0 and 600 seconds. Defaults to 10 seconds.
 	MinimumBackoff optional.Duration
 	// MaximumBackoff is the maximum delay between consecutive deliveries of a
-	// given message. Value should be between 0 and 600 seconds. Defaults to 10 seconds.
+	// given message. Value should be between 0 and 600 seconds. Defaults to 600 seconds.
 	MaximumBackoff optional.Duration
 }
 
@@ -690,9 +910,8 @@ type ReceiveSettings struct {
 	// The default is false.
 	UseLegacyFlowControl bool
 
-	// NumGoroutines is the number of goroutines that each datastructure along
-	// the Receive path will spawn. Adjusting this value adjusts concurrency
-	// along the receive path.
+	// NumGoroutines sets the number of StreamingPull streams to pull messages
+	// from the subscription.
 	//
 	// NumGoroutines defaults to DefaultReceiveSettings.NumGoroutines.
 	//
@@ -782,13 +1001,20 @@ func (s *Subscription) Config(ctx context.Context) (SubscriptionConfig, error) {
 
 // SubscriptionConfigToUpdate describes how to update a subscription.
 type SubscriptionConfigToUpdate struct {
-	// If non-nil, the push config is changed. Cannot be set at the same time as BigQueryConfig.
+	// If non-nil, the push config is changed. At most one of PushConfig, BigQueryConfig, or CloudStorageConfig
+	// can be set.
 	// If currently in push mode, set this value to the zero value to revert to a Pull based subscription.
 	PushConfig *PushConfig
 
-	// If non-nil, the bigquery config is changed. Cannot be set at the same time as PushConfig.
+	// If non-nil, the bigquery config is changed. At most one of PushConfig, BigQueryConfig, or CloudStorageConfig
+	// can be set.
 	// If currently in bigquery mode, set this value to the zero value to revert to a Pull based subscription,
 	BigQueryConfig *BigQueryConfig
+
+	// If non-nil, the Cloud Storage config is changed. At most one of PushConfig, BigQueryConfig, or CloudStorageConfig
+	// can be set.
+	// If currently in CloudStorage mode, set this value to the zero value to revert to a Pull based subscription,
+	CloudStorageConfig *CloudStorageConfig
 
 	// If non-zero, the ack deadline is changed.
 	AckDeadline time.Duration
@@ -828,7 +1054,7 @@ type SubscriptionConfigToUpdate struct {
 func (s *Subscription) Update(ctx context.Context, cfg SubscriptionConfigToUpdate) (SubscriptionConfig, error) {
 	req := s.updateRequest(&cfg)
 	if err := cfg.validate(); err != nil {
-		return SubscriptionConfig{}, fmt.Errorf("pubsub: UpdateSubscription %v", err)
+		return SubscriptionConfig{}, fmt.Errorf("pubsub: UpdateSubscription %w", err)
 	}
 	if len(req.UpdateMask.Paths) == 0 {
 		return SubscriptionConfig{}, errors.New("pubsub: UpdateSubscription call with nothing to update")
@@ -850,6 +1076,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 	if cfg.BigQueryConfig != nil {
 		psub.BigqueryConfig = cfg.BigQueryConfig.toProto()
 		paths = append(paths, "bigquery_config")
+	}
+	if cfg.CloudStorageConfig != nil {
+		psub.CloudStorageConfig = cfg.CloudStorageConfig.toProto()
+		paths = append(paths, "cloud_storage_config")
 	}
 	if cfg.AckDeadline != 0 {
 		psub.AckDeadlineSeconds = trunc32(int64(cfg.AckDeadline.Seconds()))
@@ -1013,8 +1243,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-	s.checkOrdering(ctx)
-
 	// TODO(hongalex): move settings check to a helper function to make it more testable
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
@@ -1059,6 +1287,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxOutstandingMessages: maxCount,
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
+		clientID:               s.clientID,
 	}
 	fc := newSubscriptionFlowController(FlowControlSettings{
 		MaxOutstandingMessages: maxCount,
@@ -1163,24 +1392,22 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						return nil
 					}
 					iter.eoMu.RLock()
-					ackh, _ := msgAckHandler(msg, iter.enableExactlyOnceDelivery)
+					msgAckHandler(msg, iter.enableExactlyOnceDelivery)
 					iter.eoMu.RUnlock()
-					old := ackh.doneFunc
-					msgLen := len(msg.Data)
-					ackh.doneFunc = func(ackID string, ack bool, r *ipubsub.AckResult, receiveTime time.Time) {
-						defer fc.release(ctx, msgLen)
-						old(ackID, ack, r, receiveTime)
-					}
+
 					wg.Add(1)
-					// Make sure the subscription has ordering enabled before adding to scheduler.
+					// Only schedule messages in order if an ordering key is present and the subscriber client
+					// received the ordering flag from a Streaming Pull response.
 					var key string
-					if s.enableOrdering {
+					iter.orderingMu.RLock()
+					if iter.enableOrdering {
 						key = msg.OrderingKey
 					}
-					// TODO(deklerk): Can we have a generic handler at the
-					// constructor level?
+					iter.orderingMu.RUnlock()
+					msgLen := len(msg.Data)
 					if err := sched.Add(key, msg, func(msg interface{}) {
 						defer wg.Done()
+						defer fc.release(ctx, msgLen)
 						f(ctx2, msg.(*Message))
 					}); err != nil {
 						wg.Done()
@@ -1216,20 +1443,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	return group.Wait()
 }
 
-// checkOrdering calls Config to check theEnableMessageOrdering field.
-// If this call fails (e.g. because the service account doesn't have
-// the roles/viewer or roles/pubsub.viewer role) we will assume
-// EnableMessageOrdering to be true.
-// See: https://github.com/googleapis/google-cloud-go/issues/3884
-func (s *Subscription) checkOrdering(ctx context.Context) {
-	cfg, err := s.Config(ctx)
-	if err != nil {
-		s.enableOrdering = true
-	} else {
-		s.enableOrdering = cfg.EnableMessageOrdering
-	}
-}
-
 type pullOptions struct {
 	maxExtension       time.Duration // the maximum time to extend a message's ack deadline in total
 	maxExtensionPeriod time.Duration // the maximum time to extend a message's ack deadline per modack rpc
@@ -1241,4 +1454,5 @@ type pullOptions struct {
 	maxOutstandingMessages int
 	maxOutstandingBytes    int
 	useLegacyFlowControl   bool
+	clientID               string
 }

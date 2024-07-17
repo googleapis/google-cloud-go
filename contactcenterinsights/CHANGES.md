@@ -1,5 +1,164 @@
 # Changes
 
+## [1.13.5](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.4...contactcenterinsights/v1.13.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.13.4](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.3...contactcenterinsights/v1.13.4) (2024-07-01)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.13.3](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.2...contactcenterinsights/v1.13.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.13.2](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.1...contactcenterinsights/v1.13.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.13.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.13.0...contactcenterinsights/v1.13.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.12.1...contactcenterinsights/v1.13.0) (2024-01-30)
+
+
+### Features
+
+* **contactcenterinsights:** Add Conversation QualityMetadata ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.12.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.12.0...contactcenterinsights/v1.12.1) (2023-11-27)
+
+
+### Documentation
+
+* **contactcenterinsights:** Update IngestConversations and BulkAnalyzeConversations comments ([#9028](https://github.com/googleapis/google-cloud-go/issues/9028)) ([2020edf](https://github.com/googleapis/google-cloud-go/commit/2020edff24e3ffe127248cf9a90c67593c303e18))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.11.3...contactcenterinsights/v1.12.0) (2023-11-09)
+
+
+### Features
+
+* **contactcenterinsights:** Launch BulkDelete API, and bulk audio import via the IngestConversations API ([#8964](https://github.com/googleapis/google-cloud-go/issues/8964)) ([b44c4b3](https://github.com/googleapis/google-cloud-go/commit/b44c4b301a91e8d4d107be6056b49a8fbdac9003))
+
+## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.11.2...contactcenterinsights/v1.11.3) (2023-11-01)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.11.2](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.11.1...contactcenterinsights/v1.11.2) (2023-10-26)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.11.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.11.0...contactcenterinsights/v1.11.1) (2023-10-12)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.10.0...contactcenterinsights/v1.11.0) (2023-10-04)
+
+
+### Features
+
+* **contactcenterinsights:** Add optional SpeechConfig to UploadConversationRequest ([02a899c](https://github.com/googleapis/google-cloud-go/commit/02a899c95eb9660128506cf94525c5a75bedb308))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.9.1...contactcenterinsights/v1.10.0) (2023-07-10)
+
+
+### Features
+
+* **contactcenterinsights:** Support topic model type V2 ([8ff13bf](https://github.com/googleapis/google-cloud-go/commit/8ff13bf87397ad524019268c1146e44f3c1cd0e6))
+
+## [1.9.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.9.0...contactcenterinsights/v1.9.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.8.0...contactcenterinsights/v1.9.0) (2023-06-07)
+
+
+### Features
+
+* **contactcenterinsights:** Add the resource definition of a STT recognizer ([#8035](https://github.com/googleapis/google-cloud-go/issues/8035)) ([b119cd0](https://github.com/googleapis/google-cloud-go/commit/b119cd08924ce9b4b26c6343686a76137de7375d))
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.7.1...contactcenterinsights/v1.8.0) (2023-05-30)
+
+
+### Features
+
+* **contactcenterinsights:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.7.1](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.7.0...contactcenterinsights/v1.7.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **contactcenterinsights:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.6.0...contactcenterinsights/v1.7.0) (2023-04-11)
+
+
+### Features
+
+* **contactcenterinsights:** Launch UploadConversation endpoint ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.5.0...contactcenterinsights/v1.6.0) (2023-02-14)
+
+
+### Features
+
+* **contactcenterinsights:** Add IngestConversationsStats ([4623db8](https://github.com/googleapis/google-cloud-go/commit/4623db86fb70305278f6740999ecaee674506052))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.4.0...contactcenterinsights/v1.5.0) (2023-01-04)
+
+
+### Features
+
+* **contactcenterinsights:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.3.0...contactcenterinsights/v1.4.0) (2022-11-03)
+
+
+### Features
+
+* **contactcenterinsights:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.2.3...contactcenterinsights/v1.3.0) (2022-10-25)
+
+
+### Features
+
+* **contactcenterinsights:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.2.3](https://github.com/googleapis/google-cloud-go/compare/contactcenterinsights/v1.2.2...contactcenterinsights/v1.2.3) (2022-08-23)
 
 

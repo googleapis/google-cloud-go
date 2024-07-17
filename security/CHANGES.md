@@ -1,5 +1,145 @@
 # Changes
 
+## [1.17.3](https://github.com/googleapis/google-cloud-go/compare/security/v1.17.2...security/v1.17.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **security:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/security/v1.17.1...security/v1.17.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **security:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.17.0...security/v1.17.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **security:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.16.1...security/v1.17.0) (2024-05-22)
+
+
+### Features
+
+* **security:** New client(s) ([#10224](https://github.com/googleapis/google-cloud-go/issues/10224)) ([a495f8f](https://github.com/googleapis/google-cloud-go/commit/a495f8f0786a7be5997fa148969c13f9aa839adf))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.16.0...security/v1.16.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **security:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.6...security/v1.16.0) (2024-04-15)
+
+
+### Features
+
+* **security/privateca:** Add encoding format to `.google.cloud.security.privateca.v1.CaPool` Resource ([2cdc40a](https://github.com/googleapis/google-cloud-go/commit/2cdc40a0b4288f5ab5f2b2b8f5c1d6453a9c81ec))
+
+## [1.15.6](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.5...security/v1.15.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **security:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.15.5](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.4...security/v1.15.5) (2024-01-30)
+
+
+### Bug Fixes
+
+* **security:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.15.4](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.3...security/v1.15.4) (2023-11-01)
+
+
+### Bug Fixes
+
+* **security:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+
+## [1.15.3](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.2...security/v1.15.3) (2023-10-26)
+
+
+### Bug Fixes
+
+* **security:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+## [1.15.2](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.1...security/v1.15.2) (2023-10-12)
+
+
+### Bug Fixes
+
+* **security:** Update golang.org/x/net to v0.17.0 ([174da47](https://github.com/googleapis/google-cloud-go/commit/174da47254fefb12921bbfc65b7829a453af6f5d))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.15.0...security/v1.15.1) (2023-06-20)
+
+
+### Bug Fixes
+
+* **security:** REST query UpdateMask bug ([df52820](https://github.com/googleapis/google-cloud-go/commit/df52820b0e7721954809a8aa8700b93c5662dc9b))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.14.1...security/v1.15.0) (2023-05-30)
+
+
+### Features
+
+* **security:** Update all direct dependencies ([b340d03](https://github.com/googleapis/google-cloud-go/commit/b340d030f2b52a4ce48846ce63984b28583abde6))
+
+## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/security/v1.14.0...security/v1.14.1) (2023-05-08)
+
+
+### Bug Fixes
+
+* **security:** Update grpc to v1.55.0 ([1147ce0](https://github.com/googleapis/google-cloud-go/commit/1147ce02a990276ca4f8ab7a1ab65c14da4450ef))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.13.0...security/v1.14.0) (2023-04-11)
+
+
+### Features
+
+* **security/privateca:** Added ignore_dependent_resources to DeleteCaPoolRequest, DeleteCertificateAuthorityRequest, DisableCertificateAuthorityRequest ([fc90e54](https://github.com/googleapis/google-cloud-go/commit/fc90e54b25bda6b339266e3e5388174339ed6a44))
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.12.0...security/v1.13.0) (2023-03-15)
+
+
+### Features
+
+* **security/privateca:** Remove apiv1beta1 ([#7539](https://github.com/googleapis/google-cloud-go/issues/7539)) ([ae38ff1](https://github.com/googleapis/google-cloud-go/commit/ae38ff1eda235f6d8d9013c580d458f2f2ef451f)), refs [#7378](https://github.com/googleapis/google-cloud-go/issues/7378)
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.11.0...security/v1.12.0) (2023-02-14)
+
+
+### Features
+
+* **security/privateca:** Add X.509 Name Constraints support ([#7419](https://github.com/googleapis/google-cloud-go/issues/7419)) ([e316886](https://github.com/googleapis/google-cloud-go/commit/e316886d201ec125f8821c4849dbd0e8e714c2ed))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.10.0...security/v1.11.0) (2023-01-04)
+
+
+### Features
+
+* **security:** Add REST client ([06a54a1](https://github.com/googleapis/google-cloud-go/commit/06a54a16a5866cce966547c51e203b9e09a25bc0))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.9.0...security/v1.10.0) (2022-11-03)
+
+
+### Features
+
+* **security:** rewrite signatures in terms of new location ([3c4b2b3](https://github.com/googleapis/google-cloud-go/commit/3c4b2b34565795537aac1661e6af2442437e34ad))
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.8.0...security/v1.9.0) (2022-10-25)
+
+
+### Features
+
+* **security:** start generating stubs dir ([de2d180](https://github.com/googleapis/google-cloud-go/commit/de2d18066dc613b72f6f8db93ca60146dabcfdcc))
+
 ## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/security/v1.7.0...security/v1.8.0) (2022-09-21)
 
 

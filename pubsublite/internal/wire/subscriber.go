@@ -25,7 +25,7 @@ import (
 	"google.golang.org/grpc"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 )
 
 var (
@@ -417,15 +417,15 @@ type multiPartitionSubscriber struct {
 	// Immutable after creation.
 	subscribers map[int]*singlePartitionSubscriber
 
-	apiClientService
+	compositeService
 }
 
 func newMultiPartitionSubscriber(allClients apiClients, subFactory *singlePartitionSubscriberFactory) *multiPartitionSubscriber {
 	ms := &multiPartitionSubscriber{
-		subscribers:      make(map[int]*singlePartitionSubscriber),
-		apiClientService: apiClientService{clients: allClients},
+		subscribers: make(map[int]*singlePartitionSubscriber),
 	}
 	ms.init()
+	ms.toClose = allClients
 
 	for _, partition := range subFactory.settings.Partitions {
 		subscriber := subFactory.New(partition)
@@ -468,18 +468,18 @@ type assigningSubscriber struct {
 	// Subscribers keyed by partition number. Updated as assignments change.
 	subscribers map[int]*singlePartitionSubscriber
 
-	apiClientService
+	compositeService
 }
 
 func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.PartitionAssignmentClient, reassignmentHandler ReassignmentHandlerFunc,
 	genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
 	as := &assigningSubscriber{
-		apiClientService:    apiClientService{clients: allClients},
 		reassignmentHandler: reassignmentHandler,
 		subFactory:          subFactory,
 		subscribers:         make(map[int]*singlePartitionSubscriber),
 	}
 	as.init()
+	as.toClose = allClients
 
 	assigner, err := newAssigner(subFactory.ctx, assignmentClient, genUUID, subFactory.settings, subFactory.subscriptionPath, as.handleAssignment)
 	if err != nil {

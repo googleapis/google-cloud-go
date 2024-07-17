@@ -15,6 +15,31 @@
                 "BatchOptimizeTours"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "OptimizeTours": {
+              "methods": [
+                "OptimizeTours"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FleetRoutingClient",
+          "rpcs": {
+            "BatchOptimizeTours": {
+              "methods": [
+                "BatchOptimizeTours"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "OptimizeTours": {
               "methods": [
                 "OptimizeTours"

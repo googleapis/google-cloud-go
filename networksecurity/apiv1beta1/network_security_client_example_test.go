@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ package networksecurity_test
 import (
 	"context"
 
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	networksecurity "cloud.google.com/go/networksecurity/apiv1beta1"
 	networksecuritypb "cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewClient() {
@@ -61,62 +61,6 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_ListAuthorizationPolicies() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networksecurity.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networksecuritypb.ListAuthorizationPoliciesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#ListAuthorizationPoliciesRequest.
-	}
-	it := c.ListAuthorizationPolicies(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetAuthorizationPolicy() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networksecurity.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networksecuritypb.GetAuthorizationPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#GetAuthorizationPolicyRequest.
-	}
-	resp, err := c.GetAuthorizationPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_CreateAuthorizationPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -147,7 +91,7 @@ func ExampleClient_CreateAuthorizationPolicy() {
 	_ = resp
 }
 
-func ExampleClient_UpdateAuthorizationPolicy() {
+func ExampleClient_CreateClientTlsPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -160,11 +104,41 @@ func ExampleClient_UpdateAuthorizationPolicy() {
 	}
 	defer c.Close()
 
-	req := &networksecuritypb.UpdateAuthorizationPolicyRequest{
+	req := &networksecuritypb.CreateClientTlsPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#UpdateAuthorizationPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#CreateClientTlsPolicyRequest.
 	}
-	op, err := c.UpdateAuthorizationPolicy(ctx, req)
+	op, err := c.CreateClientTlsPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateServerTlsPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networksecurity.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networksecuritypb.CreateServerTlsPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#CreateServerTlsPolicyRequest.
+	}
+	op, err := c.CreateServerTlsPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -205,7 +179,7 @@ func ExampleClient_DeleteAuthorizationPolicy() {
 	}
 }
 
-func ExampleClient_ListServerTlsPolicies() {
+func ExampleClient_DeleteClientTlsPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -218,107 +192,19 @@ func ExampleClient_ListServerTlsPolicies() {
 	}
 	defer c.Close()
 
-	req := &networksecuritypb.ListServerTlsPoliciesRequest{
+	req := &networksecuritypb.DeleteClientTlsPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#ListServerTlsPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#DeleteClientTlsPolicyRequest.
 	}
-	it := c.ListServerTlsPolicies(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetServerTlsPolicy() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networksecurity.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networksecuritypb.GetServerTlsPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#GetServerTlsPolicyRequest.
-	}
-	resp, err := c.GetServerTlsPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateServerTlsPolicy() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networksecurity.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networksecuritypb.CreateServerTlsPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#CreateServerTlsPolicyRequest.
-	}
-	op, err := c.CreateServerTlsPolicy(ctx, req)
+	op, err := c.DeleteClientTlsPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateServerTlsPolicy() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := networksecurity.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &networksecuritypb.UpdateServerTlsPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#UpdateServerTlsPolicyRequest.
-	}
-	op, err := c.UpdateServerTlsPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleClient_DeleteServerTlsPolicy() {
@@ -346,6 +232,118 @@ func ExampleClient_DeleteServerTlsPolicy() {
 	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_GetAuthorizationPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networksecurity.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networksecuritypb.GetAuthorizationPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#GetAuthorizationPolicyRequest.
+	}
+	resp, err := c.GetAuthorizationPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetClientTlsPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networksecurity.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networksecuritypb.GetClientTlsPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#GetClientTlsPolicyRequest.
+	}
+	resp, err := c.GetClientTlsPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetServerTlsPolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networksecurity.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networksecuritypb.GetServerTlsPolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#GetServerTlsPolicyRequest.
+	}
+	resp, err := c.GetServerTlsPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListAuthorizationPolicies() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := networksecurity.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &networksecuritypb.ListAuthorizationPoliciesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#ListAuthorizationPoliciesRequest.
+	}
+	it := c.ListAuthorizationPolicies(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*networksecuritypb.ListAuthorizationPoliciesResponse)
 	}
 }
 
@@ -377,10 +375,16 @@ func ExampleClient_ListClientTlsPolicies() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*networksecuritypb.ListClientTlsPoliciesResponse)
 	}
 }
 
-func ExampleClient_GetClientTlsPolicy() {
+func ExampleClient_ListServerTlsPolicies() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -393,19 +397,31 @@ func ExampleClient_GetClientTlsPolicy() {
 	}
 	defer c.Close()
 
-	req := &networksecuritypb.GetClientTlsPolicyRequest{
+	req := &networksecuritypb.ListServerTlsPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#GetClientTlsPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#ListServerTlsPoliciesRequest.
 	}
-	resp, err := c.GetClientTlsPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListServerTlsPolicies(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*networksecuritypb.ListServerTlsPoliciesResponse)
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
-func ExampleClient_CreateClientTlsPolicy() {
+func ExampleClient_UpdateAuthorizationPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -418,11 +434,11 @@ func ExampleClient_CreateClientTlsPolicy() {
 	}
 	defer c.Close()
 
-	req := &networksecuritypb.CreateClientTlsPolicyRequest{
+	req := &networksecuritypb.UpdateAuthorizationPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#CreateClientTlsPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#UpdateAuthorizationPolicyRequest.
 	}
-	op, err := c.CreateClientTlsPolicy(ctx, req)
+	op, err := c.UpdateAuthorizationPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -465,7 +481,7 @@ func ExampleClient_UpdateClientTlsPolicy() {
 	_ = resp
 }
 
-func ExampleClient_DeleteClientTlsPolicy() {
+func ExampleClient_UpdateServerTlsPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -478,19 +494,21 @@ func ExampleClient_DeleteClientTlsPolicy() {
 	}
 	defer c.Close()
 
-	req := &networksecuritypb.DeleteClientTlsPolicyRequest{
+	req := &networksecuritypb.UpdateServerTlsPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#DeleteClientTlsPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/networksecurity/apiv1beta1/networksecuritypb#UpdateServerTlsPolicyRequest.
 	}
-	op, err := c.DeleteClientTlsPolicy(ctx, req)
+	op, err := c.UpdateServerTlsPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	err = op.Wait(ctx)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_GetLocation() {
@@ -546,6 +564,12 @@ func ExampleClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -564,7 +588,7 @@ func ExampleClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -589,7 +613,7 @@ func ExampleClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -614,7 +638,7 @@ func ExampleClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -639,7 +663,7 @@ func ExampleClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -662,7 +686,7 @@ func ExampleClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -685,7 +709,7 @@ func ExampleClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -710,7 +734,7 @@ func ExampleClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {
@@ -723,5 +747,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

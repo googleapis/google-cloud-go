@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,56 +58,6 @@ func ExampleNewBinauthzManagementServiceV1Beta1RESTClient() {
 	_ = c
 }
 
-func ExampleBinauthzManagementServiceV1Beta1Client_GetPolicy() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &binaryauthorizationpb.GetPolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#GetPolicyRequest.
-	}
-	resp, err := c.GetPolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleBinauthzManagementServiceV1Beta1Client_UpdatePolicy() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &binaryauthorizationpb.UpdatePolicyRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#UpdatePolicyRequest.
-	}
-	resp, err := c.UpdatePolicy(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleBinauthzManagementServiceV1Beta1Client_CreateAttestor() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -131,6 +81,29 @@ func ExampleBinauthzManagementServiceV1Beta1Client_CreateAttestor() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleBinauthzManagementServiceV1Beta1Client_DeleteAttestor() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &binaryauthorizationpb.DeleteAttestorRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#DeleteAttestorRequest.
+	}
+	err = c.DeleteAttestor(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleBinauthzManagementServiceV1Beta1Client_GetAttestor() {
@@ -158,7 +131,7 @@ func ExampleBinauthzManagementServiceV1Beta1Client_GetAttestor() {
 	_ = resp
 }
 
-func ExampleBinauthzManagementServiceV1Beta1Client_UpdateAttestor() {
+func ExampleBinauthzManagementServiceV1Beta1Client_GetPolicy() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -171,11 +144,11 @@ func ExampleBinauthzManagementServiceV1Beta1Client_UpdateAttestor() {
 	}
 	defer c.Close()
 
-	req := &binaryauthorizationpb.UpdateAttestorRequest{
+	req := &binaryauthorizationpb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#UpdateAttestorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#GetPolicyRequest.
 	}
-	resp, err := c.UpdateAttestor(ctx, req)
+	resp, err := c.GetPolicy(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -211,10 +184,16 @@ func ExampleBinauthzManagementServiceV1Beta1Client_ListAttestors() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*binaryauthorizationpb.ListAttestorsResponse)
 	}
 }
 
-func ExampleBinauthzManagementServiceV1Beta1Client_DeleteAttestor() {
+func ExampleBinauthzManagementServiceV1Beta1Client_UpdateAttestor() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -227,12 +206,39 @@ func ExampleBinauthzManagementServiceV1Beta1Client_DeleteAttestor() {
 	}
 	defer c.Close()
 
-	req := &binaryauthorizationpb.DeleteAttestorRequest{
+	req := &binaryauthorizationpb.UpdateAttestorRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#DeleteAttestorRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#UpdateAttestorRequest.
 	}
-	err = c.DeleteAttestor(ctx, req)
+	resp, err := c.UpdateAttestor(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleBinauthzManagementServiceV1Beta1Client_UpdatePolicy() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &binaryauthorizationpb.UpdatePolicyRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/binaryauthorization/apiv1beta1/binaryauthorizationpb#UpdatePolicyRequest.
+	}
+	resp, err := c.UpdatePolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

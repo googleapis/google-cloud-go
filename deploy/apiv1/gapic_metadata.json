@@ -15,14 +15,39 @@
                 "AbandonRelease"
               ]
             },
+            "AdvanceRollout": {
+              "methods": [
+                "AdvanceRollout"
+              ]
+            },
             "ApproveRollout": {
               "methods": [
                 "ApproveRollout"
               ]
             },
+            "CancelAutomationRun": {
+              "methods": [
+                "CancelAutomationRun"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
+              ]
+            },
+            "CancelRollout": {
+              "methods": [
+                "CancelRollout"
+              ]
+            },
+            "CreateAutomation": {
+              "methods": [
+                "CreateAutomation"
+              ]
+            },
+            "CreateCustomTargetType": {
+              "methods": [
+                "CreateCustomTargetType"
               ]
             },
             "CreateDeliveryPipeline": {
@@ -45,6 +70,16 @@
                 "CreateTarget"
               ]
             },
+            "DeleteAutomation": {
+              "methods": [
+                "DeleteAutomation"
+              ]
+            },
+            "DeleteCustomTargetType": {
+              "methods": [
+                "DeleteCustomTargetType"
+              ]
+            },
             "DeleteDeliveryPipeline": {
               "methods": [
                 "DeleteDeliveryPipeline"
@@ -60,9 +95,24 @@
                 "DeleteTarget"
               ]
             },
+            "GetAutomation": {
+              "methods": [
+                "GetAutomation"
+              ]
+            },
+            "GetAutomationRun": {
+              "methods": [
+                "GetAutomationRun"
+              ]
+            },
             "GetConfig": {
               "methods": [
                 "GetConfig"
+              ]
+            },
+            "GetCustomTargetType": {
+              "methods": [
+                "GetCustomTargetType"
               ]
             },
             "GetDeliveryPipeline": {
@@ -105,6 +155,26 @@
                 "GetTarget"
               ]
             },
+            "IgnoreJob": {
+              "methods": [
+                "IgnoreJob"
+              ]
+            },
+            "ListAutomationRuns": {
+              "methods": [
+                "ListAutomationRuns"
+              ]
+            },
+            "ListAutomations": {
+              "methods": [
+                "ListAutomations"
+              ]
+            },
+            "ListCustomTargetTypes": {
+              "methods": [
+                "ListCustomTargetTypes"
+              ]
+            },
             "ListDeliveryPipelines": {
               "methods": [
                 "ListDeliveryPipelines"
@@ -145,14 +215,284 @@
                 "RetryJob"
               ]
             },
+            "RollbackTarget": {
+              "methods": [
+                "RollbackTarget"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
               ]
             },
+            "TerminateJobRun": {
+              "methods": [
+                "TerminateJobRun"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
+              ]
+            },
+            "UpdateAutomation": {
+              "methods": [
+                "UpdateAutomation"
+              ]
+            },
+            "UpdateCustomTargetType": {
+              "methods": [
+                "UpdateCustomTargetType"
+              ]
+            },
+            "UpdateDeliveryPipeline": {
+              "methods": [
+                "UpdateDeliveryPipeline"
+              ]
+            },
+            "UpdateTarget": {
+              "methods": [
+                "UpdateTarget"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CloudDeployClient",
+          "rpcs": {
+            "AbandonRelease": {
+              "methods": [
+                "AbandonRelease"
+              ]
+            },
+            "AdvanceRollout": {
+              "methods": [
+                "AdvanceRollout"
+              ]
+            },
+            "ApproveRollout": {
+              "methods": [
+                "ApproveRollout"
+              ]
+            },
+            "CancelAutomationRun": {
+              "methods": [
+                "CancelAutomationRun"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CancelRollout": {
+              "methods": [
+                "CancelRollout"
+              ]
+            },
+            "CreateAutomation": {
+              "methods": [
+                "CreateAutomation"
+              ]
+            },
+            "CreateCustomTargetType": {
+              "methods": [
+                "CreateCustomTargetType"
+              ]
+            },
+            "CreateDeliveryPipeline": {
+              "methods": [
+                "CreateDeliveryPipeline"
+              ]
+            },
+            "CreateRelease": {
+              "methods": [
+                "CreateRelease"
+              ]
+            },
+            "CreateRollout": {
+              "methods": [
+                "CreateRollout"
+              ]
+            },
+            "CreateTarget": {
+              "methods": [
+                "CreateTarget"
+              ]
+            },
+            "DeleteAutomation": {
+              "methods": [
+                "DeleteAutomation"
+              ]
+            },
+            "DeleteCustomTargetType": {
+              "methods": [
+                "DeleteCustomTargetType"
+              ]
+            },
+            "DeleteDeliveryPipeline": {
+              "methods": [
+                "DeleteDeliveryPipeline"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteTarget": {
+              "methods": [
+                "DeleteTarget"
+              ]
+            },
+            "GetAutomation": {
+              "methods": [
+                "GetAutomation"
+              ]
+            },
+            "GetAutomationRun": {
+              "methods": [
+                "GetAutomationRun"
+              ]
+            },
+            "GetConfig": {
+              "methods": [
+                "GetConfig"
+              ]
+            },
+            "GetCustomTargetType": {
+              "methods": [
+                "GetCustomTargetType"
+              ]
+            },
+            "GetDeliveryPipeline": {
+              "methods": [
+                "GetDeliveryPipeline"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetJobRun": {
+              "methods": [
+                "GetJobRun"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetRelease": {
+              "methods": [
+                "GetRelease"
+              ]
+            },
+            "GetRollout": {
+              "methods": [
+                "GetRollout"
+              ]
+            },
+            "GetTarget": {
+              "methods": [
+                "GetTarget"
+              ]
+            },
+            "IgnoreJob": {
+              "methods": [
+                "IgnoreJob"
+              ]
+            },
+            "ListAutomationRuns": {
+              "methods": [
+                "ListAutomationRuns"
+              ]
+            },
+            "ListAutomations": {
+              "methods": [
+                "ListAutomations"
+              ]
+            },
+            "ListCustomTargetTypes": {
+              "methods": [
+                "ListCustomTargetTypes"
+              ]
+            },
+            "ListDeliveryPipelines": {
+              "methods": [
+                "ListDeliveryPipelines"
+              ]
+            },
+            "ListJobRuns": {
+              "methods": [
+                "ListJobRuns"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListReleases": {
+              "methods": [
+                "ListReleases"
+              ]
+            },
+            "ListRollouts": {
+              "methods": [
+                "ListRollouts"
+              ]
+            },
+            "ListTargets": {
+              "methods": [
+                "ListTargets"
+              ]
+            },
+            "RetryJob": {
+              "methods": [
+                "RetryJob"
+              ]
+            },
+            "RollbackTarget": {
+              "methods": [
+                "RollbackTarget"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TerminateJobRun": {
+              "methods": [
+                "TerminateJobRun"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateAutomation": {
+              "methods": [
+                "UpdateAutomation"
+              ]
+            },
+            "UpdateCustomTargetType": {
+              "methods": [
+                "UpdateCustomTargetType"
               ]
             },
             "UpdateDeliveryPipeline": {

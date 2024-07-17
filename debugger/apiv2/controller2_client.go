@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,20 +17,26 @@
 package debugger
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
 	"math"
+	"net/http"
 	"net/url"
 	"time"
 
+	debuggerpb "cloud.google.com/go/debugger/apiv2/debuggerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
-	clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
+	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/encoding/protojson"
 )
 
 var newController2ClientHook clientHook
@@ -45,6 +51,7 @@ type Controller2CallOptions struct {
 func defaultController2GRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("clouddebugger.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("clouddebugger.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouddebugger.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://clouddebugger.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
@@ -84,14 +91,42 @@ func defaultController2CallOptions() *Controller2CallOptions {
 	}
 }
 
+func defaultController2RESTCallOptions() *Controller2CallOptions {
+	return &Controller2CallOptions{
+		RegisterDebuggee: []gax.CallOption{},
+		ListActiveBreakpoints: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		UpdateActiveBreakpoint: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+	}
+}
+
 // internalController2Client is an interface that defines the methods available from Stackdriver Debugger API.
 type internalController2Client interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
-	RegisterDebuggee(context.Context, *clouddebuggerpb.RegisterDebuggeeRequest, ...gax.CallOption) (*clouddebuggerpb.RegisterDebuggeeResponse, error)
-	ListActiveBreakpoints(context.Context, *clouddebuggerpb.ListActiveBreakpointsRequest, ...gax.CallOption) (*clouddebuggerpb.ListActiveBreakpointsResponse, error)
-	UpdateActiveBreakpoint(context.Context, *clouddebuggerpb.UpdateActiveBreakpointRequest, ...gax.CallOption) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error)
+	RegisterDebuggee(context.Context, *debuggerpb.RegisterDebuggeeRequest, ...gax.CallOption) (*debuggerpb.RegisterDebuggeeResponse, error)
+	ListActiveBreakpoints(context.Context, *debuggerpb.ListActiveBreakpointsRequest, ...gax.CallOption) (*debuggerpb.ListActiveBreakpointsResponse, error)
+	UpdateActiveBreakpoint(context.Context, *debuggerpb.UpdateActiveBreakpointRequest, ...gax.CallOption) (*debuggerpb.UpdateActiveBreakpointResponse, error)
 }
 
 // Controller2Client is a client for interacting with Stackdriver Debugger API.
@@ -158,7 +193,7 @@ func (c *Controller2Client) Connection() *grpc.ClientConn {
 // This protocol allows the controller service to disable debuggees, recover
 // from data loss, or change the debuggee_id format. Agents must handle
 // debuggee_id value changing upon re-registration.
-func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *clouddebuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*clouddebuggerpb.RegisterDebuggeeResponse, error) {
+func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *debuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*debuggerpb.RegisterDebuggeeResponse, error) {
 	return c.internalClient.RegisterDebuggee(ctx, req, opts...)
 }
 
@@ -175,7 +210,7 @@ func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *clouddebu
 // Moreover, an agent should remember the breakpoints that are completed
 // until the controller removes them from the active list to avoid
 // setting those breakpoints again.
-func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *clouddebuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListActiveBreakpointsResponse, error) {
+func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *debuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*debuggerpb.ListActiveBreakpointsResponse, error) {
 	return c.internalClient.ListActiveBreakpoints(ctx, req, opts...)
 }
 
@@ -187,7 +222,7 @@ func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *clou
 // condition and expressions fields should not alter the breakpoint
 // semantics. These may only make changes such as canonicalizing a value
 // or snapping the location to the correct line of code.
-func (c *Controller2Client) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
+func (c *Controller2Client) UpdateActiveBreakpoint(ctx context.Context, req *debuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*debuggerpb.UpdateActiveBreakpointResponse, error) {
 	return c.internalClient.UpdateActiveBreakpoint(ctx, req, opts...)
 }
 
@@ -205,7 +240,7 @@ type controller2GRPCClient struct {
 	CallOptions **Controller2CallOptions
 
 	// The gRPC API client.
-	controller2Client clouddebuggerpb.Controller2Client
+	controller2Client debuggerpb.Controller2Client
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -258,7 +293,7 @@ func NewController2Client(ctx context.Context, opts ...option.ClientOption) (*Co
 	c := &controller2GRPCClient{
 		connPool:          connPool,
 		disableDeadlines:  disableDeadlines,
-		controller2Client: clouddebuggerpb.NewController2Client(connPool),
+		controller2Client: debuggerpb.NewController2Client(connPool),
 		CallOptions:       &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
@@ -280,7 +315,7 @@ func (c *controller2GRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *controller2GRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
@@ -291,7 +326,95 @@ func (c *controller2GRPCClient) Close() error {
 	return c.connPool.Close()
 }
 
-func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *clouddebuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*clouddebuggerpb.RegisterDebuggeeResponse, error) {
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type controller2RESTClient struct {
+	// The http endpoint to connect to.
+	endpoint string
+
+	// The http client.
+	httpClient *http.Client
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+
+	// Points back to the CallOptions field of the containing Controller2Client
+	CallOptions **Controller2CallOptions
+}
+
+// NewController2RESTClient creates a new controller2 rest client.
+//
+// The Controller service provides the API for orchestrating a collection of
+// debugger agents to perform debugging tasks. These agents are each attached
+// to a process of an application which may include one or more replicas.
+//
+// The debugger agents register with the Controller to identify the application
+// being debugged, the Debuggee. All agents that register with the same data,
+// represent the same Debuggee, and are assigned the same debuggee_id.
+//
+// The debugger agents call the Controller to retrieve  the list of active
+// Breakpoints. Agents with the same debuggee_id get the same breakpoints
+// list. An agent that can fulfill the breakpoint request updates the
+// Controller with the breakpoint result. The controller selects the first
+// result received and discards the rest of the results.
+// Agents that poll again for active breakpoints will no longer have
+// the completed breakpoint in the list and should remove that breakpoint from
+// their attached process.
+//
+// The Controller service does not provide a way to retrieve the results of
+// a completed breakpoint. This functionality is available using the Debugger
+// service.
+func NewController2RESTClient(ctx context.Context, opts ...option.ClientOption) (*Controller2Client, error) {
+	clientOpts := append(defaultController2RESTClientOptions(), opts...)
+	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	callOpts := defaultController2RESTCallOptions()
+	c := &controller2RESTClient{
+		endpoint:    endpoint,
+		httpClient:  httpClient,
+		CallOptions: &callOpts,
+	}
+	c.setGoogleClientInfo()
+
+	return &Controller2Client{internalClient: c, CallOptions: callOpts}, nil
+}
+
+func defaultController2RESTClientOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint("https://clouddebugger.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://clouddebugger.UNIVERSE_DOMAIN"),
+		internaloption.WithDefaultMTLSEndpoint("https://clouddebugger.mtls.googleapis.com"),
+		internaloption.WithDefaultAudience("https://clouddebugger.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+	}
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *controller2RESTClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
+	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *controller2RESTClient) Close() error {
+	// Replace httpClient with nil to force cleanup.
+	c.httpClient = nil
+	return nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated: This method always returns nil.
+func (c *controller2RESTClient) Connection() *grpc.ClientConn {
+	return nil
+}
+func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *debuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*debuggerpb.RegisterDebuggeeResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -299,7 +422,7 @@ func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *cloud
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append((*c.CallOptions).RegisterDebuggee[0:len((*c.CallOptions).RegisterDebuggee):len((*c.CallOptions).RegisterDebuggee)], opts...)
-	var resp *clouddebuggerpb.RegisterDebuggeeResponse
+	var resp *debuggerpb.RegisterDebuggeeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.controller2Client.RegisterDebuggee(ctx, req, settings.GRPC...)
@@ -311,7 +434,7 @@ func (c *controller2GRPCClient) RegisterDebuggee(ctx context.Context, req *cloud
 	return resp, nil
 }
 
-func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *clouddebuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListActiveBreakpointsResponse, error) {
+func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *debuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*debuggerpb.ListActiveBreakpointsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -321,7 +444,7 @@ func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).ListActiveBreakpoints[0:len((*c.CallOptions).ListActiveBreakpoints):len((*c.CallOptions).ListActiveBreakpoints)], opts...)
-	var resp *clouddebuggerpb.ListActiveBreakpointsResponse
+	var resp *debuggerpb.ListActiveBreakpointsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.controller2Client.ListActiveBreakpoints(ctx, req, settings.GRPC...)
@@ -333,7 +456,7 @@ func (c *controller2GRPCClient) ListActiveBreakpoints(ctx context.Context, req *
 	return resp, nil
 }
 
-func (c *controller2GRPCClient) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
+func (c *controller2GRPCClient) UpdateActiveBreakpoint(ctx context.Context, req *debuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*debuggerpb.UpdateActiveBreakpointResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -343,7 +466,7 @@ func (c *controller2GRPCClient) UpdateActiveBreakpoint(ctx context.Context, req 
 
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append((*c.CallOptions).UpdateActiveBreakpoint[0:len((*c.CallOptions).UpdateActiveBreakpoint):len((*c.CallOptions).UpdateActiveBreakpoint)], opts...)
-	var resp *clouddebuggerpb.UpdateActiveBreakpointResponse
+	var resp *debuggerpb.UpdateActiveBreakpointResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.controller2Client.UpdateActiveBreakpoint(ctx, req, settings.GRPC...)
@@ -351,6 +474,224 @@ func (c *controller2GRPCClient) UpdateActiveBreakpoint(ctx context.Context, req 
 	}, opts...)
 	if err != nil {
 		return nil, err
+	}
+	return resp, nil
+}
+
+// RegisterDebuggee registers the debuggee with the controller service.
+//
+// All agents attached to the same application must call this method with
+// exactly the same request content to get back the same stable debuggee_id.
+// Agents should call this method again whenever google.rpc.Code.NOT_FOUND
+// is returned from any controller method.
+//
+// This protocol allows the controller service to disable debuggees, recover
+// from data loss, or change the debuggee_id format. Agents must handle
+// debuggee_id value changing upon re-registration.
+func (c *controller2RESTClient) RegisterDebuggee(ctx context.Context, req *debuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*debuggerpb.RegisterDebuggeeResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/controller/debuggees/register")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).RegisterDebuggee[0:len((*c.CallOptions).RegisterDebuggee):len((*c.CallOptions).RegisterDebuggee)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &debuggerpb.RegisterDebuggeeResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListActiveBreakpoints returns the list of all active breakpoints for the debuggee.
+//
+// The breakpoint specification (location, condition, and expressions
+// fields) is semantically immutable, although the field values may
+// change. For example, an agent may update the location line number
+// to reflect the actual line where the breakpoint was set, but this
+// doesn’t change the breakpoint semantics.
+//
+// This means that an agent does not need to check if a breakpoint has changed
+// when it encounters the same breakpoint on a successive call.
+// Moreover, an agent should remember the breakpoints that are completed
+// until the controller removes them from the active list to avoid
+// setting those breakpoints again.
+func (c *controller2RESTClient) ListActiveBreakpoints(ctx context.Context, req *debuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*debuggerpb.ListActiveBreakpointsResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/controller/debuggees/%v/breakpoints", req.GetDebuggeeId())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetSuccessOnTimeout() {
+		params.Add("successOnTimeout", fmt.Sprintf("%v", req.GetSuccessOnTimeout()))
+	}
+	if req.GetWaitToken() != "" {
+		params.Add("waitToken", fmt.Sprintf("%v", req.GetWaitToken()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).ListActiveBreakpoints[0:len((*c.CallOptions).ListActiveBreakpoints):len((*c.CallOptions).ListActiveBreakpoints)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &debuggerpb.ListActiveBreakpointsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateActiveBreakpoint updates the breakpoint state or mutable fields.
+// The entire Breakpoint message must be sent back to the controller service.
+//
+// Updates to active breakpoint fields are only allowed if the new value
+// does not change the breakpoint specification. Updates to the location,
+// condition and expressions fields should not alter the breakpoint
+// semantics. These may only make changes such as canonicalizing a value
+// or snapping the location to the correct line of code.
+func (c *controller2RESTClient) UpdateActiveBreakpoint(ctx context.Context, req *debuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*debuggerpb.UpdateActiveBreakpointResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/controller/debuggees/%v/breakpoints/%v", req.GetDebuggeeId(), req.GetBreakpoint().GetId())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint.id", url.QueryEscape(req.GetBreakpoint().GetId())))
+
+	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	opts = append((*c.CallOptions).UpdateActiveBreakpoint[0:len((*c.CallOptions).UpdateActiveBreakpoint):len((*c.CallOptions).UpdateActiveBreakpoint)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &debuggerpb.UpdateActiveBreakpointResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PUT", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := ioutil.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
 	return resp, nil
 }

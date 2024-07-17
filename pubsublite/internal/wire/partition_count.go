@@ -19,8 +19,8 @@ import (
 	"time"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
+	pb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	gax "github.com/googleapis/gax-go/v2"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
 // partitionCountReceiver receives updated partition counts. Calls are

@@ -17,136 +17,184 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
-	"io/fs"
-	"log"
 	"os"
 	"os/exec"
-	"path/filepath"
+	"path"
 	"strings"
+
+	"cloud.google.com/go/internal/actions/logg"
+)
+
+var (
+	dir       = flag.String("dir", "", "the root directory to evaluate")
+	format    = flag.String("format", "plain", "output format, one of [plain|github|commit], defaults to 'plain'")
+	ghVarName = flag.String("gh-var", "submodules", "github format's variable name to set output for, defaults to 'submodules'.")
+	base      = flag.String("base", "origin/main", "the base ref to compare to, defaults to 'origin/main'")
+	// See https://git-scm.com/docs/git-diff#Documentation/git-diff.txt---diff-filterACDMRTUXB82308203
+	filter          = flag.String("diff-filter", "", "the git diff filter to apply [A|C|D|M|R|T|U|X|B] - lowercase to exclude")
+	pathFilter      = flag.String("path-filter", "", "filter commits by changes to target path(s)")
+	contentPattern  = flag.String("content-regex", "", "regular expression to execute against contents of diff")
+	commitMessage   = flag.String("commit-message", "", "message to use with the module in nested commit format")
+	commitScope     = flag.String("commit-scope", "", "scope to use in commit message - only for format=commit")
+	touch           = flag.Bool("touch", false, "touches the CHANGES.md file to elicit a submodule change - only works when used with -format=commit")
+	includeInternal = flag.Bool("internal", false, "toggles inclusion of the internal modules")
 )
 
 func main() {
+	flag.BoolVar(&logg.Quiet, "q", false, "quiet mode, minimal logging")
+	flag.Parse()
+	if *format == "commit" && (*commitMessage == "" || *commitScope == "") {
+		logg.Fatalf("requested format=commit and missing commit-message or commit-scope")
+	}
+	if *touch && *format != "commit" {
+		logg.Fatalf("requested modules be touched without using format=commit")
+	}
 	rootDir, err := os.Getwd()
 	if err != nil {
-		log.Fatal(err)
+		logg.Fatal(err)
 	}
-	if len(os.Args) > 1 {
-		rootDir = os.Args[1]
+	if *dir != "" {
+		rootDir = *dir
 	}
-	log.Printf("Root dir: %q", rootDir)
-	var modDirs []string
-	// Find all external modules
-	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if d.Name() == "internal" {
-			return filepath.SkipDir
-		}
-		if d.Name() == "go.mod" {
-			modDirs = append(modDirs, filepath.Dir(path))
-		}
-		return nil
-	})
+	logg.Printf("Root dir: %q", rootDir)
 
-	// Find relative sub-module
-	submodules := map[string]bool{}
-	for _, dir := range modDirs {
-		name, err := modName(dir)
-		if err != nil {
-			log.Fatalf("unable to lookup mod dir")
-		}
-		// Skip non-submodule
-		if name == "cloud.google.com/go" {
-			continue
-		}
-		name = strings.TrimPrefix(name, "cloud.google.com/go/")
-		submodules[name] = true
-	}
-
-	c := exec.Command("git", "pull", "--tags")
-	c.Dir = rootDir
-	if err := c.Run(); err != nil {
-		log.Fatalf("unable to pull tags: %v", err)
-	}
-
-	tag, err := latestTag(rootDir)
+	submodulesDirs, err := modDirs(rootDir)
 	if err != nil {
-		log.Fatalf("unable to find tag: %v", err)
-	}
-	log.Printf("Latest release: %s", tag)
-
-	c = exec.Command("git", "reset", "--hard", tag)
-	c.Dir = rootDir
-	if err := c.Run(); err != nil {
-		log.Fatalf("unable to reset to tag: %v", err)
+		logg.Fatal(err)
 	}
 
 	changes, err := gitFilesChanges(rootDir)
 	if err != nil {
-		log.Fatalf("unable to get files changed: %v", err)
+		logg.Fatalf("unable to get files changed: %v", err)
 	}
 
-	updatedSubmodulesSet := map[string]bool{}
+	modulesSeen := map[string]bool{}
+	updatedSubmoduleDirs := []string{}
 	for _, change := range changes {
-		//TODO(codyoss): This will not work with nested sub-modules. If we add
-		// those this needs to be updated.
-		pkg := strings.Split(change, "/")[0]
-		log.Printf("update to path: %s", pkg)
-		if submodules[pkg] {
-			updatedSubmodulesSet[pkg] = true
+		if strings.HasPrefix(change, "internal") && !*includeInternal {
+			continue
+		}
+		submodDir, ok := owner(change, submodulesDirs)
+		if !ok {
+			logg.Printf("no module for: %s", change)
+			continue
+		}
+		if _, seen := modulesSeen[submodDir]; !seen {
+			logg.Printf("changes in submodule: %s", submodDir)
+			updatedSubmoduleDirs = append(updatedSubmoduleDirs, submodDir)
+			modulesSeen[submodDir] = true
+			if *touch {
+				if err := touchModule(rootDir, submodDir); err != nil {
+					logg.Printf("error touching module %q: %v", submodDir, err)
+				}
+			}
 		}
 	}
 
-	updatedSubmodule := []string{}
-	for mod := range updatedSubmodulesSet {
-		updatedSubmodule = append(updatedSubmodule, mod)
-	}
-	b, err := json.Marshal(updatedSubmodule)
-	if err != nil {
-		log.Fatalf("unable to marshal submodules: %v", err)
-	}
-	fmt.Printf("::set-output name=submodules::%s", b)
+	output(updatedSubmoduleDirs)
 }
 
-func modName(dir string) (string, error) {
-	c := exec.Command("go", "list", "-m")
+func output(s []string) error {
+	switch *format {
+	case "github":
+		b, err := json.Marshal(s)
+		if err != nil {
+			logg.Fatalf("unable to marshal submodules: %v", err)
+		}
+		fmt.Printf("::set-output name=%s::%s", *ghVarName, b)
+	case "commit":
+		for _, m := range s {
+			fmt.Println("BEGIN_NESTED_COMMIT")
+			fmt.Printf("%s(%s):%s\n", *commitScope, m, *commitMessage)
+			fmt.Println("END_NESTED_COMMIT")
+		}
+	case "plain":
+		fallthrough
+	default:
+		fmt.Println(strings.Join(s, "\n"))
+	}
+	return nil
+}
+
+func owner(file string, submoduleDirs []string) (string, bool) {
+	submod := ""
+	for _, mod := range submoduleDirs {
+		if strings.HasPrefix(file, mod) && len(mod) > len(submod) {
+			submod = mod
+		}
+	}
+
+	return submod, submod != ""
+}
+
+func modDirs(dir string) (submodulesDirs []string, err error) {
+	c := exec.Command("go", "list", "-m", "-f", "{{.Dir}}")
 	c.Dir = dir
 	b, err := c.Output()
 	if err != nil {
-		return "", err
+		return submodulesDirs, err
 	}
-	b = bytes.TrimSpace(b)
-	return string(b), nil
-}
+	// Skip the root mod
+	list := strings.Split(strings.TrimSpace(string(b)), "\n")[1:]
 
-func latestTag(dir string) (string, error) {
-	c := exec.Command("git", "rev-list", "--tags", "--max-count=1")
-	c.Dir = dir
-	b, err := c.Output()
-	if err != nil {
-		return "", err
+	submodulesDirs = []string{}
+	for _, modPath := range list {
+		if strings.Contains(modPath, "internal") && !*includeInternal {
+			continue
+		}
+		logg.Printf("found module: %s", modPath)
+		modPath = strings.TrimPrefix(modPath, dir+"/")
+		submodulesDirs = append(submodulesDirs, modPath)
 	}
-	commit := string(bytes.TrimSpace(b))
-	c = exec.Command("git", "describe", "--tags", commit)
-	c.Dir = dir
-	b, err = c.Output()
-	if err != nil {
-		return "", err
-	}
-	b = bytes.TrimSpace(b)
-	return string(b), nil
+
+	return submodulesDirs, nil
 }
 
 func gitFilesChanges(dir string) ([]string, error) {
-	c := exec.Command("git", "diff", "--name-only", "origin/main")
+	args := []string{"diff", "--name-only"}
+	if *filter != "" {
+		args = append(args, "--diff-filter", *filter)
+	}
+	if *contentPattern != "" {
+		args = append(args, "-G", *contentPattern)
+	}
+	args = append(args, *base)
+
+	if *pathFilter != "" {
+		args = append(args, "--", *pathFilter)
+	}
+
+	c := exec.Command("git", args...)
+	logg.Printf(c.String())
+
 	c.Dir = dir
 	b, err := c.Output()
 	if err != nil {
 		return nil, err
 	}
 	b = bytes.TrimSpace(b)
-	log.Printf("Files changed:\n%s", b)
+	logg.Printf("Files changed:\n%s", b)
 	return strings.Split(string(b), "\n"), nil
+}
+
+func touchModule(root, mod string) error {
+	c := exec.Command("echo")
+	logg.Printf(c.String())
+
+	f, err := os.OpenFile(path.Join(root, mod, "CHANGES.md"), os.O_APPEND|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	c.Stdout = f
+
+	err = c.Run()
+	if err != nil {
+		return err
+	}
+
+	logg.Printf("Module touched: %s", mod)
+	return nil
 }

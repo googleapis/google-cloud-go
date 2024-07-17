@@ -23,27 +23,39 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 
+	"cloud.google.com/go/internal/protostruct"
 	"cloud.google.com/go/internal/trace"
-	wrapperspb "github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-type operator int
+type operator string
 
 const (
-	lessThan operator = iota + 1
-	lessEq
-	equal
-	greaterEq
-	greaterThan
-	in
-	notIn
-	notEqual
+	lessThan    operator = "<"
+	lessEq      operator = "<="
+	equal       operator = "="
+	greaterEq   operator = ">="
+	greaterThan operator = ">"
+	in          operator = "in"
+	notIn       operator = "not-in"
+	notEqual    operator = "!="
 
 	keyFieldName = "__key__"
 )
+
+var stringToOperator = createStringToOperator()
+
+func createStringToOperator() map[string]operator {
+	strToOp := make(map[string]operator)
+	for op := range operatorToProto {
+		strToOp[string(op)] = op
+	}
+	return strToOp
+}
 
 var operatorToProto = map[operator]pb.PropertyFilter_Operator{
 	lessThan:    pb.PropertyFilter_LESS_THAN,
@@ -54,13 +66,6 @@ var operatorToProto = map[operator]pb.PropertyFilter_Operator{
 	in:          pb.PropertyFilter_IN,
 	notIn:       pb.PropertyFilter_NOT_IN,
 	notEqual:    pb.PropertyFilter_NOT_EQUAL,
-}
-
-// filter is a conditional filter on query results.
-type filter struct {
-	FieldName string
-	Op        operator
-	Value     interface{}
 }
 
 type sortDirection bool
@@ -81,6 +86,150 @@ type order struct {
 	Direction sortDirection
 }
 
+// EntityFilter represents a datastore filter.
+type EntityFilter interface {
+	toValidFilter() (EntityFilter, error)
+	toProto() (*pb.Filter, error)
+}
+
+// PropertyFilter represents field based filter.
+//
+// The operator parameter takes the following strings: ">", "<", ">=", "<=",
+// "=", "!=", "in", and "not-in".
+// Fields are compared against the provided value using the operator.
+// Field names which contain spaces, quote marks, or operator characters
+// should be passed as quoted Go string literals as returned by strconv.Quote
+// or the fmt package's %q verb.
+type PropertyFilter struct {
+	FieldName string
+	Operator  string
+	Value     interface{}
+}
+
+func (pf PropertyFilter) toProto() (*pb.Filter, error) {
+
+	if pf.FieldName == "" {
+		return nil, errors.New("datastore: empty query filter field name")
+	}
+	v, err := interfaceToProto(reflect.ValueOf(pf.Value).Interface(), false)
+	if err != nil {
+		return nil, fmt.Errorf("datastore: bad query filter value type: %w", err)
+	}
+
+	op, isOp := stringToOperator[pf.Operator]
+	if !isOp {
+		return nil, fmt.Errorf("datastore: invalid operator %q in filter", pf.Operator)
+	}
+
+	opProto, ok := operatorToProto[op]
+	if !ok {
+		return nil, errors.New("datastore: unknown query filter operator")
+	}
+	xf := &pb.PropertyFilter{
+		Op:       opProto,
+		Property: &pb.PropertyReference{Name: pf.FieldName},
+		Value:    v,
+	}
+	return &pb.Filter{
+		FilterType: &pb.Filter_PropertyFilter{PropertyFilter: xf},
+	}, nil
+}
+
+func (pf PropertyFilter) toValidFilter() (EntityFilter, error) {
+	op := strings.TrimSpace(pf.Operator)
+	_, isOp := stringToOperator[op]
+	if !isOp {
+		return nil, fmt.Errorf("datastore: invalid operator %q in filter", pf.Operator)
+	}
+
+	unquotedFieldName, err := unquote(pf.FieldName)
+	if err != nil {
+		return nil, fmt.Errorf("datastore: invalid syntax for quoted field name %q", pf.FieldName)
+	}
+
+	return PropertyFilter{Operator: op, FieldName: unquotedFieldName, Value: pf.Value}, nil
+}
+
+// CompositeFilter represents datastore composite filters.
+type CompositeFilter interface {
+	EntityFilter
+	isCompositeFilter()
+}
+
+// OrFilter represents a union of two or more filters.
+type OrFilter struct {
+	Filters []EntityFilter
+}
+
+func (OrFilter) isCompositeFilter() {}
+
+func (of OrFilter) toProto() (*pb.Filter, error) {
+
+	var pbFilters []*pb.Filter
+
+	for _, filter := range of.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters = append(pbFilters, pbFilter)
+	}
+	return &pb.Filter{FilterType: &pb.Filter_CompositeFilter{CompositeFilter: &pb.CompositeFilter{
+		Op:      pb.CompositeFilter_OR,
+		Filters: pbFilters,
+	}}}, nil
+}
+
+func (of OrFilter) toValidFilter() (EntityFilter, error) {
+	var validFilters []EntityFilter
+	for _, filter := range of.Filters {
+		validFilter, err := filter.toValidFilter()
+		if err != nil {
+			return nil, err
+		}
+		validFilters = append(validFilters, validFilter)
+	}
+	of.Filters = validFilters
+	return of, nil
+}
+
+// AndFilter represents the intersection of two or more filters.
+type AndFilter struct {
+	Filters []EntityFilter
+}
+
+func (AndFilter) isCompositeFilter() {}
+
+func (af AndFilter) toProto() (*pb.Filter, error) {
+
+	var pbFilters []*pb.Filter
+
+	for _, filter := range af.Filters {
+		pbFilter, err := filter.toProto()
+		if err != nil {
+			return nil, err
+		}
+		pbFilters = append(pbFilters, pbFilter)
+	}
+	return &pb.Filter{FilterType: &pb.Filter_CompositeFilter{CompositeFilter: &pb.CompositeFilter{
+		Op:      pb.CompositeFilter_AND,
+		Filters: pbFilters,
+	}}}, nil
+}
+
+func (af AndFilter) toValidFilter() (EntityFilter, error) {
+	var validFilters []EntityFilter
+	for _, filter := range af.Filters {
+		validFilter, err := filter.toValidFilter()
+		if err != nil {
+			return nil, err
+		}
+		validFilters = append(validFilters, validFilter)
+	}
+	af.Filters = validFilters
+	return af, nil
+}
+
 // NewQuery creates a new Query for a specific entity kind.
 //
 // An empty kind means to return all entities, including entities created and
@@ -97,7 +246,7 @@ func NewQuery(kind string) *Query {
 type Query struct {
 	kind       string
 	ancestor   *Key
-	filter     []filter
+	filter     []EntityFilter
 	order      []order
 	projection []string
 
@@ -121,7 +270,7 @@ func (q *Query) clone() *Query {
 	x := *q
 	// Copy the contents of the slice-typed fields to a new backing store.
 	if len(q.filter) > 0 {
-		x.filter = make([]filter, len(q.filter))
+		x.filter = make([]EntityFilter, len(q.filter))
 		copy(x.filter, q.filter)
 	}
 	if len(q.order) > 0 {
@@ -176,6 +325,22 @@ func (q *Query) Transaction(t *Transaction) *Query {
 	return q
 }
 
+// FilterEntity returns a query with provided filter.
+//
+// Filter can be a single field comparison or a composite filter
+// AndFilter and OrFilter are supported composite filters
+// Filters in multiple calls are joined together by AND
+func (q *Query) FilterEntity(ef EntityFilter) *Query {
+	q = q.clone()
+	vf, err := ef.toValidFilter()
+	if err != nil {
+		q.err = err
+		return q
+	}
+	q.filter = append(q.filter, vf)
+	return q
+}
+
 // Filter returns a derivative query with a field-based filter.
 //
 // Deprecated: Use the FilterField method instead, which supports the same
@@ -208,43 +373,14 @@ func (q *Query) Filter(filterStr string, value interface{}) *Query {
 // Field names which contain spaces, quote marks, or operator characters
 // should be passed as quoted Go string literals as returned by strconv.Quote
 // or the fmt package's %q verb.
+// For "in" and "not-in" operator, use []interface{} as value. For instance
+// query.FilterField("Month", "in", []interface{}{1, 2, 3, 4})
 func (q *Query) FilterField(fieldName, operator string, value interface{}) *Query {
-	q = q.clone()
-
-	f := filter{
+	return q.FilterEntity(PropertyFilter{
 		FieldName: fieldName,
+		Operator:  operator,
 		Value:     value,
-	}
-
-	switch o := strings.TrimSpace(operator); o {
-	case "<=":
-		f.Op = lessEq
-	case ">=":
-		f.Op = greaterEq
-	case "<":
-		f.Op = lessThan
-	case ">":
-		f.Op = greaterThan
-	case "=":
-		f.Op = equal
-	case "in":
-		f.Op = in
-	case "not-in":
-		f.Op = notIn
-	case "!=":
-		f.Op = notEqual
-	default:
-		q.err = fmt.Errorf("datastore: invalid operator %q in filter", operator)
-		return q
-	}
-	var err error
-	f.FieldName, err = unquote(f.FieldName)
-	if err != nil {
-		q.err = fmt.Errorf("datastore: invalid syntax for quoted field name %q", f.FieldName)
-		return q
-	}
-	q.filter = append(q.filter, f)
-	return q
+	})
 }
 
 // Order returns a derivative query with a field-based sort order. Orders are
@@ -364,13 +500,28 @@ func (q *Query) End(c Cursor) *Query {
 	return q
 }
 
-// toProto converts the query to a protocol buffer.
-func (q *Query) toProto(req *pb.RunQueryRequest) error {
+// toRunQueryRequest converts the query to a protocol buffer.
+func (q *Query) toRunQueryRequest(req *pb.RunQueryRequest) error {
+	dst, err := q.toProto()
+	if err != nil {
+		return err
+	}
+
+	req.ReadOptions, err = parseQueryReadOptions(q.eventual, q.trans)
+	if err != nil {
+		return err
+	}
+
+	req.QueryType = &pb.RunQueryRequest_Query{Query: dst}
+	return nil
+}
+
+func (q *Query) toProto() (*pb.Query, error) {
 	if len(q.projection) != 0 && q.keysOnly {
-		return errors.New("datastore: query cannot both project and be keys-only")
+		return nil, errors.New("datastore: query cannot both project and be keys-only")
 	}
 	if len(q.distinctOn) != 0 && q.distinct {
-		return errors.New("datastore: query cannot be both distinct and distinct-on")
+		return nil, errors.New("datastore: query cannot be both distinct and distinct-on")
 	}
 	dst := &pb.Query{}
 	if q.kind != "" {
@@ -394,28 +545,13 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	if q.keysOnly {
 		dst.Projection = []*pb.Projection{{Property: &pb.PropertyReference{Name: keyFieldName}}}
 	}
-
 	var filters []*pb.Filter
 	for _, qf := range q.filter {
-		if qf.FieldName == "" {
-			return errors.New("datastore: empty query filter field name")
-		}
-		v, err := interfaceToProto(reflect.ValueOf(qf.Value).Interface(), false)
+		pbFilter, err := qf.toProto()
 		if err != nil {
-			return fmt.Errorf("datastore: bad query filter value type: %v", err)
+			return nil, err
 		}
-		op, ok := operatorToProto[qf.Op]
-		if !ok {
-			return errors.New("datastore: unknown query filter operator")
-		}
-		xf := &pb.PropertyFilter{
-			Op:       op,
-			Property: &pb.PropertyReference{Name: qf.FieldName},
-			Value:    v,
-		}
-		filters = append(filters, &pb.Filter{
-			FilterType: &pb.Filter_PropertyFilter{PropertyFilter: xf},
-		})
+		filters = append(filters, pbFilter)
 	}
 
 	if q.ancestor != nil {
@@ -438,7 +574,7 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 
 	for _, qo := range q.order {
 		if qo.FieldName == "" {
-			return errors.New("datastore: empty query order field name")
+			return nil, errors.New("datastore: empty query order field name")
 		}
 		xo := &pb.PropertyOrder{
 			Property:  &pb.PropertyReference{Name: qo.FieldName},
@@ -453,24 +589,7 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 	dst.StartCursor = q.start
 	dst.EndCursor = q.end
 
-	if t := q.trans; t != nil {
-		if t.id == nil {
-			return errExpiredTransaction
-		}
-		if q.eventual {
-			return errors.New("datastore: cannot use EventualConsistency query in a transaction")
-		}
-		req.ReadOptions = &pb.ReadOptions{
-			ConsistencyType: &pb.ReadOptions_Transaction{Transaction: t.id},
-		}
-	}
-
-	if q.eventual {
-		req.ReadOptions = &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}
-	}
-
-	req.QueryType = &pb.RunQueryRequest_Query{Query: dst}
-	return nil
+	return dst, nil
 }
 
 // Count returns the number of results for the given query.
@@ -479,6 +598,8 @@ func (q *Query) toProto(req *pb.RunQueryRequest) error {
 // the sum of the query's offset and limit. Unless the result count is
 // expected to be small, it is best to specify a limit; otherwise Count will
 // continue until it finishes counting or the provided context expires.
+//
+// Deprecated. Use Client.RunAggregationQuery() instead.
 func (c *Client) Count(ctx context.Context, q *Query) (n int, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Count")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -508,6 +629,107 @@ func (c *Client) Count(ctx context.Context, q *Query) (n int, err error) {
 	}
 }
 
+// RunOption lets the user provide options while running a query
+type RunOption interface {
+	apply(*runQuerySettings) error
+}
+
+// ExplainOptions is explain options for the query.
+//
+// Query Explain feature is still in preview and not yet publicly available.
+// Pre-GA features might have limited support and can change at any time.
+type ExplainOptions struct {
+	// When false (the default), the query will be planned, returning only
+	// metrics from the planning stages.
+	// When true, the query will be planned and executed, returning the full
+	// query results along with both planning and execution stage metrics.
+	Analyze bool
+}
+
+func (e ExplainOptions) apply(s *runQuerySettings) error {
+	if s.explainOptions != nil {
+		return errors.New("datastore: ExplainOptions can be specified only once")
+	}
+	pbExplainOptions := pb.ExplainOptions{
+		Analyze: e.Analyze,
+	}
+	s.explainOptions = &pbExplainOptions
+	return nil
+}
+
+type runQuerySettings struct {
+	explainOptions *pb.ExplainOptions
+}
+
+// newRunQuerySettings creates a runQuerySettings with a given RunOption slice.
+func newRunQuerySettings(opts []RunOption) (*runQuerySettings, error) {
+	s := &runQuerySettings{}
+	for _, o := range opts {
+		if o == nil {
+			return nil, errors.New("datastore: RunOption cannot be nil")
+		}
+		err := o.apply(s)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return s, nil
+}
+
+// ExplainMetrics for the query.
+type ExplainMetrics struct {
+	// Planning phase information for the query.
+	PlanSummary *PlanSummary
+
+	// Aggregated stats from the execution of the query. Only present when
+	// ExplainOptions.Analyze is set to true.
+	ExecutionStats *ExecutionStats
+}
+
+// PlanSummary represents planning phase information for the query.
+type PlanSummary struct {
+	// The indexes selected for the query. For example:
+	//
+	//	[
+	//	  {"query_scope": "Collection", "properties": "(foo ASC, __name__ ASC)"},
+	//	  {"query_scope": "Collection", "properties": "(bar ASC, __name__ ASC)"}
+	//	]
+	IndexesUsed []*map[string]interface{}
+}
+
+// ExecutionStats represents execution statistics for the query.
+type ExecutionStats struct {
+	// Total number of results returned, including documents, projections,
+	// aggregation results, keys.
+	ResultsReturned int64
+	// Total time to execute the query in the backend.
+	ExecutionDuration *time.Duration
+	// Total billable read operations.
+	ReadOperations int64
+	// Debugging statistics from the execution of the query. Note that the
+	// debugging stats are subject to change as Firestore evolves. It could
+	// include:
+	//
+	//	{
+	//	  "indexes_entries_scanned": "1000",
+	//	  "documents_scanned": "20",
+	//	  "billing_details" : {
+	//	     "documents_billable": "20",
+	//	     "index_entries_billable": "1000",
+	//	     "min_query_cost": "0"
+	//	  }
+	//	}
+	DebugStats *map[string]interface{}
+}
+
+// GetAllWithOptionsResult is the result of call to GetAllWithOptions method
+type GetAllWithOptionsResult struct {
+	Keys []*Key
+
+	// Query explain metrics. This is only present when ExplainOptions is provided.
+	ExplainMetrics *ExplainMetrics
+}
+
 // GetAll runs the provided query in the given context and returns all keys
 // that match that query, as well as appending the values to dst.
 //
@@ -532,6 +754,15 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.GetAll")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	res, err := c.GetAllWithOptions(ctx, q, dst)
+	return res.Keys, err
+}
+
+// GetAllWithOptions is similar to GetAll but runs the query with provided options
+func (c *Client) GetAllWithOptions(ctx context.Context, q *Query, dst interface{}, opts ...RunOption) (res GetAllWithOptionsResult, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.GetAllWithOptions")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	var (
 		dv               reflect.Value
 		mat              multiArgType
@@ -541,22 +772,23 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 	if !q.keysOnly {
 		dv = reflect.ValueOf(dst)
 		if dv.Kind() != reflect.Ptr || dv.IsNil() {
-			return nil, ErrInvalidEntityType
+			return res, ErrInvalidEntityType
 		}
 		dv = dv.Elem()
 		mat, elemType = checkMultiArg(dv)
 		if mat == multiArgTypeInvalid || mat == multiArgTypeInterface {
-			return nil, ErrInvalidEntityType
+			return res, ErrInvalidEntityType
 		}
 	}
 
-	for t := c.Run(ctx, q); ; {
+	for t := c.RunWithOptions(ctx, q, opts...); ; {
 		k, e, err := t.next()
+		res.ExplainMetrics = t.ExplainMetrics
 		if err == iterator.Done {
 			break
 		}
 		if err != nil {
-			return keys, err
+			return res, err
 		}
 		if !q.keysOnly {
 			ev := reflect.New(elemType)
@@ -583,7 +815,7 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 					// an ErrFieldMismatch is returned.
 					errFieldMismatch = err
 				} else {
-					return keys, err
+					return res, err
 				}
 			}
 			if mat != multiArgTypeStructPtr {
@@ -591,15 +823,29 @@ func (c *Client) GetAll(ctx context.Context, q *Query, dst interface{}) (keys []
 			}
 			dv.Set(reflect.Append(dv, ev))
 		}
-		keys = append(keys, k)
+		res.Keys = append(res.Keys, k)
 	}
-	return keys, errFieldMismatch
+	return res, errFieldMismatch
 }
 
-// Run runs the given query in the given context.
-func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
+// Run runs the given query in the given context
+func (c *Client) Run(ctx context.Context, q *Query) (it *Iterator) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.Run")
+	defer func() { trace.EndSpan(ctx, it.err) }()
+	return c.run(ctx, q)
+}
+
+// RunWithOptions runs the given query in the given context with the provided options
+func (c *Client) RunWithOptions(ctx context.Context, q *Query, opts ...RunOption) (it *Iterator) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunWithOptions")
+	defer func() { trace.EndSpan(ctx, it.err) }()
+	return c.run(ctx, q, opts...)
+}
+
+// run runs the given query in the given context with the provided options
+func (c *Client) run(ctx context.Context, q *Query, opts ...RunOption) *Iterator {
 	if q.err != nil {
-		return &Iterator{err: q.err}
+		return &Iterator{ctx: ctx, err: q.err}
 	}
 	t := &Iterator{
 		ctx:          ctx,
@@ -610,8 +856,11 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		pageCursor:   q.start,
 		entityCursor: q.start,
 		req: &pb.RunQueryRequest{
-			ProjectId: c.dataset,
+			ProjectId:  c.dataset,
+			DatabaseId: c.databaseID,
 		},
+		trans:    q.trans,
+		eventual: q.eventual,
 	}
 
 	if q.namespace != "" {
@@ -620,10 +869,142 @@ func (c *Client) Run(ctx context.Context, q *Query) *Iterator {
 		}
 	}
 
-	if err := q.toProto(t.req); err != nil {
+	runSettings, err := newRunQuerySettings(opts)
+	if err != nil {
+		t.err = err
+		return t
+	}
+
+	if runSettings.explainOptions != nil {
+		t.req.ExplainOptions = runSettings.explainOptions
+	}
+
+	if err := q.toRunQueryRequest(t.req); err != nil {
 		t.err = err
 	}
 	return t
+}
+
+// RunAggregationQuery gets aggregation query (e.g. COUNT) results from the service.
+func (c *Client) RunAggregationQuery(ctx context.Context, aq *AggregationQuery) (ar AggregationResult, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunAggregationQuery")
+	defer func() { trace.EndSpan(ctx, err) }()
+	aro, err := c.RunAggregationQueryWithOptions(ctx, aq)
+	return aro.Result, err
+}
+
+// RunAggregationQueryWithOptions runs aggregation query (e.g. COUNT) with provided options and returns results from the service.
+func (c *Client) RunAggregationQueryWithOptions(ctx context.Context, aq *AggregationQuery, opts ...RunOption) (ar AggregationWithOptionsResult, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Query.RunAggregationQueryWithOptions")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	if aq == nil {
+		return ar, errors.New("datastore: aggregation query cannot be nil")
+	}
+
+	if aq.query == nil {
+		return ar, errors.New("datastore: aggregation query must include nested query")
+	}
+
+	if len(aq.aggregationQueries) == 0 {
+		return ar, errors.New("datastore: aggregation query must contain one or more operators (e.g. count)")
+	}
+
+	q, err := aq.query.toProto()
+	if err != nil {
+		return ar, err
+	}
+
+	req := &pb.RunAggregationQueryRequest{
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		QueryType: &pb.RunAggregationQueryRequest_AggregationQuery{
+			AggregationQuery: &pb.AggregationQuery{
+				QueryType: &pb.AggregationQuery_NestedQuery{
+					NestedQuery: q,
+				},
+				Aggregations: aq.aggregationQueries,
+			},
+		},
+	}
+
+	if aq.query.namespace != "" {
+		req.PartitionId = &pb.PartitionId{
+			NamespaceId: aq.query.namespace,
+		}
+	}
+
+	runSettings, err := newRunQuerySettings(opts)
+	if err != nil {
+		return ar, err
+	}
+	if runSettings.explainOptions != nil {
+		req.ExplainOptions = runSettings.explainOptions
+	}
+
+	// Parse the read options.
+	txn := aq.query.trans
+	if txn != nil {
+		defer txn.stateLockDeferUnlock()()
+	}
+
+	req.ReadOptions, err = parseQueryReadOptions(aq.query.eventual, txn)
+	if err != nil {
+		return ar, err
+	}
+
+	resp, err := c.client.RunAggregationQuery(ctx, req)
+	if err != nil {
+		return ar, err
+	}
+
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.setToInProgress(resp.Transaction)
+	}
+
+	if req.ExplainOptions == nil || req.ExplainOptions.Analyze {
+		ar.Result = make(AggregationResult)
+		// TODO(developer): change batch parsing logic if other aggregations are supported.
+		for _, a := range resp.Batch.AggregationResults {
+			for k, v := range a.AggregateProperties {
+				ar.Result[k] = v
+			}
+		}
+	}
+
+	ar.ExplainMetrics = fromPbExplainMetrics(resp.GetExplainMetrics())
+	return ar, nil
+}
+
+func validateReadOptions(eventual bool, t *Transaction) error {
+	if t == nil {
+		return nil
+	}
+	if eventual {
+		return errEventualConsistencyTransaction
+	}
+	if t.state == transactionStateExpired {
+		return errExpiredTransaction
+	}
+	return nil
+}
+
+// parseQueryReadOptions translates Query read options into protobuf format.
+func parseQueryReadOptions(eventual bool, t *Transaction) (*pb.ReadOptions, error) {
+	err := validateReadOptions(eventual, t)
+	if err != nil {
+		return nil, err
+	}
+
+	if t != nil {
+		return t.parseReadOptions()
+	}
+
+	if eventual {
+		return &pb.ReadOptions{ConsistencyType: &pb.ReadOptions_ReadConsistency_{ReadConsistency: pb.ReadOptions_EVENTUAL}}, nil
+	}
+
+	return nil, nil
 }
 
 // Iterator is the result of running a query.
@@ -655,6 +1036,15 @@ type Iterator struct {
 	pageCursor []byte
 	// entityCursor is the compiled cursor of the next result.
 	entityCursor []byte
+
+	// Query explain metrics. This is only present when ExplainOptions is used.
+	ExplainMetrics *ExplainMetrics
+
+	// trans records the transaction in which the query was run
+	trans *Transaction
+
+	// eventual records whether the query was eventual
+	eventual bool
 }
 
 // Next returns the key of the next result. When there are no more results,
@@ -721,10 +1111,32 @@ func (t *Iterator) nextBatch() error {
 		q.Limit = nil
 	}
 
+	txn := t.trans
+	if txn != nil {
+		defer txn.stateLockDeferUnlock()()
+	}
+
+	var err error
+	t.req.ReadOptions, err = parseQueryReadOptions(t.eventual, txn)
+	if err != nil {
+		return err
+	}
+
 	// Run the query.
 	resp, err := t.client.client.RunQuery(t.ctx, t.req)
 	if err != nil {
 		return err
+	}
+
+	if txn != nil && txn.state == transactionStateNotStarted {
+		txn.setToInProgress(resp.Transaction)
+	}
+
+	if t.req.ExplainOptions != nil && !t.req.ExplainOptions.Analyze {
+		// No results to process
+		t.limit = 0
+		t.ExplainMetrics = fromPbExplainMetrics(resp.GetExplainMetrics())
+		return nil
 	}
 
 	// Adjust any offset from skipped results.
@@ -766,7 +1178,54 @@ func (t *Iterator) nextBatch() error {
 	t.pageCursor = resp.Batch.EndCursor
 
 	t.results = resp.Batch.EntityResults
+	t.ExplainMetrics = fromPbExplainMetrics(resp.GetExplainMetrics())
 	return nil
+}
+
+func fromPbExplainMetrics(pbExplainMetrics *pb.ExplainMetrics) *ExplainMetrics {
+	if pbExplainMetrics == nil {
+		return nil
+	}
+	explainMetrics := &ExplainMetrics{
+		PlanSummary:    fromPbPlanSummary(pbExplainMetrics.PlanSummary),
+		ExecutionStats: fromPbExecutionStats(pbExplainMetrics.ExecutionStats),
+	}
+	return explainMetrics
+}
+
+func fromPbPlanSummary(pbPlanSummary *pb.PlanSummary) *PlanSummary {
+	if pbPlanSummary == nil {
+		return nil
+	}
+
+	planSummary := &PlanSummary{}
+	indexesUsed := []*map[string]interface{}{}
+	for _, pbIndexUsed := range pbPlanSummary.GetIndexesUsed() {
+		indexUsed := protostruct.DecodeToMap(pbIndexUsed)
+		indexesUsed = append(indexesUsed, &indexUsed)
+	}
+
+	planSummary.IndexesUsed = indexesUsed
+	return planSummary
+}
+
+func fromPbExecutionStats(pbstats *pb.ExecutionStats) *ExecutionStats {
+	if pbstats == nil {
+		return nil
+	}
+
+	executionStats := &ExecutionStats{
+		ResultsReturned: pbstats.GetResultsReturned(),
+		ReadOperations:  pbstats.GetReadOperations(),
+	}
+
+	executionDuration := pbstats.GetExecutionDuration().AsDuration()
+	executionStats.ExecutionDuration = &executionDuration
+
+	debugStats := protostruct.DecodeToMap(pbstats.GetDebugStats())
+	executionStats.DebugStats = &debugStats
+
+	return executionStats
 }
 
 // Cursor returns a cursor for the iterator's current location.
@@ -818,4 +1277,92 @@ func DecodeCursor(s string) (Cursor, error) {
 		return Cursor{}, err
 	}
 	return Cursor{b}, nil
+}
+
+// NewAggregationQuery returns an AggregationQuery with this query as its
+// base query.
+func (q *Query) NewAggregationQuery() *AggregationQuery {
+	return &AggregationQuery{
+		query:              q,
+		aggregationQueries: make([]*pb.AggregationQuery_Aggregation, 0),
+	}
+}
+
+// AggregationQuery allows for generating aggregation results of an underlying
+// basic query. A single AggregationQuery can contain multiple aggregations.
+type AggregationQuery struct {
+	query              *Query                             // query contains a reference pointer to the underlying structured query.
+	aggregationQueries []*pb.AggregationQuery_Aggregation // aggregateQueries contains all of the queries for this request.
+}
+
+// WithCount specifies that the aggregation query provide a count of results
+// returned by the underlying Query.
+func (aq *AggregationQuery) WithCount(alias string) *AggregationQuery {
+	if alias == "" {
+		alias = fmt.Sprintf("%s_%s", "count", aq.query.kind)
+	}
+
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias:    alias,
+		Operator: &pb.AggregationQuery_Aggregation_Count_{},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// WithSum specifies that the aggregation query should provide a sum of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithSum(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Sum_{
+			Sum: &pb.AggregationQuery_Aggregation_Sum{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// WithAvg specifies that the aggregation query should provide an average of the values
+// of the provided field in the results returned by the underlying Query.
+// The alias argument can be empty or a valid Datastore entity property name. It can be used
+// as key in the AggregationResult to get the sum value. If alias is empty, Datastore
+// will autogenerate a key.
+func (aq *AggregationQuery) WithAvg(fieldName string, alias string) *AggregationQuery {
+	aqpb := &pb.AggregationQuery_Aggregation{
+		Alias: alias,
+		Operator: &pb.AggregationQuery_Aggregation_Avg_{
+			Avg: &pb.AggregationQuery_Aggregation_Avg{
+				Property: &pb.PropertyReference{
+					Name: fieldName,
+				},
+			},
+		},
+	}
+
+	aq.aggregationQueries = append(aq.aggregationQueries, aqpb)
+
+	return aq
+}
+
+// AggregationResult contains the results of an aggregation query.
+type AggregationResult map[string]interface{}
+
+// AggregationWithOptionsResult contains the results of an aggregation query run with options.
+type AggregationWithOptionsResult struct {
+	Result AggregationResult
+
+	// Query explain metrics. This is only present when ExplainOptions is provided.
+	ExplainMetrics *ExplainMetrics
 }

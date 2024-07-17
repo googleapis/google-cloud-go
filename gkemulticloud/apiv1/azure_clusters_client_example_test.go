@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,9 @@ import (
 	"context"
 
 	gkemulticloud "cloud.google.com/go/gkemulticloud/apiv1"
+	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	gkemulticloudpb "google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1"
 )
 
 func ExampleNewAzureClustersClient() {
@@ -56,7 +57,7 @@ func ExampleAzureClustersClient_CreateAzureClient() {
 
 	req := &gkemulticloudpb.CreateAzureClientRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#CreateAzureClientRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#CreateAzureClientRequest.
 	}
 	op, err := c.CreateAzureClient(ctx, req)
 	if err != nil {
@@ -69,90 +70,6 @@ func ExampleAzureClustersClient_CreateAzureClient() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleAzureClustersClient_GetAzureClient() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gkemulticloud.NewAzureClustersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gkemulticloudpb.GetAzureClientRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#GetAzureClientRequest.
-	}
-	resp, err := c.GetAzureClient(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAzureClustersClient_ListAzureClients() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gkemulticloud.NewAzureClustersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gkemulticloudpb.ListAzureClientsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#ListAzureClientsRequest.
-	}
-	it := c.ListAzureClients(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleAzureClustersClient_DeleteAzureClient() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gkemulticloud.NewAzureClustersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gkemulticloudpb.DeleteAzureClientRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#DeleteAzureClientRequest.
-	}
-	op, err := c.DeleteAzureClient(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }
 
 func ExampleAzureClustersClient_CreateAzureCluster() {
@@ -170,7 +87,7 @@ func ExampleAzureClustersClient_CreateAzureCluster() {
 
 	req := &gkemulticloudpb.CreateAzureClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#CreateAzureClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#CreateAzureClusterRequest.
 	}
 	op, err := c.CreateAzureCluster(ctx, req)
 	if err != nil {
@@ -185,7 +102,7 @@ func ExampleAzureClustersClient_CreateAzureCluster() {
 	_ = resp
 }
 
-func ExampleAzureClustersClient_UpdateAzureCluster() {
+func ExampleAzureClustersClient_CreateAzureNodePool() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -198,11 +115,11 @@ func ExampleAzureClustersClient_UpdateAzureCluster() {
 	}
 	defer c.Close()
 
-	req := &gkemulticloudpb.UpdateAzureClusterRequest{
+	req := &gkemulticloudpb.CreateAzureNodePoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#UpdateAzureClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#CreateAzureNodePoolRequest.
 	}
-	op, err := c.UpdateAzureCluster(ctx, req)
+	op, err := c.CreateAzureNodePool(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -215,7 +132,7 @@ func ExampleAzureClustersClient_UpdateAzureCluster() {
 	_ = resp
 }
 
-func ExampleAzureClustersClient_GetAzureCluster() {
+func ExampleAzureClustersClient_DeleteAzureClient() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -228,46 +145,18 @@ func ExampleAzureClustersClient_GetAzureCluster() {
 	}
 	defer c.Close()
 
-	req := &gkemulticloudpb.GetAzureClusterRequest{
+	req := &gkemulticloudpb.DeleteAzureClientRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#GetAzureClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#DeleteAzureClientRequest.
 	}
-	resp, err := c.GetAzureCluster(ctx, req)
+	op, err := c.DeleteAzureClient(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
 
-func ExampleAzureClustersClient_ListAzureClusters() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gkemulticloudpb.ListAzureClustersRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#ListAzureClustersRequest.
-	}
-	it := c.ListAzureClusters(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
 	}
 }
 
@@ -286,9 +175,37 @@ func ExampleAzureClustersClient_DeleteAzureCluster() {
 
 	req := &gkemulticloudpb.DeleteAzureClusterRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#DeleteAzureClusterRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#DeleteAzureClusterRequest.
 	}
 	op, err := c.DeleteAzureCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAzureClustersClient_DeleteAzureNodePool() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.DeleteAzureNodePoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#DeleteAzureNodePoolRequest.
+	}
+	op, err := c.DeleteAzureNodePool(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -314,7 +231,7 @@ func ExampleAzureClustersClient_GenerateAzureAccessToken() {
 
 	req := &gkemulticloudpb.GenerateAzureAccessTokenRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#GenerateAzureAccessTokenRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GenerateAzureAccessTokenRequest.
 	}
 	resp, err := c.GenerateAzureAccessToken(ctx, req)
 	if err != nil {
@@ -324,7 +241,7 @@ func ExampleAzureClustersClient_GenerateAzureAccessToken() {
 	_ = resp
 }
 
-func ExampleAzureClustersClient_CreateAzureNodePool() {
+func ExampleAzureClustersClient_GenerateAzureClusterAgentToken() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -337,11 +254,297 @@ func ExampleAzureClustersClient_CreateAzureNodePool() {
 	}
 	defer c.Close()
 
-	req := &gkemulticloudpb.CreateAzureNodePoolRequest{
+	req := &gkemulticloudpb.GenerateAzureClusterAgentTokenRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#CreateAzureNodePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GenerateAzureClusterAgentTokenRequest.
 	}
-	op, err := c.CreateAzureNodePool(ctx, req)
+	resp, err := c.GenerateAzureClusterAgentToken(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAzureClustersClient_GetAzureClient() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GetAzureClientRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAzureClientRequest.
+	}
+	resp, err := c.GetAzureClient(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAzureClustersClient_GetAzureCluster() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GetAzureClusterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAzureClusterRequest.
+	}
+	resp, err := c.GetAzureCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAzureClustersClient_GetAzureJsonWebKeys() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GetAzureJsonWebKeysRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAzureJsonWebKeysRequest.
+	}
+	resp, err := c.GetAzureJsonWebKeys(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAzureClustersClient_GetAzureNodePool() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GetAzureNodePoolRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAzureNodePoolRequest.
+	}
+	resp, err := c.GetAzureNodePool(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAzureClustersClient_GetAzureOpenIdConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GetAzureOpenIdConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAzureOpenIdConfigRequest.
+	}
+	resp, err := c.GetAzureOpenIdConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAzureClustersClient_GetAzureServerConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.GetAzureServerConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#GetAzureServerConfigRequest.
+	}
+	resp, err := c.GetAzureServerConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAzureClustersClient_ListAzureClients() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.ListAzureClientsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#ListAzureClientsRequest.
+	}
+	it := c.ListAzureClients(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkemulticloudpb.ListAzureClientsResponse)
+	}
+}
+
+func ExampleAzureClustersClient_ListAzureClusters() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.ListAzureClustersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#ListAzureClustersRequest.
+	}
+	it := c.ListAzureClusters(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkemulticloudpb.ListAzureClustersResponse)
+	}
+}
+
+func ExampleAzureClustersClient_ListAzureNodePools() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.ListAzureNodePoolsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#ListAzureNodePoolsRequest.
+	}
+	it := c.ListAzureNodePools(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*gkemulticloudpb.ListAzureNodePoolsResponse)
+	}
+}
+
+func ExampleAzureClustersClient_UpdateAzureCluster() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &gkemulticloudpb.UpdateAzureClusterRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#UpdateAzureClusterRequest.
+	}
+	op, err := c.UpdateAzureCluster(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -369,7 +572,7 @@ func ExampleAzureClustersClient_UpdateAzureNodePool() {
 
 	req := &gkemulticloudpb.UpdateAzureNodePoolRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#UpdateAzureNodePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb#UpdateAzureNodePoolRequest.
 	}
 	op, err := c.UpdateAzureNodePool(ctx, req)
 	if err != nil {
@@ -384,7 +587,7 @@ func ExampleAzureClustersClient_UpdateAzureNodePool() {
 	_ = resp
 }
 
-func ExampleAzureClustersClient_GetAzureNodePool() {
+func ExampleAzureClustersClient_CancelOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -397,11 +600,57 @@ func ExampleAzureClustersClient_GetAzureNodePool() {
 	}
 	defer c.Close()
 
-	req := &gkemulticloudpb.GetAzureNodePoolRequest{
+	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#GetAzureNodePoolRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
-	resp, err := c.GetAzureNodePool(ctx, req)
+	err = c.CancelOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAzureClustersClient_DeleteOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.DeleteOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
+	}
+	err = c.DeleteOperation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAzureClustersClient_GetOperation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := gkemulticloud.NewAzureClustersClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &longrunningpb.GetOperationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
+	}
+	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -409,7 +658,7 @@ func ExampleAzureClustersClient_GetAzureNodePool() {
 	_ = resp
 }
 
-func ExampleAzureClustersClient_ListAzureNodePools() {
+func ExampleAzureClustersClient_ListOperations() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -422,11 +671,11 @@ func ExampleAzureClustersClient_ListAzureNodePools() {
 	}
 	defer c.Close()
 
-	req := &gkemulticloudpb.ListAzureNodePoolsRequest{
+	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#ListAzureNodePoolsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
-	it := c.ListAzureNodePools(ctx, req)
+	it := c.ListOperations(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -437,58 +686,11 @@ func ExampleAzureClustersClient_ListAzureNodePools() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
 
-func ExampleAzureClustersClient_DeleteAzureNodePool() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gkemulticloud.NewAzureClustersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
-	defer c.Close()
-
-	req := &gkemulticloudpb.DeleteAzureNodePoolRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#DeleteAzureNodePoolRequest.
-	}
-	op, err := c.DeleteAzureNodePool(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleAzureClustersClient_GetAzureServerConfig() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := gkemulticloud.NewAzureClustersClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &gkemulticloudpb.GetAzureServerConfigRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/gkemulticloud/v1#GetAzureServerConfigRequest.
-	}
-	resp, err := c.GetAzureServerConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }

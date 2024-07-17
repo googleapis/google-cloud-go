@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewRegionInstanceGroupsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleRegionInstanceGroupsClient_Get() {
 
 	req := &computepb.GetRegionInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetRegionInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetRegionInstanceGroupRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleRegionInstanceGroupsClient_List() {
 
 	req := &computepb.ListRegionInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListRegionInstanceGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListRegionInstanceGroupsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -94,6 +94,12 @@ func ExampleRegionInstanceGroupsClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.RegionInstanceGroupList)
 	}
 }
 
@@ -112,7 +118,7 @@ func ExampleRegionInstanceGroupsClient_ListInstances() {
 
 	req := &computepb.ListInstancesRegionInstanceGroupsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInstancesRegionInstanceGroupsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListInstancesRegionInstanceGroupsRequest.
 	}
 	it := c.ListInstances(ctx, req)
 	for {
@@ -125,6 +131,12 @@ func ExampleRegionInstanceGroupsClient_ListInstances() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.RegionInstanceGroupsListInstances)
 	}
 }
 
@@ -143,7 +155,7 @@ func ExampleRegionInstanceGroupsClient_SetNamedPorts() {
 
 	req := &computepb.SetNamedPortsRegionInstanceGroupRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetNamedPortsRegionInstanceGroupRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetNamedPortsRegionInstanceGroupRequest.
 	}
 	op, err := c.SetNamedPorts(ctx, req)
 	if err != nil {

@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "CreateNode": {
               "methods": [
                 "CreateNode"
@@ -20,14 +25,29 @@
                 "DeleteNode"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
             "GetAcceleratorType": {
               "methods": [
                 "GetAcceleratorType"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetNode": {
               "methods": [
                 "GetNode"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
               ]
             },
             "GetTensorFlowVersion": {
@@ -40,9 +60,19 @@
                 "ListAcceleratorTypes"
               ]
             },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
             "ListNodes": {
               "methods": [
                 "ListNodes"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListTensorFlowVersions": {

@@ -23,8 +23,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/golang/protobuf/proto"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	"google.golang.org/protobuf/proto"
 )
 
 // Key represents the datastore key for a stored entity.
@@ -104,6 +104,10 @@ func (k *Key) marshal(b *bytes.Buffer) {
 		b.WriteString(k.Name)
 	} else {
 		b.WriteString(strconv.FormatInt(k.ID, 10))
+	}
+	if k.Namespace != "" {
+		b.WriteByte(',')
+		b.WriteString(k.Namespace)
 	}
 }
 
@@ -247,8 +251,9 @@ func (c *Client) AllocateIDs(ctx context.Context, keys []*Key) ([]*Key, error) {
 	}
 
 	req := &pb.AllocateIdsRequest{
-		ProjectId: c.dataset,
-		Keys:      multiKeyToProto(keys),
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Keys:       multiKeyToProto(keys),
 	}
 	resp, err := c.client.AllocateIds(ctx, req)
 	if err != nil {
@@ -256,6 +261,22 @@ func (c *Client) AllocateIDs(ctx context.Context, keys []*Key) ([]*Key, error) {
 	}
 
 	return multiProtoToKey(resp.Keys)
+}
+
+// ReserveIDs accepts a slice of keys and prevents them from being auto-allocated by Datastore
+func (c *Client) ReserveIDs(ctx context.Context, keys []*Key) error {
+	if keys == nil {
+		return nil
+	}
+
+	req := &pb.ReserveIdsRequest{
+		ProjectId:  c.dataset,
+		DatabaseId: c.databaseID,
+		Keys:       multiKeyToProto(keys),
+	}
+
+	_, err := c.client.ReserveIds(ctx, req)
+	return err
 }
 
 // IncompleteKey creates a new incomplete key.

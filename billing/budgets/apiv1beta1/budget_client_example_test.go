@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -83,7 +83,7 @@ func ExampleBudgetClient_CreateBudget() {
 	_ = resp
 }
 
-func ExampleBudgetClient_UpdateBudget() {
+func ExampleBudgetClient_DeleteBudget() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -96,16 +96,14 @@ func ExampleBudgetClient_UpdateBudget() {
 	}
 	defer c.Close()
 
-	req := &budgetspb.UpdateBudgetRequest{
+	req := &budgetspb.DeleteBudgetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1beta1/budgetspb#UpdateBudgetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1beta1/budgetspb#DeleteBudgetRequest.
 	}
-	resp, err := c.UpdateBudget(ctx, req)
+	err = c.DeleteBudget(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleBudgetClient_GetBudget() {
@@ -161,10 +159,16 @@ func ExampleBudgetClient_ListBudgets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*budgetspb.ListBudgetsResponse)
 	}
 }
 
-func ExampleBudgetClient_DeleteBudget() {
+func ExampleBudgetClient_UpdateBudget() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -177,12 +181,14 @@ func ExampleBudgetClient_DeleteBudget() {
 	}
 	defer c.Close()
 
-	req := &budgetspb.DeleteBudgetRequest{
+	req := &budgetspb.UpdateBudgetRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1beta1/budgetspb#DeleteBudgetRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1beta1/budgetspb#UpdateBudgetRequest.
 	}
-	err = c.DeleteBudget(ctx, req)
+	resp, err := c.UpdateBudget(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }

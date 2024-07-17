@@ -16,50 +16,31 @@ package generator
 
 import "testing"
 
-func TestHasPrefix(t *testing.T) {
-	tests := []struct {
-		s        string
-		prefixes []string
-		want     bool
-	}{
-		{
-			s:        "abc",
-			prefixes: []string{"a"},
-			want:     true,
-		},
-		{
-			s:        "abc",
-			prefixes: []string{"ab"},
-			want:     true,
-		},
-		{
-			s:        "abc",
-			prefixes: []string{"abc"},
-			want:     true,
-		},
-		{
-			s:        "google.golang.org/genproto/googleapis/ads/googleads/v1/common",
-			prefixes: []string{"google.golang.org/genproto/googleapis/ads"},
-			want:     true,
-		},
-		{
-			s:        "abc",
-			prefixes: []string{"zzz"},
-			want:     false,
-		},
-		{
-			s:        "",
-			prefixes: []string{"zzz"},
-			want:     false,
-		},
-		{
-			s:    "abc",
-			want: false,
-		},
+func TestFilterPackages(t *testing.T) {
+	in := map[string][]string{
+		"google.golang.org/genproto/googleapis/api/distribution":  {"foo.proto"},
+		"google.golang.org/genproto/googleapis/type/date_range":   {"foo.proto"},
+		"google.golang.org/genproto/googleapis/bigtable/admin/v2": {"foo.proto"},
+		// Should be excluded.
+		"google.golang.org/genproto/do/not/generate/me": {"foo.proto"},
 	}
-	for _, test := range tests {
-		if got := hasPrefix(test.s, test.prefixes); got != test.want {
-			t.Errorf("hasPrefix(%q, %q) got %v, want %v", test.s, test.prefixes, got, test.want)
+	want := map[string][]string{
+		"google.golang.org/genproto/googleapis/api/distribution":  {"foo.proto"},
+		"google.golang.org/genproto/googleapis/type/date_range":   {"foo.proto"},
+		"google.golang.org/genproto/googleapis/bigtable/admin/v2": {"foo.proto"},
+	}
+	out, err := filterPackages(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if len(out) != len(want) {
+		t.Fatalf("expected %d packages got %d packages", len(want), len(out))
+	}
+	for p := range out {
+		if _, ok := want[p]; !ok {
+			t.Errorf("retained package that should have been removed: %q", p)
 		}
 	}
+
 }

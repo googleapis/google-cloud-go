@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewGlobalOrganizationOperationsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleGlobalOrganizationOperationsClient_Delete() {
 
 	req := &computepb.DeleteGlobalOrganizationOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteGlobalOrganizationOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteGlobalOrganizationOperationRequest.
 	}
 	resp, err := c.Delete(ctx, req)
 	if err != nil {
@@ -81,7 +81,7 @@ func ExampleGlobalOrganizationOperationsClient_Get() {
 
 	req := &computepb.GetGlobalOrganizationOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetGlobalOrganizationOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetGlobalOrganizationOperationRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -106,7 +106,7 @@ func ExampleGlobalOrganizationOperationsClient_List() {
 
 	req := &computepb.ListGlobalOrganizationOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListGlobalOrganizationOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListGlobalOrganizationOperationsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -119,5 +119,11 @@ func ExampleGlobalOrganizationOperationsClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.OperationList)
 	}
 }

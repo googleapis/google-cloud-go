@@ -50,9 +50,19 @@
                 "EnableProcessor"
               ]
             },
+            "EvaluateProcessorVersion": {
+              "methods": [
+                "EvaluateProcessorVersion"
+              ]
+            },
             "FetchProcessorTypes": {
               "methods": [
                 "FetchProcessorTypes"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
               ]
             },
             "GetLocation": {
@@ -70,9 +80,24 @@
                 "GetProcessor"
               ]
             },
+            "GetProcessorType": {
+              "methods": [
+                "GetProcessorType"
+              ]
+            },
             "GetProcessorVersion": {
               "methods": [
                 "GetProcessorVersion"
+              ]
+            },
+            "ImportProcessorVersion": {
+              "methods": [
+                "ImportProcessorVersion"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
               ]
             },
             "ListLocations": {
@@ -113,6 +138,11 @@
             "SetDefaultProcessorVersion": {
               "methods": [
                 "SetDefaultProcessorVersion"
+              ]
+            },
+            "TrainProcessorVersion": {
+              "methods": [
+                "TrainProcessorVersion"
               ]
             },
             "UndeployProcessorVersion": {
@@ -165,9 +195,19 @@
                 "EnableProcessor"
               ]
             },
+            "EvaluateProcessorVersion": {
+              "methods": [
+                "EvaluateProcessorVersion"
+              ]
+            },
             "FetchProcessorTypes": {
               "methods": [
                 "FetchProcessorTypes"
+              ]
+            },
+            "GetEvaluation": {
+              "methods": [
+                "GetEvaluation"
               ]
             },
             "GetLocation": {
@@ -185,9 +225,24 @@
                 "GetProcessor"
               ]
             },
+            "GetProcessorType": {
+              "methods": [
+                "GetProcessorType"
+              ]
+            },
             "GetProcessorVersion": {
               "methods": [
                 "GetProcessorVersion"
+              ]
+            },
+            "ImportProcessorVersion": {
+              "methods": [
+                "ImportProcessorVersion"
+              ]
+            },
+            "ListEvaluations": {
+              "methods": [
+                "ListEvaluations"
               ]
             },
             "ListLocations": {
@@ -230,9 +285,148 @@
                 "SetDefaultProcessorVersion"
               ]
             },
+            "TrainProcessorVersion": {
+              "methods": [
+                "TrainProcessorVersion"
+              ]
+            },
             "UndeployProcessorVersion": {
               "methods": [
                 "UndeployProcessorVersion"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DocumentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DocumentClient",
+          "rpcs": {
+            "BatchDeleteDocuments": {
+              "methods": [
+                "BatchDeleteDocuments"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetDatasetSchema": {
+              "methods": [
+                "GetDatasetSchema"
+              ]
+            },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
+              ]
+            },
+            "ListDocuments": {
+              "methods": [
+                "ListDocuments"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataset": {
+              "methods": [
+                "UpdateDataset"
+              ]
+            },
+            "UpdateDatasetSchema": {
+              "methods": [
+                "UpdateDatasetSchema"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DocumentClient",
+          "rpcs": {
+            "BatchDeleteDocuments": {
+              "methods": [
+                "BatchDeleteDocuments"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "GetDatasetSchema": {
+              "methods": [
+                "GetDatasetSchema"
+              ]
+            },
+            "GetDocument": {
+              "methods": [
+                "GetDocument"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportDocuments": {
+              "methods": [
+                "ImportDocuments"
+              ]
+            },
+            "ListDocuments": {
+              "methods": [
+                "ListDocuments"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataset": {
+              "methods": [
+                "UpdateDataset"
+              ]
+            },
+            "UpdateDatasetSchema": {
+              "methods": [
+                "UpdateDatasetSchema"
               ]
             }
           }

@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/functions/apiv1",
-    "version": "1.7.0",
+    "version": "1.16.5",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_CallFunction_sync",
       "title": "cloudfunctions CallFunction Sample",
-      "description": "CallFunction synchronously invokes a deployed Cloud Function. To be used for testing\npurposes as very limited traffic is allowed. For more information on\nthe actual limits, refer to\nRate Limits (at https: //cloud.google.com/functions/quotas#rate_limits).",
+      "description": "CallFunction synchronously invokes a deployed Cloud Function. To be used for testing\npurposes as very limited traffic is allowed. For more information on\nthe actual limits, refer to\n[Rate Limits](https: //cloud.google.com/functions/quotas#rate_limits).",
       "file": "CloudFunctionsClient/CallFunction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -34,7 +34,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "functionspb.CallFunctionResponse",
+        "resultType": "*functionspb.CallFunctionResponse",
         "client": {
           "shortName": "CloudFunctionsClient",
           "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_CreateFunction_sync",
       "title": "cloudfunctions CreateFunction Sample",
-      "description": "CreateFunction creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation will return\nALREADY_EXISTS error.",
+      "description": "CreateFunction creates a new function. If a function with the given name already exists in\nthe specified project, the long running operation will return\n`ALREADY_EXISTS` error.",
       "file": "CloudFunctionsClient/CreateFunction/main.go",
       "language": "GO",
       "clientMethod": {
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_GenerateDownloadUrl_sync",
       "title": "cloudfunctions GenerateDownloadUrl Sample",
-      "description": "GenerateDownloadUrl returns a signed URL for downloading deployed function source code.\nThe URL is only valid for a limited period and should be used within\nminutes after generation.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls (at https: //cloud.google.com/storage/docs/access-control/signed-urls)",
+      "description": "GenerateDownloadUrl returns a signed URL for downloading deployed function source code.\nThe URL is only valid for a limited period and should be used within\nminutes after generation.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls",
       "file": "CloudFunctionsClient/GenerateDownloadUrl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "functionspb.GenerateDownloadUrlResponse",
+        "resultType": "*functionspb.GenerateDownloadUrlResponse",
         "client": {
           "shortName": "CloudFunctionsClient",
           "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -198,7 +198,7 @@
     {
       "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_GenerateUploadUrl_sync",
       "title": "cloudfunctions GenerateUploadUrl Sample",
-      "description": "GenerateUploadUrl returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls (at https: //cloud.google.com/storage/docs/access-control/signed-urls).\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions: \n\n\tSource file type should be a zip file.\n\n\tSource file size should not exceed 100MB limit.\n\n\tNo credentials should be attached - the signed URLs provide access to the\n\ttarget bucket using internal service identity; if credentials were\n\tattached, the identity from the credentials would be used, but that\n\tidentity does not have permissions to upload files to the URL.\n\nWhen making a HTTP PUT request, these two headers need to be specified: \n\n\tcontent-type: application/zip\n\n\tx-goog-content-length-range: 0,104857600\n\nAnd this header SHOULD NOT be specified: \n\n\tAuthorization: Bearer YOUR_TOKEN",
+      "description": "GenerateUploadUrl returns a signed URL for uploading a function source code.\nFor more information about the signed URL usage see: \nhttps: //cloud.google.com/storage/docs/access-control/signed-urls.\nOnce the function source code upload is complete, the used signed\nURL should be provided in CreateFunction or UpdateFunction request\nas a reference to the function source code.\n\nWhen uploading source code to the generated signed URL, please follow\nthese restrictions: \n\n* Source file type should be a zip file.\n* Source file size should not exceed 100MB limit.\n* No credentials should be attached - the signed URLs provide access to the\ntarget bucket using internal service identity; if credentials were\nattached, the identity from the credentials would be used, but that\nidentity does not have permissions to upload files to the URL.\n\nWhen making a HTTP PUT request, these two headers need to be specified: \n\n* `content-type: application/zip`\n* `x-goog-content-length-range: 0,104857600`\n\nAnd this header SHOULD NOT be specified: \n\n* `Authorization: Bearer YOUR_TOKEN`",
       "file": "CloudFunctionsClient/GenerateUploadUrl/main.go",
       "language": "GO",
       "clientMethod": {
@@ -218,7 +218,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "functionspb.GenerateUploadUrlResponse",
+        "resultType": "*functionspb.GenerateUploadUrlResponse",
         "client": {
           "shortName": "CloudFunctionsClient",
           "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -264,7 +264,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "functionspb.CloudFunction",
+        "resultType": "*functionspb.CloudFunction",
         "client": {
           "shortName": "CloudFunctionsClient",
           "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "CloudFunctionsClient",
           "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
@@ -328,7 +328,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_GetOperation_sync",
+      "title": "cloudfunctions GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CloudFunctionsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -374,7 +420,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_ListLocations_sync",
+      "title": "cloudfunctions ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CloudFunctionsClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "cloudfunctions_v1_generated_CloudFunctionsService_ListOperations_sync",
+      "title": "cloudfunctions ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CloudFunctionsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.functions.v1.CloudFunctionsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "CloudFunctionsClient",
+          "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -402,7 +540,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.Policy",
+        "resultType": "*iampb.Policy",
         "client": {
           "shortName": "CloudFunctionsClient",
           "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
@@ -420,7 +558,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -448,7 +586,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "iampb.TestIamPermissionsResponse",
+        "resultType": "*iampb.TestIamPermissionsResponse",
         "client": {
           "shortName": "CloudFunctionsClient",
           "fullName": "google.cloud.functions.v1.CloudFunctionsClient"
@@ -466,7 +604,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -512,7 +650,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

@@ -36,6 +36,36 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "DashboardsClient",
+          "rpcs": {
+            "CreateDashboard": {
+              "methods": [
+                "CreateDashboard"
+              ]
+            },
+            "DeleteDashboard": {
+              "methods": [
+                "DeleteDashboard"
+              ]
+            },
+            "GetDashboard": {
+              "methods": [
+                "GetDashboard"
+              ]
+            },
+            "ListDashboards": {
+              "methods": [
+                "ListDashboards"
+              ]
+            },
+            "UpdateDashboard": {
+              "methods": [
+                "UpdateDashboard"
+              ]
+            }
+          }
         }
       }
     }

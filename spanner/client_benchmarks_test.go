@@ -25,9 +25,9 @@ import (
 	"testing"
 	"time"
 
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"google.golang.org/api/iterator"
-	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
 const networkLatencyTime = 10 * time.Millisecond
@@ -84,7 +84,7 @@ func createBenchmarkServer(incStep uint64) (server *MockedSpannerInMemTestServer
 	})
 	// Wait until the session pool has been initialized.
 	waitFor(t, func() error {
-		if uint64(client.idleSessions.idleList.Len()+client.idleSessions.idleWriteList.Len()) == client.idleSessions.MinOpened {
+		if uint64(client.idleSessions.idleList.Len()) == client.idleSessions.MinOpened {
 			return nil
 		}
 		return fmt.Errorf("not yet initialized")
@@ -106,7 +106,8 @@ func readWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- in
 				break
 			}
 			if err != nil {
-				b.Fatal(err)
+				b.Error(err)
+				return
 			}
 			row++
 			if row == 1 {
@@ -135,7 +136,8 @@ func writeWorker(client *Client, b *testing.B, jobs <-chan int, results chan<- i
 			}
 			return nil
 		}); err != nil {
-			b.Fatal(err)
+			b.Error(err)
+			return
 		}
 		results <- updateCount
 	}
@@ -177,8 +179,8 @@ func benchmarkClientBurstRead(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
-		if uint64(sp.idleList.Len()+sp.idleWriteList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len()+sp.idleWriteList.Len(), sp.MinOpened)
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
 		}
 
 		totalQueries := int(sp.MaxOpened * 8)
@@ -238,8 +240,8 @@ func benchmarkClientBurstWrite(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
-		if uint64(sp.idleList.Len()+sp.idleWriteList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len()+sp.idleWriteList.Len(), sp.MinOpened)
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
 		}
 
 		totalUpdates := int(sp.MaxOpened * 8)
@@ -299,8 +301,8 @@ func benchmarkClientBurstReadAndWrite(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
-		if uint64(sp.idleList.Len()+sp.idleWriteList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len()+sp.idleWriteList.Len(), sp.MinOpened)
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
 		}
 
 		totalUpdates := int(sp.MaxOpened * 4)
@@ -378,8 +380,8 @@ func benchmarkClientSteadyIncrease(b *testing.B, incStep uint64) {
 	for n := 0; n < b.N; n++ {
 		server, client, teardown := createBenchmarkServer(incStep)
 		sp := client.idleSessions
-		if uint64(sp.idleList.Len()+sp.idleWriteList.Len()) != sp.MinOpened {
-			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len()+sp.idleWriteList.Len(), sp.MinOpened)
+		if uint64(sp.idleList.Len()) != sp.MinOpened {
+			b.Fatalf("session count mismatch\nGot: %d\nWant: %d", sp.idleList.Len(), sp.MinOpened)
 		}
 
 		transactions := make([]*ReadOnlyTransaction, sp.MaxOpened)
@@ -404,8 +406,7 @@ func reportBenchmark(b *testing.B, sp *sessionPool, server *MockedSpannerInMemTe
 	b.Logf("CreateSession: %d\t", countRequests(requests, reflect.TypeOf(&sppb.CreateSessionRequest{})))
 	b.Logf("BeginTransaction: %d\t", countRequests(requests, reflect.TypeOf(&sppb.BeginTransactionRequest{})))
 	b.Logf("Commit: %d\t", countRequests(requests, reflect.TypeOf(&sppb.CommitRequest{})))
-	b.Logf("ReadSessions: %d\t", sp.idleList.Len())
-	b.Logf("WriteSessions: %d\n", sp.idleWriteList.Len())
+	b.Logf("NumSessions: %d\t", sp.idleList.Len())
 }
 
 func countRequests(requests []interface{}, tp reflect.Type) (count int) {

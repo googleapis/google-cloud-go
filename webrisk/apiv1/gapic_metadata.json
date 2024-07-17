@@ -10,6 +10,11 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
             "ComputeThreatListDiff": {
               "methods": [
                 "ComputeThreatListDiff"
@@ -20,6 +25,21 @@
                 "CreateSubmission"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
             "SearchHashes": {
               "methods": [
                 "SearchHashes"
@@ -28,6 +48,61 @@
             "SearchUris": {
               "methods": [
                 "SearchUris"
+              ]
+            },
+            "SubmitUri": {
+              "methods": [
+                "SubmitUri"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ComputeThreatListDiff": {
+              "methods": [
+                "ComputeThreatListDiff"
+              ]
+            },
+            "CreateSubmission": {
+              "methods": [
+                "CreateSubmission"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "SearchHashes": {
+              "methods": [
+                "SearchHashes"
+              ]
+            },
+            "SearchUris": {
+              "methods": [
+                "SearchUris"
+              ]
+            },
+            "SubmitUri": {
+              "methods": [
+                "SubmitUri"
               ]
             }
           }

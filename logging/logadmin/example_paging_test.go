@@ -22,6 +22,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"time"
 
 	"cloud.google.com/go/logging"
 	"cloud.google.com/go/logging/logadmin"
@@ -31,6 +32,7 @@ import (
 var (
 	client    *logadmin.Client
 	projectID = flag.String("project-id", "", "ID of the project to use")
+	filter    string
 )
 
 func ExampleClient_Entries_pagination() {
@@ -48,6 +50,15 @@ func ExampleClient_Entries_pagination() {
 	if err != nil {
 		log.Fatalf("creating logging client: %v", err)
 	}
+
+	// Filter for logs of a specific name.
+	logName := fmt.Sprintf(`logName = "projects/%s/logs/testlog"`, *projectID)
+
+	// Filter for logs from the last twenty-four hours.
+	yesterday := time.Now().Add(-24 * time.Hour).UTC()
+	dayAgo := fmt.Sprintf("timestamp >= %q", yesterday.Format(time.RFC3339))
+
+	filter = fmt.Sprintf("%s AND %s", logName, dayAgo)
 
 	http.HandleFunc("/entries", handleEntries)
 	log.Print("listening on 8080")
@@ -67,7 +78,6 @@ var pageTemplate = template.Must(template.New("").Parse(`
 
 func handleEntries(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-	filter := fmt.Sprintf(`logName = "projects/%s/logs/testlog"`, *projectID)
 	it := client.Entries(ctx, logadmin.Filter(filter))
 	var entries []*logging.Entry
 	nextTok, err := iterator.NewPager(it, 5, r.URL.Query().Get("pageToken")).NextPage(&entries)

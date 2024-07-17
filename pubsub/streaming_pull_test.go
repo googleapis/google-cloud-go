@@ -20,6 +20,7 @@ package pubsub
 
 import (
 	"context"
+	"errors"
 	"io"
 	"strconv"
 	"sync"
@@ -28,10 +29,10 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	pb "cloud.google.com/go/pubsub/apiv1/pubsubpb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
-	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -66,7 +67,7 @@ func TestStreamingPullMultipleFetches(t *testing.T) {
 
 func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer, msgs []*pb.ReceivedMessage) {
 	sub := client.Subscription("S")
-	gotMsgs, err := pullN(context.Background(), sub, len(msgs), func(_ context.Context, m *Message) {
+	gotMsgs, err := pullN(context.Background(), sub, len(msgs), 0, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
 			t.Fatalf("pullN err: %v", err)
@@ -78,7 +79,7 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 			m.Nack()
 		}
 	})
-	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
+	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatalf("Pull: %v", err)
 	}
 	gotMap := map[string]*Message{}
@@ -196,7 +197,7 @@ func TestStreamingPullRetry(t *testing.T) {
 
 	sub := client.Subscription("S")
 	sub.ReceiveSettings.NumGoroutines = 1
-	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), func(_ context.Context, m *Message) {
+	gotMsgs, err := pullN(context.Background(), sub, len(testMessages), 0, func(_ context.Context, m *Message) {
 		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
 			t.Fatalf("pullN err: %v", err)
@@ -244,15 +245,17 @@ func TestStreamingPullRetry(t *testing.T) {
 	server.wait()
 	for i := 0; i < len(testMessages); i++ {
 		id := testMessages[i].AckId
+		server.mu.Lock()
 		if i%2 == 0 {
 			if !server.Acked[id] {
 				t.Errorf("msg %q should have been acked but wasn't", id)
 			}
 		} else {
-			if dl, ok := server.Deadlines[id]; !ok || dl != 0 {
-				t.Errorf("msg %q should have been nacked but wasn't", id)
+			if server.Acked[id] {
+				t.Errorf("msg %q should have not been acked", id)
 			}
 		}
+		server.mu.Unlock()
 	}
 }
 
@@ -297,7 +300,7 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	sub := client.Subscription("S")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	gotMsgs, err := pullN(ctx, sub, nMessages, func(ctx context.Context, m *Message) {
+	gotMsgs, err := pullN(ctx, sub, nMessages, 0, func(ctx context.Context, m *Message) {
 		m.Ack()
 	})
 	if c := status.Convert(err); err != nil && c.Code() != codes.Canceled {
@@ -513,7 +516,8 @@ func newMock(t *testing.T) (*Client, *mockServer) {
 }
 
 // pullN calls sub.Receive until at least n messages are received.
-func pullN(ctx context.Context, sub *Subscription, n int, f func(context.Context, *Message)) ([]*Message, error) {
+// Wait a provided duration before cancelling.
+func pullN(ctx context.Context, sub *Subscription, n int, wait time.Duration, f func(context.Context, *Message)) ([]*Message, error) {
 	var (
 		mu   sync.Mutex
 		msgs []*Message
@@ -526,6 +530,9 @@ func pullN(ctx context.Context, sub *Subscription, n int, f func(context.Context
 		mu.Unlock()
 		f(ctx, m)
 		if nSeen >= n {
+			// Wait a specified amount of time so that for exactly once delivery,
+			// Acks aren't cancelled immediately.
+			time.Sleep(wait)
 			cancel()
 		}
 	})

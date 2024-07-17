@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/gkebackup/apiv1",
-    "version": "0.1.0",
+    "version": "1.5.3",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,51 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_CancelOperation_sync",
+      "title": "gkebackup CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "BackupForGKEClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "gkebackup_v1_generated_BackupForGKE_CreateBackup_sync",
       "title": "gkebackup CreateBackup Sample",
@@ -52,7 +97,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -98,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -144,7 +189,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -190,7 +235,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -236,7 +281,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -282,7 +327,52 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_DeleteOperation_sync",
+      "title": "gkebackup DeleteOperation Sample",
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "BackupForGKEClient/DeleteOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteOperation",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.DeleteOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.DeleteOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "DeleteOperation",
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -328,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -374,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 55,
+          "end": 56,
           "type": "FULL"
         }
       ]
@@ -402,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.Backup",
+        "resultType": "*gkebackuppb.Backup",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -420,7 +510,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetBackupIndexDownloadUrl_sync",
+      "title": "gkebackup GetBackupIndexDownloadUrl Sample",
+      "description": "GetBackupIndexDownloadUrl retrieve the link to the backupIndex.",
+      "file": "BackupForGKEClient/GetBackupIndexDownloadUrl/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupIndexDownloadUrl",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetBackupIndexDownloadUrl",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "gkebackuppb.GetBackupIndexDownloadUrlRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*gkebackuppb.GetBackupIndexDownloadUrlResponse",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetBackupIndexDownloadUrl",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKE.GetBackupIndexDownloadUrl",
+          "service": {
+            "shortName": "BackupForGKE",
+            "fullName": "google.cloud.gkebackup.v1.BackupForGKE"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -448,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.BackupPlan",
+        "resultType": "*gkebackuppb.BackupPlan",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -466,7 +602,145 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetIamPolicy_sync",
+      "title": "gkebackup GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "BackupForGKEClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetLocation_sync",
+      "title": "gkebackup GetLocation Sample",
+      "description": "GetLocation gets information about a location.",
+      "file": "BackupForGKEClient/GetLocation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLocation",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetLocation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.GetLocationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetLocation",
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_GetOperation_sync",
+      "title": "gkebackup GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "BackupForGKEClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -494,7 +768,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.Restore",
+        "resultType": "*gkebackuppb.Restore",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -512,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -540,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.RestorePlan",
+        "resultType": "*gkebackuppb.RestorePlan",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -558,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -586,7 +860,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.VolumeBackup",
+        "resultType": "*gkebackuppb.VolumeBackup",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -604,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -632,7 +906,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "gkebackuppb.VolumeRestore",
+        "resultType": "*gkebackuppb.VolumeRestore",
         "client": {
           "shortName": "BackupForGKEClient",
           "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
@@ -650,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -696,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -742,7 +1016,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListLocations_sync",
+      "title": "gkebackup ListLocations Sample",
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "BackupForGKEClient/ListLocations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocations",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListLocations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "locationpb.ListLocationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListLocations",
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "shortName": "Locations",
+            "fullName": "google.cloud.location.Locations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_ListOperations_sync",
+      "title": "gkebackup ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "BackupForGKEClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -788,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -834,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -880,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -926,7 +1292,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_SetIamPolicy_sync",
+      "title": "gkebackup SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "BackupForGKEClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "gkebackup_v1_generated_BackupForGKE_TestIamPermissions_sync",
+      "title": "gkebackup TestIamPermissions Sample",
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "BackupForGKEClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "BackupForGKEClient",
+          "fullName": "google.cloud.gkebackup.v1.BackupForGKEClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "shortName": "IAMPolicy",
+            "fullName": "google.iam.v1.IAMPolicy"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -972,7 +1430,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1018,7 +1476,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1064,7 +1522,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -1110,7 +1568,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

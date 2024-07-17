@@ -329,7 +329,8 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 // callback f will block the delivery of subsequent messages for the partition.
 //
 // All messages received by f must be ACKed or NACKed. Failure to do so can
-// prevent Receive from returning.
+// prevent Receive from returning. Messages may be processed by the client
+// concurrently and ACKed asynchronously to increase throughput.
 //
 // Each SubscriberClient may have only one invocation of Receive active at a
 // time.

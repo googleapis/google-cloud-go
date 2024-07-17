@@ -20,9 +20,9 @@ import (
 	"fmt"
 
 	vkit "cloud.google.com/go/logging/apiv2"
+	logpb "cloud.google.com/go/logging/apiv2/loggingpb"
 	"google.golang.org/api/iterator"
-	logpb "google.golang.org/genproto/googleapis/logging/v2"
-	maskpb "google.golang.org/genproto/protobuf/field_mask"
+	maskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 )
 
 // Sink describes a sink used to export log entries outside Cloud

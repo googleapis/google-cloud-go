@@ -10,9 +10,24 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
             "CreateChannel": {
               "methods": [
                 "CreateChannel"
+              ]
+            },
+            "CreateClip": {
+              "methods": [
+                "CreateClip"
               ]
             },
             "CreateEvent": {
@@ -25,9 +40,19 @@
                 "CreateInput"
               ]
             },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
+              ]
+            },
             "DeleteChannel": {
               "methods": [
                 "DeleteChannel"
+              ]
+            },
+            "DeleteClip": {
+              "methods": [
+                "DeleteClip"
               ]
             },
             "DeleteEvent": {
@@ -40,9 +65,24 @@
                 "DeleteInput"
               ]
             },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
             "GetChannel": {
               "methods": [
                 "GetChannel"
+              ]
+            },
+            "GetClip": {
+              "methods": [
+                "GetClip"
               ]
             },
             "GetEvent": {
@@ -55,9 +95,34 @@
                 "GetInput"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPool": {
+              "methods": [
+                "GetPool"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
             "ListChannels": {
               "methods": [
                 "ListChannels"
+              ]
+            },
+            "ListClips": {
+              "methods": [
+                "ListClips"
               ]
             },
             "ListEvents": {
@@ -68,6 +133,16 @@
             "ListInputs": {
               "methods": [
                 "ListInputs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "StartChannel": {
@@ -88,6 +163,176 @@
             "UpdateInput": {
               "methods": [
                 "UpdateInput"
+              ]
+            },
+            "UpdatePool": {
+              "methods": [
+                "UpdatePool"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateAsset": {
+              "methods": [
+                "CreateAsset"
+              ]
+            },
+            "CreateChannel": {
+              "methods": [
+                "CreateChannel"
+              ]
+            },
+            "CreateClip": {
+              "methods": [
+                "CreateClip"
+              ]
+            },
+            "CreateEvent": {
+              "methods": [
+                "CreateEvent"
+              ]
+            },
+            "CreateInput": {
+              "methods": [
+                "CreateInput"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
+              ]
+            },
+            "DeleteChannel": {
+              "methods": [
+                "DeleteChannel"
+              ]
+            },
+            "DeleteClip": {
+              "methods": [
+                "DeleteClip"
+              ]
+            },
+            "DeleteEvent": {
+              "methods": [
+                "DeleteEvent"
+              ]
+            },
+            "DeleteInput": {
+              "methods": [
+                "DeleteInput"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
+            "GetChannel": {
+              "methods": [
+                "GetChannel"
+              ]
+            },
+            "GetClip": {
+              "methods": [
+                "GetClip"
+              ]
+            },
+            "GetEvent": {
+              "methods": [
+                "GetEvent"
+              ]
+            },
+            "GetInput": {
+              "methods": [
+                "GetInput"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPool": {
+              "methods": [
+                "GetPool"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListChannels": {
+              "methods": [
+                "ListChannels"
+              ]
+            },
+            "ListClips": {
+              "methods": [
+                "ListClips"
+              ]
+            },
+            "ListEvents": {
+              "methods": [
+                "ListEvents"
+              ]
+            },
+            "ListInputs": {
+              "methods": [
+                "ListInputs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "StartChannel": {
+              "methods": [
+                "StartChannel"
+              ]
+            },
+            "StopChannel": {
+              "methods": [
+                "StopChannel"
+              ]
+            },
+            "UpdateChannel": {
+              "methods": [
+                "UpdateChannel"
+              ]
+            },
+            "UpdateInput": {
+              "methods": [
+                "UpdateInput"
+              ]
+            },
+            "UpdatePool": {
+              "methods": [
+                "UpdatePool"
               ]
             }
           }

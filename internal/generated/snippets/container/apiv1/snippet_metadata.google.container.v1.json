@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/container/apiv1",
-    "version": "1.4.0",
+    "version": "1.37.3",
     "language": "GO",
     "apis": [
       {
@@ -51,7 +51,53 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "container_v1_generated_ClusterManager_CheckAutopilotCompatibility_sync",
+      "title": "container CheckAutopilotCompatibility Sample",
+      "description": "CheckAutopilotCompatibility checks the cluster compatibility with Autopilot mode, and returns a list of\ncompatibility issues.",
+      "file": "ClusterManagerClient/CheckAutopilotCompatibility/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckAutopilotCompatibility",
+        "fullName": "google.container.v1.ClusterManagerClient.CheckAutopilotCompatibility",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "containerpb.CheckAutopilotCompatibilityRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*containerpb.CheckAutopilotCompatibilityResponse",
+        "client": {
+          "shortName": "ClusterManagerClient",
+          "fullName": "google.container.v1.ClusterManagerClient"
+        },
+        "method": {
+          "shortName": "CheckAutopilotCompatibility",
+          "fullName": "google.container.v1.ClusterManager.CheckAutopilotCompatibility",
+          "service": {
+            "shortName": "ClusterManager",
+            "fullName": "google.container.v1.ClusterManager"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -79,7 +125,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -97,7 +143,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -142,7 +188,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 50,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -150,7 +196,7 @@
     {
       "regionTag": "container_v1_generated_ClusterManager_CreateCluster_sync",
       "title": "container CreateCluster Sample",
-      "description": "CreateCluster creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project’s\ndefault\nnetwork (at https: //cloud.google.com/compute/docs/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe Kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project’s global metadata indicating\nwhich CIDR range the cluster is using.",
+      "description": "CreateCluster creates a cluster, consisting of the specified number and type of Google\nCompute Engine instances.\n\nBy default, the cluster is created in the project's\n[default\nnetwork](https: //cloud.google.com/compute/docs/networks-and-firewalls#networks).\n\nOne firewall is added for the cluster. After cluster creation,\nthe Kubelet creates routes for each node to allow the containers\non that node to communicate with all other instances in the\ncluster.\n\nFinally, an entry is added to the project's global metadata indicating\nwhich CIDR range the cluster is using.",
       "file": "ClusterManagerClient/CreateCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -170,7 +216,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -188,7 +234,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -216,7 +262,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -234,7 +280,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -242,7 +288,7 @@
     {
       "regionTag": "container_v1_generated_ClusterManager_DeleteCluster_sync",
       "title": "container DeleteCluster Sample",
-      "description": "DeleteCluster deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster,\nsuch as load balancer resources, are not deleted if they weren’t present\nwhen the cluster was initially created.",
+      "description": "DeleteCluster deletes the cluster, including the Kubernetes endpoint and all worker\nnodes.\n\nFirewalls and routes that were configured during cluster creation\nare also deleted.\n\nOther Google Compute Engine resources that might be in use by the cluster,\nsuch as load balancer resources, are not deleted if they weren't present\nwhen the cluster was initially created.",
       "file": "ClusterManagerClient/DeleteCluster/main.go",
       "language": "GO",
       "clientMethod": {
@@ -262,7 +308,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -280,7 +326,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -308,7 +354,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -326,7 +372,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -354,7 +400,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Cluster",
+        "resultType": "*containerpb.Cluster",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -372,7 +418,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -380,7 +426,7 @@
     {
       "regionTag": "container_v1_generated_ClusterManager_GetJSONWebKeys_sync",
       "title": "container GetJSONWebKeys Sample",
-      "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.\nThis API is not yet intended for general use, and is not available for all\nclusters.",
+      "description": "GetJSONWebKeys gets the public component of the cluster signing keys in\nJSON Web Key format.",
       "file": "ClusterManagerClient/GetJSONWebKeys/main.go",
       "language": "GO",
       "clientMethod": {
@@ -400,7 +446,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.GetJSONWebKeysResponse",
+        "resultType": "*containerpb.GetJSONWebKeysResponse",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -418,7 +464,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -446,7 +492,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.NodePool",
+        "resultType": "*containerpb.NodePool",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -464,7 +510,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -492,7 +538,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -510,7 +556,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -538,7 +584,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.ServerConfig",
+        "resultType": "*containerpb.ServerConfig",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -556,7 +602,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -584,7 +630,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.ListClustersResponse",
+        "resultType": "*containerpb.ListClustersResponse",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -602,7 +648,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -630,7 +676,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.ListNodePoolsResponse",
+        "resultType": "*containerpb.ListNodePoolsResponse",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -648,7 +694,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -676,7 +722,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.ListOperationsResponse",
+        "resultType": "*containerpb.ListOperationsResponse",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -694,7 +740,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -740,7 +786,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -768,7 +814,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -786,7 +832,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -814,7 +860,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -832,7 +878,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -860,7 +906,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -878,7 +924,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -906,7 +952,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -924,7 +970,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -932,7 +978,7 @@
     {
       "regionTag": "container_v1_generated_ClusterManager_SetLocations_sync",
       "title": "container SetLocations Sample",
-      "description": "SetLocations sets the locations for a specific cluster.\nDeprecated. Use\nprojects.locations.clusters.update (at https: //cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters/update)\ninstead.\n\nDeprecated: SetLocations may be removed in a future version.",
+      "description": "SetLocations sets the locations for a specific cluster.\nDeprecated. Use\n[projects.locations.clusters.update](https: //cloud.google.com/kubernetes-engine/docs/reference/rest/v1/projects.locations.clusters/update)\ninstead.\n\n\nDeprecated: SetLocations may be removed in a future version.",
       "file": "ClusterManagerClient/SetLocations/main.go",
       "language": "GO",
       "clientMethod": {
@@ -952,7 +998,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -970,7 +1016,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -998,7 +1044,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1016,7 +1062,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1044,7 +1090,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1062,7 +1108,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1090,7 +1136,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1108,7 +1154,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1136,7 +1182,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1154,7 +1200,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1182,7 +1228,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1200,7 +1246,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1228,7 +1274,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1246,7 +1292,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1274,7 +1320,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1292,7 +1338,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1300,7 +1346,7 @@
     {
       "regionTag": "container_v1_generated_ClusterManager_SetNodePoolSize_sync",
       "title": "container SetNodePoolSize Sample",
-      "description": "SetNodePoolSize sets the size for a specific node pool. The new size will be used for all\nreplicas, including future replicas created by modifying\nNodePool.locations.",
+      "description": "SetNodePoolSize sets the size for a specific node pool. The new size will be used for all\nreplicas, including future replicas created by modifying\n[NodePool.locations][google.container.v1.NodePool.locations].",
       "file": "ClusterManagerClient/SetNodePoolSize/main.go",
       "language": "GO",
       "clientMethod": {
@@ -1320,7 +1366,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1338,7 +1384,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1366,7 +1412,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1384,7 +1430,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1412,7 +1458,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1430,7 +1476,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1458,7 +1504,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1476,7 +1522,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -1504,7 +1550,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "containerpb.Operation",
+        "resultType": "*containerpb.Operation",
         "client": {
           "shortName": "ClusterManagerClient",
           "fullName": "google.container.v1.ClusterManagerClient"
@@ -1522,7 +1568,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]

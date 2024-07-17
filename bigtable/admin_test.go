@@ -16,14 +16,688 @@ package bigtable
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"strings"
 	"testing"
+	"time"
 
+	"cloud.google.com/go/internal/pretty"
+	"cloud.google.com/go/internal/testutil"
+	longrunning "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/google/go-cmp/cmp"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	"google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+type mockTableAdminClock struct {
+	btapb.BigtableTableAdminClient
+
+	createTableReq   *btapb.CreateTableRequest
+	updateTableReq   *btapb.UpdateTableRequest
+	createTableResp  *btapb.Table
+	updateTableError error
+
+	copyBackupReq   *btapb.CopyBackupRequest
+	copyBackupError error
+
+	modColumnReq *btapb.ModifyColumnFamiliesRequest
+
+	createAuthorizedViewReq   *btapb.CreateAuthorizedViewRequest
+	createAuthorizedViewError error
+	updateAuthorizedViewReq   *btapb.UpdateAuthorizedViewRequest
+	updateAuthorizedViewError error
+}
+
+func (c *mockTableAdminClock) CreateTable(
+	ctx context.Context, in *btapb.CreateTableRequest, opts ...grpc.CallOption,
+) (*btapb.Table, error) {
+	c.createTableReq = in
+	return c.createTableResp, nil
+}
+
+func (c *mockTableAdminClock) UpdateTable(
+	ctx context.Context, in *btapb.UpdateTableRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.updateTableReq = in
+	return &longrunning.Operation{
+		Done: true,
+		Result: &longrunning.Operation_Response{
+			Response: &anypb.Any{TypeUrl: "google.bigtable.admin.v2.Table"},
+		},
+	}, c.updateTableError
+}
+
+func (c *mockTableAdminClock) CopyBackup(
+	ctx context.Context, in *btapb.CopyBackupRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.copyBackupReq = in
+	c.copyBackupError = fmt.Errorf("Mock error from client API")
+	return nil, c.copyBackupError
+}
+
+func (c *mockTableAdminClock) ModifyColumnFamilies(
+	ctx context.Context, in *btapb.ModifyColumnFamiliesRequest, opts ...grpc.CallOption) (*btapb.Table, error) {
+	c.modColumnReq = in
+	return nil, nil
+}
+
+func (c *mockTableAdminClock) CreateAuthorizedView(
+	ctx context.Context, in *btapb.CreateAuthorizedViewRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.createAuthorizedViewReq = in
+	return &longrunning.Operation{
+		Done: true,
+		Result: &longrunning.Operation_Response{
+			Response: &anypb.Any{TypeUrl: "google.bigtable.admin.v2.AuthorizedView"},
+		},
+	}, c.createAuthorizedViewError
+}
+
+func (c *mockTableAdminClock) UpdateAuthorizedView(
+	ctx context.Context, in *btapb.UpdateAuthorizedViewRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.updateAuthorizedViewReq = in
+	return &longrunning.Operation{
+		Done: true,
+		Result: &longrunning.Operation_Response{
+			Response: &anypb.Any{TypeUrl: "google.bigtable.admin.v2.AuthorizedView"},
+		},
+	}, c.updateAuthorizedViewError
+}
+
+func setupTableClient(t *testing.T, ac btapb.BigtableTableAdminClient) *AdminClient {
+	ctx := context.Background()
+	c, err := NewAdminClient(ctx, "my-cool-project", "my-cool-instance")
+	if err != nil {
+		t.Fatalf("NewAdminClient failed: %v", err)
+	}
+	c.tClient = ac
+	return c
+}
+
+func TestTableAdmin_CreateTableFromConf_DeletionProtection_Protected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	deletionProtection := Protected
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.DeletionProtection, true) {
+		t.Errorf("Unexpected table deletion protection: %v, expected %v", createTableReq.Table.DeletionProtection, true)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_DeletionProtection_Unprotected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	deletionProtection := Unprotected
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", DeletionProtection: deletionProtection})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.DeletionProtection, false) {
+		t.Errorf("Unexpected table deletion protection: %v, expected %v", createTableReq.Table.DeletionProtection, false)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_ChangeStream_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	changeStreamRetention, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("ChangeStreamRetention not valid: %v", err)
+	}
+	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", ChangeStreamRetention: changeStreamRetention})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, int64(changeStreamRetention.Seconds())) {
+		t.Errorf("Unexpected table change stream retention: %v, expected %v", createTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, changeStreamRetention.Seconds())
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	retentionPeriod, err := time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	frequency, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+
+	err = c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupConfig: &automatedBackupPolicy})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
+		t.Errorf("Unexpected table automated backup policy frequency: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, automatedBackupPolicy.Frequency.(time.Duration))
+	}
+	if !cmp.Equal(createTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
+		t.Errorf("Unexpected table automated backup policy retention period: %v, expected %v", createTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, automatedBackupPolicy.Frequency.(time.Duration))
+	}
+}
+
+func TestTableAdmin_CopyBackup_ErrorFromClient(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	currTime := time.Now()
+	err := c.CopyBackup(context.Background(), "source-cluster", "source-backup", "dest-project", "dest-instance", "dest-cluster", "dest-backup", currTime)
+	if err == nil {
+		t.Errorf("CopyBackup got: nil, want: non-nil error")
+	}
+
+	got := mock.copyBackupReq
+	want := &btapb.CopyBackupRequest{
+		Parent:       "projects/dest-project/instances/dest-instance/clusters/dest-cluster",
+		BackupId:     "dest-backup",
+		SourceBackup: "projects/my-cool-project/instances/my-cool-instance/clusters/source-cluster/backups/source-backup",
+		ExpireTime:   timestamppb.New(currTime),
+	}
+	if diff := testutil.Diff(got, want, cmp.AllowUnexported(btapb.CopyBackupRequest{})); diff != "" {
+		t.Errorf("CopyBackupRequest \ngot:\n%v,\nwant:\n%v,\ndiff:\n%v", pretty.Value(got), pretty.Value(want), diff)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_ChangeStream_Disable(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	changeStreamRetention := time.Duration(0)
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", ChangeStreamRetention: changeStreamRetention})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if createTableReq.Table.ChangeStreamConfig != nil {
+		t.Errorf("Unexpected table change stream retention: %v should be empty", createTableReq.Table.ChangeStreamConfig)
+	}
+}
+
+func TestTableAdmin_CreateTableFromConf_AutomatedBackupPolicy_Disable(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "My-table", AutomatedBackupConfig: nil})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+	createTableReq := mock.createTableReq
+	if !cmp.Equal(createTableReq.TableId, "My-table") {
+		t.Errorf("Unexpected table ID: %v, expected %v", createTableReq.TableId, "My-table")
+	}
+	if createTableReq.Table.AutomatedBackupConfig != nil {
+		t.Errorf("Unexpected table automated backup policy %v should be empty", createTableReq.Table.AutomatedBackupConfig)
+	}
+	if createTableReq.Table.GetAutomatedBackupPolicy() != nil {
+		t.Errorf("Unexpected table automated backup policy %v should be empty", createTableReq.Table.GetAutomatedBackupPolicy())
+	}
+}
+
+func TestTableAdmin_UpdateTableWithDeletionProtection(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	deletionProtection := Protected
+
+	// Check if the deletion protection updates correctly
+	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
+	if err != nil {
+		t.Fatalf("UpdateTableWithDeletionProtection failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.DeletionProtection, true) {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "deletion_protection") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+}
+
+func TestTableAdmin_UpdateTable_WithError(t *testing.T) {
+	mock := &mockTableAdminClock{updateTableError: errors.New("update table failure error")}
+	c := setupTableClient(t, mock)
+	deletionProtection := Protected
+
+	// Check if the update fails when update table returns an error
+	err := c.UpdateTableWithDeletionProtection(context.Background(), "My-table", deletionProtection)
+
+	if fmt.Sprint(err) != "error from update: update table failure error" {
+		t.Fatalf("UpdateTable updated by mistake: %v", err)
+	}
+}
+
+func TestTableAdmin_UpdateTable_TableID_NotProvided(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	deletionProtection := Protected
+
+	// Check if the update fails when TableID is not provided
+	err := c.UpdateTableWithDeletionProtection(context.Background(), "", deletionProtection)
+	if !strings.Contains(fmt.Sprint(err), "TableID is required") {
+		t.Fatalf("UpdateTable failed: %v", err)
+	}
+}
+
+func TestTableAdmin_UpdateTableWithChangeStreamRetention(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	changeStreamRetention, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("ChangeStreamRetention not valid: %v", err)
+	}
+
+	err = c.UpdateTableWithChangeStream(context.Background(), "My-table", changeStreamRetention)
+	if err != nil {
+		t.Fatalf("UpdateTableWithChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.ChangeStreamConfig.RetentionPeriod.Seconds, int64(changeStreamRetention.Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, ChangeStreamConfig: %v", updateTableReq.Table.ChangeStreamConfig)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config.retention_period") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableDisableChangeStream(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableDisableChangeStream(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("UpdateTableDisableChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if updateTableReq.Table.ChangeStreamConfig != nil {
+		t.Errorf("UpdateTableRequest does not match, ChangeStreamConfig: %v should be empty", updateTableReq.Table.ChangeStreamConfig)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "change_stream_config") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_SetGcPolicy(t *testing.T) {
+	for _, test := range []struct {
+		desc string
+		opts GCPolicyOption
+		want bool
+	}{
+		{
+			desc: "IgnoreWarnings: false",
+			want: false,
+		},
+		{
+			desc: "IgnoreWarnings: true",
+			opts: IgnoreWarnings(),
+			want: true,
+		},
+	} {
+
+		mock := &mockTableAdminClock{}
+		c := setupTableClient(t, mock)
+
+		err := c.SetGCPolicyWithOptions(context.Background(), "My-table", "cf1", NoGcPolicy(), test.opts)
+		if err != nil {
+			t.Fatalf("%v: Failed to set GC Policy: %v", test.desc, err)
+		}
+
+		modColumnReq := mock.modColumnReq
+		if modColumnReq.IgnoreWarnings != test.want {
+			t.Errorf("%v: IgnoreWarnings got: %v, want: %v", test.desc, modColumnReq.IgnoreWarnings, test.want)
+		}
+	}
+
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.SetGCPolicy(context.Background(), "My-table", "cf1", NoGcPolicy())
+	if err != nil {
+		t.Fatalf("SetGCPolicy: Failed to set GC Policy: %v", err)
+	}
+
+	modColumnReq := mock.modColumnReq
+	if modColumnReq.IgnoreWarnings {
+		t.Errorf("SetGCPolicy: IgnoreWarnings should be set to false")
+	}
+}
+
+func TestTableAdmin_SetType(t *testing.T) {
+	for _, test := range []struct {
+		desc       string
+		familyType Type
+		hasError   bool
+	}{
+		{
+			desc:       "Update with aggregate type failed",
+			familyType: AggregateType{Input: Int64Type{Encoding: BigEndianBytesEncoding{}}, Aggregator: SumAggregator{}},
+			hasError:   true,
+		},
+		{
+			desc:       "Update with string type",
+			familyType: StringType{Encoding: StringUtf8Encoding{}},
+			hasError:   false,
+		},
+		{
+			desc:       "Update with nil type",
+			familyType: nil,
+			hasError:   true,
+		},
+	} {
+		mock := &mockTableAdminClock{}
+		c := setupTableClient(t, mock)
+
+		err := c.SetValueType(context.Background(), "My-table", "cf1", test.familyType)
+		if err != nil && !test.hasError {
+			t.Fatalf("Unexpected error when setting type: %v", err)
+		}
+	}
+}
+
+func TestTableAdmin_CreateAuthorizedView_DeletionProtection_Protected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.CreateTableFromConf(context.Background(), &TableConf{TableID: "my-cool-table"})
+	if err != nil {
+		t.Fatalf("CreateTableFromConf failed: %v", err)
+	}
+
+	deletionProtection := Protected
+	err = c.CreateAuthorizedView(context.Background(), &AuthorizedViewConf{
+		TableID:            "my-cool-table",
+		AuthorizedViewID:   "my-cool-authorized-view",
+		AuthorizedView:     &SubsetViewConf{},
+		DeletionProtection: deletionProtection,
+	})
+	if err != nil {
+		t.Fatalf("CreateAuthorizedView failed: %v", err)
+	}
+	createAuthorizedViewReq := mock.createAuthorizedViewReq
+	if !cmp.Equal(createAuthorizedViewReq.Parent, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table") {
+		t.Errorf("Unexpected parent: %v, expected %v", createAuthorizedViewReq.Parent, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table")
+	}
+	if !cmp.Equal(createAuthorizedViewReq.AuthorizedViewId, "my-cool-authorized-view") {
+		t.Errorf("Unexpected authorized view ID: %v, expected %v", createAuthorizedViewReq.Parent, "my-cool-authorized-view")
+	}
+	if !cmp.Equal(createAuthorizedViewReq.AuthorizedView.DeletionProtection, true) {
+		t.Errorf("Unexpected authorized view deletion protection: %v, expected %v", createAuthorizedViewReq.AuthorizedView.DeletionProtection, true)
+	}
+}
+
+func TestTableAdmin_CreateAuthorizedView_DeletionProtection_Unprotected(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	deletionProtection := Unprotected
+	err := c.CreateAuthorizedView(context.Background(), &AuthorizedViewConf{
+		TableID:            "my-cool-table",
+		AuthorizedViewID:   "my-cool-authorized-view",
+		AuthorizedView:     &SubsetViewConf{},
+		DeletionProtection: deletionProtection,
+	})
+	if err != nil {
+		t.Fatalf("CreateAuthorizedView failed: %v", err)
+	}
+	createAuthorizedViewReq := mock.createAuthorizedViewReq
+	if !cmp.Equal(createAuthorizedViewReq.Parent, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table") {
+		t.Errorf("Unexpected parent: %v, expected %v", createAuthorizedViewReq.Parent, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table")
+	}
+	if !cmp.Equal(createAuthorizedViewReq.AuthorizedViewId, "my-cool-authorized-view") {
+		t.Errorf("Unexpected authorized view ID: %v, expected %v", createAuthorizedViewReq.Parent, "my-cool-authorized-view")
+	}
+	if !cmp.Equal(createAuthorizedViewReq.AuthorizedView.DeletionProtection, false) {
+		t.Errorf("Unexpected authorized view deletion protection: %v, expected %v", createAuthorizedViewReq.AuthorizedView.DeletionProtection, false)
+	}
+}
+
+func TestTableAdmin_UpdateAuthorizedViewWithDeletionProtection(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+	deletionProtection := Protected
+
+	// Check if the deletion protection updates correctly
+	err := c.UpdateAuthorizedView(context.Background(), UpdateAuthorizedViewConf{
+		AuthorizedViewConf: AuthorizedViewConf{
+			TableID:            "my-cool-table",
+			AuthorizedViewID:   "my-cool-authorized-view",
+			DeletionProtection: deletionProtection,
+		},
+	})
+	if err != nil {
+		t.Fatalf("UpdateAuthorizedView failed: %v", err)
+	}
+	updateAuthorizedViewReq := mock.updateAuthorizedViewReq
+	if !cmp.Equal(updateAuthorizedViewReq.AuthorizedView.Name, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table/authorizedViews/my-cool-authorized-view") {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: AuthorizedViewName: %v, expected %v", updateAuthorizedViewReq.AuthorizedView.Name, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table/authorizedViews/my-cool-authorized-view")
+	}
+	if !cmp.Equal(updateAuthorizedViewReq.AuthorizedView.DeletionProtection, true) {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: DeletionProtection: %v, expected %v", updateAuthorizedViewReq.AuthorizedView.DeletionProtection, true)
+	}
+	if !cmp.Equal(len(updateAuthorizedViewReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: UpdateMask has length of %d, expected %v", len(updateAuthorizedViewReq.UpdateMask.Paths), 1)
+	}
+	if !cmp.Equal(updateAuthorizedViewReq.UpdateMask.Paths[0], "deletion_protection") {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: updateAuthorizedViewReq.UpdateMask.Paths[0]: %v, expected: %v", updateAuthorizedViewReq.UpdateMask.Paths[0], "deletion_protection")
+	}
+}
+
+func TestTableAdmin_UpdateAuthorizedViewWithSubsetView(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateAuthorizedView(context.Background(), UpdateAuthorizedViewConf{
+		AuthorizedViewConf: AuthorizedViewConf{
+			TableID:          "my-cool-table",
+			AuthorizedViewID: "my-cool-authorized-view",
+			AuthorizedView:   &SubsetViewConf{},
+		},
+	})
+	if err != nil {
+		t.Fatalf("UpdateAuthorizedView failed: %v", err)
+	}
+	updateAuthorizedViewReq := mock.updateAuthorizedViewReq
+	if !cmp.Equal(updateAuthorizedViewReq.AuthorizedView.Name, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table/authorizedViews/my-cool-authorized-view") {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: AuthorizedViewName: %v, expected %v", updateAuthorizedViewReq.AuthorizedView.Name, "projects/my-cool-project/instances/my-cool-instance/tables/my-cool-table/authorizedViews/my-cool-authorized-view")
+	}
+	if !cmp.Equal(len(updateAuthorizedViewReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: UpdateMask has length of %d, expected %v", len(updateAuthorizedViewReq.UpdateMask.Paths), 1)
+	}
+	if !cmp.Equal(updateAuthorizedViewReq.UpdateMask.Paths[0], "subset_view") {
+		t.Errorf("UpdateAuthorizedViewRequest does not match: updateAuthorizedViewReq.UpdateMask.Paths[0]: %v, expected: %v", updateAuthorizedViewReq.UpdateMask.Paths[0], "subset_view")
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	retentionPeriod, err := time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	frequency, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod, Frequency: frequency}
+
+	err = c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.RetentionPeriod: %v", updateTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod)
+	}
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.Frequency: %v", updateTableReq.Table.GetAutomatedBackupPolicy().Frequency)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 2) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy.retention_period") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[1], "automated_backup_policy.frequency") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[1])
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_JustFrequency_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	frequency, err := time.ParseDuration("24h")
+	if err != nil {
+		t.Fatalf("Frequency not valid: %v", err)
+	}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{Frequency: frequency}
+
+	err = c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().Frequency.Seconds, int64(automatedBackupPolicy.Frequency.(time.Duration).Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.Frequency: %v", updateTableReq.Table.GetAutomatedBackupPolicy().Frequency)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy.frequency") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_JustRetentionPeriod_Valid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	retentionPeriod, err := time.ParseDuration("72h")
+	if err != nil {
+		t.Fatalf("RetentionPeriod not valid: %v", err)
+	}
+	automatedBackupPolicy := TableAutomatedBackupPolicy{RetentionPeriod: retentionPeriod}
+
+	err = c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", automatedBackupPolicy)
+	if err != nil {
+		t.Fatalf("UpdateTableWithChangeStream failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if !cmp.Equal(updateTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod.Seconds, int64(automatedBackupPolicy.RetentionPeriod.(time.Duration).Seconds())) {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupPolicy.RetentionPeriod: %v", updateTableReq.Table.GetAutomatedBackupPolicy().RetentionPeriod)
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy.retention_period") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableDisableAutomatedBackupPolicy(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableDisableAutomatedBackupPolicy(context.Background(), "My-table")
+	if err != nil {
+		t.Fatalf("UpdateTableDisableAutomatedBackupPolicy failed: %v", err)
+	}
+	updateTableReq := mock.updateTableReq
+	if !cmp.Equal(updateTableReq.Table.Name, "projects/my-cool-project/instances/my-cool-instance/tables/My-table") {
+		t.Errorf("UpdateTableRequest does not match, TableID: %v", updateTableReq.Table.Name)
+	}
+	if updateTableReq.Table.AutomatedBackupConfig != nil {
+		t.Errorf("UpdateTableRequest does not match, AutomatedBackupConfig: %v should be empty", updateTableReq.Table.AutomatedBackupConfig)
+	}
+	if updateTableReq.Table.GetAutomatedBackupPolicy() != nil {
+		t.Errorf("UpdateTableRequest does not match, GetAutomatedBackupPolicy: %v should be empty", updateTableReq.Table.GetAutomatedBackupPolicy())
+	}
+	if !cmp.Equal(len(updateTableReq.UpdateMask.Paths), 1) {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask has length of %d, expected 1", len(updateTableReq.UpdateMask.Paths))
+	}
+	if !cmp.Equal(updateTableReq.UpdateMask.Paths[0], "automated_backup_policy") {
+		t.Errorf("UpdateTableRequest does not match, UpdateMask: %v", updateTableReq.UpdateMask.Paths[0])
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_NilFields_Invalid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{nil, nil})
+	if err == nil {
+		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
+	}
+}
+
+func TestTableAdmin_UpdateTableWithAutomatedBackupPolicy_ZeroFields_Invalid(t *testing.T) {
+	mock := &mockTableAdminClock{}
+	c := setupTableClient(t, mock)
+
+	err := c.UpdateTableWithAutomatedBackupPolicy(context.Background(), "My-table", TableAutomatedBackupPolicy{time.Duration(0), time.Duration(0)})
+	if err == nil {
+		t.Fatalf("Expected UpdateTableDisableAutomatedBackupPolicy to fail due to misspecified AutomatedBackupPolicy")
+	}
+}
 
 type mockAdminClock struct {
 	btapb.BigtableInstanceAdminClient

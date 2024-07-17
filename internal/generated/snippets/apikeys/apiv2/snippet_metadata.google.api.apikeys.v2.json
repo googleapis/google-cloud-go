@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/apikeys/apiv2",
-    "version": "0.2.0",
+    "version": "1.1.10",
     "language": "GO",
     "apis": [
       {
@@ -14,7 +14,7 @@
     {
       "regionTag": "apikeys_v2_generated_ApiKeys_CreateKey_sync",
       "title": "apikeys CreateKey Sample",
-      "description": "CreateKey creates a new API key.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is global.",
+      "description": "CreateKey creates a new API key.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is `global`.",
       "file": "Client/CreateKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -52,7 +52,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -60,7 +60,7 @@
     {
       "regionTag": "apikeys_v2_generated_ApiKeys_DeleteKey_sync",
       "title": "apikeys DeleteKey Sample",
-      "description": "DeleteKey deletes an API key. Deleted key can be retrieved within 30 days of\ndeletion. Afterward, key will be purged from the project.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is global.",
+      "description": "DeleteKey deletes an API key. Deleted key can be retrieved within 30 days of\ndeletion. Afterward, key will be purged from the project.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is `global`.",
       "file": "Client/DeleteKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -98,7 +98,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -106,7 +106,7 @@
     {
       "regionTag": "apikeys_v2_generated_ApiKeys_GetKey_sync",
       "title": "apikeys GetKey Sample",
-      "description": "GetKey gets the metadata for an API key. The key string of the API key\nisn’t included in the response.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is global.",
+      "description": "GetKey gets the metadata for an API key. The key string of the API key\nisn't included in the response.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is `global`.",
       "file": "Client/GetKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -126,7 +126,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apikeyspb.Key",
+        "resultType": "*apikeyspb.Key",
         "client": {
           "shortName": "Client",
           "fullName": "google.api.apikeys.v2.Client"
@@ -144,7 +144,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -152,7 +152,7 @@
     {
       "regionTag": "apikeys_v2_generated_ApiKeys_GetKeyString_sync",
       "title": "apikeys GetKeyString Sample",
-      "description": "GetKeyString get the key string for an API key.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is global.",
+      "description": "GetKeyString get the key string for an API key.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is `global`.",
       "file": "Client/GetKeyString/main.go",
       "language": "GO",
       "clientMethod": {
@@ -172,7 +172,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apikeyspb.GetKeyStringResponse",
+        "resultType": "*apikeyspb.GetKeyStringResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.api.apikeys.v2.Client"
@@ -190,7 +190,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -218,17 +218,17 @@
             "name": "opts"
           }
         ],
-        "resultType": "longrunningpb.Operation",
+        "resultType": "*longrunningpb.Operation",
         "client": {
           "shortName": "Client",
           "fullName": "google.api.apikeys.v2.Client"
         },
         "method": {
           "shortName": "GetOperation",
-          "fullName": "google.api.apikeys.v2.ApiKeys.GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
           "service": {
-            "shortName": "ApiKeys",
-            "fullName": "google.api.apikeys.v2.ApiKeys"
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
           }
         }
       },
@@ -236,7 +236,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -244,7 +244,7 @@
     {
       "regionTag": "apikeys_v2_generated_ApiKeys_ListKeys_sync",
       "title": "apikeys ListKeys Sample",
-      "description": "ListKeys lists the API keys owned by a project. The key string of the API key\nisn’t included in the response.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is global.",
+      "description": "ListKeys lists the API keys owned by a project. The key string of the API key\nisn't included in the response.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is `global`.",
       "file": "Client/ListKeys/main.go",
       "language": "GO",
       "clientMethod": {
@@ -282,7 +282,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 59,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -290,7 +290,7 @@
     {
       "regionTag": "apikeys_v2_generated_ApiKeys_LookupKey_sync",
       "title": "apikeys LookupKey Sample",
-      "description": "LookupKey find the parent project and resource name of the API\nkey that matches the key string in the request. If the API key has been\npurged, resource name will not be set.\nThe service account must have the apikeys.keys.lookup permission\non the parent project.",
+      "description": "LookupKey find the parent project and resource name of the API\nkey that matches the key string in the request. If the API key has been\npurged, resource name will not be set.\nThe service account must have the `apikeys.keys.lookup` permission\non the parent project.",
       "file": "Client/LookupKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -310,7 +310,7 @@
             "name": "opts"
           }
         ],
-        "resultType": "apikeyspb.LookupKeyResponse",
+        "resultType": "*apikeyspb.LookupKeyResponse",
         "client": {
           "shortName": "Client",
           "fullName": "google.api.apikeys.v2.Client"
@@ -328,7 +328,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 52,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -336,7 +336,7 @@
     {
       "regionTag": "apikeys_v2_generated_ApiKeys_UndeleteKey_sync",
       "title": "apikeys UndeleteKey Sample",
-      "description": "UndeleteKey undeletes an API key which was deleted within 30 days.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is global.",
+      "description": "UndeleteKey undeletes an API key which was deleted within 30 days.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is `global`.",
       "file": "Client/UndeleteKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -374,7 +374,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]
@@ -382,7 +382,7 @@
     {
       "regionTag": "apikeys_v2_generated_ApiKeys_UpdateKey_sync",
       "title": "apikeys UpdateKey Sample",
-      "description": "UpdateKey patches the modifiable fields of an API key.\nThe key string of the API key isn’t included in the response.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is global.",
+      "description": "UpdateKey patches the modifiable fields of an API key.\nThe key string of the API key isn't included in the response.\n\nNOTE: Key is a global resource; hence the only supported value for\nlocation is `global`.",
       "file": "Client/UpdateKey/main.go",
       "language": "GO",
       "clientMethod": {
@@ -420,7 +420,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 57,
+          "end": 58,
           "type": "FULL"
         }
       ]

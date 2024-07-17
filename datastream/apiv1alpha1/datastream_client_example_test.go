@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,62 +58,6 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
-func ExampleClient_ListConnectionProfiles() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := datastream.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &datastreampb.ListConnectionProfilesRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#ListConnectionProfilesRequest.
-	}
-	it := c.ListConnectionProfiles(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetConnectionProfile() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := datastream.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &datastreampb.GetConnectionProfileRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#GetConnectionProfileRequest.
-	}
-	resp, err := c.GetConnectionProfile(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleClient_CreateConnectionProfile() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -144,7 +88,7 @@ func ExampleClient_CreateConnectionProfile() {
 	_ = resp
 }
 
-func ExampleClient_UpdateConnectionProfile() {
+func ExampleClient_CreatePrivateConnection() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -157,11 +101,71 @@ func ExampleClient_UpdateConnectionProfile() {
 	}
 	defer c.Close()
 
-	req := &datastreampb.UpdateConnectionProfileRequest{
+	req := &datastreampb.CreatePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#UpdateConnectionProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#CreatePrivateConnectionRequest.
 	}
-	op, err := c.UpdateConnectionProfile(ctx, req)
+	op, err := c.CreatePrivateConnection(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateRoute() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datastream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datastreampb.CreateRouteRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#CreateRouteRequest.
+	}
+	op, err := c.CreateRoute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateStream() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datastream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datastreampb.CreateStreamRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#CreateStreamRequest.
+	}
+	op, err := c.CreateStream(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -202,7 +206,7 @@ func ExampleClient_DeleteConnectionProfile() {
 	}
 }
 
-func ExampleClient_DiscoverConnectionProfile() {
+func ExampleClient_DeletePrivateConnection() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -215,50 +219,22 @@ func ExampleClient_DiscoverConnectionProfile() {
 	}
 	defer c.Close()
 
-	req := &datastreampb.DiscoverConnectionProfileRequest{
+	req := &datastreampb.DeletePrivateConnectionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#DiscoverConnectionProfileRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#DeletePrivateConnectionRequest.
 	}
-	resp, err := c.DiscoverConnectionProfile(ctx, req)
+	op, err := c.DeletePrivateConnection(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
 
-func ExampleClient_ListStreams() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := datastream.NewClient(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &datastreampb.ListStreamsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#ListStreamsRequest.
-	}
-	it := c.ListStreams(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
 	}
 }
 
-func ExampleClient_GetStream() {
+func ExampleClient_DeleteRoute() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -271,76 +247,19 @@ func ExampleClient_GetStream() {
 	}
 	defer c.Close()
 
-	req := &datastreampb.GetStreamRequest{
+	req := &datastreampb.DeleteRouteRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#GetStreamRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#DeleteRouteRequest.
 	}
-	resp, err := c.GetStream(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_CreateStream() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := datastream.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &datastreampb.CreateStreamRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#CreateStreamRequest.
-	}
-	op, err := c.CreateStream(ctx, req)
+	op, err := c.DeleteRoute(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateStream() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := datastream.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &datastreampb.UpdateStreamRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#UpdateStreamRequest.
-	}
-	op, err := c.UpdateStream(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleClient_DeleteStream() {
@@ -369,6 +288,31 @@ func ExampleClient_DeleteStream() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleClient_DiscoverConnectionProfile() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datastream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datastreampb.DiscoverConnectionProfileRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#DiscoverConnectionProfileRequest.
+	}
+	resp, err := c.DiscoverConnectionProfile(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_FetchErrors() {
@@ -429,10 +373,16 @@ func ExampleClient_FetchStaticIps() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datastreampb.FetchStaticIpsResponse)
 	}
 }
 
-func ExampleClient_CreatePrivateConnection() {
+func ExampleClient_GetConnectionProfile() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -445,16 +395,11 @@ func ExampleClient_CreatePrivateConnection() {
 	}
 	defer c.Close()
 
-	req := &datastreampb.CreatePrivateConnectionRequest{
+	req := &datastreampb.GetConnectionProfileRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#CreatePrivateConnectionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#GetConnectionProfileRequest.
 	}
-	op, err := c.CreatePrivateConnection(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.GetConnectionProfile(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -487,6 +432,93 @@ func ExampleClient_GetPrivateConnection() {
 	_ = resp
 }
 
+func ExampleClient_GetRoute() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datastream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datastreampb.GetRouteRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#GetRouteRequest.
+	}
+	resp, err := c.GetRoute(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetStream() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datastream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datastreampb.GetStreamRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#GetStreamRequest.
+	}
+	resp, err := c.GetStream(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListConnectionProfiles() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datastream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datastreampb.ListConnectionProfilesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#ListConnectionProfilesRequest.
+	}
+	it := c.ListConnectionProfiles(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datastreampb.ListConnectionProfilesResponse)
+	}
+}
+
 func ExampleClient_ListPrivateConnections() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -515,90 +547,13 @@ func ExampleClient_ListPrivateConnections() {
 		}
 		// TODO: Use resp.
 		_ = resp
-	}
-}
 
-func ExampleClient_DeletePrivateConnection() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := datastream.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datastreampb.ListPrivateConnectionsResponse)
 	}
-	defer c.Close()
-
-	req := &datastreampb.DeletePrivateConnectionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#DeletePrivateConnectionRequest.
-	}
-	op, err := c.DeletePrivateConnection(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleClient_CreateRoute() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := datastream.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &datastreampb.CreateRouteRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#CreateRouteRequest.
-	}
-	op, err := c.CreateRoute(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_GetRoute() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := datastream.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &datastreampb.GetRouteRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#GetRouteRequest.
-	}
-	resp, err := c.GetRoute(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleClient_ListRoutes() {
@@ -629,10 +584,16 @@ func ExampleClient_ListRoutes() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datastreampb.ListRoutesResponse)
 	}
 }
 
-func ExampleClient_DeleteRoute() {
+func ExampleClient_ListStreams() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -645,17 +606,86 @@ func ExampleClient_DeleteRoute() {
 	}
 	defer c.Close()
 
-	req := &datastreampb.DeleteRouteRequest{
+	req := &datastreampb.ListStreamsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#DeleteRouteRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#ListStreamsRequest.
 	}
-	op, err := c.DeleteRoute(ctx, req)
+	it := c.ListStreams(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datastreampb.ListStreamsResponse)
+	}
+}
+
+func ExampleClient_UpdateConnectionProfile() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datastream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datastreampb.UpdateConnectionProfileRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#UpdateConnectionProfileRequest.
+	}
+	op, err := c.UpdateConnectionProfile(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	err = op.Wait(ctx)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateStream() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := datastream.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &datastreampb.UpdateStreamRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/datastream/apiv1alpha1/datastreampb#UpdateStreamRequest.
+	}
+	op, err := c.UpdateStream(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

@@ -55,6 +55,11 @@
                 "GenerateAccessToken"
               ]
             },
+            "GenerateOfflineCredential": {
+              "methods": [
+                "GenerateOfflineCredential"
+              ]
+            },
             "GetCluster": {
               "methods": [
                 "GetCluster"
@@ -78,6 +83,11 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "GetServerConfig": {
+              "methods": [
+                "GetServerConfig"
               ]
             },
             "GetVpnConnection": {
@@ -123,6 +133,146 @@
             "UpdateNodePool": {
               "methods": [
                 "UpdateNodePool"
+              ]
+            },
+            "UpgradeCluster": {
+              "methods": [
+                "UpgradeCluster"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateCluster": {
+              "methods": [
+                "CreateCluster"
+              ]
+            },
+            "CreateNodePool": {
+              "methods": [
+                "CreateNodePool"
+              ]
+            },
+            "CreateVpnConnection": {
+              "methods": [
+                "CreateVpnConnection"
+              ]
+            },
+            "DeleteCluster": {
+              "methods": [
+                "DeleteCluster"
+              ]
+            },
+            "DeleteNodePool": {
+              "methods": [
+                "DeleteNodePool"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteVpnConnection": {
+              "methods": [
+                "DeleteVpnConnection"
+              ]
+            },
+            "GenerateAccessToken": {
+              "methods": [
+                "GenerateAccessToken"
+              ]
+            },
+            "GenerateOfflineCredential": {
+              "methods": [
+                "GenerateOfflineCredential"
+              ]
+            },
+            "GetCluster": {
+              "methods": [
+                "GetCluster"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetMachine": {
+              "methods": [
+                "GetMachine"
+              ]
+            },
+            "GetNodePool": {
+              "methods": [
+                "GetNodePool"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServerConfig": {
+              "methods": [
+                "GetServerConfig"
+              ]
+            },
+            "GetVpnConnection": {
+              "methods": [
+                "GetVpnConnection"
+              ]
+            },
+            "ListClusters": {
+              "methods": [
+                "ListClusters"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListMachines": {
+              "methods": [
+                "ListMachines"
+              ]
+            },
+            "ListNodePools": {
+              "methods": [
+                "ListNodePools"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListVpnConnections": {
+              "methods": [
+                "ListVpnConnections"
+              ]
+            },
+            "UpdateCluster": {
+              "methods": [
+                "UpdateCluster"
+              ]
+            },
+            "UpdateNodePool": {
+              "methods": [
+                "UpdateNodePool"
+              ]
+            },
+            "UpgradeCluster": {
+              "methods": [
+                "UpgradeCluster"
               ]
             }
           }

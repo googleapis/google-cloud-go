@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewGlobalPublicDelegatedPrefixesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleGlobalPublicDelegatedPrefixesClient_Delete() {
 
 	req := &computepb.DeleteGlobalPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteGlobalPublicDelegatedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteGlobalPublicDelegatedPrefixeRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -84,7 +84,7 @@ func ExampleGlobalPublicDelegatedPrefixesClient_Get() {
 
 	req := &computepb.GetGlobalPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetGlobalPublicDelegatedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetGlobalPublicDelegatedPrefixeRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -109,7 +109,7 @@ func ExampleGlobalPublicDelegatedPrefixesClient_Insert() {
 
 	req := &computepb.InsertGlobalPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertGlobalPublicDelegatedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertGlobalPublicDelegatedPrefixeRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -137,7 +137,7 @@ func ExampleGlobalPublicDelegatedPrefixesClient_List() {
 
 	req := &computepb.ListGlobalPublicDelegatedPrefixesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListGlobalPublicDelegatedPrefixesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListGlobalPublicDelegatedPrefixesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -150,6 +150,12 @@ func ExampleGlobalPublicDelegatedPrefixesClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.PublicDelegatedPrefixList)
 	}
 }
 
@@ -168,7 +174,7 @@ func ExampleGlobalPublicDelegatedPrefixesClient_Patch() {
 
 	req := &computepb.PatchGlobalPublicDelegatedPrefixeRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchGlobalPublicDelegatedPrefixeRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchGlobalPublicDelegatedPrefixeRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {

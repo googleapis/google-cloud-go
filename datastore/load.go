@@ -302,11 +302,17 @@ func setVal(v reflect.Value, p Property) (s string) {
 			return fmt.Sprintf("%v is unsettable", v.Type())
 		}
 
-		rpValue := reflect.ValueOf(pValue)
-		if !rpValue.Type().AssignableTo(v.Type()) {
-			return fmt.Sprintf("%q is not assignable to %q", rpValue.Type(), v.Type())
+		// When retrieved property value is untyped nil, its type cannot be determined
+		// So, set v to zero value of its datatype
+		if pValue == nil {
+			v.Set(reflect.Zero(v.Type()))
+		} else {
+			rpValue := reflect.ValueOf(pValue)
+			if !rpValue.Type().AssignableTo(v.Type()) {
+				return fmt.Sprintf("%q is not assignable to %q", rpValue.Type(), v.Type())
+			}
+			v.Set(rpValue)
 		}
-		v.Set(rpValue)
 
 	case reflect.Ptr:
 		// v must be a pointer to either a Key, an Entity, or one of the supported basic types.
@@ -507,10 +513,16 @@ func protoToEntity(src *pb.Entity) (*Entity, error) {
 		if err != nil {
 			return nil, err
 		}
+		noIndex := val.ExcludeFromIndexes
+		if array := val.GetArrayValue(); array != nil {
+			if values := array.GetValues(); len(values) > 0 {
+				noIndex = values[0].ExcludeFromIndexes
+			}
+		}
 		props = append(props, Property{
 			Name:    name,
 			Value:   v,
-			NoIndex: val.ExcludeFromIndexes,
+			NoIndex: noIndex,
 		})
 	}
 	var key *Key

@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,11 +20,11 @@ import (
 	"context"
 
 	apigeeregistry "cloud.google.com/go/apigeeregistry/apiv1"
+	apigeeregistrypb "cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb"
+	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"google.golang.org/api/iterator"
-	apigeeregistrypb "google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
 func ExampleNewRegistryClient() {
@@ -44,62 +44,6 @@ func ExampleNewRegistryClient() {
 	_ = c
 }
 
-func ExampleRegistryClient_ListApis() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.ListApisRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApisRequest.
-	}
-	it := c.ListApis(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleRegistryClient_GetApi() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.GetApiRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiRequest.
-	}
-	resp, err := c.GetApi(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleRegistryClient_CreateApi() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -115,7 +59,7 @@ func ExampleRegistryClient_CreateApi() {
 
 	req := &apigeeregistrypb.CreateApiRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateApiRequest.
 	}
 	resp, err := c.CreateApi(ctx, req)
 	if err != nil {
@@ -125,7 +69,7 @@ func ExampleRegistryClient_CreateApi() {
 	_ = resp
 }
 
-func ExampleRegistryClient_UpdateApi() {
+func ExampleRegistryClient_CreateApiDeployment() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -138,11 +82,11 @@ func ExampleRegistryClient_UpdateApi() {
 	}
 	defer c.Close()
 
-	req := &apigeeregistrypb.UpdateApiRequest{
+	req := &apigeeregistrypb.CreateApiDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#UpdateApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateApiDeploymentRequest.
 	}
-	resp, err := c.UpdateApi(ctx, req)
+	resp, err := c.CreateApiDeployment(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -150,7 +94,7 @@ func ExampleRegistryClient_UpdateApi() {
 	_ = resp
 }
 
-func ExampleRegistryClient_DeleteApi() {
+func ExampleRegistryClient_CreateApiSpec() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -163,65 +107,11 @@ func ExampleRegistryClient_DeleteApi() {
 	}
 	defer c.Close()
 
-	req := &apigeeregistrypb.DeleteApiRequest{
+	req := &apigeeregistrypb.CreateApiSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateApiSpecRequest.
 	}
-	err = c.DeleteApi(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleRegistryClient_ListApiVersions() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.ListApiVersionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiVersionsRequest.
-	}
-	it := c.ListApiVersions(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleRegistryClient_GetApiVersion() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.GetApiVersionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiVersionRequest.
-	}
-	resp, err := c.GetApiVersion(ctx, req)
+	resp, err := c.CreateApiSpec(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -244,7 +134,7 @@ func ExampleRegistryClient_CreateApiVersion() {
 
 	req := &apigeeregistrypb.CreateApiVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateApiVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateApiVersionRequest.
 	}
 	resp, err := c.CreateApiVersion(ctx, req)
 	if err != nil {
@@ -254,7 +144,7 @@ func ExampleRegistryClient_CreateApiVersion() {
 	_ = resp
 }
 
-func ExampleRegistryClient_UpdateApiVersion() {
+func ExampleRegistryClient_CreateArtifact() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -267,11 +157,130 @@ func ExampleRegistryClient_UpdateApiVersion() {
 	}
 	defer c.Close()
 
-	req := &apigeeregistrypb.UpdateApiVersionRequest{
+	req := &apigeeregistrypb.CreateArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#UpdateApiVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#CreateArtifactRequest.
 	}
-	resp, err := c.UpdateApiVersion(ctx, req)
+	resp, err := c.CreateArtifact(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_DeleteApi() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.DeleteApiRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiRequest.
+	}
+	err = c.DeleteApi(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleRegistryClient_DeleteApiDeployment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.DeleteApiDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiDeploymentRequest.
+	}
+	err = c.DeleteApiDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleRegistryClient_DeleteApiDeploymentRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.DeleteApiDeploymentRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiDeploymentRevisionRequest.
+	}
+	resp, err := c.DeleteApiDeploymentRevision(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_DeleteApiSpec() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.DeleteApiSpecRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiSpecRequest.
+	}
+	err = c.DeleteApiSpec(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleRegistryClient_DeleteApiSpecRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.DeleteApiSpecRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiSpecRevisionRequest.
+	}
+	resp, err := c.DeleteApiSpecRevision(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -294,7 +303,7 @@ func ExampleRegistryClient_DeleteApiVersion() {
 
 	req := &apigeeregistrypb.DeleteApiVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiVersionRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteApiVersionRequest.
 	}
 	err = c.DeleteApiVersion(ctx, req)
 	if err != nil {
@@ -302,7 +311,7 @@ func ExampleRegistryClient_DeleteApiVersion() {
 	}
 }
 
-func ExampleRegistryClient_ListApiSpecs() {
+func ExampleRegistryClient_DeleteArtifact() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -315,22 +324,64 @@ func ExampleRegistryClient_ListApiSpecs() {
 	}
 	defer c.Close()
 
-	req := &apigeeregistrypb.ListApiSpecsRequest{
+	req := &apigeeregistrypb.DeleteArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiSpecsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#DeleteArtifactRequest.
 	}
-	it := c.ListApiSpecs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	err = c.DeleteArtifact(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+}
+
+func ExampleRegistryClient_GetApi() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.GetApiRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiRequest.
+	}
+	resp, err := c.GetApi(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_GetApiDeployment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.GetApiDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiDeploymentRequest.
+	}
+	resp, err := c.GetApiDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleRegistryClient_GetApiSpec() {
@@ -348,7 +399,7 @@ func ExampleRegistryClient_GetApiSpec() {
 
 	req := &apigeeregistrypb.GetApiSpecRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiSpecRequest.
 	}
 	resp, err := c.GetApiSpec(ctx, req)
 	if err != nil {
@@ -373,7 +424,7 @@ func ExampleRegistryClient_GetApiSpecContents() {
 
 	req := &apigeeregistrypb.GetApiSpecContentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiSpecContentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiSpecContentsRequest.
 	}
 	resp, err := c.GetApiSpecContents(ctx, req)
 	if err != nil {
@@ -383,7 +434,7 @@ func ExampleRegistryClient_GetApiSpecContents() {
 	_ = resp
 }
 
-func ExampleRegistryClient_CreateApiSpec() {
+func ExampleRegistryClient_GetApiVersion() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -396,436 +447,16 @@ func ExampleRegistryClient_CreateApiSpec() {
 	}
 	defer c.Close()
 
-	req := &apigeeregistrypb.CreateApiSpecRequest{
+	req := &apigeeregistrypb.GetApiVersionRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateApiSpecRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetApiVersionRequest.
 	}
-	resp, err := c.CreateApiSpec(ctx, req)
+	resp, err := c.GetApiVersion(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleRegistryClient_UpdateApiSpec() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.UpdateApiSpecRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#UpdateApiSpecRequest.
-	}
-	resp, err := c.UpdateApiSpec(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_DeleteApiSpec() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.DeleteApiSpecRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiSpecRequest.
-	}
-	err = c.DeleteApiSpec(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleRegistryClient_TagApiSpecRevision() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.TagApiSpecRevisionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#TagApiSpecRevisionRequest.
-	}
-	resp, err := c.TagApiSpecRevision(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_ListApiSpecRevisions() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.ListApiSpecRevisionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiSpecRevisionsRequest.
-	}
-	it := c.ListApiSpecRevisions(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleRegistryClient_RollbackApiSpec() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.RollbackApiSpecRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#RollbackApiSpecRequest.
-	}
-	resp, err := c.RollbackApiSpec(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_DeleteApiSpecRevision() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.DeleteApiSpecRevisionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiSpecRevisionRequest.
-	}
-	resp, err := c.DeleteApiSpecRevision(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_ListApiDeployments() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.ListApiDeploymentsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiDeploymentsRequest.
-	}
-	it := c.ListApiDeployments(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleRegistryClient_GetApiDeployment() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.GetApiDeploymentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetApiDeploymentRequest.
-	}
-	resp, err := c.GetApiDeployment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_CreateApiDeployment() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.CreateApiDeploymentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateApiDeploymentRequest.
-	}
-	resp, err := c.CreateApiDeployment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_UpdateApiDeployment() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.UpdateApiDeploymentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#UpdateApiDeploymentRequest.
-	}
-	resp, err := c.UpdateApiDeployment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_DeleteApiDeployment() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.DeleteApiDeploymentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiDeploymentRequest.
-	}
-	err = c.DeleteApiDeployment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleRegistryClient_TagApiDeploymentRevision() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.TagApiDeploymentRevisionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#TagApiDeploymentRevisionRequest.
-	}
-	resp, err := c.TagApiDeploymentRevision(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_ListApiDeploymentRevisions() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.ListApiDeploymentRevisionsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListApiDeploymentRevisionsRequest.
-	}
-	it := c.ListApiDeploymentRevisions(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleRegistryClient_RollbackApiDeployment() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.RollbackApiDeploymentRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#RollbackApiDeploymentRequest.
-	}
-	resp, err := c.RollbackApiDeployment(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_DeleteApiDeploymentRevision() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.DeleteApiDeploymentRevisionRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteApiDeploymentRevisionRequest.
-	}
-	resp, err := c.DeleteApiDeploymentRevision(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleRegistryClient_ListArtifacts() {
-	ctx := context.Background()
-	// This snippet has been automatically generated and should be regarded as a code template only.
-	// It will require modifications to work:
-	// - It may require correct/in-range values for request initialization.
-	// - It may require specifying regional endpoints when creating the service client as shown in:
-	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
-	c, err := apigeeregistry.NewRegistryClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer c.Close()
-
-	req := &apigeeregistrypb.ListArtifactsRequest{
-		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ListArtifactsRequest.
-	}
-	it := c.ListArtifacts(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }
 
 func ExampleRegistryClient_GetArtifact() {
@@ -843,7 +474,7 @@ func ExampleRegistryClient_GetArtifact() {
 
 	req := &apigeeregistrypb.GetArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetArtifactRequest.
 	}
 	resp, err := c.GetArtifact(ctx, req)
 	if err != nil {
@@ -868,7 +499,7 @@ func ExampleRegistryClient_GetArtifactContents() {
 
 	req := &apigeeregistrypb.GetArtifactContentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#GetArtifactContentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#GetArtifactContentsRequest.
 	}
 	resp, err := c.GetArtifactContents(ctx, req)
 	if err != nil {
@@ -878,7 +509,7 @@ func ExampleRegistryClient_GetArtifactContents() {
 	_ = resp
 }
 
-func ExampleRegistryClient_CreateArtifact() {
+func ExampleRegistryClient_ListApiDeploymentRevisions() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -891,16 +522,250 @@ func ExampleRegistryClient_CreateArtifact() {
 	}
 	defer c.Close()
 
-	req := &apigeeregistrypb.CreateArtifactRequest{
+	req := &apigeeregistrypb.ListApiDeploymentRevisionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#CreateArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiDeploymentRevisionsRequest.
 	}
-	resp, err := c.CreateArtifact(ctx, req)
+	it := c.ListApiDeploymentRevisions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiDeploymentRevisionsResponse)
+	}
+}
+
+func ExampleRegistryClient_ListApiDeployments() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
+	defer c.Close()
+
+	req := &apigeeregistrypb.ListApiDeploymentsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiDeploymentsRequest.
+	}
+	it := c.ListApiDeployments(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiDeploymentsResponse)
+	}
+}
+
+func ExampleRegistryClient_ListApiSpecRevisions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.ListApiSpecRevisionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiSpecRevisionsRequest.
+	}
+	it := c.ListApiSpecRevisions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiSpecRevisionsResponse)
+	}
+}
+
+func ExampleRegistryClient_ListApiSpecs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.ListApiSpecsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiSpecsRequest.
+	}
+	it := c.ListApiSpecs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiSpecsResponse)
+	}
+}
+
+func ExampleRegistryClient_ListApiVersions() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.ListApiVersionsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApiVersionsRequest.
+	}
+	it := c.ListApiVersions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApiVersionsResponse)
+	}
+}
+
+func ExampleRegistryClient_ListApis() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.ListApisRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListApisRequest.
+	}
+	it := c.ListApis(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListApisResponse)
+	}
+}
+
+func ExampleRegistryClient_ListArtifacts() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.ListArtifactsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ListArtifactsRequest.
+	}
+	it := c.ListArtifacts(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apigeeregistrypb.ListArtifactsResponse)
+	}
 }
 
 func ExampleRegistryClient_ReplaceArtifact() {
@@ -918,7 +783,7 @@ func ExampleRegistryClient_ReplaceArtifact() {
 
 	req := &apigeeregistrypb.ReplaceArtifactRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#ReplaceArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#ReplaceArtifactRequest.
 	}
 	resp, err := c.ReplaceArtifact(ctx, req)
 	if err != nil {
@@ -928,7 +793,7 @@ func ExampleRegistryClient_ReplaceArtifact() {
 	_ = resp
 }
 
-func ExampleRegistryClient_DeleteArtifact() {
+func ExampleRegistryClient_RollbackApiDeployment() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
 	// It will require modifications to work:
@@ -941,14 +806,191 @@ func ExampleRegistryClient_DeleteArtifact() {
 	}
 	defer c.Close()
 
-	req := &apigeeregistrypb.DeleteArtifactRequest{
+	req := &apigeeregistrypb.RollbackApiDeploymentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/apigeeregistry/v1#DeleteArtifactRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#RollbackApiDeploymentRequest.
 	}
-	err = c.DeleteArtifact(ctx, req)
+	resp, err := c.RollbackApiDeployment(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_RollbackApiSpec() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.RollbackApiSpecRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#RollbackApiSpecRequest.
+	}
+	resp, err := c.RollbackApiSpec(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_TagApiDeploymentRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.TagApiDeploymentRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#TagApiDeploymentRevisionRequest.
+	}
+	resp, err := c.TagApiDeploymentRevision(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_TagApiSpecRevision() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.TagApiSpecRevisionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#TagApiSpecRevisionRequest.
+	}
+	resp, err := c.TagApiSpecRevision(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_UpdateApi() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.UpdateApiRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#UpdateApiRequest.
+	}
+	resp, err := c.UpdateApi(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_UpdateApiDeployment() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.UpdateApiDeploymentRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#UpdateApiDeploymentRequest.
+	}
+	resp, err := c.UpdateApiDeployment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_UpdateApiSpec() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.UpdateApiSpecRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#UpdateApiSpecRequest.
+	}
+	resp, err := c.UpdateApiSpec(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleRegistryClient_UpdateApiVersion() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apigeeregistry.NewRegistryClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apigeeregistrypb.UpdateApiVersionRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apigeeregistry/apiv1/apigeeregistrypb#UpdateApiVersionRequest.
+	}
+	resp, err := c.UpdateApiVersion(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleRegistryClient_GetLocation() {
@@ -1004,6 +1046,12 @@ func ExampleRegistryClient_ListLocations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*locationpb.ListLocationsResponse)
 	}
 }
 
@@ -1022,7 +1070,7 @@ func ExampleRegistryClient_GetIamPolicy() {
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#GetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#GetIamPolicyRequest.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
 	if err != nil {
@@ -1047,7 +1095,7 @@ func ExampleRegistryClient_SetIamPolicy() {
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#SetIamPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#SetIamPolicyRequest.
 	}
 	resp, err := c.SetIamPolicy(ctx, req)
 	if err != nil {
@@ -1072,7 +1120,7 @@ func ExampleRegistryClient_TestIamPermissions() {
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/iam/v1#TestIamPermissionsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/iam/apiv1/iampb#TestIamPermissionsRequest.
 	}
 	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
@@ -1097,7 +1145,7 @@ func ExampleRegistryClient_CancelOperation() {
 
 	req := &longrunningpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#CancelOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#CancelOperationRequest.
 	}
 	err = c.CancelOperation(ctx, req)
 	if err != nil {
@@ -1120,7 +1168,7 @@ func ExampleRegistryClient_DeleteOperation() {
 
 	req := &longrunningpb.DeleteOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#DeleteOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#DeleteOperationRequest.
 	}
 	err = c.DeleteOperation(ctx, req)
 	if err != nil {
@@ -1143,7 +1191,7 @@ func ExampleRegistryClient_GetOperation() {
 
 	req := &longrunningpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#GetOperationRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#GetOperationRequest.
 	}
 	resp, err := c.GetOperation(ctx, req)
 	if err != nil {
@@ -1168,7 +1216,7 @@ func ExampleRegistryClient_ListOperations() {
 
 	req := &longrunningpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/longrunning#ListOperationsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/longrunning/autogen/longrunningpb#ListOperationsRequest.
 	}
 	it := c.ListOperations(ctx, req)
 	for {
@@ -1181,5 +1229,11 @@ func ExampleRegistryClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

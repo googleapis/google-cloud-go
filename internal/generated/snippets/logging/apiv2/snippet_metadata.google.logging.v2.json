@@ -1,0 +1,2393 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/logging/apiv2",
+    "version": "1.10.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.logging.v2",
+        "version": "v2"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_CancelOperation_sync",
+      "title": "logging CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConfigClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.logging.v2.ConfigClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_CopyLogEntries_sync",
+      "title": "logging CopyLogEntries Sample",
+      "description": "CopyLogEntries copies a set of log entries from a log bucket to a Cloud Storage bucket.",
+      "file": "ConfigClient/CopyLogEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CopyLogEntries",
+        "fullName": "google.logging.v2.ConfigClient.CopyLogEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.CopyLogEntriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CopyLogEntriesOperation",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "CopyLogEntries",
+          "fullName": "google.logging.v2.ConfigServiceV2.CopyLogEntries",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_CreateBucket_sync",
+      "title": "logging CreateBucket Sample",
+      "description": "CreateBucket creates a log bucket that can be used to store log entries. After a bucket\nhas been created, the bucket's location cannot be changed.",
+      "file": "ConfigClient/CreateBucket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBucket",
+        "fullName": "google.logging.v2.ConfigClient.CreateBucket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.CreateBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogBucket",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "CreateBucket",
+          "fullName": "google.logging.v2.ConfigServiceV2.CreateBucket",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_CreateBucketAsync_sync",
+      "title": "logging CreateBucketAsync Sample",
+      "description": "CreateBucketAsync creates a log bucket asynchronously that can be used to store log entries.\n\nAfter a bucket has been created, the bucket's location cannot be changed.",
+      "file": "ConfigClient/CreateBucketAsync/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBucketAsync",
+        "fullName": "google.logging.v2.ConfigClient.CreateBucketAsync",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.CreateBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateBucketAsyncOperation",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "CreateBucketAsync",
+          "fullName": "google.logging.v2.ConfigServiceV2.CreateBucketAsync",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_CreateExclusion_sync",
+      "title": "logging CreateExclusion Sample",
+      "description": "CreateExclusion creates a new exclusion in the _Default sink in a specified parent\nresource. Only log entries belonging to that resource can be excluded. You\ncan have up to 10 exclusions in a resource.",
+      "file": "ConfigClient/CreateExclusion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateExclusion",
+        "fullName": "google.logging.v2.ConfigClient.CreateExclusion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.CreateExclusionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogExclusion",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "CreateExclusion",
+          "fullName": "google.logging.v2.ConfigServiceV2.CreateExclusion",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_CreateLink_sync",
+      "title": "logging CreateLink Sample",
+      "description": "CreateLink asynchronously creates a linked dataset in BigQuery which makes it possible\nto use BigQuery to read the logs stored in the log bucket. A log bucket may\ncurrently only contain one link.",
+      "file": "ConfigClient/CreateLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateLink",
+        "fullName": "google.logging.v2.ConfigClient.CreateLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.CreateLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CreateLinkOperation",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "CreateLink",
+          "fullName": "google.logging.v2.ConfigServiceV2.CreateLink",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_CreateSink_sync",
+      "title": "logging CreateSink Sample",
+      "description": "CreateSink creates a sink that exports specified log entries to a destination. The\nexport of newly-ingested log entries begins immediately, unless the sink's\n`writer_identity` is not permitted to write to the destination. A sink can\nexport log entries only from the resource owning the sink.",
+      "file": "ConfigClient/CreateSink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateSink",
+        "fullName": "google.logging.v2.ConfigClient.CreateSink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.CreateSinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogSink",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "CreateSink",
+          "fullName": "google.logging.v2.ConfigServiceV2.CreateSink",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_CreateView_sync",
+      "title": "logging CreateView Sample",
+      "description": "CreateView creates a view over log entries in a log bucket. A bucket may contain a\nmaximum of 30 views.",
+      "file": "ConfigClient/CreateView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateView",
+        "fullName": "google.logging.v2.ConfigClient.CreateView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.CreateViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogView",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "CreateView",
+          "fullName": "google.logging.v2.ConfigServiceV2.CreateView",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteBucket_sync",
+      "title": "logging DeleteBucket Sample",
+      "description": "DeleteBucket deletes a log bucket.\n\nChanges the bucket's `lifecycle_state` to the `DELETE_REQUESTED` state.\nAfter 7 days, the bucket will be purged and all log entries in the bucket\nwill be permanently deleted.",
+      "file": "ConfigClient/DeleteBucket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBucket",
+        "fullName": "google.logging.v2.ConfigClient.DeleteBucket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.DeleteBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteBucket",
+          "fullName": "google.logging.v2.ConfigServiceV2.DeleteBucket",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteExclusion_sync",
+      "title": "logging DeleteExclusion Sample",
+      "description": "DeleteExclusion deletes an exclusion in the _Default sink.",
+      "file": "ConfigClient/DeleteExclusion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteExclusion",
+        "fullName": "google.logging.v2.ConfigClient.DeleteExclusion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.DeleteExclusionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteExclusion",
+          "fullName": "google.logging.v2.ConfigServiceV2.DeleteExclusion",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteLink_sync",
+      "title": "logging DeleteLink Sample",
+      "description": "DeleteLink deletes a link. This will also delete the corresponding BigQuery linked\ndataset.",
+      "file": "ConfigClient/DeleteLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteLink",
+        "fullName": "google.logging.v2.ConfigClient.DeleteLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.DeleteLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DeleteLinkOperation",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteLink",
+          "fullName": "google.logging.v2.ConfigServiceV2.DeleteLink",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 56,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteSink_sync",
+      "title": "logging DeleteSink Sample",
+      "description": "DeleteSink deletes a sink. If the sink has a unique `writer_identity`, then that\nservice account is also deleted.",
+      "file": "ConfigClient/DeleteSink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteSink",
+        "fullName": "google.logging.v2.ConfigClient.DeleteSink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.DeleteSinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteSink",
+          "fullName": "google.logging.v2.ConfigServiceV2.DeleteSink",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_DeleteView_sync",
+      "title": "logging DeleteView Sample",
+      "description": "DeleteView deletes a view on a log bucket.\nIf an `UNAVAILABLE` error is returned, this indicates that system is not in\na state where it can delete the view. If this occurs, please try again in a\nfew minutes.",
+      "file": "ConfigClient/DeleteView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteView",
+        "fullName": "google.logging.v2.ConfigClient.DeleteView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.DeleteViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "DeleteView",
+          "fullName": "google.logging.v2.ConfigServiceV2.DeleteView",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_GetBucket_sync",
+      "title": "logging GetBucket Sample",
+      "description": "GetBucket gets a log bucket.",
+      "file": "ConfigClient/GetBucket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBucket",
+        "fullName": "google.logging.v2.ConfigClient.GetBucket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.GetBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogBucket",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetBucket",
+          "fullName": "google.logging.v2.ConfigServiceV2.GetBucket",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_GetCmekSettings_sync",
+      "title": "logging GetCmekSettings Sample",
+      "description": "GetCmekSettings gets the Logging CMEK settings for the given resource.\n\nNote: CMEK for the Log Router can be configured for Google Cloud projects,\nfolders, organizations and billing accounts. Once configured for an\norganization, it applies to all projects and folders in the Google Cloud\norganization.\n\nSee [Enabling CMEK for Log\nRouter](https: //cloud.google.com/logging/docs/routing/managed-encryption)\nfor more information.",
+      "file": "ConfigClient/GetCmekSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCmekSettings",
+        "fullName": "google.logging.v2.ConfigClient.GetCmekSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.GetCmekSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.CmekSettings",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetCmekSettings",
+          "fullName": "google.logging.v2.ConfigServiceV2.GetCmekSettings",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_GetExclusion_sync",
+      "title": "logging GetExclusion Sample",
+      "description": "GetExclusion gets the description of an exclusion in the _Default sink.",
+      "file": "ConfigClient/GetExclusion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetExclusion",
+        "fullName": "google.logging.v2.ConfigClient.GetExclusion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.GetExclusionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogExclusion",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetExclusion",
+          "fullName": "google.logging.v2.ConfigServiceV2.GetExclusion",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_GetLink_sync",
+      "title": "logging GetLink Sample",
+      "description": "GetLink gets a link.",
+      "file": "ConfigClient/GetLink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLink",
+        "fullName": "google.logging.v2.ConfigClient.GetLink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.GetLinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.Link",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetLink",
+          "fullName": "google.logging.v2.ConfigServiceV2.GetLink",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_GetOperation_sync",
+      "title": "logging GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "ConfigClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.logging.v2.ConfigClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_GetSettings_sync",
+      "title": "logging GetSettings Sample",
+      "description": "GetSettings gets the Log Router settings for the given resource.\n\nNote: Settings for the Log Router can be get for Google Cloud projects,\nfolders, organizations and billing accounts. Currently it can only be\nconfigured for organizations. Once configured for an organization, it\napplies to all projects and folders in the Google Cloud organization.\n\nSee [Enabling CMEK for Log\nRouter](https: //cloud.google.com/logging/docs/routing/managed-encryption)\nfor more information.",
+      "file": "ConfigClient/GetSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSettings",
+        "fullName": "google.logging.v2.ConfigClient.GetSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.GetSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.Settings",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetSettings",
+          "fullName": "google.logging.v2.ConfigServiceV2.GetSettings",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_GetSink_sync",
+      "title": "logging GetSink Sample",
+      "description": "GetSink gets a sink.",
+      "file": "ConfigClient/GetSink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetSink",
+        "fullName": "google.logging.v2.ConfigClient.GetSink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.GetSinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogSink",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetSink",
+          "fullName": "google.logging.v2.ConfigServiceV2.GetSink",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_GetView_sync",
+      "title": "logging GetView Sample",
+      "description": "GetView gets a view on a log bucket..",
+      "file": "ConfigClient/GetView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetView",
+        "fullName": "google.logging.v2.ConfigClient.GetView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.GetViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogView",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "GetView",
+          "fullName": "google.logging.v2.ConfigServiceV2.GetView",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_ListBuckets_sync",
+      "title": "logging ListBuckets Sample",
+      "description": "ListBuckets lists log buckets.",
+      "file": "ConfigClient/ListBuckets/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBuckets",
+        "fullName": "google.logging.v2.ConfigClient.ListBuckets",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.ListBucketsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LogBucketIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListBuckets",
+          "fullName": "google.logging.v2.ConfigServiceV2.ListBuckets",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_ListExclusions_sync",
+      "title": "logging ListExclusions Sample",
+      "description": "ListExclusions lists all the exclusions on the _Default sink in a parent resource.",
+      "file": "ConfigClient/ListExclusions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListExclusions",
+        "fullName": "google.logging.v2.ConfigClient.ListExclusions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.ListExclusionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LogExclusionIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListExclusions",
+          "fullName": "google.logging.v2.ConfigServiceV2.ListExclusions",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_ListLinks_sync",
+      "title": "logging ListLinks Sample",
+      "description": "ListLinks lists links.",
+      "file": "ConfigClient/ListLinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLinks",
+        "fullName": "google.logging.v2.ConfigClient.ListLinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.ListLinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LinkIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListLinks",
+          "fullName": "google.logging.v2.ConfigServiceV2.ListLinks",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_ListOperations_sync",
+      "title": "logging ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "ConfigClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.logging.v2.ConfigClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_ListSinks_sync",
+      "title": "logging ListSinks Sample",
+      "description": "ListSinks lists sinks.",
+      "file": "ConfigClient/ListSinks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListSinks",
+        "fullName": "google.logging.v2.ConfigClient.ListSinks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.ListSinksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LogSinkIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListSinks",
+          "fullName": "google.logging.v2.ConfigServiceV2.ListSinks",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_ListViews_sync",
+      "title": "logging ListViews Sample",
+      "description": "ListViews lists views on a log bucket.",
+      "file": "ConfigClient/ListViews/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListViews",
+        "fullName": "google.logging.v2.ConfigClient.ListViews",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.ListViewsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LogViewIterator",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "ListViews",
+          "fullName": "google.logging.v2.ConfigServiceV2.ListViews",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_UndeleteBucket_sync",
+      "title": "logging UndeleteBucket Sample",
+      "description": "UndeleteBucket undeletes a log bucket. A bucket that has been deleted can be undeleted\nwithin the grace period of 7 days.",
+      "file": "ConfigClient/UndeleteBucket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UndeleteBucket",
+        "fullName": "google.logging.v2.ConfigClient.UndeleteBucket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.UndeleteBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "UndeleteBucket",
+          "fullName": "google.logging.v2.ConfigServiceV2.UndeleteBucket",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateBucket_sync",
+      "title": "logging UpdateBucket Sample",
+      "description": "UpdateBucket updates a log bucket.\n\nIf the bucket has a `lifecycle_state` of `DELETE_REQUESTED`, then\n`FAILED_PRECONDITION` will be returned.\n\nAfter a bucket has been created, the bucket's location cannot be changed.",
+      "file": "ConfigClient/UpdateBucket/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBucket",
+        "fullName": "google.logging.v2.ConfigClient.UpdateBucket",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.UpdateBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogBucket",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateBucket",
+          "fullName": "google.logging.v2.ConfigServiceV2.UpdateBucket",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateBucketAsync_sync",
+      "title": "logging UpdateBucketAsync Sample",
+      "description": "UpdateBucketAsync updates a log bucket asynchronously.\n\nIf the bucket has a `lifecycle_state` of `DELETE_REQUESTED`, then\n`FAILED_PRECONDITION` will be returned.\n\nAfter a bucket has been created, the bucket's location cannot be changed.",
+      "file": "ConfigClient/UpdateBucketAsync/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBucketAsync",
+        "fullName": "google.logging.v2.ConfigClient.UpdateBucketAsync",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.UpdateBucketRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "UpdateBucketAsyncOperation",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateBucketAsync",
+          "fullName": "google.logging.v2.ConfigServiceV2.UpdateBucketAsync",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateCmekSettings_sync",
+      "title": "logging UpdateCmekSettings Sample",
+      "description": "UpdateCmekSettings updates the Log Router CMEK settings for the given resource.\n\nNote: CMEK for the Log Router can currently only be configured for Google\nCloud organizations. Once configured, it applies to all projects and\nfolders in the Google Cloud organization.\n\n[UpdateCmekSettings][google.logging.v2.ConfigServiceV2.UpdateCmekSettings]\nwill fail if 1) `kms_key_name` is invalid, or 2) the associated service\naccount does not have the required\n`roles/cloudkms.cryptoKeyEncrypterDecrypter` role assigned for the key, or\n3) access to the key is disabled.\n\nSee [Enabling CMEK for Log\nRouter](https: //cloud.google.com/logging/docs/routing/managed-encryption)\nfor more information.",
+      "file": "ConfigClient/UpdateCmekSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateCmekSettings",
+        "fullName": "google.logging.v2.ConfigClient.UpdateCmekSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.UpdateCmekSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.CmekSettings",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateCmekSettings",
+          "fullName": "google.logging.v2.ConfigServiceV2.UpdateCmekSettings",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateExclusion_sync",
+      "title": "logging UpdateExclusion Sample",
+      "description": "UpdateExclusion changes one or more properties of an existing exclusion in the _Default\nsink.",
+      "file": "ConfigClient/UpdateExclusion/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateExclusion",
+        "fullName": "google.logging.v2.ConfigClient.UpdateExclusion",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.UpdateExclusionRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogExclusion",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateExclusion",
+          "fullName": "google.logging.v2.ConfigServiceV2.UpdateExclusion",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateSettings_sync",
+      "title": "logging UpdateSettings Sample",
+      "description": "UpdateSettings updates the Log Router settings for the given resource.\n\nNote: Settings for the Log Router can currently only be configured for\nGoogle Cloud organizations. Once configured, it applies to all projects and\nfolders in the Google Cloud organization.\n\n[UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings]\nwill fail if 1) `kms_key_name` is invalid, or 2) the associated service\naccount does not have the required\n`roles/cloudkms.cryptoKeyEncrypterDecrypter` role assigned for the key, or\n3) access to the key is disabled. 4) `location_id` is not supported by\nLogging. 5) `location_id` violate OrgPolicy.\n\nSee [Enabling CMEK for Log\nRouter](https: //cloud.google.com/logging/docs/routing/managed-encryption)\nfor more information.",
+      "file": "ConfigClient/UpdateSettings/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSettings",
+        "fullName": "google.logging.v2.ConfigClient.UpdateSettings",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.UpdateSettingsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.Settings",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateSettings",
+          "fullName": "google.logging.v2.ConfigServiceV2.UpdateSettings",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateSink_sync",
+      "title": "logging UpdateSink Sample",
+      "description": "UpdateSink updates a sink. This method replaces the following fields in the existing\nsink with values from the new sink: `destination`, and `filter`.\n\nThe updated sink might also have a new `writer_identity`; see the\n`unique_writer_identity` field.",
+      "file": "ConfigClient/UpdateSink/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateSink",
+        "fullName": "google.logging.v2.ConfigClient.UpdateSink",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.UpdateSinkRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogSink",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateSink",
+          "fullName": "google.logging.v2.ConfigServiceV2.UpdateSink",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_ConfigServiceV2_UpdateView_sync",
+      "title": "logging UpdateView Sample",
+      "description": "UpdateView updates a view on a log bucket. This method replaces the following fields\nin the existing view with values from the new view: `filter`.\nIf an `UNAVAILABLE` error is returned, this indicates that system is not in\na state where it can update the view. If this occurs, please try again in a\nfew minutes.",
+      "file": "ConfigClient/UpdateView/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateView",
+        "fullName": "google.logging.v2.ConfigClient.UpdateView",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.UpdateViewRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogView",
+        "client": {
+          "shortName": "ConfigClient",
+          "fullName": "google.logging.v2.ConfigClient"
+        },
+        "method": {
+          "shortName": "UpdateView",
+          "fullName": "google.logging.v2.ConfigServiceV2.UpdateView",
+          "service": {
+            "shortName": "ConfigServiceV2",
+            "fullName": "google.logging.v2.ConfigServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_LoggingServiceV2_CancelOperation_sync",
+      "title": "logging CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.logging.v2.Client.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.logging.v2.Client"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_LoggingServiceV2_DeleteLog_sync",
+      "title": "logging DeleteLog Sample",
+      "description": "DeleteLog deletes all the log entries in a log for the _Default Log Bucket. The log\nreappears if it receives new entries. Log entries written shortly before\nthe delete operation might not be deleted. Entries received after the\ndelete operation with a timestamp before the operation will be deleted.",
+      "file": "Client/DeleteLog/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteLog",
+        "fullName": "google.logging.v2.Client.DeleteLog",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.DeleteLogRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.logging.v2.Client"
+        },
+        "method": {
+          "shortName": "DeleteLog",
+          "fullName": "google.logging.v2.LoggingServiceV2.DeleteLog",
+          "service": {
+            "shortName": "LoggingServiceV2",
+            "fullName": "google.logging.v2.LoggingServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_LoggingServiceV2_GetOperation_sync",
+      "title": "logging GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.logging.v2.Client.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.logging.v2.Client"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_LoggingServiceV2_ListLogEntries_sync",
+      "title": "logging ListLogEntries Sample",
+      "description": "ListLogEntries lists log entries.  Use this method to retrieve log entries that originated\nfrom a project/folder/organization/billing account.  For ways to export log\nentries, see [Exporting\nLogs](https: //cloud.google.com/logging/docs/export).",
+      "file": "Client/ListLogEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLogEntries",
+        "fullName": "google.logging.v2.Client.ListLogEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.ListLogEntriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LogEntryIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.logging.v2.Client"
+        },
+        "method": {
+          "shortName": "ListLogEntries",
+          "fullName": "google.logging.v2.LoggingServiceV2.ListLogEntries",
+          "service": {
+            "shortName": "LoggingServiceV2",
+            "fullName": "google.logging.v2.LoggingServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_LoggingServiceV2_ListLogs_sync",
+      "title": "logging ListLogs Sample",
+      "description": "ListLogs lists the logs in projects, organizations, folders, or billing accounts.\nOnly logs that have entries are listed.",
+      "file": "Client/ListLogs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLogs",
+        "fullName": "google.logging.v2.Client.ListLogs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.ListLogsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "StringIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.logging.v2.Client"
+        },
+        "method": {
+          "shortName": "ListLogs",
+          "fullName": "google.logging.v2.LoggingServiceV2.ListLogs",
+          "service": {
+            "shortName": "LoggingServiceV2",
+            "fullName": "google.logging.v2.LoggingServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_LoggingServiceV2_ListMonitoredResourceDescriptors_sync",
+      "title": "logging ListMonitoredResourceDescriptors Sample",
+      "description": "ListMonitoredResourceDescriptors lists the descriptors for monitored resource types used by Logging.",
+      "file": "Client/ListMonitoredResourceDescriptors/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListMonitoredResourceDescriptors",
+        "fullName": "google.logging.v2.Client.ListMonitoredResourceDescriptors",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.ListMonitoredResourceDescriptorsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "MonitoredResourceDescriptorIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.logging.v2.Client"
+        },
+        "method": {
+          "shortName": "ListMonitoredResourceDescriptors",
+          "fullName": "google.logging.v2.LoggingServiceV2.ListMonitoredResourceDescriptors",
+          "service": {
+            "shortName": "LoggingServiceV2",
+            "fullName": "google.logging.v2.LoggingServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_LoggingServiceV2_ListOperations_sync",
+      "title": "logging ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.logging.v2.Client.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.logging.v2.Client"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_LoggingServiceV2_TailLogEntries_sync",
+      "title": "logging TailLogEntries Sample",
+      "description": "TailLogEntries streaming read of log entries as they are ingested. Until the stream is\nterminated, it will continue reading logs.",
+      "file": "Client/TailLogEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TailLogEntries",
+        "fullName": "google.logging.v2.Client.TailLogEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "loggingpb.LoggingServiceV2_TailLogEntriesClient",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.logging.v2.Client"
+        },
+        "method": {
+          "shortName": "TailLogEntries",
+          "fullName": "google.logging.v2.LoggingServiceV2.TailLogEntries",
+          "service": {
+            "shortName": "LoggingServiceV2",
+            "fullName": "google.logging.v2.LoggingServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 69,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_LoggingServiceV2_WriteLogEntries_sync",
+      "title": "logging WriteLogEntries Sample",
+      "description": "WriteLogEntries writes log entries to Logging. This API method is the\nonly way to send log entries to Logging. This method\nis used, directly or indirectly, by the Logging agent\n(fluentd) and all logging libraries configured to use Logging.\nA single request may contain log entries for a maximum of 1000\ndifferent resources (projects, organizations, billing accounts or\nfolders)",
+      "file": "Client/WriteLogEntries/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "WriteLogEntries",
+        "fullName": "google.logging.v2.Client.WriteLogEntries",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.WriteLogEntriesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.WriteLogEntriesResponse",
+        "client": {
+          "shortName": "Client",
+          "fullName": "google.logging.v2.Client"
+        },
+        "method": {
+          "shortName": "WriteLogEntries",
+          "fullName": "google.logging.v2.LoggingServiceV2.WriteLogEntries",
+          "service": {
+            "shortName": "LoggingServiceV2",
+            "fullName": "google.logging.v2.LoggingServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_MetricsServiceV2_CancelOperation_sync",
+      "title": "logging CancelOperation Sample",
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "MetricsClient/CancelOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CancelOperation",
+        "fullName": "google.logging.v2.MetricsClient.CancelOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.CancelOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MetricsClient",
+          "fullName": "google.logging.v2.MetricsClient"
+        },
+        "method": {
+          "shortName": "CancelOperation",
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_MetricsServiceV2_CreateLogMetric_sync",
+      "title": "logging CreateLogMetric Sample",
+      "description": "CreateLogMetric creates a logs-based metric.",
+      "file": "MetricsClient/CreateLogMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateLogMetric",
+        "fullName": "google.logging.v2.MetricsClient.CreateLogMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.CreateLogMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogMetric",
+        "client": {
+          "shortName": "MetricsClient",
+          "fullName": "google.logging.v2.MetricsClient"
+        },
+        "method": {
+          "shortName": "CreateLogMetric",
+          "fullName": "google.logging.v2.MetricsServiceV2.CreateLogMetric",
+          "service": {
+            "shortName": "MetricsServiceV2",
+            "fullName": "google.logging.v2.MetricsServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_MetricsServiceV2_DeleteLogMetric_sync",
+      "title": "logging DeleteLogMetric Sample",
+      "description": "DeleteLogMetric deletes a logs-based metric.",
+      "file": "MetricsClient/DeleteLogMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteLogMetric",
+        "fullName": "google.logging.v2.MetricsClient.DeleteLogMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.DeleteLogMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MetricsClient",
+          "fullName": "google.logging.v2.MetricsClient"
+        },
+        "method": {
+          "shortName": "DeleteLogMetric",
+          "fullName": "google.logging.v2.MetricsServiceV2.DeleteLogMetric",
+          "service": {
+            "shortName": "MetricsServiceV2",
+            "fullName": "google.logging.v2.MetricsServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_MetricsServiceV2_GetLogMetric_sync",
+      "title": "logging GetLogMetric Sample",
+      "description": "GetLogMetric gets a logs-based metric.",
+      "file": "MetricsClient/GetLogMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetLogMetric",
+        "fullName": "google.logging.v2.MetricsClient.GetLogMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.GetLogMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogMetric",
+        "client": {
+          "shortName": "MetricsClient",
+          "fullName": "google.logging.v2.MetricsClient"
+        },
+        "method": {
+          "shortName": "GetLogMetric",
+          "fullName": "google.logging.v2.MetricsServiceV2.GetLogMetric",
+          "service": {
+            "shortName": "MetricsServiceV2",
+            "fullName": "google.logging.v2.MetricsServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_MetricsServiceV2_GetOperation_sync",
+      "title": "logging GetOperation Sample",
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "MetricsClient/GetOperation/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetOperation",
+        "fullName": "google.logging.v2.MetricsClient.GetOperation",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.GetOperationRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "client": {
+          "shortName": "MetricsClient",
+          "fullName": "google.logging.v2.MetricsClient"
+        },
+        "method": {
+          "shortName": "GetOperation",
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_MetricsServiceV2_ListLogMetrics_sync",
+      "title": "logging ListLogMetrics Sample",
+      "description": "ListLogMetrics lists logs-based metrics.",
+      "file": "MetricsClient/ListLogMetrics/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLogMetrics",
+        "fullName": "google.logging.v2.MetricsClient.ListLogMetrics",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.ListLogMetricsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LogMetricIterator",
+        "client": {
+          "shortName": "MetricsClient",
+          "fullName": "google.logging.v2.MetricsClient"
+        },
+        "method": {
+          "shortName": "ListLogMetrics",
+          "fullName": "google.logging.v2.MetricsServiceV2.ListLogMetrics",
+          "service": {
+            "shortName": "MetricsServiceV2",
+            "fullName": "google.logging.v2.MetricsServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_MetricsServiceV2_ListOperations_sync",
+      "title": "logging ListOperations Sample",
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "MetricsClient/ListOperations/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListOperations",
+        "fullName": "google.logging.v2.MetricsClient.ListOperations",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "longrunningpb.ListOperationsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "client": {
+          "shortName": "MetricsClient",
+          "fullName": "google.logging.v2.MetricsClient"
+        },
+        "method": {
+          "shortName": "ListOperations",
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "shortName": "Operations",
+            "fullName": "google.longrunning.Operations"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "logging_v2_generated_MetricsServiceV2_UpdateLogMetric_sync",
+      "title": "logging UpdateLogMetric Sample",
+      "description": "UpdateLogMetric creates or updates a logs-based metric.",
+      "file": "MetricsClient/UpdateLogMetric/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateLogMetric",
+        "fullName": "google.logging.v2.MetricsClient.UpdateLogMetric",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "loggingpb.UpdateLogMetricRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*loggingpb.LogMetric",
+        "client": {
+          "shortName": "MetricsClient",
+          "fullName": "google.logging.v2.MetricsClient"
+        },
+        "method": {
+          "shortName": "UpdateLogMetric",
+          "fullName": "google.logging.v2.MetricsServiceV2.UpdateLogMetric",
+          "service": {
+            "shortName": "MetricsServiceV2",
+            "fullName": "google.logging.v2.MetricsServiceV2"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -19,9 +19,11 @@ import (
 	"fmt"
 	"testing"
 
+	"cloud.google.com/go/bigquery/connection/apiv1/connectionpb"
+	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	"google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
 )
 
 func TestIntegration_RoutineScalarUDF(t *testing.T) {
@@ -45,6 +47,73 @@ func TestIntegration_RoutineScalarUDF(t *testing.T) {
 				},
 			},
 		},
+	})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+}
+
+func TestIntegration_RoutineRangeType(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	err := routine.Create(ctx, &RoutineMetadata{
+		Type:     "SCALAR_FUNCTION",
+		Language: "SQL",
+		Body:     "RANGE_CONTAINS(r1,r2)",
+		Arguments: []*RoutineArgument{
+			{
+				Name: "r1",
+				DataType: &StandardSQLDataType{
+					TypeKind: "RANGE",
+					RangeElementType: &StandardSQLDataType{
+						TypeKind: "TIMESTAMP",
+					},
+				},
+			},
+			{
+				Name: "r2",
+				DataType: &StandardSQLDataType{
+					TypeKind: "RANGE",
+					RangeElementType: &StandardSQLDataType{
+						TypeKind: "TIMESTAMP",
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+}
+
+func TestIntegration_RoutineDataGovernance(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Create a scalar UDF routine via API.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	err := routine.Create(ctx, &RoutineMetadata{
+		Type:     "SCALAR_FUNCTION",
+		Language: "SQL",
+		Body:     "x",
+		Arguments: []*RoutineArgument{
+			{
+				Name: "x",
+				DataType: &StandardSQLDataType{
+					TypeKind: "INT64",
+				},
+			},
+		},
+		ReturnType:         &StandardSQLDataType{TypeKind: "INT64"},
+		DataGovernanceType: "DATA_MASKING",
 	})
 	if err != nil {
 		t.Fatalf("Create: %v", err)
@@ -121,7 +190,14 @@ func TestIntegration_RoutineRemoteUDF(t *testing.T) {
 			TypeKind: "STRING",
 		},
 	}
-	if err := routine.Create(ctx, meta); err != nil {
+
+	err = internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+		if err := routine.Create(ctx, meta); err != nil {
+			return false, err
+		}
+		return true, nil
+	})
+	if err != nil {
 		t.Fatalf("routine.Create: %v", err)
 	}
 
@@ -137,27 +213,27 @@ func TestIntegration_RoutineRemoteUDF(t *testing.T) {
 
 func createConnection(ctx context.Context, t *testing.T, parent, name string) (cleanup func(), connectionID string, err error) {
 	fullname := fmt.Sprintf("%s/connections/%s", parent, name)
-	conn, err := connectionsClient.CreateConnection(ctx, &connection.CreateConnectionRequest{
+	conn, err := connectionsClient.CreateConnection(ctx, &connectionpb.CreateConnectionRequest{
 		Parent:       parent,
 		ConnectionId: name,
-		Connection: &connection.Connection{
+		Connection: &connectionpb.Connection{
 			FriendlyName: name,
-			Properties: &connection.Connection_CloudResource{
-				CloudResource: &connection.CloudResourceProperties{},
+			Properties: &connectionpb.Connection_CloudResource{
+				CloudResource: &connectionpb.CloudResourceProperties{},
 			},
 		},
 	})
 	if err != nil {
 		return
 	}
-	conn, err = connectionsClient.GetConnection(ctx, &connection.GetConnectionRequest{
+	conn, err = connectionsClient.GetConnection(ctx, &connectionpb.GetConnectionRequest{
 		Name: fullname,
 	})
 	if err != nil {
 		return
 	}
 	cleanup = func() {
-		err := connectionsClient.DeleteConnection(ctx, &connection.DeleteConnectionRequest{
+		err := connectionsClient.DeleteConnection(ctx, &connectionpb.DeleteConnectionRequest{
 			Name: fullname,
 		})
 		if err != nil {

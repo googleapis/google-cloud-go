@@ -1,0 +1,888 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigquery/biglake/apiv1alpha1",
+    "version": "1.61.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.bigquery.biglake.v1alpha1",
+        "version": "v1alpha1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_CheckLock_sync",
+      "title": "biglake CheckLock Sample",
+      "description": "CheckLock checks the state of a lock specified by the lock ID.",
+      "file": "MetastoreClient/CheckLock/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CheckLock",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.CheckLock",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.CheckLockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Lock",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "CheckLock",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.CheckLock",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_CreateCatalog_sync",
+      "title": "biglake CreateCatalog Sample",
+      "description": "CreateCatalog creates a new catalog.",
+      "file": "MetastoreClient/CreateCatalog/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateCatalog",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.CreateCatalog",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.CreateCatalogRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Catalog",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "CreateCatalog",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.CreateCatalog",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_CreateDatabase_sync",
+      "title": "biglake CreateDatabase Sample",
+      "description": "CreateDatabase creates a new database.",
+      "file": "MetastoreClient/CreateDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDatabase",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.CreateDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.CreateDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Database",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "CreateDatabase",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.CreateDatabase",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_CreateLock_sync",
+      "title": "biglake CreateLock Sample",
+      "description": "CreateLock creates a new lock.",
+      "file": "MetastoreClient/CreateLock/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateLock",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.CreateLock",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.CreateLockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Lock",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "CreateLock",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.CreateLock",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_CreateTable_sync",
+      "title": "biglake CreateTable Sample",
+      "description": "CreateTable creates a new table.",
+      "file": "MetastoreClient/CreateTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateTable",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.CreateTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.CreateTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Table",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "CreateTable",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.CreateTable",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_DeleteCatalog_sync",
+      "title": "biglake DeleteCatalog Sample",
+      "description": "DeleteCatalog deletes an existing catalog specified by the catalog ID.",
+      "file": "MetastoreClient/DeleteCatalog/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteCatalog",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.DeleteCatalog",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.DeleteCatalogRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Catalog",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "DeleteCatalog",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.DeleteCatalog",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_DeleteDatabase_sync",
+      "title": "biglake DeleteDatabase Sample",
+      "description": "DeleteDatabase deletes an existing database specified by the database ID.",
+      "file": "MetastoreClient/DeleteDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDatabase",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.DeleteDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.DeleteDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Database",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "DeleteDatabase",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.DeleteDatabase",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_DeleteLock_sync",
+      "title": "biglake DeleteLock Sample",
+      "description": "DeleteLock deletes an existing lock specified by the lock ID.",
+      "file": "MetastoreClient/DeleteLock/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteLock",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.DeleteLock",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.DeleteLockRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "DeleteLock",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.DeleteLock",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_DeleteTable_sync",
+      "title": "biglake DeleteTable Sample",
+      "description": "DeleteTable deletes an existing table specified by the table ID.",
+      "file": "MetastoreClient/DeleteTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteTable",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.DeleteTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.DeleteTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Table",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "DeleteTable",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.DeleteTable",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_GetCatalog_sync",
+      "title": "biglake GetCatalog Sample",
+      "description": "GetCatalog gets the catalog specified by the resource name.",
+      "file": "MetastoreClient/GetCatalog/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetCatalog",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.GetCatalog",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.GetCatalogRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Catalog",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "GetCatalog",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.GetCatalog",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_GetDatabase_sync",
+      "title": "biglake GetDatabase Sample",
+      "description": "GetDatabase gets the database specified by the resource name.",
+      "file": "MetastoreClient/GetDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDatabase",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.GetDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.GetDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Database",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "GetDatabase",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.GetDatabase",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_GetTable_sync",
+      "title": "biglake GetTable Sample",
+      "description": "GetTable gets the table specified by the resource name.",
+      "file": "MetastoreClient/GetTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetTable",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.GetTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.GetTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Table",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "GetTable",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.GetTable",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_ListCatalogs_sync",
+      "title": "biglake ListCatalogs Sample",
+      "description": "ListCatalogs list all catalogs in a specified project.",
+      "file": "MetastoreClient/ListCatalogs/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListCatalogs",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.ListCatalogs",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.ListCatalogsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "CatalogIterator",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "ListCatalogs",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.ListCatalogs",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_ListDatabases_sync",
+      "title": "biglake ListDatabases Sample",
+      "description": "ListDatabases list all databases in a specified catalog.",
+      "file": "MetastoreClient/ListDatabases/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDatabases",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.ListDatabases",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.ListDatabasesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DatabaseIterator",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "ListDatabases",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.ListDatabases",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_ListLocks_sync",
+      "title": "biglake ListLocks Sample",
+      "description": "ListLocks list all locks in a specified database.",
+      "file": "MetastoreClient/ListLocks/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListLocks",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.ListLocks",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.ListLocksRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "LockIterator",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "ListLocks",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.ListLocks",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_ListTables_sync",
+      "title": "biglake ListTables Sample",
+      "description": "ListTables list all tables in a specified database.",
+      "file": "MetastoreClient/ListTables/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListTables",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.ListTables",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.ListTablesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "TableIterator",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "ListTables",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.ListTables",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_RenameTable_sync",
+      "title": "biglake RenameTable Sample",
+      "description": "RenameTable renames an existing table specified by the table ID.",
+      "file": "MetastoreClient/RenameTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RenameTable",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.RenameTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.RenameTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Table",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "RenameTable",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.RenameTable",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_UpdateDatabase_sync",
+      "title": "biglake UpdateDatabase Sample",
+      "description": "UpdateDatabase updates an existing database specified by the database ID.",
+      "file": "MetastoreClient/UpdateDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDatabase",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.UpdateDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.UpdateDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Database",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "UpdateDatabase",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.UpdateDatabase",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "biglake_v1alpha1_generated_MetastoreService_UpdateTable_sync",
+      "title": "biglake UpdateTable Sample",
+      "description": "UpdateTable updates an existing table specified by the table ID.",
+      "file": "MetastoreClient/UpdateTable/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateTable",
+        "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient.UpdateTable",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "biglakepb.UpdateTableRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*biglakepb.Table",
+        "client": {
+          "shortName": "MetastoreClient",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreClient"
+        },
+        "method": {
+          "shortName": "UpdateTable",
+          "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService.UpdateTable",
+          "service": {
+            "shortName": "MetastoreService",
+            "fullName": "google.cloud.bigquery.biglake.v1alpha1.MetastoreService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.places.v1",
+  "libraryPackage": "cloud.google.com/go/maps/places/apiv1",
+  "services": {
+    "Places": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AutocompletePlaces": {
+              "methods": [
+                "AutocompletePlaces"
+              ]
+            },
+            "GetPhotoMedia": {
+              "methods": [
+                "GetPhotoMedia"
+              ]
+            },
+            "GetPlace": {
+              "methods": [
+                "GetPlace"
+              ]
+            },
+            "SearchNearby": {
+              "methods": [
+                "SearchNearby"
+              ]
+            },
+            "SearchText": {
+              "methods": [
+                "SearchText"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AutocompletePlaces": {
+              "methods": [
+                "AutocompletePlaces"
+              ]
+            },
+            "GetPhotoMedia": {
+              "methods": [
+                "GetPhotoMedia"
+              ]
+            },
+            "GetPlace": {
+              "methods": [
+                "GetPlace"
+              ]
+            },
+            "SearchNearby": {
+              "methods": [
+                "SearchNearby"
+              ]
+            },
+            "SearchText": {
+              "methods": [
+                "SearchText"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

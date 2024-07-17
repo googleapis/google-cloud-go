@@ -26,12 +26,62 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "Controller2Client",
+          "rpcs": {
+            "ListActiveBreakpoints": {
+              "methods": [
+                "ListActiveBreakpoints"
+              ]
+            },
+            "RegisterDebuggee": {
+              "methods": [
+                "RegisterDebuggee"
+              ]
+            },
+            "UpdateActiveBreakpoint": {
+              "methods": [
+                "UpdateActiveBreakpoint"
+              ]
+            }
+          }
         }
       }
     },
     "Debugger2": {
       "clients": {
         "grpc": {
+          "libraryClient": "Debugger2Client",
+          "rpcs": {
+            "DeleteBreakpoint": {
+              "methods": [
+                "DeleteBreakpoint"
+              ]
+            },
+            "GetBreakpoint": {
+              "methods": [
+                "GetBreakpoint"
+              ]
+            },
+            "ListBreakpoints": {
+              "methods": [
+                "ListBreakpoints"
+              ]
+            },
+            "ListDebuggees": {
+              "methods": [
+                "ListDebuggees"
+              ]
+            },
+            "SetBreakpoint": {
+              "methods": [
+                "SetBreakpoint"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "Debugger2Client",
           "rpcs": {
             "DeleteBreakpoint": {

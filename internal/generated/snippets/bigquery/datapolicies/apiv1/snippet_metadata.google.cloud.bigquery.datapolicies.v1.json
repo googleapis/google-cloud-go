@@ -1,0 +1,428 @@
+{
+  "clientLibrary": {
+    "name": "cloud.google.com/go/bigquery/datapolicies/apiv1",
+    "version": "1.61.0",
+    "language": "GO",
+    "apis": [
+      {
+        "id": "google.cloud.bigquery.datapolicies.v1",
+        "version": "v1"
+      }
+    ]
+  },
+  "snippets": [
+    {
+      "regionTag": "bigquerydatapolicy_v1_generated_DataPolicyService_CreateDataPolicy_sync",
+      "title": "bigquerydatapolicy CreateDataPolicy Sample",
+      "description": "CreateDataPolicy creates a new data policy under a project with the given `dataPolicyId`\n(used as the display name), policy tag, and data policy type.",
+      "file": "DataPolicyClient/CreateDataPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateDataPolicy",
+        "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient.CreateDataPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datapoliciespb.CreateDataPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datapoliciespb.DataPolicy",
+        "client": {
+          "shortName": "DataPolicyClient",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient"
+        },
+        "method": {
+          "shortName": "CreateDataPolicy",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService.CreateDataPolicy",
+          "service": {
+            "shortName": "DataPolicyService",
+            "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatapolicy_v1_generated_DataPolicyService_DeleteDataPolicy_sync",
+      "title": "bigquerydatapolicy DeleteDataPolicy Sample",
+      "description": "DeleteDataPolicy deletes the data policy specified by its resource name.",
+      "file": "DataPolicyClient/DeleteDataPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteDataPolicy",
+        "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient.DeleteDataPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datapoliciespb.DeleteDataPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "DataPolicyClient",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient"
+        },
+        "method": {
+          "shortName": "DeleteDataPolicy",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService.DeleteDataPolicy",
+          "service": {
+            "shortName": "DataPolicyService",
+            "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatapolicy_v1_generated_DataPolicyService_GetDataPolicy_sync",
+      "title": "bigquerydatapolicy GetDataPolicy Sample",
+      "description": "GetDataPolicy gets the data policy specified by its resource name.",
+      "file": "DataPolicyClient/GetDataPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetDataPolicy",
+        "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient.GetDataPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datapoliciespb.GetDataPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datapoliciespb.DataPolicy",
+        "client": {
+          "shortName": "DataPolicyClient",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient"
+        },
+        "method": {
+          "shortName": "GetDataPolicy",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService.GetDataPolicy",
+          "service": {
+            "shortName": "DataPolicyService",
+            "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatapolicy_v1_generated_DataPolicyService_GetIamPolicy_sync",
+      "title": "bigquerydatapolicy GetIamPolicy Sample",
+      "description": "GetIamPolicy gets the IAM policy for the specified data policy.",
+      "file": "DataPolicyClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetIamPolicy",
+        "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient.GetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.GetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataPolicyClient",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient"
+        },
+        "method": {
+          "shortName": "GetIamPolicy",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService.GetIamPolicy",
+          "service": {
+            "shortName": "DataPolicyService",
+            "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatapolicy_v1_generated_DataPolicyService_ListDataPolicies_sync",
+      "title": "bigquerydatapolicy ListDataPolicies Sample",
+      "description": "ListDataPolicies list all of the data policies in the specified parent project.",
+      "file": "DataPolicyClient/ListDataPolicies/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListDataPolicies",
+        "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient.ListDataPolicies",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datapoliciespb.ListDataPoliciesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "DataPolicyIterator",
+        "client": {
+          "shortName": "DataPolicyClient",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient"
+        },
+        "method": {
+          "shortName": "ListDataPolicies",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService.ListDataPolicies",
+          "service": {
+            "shortName": "DataPolicyService",
+            "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatapolicy_v1_generated_DataPolicyService_RenameDataPolicy_sync",
+      "title": "bigquerydatapolicy RenameDataPolicy Sample",
+      "description": "RenameDataPolicy renames the id (display name) of the specified data policy.",
+      "file": "DataPolicyClient/RenameDataPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RenameDataPolicy",
+        "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient.RenameDataPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datapoliciespb.RenameDataPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datapoliciespb.DataPolicy",
+        "client": {
+          "shortName": "DataPolicyClient",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient"
+        },
+        "method": {
+          "shortName": "RenameDataPolicy",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService.RenameDataPolicy",
+          "service": {
+            "shortName": "DataPolicyService",
+            "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatapolicy_v1_generated_DataPolicyService_SetIamPolicy_sync",
+      "title": "bigquerydatapolicy SetIamPolicy Sample",
+      "description": "SetIamPolicy sets the IAM policy for the specified data policy.",
+      "file": "DataPolicyClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "SetIamPolicy",
+        "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient.SetIamPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.SetIamPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "client": {
+          "shortName": "DataPolicyClient",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient"
+        },
+        "method": {
+          "shortName": "SetIamPolicy",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService.SetIamPolicy",
+          "service": {
+            "shortName": "DataPolicyService",
+            "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatapolicy_v1_generated_DataPolicyService_TestIamPermissions_sync",
+      "title": "bigquerydatapolicy TestIamPermissions Sample",
+      "description": "TestIamPermissions returns the caller's permission on the specified data policy resource.",
+      "file": "DataPolicyClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "TestIamPermissions",
+        "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient.TestIamPermissions",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "iampb.TestIamPermissionsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "client": {
+          "shortName": "DataPolicyClient",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient"
+        },
+        "method": {
+          "shortName": "TestIamPermissions",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService.TestIamPermissions",
+          "service": {
+            "shortName": "DataPolicyService",
+            "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "bigquerydatapolicy_v1_generated_DataPolicyService_UpdateDataPolicy_sync",
+      "title": "bigquerydatapolicy UpdateDataPolicy Sample",
+      "description": "UpdateDataPolicy updates the metadata for an existing data policy. The target data policy\ncan be specified by the resource name.",
+      "file": "DataPolicyClient/UpdateDataPolicy/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateDataPolicy",
+        "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient.UpdateDataPolicy",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "datapoliciespb.UpdateDataPolicyRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*datapoliciespb.DataPolicy",
+        "client": {
+          "shortName": "DataPolicyClient",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyClient"
+        },
+        "method": {
+          "shortName": "UpdateDataPolicy",
+          "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService.UpdateDataPolicy",
+          "service": {
+            "shortName": "DataPolicyService",
+            "fullName": "google.cloud.bigquery.datapolicies.v1.DataPolicyService"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    }
+  ]
+}

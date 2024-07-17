@@ -61,12 +61,112 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "IdentityAwareProxyAdminClient",
+          "rpcs": {
+            "CreateTunnelDestGroup": {
+              "methods": [
+                "CreateTunnelDestGroup"
+              ]
+            },
+            "DeleteTunnelDestGroup": {
+              "methods": [
+                "DeleteTunnelDestGroup"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetIapSettings": {
+              "methods": [
+                "GetIapSettings"
+              ]
+            },
+            "GetTunnelDestGroup": {
+              "methods": [
+                "GetTunnelDestGroup"
+              ]
+            },
+            "ListTunnelDestGroups": {
+              "methods": [
+                "ListTunnelDestGroups"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateIapSettings": {
+              "methods": [
+                "UpdateIapSettings"
+              ]
+            },
+            "UpdateTunnelDestGroup": {
+              "methods": [
+                "UpdateTunnelDestGroup"
+              ]
+            }
+          }
         }
       }
     },
     "IdentityAwareProxyOAuthService": {
       "clients": {
         "grpc": {
+          "libraryClient": "IdentityAwareProxyOAuthClient",
+          "rpcs": {
+            "CreateBrand": {
+              "methods": [
+                "CreateBrand"
+              ]
+            },
+            "CreateIdentityAwareProxyClient": {
+              "methods": [
+                "CreateIdentityAwareProxyClient"
+              ]
+            },
+            "DeleteIdentityAwareProxyClient": {
+              "methods": [
+                "DeleteIdentityAwareProxyClient"
+              ]
+            },
+            "GetBrand": {
+              "methods": [
+                "GetBrand"
+              ]
+            },
+            "GetIdentityAwareProxyClient": {
+              "methods": [
+                "GetIdentityAwareProxyClient"
+              ]
+            },
+            "ListBrands": {
+              "methods": [
+                "ListBrands"
+              ]
+            },
+            "ListIdentityAwareProxyClients": {
+              "methods": [
+                "ListIdentityAwareProxyClients"
+              ]
+            },
+            "ResetIdentityAwareProxyClientSecret": {
+              "methods": [
+                "ResetIdentityAwareProxyClientSecret"
+              ]
+            }
+          }
+        },
+        "rest": {
           "libraryClient": "IdentityAwareProxyOAuthClient",
           "rpcs": {
             "CreateBrand": {

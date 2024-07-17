@@ -30,9 +30,64 @@
                 "EnableService"
               ]
             },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
             "GetService": {
               "methods": [
                 "GetService"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchEnableServices": {
+              "methods": [
+                "BatchEnableServices"
+              ]
+            },
+            "BatchGetServices": {
+              "methods": [
+                "BatchGetServices"
+              ]
+            },
+            "DisableService": {
+              "methods": [
+                "DisableService"
+              ]
+            },
+            "EnableService": {
+              "methods": [
+                "EnableService"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
               ]
             },
             "ListServices": {

@@ -164,7 +164,8 @@ func TestValidateReadRowsRequestSendsRPCError(t *testing.T) {
 			},
 		}
 
-		err := srv.ReadRows(badReq, nil)
+		stream := &MockReadRowsServer{}
+		err := srv.ReadRows(badReq, stream)
 		if err == nil {
 			t.Errorf("#%d: unexpectedly returned nil error", i)
 			continue

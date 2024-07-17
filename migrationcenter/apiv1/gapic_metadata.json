@@ -1,0 +1,563 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.migrationcenter.v1",
+  "libraryPackage": "cloud.google.com/go/migrationcenter/apiv1",
+  "services": {
+    "MigrationCenter": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AddAssetsToGroup": {
+              "methods": [
+                "AddAssetsToGroup"
+              ]
+            },
+            "AggregateAssetsValues": {
+              "methods": [
+                "AggregateAssetsValues"
+              ]
+            },
+            "BatchDeleteAssets": {
+              "methods": [
+                "BatchDeleteAssets"
+              ]
+            },
+            "BatchUpdateAssets": {
+              "methods": [
+                "BatchUpdateAssets"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGroup": {
+              "methods": [
+                "CreateGroup"
+              ]
+            },
+            "CreateImportDataFile": {
+              "methods": [
+                "CreateImportDataFile"
+              ]
+            },
+            "CreateImportJob": {
+              "methods": [
+                "CreateImportJob"
+              ]
+            },
+            "CreatePreferenceSet": {
+              "methods": [
+                "CreatePreferenceSet"
+              ]
+            },
+            "CreateReport": {
+              "methods": [
+                "CreateReport"
+              ]
+            },
+            "CreateReportConfig": {
+              "methods": [
+                "CreateReportConfig"
+              ]
+            },
+            "CreateSource": {
+              "methods": [
+                "CreateSource"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
+              ]
+            },
+            "DeleteGroup": {
+              "methods": [
+                "DeleteGroup"
+              ]
+            },
+            "DeleteImportDataFile": {
+              "methods": [
+                "DeleteImportDataFile"
+              ]
+            },
+            "DeleteImportJob": {
+              "methods": [
+                "DeleteImportJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePreferenceSet": {
+              "methods": [
+                "DeletePreferenceSet"
+              ]
+            },
+            "DeleteReport": {
+              "methods": [
+                "DeleteReport"
+              ]
+            },
+            "DeleteReportConfig": {
+              "methods": [
+                "DeleteReportConfig"
+              ]
+            },
+            "DeleteSource": {
+              "methods": [
+                "DeleteSource"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
+            "GetErrorFrame": {
+              "methods": [
+                "GetErrorFrame"
+              ]
+            },
+            "GetGroup": {
+              "methods": [
+                "GetGroup"
+              ]
+            },
+            "GetImportDataFile": {
+              "methods": [
+                "GetImportDataFile"
+              ]
+            },
+            "GetImportJob": {
+              "methods": [
+                "GetImportJob"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPreferenceSet": {
+              "methods": [
+                "GetPreferenceSet"
+              ]
+            },
+            "GetReport": {
+              "methods": [
+                "GetReport"
+              ]
+            },
+            "GetReportConfig": {
+              "methods": [
+                "GetReportConfig"
+              ]
+            },
+            "GetSettings": {
+              "methods": [
+                "GetSettings"
+              ]
+            },
+            "GetSource": {
+              "methods": [
+                "GetSource"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListErrorFrames": {
+              "methods": [
+                "ListErrorFrames"
+              ]
+            },
+            "ListGroups": {
+              "methods": [
+                "ListGroups"
+              ]
+            },
+            "ListImportDataFiles": {
+              "methods": [
+                "ListImportDataFiles"
+              ]
+            },
+            "ListImportJobs": {
+              "methods": [
+                "ListImportJobs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPreferenceSets": {
+              "methods": [
+                "ListPreferenceSets"
+              ]
+            },
+            "ListReportConfigs": {
+              "methods": [
+                "ListReportConfigs"
+              ]
+            },
+            "ListReports": {
+              "methods": [
+                "ListReports"
+              ]
+            },
+            "ListSources": {
+              "methods": [
+                "ListSources"
+              ]
+            },
+            "RemoveAssetsFromGroup": {
+              "methods": [
+                "RemoveAssetsFromGroup"
+              ]
+            },
+            "ReportAssetFrames": {
+              "methods": [
+                "ReportAssetFrames"
+              ]
+            },
+            "RunImportJob": {
+              "methods": [
+                "RunImportJob"
+              ]
+            },
+            "UpdateAsset": {
+              "methods": [
+                "UpdateAsset"
+              ]
+            },
+            "UpdateGroup": {
+              "methods": [
+                "UpdateGroup"
+              ]
+            },
+            "UpdateImportJob": {
+              "methods": [
+                "UpdateImportJob"
+              ]
+            },
+            "UpdatePreferenceSet": {
+              "methods": [
+                "UpdatePreferenceSet"
+              ]
+            },
+            "UpdateSettings": {
+              "methods": [
+                "UpdateSettings"
+              ]
+            },
+            "UpdateSource": {
+              "methods": [
+                "UpdateSource"
+              ]
+            },
+            "ValidateImportJob": {
+              "methods": [
+                "ValidateImportJob"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AddAssetsToGroup": {
+              "methods": [
+                "AddAssetsToGroup"
+              ]
+            },
+            "AggregateAssetsValues": {
+              "methods": [
+                "AggregateAssetsValues"
+              ]
+            },
+            "BatchDeleteAssets": {
+              "methods": [
+                "BatchDeleteAssets"
+              ]
+            },
+            "BatchUpdateAssets": {
+              "methods": [
+                "BatchUpdateAssets"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGroup": {
+              "methods": [
+                "CreateGroup"
+              ]
+            },
+            "CreateImportDataFile": {
+              "methods": [
+                "CreateImportDataFile"
+              ]
+            },
+            "CreateImportJob": {
+              "methods": [
+                "CreateImportJob"
+              ]
+            },
+            "CreatePreferenceSet": {
+              "methods": [
+                "CreatePreferenceSet"
+              ]
+            },
+            "CreateReport": {
+              "methods": [
+                "CreateReport"
+              ]
+            },
+            "CreateReportConfig": {
+              "methods": [
+                "CreateReportConfig"
+              ]
+            },
+            "CreateSource": {
+              "methods": [
+                "CreateSource"
+              ]
+            },
+            "DeleteAsset": {
+              "methods": [
+                "DeleteAsset"
+              ]
+            },
+            "DeleteGroup": {
+              "methods": [
+                "DeleteGroup"
+              ]
+            },
+            "DeleteImportDataFile": {
+              "methods": [
+                "DeleteImportDataFile"
+              ]
+            },
+            "DeleteImportJob": {
+              "methods": [
+                "DeleteImportJob"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeletePreferenceSet": {
+              "methods": [
+                "DeletePreferenceSet"
+              ]
+            },
+            "DeleteReport": {
+              "methods": [
+                "DeleteReport"
+              ]
+            },
+            "DeleteReportConfig": {
+              "methods": [
+                "DeleteReportConfig"
+              ]
+            },
+            "DeleteSource": {
+              "methods": [
+                "DeleteSource"
+              ]
+            },
+            "GetAsset": {
+              "methods": [
+                "GetAsset"
+              ]
+            },
+            "GetErrorFrame": {
+              "methods": [
+                "GetErrorFrame"
+              ]
+            },
+            "GetGroup": {
+              "methods": [
+                "GetGroup"
+              ]
+            },
+            "GetImportDataFile": {
+              "methods": [
+                "GetImportDataFile"
+              ]
+            },
+            "GetImportJob": {
+              "methods": [
+                "GetImportJob"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPreferenceSet": {
+              "methods": [
+                "GetPreferenceSet"
+              ]
+            },
+            "GetReport": {
+              "methods": [
+                "GetReport"
+              ]
+            },
+            "GetReportConfig": {
+              "methods": [
+                "GetReportConfig"
+              ]
+            },
+            "GetSettings": {
+              "methods": [
+                "GetSettings"
+              ]
+            },
+            "GetSource": {
+              "methods": [
+                "GetSource"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListErrorFrames": {
+              "methods": [
+                "ListErrorFrames"
+              ]
+            },
+            "ListGroups": {
+              "methods": [
+                "ListGroups"
+              ]
+            },
+            "ListImportDataFiles": {
+              "methods": [
+                "ListImportDataFiles"
+              ]
+            },
+            "ListImportJobs": {
+              "methods": [
+                "ListImportJobs"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPreferenceSets": {
+              "methods": [
+                "ListPreferenceSets"
+              ]
+            },
+            "ListReportConfigs": {
+              "methods": [
+                "ListReportConfigs"
+              ]
+            },
+            "ListReports": {
+              "methods": [
+                "ListReports"
+              ]
+            },
+            "ListSources": {
+              "methods": [
+                "ListSources"
+              ]
+            },
+            "RemoveAssetsFromGroup": {
+              "methods": [
+                "RemoveAssetsFromGroup"
+              ]
+            },
+            "ReportAssetFrames": {
+              "methods": [
+                "ReportAssetFrames"
+              ]
+            },
+            "RunImportJob": {
+              "methods": [
+                "RunImportJob"
+              ]
+            },
+            "UpdateAsset": {
+              "methods": [
+                "UpdateAsset"
+              ]
+            },
+            "UpdateGroup": {
+              "methods": [
+                "UpdateGroup"
+              ]
+            },
+            "UpdateImportJob": {
+              "methods": [
+                "UpdateImportJob"
+              ]
+            },
+            "UpdatePreferenceSet": {
+              "methods": [
+                "UpdatePreferenceSet"
+              ]
+            },
+            "UpdateSettings": {
+              "methods": [
+                "UpdateSettings"
+              ]
+            },
+            "UpdateSource": {
+              "methods": [
+                "UpdateSource"
+              ]
+            },
+            "ValidateImportJob": {
+              "methods": [
+                "ValidateImportJob"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

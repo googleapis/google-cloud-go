@@ -34,6 +34,7 @@ func ExampleAdminClient_CreateTopic() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	const gib = 1 << 30
 	topicConfig := pubsublite.TopicConfig{
@@ -58,6 +59,7 @@ func ExampleAdminClient_UpdateTopic() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	updateConfig := pubsublite.TopicConfigToUpdate{
 		Name:                       "projects/my-project/locations/region-or-zone/topics/my-topic",
@@ -79,6 +81,7 @@ func ExampleAdminClient_DeleteTopic() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	if err := admin.DeleteTopic(ctx, topic); err != nil {
@@ -93,6 +96,7 @@ func ExampleAdminClient_Topics() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	// List the configs of all topics in the given region or zone for the project.
 	it := admin.Topics(ctx, "projects/my-project/locations/region-or-zone")
@@ -115,6 +119,7 @@ func ExampleAdminClient_TopicSubscriptions() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	// List the paths of all subscriptions of a topic.
 	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
@@ -141,6 +146,7 @@ func ExampleAdminClient_CreateSubscription() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	subscriptionConfig := pubsublite.SubscriptionConfig{
 		Name:  "projects/my-project/locations/region-or-zone/subscriptions/my-subscription",
@@ -155,6 +161,70 @@ func ExampleAdminClient_CreateSubscription() {
 	}
 }
 
+// This example demonstrates how to create a new subscription initialized to a
+// specified target location within the message backlog. The target location can
+// be a BacklogLocation, PublishTime or EventTime.
+func ExampleAdminClient_CreateSubscription_atTargetLocation() {
+	ctx := context.Background()
+	// NOTE: resources must be located within this region.
+	admin, err := pubsublite.NewAdminClient(ctx, "region")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer admin.Close()
+
+	subscriptionConfig := pubsublite.SubscriptionConfig{
+		Name:  "projects/my-project/locations/region-or-zone/subscriptions/my-subscription",
+		Topic: "projects/my-project/locations/region-or-zone/topics/my-topic",
+		// Do not wait for a published message to be successfully written to storage
+		// before delivering it to subscribers.
+		DeliveryRequirement: pubsublite.DeliverImmediately,
+	}
+	// Initialize the subscription to the oldest retained messages for each
+	// partition.
+	targetLocation := pubsublite.AtTargetLocation(pubsublite.Beginning)
+	_, err = admin.CreateSubscription(ctx, subscriptionConfig, targetLocation)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+// This example demonstrates how to create a new subscription that exports
+// messages to a Pub/Sub topic.
+// See https://cloud.google.com/pubsub/lite/docs/export-pubsub for more
+// information about how export subscriptions are configured.
+func ExampleAdminClient_CreateSubscription_exportToPubSub() {
+	ctx := context.Background()
+	// NOTE: resources must be located within this region.
+	admin, err := pubsublite.NewAdminClient(ctx, "region")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer admin.Close()
+
+	subscriptionConfig := pubsublite.SubscriptionConfig{
+		Name:  "projects/my-project/locations/region-or-zone/subscriptions/my-subscription",
+		Topic: "projects/my-project/locations/region-or-zone/topics/my-topic",
+		// Deliver a published message to subscribers after it has been successfully
+		// written to storage.
+		DeliveryRequirement: pubsublite.DeliverAfterStored,
+		ExportConfig: &pubsublite.ExportConfig{
+			DesiredState: pubsublite.ExportActive,
+			// Configure an export subscription to a Pub/Sub topic.
+			Destination: &pubsublite.PubSubDestinationConfig{
+				Topic: "projects/my-project/topics/destination-pubsub-topic",
+			},
+			// Optional Lite topic to receive messages that cannot be exported to the
+			// destination.
+			DeadLetterTopic: "projects/my-project/locations/region-or-zone/topics/dead-letter-topic",
+		},
+	}
+	_, err = admin.CreateSubscription(ctx, subscriptionConfig)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleAdminClient_UpdateSubscription() {
 	ctx := context.Background()
 	// NOTE: resources must be located within this region.
@@ -162,6 +232,7 @@ func ExampleAdminClient_UpdateSubscription() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	updateConfig := pubsublite.SubscriptionConfigToUpdate{
 		Name: "projects/my-project/locations/region-or-zone/subscriptions/my-subscription",
@@ -182,6 +253,7 @@ func ExampleAdminClient_SeekSubscription() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	seekOp, err := admin.SeekSubscription(ctx, subscription, pubsublite.Beginning)
@@ -209,6 +281,7 @@ func ExampleAdminClient_DeleteSubscription() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	if err := admin.DeleteSubscription(ctx, subscription); err != nil {
@@ -223,6 +296,7 @@ func ExampleAdminClient_Subscriptions() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	// List the configs of all subscriptions in the given region or zone for the project.
 	it := admin.Subscriptions(ctx, "projects/my-project/locations/region-or-zone")
@@ -247,6 +321,7 @@ func ExampleAdminClient_CreateReservation() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	reservationConfig := pubsublite.ReservationConfig{
 		Name:               "projects/my-project/locations/region/reservations/my-reservation",
@@ -264,6 +339,7 @@ func ExampleAdminClient_UpdateReservation() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	updateConfig := pubsublite.ReservationConfigToUpdate{
 		Name:               "projects/my-project/locations/region/reservations/my-reservation",
@@ -281,6 +357,7 @@ func ExampleAdminClient_DeleteReservation() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	const reservation = "projects/my-project/locations/region/reservations/my-reservation"
 	if err := admin.DeleteReservation(ctx, reservation); err != nil {
@@ -294,6 +371,7 @@ func ExampleAdminClient_Reservations() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	// List the configs of all reservations in the given region for the project.
 	it := admin.Reservations(ctx, "projects/my-project/locations/region")
@@ -315,6 +393,7 @@ func ExampleAdminClient_ReservationTopics() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer admin.Close()
 
 	// List the paths of all topics using a reservation.
 	const reservation = "projects/my-project/locations/region/reservations/my-reservation"

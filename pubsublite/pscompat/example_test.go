@@ -17,12 +17,17 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/pubsub"
+	api "cloud.google.com/go/pubsublite/apiv1"
 	"cloud.google.com/go/pubsublite/pscompat"
+	"golang.org/x/oauth2/google"
 	"golang.org/x/sync/errgroup"
+	"google.golang.org/api/option"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func ExamplePublisherClient_Publish() {
@@ -61,11 +66,58 @@ func ExamplePublisherClient_Publish() {
 	}
 }
 
+// This example illustrates how to configure OAuth tokens to be refreshed 5
+// minutes before they expire, in order to mitigate delays which may occur
+// during refresh.
+func ExampleNewPublisherClient_earlyTokenRefresh() {
+	ctx := context.Background()
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
+	params := google.CredentialsParams{
+		Scopes:            api.DefaultAuthScopes(),
+		EarlyTokenRefresh: 5 * time.Minute,
+	}
+	creds, err := google.FindDefaultCredentialsWithParams(ctx, params)
+	if err != nil {
+		log.Fatalf("No 'Application Default Credentials' found: %v.", err)
+	}
+	publisher, err := pscompat.NewPublisherClient(ctx, topic, option.WithTokenSource(creds.TokenSource))
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	var results []*pubsub.PublishResult
+	r := publisher.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+	})
+	results = append(results, r)
+	// Publish more messages ...
+
+	var publishFailed bool
+	for _, r := range results {
+		id, err := r.Get(ctx)
+		if err != nil {
+			// TODO: Handle error.
+			publishFailed = true
+			continue
+		}
+		fmt.Printf("Published a message with a message ID: %s\n", id)
+	}
+
+	// NOTE: A failed PublishResult indicates that the publisher client
+	// encountered a fatal error and has permanently terminated. After the fatal
+	// error has been resolved, a new publisher client instance must be created to
+	// republish failed messages.
+	if publishFailed {
+		fmt.Printf("Publisher client terminated due to error: %v\n", publisher.Error())
+	}
+}
+
 // This example illustrates how to set batching settings for publishing. Note
 // that batching settings apply per partition. If BufferedByteLimit is being
 // used to bound memory usage, keep in mind the number of partitions in the
 // topic.
-func ExamplePublisherClient_Publish_batchingSettings() {
+func ExampleNewPublisherClientWithSettings_batchingSettings() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
 	settings := pscompat.PublishSettings{
@@ -171,6 +223,62 @@ func ExamplePublisherClient_Publish_errorHandling() {
 	}
 }
 
+func ExampleEncodeEventTimeAttribute() {
+	ctx := context.Background()
+	const topic = "projects/my-project/locations/region-or-zone/topics/my-topic"
+	publisher, err := pscompat.NewPublisherClient(ctx, topic)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	v, err := pscompat.EncodeEventTimeAttribute(&timestamppb.Timestamp{
+		Seconds: 1672531200,
+		Nanos:   500000000,
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	r := publisher.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+		Attributes: map[string]string{
+			pscompat.EventTimeAttributeKey: v,
+		},
+	})
+	_, err = r.Get(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDecodeEventTimeAttribute() {
+	ctx := context.Background()
+	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
+	subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	cctx, cancel := context.WithCancel(ctx)
+	err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
+		m.Ack()
+		if v, ok := m.Attributes[pscompat.EventTimeAttributeKey]; ok {
+			eventTime, err := pscompat.DecodeEventTimeAttribute(v)
+			if err != nil {
+				// TODO: Handle error.
+			}
+			fmt.Printf("Received message with event time: %v\n", eventTime)
+		}
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Call cancel from the receiver callback or another goroutine to stop
+	// receiving.
+	cancel()
+}
+
 func ExampleSubscriberClient_Receive() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
@@ -216,6 +324,7 @@ func ExampleSubscriberClient_Receive_errorHandling() {
 			m.Ack()
 		})
 		if err != nil {
+			cancel()
 			fmt.Printf("Subscriber client stopped receiving due to error: %v\n", err)
 			if errors.Is(err, pscompat.ErrBackendUnavailable) {
 				// TODO: Alert if necessary. Receive can be retried.
@@ -236,7 +345,7 @@ func ExampleSubscriberClient_Receive_errorHandling() {
 // being processed at once, you can bound your program's resource consumption.
 // Note that ReceiveSettings apply per partition, so keep in mind the number of
 // partitions in the associated topic.
-func ExampleSubscriberClient_Receive_maxOutstanding() {
+func ExampleNewSubscriberClientWithSettings_maxOutstanding() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	settings := pscompat.ReceiveSettings{
@@ -266,7 +375,7 @@ func ExampleSubscriberClient_Receive_maxOutstanding() {
 // SubscriberClient should connect to. If not specified, the SubscriberClient
 // will use Pub/Sub Lite's partition assignment service to automatically
 // determine which partitions it should connect to.
-func ExampleSubscriberClient_Receive_manualPartitionAssignment() {
+func ExampleNewSubscriberClientWithSettings_manualPartitionAssignment() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/region-or-zone/subscriptions/my-subscription"
 	settings := pscompat.ReceiveSettings{

@@ -16,6 +16,16 @@
               ]
             }
           }
+        },
+        "rest": {
+          "libraryClient": "IamCheckerClient",
+          "rpcs": {
+            "TroubleshootIamPolicy": {
+              "methods": [
+                "TroubleshootIamPolicy"
+              ]
+            }
+          }
         }
       }
     }

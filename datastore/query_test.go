@@ -20,13 +20,14 @@ import (
 	"fmt"
 	"reflect"
 	"sort"
+	"strings"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -50,12 +51,14 @@ var (
 			},
 		},
 	}
+	countAlias = "count"
 )
 
 type fakeClient struct {
 	pb.DatastoreClient
-	queryFn  func(*pb.RunQueryRequest) (*pb.RunQueryResponse, error)
-	commitFn func(*pb.CommitRequest) (*pb.CommitResponse, error)
+	queryFn    func(*pb.RunQueryRequest) (*pb.RunQueryResponse, error)
+	commitFn   func(*pb.CommitRequest) (*pb.CommitResponse, error)
+	aggQueryFn func(*pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error)
 }
 
 func (c *fakeClient) RunQuery(_ context.Context, req *pb.RunQueryRequest, _ ...grpc.CallOption) (*pb.RunQueryResponse, error) {
@@ -64,6 +67,10 @@ func (c *fakeClient) RunQuery(_ context.Context, req *pb.RunQueryRequest, _ ...g
 
 func (c *fakeClient) Commit(_ context.Context, req *pb.CommitRequest, _ ...grpc.CallOption) (*pb.CommitResponse, error) {
 	return c.commitFn(req)
+}
+
+func (c *fakeClient) RunAggregationQuery(_ context.Context, req *pb.RunAggregationQueryRequest, _ ...grpc.CallOption) (*pb.RunAggregationQueryResponse, error) {
+	return c.aggQueryFn(req)
 }
 
 func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
@@ -95,6 +102,42 @@ func fakeRunQuery(in *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
 						Properties: map[string]*pb.Value{
 							"Name": {ValueType: &pb.Value_StringValue{StringValue: "Rufus"}},
 							// No height for Rufus.
+						},
+					},
+				},
+			},
+		},
+	}, nil
+}
+
+func fakeRunAggregationQuery(req *pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error) {
+	expectedIn := &pb.RunAggregationQueryRequest{
+		QueryType: &pb.RunAggregationQueryRequest_AggregationQuery{
+			AggregationQuery: &pb.AggregationQuery{
+				QueryType: &pb.AggregationQuery_NestedQuery{
+					NestedQuery: &pb.Query{
+						Kind: []*pb.KindExpression{{Name: "Gopher"}},
+					},
+				},
+				Aggregations: []*pb.AggregationQuery_Aggregation{
+					{
+						Operator: &pb.AggregationQuery_Aggregation_Count_{},
+						Alias:    countAlias,
+					},
+				},
+			},
+		},
+	}
+	if !proto.Equal(req, expectedIn) {
+		return nil, fmt.Errorf("unsupported argument: got %v want %v", req, expectedIn)
+	}
+	return &pb.RunAggregationQueryResponse{
+		Batch: &pb.AggregationResultBatch{
+			AggregationResults: []*pb.AggregationResult{
+				{
+					AggregateProperties: map[string]*pb.Value{
+						"count": {
+							ValueType: &pb.Value_IntegerValue{IntegerValue: 1},
 						},
 					},
 				},
@@ -435,23 +478,135 @@ var (
 	}
 	// Operators not supported in either filter method
 	filterUnsupported = []testFilterCase{
-		{"x IN", "x", "IN", 0, ""},
-		{"x NOT-IN", "x", "NOT-IN", 0, ""},
-		{"x EQ", "x", "EQ", 0, ""},
-		{"x lt", "x", "lt", 0, ""},
-		{"x <>", "x", "<>", 0, ""},
-		{"x >>", "x", ">>", 0, ""},
-		{"x ==", "x", "==", 0, ""},
-		{"x =<", "x", "=<", 0, ""},
-		{"x =>", "x", "=>", 0, ""},
-		{"x !", "x", "!", 0, ""},
-		{"x ", "x", "", 0, ""},
-		{"x", "x", "", 0, ""},
-		{`" x =`, `" x`, "=", 0, ""},
-		{`" x ="`, `" x `, `="`, 0, ""},
-		{"` x \" =", "` x \"", "=", 0, ""},
+		{filterStr: "x IN", fieldName: "x", operator: "IN", wantOp: "", wantFieldName: ""},
+		{filterStr: "x NOT-IN", fieldName: "x", operator: "NOT-IN", wantOp: "", wantFieldName: ""},
+		{filterStr: "x EQ", fieldName: "x", operator: "EQ", wantOp: "", wantFieldName: ""},
+		{filterStr: "x lt", fieldName: "x", operator: "lt", wantOp: "", wantFieldName: ""},
+		{filterStr: "x <>", fieldName: "x", operator: "<>", wantOp: "", wantFieldName: ""},
+		{filterStr: "x >>", fieldName: "x", operator: ">>", wantOp: "", wantFieldName: ""},
+		{filterStr: "x ==", fieldName: "x", operator: "==", wantOp: "", wantFieldName: ""},
+		{filterStr: "x =<", fieldName: "x", operator: "=<", wantOp: "", wantFieldName: ""},
+		{filterStr: "x =>", fieldName: "x", operator: "=>", wantOp: "", wantFieldName: ""},
+		{filterStr: "x !", fieldName: "x", operator: "!", wantOp: "", wantFieldName: ""},
+		{filterStr: "x ", fieldName: "x", operator: "", wantOp: "", wantFieldName: ""},
+		{filterStr: "x", fieldName: "x", operator: "", wantOp: "", wantFieldName: ""},
+		{filterStr: `" x =`, fieldName: `" x`, operator: "=", wantOp: "", wantFieldName: ""},
+		{filterStr: `" x ="`, fieldName: `" x `, operator: `="`, wantOp: "", wantFieldName: ""},
+		{filterStr: "` x \" =", fieldName: "` x \"", operator: "=", wantOp: "", wantFieldName: ""},
 	}
 )
+
+type pfToProtoTestCase struct {
+	pf         PropertyFilter
+	wantErrMsg string
+}
+
+func TestPropertyFilterToProto(t *testing.T) {
+
+	testCases := []pfToProtoTestCase{
+		{PropertyFilter{FieldName: "x", Operator: "=", Value: 4}, ""},
+		{PropertyFilter{FieldName: "x ", Operator: "=", Value: 4}, ""},
+		{PropertyFilter{FieldName: "", Operator: "=", Value: 4}, "datastore: empty query filter field name"},
+		{PropertyFilter{FieldName: "x", Operator: "==", Value: 4}, "datastore: invalid operator \"==\" in filter"},
+		{PropertyFilter{FieldName: "x", Operator: "==", Value: struct{ x string }{x: "sample"}}, "datastore: bad query filter value type: invalid Value type struct { x string }"},
+	}
+
+	successFilterFieldTestCases := append(filterTestCases, filterFieldTestCases...)
+	for _, sfftc := range successFilterFieldTestCases {
+		testCases = append(testCases, pfToProtoTestCase{
+			PropertyFilter{FieldName: sfftc.fieldName, Operator: sfftc.operator, Value: 4}, "",
+		})
+	}
+
+	for _, tc := range testCases {
+		_, err := tc.pf.toProto()
+		gotErrMsg := ""
+		if err != nil {
+			gotErrMsg = err.Error()
+		}
+
+		if gotErrMsg != tc.wantErrMsg {
+			t.Errorf("PropertyFilter proto conversion error: \nwant %v,\ngot %v", tc.wantErrMsg, gotErrMsg)
+		}
+	}
+}
+
+func TestCompositeFilterToProto(t *testing.T) {
+	testCases := []struct {
+		cf         CompositeFilter
+		wantErrMsg string
+	}{
+		{AndFilter{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "=", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, ""},
+		{OrFilter{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "=", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, ""},
+
+		// Fail when inner filter is malformed
+		{AndFilter{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, "datastore: invalid operator \"==\" in filter"},
+		{OrFilter{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, "datastore: invalid operator \"==\" in filter"},
+	}
+	for _, tc := range testCases {
+		_, gotErr := tc.cf.toProto()
+		gotErrMsg := ""
+		if gotErr != nil {
+			gotErrMsg = gotErr.Error()
+		}
+
+		if gotErrMsg != tc.wantErrMsg {
+			t.Errorf("CompositeFilter proto conversion error: \nwant %v,\ngot %v", tc.wantErrMsg, gotErrMsg)
+		}
+
+	}
+}
+
+func TestFilterEntity(t *testing.T) {
+	testCases := []struct {
+		ef         EntityFilter
+		wantErrMsg string
+	}{
+		{AndFilter{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "x", Operator: "==", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, "datastore: invalid operator \"==\" in filter"},
+		{AndFilter{
+			[]EntityFilter{
+				PropertyFilter{FieldName: "`x", Operator: "=", Value: 4},
+				PropertyFilter{FieldName: "y", Operator: "<", Value: 3},
+			},
+		}, "datastore: invalid syntax for quoted field name \"`x\""},
+	}
+
+	for _, tc := range testCases {
+		q := NewQuery("foo").FilterEntity(tc.ef)
+		gotErrMsg := ""
+		if q.err != nil {
+			gotErrMsg = q.err.Error()
+		}
+		if gotErrMsg != tc.wantErrMsg {
+			t.Errorf("FilterEntity error: \nwant %v,\ngot %v", tc.wantErrMsg, gotErrMsg)
+		}
+	}
+}
 
 func TestFilterParser(t *testing.T) {
 	// Success cases
@@ -465,7 +620,7 @@ func TestFilterParser(t *testing.T) {
 			t.Errorf("%q: len=%d, want %d", tc.filterStr, len(q.filter), 1)
 			continue
 		}
-		got, want := q.filter[0], filter{tc.wantFieldName, tc.wantOp, 42}
+		got, want := q.filter[0], PropertyFilter{tc.wantFieldName, string(tc.wantOp), 42}
 		if got != want {
 			t.Errorf("%q: got %v, want %v", tc.filterStr, got, want)
 			continue
@@ -493,7 +648,7 @@ func TestFilterField(t *testing.T) {
 			t.Errorf("%q: len=%d, want %d", tc.fieldName, len(q.filter), 1)
 			continue
 		}
-		got, want := q.filter[0], filter{tc.fieldName, tc.wantOp, 42}
+		got, want := q.filter[0], PropertyFilter{tc.fieldName, string(tc.wantOp), 42}
 		if got != want {
 			t.Errorf("%q %q: got %v, want %v", tc.fieldName, tc.operator, got, want)
 			continue
@@ -600,20 +755,17 @@ func TestReadOptions(t *testing.T) {
 		},
 	} {
 		req := &pb.RunQueryRequest{}
-		if err := test.q.toProto(req); err != nil {
+		if err := test.q.toRunQueryRequest(req); err != nil {
 			t.Fatalf("%+v: got %v, want no error", test.q, err)
-		}
-		if got := req.ReadOptions; !proto.Equal(got, test.want) {
-			t.Errorf("%+v:\ngot  %+v\nwant %+v", test.q, got, test.want)
 		}
 	}
 	// Test errors.
 	for _, q := range []*Query{
-		NewQuery("").Transaction(&Transaction{id: nil}),
-		NewQuery("").Transaction(&Transaction{id: tid}).EventualConsistency(),
+		NewQuery("").Transaction(&Transaction{id: nil, state: transactionStateExpired}),
+		NewQuery("").Transaction(&Transaction{id: tid, state: transactionStateInProgress}).EventualConsistency(),
 	} {
 		req := &pb.RunQueryRequest{}
-		if err := q.toProto(req); err == nil {
+		if err := q.toRunQueryRequest(req); err == nil {
 			t.Errorf("%+v: got nil, wanted error", q)
 		}
 	}
@@ -638,6 +790,221 @@ func TestInvalidFilters(t *testing.T) {
 	} {
 		if _, err := client.Count(context.Background(), q); err == nil {
 			t.Errorf("%+v: got nil, wanted error", q)
+		}
+	}
+}
+
+func TestRunErr(t *testing.T) {
+	client := &Client{
+		client: &fakeClient{
+			queryFn: func(req *pb.RunQueryRequest) (*pb.RunQueryResponse, error) {
+				fmt.Printf("received next request")
+				return fakeRunQuery(req)
+			},
+		},
+	}
+
+	type Gopher struct {
+		A int
+	}
+
+	ctx := context.Background()
+	q := NewQuery("Gopher").Filter("", 2)
+	it := client.Run(ctx, q)
+
+	var g1 Gopher
+	it.Next(&g1)
+
+	defer func() {
+		if r := recover(); r != nil {
+			t.Errorf("Cursor panic")
+		}
+	}()
+	it.Cursor()
+}
+
+func TestAggregationQuery(t *testing.T) {
+	client := &Client{
+		client: &fakeClient{
+			aggQueryFn: func(req *pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error) {
+				return fakeRunAggregationQuery(req)
+			},
+		},
+	}
+
+	q := NewQuery("Gopher")
+	aq := q.NewAggregationQuery()
+	aq.WithCount(countAlias)
+
+	res, err := client.RunAggregationQuery(context.Background(), aq)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	count, ok := res[countAlias]
+	if !ok {
+		t.Errorf("%s key does not exist in return aggregation result", countAlias)
+	}
+
+	want := &pb.Value{
+		ValueType: &pb.Value_IntegerValue{IntegerValue: 1},
+	}
+
+	cv := count.(*pb.Value)
+	if !proto.Equal(want, cv) {
+		t.Errorf("want: %v\ngot: %v\n", want, cv)
+	}
+}
+
+func TestAggregationQueryIsNil(t *testing.T) {
+	client := &Client{
+		client: &fakeClient{
+			aggQueryFn: func(req *pb.RunAggregationQueryRequest) (*pb.RunAggregationQueryResponse, error) {
+				return fakeRunAggregationQuery(req)
+			},
+		},
+	}
+
+	var q Query
+	aq := q.NewAggregationQuery()
+	_, err := client.RunAggregationQuery(context.Background(), aq)
+	if err == nil {
+		t.Fatal(err)
+	}
+
+	q2 := NewQuery("Gopher")
+	aq2 := q2.NewAggregationQuery()
+	_, err = client.RunAggregationQuery(context.Background(), aq2)
+	if err == nil {
+		t.Fatal(err)
+	}
+
+	aq3 := q2.NewAggregationQuery().WithCount("")
+	_, err = client.RunAggregationQuery(context.Background(), aq3)
+	if err == nil {
+		t.Fatal(err)
+	}
+}
+
+func TestExplainOptionsApply(t *testing.T) {
+	pbExplainOptions := pb.ExplainOptions{
+		Analyze: true,
+	}
+	for _, testcase := range []struct {
+		desc            string
+		existingOptions *pb.ExplainOptions
+		newOptions      ExplainOptions
+		wantErrMsg      string
+	}{
+		{
+			desc:            "ExplainOptions specified multiple times",
+			existingOptions: &pbExplainOptions,
+			newOptions: ExplainOptions{
+				Analyze: true,
+			},
+			wantErrMsg: "ExplainOptions can be specified only once",
+		},
+		{
+			desc:            "ExplainOptions specified once",
+			existingOptions: nil,
+			newOptions: ExplainOptions{
+				Analyze: true,
+			},
+		},
+	} {
+		gotErr := testcase.newOptions.apply(&runQuerySettings{explainOptions: testcase.existingOptions})
+		if (gotErr == nil && testcase.wantErrMsg != "") ||
+			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
+			t.Errorf("%v: apply got: %v want: %v", testcase.desc, gotErr.Error(), testcase.wantErrMsg)
+		}
+	}
+}
+
+func TestNewRunQuerySettings(t *testing.T) {
+	for _, testcase := range []struct {
+		desc       string
+		opts       []RunOption
+		wantErrMsg string
+	}{
+		{
+			desc:       "nil RunOption",
+			opts:       []RunOption{ExplainOptions{Analyze: true}, nil},
+			wantErrMsg: "cannot be nil",
+		},
+		{
+			desc: "success RunOption",
+			opts: []RunOption{ExplainOptions{Analyze: true}},
+		},
+		{
+			desc:       "ExplainOptions specified multiple times",
+			opts:       []RunOption{ExplainOptions{Analyze: true}, ExplainOptions{Analyze: false}, ExplainOptions{Analyze: true}},
+			wantErrMsg: "ExplainOptions can be specified only once",
+		},
+	} {
+		_, gotErr := newRunQuerySettings(testcase.opts)
+		if (gotErr == nil && testcase.wantErrMsg != "") ||
+			(gotErr != nil && !strings.Contains(gotErr.Error(), testcase.wantErrMsg)) {
+			t.Errorf("%v: newRunQuerySettings got: %v want: %v", testcase.desc, gotErr, testcase.wantErrMsg)
+		}
+	}
+}
+
+func TestValidateReadOptions(t *testing.T) {
+	eventualInTxnErr := errEventualConsistencyTransaction
+
+	for _, test := range []struct {
+		desc     string
+		eventual bool
+		trans    *Transaction
+		wantErr  error
+	}{
+		{
+			desc:     "EventualConsistency query in a transaction",
+			eventual: true,
+			trans: &Transaction{
+				id:    []byte("test id"),
+				state: transactionStateInProgress,
+			},
+			wantErr: eventualInTxnErr,
+		},
+		{
+			desc: "Expired transaction in non-eventual query",
+			trans: &Transaction{
+				id:    nil,
+				state: transactionStateExpired,
+			},
+			wantErr: errExpiredTransaction,
+		},
+		{
+			desc: "Expired transaction in eventual query",
+			trans: &Transaction{
+				id:    nil,
+				state: transactionStateExpired,
+			},
+			eventual: true,
+			wantErr:  eventualInTxnErr,
+		},
+		{
+			desc: "No transaction in non-eventual query",
+		},
+		{
+			desc:     "No transaction in eventual query",
+			eventual: true,
+		},
+	} {
+		gotErr := validateReadOptions(test.eventual, test.trans)
+		gotErrMsg := ""
+		if gotErr != nil {
+			gotErrMsg = gotErr.Error()
+		}
+
+		wantErrMsg := ""
+		if test.wantErr != nil {
+			wantErrMsg = test.wantErr.Error()
+		}
+
+		if gotErrMsg != wantErrMsg {
+			t.Errorf("%q: got: %v, want: %v", test.desc, gotErr, test.wantErr)
 		}
 	}
 }

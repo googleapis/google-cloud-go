@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,15 +20,15 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"math"
 	"net/http"
 	"net/url"
-	"time"
 
 	domainspb "cloud.google.com/go/domains/apiv1beta1/domainspb"
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -36,9 +36,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 )
@@ -67,10 +65,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("domains.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("domains.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("domains.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://domains.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -399,9 +400,6 @@ type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
 
@@ -414,7 +412,7 @@ type gRPCClient struct {
 	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	xGoogHeaders []string
 }
 
 // NewClient creates a new domains client based on gRPC.
@@ -431,11 +429,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
@@ -443,10 +436,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           domainspb.NewDomainsClient(connPool),
-		CallOptions:      &client.CallOptions,
+		connPool:    connPool,
+		client:      domainspb.NewDomainsClient(connPool),
+		CallOptions: &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -478,9 +470,11 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -502,8 +496,8 @@ type restClient struct {
 	// Users should not Close this client.
 	LROClient **lroauto.OperationsClient
 
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+	// The x-goog-* headers to be sent with each request.
+	xGoogHeaders []string
 
 	// Points back to the CallOptions field of the containing Client
 	CallOptions **CallOptions
@@ -543,9 +537,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://domains.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://domains.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://domains.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://domains.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -553,9 +550,11 @@ func defaultRESTClientOptions() []option.ClientOption {
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -573,9 +572,10 @@ func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
 func (c *gRPCClient) SearchDomains(ctx context.Context, req *domainspb.SearchDomainsRequest, opts ...gax.CallOption) (*domainspb.SearchDomainsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).SearchDomains[0:len((*c.CallOptions).SearchDomains):len((*c.CallOptions).SearchDomains)], opts...)
 	var resp *domainspb.SearchDomainsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -590,9 +590,10 @@ func (c *gRPCClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 }
 
 func (c *gRPCClient) RetrieveRegisterParameters(ctx context.Context, req *domainspb.RetrieveRegisterParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveRegisterParametersResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RetrieveRegisterParameters[0:len((*c.CallOptions).RetrieveRegisterParameters):len((*c.CallOptions).RetrieveRegisterParameters)], opts...)
 	var resp *domainspb.RetrieveRegisterParametersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -607,9 +608,10 @@ func (c *gRPCClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 }
 
 func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.RegisterDomainRequest, opts ...gax.CallOption) (*RegisterDomainOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RegisterDomain[0:len((*c.CallOptions).RegisterDomain):len((*c.CallOptions).RegisterDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -626,9 +628,10 @@ func (c *gRPCClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 }
 
 func (c *gRPCClient) RetrieveTransferParameters(ctx context.Context, req *domainspb.RetrieveTransferParametersRequest, opts ...gax.CallOption) (*domainspb.RetrieveTransferParametersResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RetrieveTransferParameters[0:len((*c.CallOptions).RetrieveTransferParameters):len((*c.CallOptions).RetrieveTransferParameters)], opts...)
 	var resp *domainspb.RetrieveTransferParametersResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -643,9 +646,10 @@ func (c *gRPCClient) RetrieveTransferParameters(ctx context.Context, req *domain
 }
 
 func (c *gRPCClient) TransferDomain(ctx context.Context, req *domainspb.TransferDomainRequest, opts ...gax.CallOption) (*TransferDomainOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).TransferDomain[0:len((*c.CallOptions).TransferDomain):len((*c.CallOptions).TransferDomain)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -662,9 +666,10 @@ func (c *gRPCClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 }
 
 func (c *gRPCClient) ListRegistrations(ctx context.Context, req *domainspb.ListRegistrationsRequest, opts ...gax.CallOption) *RegistrationIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ListRegistrations[0:len((*c.CallOptions).ListRegistrations):len((*c.CallOptions).ListRegistrations)], opts...)
 	it := &RegistrationIterator{}
 	req = proto.Clone(req).(*domainspb.ListRegistrationsRequest)
@@ -707,9 +712,10 @@ func (c *gRPCClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 }
 
 func (c *gRPCClient) GetRegistration(ctx context.Context, req *domainspb.GetRegistrationRequest, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).GetRegistration[0:len((*c.CallOptions).GetRegistration):len((*c.CallOptions).GetRegistration)], opts...)
 	var resp *domainspb.Registration
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -724,9 +730,10 @@ func (c *gRPCClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 }
 
 func (c *gRPCClient) UpdateRegistration(ctx context.Context, req *domainspb.UpdateRegistrationRequest, opts ...gax.CallOption) (*UpdateRegistrationOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration.name", url.QueryEscape(req.GetRegistration().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration.name", url.QueryEscape(req.GetRegistration().GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).UpdateRegistration[0:len((*c.CallOptions).UpdateRegistration):len((*c.CallOptions).UpdateRegistration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -743,9 +750,10 @@ func (c *gRPCClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 }
 
 func (c *gRPCClient) ConfigureManagementSettings(ctx context.Context, req *domainspb.ConfigureManagementSettingsRequest, opts ...gax.CallOption) (*ConfigureManagementSettingsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ConfigureManagementSettings[0:len((*c.CallOptions).ConfigureManagementSettings):len((*c.CallOptions).ConfigureManagementSettings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -762,9 +770,10 @@ func (c *gRPCClient) ConfigureManagementSettings(ctx context.Context, req *domai
 }
 
 func (c *gRPCClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.ConfigureDnsSettingsRequest, opts ...gax.CallOption) (*ConfigureDnsSettingsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ConfigureDnsSettings[0:len((*c.CallOptions).ConfigureDnsSettings):len((*c.CallOptions).ConfigureDnsSettings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -781,9 +790,10 @@ func (c *gRPCClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 }
 
 func (c *gRPCClient) ConfigureContactSettings(ctx context.Context, req *domainspb.ConfigureContactSettingsRequest, opts ...gax.CallOption) (*ConfigureContactSettingsOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ConfigureContactSettings[0:len((*c.CallOptions).ConfigureContactSettings):len((*c.CallOptions).ConfigureContactSettings)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -800,9 +810,10 @@ func (c *gRPCClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 }
 
 func (c *gRPCClient) ExportRegistration(ctx context.Context, req *domainspb.ExportRegistrationRequest, opts ...gax.CallOption) (*ExportRegistrationOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ExportRegistration[0:len((*c.CallOptions).ExportRegistration):len((*c.CallOptions).ExportRegistration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -819,9 +830,10 @@ func (c *gRPCClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 }
 
 func (c *gRPCClient) DeleteRegistration(ctx context.Context, req *domainspb.DeleteRegistrationRequest, opts ...gax.CallOption) (*DeleteRegistrationOperation, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).DeleteRegistration[0:len((*c.CallOptions).DeleteRegistration):len((*c.CallOptions).DeleteRegistration)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -838,9 +850,10 @@ func (c *gRPCClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 }
 
 func (c *gRPCClient) RetrieveAuthorizationCode(ctx context.Context, req *domainspb.RetrieveAuthorizationCodeRequest, opts ...gax.CallOption) (*domainspb.AuthorizationCode, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).RetrieveAuthorizationCode[0:len((*c.CallOptions).RetrieveAuthorizationCode):len((*c.CallOptions).RetrieveAuthorizationCode)], opts...)
 	var resp *domainspb.AuthorizationCode
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -855,9 +868,10 @@ func (c *gRPCClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 }
 
 func (c *gRPCClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.ResetAuthorizationCodeRequest, opts ...gax.CallOption) (*domainspb.AuthorizationCode, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
 
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
 	opts = append((*c.CallOptions).ResetAuthorizationCode[0:len((*c.CallOptions).ResetAuthorizationCode):len((*c.CallOptions).ResetAuthorizationCode)], opts...)
 	var resp *domainspb.AuthorizationCode
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -884,14 +898,17 @@ func (c *restClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:searchDomains", req.GetLocation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("query", fmt.Sprintf("%v", req.GetQuery()))
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).SearchDomains[0:len((*c.CallOptions).SearchDomains):len((*c.CallOptions).SearchDomains)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.SearchDomainsResponse{}
@@ -916,13 +933,13 @@ func (c *restClient) SearchDomains(ctx context.Context, req *domainspb.SearchDom
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -943,14 +960,17 @@ func (c *restClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:retrieveRegisterParameters", req.GetLocation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("domainName", fmt.Sprintf("%v", req.GetDomainName()))
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).RetrieveRegisterParameters[0:len((*c.CallOptions).RetrieveRegisterParameters):len((*c.CallOptions).RetrieveRegisterParameters)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.RetrieveRegisterParametersResponse{}
@@ -975,13 +995,13 @@ func (c *restClient) RetrieveRegisterParameters(ctx context.Context, req *domain
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1018,10 +1038,17 @@ func (c *restClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:register", req.GetParent())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1045,13 +1072,13 @@ func (c *restClient) RegisterDomain(ctx context.Context, req *domainspb.Register
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1080,14 +1107,17 @@ func (c *restClient) RetrieveTransferParameters(ctx context.Context, req *domain
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:retrieveTransferParameters", req.GetLocation())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("domainName", fmt.Sprintf("%v", req.GetDomainName()))
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).RetrieveTransferParameters[0:len((*c.CallOptions).RetrieveTransferParameters):len((*c.CallOptions).RetrieveTransferParameters)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.RetrieveTransferParametersResponse{}
@@ -1112,13 +1142,13 @@ func (c *restClient) RetrieveTransferParameters(ctx context.Context, req *domain
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1162,10 +1192,17 @@ func (c *restClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations:transfer", req.GetParent())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1189,13 +1226,13 @@ func (c *restClient) TransferDomain(ctx context.Context, req *domainspb.Transfer
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1233,6 +1270,7 @@ func (c *restClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/registrations", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1246,7 +1284,8 @@ func (c *restClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 		baseUrl.RawQuery = params.Encode()
 
 		// Build HTTP headers from client and context metadata.
-		headers := buildHeaders(ctx, c.xGoogMetadata, metadata.Pairs("Content-Type", "application/json"))
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
 		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			if settings.Path != "" {
 				baseUrl.Path = settings.Path
@@ -1267,13 +1306,13 @@ func (c *restClient) ListRegistrations(ctx context.Context, req *domainspb.ListR
 				return err
 			}
 
-			buf, err := ioutil.ReadAll(httpRsp.Body)
+			buf, err := io.ReadAll(httpRsp.Body)
 			if err != nil {
 				return err
 			}
 
 			if err := unm.Unmarshal(buf, resp); err != nil {
-				return maybeUnknownEnum(err)
+				return err
 			}
 
 			return nil
@@ -1309,10 +1348,17 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).GetRegistration[0:len((*c.CallOptions).GetRegistration):len((*c.CallOptions).GetRegistration)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.Registration{}
@@ -1337,13 +1383,13 @@ func (c *restClient) GetRegistration(ctx context.Context, req *domainspb.GetRegi
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1377,20 +1423,23 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRegistration().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
 			return nil, err
 		}
-		params.Add("updateMask", string(updateMask))
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration.name", url.QueryEscape(req.GetRegistration().GetName())))
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration.name", url.QueryEscape(req.GetRegistration().GetName()))}
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1414,13 +1463,13 @@ func (c *restClient) UpdateRegistration(ctx context.Context, req *domainspb.Upda
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1450,10 +1499,17 @@ func (c *restClient) ConfigureManagementSettings(ctx context.Context, req *domai
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:configureManagementSettings", req.GetRegistration())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1477,13 +1533,13 @@ func (c *restClient) ConfigureManagementSettings(ctx context.Context, req *domai
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1513,10 +1569,17 @@ func (c *restClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:configureDnsSettings", req.GetRegistration())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1540,13 +1603,13 @@ func (c *restClient) ConfigureDnsSettings(ctx context.Context, req *domainspb.Co
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1577,10 +1640,17 @@ func (c *restClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:configureContactSettings", req.GetRegistration())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1604,13 +1674,13 @@ func (c *restClient) ConfigureContactSettings(ctx context.Context, req *domainsp
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1648,10 +1718,17 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:export", req.GetName())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1675,13 +1752,13 @@ func (c *restClient) ExportRegistration(ctx context.Context, req *domainspb.Expo
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1725,10 +1802,17 @@ func (c *restClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1752,13 +1836,13 @@ func (c *restClient) DeleteRegistration(ctx context.Context, req *domainspb.Dele
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1786,10 +1870,17 @@ func (c *restClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:retrieveAuthorizationCode", req.GetRegistration())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).RetrieveAuthorizationCode[0:len((*c.CallOptions).RetrieveAuthorizationCode):len((*c.CallOptions).RetrieveAuthorizationCode)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.AuthorizationCode{}
@@ -1814,13 +1905,13 @@ func (c *restClient) RetrieveAuthorizationCode(ctx context.Context, req *domains
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1848,10 +1939,17 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:resetAuthorizationCode", req.GetRegistration())
 
-	// Build HTTP headers from client and context metadata.
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration())))
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 
-	headers := buildHeaders(ctx, c.xGoogMetadata, md, metadata.Pairs("Content-Type", "application/json"))
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "registration", url.QueryEscape(req.GetRegistration()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).ResetAuthorizationCode[0:len((*c.CallOptions).ResetAuthorizationCode):len((*c.CallOptions).ResetAuthorizationCode)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &domainspb.AuthorizationCode{}
@@ -1876,13 +1974,13 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 			return err
 		}
 
-		buf, err := ioutil.ReadAll(httpRsp.Body)
+		buf, err := io.ReadAll(httpRsp.Body)
 		if err != nil {
 			return err
 		}
 
 		if err := unm.Unmarshal(buf, resp); err != nil {
-			return maybeUnknownEnum(err)
+			return err
 		}
 
 		return nil
@@ -1891,12 +1989,6 @@ func (c *restClient) ResetAuthorizationCode(ctx context.Context, req *domainspb.
 		return nil, e
 	}
 	return resp, nil
-}
-
-// ConfigureContactSettingsOperation manages a long-running operation from ConfigureContactSettings.
-type ConfigureContactSettingsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ConfigureContactSettingsOperation returns a new ConfigureContactSettingsOperation from a given name.
@@ -1917,70 +2009,6 @@ func (c *restClient) ConfigureContactSettingsOperation(name string) *ConfigureCo
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ConfigureContactSettingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ConfigureContactSettingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ConfigureContactSettingsOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ConfigureContactSettingsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ConfigureContactSettingsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ConfigureDnsSettingsOperation manages a long-running operation from ConfigureDnsSettings.
-type ConfigureDnsSettingsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // ConfigureDnsSettingsOperation returns a new ConfigureDnsSettingsOperation from a given name.
 // The name must be that of a previously created ConfigureDnsSettingsOperation, possibly from a different process.
 func (c *gRPCClient) ConfigureDnsSettingsOperation(name string) *ConfigureDnsSettingsOperation {
@@ -1997,70 +2025,6 @@ func (c *restClient) ConfigureDnsSettingsOperation(name string) *ConfigureDnsSet
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ConfigureDnsSettingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ConfigureDnsSettingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ConfigureDnsSettingsOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ConfigureDnsSettingsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ConfigureDnsSettingsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ConfigureManagementSettingsOperation manages a long-running operation from ConfigureManagementSettings.
-type ConfigureManagementSettingsOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ConfigureManagementSettingsOperation returns a new ConfigureManagementSettingsOperation from a given name.
@@ -2081,70 +2045,6 @@ func (c *restClient) ConfigureManagementSettingsOperation(name string) *Configur
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ConfigureManagementSettingsOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ConfigureManagementSettingsOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ConfigureManagementSettingsOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ConfigureManagementSettingsOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ConfigureManagementSettingsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteRegistrationOperation manages a long-running operation from DeleteRegistration.
-type DeleteRegistrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // DeleteRegistrationOperation returns a new DeleteRegistrationOperation from a given name.
 // The name must be that of a previously created DeleteRegistrationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteRegistrationOperation(name string) *DeleteRegistrationOperation {
@@ -2161,59 +2061,6 @@ func (c *restClient) DeleteRegistrationOperation(name string) *DeleteRegistratio
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteRegistrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteRegistrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteRegistrationOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteRegistrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteRegistrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ExportRegistrationOperation manages a long-running operation from ExportRegistration.
-type ExportRegistrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // ExportRegistrationOperation returns a new ExportRegistrationOperation from a given name.
@@ -2234,70 +2081,6 @@ func (c *restClient) ExportRegistrationOperation(name string) *ExportRegistratio
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportRegistrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportRegistrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportRegistrationOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportRegistrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportRegistrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RegisterDomainOperation manages a long-running operation from RegisterDomain.
-type RegisterDomainOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // RegisterDomainOperation returns a new RegisterDomainOperation from a given name.
 // The name must be that of a previously created RegisterDomainOperation, possibly from a different process.
 func (c *gRPCClient) RegisterDomainOperation(name string) *RegisterDomainOperation {
@@ -2314,70 +2097,6 @@ func (c *restClient) RegisterDomainOperation(name string) *RegisterDomainOperati
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *RegisterDomainOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *RegisterDomainOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *RegisterDomainOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *RegisterDomainOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *RegisterDomainOperation) Name() string {
-	return op.lro.Name()
-}
-
-// TransferDomainOperation manages a long-running operation from TransferDomain.
-type TransferDomainOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
 }
 
 // TransferDomainOperation returns a new TransferDomainOperation from a given name.
@@ -2398,70 +2117,6 @@ func (c *restClient) TransferDomainOperation(name string) *TransferDomainOperati
 	}
 }
 
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *TransferDomainOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *TransferDomainOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *TransferDomainOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *TransferDomainOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *TransferDomainOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateRegistrationOperation manages a long-running operation from UpdateRegistration.
-type UpdateRegistrationOperation struct {
-	lro      *longrunning.Operation
-	pollPath string
-}
-
 // UpdateRegistrationOperation returns a new UpdateRegistrationOperation from a given name.
 // The name must be that of a previously created UpdateRegistrationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateRegistrationOperation(name string) *UpdateRegistrationOperation {
@@ -2478,109 +2133,4 @@ func (c *restClient) UpdateRegistrationOperation(name string) *UpdateRegistratio
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateRegistrationOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateRegistrationOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*domainspb.Registration, error) {
-	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
-	var resp domainspb.Registration
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateRegistrationOperation) Metadata() (*domainspb.OperationMetadata, error) {
-	var meta domainspb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateRegistrationOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateRegistrationOperation) Name() string {
-	return op.lro.Name()
-}
-
-// RegistrationIterator manages a stream of *domainspb.Registration.
-type RegistrationIterator struct {
-	items    []*domainspb.Registration
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*domainspb.Registration, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *RegistrationIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *RegistrationIterator) Next() (*domainspb.Registration, error) {
-	var item *domainspb.Registration
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *RegistrationIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *RegistrationIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }

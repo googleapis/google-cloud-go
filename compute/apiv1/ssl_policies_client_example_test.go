@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewSslPoliciesRESTClient() {
@@ -56,7 +56,7 @@ func ExampleSslPoliciesClient_AggregatedList() {
 
 	req := &computepb.AggregatedListSslPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListSslPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListSslPoliciesRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -69,6 +69,12 @@ func ExampleSslPoliciesClient_AggregatedList() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.SslPoliciesAggregatedList)
 	}
 }
 
@@ -87,7 +93,7 @@ func ExampleSslPoliciesClient_Delete() {
 
 	req := &computepb.DeleteSslPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteSslPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteSslPolicyRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +121,7 @@ func ExampleSslPoliciesClient_Get() {
 
 	req := &computepb.GetSslPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetSslPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetSslPolicyRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +146,7 @@ func ExampleSslPoliciesClient_Insert() {
 
 	req := &computepb.InsertSslPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertSslPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertSslPolicyRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -168,7 +174,7 @@ func ExampleSslPoliciesClient_List() {
 
 	req := &computepb.ListSslPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListSslPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListSslPoliciesRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -181,6 +187,12 @@ func ExampleSslPoliciesClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.SslPoliciesList)
 	}
 }
 
@@ -199,7 +211,7 @@ func ExampleSslPoliciesClient_ListAvailableFeatures() {
 
 	req := &computepb.ListAvailableFeaturesSslPoliciesRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListAvailableFeaturesSslPoliciesRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListAvailableFeaturesSslPoliciesRequest.
 	}
 	resp, err := c.ListAvailableFeatures(ctx, req)
 	if err != nil {
@@ -224,7 +236,7 @@ func ExampleSslPoliciesClient_Patch() {
 
 	req := &computepb.PatchSslPolicyRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchSslPolicyRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchSslPolicyRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {

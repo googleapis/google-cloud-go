@@ -1,4 +1,4 @@
-// Copyright 2022 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import (
 	"context"
 
 	compute "cloud.google.com/go/compute/apiv1"
+	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 )
 
 func ExampleNewInterconnectAttachmentsRESTClient() {
@@ -56,7 +56,7 @@ func ExampleInterconnectAttachmentsClient_AggregatedList() {
 
 	req := &computepb.AggregatedListInterconnectAttachmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#AggregatedListInterconnectAttachmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#AggregatedListInterconnectAttachmentsRequest.
 	}
 	it := c.AggregatedList(ctx, req)
 	for {
@@ -69,6 +69,12 @@ func ExampleInterconnectAttachmentsClient_AggregatedList() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.InterconnectAttachmentAggregatedList)
 	}
 }
 
@@ -87,7 +93,7 @@ func ExampleInterconnectAttachmentsClient_Delete() {
 
 	req := &computepb.DeleteInterconnectAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#DeleteInterconnectAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#DeleteInterconnectAttachmentRequest.
 	}
 	op, err := c.Delete(ctx, req)
 	if err != nil {
@@ -115,7 +121,7 @@ func ExampleInterconnectAttachmentsClient_Get() {
 
 	req := &computepb.GetInterconnectAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#GetInterconnectAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#GetInterconnectAttachmentRequest.
 	}
 	resp, err := c.Get(ctx, req)
 	if err != nil {
@@ -140,7 +146,7 @@ func ExampleInterconnectAttachmentsClient_Insert() {
 
 	req := &computepb.InsertInterconnectAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#InsertInterconnectAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#InsertInterconnectAttachmentRequest.
 	}
 	op, err := c.Insert(ctx, req)
 	if err != nil {
@@ -168,7 +174,7 @@ func ExampleInterconnectAttachmentsClient_List() {
 
 	req := &computepb.ListInterconnectAttachmentsRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#ListInterconnectAttachmentsRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#ListInterconnectAttachmentsRequest.
 	}
 	it := c.List(ctx, req)
 	for {
@@ -181,6 +187,12 @@ func ExampleInterconnectAttachmentsClient_List() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*computepb.InterconnectAttachmentList)
 	}
 }
 
@@ -199,7 +211,7 @@ func ExampleInterconnectAttachmentsClient_Patch() {
 
 	req := &computepb.PatchInterconnectAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#PatchInterconnectAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#PatchInterconnectAttachmentRequest.
 	}
 	op, err := c.Patch(ctx, req)
 	if err != nil {
@@ -227,7 +239,7 @@ func ExampleInterconnectAttachmentsClient_SetLabels() {
 
 	req := &computepb.SetLabelsInterconnectAttachmentRequest{
 		// TODO: Fill request struct fields.
-		// See https://pkg.go.dev/google.golang.org/genproto/googleapis/cloud/compute/v1#SetLabelsInterconnectAttachmentRequest.
+		// See https://pkg.go.dev/cloud.google.com/go/compute/apiv1/computepb#SetLabelsInterconnectAttachmentRequest.
 	}
 	op, err := c.SetLabels(ctx, req)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2021 Google LLC
+// Copyright 2023 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,18 +27,16 @@ import (
 
 	"google.golang.org/api/option"
 
-	"github.com/google/go-cmp/cmp"
-
+	"cloud.google.com/go/compute/apiv1/computepb"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"google.golang.org/api/iterator"
-	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/protobuf/proto"
 )
 
 var projectId = testutil.ProjID()
 var defaultZone = "us-central1-a"
-var image = "projects/debian-cloud/global/images/family/debian-10"
+var image = "projects/debian-cloud/global/images/family/debian-12"
 
 func TestCreateGetPutPatchListInstance(t *testing.T) {
 	if testing.Short() {
@@ -150,10 +148,10 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 		t.Fatal(err)
 	}
 	if fetched.GetDescription() != "updated" {
-		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "updated", fetched.GetDescription()))
+		t.Fatalf("expected instance description: %s, got: %s", "updated", fetched.GetDescription())
 	}
 	if secureBootEnabled := fetched.GetShieldedInstanceConfig().GetEnableSecureBoot(); !secureBootEnabled {
-		t.Fatal(fmt.Sprintf("expected instance secure boot: %t, got: %t", true, secureBootEnabled))
+		t.Fatalf("expected instance secure boot: %t, got: %t", true, secureBootEnabled)
 	}
 	listRequest := &computepb.ListInstancesRequest{
 		Project: projectId,
@@ -172,7 +170,7 @@ func TestCreateGetPutPatchListInstance(t *testing.T) {
 		}
 		element, err = itr.Next()
 	}
-	if err != nil && err != iterator.Done {
+	if err != iterator.Done {
 		t.Fatal(err)
 	}
 	if !found {
@@ -431,79 +429,6 @@ func TestPaginationMapResponseMaxRes(t *testing.T) {
 	}
 	if !found {
 		t.Error("Couldn't find the accelerator in the response")
-	}
-}
-
-func TestCapitalLetter(t *testing.T) {
-	if testing.Short() {
-		t.Skip("skipping smoke test in short mode")
-	}
-	ctx := context.Background()
-	c, err := NewFirewallsRESTClient(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	space := uid.NewSpace("gogapic", nil)
-	name := space.New()
-	allowed := []*computepb.Allowed{
-		{
-			IPProtocol: proto.String("tcp"),
-			Ports: []string{
-				"80",
-			},
-		},
-	}
-	res := &computepb.Firewall{
-		SourceRanges: []string{
-			"0.0.0.0/0",
-		},
-		Name:    proto.String(name),
-		Allowed: allowed,
-	}
-	req := &computepb.InsertFirewallRequest{
-		Project:          projectId,
-		FirewallResource: res,
-	}
-	insert, err := c.Insert(ctx, req)
-	if err != nil {
-		t.Fatal(err)
-	}
-	err = insert.Wait(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer func() {
-		var op *Operation
-		var err error
-		ok := testutil.Retry(t, 20, 10*time.Second, func(r *testutil.R) {
-			var err error
-			op, err = c.Delete(ctx,
-				&computepb.DeleteFirewallRequest{
-					Project:  projectId,
-					Firewall: name,
-				})
-			if err != nil {
-				r.Errorf("%v", err)
-			}
-		})
-		if !ok {
-			t.Fatal(err)
-		}
-		timeoutCtx, cancel := context.WithTimeout(ctx, 10*time.Minute)
-		defer cancel()
-		if err = op.Wait(timeoutCtx); err != nil {
-			t.Error(err)
-		}
-	}()
-	fetched, err := c.Get(ctx, &computepb.GetFirewallRequest{
-		Project:  projectId,
-		Firewall: name,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if diff := cmp.Diff(fetched.GetAllowed(), allowed, cmp.Comparer(proto.Equal)); diff != "" {
-		t.Fatalf("got(-),want(+):\n%s", diff)
 	}
 }
 
