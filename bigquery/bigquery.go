@@ -234,9 +234,9 @@ func runWithRetry(ctx context.Context, call func() error) error {
 func runWithRetryExplicit(ctx context.Context, call func() error, allowedReasons []string) error {
 	// These parameters match the suggestions in https://cloud.google.com/bigquery/sla.
 	backoff := gax.Backoff{
-		Initial:    50 * time.Millisecond,
+		Initial:    1 * time.Second,
 		Max:        32 * time.Second,
-		Multiplier: 1.3,
+		Multiplier: 2,
 	}
 	return cloudinternal.Retry(ctx, backoff, func() (stop bool, err error) {
 		err = call()
