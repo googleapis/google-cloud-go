@@ -21,13 +21,12 @@
 package discoveryenginepb
 
 import (
-	reflect "reflect"
-	sync "sync"
-
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -107,24 +106,29 @@ type ServingConfig struct {
 	//
 	// The ranking expression is a single function or multiple functions that are
 	// joined by "+".
+	//
 	//   - ranking_expression = function, { " + ", function };
 	//
 	// Supported functions:
+	//
 	//   - double * relevance_score
 	//   - double * dotProduct(embedding_field_path)
 	//
 	// Function variables:
 	//
-	//	 relevance_score: pre-defined keywords, used for measure relevance between
-	//	 query and document.
-	//	 embedding_field_path: the document embedding field
-	//	 used with query embedding vector.
-	//	 dotProduct: embedding function between embedding_field_path and query
-	//	 embedding vector.
+	//   - `relevance_score`: pre-defined keywords, used for measure relevance
+	//     between query and document.
 	//
-	//	Example ranking expression:
-	//	  If document has an embedding field doc_embedding, the ranking expression
-	//	  could be 0.5 * relevance_score + 0.3 * dotProduct(doc_embedding).
+	//   - `embedding_field_path`: the document embedding field
+	//     used with query embedding vector.
+	//
+	//   - `dotProduct`: embedding function between embedding_field_path and query
+	//     embedding vector.
+	//
+	//     Example ranking expression:
+	//
+	//     If document has an embedding field doc_embedding, the ranking expression
+	//     could be `0.5 * relevance_score + 0.3 * dotProduct(doc_embedding)`.
 	RankingExpression string `protobuf:"bytes,21,opt,name=ranking_expression,json=rankingExpression,proto3" json:"ranking_expression,omitempty"`
 	// Output only. ServingConfig created timestamp.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
