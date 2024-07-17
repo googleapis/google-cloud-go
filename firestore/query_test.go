@@ -651,9 +651,42 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 			},
 		},
 		{
-			desc: `q.Where("a", ">", 5).FindNearest`,
+			desc: `q.Where("a", ">", 5).FindNearest float64 vector`,
 			in: q.Where("a", ">", 5).
-				FindNearest("embeddedField", []float32{100, 200, 300}, FindNearestOpts{Limit: 2, Measure: DistanceMeasureEuclidean}).q,
+				FindNearest("embeddedField", []float64{100, 200, 300}, 2, DistanceMeasureEuclidean, nil).q,
+			want: &pb.StructuredQuery{
+				Where: filtr([]string{"a"}, ">", 5),
+				FindNearest: &pb.StructuredQuery_FindNearest{
+					VectorField: fref1("embeddedField"),
+					QueryVector: &pb.Value{
+						ValueType: &pb.Value_MapValue{
+							MapValue: &pb.MapValue{
+								Fields: map[string]*pb.Value{
+									typeKey: stringToProtoValue(typeValVector),
+									valueKey: {
+										ValueType: &pb.Value_ArrayValue{
+											ArrayValue: &pb.ArrayValue{
+												Values: []*pb.Value{
+													{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
+													{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
+													{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
+					DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
+				},
+			},
+		},
+		{
+			desc: `q.Where("a", ">", 5).FindNearest float32 vector`,
+			in: q.Where("a", ">", 5).
+				FindNearest("embeddedField", ToVector([]float32{100, 200, 300}), 2, DistanceMeasureEuclidean, nil).q,
 			want: &pb.StructuredQuery{
 				Where: filtr([]string{"a"}, ">", 5),
 				FindNearest: &pb.StructuredQuery_FindNearest{
@@ -1443,10 +1476,7 @@ func TestFindNearest(t *testing.T) {
 	}
 	for _, tc := range testcases {
 
-		vQuery := c.Collection("C").FindNearest(tc.path, []float32{5, 6, 7}, FindNearestOpts{
-			Limit:   2,
-			Measure: DistanceMeasureEuclidean,
-		})
+		vQuery := c.Collection("C").FindNearest(tc.path, []float64{5, 6, 7}, 2, DistanceMeasureEuclidean, nil)
 
 		_, err := vQuery.Documents(ctx).GetAll()
 		if err == nil && tc.wantErr {

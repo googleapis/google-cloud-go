@@ -394,8 +394,6 @@ const (
 
 // FindNearestOpts is options to use while building FindNearest vector query
 type FindNearestOpts struct {
-	Limit   int
-	Measure DistanceMeasure
 }
 
 // VectorQuery represents a vector query
@@ -414,7 +412,7 @@ type VectorQuery struct {
 //
 // The vectorField argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
-func (q Query) FindNearest(vectorField string, queryVector Vector, options FindNearestOpts) VectorQuery {
+func (q Query) FindNearest(vectorField string, queryVector Vector, limit int, measure DistanceMeasure, options *FindNearestOpts) VectorQuery {
 	vq := VectorQuery{
 		q: q,
 	}
@@ -425,7 +423,7 @@ func (q Query) FindNearest(vectorField string, queryVector Vector, options FindN
 		vq.q.err = err
 		return vq
 	}
-	return q.FindNearestPath(fieldPath, queryVector, options)
+	return q.FindNearestPath(fieldPath, queryVector, limit, measure, options)
 }
 
 // Documents returns an iterator over the vector query's resulting documents.
@@ -433,8 +431,8 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 	return vq.q.Documents(ctx)
 }
 
-// FindNearestPath is similar to FindNearest but it accepts [FieldPath]
-func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector Vector, options FindNearestOpts) VectorQuery {
+// FindNearestPath is similar to FindNearest but it accepts a [FieldPath].
+func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector Vector, limit int, measure DistanceMeasure, options *FindNearestOpts) VectorQuery {
 	vq := VectorQuery{
 		q: q,
 	}
@@ -448,8 +446,8 @@ func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector Vector, op
 	vq.q.findNearest = &pb.StructuredQuery_FindNearest{
 		VectorField:     vectorFieldRef,
 		QueryVector:     vectorToProtoValue(queryVector),
-		Limit:           &wrapperspb.Int32Value{Value: trunc32(options.Limit)},
-		DistanceMeasure: pb.StructuredQuery_FindNearest_DistanceMeasure(options.Measure),
+		Limit:           &wrapperspb.Int32Value{Value: trunc32(limit)},
+		DistanceMeasure: pb.StructuredQuery_FindNearest_DistanceMeasure(measure),
 	}
 
 	return vq

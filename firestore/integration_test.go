@@ -151,9 +151,10 @@ type vectorIndex struct {
 	fieldPath string
 }
 
-func createVectorIndexes(ctx context.Context, dbPath string, vectorModeIndexes []vectorIndex) []string {
+func createVectorIndexes(t *testing.T, ctx context.Context, dbPath string, vectorModeIndexes []vectorIndex) []string {
+	collRef := integrationColl(t)
 	indexNames := make([]string, len(vectorModeIndexes))
-	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, iColl.ID)
+	indexParent := fmt.Sprintf("%s/collectionGroups/%s", dbPath, collRef.ID)
 
 	var wg sync.WaitGroup
 
@@ -2825,7 +2826,11 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 	}
 
 	tm := time.Now().Add(-time.Minute)
+	oldReadSettings := *c.readSettings
 	c.WithReadOptions(ReadTime(tm))
+	t.Cleanup(func() {
+		c.readSettings = &oldReadSettings
+	})
 
 	ds, err := c.GetAll(ctx, docs)
 	if err != nil {
@@ -2842,17 +2847,22 @@ func TestIntegration_ClientReadTime(t *testing.T) {
 }
 
 func TestIntegration_FindNearest(t *testing.T) {
+	collRef := integrationColl(t)
 	adminCtx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
-	defer cancel()
-	indexNames := createVectorIndexes(adminCtx, wantDBPath, []vectorIndex{
+	t.Cleanup(func() {
+		cancel()
+	})
+
+	indexNames := createVectorIndexes(t, adminCtx, wantDBPath, []vectorIndex{
 		{
 			fieldPath: "EmbeddedField",
 			dimension: 3,
 		},
 	})
-	// defer deleteIndexes(adminCtx, indexNames)
-	time.Sleep(30 * time.Second)
-	fmt.Printf("indexNames: %+v\n", indexNames)
+	t.Cleanup(func() {
+		deleteIndexes(adminCtx, indexNames)
+	})
+
 	type coffeeBean struct {
 		ID            string
 		EmbeddedField Vector
@@ -2861,26 +2871,29 @@ func TestIntegration_FindNearest(t *testing.T) {
 	beans := []coffeeBean{
 		{
 			ID:            "Robusta",
-			EmbeddedField: []float32{1, 2, 3},
+			EmbeddedField: []float64{1, 2, 3},
 		},
 		{
 			ID:            "Excelsa",
-			EmbeddedField: []float32{4, 5, 6},
+			EmbeddedField: []float64{4, 5, 6},
 		},
 		{
 			ID:            "Arabica",
-			EmbeddedField: []float32{100, 200, 300}, // too far from query vector. not within findNearest limit
+			EmbeddedField: []float64{100, 200, 300}, // too far from query vector. not within findNearest limit
 		},
 
 		{
 			ID:            "Liberica",
-			EmbeddedField: []float32{1, 2}, // Not enough dimensions as compared to query vector.
+			EmbeddedField: []float64{1, 2}, // Not enough dimensions as compared to query vector.
 		},
 	}
 	h := testHelper{t}
 	coll := integrationColl(t)
 	ctx := context.Background()
 	var docRefs []*DocumentRef
+	t.Cleanup(func() {
+		deleteDocuments(docRefs)
+	})
 
 	// create documents with vector field
 	for i := 0; i < len(beans); i++ {
@@ -2890,10 +2903,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 	}
 
 	// Query documents with a vector field
-	vectorQuery := iColl.FindNearest("EmbeddedField", []float32{1, 2, 3}, FindNearestOpts{
-		Limit:   2,
-		Measure: DistanceMeasureEuclidean,
-	})
+	vectorQuery := collRef.FindNearest("EmbeddedField", []float64{1, 2, 3}, 2, DistanceMeasureEuclidean, nil)
 
 	iter := vectorQuery.Documents(ctx)
 	gotDocs, err := iter.GetAll()
@@ -2915,8 +2925,4 @@ func TestIntegration_FindNearest(t *testing.T) {
 			t.Errorf("#%v: want: %v, got: %v", i, beans[i].ID, gotBean.ID)
 		}
 	}
-
-	// t.Cleanup(func() {
-	// 	deleteDocuments(docRefs)
-	// })
 }

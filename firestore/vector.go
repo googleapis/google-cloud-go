@@ -26,8 +26,21 @@ const (
 	valueKey      = "value"
 )
 
-// Vector represents a vector in the form of a float32 array
-type Vector []float32
+// Vector is an embedding vector.
+type Vector []float64
+
+func ToVector[fType float32 | float64](arr []fType) Vector {
+	var arrAny interface{}
+	if arrFloat64, ok := arrAny.([]float64); ok {
+		return Vector(arrFloat64) // Type assertion, no conversion needed
+	}
+
+	vec := make(Vector, len(arr))
+	for i, val := range arr {
+		vec[i] = float64(val)
+	}
+	return vec
+}
 
 // vectorToProtoValue returns a Firestore [pb.Value] representing the Vector.
 func vectorToProtoValue(v Vector) *pb.Value {
@@ -91,13 +104,13 @@ func vectorFromProtoValue(v *pb.Value) (Vector, error) {
 	}
 
 	pbArrVals := pbArr.ArrayValue.Values
-	floats := make([]float32, len(pbArrVals))
+	floats := make([]float64, len(pbArrVals))
 	for i, fval := range pbArrVals {
 		dv, ok := fval.ValueType.(*pb.Value_DoubleValue)
 		if !ok {
 			return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_DoubleValue", fval.ValueType)
 		}
-		floats[i] = float32(dv.DoubleValue)
+		floats[i] = dv.DoubleValue
 	}
 	return Vector(floats), nil
 }
