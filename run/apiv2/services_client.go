@@ -245,7 +245,7 @@ func (c *ServicesClient) GetService(ctx context.Context, req *runpb.GetServiceRe
 	return c.internalClient.GetService(ctx, req, opts...)
 }
 
-// ListServices lists Services.
+// ListServices lists Services. Results are sorted by creation time, descending.
 func (c *ServicesClient) ListServices(ctx context.Context, req *runpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	return c.internalClient.ListServices(ctx, req, opts...)
 }
@@ -966,7 +966,7 @@ func (c *servicesRESTClient) GetService(ctx context.Context, req *runpb.GetServi
 	return resp, nil
 }
 
-// ListServices lists Services.
+// ListServices lists Services. Results are sorted by creation time, descending.
 func (c *servicesRESTClient) ListServices(ctx context.Context, req *runpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*runpb.ListServicesRequest)
@@ -1077,6 +1077,13 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *runpb.Updat
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))

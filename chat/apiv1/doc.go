@@ -120,6 +120,11 @@ func getVersionClient() string {
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
 func DefaultAuthScopes() []string {
 	return []string{
+		"https://www.googleapis.com/auth/chat.admin.delete",
+		"https://www.googleapis.com/auth/chat.admin.memberships",
+		"https://www.googleapis.com/auth/chat.admin.memberships.readonly",
+		"https://www.googleapis.com/auth/chat.admin.spaces",
+		"https://www.googleapis.com/auth/chat.admin.spaces.readonly",
 		"https://www.googleapis.com/auth/chat.bot",
 		"https://www.googleapis.com/auth/chat.delete",
 		"https://www.googleapis.com/auth/chat.import",

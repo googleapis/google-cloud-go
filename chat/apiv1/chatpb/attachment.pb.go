@@ -96,7 +96,7 @@ type Attachment struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Resource name of the attachment, in the form
-	// `spaces/*/messages/*/attachments/*`.
+	// `spaces/{space}/messages/{message}/attachments/{attachment}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The original file name for the content, not the full path.
 	ContentName string `protobuf:"bytes,2,opt,name=content_name,json=contentName,proto3" json:"content_name,omitempty"`
@@ -353,7 +353,7 @@ type GetAttachmentRequest struct {
 	unknownFields protoimpl.UnknownFields
 
 	// Required. Resource name of the attachment, in the form
-	// `spaces/*/messages/*/attachments/*`.
+	// `spaces/{space}/messages/{message}/attachments/{attachment}`.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 }
 

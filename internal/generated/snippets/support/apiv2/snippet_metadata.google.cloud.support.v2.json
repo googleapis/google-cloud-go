@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/support/apiv2",
-    "version": "1.0.7",
+    "version": "1.0.9",
     "language": "GO",
     "apis": [
       {

@@ -35,7 +35,7 @@ func TestWaitAndClose(t *testing.T) {
 		t.Fatalf("WaitAndClose: %v", err)
 	}
 
-	expectedErr := "transfermanager: WaitAndClose called before DownloadObject"
+	expectedErr := "transfermanager: Downloader used after WaitAndClose was called"
 	err = d.DownloadObject(context.Background(), &DownloadObjectInput{})
 	if err == nil {
 		t.Fatalf("d.DownloadObject err was nil, should be %q", expectedErr)
@@ -354,6 +354,19 @@ func TestCalculateRange(t *testing.T) {
 			want: DownloadRange{
 				Offset: 4001,
 				Length: 1000,
+			},
+		},
+		{
+			desc: "sharding turned off",
+			objRange: &DownloadRange{
+				Offset: 1024 * 1024 * 1024 * 1024 / 2,
+				Length: 1024 * 1024 * 1024 * 1024,
+			},
+			partSize: 0,
+			shard:    0,
+			want: DownloadRange{
+				Offset: 1024 * 1024 * 1024 * 1024 / 2,
+				Length: 1024 * 1024 * 1024 * 1024,
 			},
 		},
 		{

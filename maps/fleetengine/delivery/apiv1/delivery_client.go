@@ -377,9 +377,9 @@ func (c *Client) GetDeliveryVehicle(ctx context.Context, req *deliverypb.GetDeli
 
 // UpdateDeliveryVehicle writes updated DeliveryVehicle data to Fleet Engine, and assigns
 // Tasks to the DeliveryVehicle. You cannot update the name of the
-// DeliveryVehicle. You can update remaining_vehicle_journey_segments
-// though, but it must contain all of the VehicleJourneySegments currently
-// on the DeliveryVehicle. The task_ids are retrieved from
+// DeliveryVehicle. You can update remaining_vehicle_journey_segments,
+// but it must contain all of the VehicleJourneySegments to be persisted on
+// the DeliveryVehicle. The task_ids are retrieved from
 // remaining_vehicle_journey_segments, and their corresponding Tasks are
 // assigned to the DeliveryVehicle if they have not yet been assigned.
 func (c *Client) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.UpdateDeliveryVehicleRequest, opts ...gax.CallOption) (*deliverypb.DeliveryVehicle, error) {
@@ -1110,9 +1110,9 @@ func (c *restClient) GetDeliveryVehicle(ctx context.Context, req *deliverypb.Get
 
 // UpdateDeliveryVehicle writes updated DeliveryVehicle data to Fleet Engine, and assigns
 // Tasks to the DeliveryVehicle. You cannot update the name of the
-// DeliveryVehicle. You can update remaining_vehicle_journey_segments
-// though, but it must contain all of the VehicleJourneySegments currently
-// on the DeliveryVehicle. The task_ids are retrieved from
+// DeliveryVehicle. You can update remaining_vehicle_journey_segments,
+// but it must contain all of the VehicleJourneySegments to be persisted on
+// the DeliveryVehicle. The task_ids are retrieved from
 // remaining_vehicle_journey_segments, and their corresponding Tasks are
 // assigned to the DeliveryVehicle if they have not yet been assigned.
 func (c *restClient) UpdateDeliveryVehicle(ctx context.Context, req *deliverypb.UpdateDeliveryVehicleRequest, opts ...gax.CallOption) (*deliverypb.DeliveryVehicle, error) {
