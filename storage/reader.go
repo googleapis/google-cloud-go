@@ -67,8 +67,12 @@ type ReaderObjectAttrs struct {
 	Metageneration int64
 
 	// CRC32C is the CRC32 checksum of the entire object's content using the
-	// Castagnoli93 polynomial.
+	// Castagnoli93 polynomial, if available.
 	CRC32C uint32
+
+	// Decompressed is true if the object was read decompressed and different
+	// than its original storage form.
+	Decompressed bool
 }
 
 // NewReader creates a new Reader to read the contents of the

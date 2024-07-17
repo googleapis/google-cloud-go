@@ -1466,6 +1466,7 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		Generation:      params.gen,
 		Metageneration:  metaGen,
 		CRC32C:          crc,
+		Decompressed:    res.Uncompressed || uncompressedByServer(res),
 	}
 	return &Reader{
 		Attrs:    attrs,
