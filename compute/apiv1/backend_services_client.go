@@ -222,7 +222,7 @@ func (c *BackendServicesClient) AddSignedUrlKey(ctx context.Context, req *comput
 	return c.internalClient.AddSignedUrlKey(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *BackendServicesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -354,6 +354,7 @@ func defaultBackendServicesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -363,7 +364,9 @@ func defaultBackendServicesRESTClientOptions() []option.ClientOption {
 func (c *backendServicesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -460,7 +463,7 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 	return op, nil
 }
 
-// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) *BackendServicesScopedListPairIterator {
 	it := &BackendServicesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListBackendServicesRequest)

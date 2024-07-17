@@ -164,7 +164,7 @@ func (c *NetworkEndpointGroupsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of network endpoint groups and sorts them by zone.
+// AggregatedList retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *NetworkEndpointGroupsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -266,6 +266,7 @@ func defaultNetworkEndpointGroupsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -275,7 +276,9 @@ func defaultNetworkEndpointGroupsRESTClientOptions() []option.ClientOption {
 func (c *networkEndpointGroupsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -296,7 +299,7 @@ func (c *networkEndpointGroupsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of network endpoint groups and sorts them by zone.
+// AggregatedList retrieves the list of network endpoint groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNetworkEndpointGroupsRequest, opts ...gax.CallOption) *NetworkEndpointGroupsScopedListPairIterator {
 	it := &NetworkEndpointGroupsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNetworkEndpointGroupsRequest)

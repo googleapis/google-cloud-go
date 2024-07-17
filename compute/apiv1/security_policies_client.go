@@ -202,7 +202,7 @@ func (c *SecurityPoliciesClient) AddRule(ctx context.Context, req *computepb.Add
 	return c.internalClient.AddRule(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *SecurityPoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -314,6 +314,7 @@ func defaultSecurityPoliciesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -323,7 +324,9 @@ func defaultSecurityPoliciesRESTClientOptions() []option.ClientOption {
 func (c *securityPoliciesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -420,7 +423,7 @@ func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 	return op, nil
 }
 
-// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all SecurityPolicy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *securityPoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSecurityPoliciesRequest, opts ...gax.CallOption) *SecurityPoliciesScopedListPairIterator {
 	it := &SecurityPoliciesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListSecurityPoliciesRequest)

@@ -133,7 +133,7 @@ func (c *NodeTypesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of node types.
+// AggregatedList retrieves an aggregated list of node types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *NodeTypesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTypesRequest, opts ...gax.CallOption) *NodeTypesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -192,6 +192,7 @@ func defaultNodeTypesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -201,7 +202,9 @@ func defaultNodeTypesRESTClientOptions() []option.ClientOption {
 func (c *nodeTypesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -219,7 +222,7 @@ func (c *nodeTypesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of node types.
+// AggregatedList retrieves an aggregated list of node types. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTypesRequest, opts ...gax.CallOption) *NodeTypesScopedListPairIterator {
 	it := &NodeTypesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListNodeTypesRequest)

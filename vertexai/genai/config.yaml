@@ -3,7 +3,6 @@
 package: genai
 
 protoImportPath: cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb
-supportImportPath: cloud.google.com/go/vertexai/internal/support
 
 types:
     HarmCategory:
@@ -18,12 +17,23 @@ types:
       valueNames:
         SafetySetting_HARM_BLOCK_THRESHOLD_UNSPECIFIED: HarmBlockUnspecified
 
+    SafetySetting_HarmBlockMethod:
+      name: HarmBlockMethod
+      protoPrefix: SafetySetting_
+      veneerPrefix: HarmBlockMethod
+      doc: 'determines how harm blocking is done.'
+
     SafetyRating_HarmProbability:
       name: HarmProbability
       protoPrefix: SafetyRating_
       docVerb: specifies
       valueNames:
         SafetyRating_HARM_PROBABILITY_UNSPECIFIED: HarmProbabilityUnspecified
+
+    SafetyRating_HarmSeverity:
+      name: HarmSeverity
+      protoPrefix: SafetyRating_
+      docVerb: specifies
 
     Candidate_FinishReason:
       name: FinishReason
@@ -45,7 +55,8 @@ types:
       fields:
         MimeType:
           name: MIMEType
-      docVerb: contains
+      doc: 'contains binary data like images. Use [Text] for text.'
+      removeOtherDoc: true
 
     FileData:
       fields:
@@ -58,7 +69,23 @@ types:
 
     FunctionResponse:
 
+    FunctionCallingConfig:
+      doc: 'holds configuration for function calling.'
+
+    FunctionCallingConfig_Mode:
+      name: FunctionCallingMode
+      protoPrefix: FunctionCallingConfig
+      veneerPrefix: FunctionCalling
+      valueNames:
+        FunctionCallingConfig_MODE_UNSPECIFIED: FunctionCallingUnspecified
+
     GenerationConfig:
+      fields:
+        TopK:
+          type: '*int32'
+          convertToFrom: int32pToFloat32p, float32pToInt32p
+        ResponseMimeType:
+          name: ResponseMIMEType
 
     SafetyRating:
       docVerb: 'is the'
@@ -73,7 +100,8 @@ types:
       fields:
         FinishMessage:
           type: string
-
+        GroundingMetadata:
+          omit: true
 
     GenerateContentResponse:
       doc: 'is the response from a GenerateContent or GenerateContentStream call.'
@@ -89,15 +117,33 @@ types:
 
     Tool:
       docVerb: contains
+      fields:
+        Retrieval:
+          omit: true
+        GoogleSearchRetrieval:
+          omit: true
 
+    ToolConfig:
+      doc: 'configures tools.'
+ 
     Schema:
       fields:
         Example:
+          omit: true
+        Default:
+          # TODO(jba): protoveneer should treat a *structpb.Value as an any
           omit: true
 
     CitationMetadata:
     FunctionDeclaration:
     SafetySetting:
+
+    CachedContent:
+      populateToFrom: populateCachedContentTo, populateCachedContentFrom
+      fields:
+        Expiration:
+          type: ExpireTimeOrTTL
+          noConvert: true
 
 # Omit everything that is not explicitly configured.
 omitTypes:

@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -45,18 +46,19 @@ var newFeatureOnlineStoreClientHook clientHook
 
 // FeatureOnlineStoreCallOptions contains the retry settings for each method of FeatureOnlineStoreClient.
 type FeatureOnlineStoreCallOptions struct {
-	FetchFeatureValues    []gax.CallOption
-	SearchNearestEntities []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
-	GetIamPolicy          []gax.CallOption
-	SetIamPolicy          []gax.CallOption
-	TestIamPermissions    []gax.CallOption
-	CancelOperation       []gax.CallOption
-	DeleteOperation       []gax.CallOption
-	GetOperation          []gax.CallOption
-	ListOperations        []gax.CallOption
-	WaitOperation         []gax.CallOption
+	FetchFeatureValues          []gax.CallOption
+	StreamingFetchFeatureValues []gax.CallOption
+	SearchNearestEntities       []gax.CallOption
+	GetLocation                 []gax.CallOption
+	ListLocations               []gax.CallOption
+	GetIamPolicy                []gax.CallOption
+	SetIamPolicy                []gax.CallOption
+	TestIamPermissions          []gax.CallOption
+	CancelOperation             []gax.CallOption
+	DeleteOperation             []gax.CallOption
+	GetOperation                []gax.CallOption
+	ListOperations              []gax.CallOption
+	WaitOperation               []gax.CallOption
 }
 
 func defaultFeatureOnlineStoreGRPCClientOptions() []option.ClientOption {
@@ -75,35 +77,37 @@ func defaultFeatureOnlineStoreGRPCClientOptions() []option.ClientOption {
 
 func defaultFeatureOnlineStoreCallOptions() *FeatureOnlineStoreCallOptions {
 	return &FeatureOnlineStoreCallOptions{
-		FetchFeatureValues:    []gax.CallOption{},
-		SearchNearestEntities: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
-		WaitOperation:         []gax.CallOption{},
+		FetchFeatureValues:          []gax.CallOption{},
+		StreamingFetchFeatureValues: []gax.CallOption{},
+		SearchNearestEntities:       []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
+		GetIamPolicy:                []gax.CallOption{},
+		SetIamPolicy:                []gax.CallOption{},
+		TestIamPermissions:          []gax.CallOption{},
+		CancelOperation:             []gax.CallOption{},
+		DeleteOperation:             []gax.CallOption{},
+		GetOperation:                []gax.CallOption{},
+		ListOperations:              []gax.CallOption{},
+		WaitOperation:               []gax.CallOption{},
 	}
 }
 
 func defaultFeatureOnlineStoreRESTCallOptions() *FeatureOnlineStoreCallOptions {
 	return &FeatureOnlineStoreCallOptions{
-		FetchFeatureValues:    []gax.CallOption{},
-		SearchNearestEntities: []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
-		WaitOperation:         []gax.CallOption{},
+		FetchFeatureValues:          []gax.CallOption{},
+		StreamingFetchFeatureValues: []gax.CallOption{},
+		SearchNearestEntities:       []gax.CallOption{},
+		GetLocation:                 []gax.CallOption{},
+		ListLocations:               []gax.CallOption{},
+		GetIamPolicy:                []gax.CallOption{},
+		SetIamPolicy:                []gax.CallOption{},
+		TestIamPermissions:          []gax.CallOption{},
+		CancelOperation:             []gax.CallOption{},
+		DeleteOperation:             []gax.CallOption{},
+		GetOperation:                []gax.CallOption{},
+		ListOperations:              []gax.CallOption{},
+		WaitOperation:               []gax.CallOption{},
 	}
 }
 
@@ -113,6 +117,7 @@ type internalFeatureOnlineStoreClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	FetchFeatureValues(context.Context, *aiplatformpb.FetchFeatureValuesRequest, ...gax.CallOption) (*aiplatformpb.FetchFeatureValuesResponse, error)
+	StreamingFetchFeatureValues(context.Context, ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error)
 	SearchNearestEntities(context.Context, *aiplatformpb.SearchNearestEntitiesRequest, ...gax.CallOption) (*aiplatformpb.SearchNearestEntitiesResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
@@ -164,6 +169,15 @@ func (c *FeatureOnlineStoreClient) Connection() *grpc.ClientConn {
 // FetchFeatureValues fetch feature values under a FeatureView.
 func (c *FeatureOnlineStoreClient) FetchFeatureValues(ctx context.Context, req *aiplatformpb.FetchFeatureValuesRequest, opts ...gax.CallOption) (*aiplatformpb.FetchFeatureValuesResponse, error) {
 	return c.internalClient.FetchFeatureValues(ctx, req, opts...)
+}
+
+// StreamingFetchFeatureValues bidirectional streaming RPC to fetch feature values under a FeatureView.
+// Requests may not have a one-to-one mapping to responses and responses may
+// be returned out-of-order to reduce latency.
+//
+// This method is not supported for the REST transport.
+func (c *FeatureOnlineStoreClient) StreamingFetchFeatureValues(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error) {
+	return c.internalClient.StreamingFetchFeatureValues(ctx, opts...)
 }
 
 // SearchNearestEntities search the nearest entities under a FeatureView.
@@ -306,7 +320,9 @@ func (c *featureOnlineStoreGRPCClient) Connection() *grpc.ClientConn {
 func (c *featureOnlineStoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -368,7 +384,9 @@ func defaultFeatureOnlineStoreRESTClientOptions() []option.ClientOption {
 func (c *featureOnlineStoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -395,6 +413,21 @@ func (c *featureOnlineStoreGRPCClient) FetchFeatureValues(ctx context.Context, r
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.featureOnlineStoreClient.FetchFeatureValues(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *featureOnlineStoreGRPCClient) StreamingFetchFeatureValues(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	var resp aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient
+	opts = append((*c.CallOptions).StreamingFetchFeatureValues[0:len((*c.CallOptions).StreamingFetchFeatureValues):len((*c.CallOptions).StreamingFetchFeatureValues)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.featureOnlineStoreClient.StreamingFetchFeatureValues(ctx, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -663,6 +696,11 @@ func (c *featureOnlineStoreRESTClient) FetchFeatureValues(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:fetchFeatureValues", req.GetFeatureView())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "feature_view", url.QueryEscape(req.GetFeatureView()))}
 
@@ -710,6 +748,15 @@ func (c *featureOnlineStoreRESTClient) FetchFeatureValues(ctx context.Context, r
 	return resp, nil
 }
 
+// StreamingFetchFeatureValues bidirectional streaming RPC to fetch feature values under a FeatureView.
+// Requests may not have a one-to-one mapping to responses and responses may
+// be returned out-of-order to reduce latency.
+//
+// This method is not supported for the REST transport.
+func (c *featureOnlineStoreRESTClient) StreamingFetchFeatureValues(ctx context.Context, opts ...gax.CallOption) (aiplatformpb.FeatureOnlineStoreService_StreamingFetchFeatureValuesClient, error) {
+	return nil, errors.New("StreamingFetchFeatureValues not yet supported for REST clients")
+}
+
 // SearchNearestEntities search the nearest entities under a FeatureView.
 // Search only works for indexable feature view; if a feature view isn’t
 // indexable, returns Invalid argument response.
@@ -725,6 +772,11 @@ func (c *featureOnlineStoreRESTClient) SearchNearestEntities(ctx context.Context
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:searchNearestEntities", req.GetFeatureView())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "feature_view", url.QueryEscape(req.GetFeatureView()))}
@@ -780,6 +832,11 @@ func (c *featureOnlineStoreRESTClient) GetLocation(ctx context.Context, req *loc
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -850,6 +907,7 @@ func (c *featureOnlineStoreRESTClient) ListLocations(ctx context.Context, req *l
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -934,6 +992,11 @@ func (c *featureOnlineStoreRESTClient) GetIamPolicy(ctx context.Context, req *ia
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -998,6 +1061,11 @@ func (c *featureOnlineStoreRESTClient) SetIamPolicy(ctx context.Context, req *ia
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -1066,6 +1134,11 @@ func (c *featureOnlineStoreRESTClient) TestIamPermissions(ctx context.Context, r
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1121,6 +1194,11 @@ func (c *featureOnlineStoreRESTClient) CancelOperation(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1158,6 +1236,11 @@ func (c *featureOnlineStoreRESTClient) DeleteOperation(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1194,6 +1277,11 @@ func (c *featureOnlineStoreRESTClient) GetOperation(ctx context.Context, req *lo
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1264,6 +1352,7 @@ func (c *featureOnlineStoreRESTClient) ListOperations(ctx context.Context, req *
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1342,6 +1431,7 @@ func (c *featureOnlineStoreRESTClient) WaitOperation(ctx context.Context, req *l
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
 		timeout, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {

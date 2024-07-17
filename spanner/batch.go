@@ -25,10 +25,10 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 // BatchReadOnlyTransaction is a ReadOnlyTransaction that allows for exporting
@@ -149,6 +149,9 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
 	}
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "PartitionReadUsingIndexWithOptions", t.otConfig); metricErr != nil {
+		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
+	}
 	// Prepare ReadRequest.
 	req := &sppb.ReadRequest{
 		Session:             sid,
@@ -212,6 +215,9 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "partitionQuery"); err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
+	}
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "partitionQuery", t.otConfig); metricErr != nil {
+		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
 
 	// prepare ExecuteSqlRequest
@@ -284,6 +290,9 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
 	}
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "Cleanup", t.otConfig); metricErr != nil {
+		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
+	}
 
 	if err != nil {
 		var logger *log.Logger
@@ -336,6 +345,9 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
 			}
+			if metricErr := recordGFELatencyMetricsOT(ctx, md, "Execute", t.otConfig); metricErr != nil {
+				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
+			}
 			return client, err
 		}
 	} else {
@@ -362,6 +374,9 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Execute"); err != nil {
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
+			}
+			if metricErr := recordGFELatencyMetricsOT(ctx, md, "Execute", t.otConfig); metricErr != nil {
+				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 			}
 			return client, err
 		}

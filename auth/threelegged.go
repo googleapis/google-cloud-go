@@ -62,7 +62,8 @@ type Options3LO struct {
 	// Optional.
 	Client *http.Client
 	// EarlyTokenExpiry is the time before the token expires that it should be
-	// refreshed. If not set the default value is 10 seconds. Optional.
+	// refreshed. If not set the default value is 3 minutes and 45 seconds.
+	// Optional.
 	EarlyTokenExpiry time.Duration
 
 	// AuthHandlerOpts provides a set of options for doing a
@@ -123,44 +124,44 @@ func (e *tokenJSON) expiry() (t time.Time) {
 	return
 }
 
-func (c *Options3LO) client() *http.Client {
-	if c.Client != nil {
-		return c.Client
+func (o *Options3LO) client() *http.Client {
+	if o.Client != nil {
+		return o.Client
 	}
 	return internal.CloneDefaultClient()
 }
 
 // authCodeURL returns a URL that points to a OAuth2 consent page.
-func (c *Options3LO) authCodeURL(state string, values url.Values) string {
+func (o *Options3LO) authCodeURL(state string, values url.Values) string {
 	var buf bytes.Buffer
-	buf.WriteString(c.AuthURL)
+	buf.WriteString(o.AuthURL)
 	v := url.Values{
 		"response_type": {"code"},
-		"client_id":     {c.ClientID},
+		"client_id":     {o.ClientID},
 	}
-	if c.RedirectURL != "" {
-		v.Set("redirect_uri", c.RedirectURL)
+	if o.RedirectURL != "" {
+		v.Set("redirect_uri", o.RedirectURL)
 	}
-	if len(c.Scopes) > 0 {
-		v.Set("scope", strings.Join(c.Scopes, " "))
+	if len(o.Scopes) > 0 {
+		v.Set("scope", strings.Join(o.Scopes, " "))
 	}
 	if state != "" {
 		v.Set("state", state)
 	}
-	if c.AuthHandlerOpts != nil {
-		if c.AuthHandlerOpts.PKCEOpts != nil &&
-			c.AuthHandlerOpts.PKCEOpts.Challenge != "" {
-			v.Set(codeChallengeKey, c.AuthHandlerOpts.PKCEOpts.Challenge)
+	if o.AuthHandlerOpts != nil {
+		if o.AuthHandlerOpts.PKCEOpts != nil &&
+			o.AuthHandlerOpts.PKCEOpts.Challenge != "" {
+			v.Set(codeChallengeKey, o.AuthHandlerOpts.PKCEOpts.Challenge)
 		}
-		if c.AuthHandlerOpts.PKCEOpts != nil &&
-			c.AuthHandlerOpts.PKCEOpts.ChallengeMethod != "" {
-			v.Set(codeChallengeMethodKey, c.AuthHandlerOpts.PKCEOpts.ChallengeMethod)
+		if o.AuthHandlerOpts.PKCEOpts != nil &&
+			o.AuthHandlerOpts.PKCEOpts.ChallengeMethod != "" {
+			v.Set(codeChallengeMethodKey, o.AuthHandlerOpts.PKCEOpts.ChallengeMethod)
 		}
 	}
 	for k := range values {
 		v.Set(k, v.Get(k))
 	}
-	if strings.Contains(c.AuthURL, "?") {
+	if strings.Contains(o.AuthURL, "?") {
 		buf.WriteByte('&')
 	} else {
 		buf.WriteByte('?')
@@ -205,24 +206,24 @@ func new3LOTokenProviderWithAuthHandler(opts *Options3LO) TokenProvider {
 
 // exchange handles the final exchange portion of the 3lo flow. Returns a Token,
 // refreshToken, and error.
-func (c *Options3LO) exchange(ctx context.Context, code string) (*Token, string, error) {
+func (o *Options3LO) exchange(ctx context.Context, code string) (*Token, string, error) {
 	// Build request
 	v := url.Values{
 		"grant_type": {"authorization_code"},
 		"code":       {code},
 	}
-	if c.RedirectURL != "" {
-		v.Set("redirect_uri", c.RedirectURL)
+	if o.RedirectURL != "" {
+		v.Set("redirect_uri", o.RedirectURL)
 	}
-	if c.AuthHandlerOpts != nil &&
-		c.AuthHandlerOpts.PKCEOpts != nil &&
-		c.AuthHandlerOpts.PKCEOpts.Verifier != "" {
-		v.Set(codeVerifierKey, c.AuthHandlerOpts.PKCEOpts.Verifier)
+	if o.AuthHandlerOpts != nil &&
+		o.AuthHandlerOpts.PKCEOpts != nil &&
+		o.AuthHandlerOpts.PKCEOpts.Verifier != "" {
+		v.Set(codeVerifierKey, o.AuthHandlerOpts.PKCEOpts.Verifier)
 	}
-	for k := range c.URLParams {
-		v.Set(k, c.URLParams.Get(k))
+	for k := range o.URLParams {
+		v.Set(k, o.URLParams.Get(k))
 	}
-	return fetchToken(ctx, c, v)
+	return fetchToken(ctx, o, v)
 }
 
 // This struct is not safe for concurrent access alone, but the way it is used
@@ -274,45 +275,39 @@ func (tp tokenProviderWithHandler) Token(ctx context.Context) (*Token, error) {
 }
 
 // fetchToken returns a Token, refresh token, and/or an error.
-func fetchToken(ctx context.Context, c *Options3LO, v url.Values) (*Token, string, error) {
+func fetchToken(ctx context.Context, o *Options3LO, v url.Values) (*Token, string, error) {
 	var refreshToken string
-	if c.AuthStyle == StyleInParams {
-		if c.ClientID != "" {
-			v.Set("client_id", c.ClientID)
+	if o.AuthStyle == StyleInParams {
+		if o.ClientID != "" {
+			v.Set("client_id", o.ClientID)
 		}
-		if c.ClientSecret != "" {
-			v.Set("client_secret", c.ClientSecret)
+		if o.ClientSecret != "" {
+			v.Set("client_secret", o.ClientSecret)
 		}
 	}
-	req, err := http.NewRequest("POST", c.TokenURL, strings.NewReader(v.Encode()))
+	req, err := http.NewRequestWithContext(ctx, "POST", o.TokenURL, strings.NewReader(v.Encode()))
 	if err != nil {
 		return nil, refreshToken, err
 	}
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	if c.AuthStyle == StyleInHeader {
-		req.SetBasicAuth(url.QueryEscape(c.ClientID), url.QueryEscape(c.ClientSecret))
+	if o.AuthStyle == StyleInHeader {
+		req.SetBasicAuth(url.QueryEscape(o.ClientID), url.QueryEscape(o.ClientSecret))
 	}
 
 	// Make request
-	r, err := c.client().Do(req.WithContext(ctx))
+	resp, body, err := internal.DoRequest(o.client(), req)
 	if err != nil {
 		return nil, refreshToken, err
 	}
-	body, err := internal.ReadAll(r.Body)
-	r.Body.Close()
-	if err != nil {
-		return nil, refreshToken, fmt.Errorf("auth: cannot fetch token: %w", err)
-	}
-
-	failureStatus := r.StatusCode < 200 || r.StatusCode > 299
+	failureStatus := resp.StatusCode < 200 || resp.StatusCode > 299
 	tokError := &Error{
-		Response: r,
+		Response: resp,
 		Body:     body,
 	}
 
 	var token *Token
 	// errors ignored because of default switch on content
-	content, _, _ := mime.ParseMediaType(r.Header.Get("Content-Type"))
+	content, _, _ := mime.ParseMediaType(resp.Header.Get("Content-Type"))
 	switch content {
 	case "application/x-www-form-urlencoded", "text/plain":
 		// some endpoints return a query string

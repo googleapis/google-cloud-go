@@ -154,7 +154,7 @@ func (c *AddressesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of addresses.
+// AggregatedList retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *AddressesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAddressesRequest, opts ...gax.CallOption) *AddressesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -246,6 +246,7 @@ func defaultAddressesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -255,7 +256,9 @@ func defaultAddressesRESTClientOptions() []option.ClientOption {
 func (c *addressesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -276,7 +279,7 @@ func (c *addressesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of addresses.
+// AggregatedList retrieves an aggregated list of addresses. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *addressesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAddressesRequest, opts ...gax.CallOption) *AddressesScopedListPairIterator {
 	it := &AddressesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListAddressesRequest)

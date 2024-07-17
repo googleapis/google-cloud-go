@@ -73,6 +73,7 @@ func defaultServicesGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -244,7 +245,7 @@ func (c *ServicesClient) GetService(ctx context.Context, req *runpb.GetServiceRe
 	return c.internalClient.GetService(ctx, req, opts...)
 }
 
-// ListServices lists Services.
+// ListServices lists Services. Results are sorted by creation time, descending.
 func (c *ServicesClient) ListServices(ctx context.Context, req *runpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	return c.internalClient.ListServices(ctx, req, opts...)
 }
@@ -394,7 +395,9 @@ func (c *servicesGRPCClient) Connection() *grpc.ClientConn {
 func (c *servicesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -462,6 +465,7 @@ func defaultServicesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -471,7 +475,9 @@ func defaultServicesRESTClientOptions() []option.ClientOption {
 func (c *servicesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -960,7 +966,7 @@ func (c *servicesRESTClient) GetService(ctx context.Context, req *runpb.GetServi
 	return resp, nil
 }
 
-// ListServices lists Services.
+// ListServices lists Services. Results are sorted by creation time, descending.
 func (c *servicesRESTClient) ListServices(ctx context.Context, req *runpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*runpb.ListServicesRequest)
@@ -1071,6 +1077,13 @@ func (c *servicesRESTClient) UpdateService(ctx context.Context, req *runpb.Updat
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
+	}
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
 	}
 	if req.GetValidateOnly() {
 		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))

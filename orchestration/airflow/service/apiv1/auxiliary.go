@@ -494,6 +494,53 @@ func (it *ImageVersionIterator) takeBuf() interface{} {
 	return b
 }
 
+// ListWorkloadsResponse_ComposerWorkloadIterator manages a stream of *servicepb.ListWorkloadsResponse_ComposerWorkload.
+type ListWorkloadsResponse_ComposerWorkloadIterator struct {
+	items    []*servicepb.ListWorkloadsResponse_ComposerWorkload
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*servicepb.ListWorkloadsResponse_ComposerWorkload, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ListWorkloadsResponse_ComposerWorkloadIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ListWorkloadsResponse_ComposerWorkloadIterator) Next() (*servicepb.ListWorkloadsResponse_ComposerWorkload, error) {
+	var item *servicepb.ListWorkloadsResponse_ComposerWorkload
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ListWorkloadsResponse_ComposerWorkloadIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ListWorkloadsResponse_ComposerWorkloadIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -536,6 +583,100 @@ func (it *OperationIterator) bufLen() int {
 }
 
 func (it *OperationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// UserWorkloadsConfigMapIterator manages a stream of *servicepb.UserWorkloadsConfigMap.
+type UserWorkloadsConfigMapIterator struct {
+	items    []*servicepb.UserWorkloadsConfigMap
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*servicepb.UserWorkloadsConfigMap, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *UserWorkloadsConfigMapIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *UserWorkloadsConfigMapIterator) Next() (*servicepb.UserWorkloadsConfigMap, error) {
+	var item *servicepb.UserWorkloadsConfigMap
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *UserWorkloadsConfigMapIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *UserWorkloadsConfigMapIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// UserWorkloadsSecretIterator manages a stream of *servicepb.UserWorkloadsSecret.
+type UserWorkloadsSecretIterator struct {
+	items    []*servicepb.UserWorkloadsSecret
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*servicepb.UserWorkloadsSecret, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *UserWorkloadsSecretIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *UserWorkloadsSecretIterator) Next() (*servicepb.UserWorkloadsSecret, error) {
+	var item *servicepb.UserWorkloadsSecret
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *UserWorkloadsSecretIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *UserWorkloadsSecretIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

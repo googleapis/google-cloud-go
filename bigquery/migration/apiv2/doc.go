@@ -20,8 +20,6 @@
 // The migration service, exposing apis for migration jobs operations, and
 // agent management.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

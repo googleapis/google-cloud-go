@@ -33,18 +33,18 @@ jobs:
     strategy:
       matrix:
         # Bigtable test proxy can be run on any of these Go versions
-        go: [ '1.19', '1.20', '1.21' ]
+        go: [ '1.20', '1.22']
         folders: ['bigtable']
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         path: google-cloud-go
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         repository: googleapis/cloud-bigtable-clients-test
         ref: main
         path: cloud-bigtable-clients-test
-    - uses: actions/setup-go@v4
+    - uses: actions/setup-go@v5
       with:
           go-version: ${{ matrix.go }}
     - run: go version

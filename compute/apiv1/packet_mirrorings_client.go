@@ -154,7 +154,7 @@ func (c *PacketMirroringsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of packetMirrorings.
+// AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *PacketMirroringsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -246,6 +246,7 @@ func defaultPacketMirroringsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -255,7 +256,9 @@ func defaultPacketMirroringsRESTClientOptions() []option.ClientOption {
 func (c *packetMirroringsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -276,7 +279,7 @@ func (c *packetMirroringsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of packetMirrorings.
+// AggregatedList retrieves an aggregated list of packetMirrorings. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *packetMirroringsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPacketMirroringsRequest, opts ...gax.CallOption) *PacketMirroringsScopedListPairIterator {
 	it := &PacketMirroringsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListPacketMirroringsRequest)

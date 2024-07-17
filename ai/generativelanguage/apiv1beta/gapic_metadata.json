@@ -5,6 +5,70 @@
   "protoPackage": "google.ai.generativelanguage.v1beta",
   "libraryPackage": "cloud.google.com/go/ai/generativelanguage/apiv1beta",
   "services": {
+    "CacheService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CacheClient",
+          "rpcs": {
+            "CreateCachedContent": {
+              "methods": [
+                "CreateCachedContent"
+              ]
+            },
+            "DeleteCachedContent": {
+              "methods": [
+                "DeleteCachedContent"
+              ]
+            },
+            "GetCachedContent": {
+              "methods": [
+                "GetCachedContent"
+              ]
+            },
+            "ListCachedContents": {
+              "methods": [
+                "ListCachedContents"
+              ]
+            },
+            "UpdateCachedContent": {
+              "methods": [
+                "UpdateCachedContent"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "CacheClient",
+          "rpcs": {
+            "CreateCachedContent": {
+              "methods": [
+                "CreateCachedContent"
+              ]
+            },
+            "DeleteCachedContent": {
+              "methods": [
+                "DeleteCachedContent"
+              ]
+            },
+            "GetCachedContent": {
+              "methods": [
+                "GetCachedContent"
+              ]
+            },
+            "ListCachedContents": {
+              "methods": [
+                "ListCachedContents"
+              ]
+            },
+            "UpdateCachedContent": {
+              "methods": [
+                "UpdateCachedContent"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DiscussService": {
       "clients": {
         "grpc": {
@@ -33,6 +97,60 @@
             "GenerateMessage": {
               "methods": [
                 "GenerateMessage"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FileService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FileClient",
+          "rpcs": {
+            "CreateFile": {
+              "methods": [
+                "CreateFile"
+              ]
+            },
+            "DeleteFile": {
+              "methods": [
+                "DeleteFile"
+              ]
+            },
+            "GetFile": {
+              "methods": [
+                "GetFile"
+              ]
+            },
+            "ListFiles": {
+              "methods": [
+                "ListFiles"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FileClient",
+          "rpcs": {
+            "CreateFile": {
+              "methods": [
+                "CreateFile"
+              ]
+            },
+            "DeleteFile": {
+              "methods": [
+                "DeleteFile"
+              ]
+            },
+            "GetFile": {
+              "methods": [
+                "GetFile"
+              ]
+            },
+            "ListFiles": {
+              "methods": [
+                "ListFiles"
               ]
             }
           }

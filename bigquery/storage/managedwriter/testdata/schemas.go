@@ -91,6 +91,18 @@ var (
 				{Name: "value", Type: bigquery.StringFieldType, Repeated: true},
 			},
 		},
+		{
+			// range is a compound representation, but not quite a struct.
+			Name: "range_type",
+			Type: bigquery.RangeFieldType,
+			RangeElementType: &bigquery.RangeElementType{
+				Type: bigquery.TimestampFieldType,
+			},
+		},
+		{
+			Name: "json_type",
+			Type: bigquery.JSONFieldType,
+		},
 	}
 
 	// We currently follow proto2 rules here, hence the well known types getting treated as records.

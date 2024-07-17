@@ -305,6 +305,12 @@ func ExampleClient_ListAssignments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.ListAssignmentsResponse)
 	}
 }
 
@@ -336,6 +342,12 @@ func ExampleClient_ListCapacityCommitments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.ListCapacityCommitmentsResponse)
 	}
 }
 
@@ -367,6 +379,12 @@ func ExampleClient_ListReservations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.ListReservationsResponse)
 	}
 }
 
@@ -448,6 +466,12 @@ func ExampleClient_SearchAllAssignments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.SearchAllAssignmentsResponse)
 	}
 }
 
@@ -479,6 +503,12 @@ func ExampleClient_SearchAssignments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*reservationpb.SearchAssignmentsResponse)
 	}
 }
 

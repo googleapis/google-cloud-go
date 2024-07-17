@@ -19,6 +19,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -248,6 +249,8 @@ type internalBigQueryWriteClient interface {
 // The google.cloud.bigquery.storage.v1
 // API (at /bigquery/docs/reference/storage/rpc/google.cloud.bigquery.storage.v1)
 // should be used instead of the v1beta2 API for BigQueryWrite operations.
+//
+// Deprecated: BigQueryWrite may be removed in a future version.
 type BigQueryWriteClient struct {
 	// The internal transport-dependent client.
 	internalClient internalBigQueryWriteClient
@@ -285,6 +288,8 @@ func (c *BigQueryWriteClient) Connection() *grpc.ClientConn {
 // CreateWriteStream. It is a stream that can be used simultaneously by any
 // number of clients. Data written to this stream is considered committed as
 // soon as an acknowledgement is received.
+//
+// Deprecated: CreateWriteStream may be removed in a future version.
 func (c *BigQueryWriteClient) CreateWriteStream(ctx context.Context, req *storagepb.CreateWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
 	return c.internalClient.CreateWriteStream(ctx, req, opts...)
 }
@@ -310,17 +315,23 @@ func (c *BigQueryWriteClient) CreateWriteStream(ctx context.Context, req *storag
 // operations after the stream is committed.
 //
 // This method is not supported for the REST transport.
+//
+// Deprecated: AppendRows may be removed in a future version.
 func (c *BigQueryWriteClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
 	return c.internalClient.AppendRows(ctx, opts...)
 }
 
 // GetWriteStream gets a write stream.
+//
+// Deprecated: GetWriteStream may be removed in a future version.
 func (c *BigQueryWriteClient) GetWriteStream(ctx context.Context, req *storagepb.GetWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
 	return c.internalClient.GetWriteStream(ctx, req, opts...)
 }
 
 // FinalizeWriteStream finalize a write stream so that no new data can be appended to the
 // stream. Finalize is not supported on the ‘_default’ stream.
+//
+// Deprecated: FinalizeWriteStream may be removed in a future version.
 func (c *BigQueryWriteClient) FinalizeWriteStream(ctx context.Context, req *storagepb.FinalizeWriteStreamRequest, opts ...gax.CallOption) (*storagepb.FinalizeWriteStreamResponse, error) {
 	return c.internalClient.FinalizeWriteStream(ctx, req, opts...)
 }
@@ -330,6 +341,8 @@ func (c *BigQueryWriteClient) FinalizeWriteStream(ctx context.Context, req *stor
 // Streams must be finalized before commit and cannot be committed multiple
 // times. Once a stream is committed, data in the stream becomes available
 // for read operations.
+//
+// Deprecated: BatchCommitWriteStreams may be removed in a future version.
 func (c *BigQueryWriteClient) BatchCommitWriteStreams(ctx context.Context, req *storagepb.BatchCommitWriteStreamsRequest, opts ...gax.CallOption) (*storagepb.BatchCommitWriteStreamsResponse, error) {
 	return c.internalClient.BatchCommitWriteStreams(ctx, req, opts...)
 }
@@ -340,6 +353,8 @@ func (c *BigQueryWriteClient) BatchCommitWriteStreams(ctx context.Context, req *
 // Flush operation flushes up to any previously flushed offset in a BUFFERED
 // stream, to the offset specified in the request.
 // Flush is not supported on the _default stream, since it is not BUFFERED.
+//
+// Deprecated: FlushRows may be removed in a future version.
 func (c *BigQueryWriteClient) FlushRows(ctx context.Context, req *storagepb.FlushRowsRequest, opts ...gax.CallOption) (*storagepb.FlushRowsResponse, error) {
 	return c.internalClient.FlushRows(ctx, req, opts...)
 }
@@ -371,6 +386,8 @@ type bigQueryWriteGRPCClient struct {
 // The google.cloud.bigquery.storage.v1
 // API (at /bigquery/docs/reference/storage/rpc/google.cloud.bigquery.storage.v1)
 // should be used instead of the v1beta2 API for BigQueryWrite operations.
+//
+// Deprecated: BigQueryWrite may be removed in a future version.
 func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryWriteClient, error) {
 	clientOpts := defaultBigQueryWriteGRPCClientOptions()
 	if newBigQueryWriteClientHook != nil {
@@ -413,7 +430,9 @@ func (c *bigQueryWriteGRPCClient) Connection() *grpc.ClientConn {
 func (c *bigQueryWriteGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -446,6 +465,8 @@ type bigQueryWriteRESTClient struct {
 // The google.cloud.bigquery.storage.v1
 // API (at /bigquery/docs/reference/storage/rpc/google.cloud.bigquery.storage.v1)
 // should be used instead of the v1beta2 API for BigQueryWrite operations.
+//
+// Deprecated: BigQueryWrite may be removed in a future version.
 func NewBigQueryWriteRESTClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryWriteClient, error) {
 	clientOpts := append(defaultBigQueryWriteRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -481,7 +502,9 @@ func defaultBigQueryWriteRESTClientOptions() []option.ClientOption {
 func (c *bigQueryWriteRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -609,6 +632,8 @@ func (c *bigQueryWriteGRPCClient) FlushRows(ctx context.Context, req *storagepb.
 // CreateWriteStream. It is a stream that can be used simultaneously by any
 // number of clients. Data written to this stream is considered committed as
 // soon as an acknowledgement is received.
+//
+// Deprecated: CreateWriteStream may be removed in a future version.
 func (c *bigQueryWriteRESTClient) CreateWriteStream(ctx context.Context, req *storagepb.CreateWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetWriteStream()
@@ -691,11 +716,15 @@ func (c *bigQueryWriteRESTClient) CreateWriteStream(ctx context.Context, req *st
 // operations after the stream is committed.
 //
 // This method is not supported for the REST transport.
+//
+// Deprecated: AppendRows may be removed in a future version.
 func (c *bigQueryWriteRESTClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
-	return nil, fmt.Errorf("AppendRows not yet supported for REST clients")
+	return nil, errors.New("AppendRows not yet supported for REST clients")
 }
 
 // GetWriteStream gets a write stream.
+//
+// Deprecated: GetWriteStream may be removed in a future version.
 func (c *bigQueryWriteRESTClient) GetWriteStream(ctx context.Context, req *storagepb.GetWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -758,6 +787,8 @@ func (c *bigQueryWriteRESTClient) GetWriteStream(ctx context.Context, req *stora
 
 // FinalizeWriteStream finalize a write stream so that no new data can be appended to the
 // stream. Finalize is not supported on the ‘_default’ stream.
+//
+// Deprecated: FinalizeWriteStream may be removed in a future version.
 func (c *bigQueryWriteRESTClient) FinalizeWriteStream(ctx context.Context, req *storagepb.FinalizeWriteStreamRequest, opts ...gax.CallOption) (*storagepb.FinalizeWriteStreamResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -823,6 +854,8 @@ func (c *bigQueryWriteRESTClient) FinalizeWriteStream(ctx context.Context, req *
 // Streams must be finalized before commit and cannot be committed multiple
 // times. Once a stream is committed, data in the stream becomes available
 // for read operations.
+//
+// Deprecated: BatchCommitWriteStreams may be removed in a future version.
 func (c *bigQueryWriteRESTClient) BatchCommitWriteStreams(ctx context.Context, req *storagepb.BatchCommitWriteStreamsRequest, opts ...gax.CallOption) (*storagepb.BatchCommitWriteStreamsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -892,6 +925,8 @@ func (c *bigQueryWriteRESTClient) BatchCommitWriteStreams(ctx context.Context, r
 // Flush operation flushes up to any previously flushed offset in a BUFFERED
 // stream, to the offset specified in the request.
 // Flush is not supported on the _default stream, since it is not BUFFERED.
+//
+// Deprecated: FlushRows may be removed in a future version.
 func (c *bigQueryWriteRESTClient) FlushRows(ctx context.Context, req *storagepb.FlushRowsRequest, opts ...gax.CallOption) (*storagepb.FlushRowsResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

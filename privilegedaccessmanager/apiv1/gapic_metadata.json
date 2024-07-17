@@ -1,0 +1,213 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.privilegedaccessmanager.v1",
+  "libraryPackage": "cloud.google.com/go/privilegedaccessmanager/apiv1",
+  "services": {
+    "PrivilegedAccessManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ApproveGrant": {
+              "methods": [
+                "ApproveGrant"
+              ]
+            },
+            "CheckOnboardingStatus": {
+              "methods": [
+                "CheckOnboardingStatus"
+              ]
+            },
+            "CreateEntitlement": {
+              "methods": [
+                "CreateEntitlement"
+              ]
+            },
+            "CreateGrant": {
+              "methods": [
+                "CreateGrant"
+              ]
+            },
+            "DeleteEntitlement": {
+              "methods": [
+                "DeleteEntitlement"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DenyGrant": {
+              "methods": [
+                "DenyGrant"
+              ]
+            },
+            "GetEntitlement": {
+              "methods": [
+                "GetEntitlement"
+              ]
+            },
+            "GetGrant": {
+              "methods": [
+                "GetGrant"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEntitlements": {
+              "methods": [
+                "ListEntitlements"
+              ]
+            },
+            "ListGrants": {
+              "methods": [
+                "ListGrants"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RevokeGrant": {
+              "methods": [
+                "RevokeGrant"
+              ]
+            },
+            "SearchEntitlements": {
+              "methods": [
+                "SearchEntitlements"
+              ]
+            },
+            "SearchGrants": {
+              "methods": [
+                "SearchGrants"
+              ]
+            },
+            "UpdateEntitlement": {
+              "methods": [
+                "UpdateEntitlement"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ApproveGrant": {
+              "methods": [
+                "ApproveGrant"
+              ]
+            },
+            "CheckOnboardingStatus": {
+              "methods": [
+                "CheckOnboardingStatus"
+              ]
+            },
+            "CreateEntitlement": {
+              "methods": [
+                "CreateEntitlement"
+              ]
+            },
+            "CreateGrant": {
+              "methods": [
+                "CreateGrant"
+              ]
+            },
+            "DeleteEntitlement": {
+              "methods": [
+                "DeleteEntitlement"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DenyGrant": {
+              "methods": [
+                "DenyGrant"
+              ]
+            },
+            "GetEntitlement": {
+              "methods": [
+                "GetEntitlement"
+              ]
+            },
+            "GetGrant": {
+              "methods": [
+                "GetGrant"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListEntitlements": {
+              "methods": [
+                "ListEntitlements"
+              ]
+            },
+            "ListGrants": {
+              "methods": [
+                "ListGrants"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RevokeGrant": {
+              "methods": [
+                "RevokeGrant"
+              ]
+            },
+            "SearchEntitlements": {
+              "methods": [
+                "SearchEntitlements"
+              ]
+            },
+            "SearchGrants": {
+              "methods": [
+                "SearchGrants"
+              ]
+            },
+            "UpdateEntitlement": {
+              "methods": [
+                "UpdateEntitlement"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

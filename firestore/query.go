@@ -26,9 +26,9 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // Query represents a Firestore query.
@@ -36,18 +36,21 @@ import (
 // Query values are immutable. Each Query method creates
 // a new Query; it does not modify the old.
 type Query struct {
-	c                      *Client
-	path                   string // path to query (collection)
-	parentPath             string // path of the collection's parent (document)
-	collectionID           string
-	selection              []*pb.StructuredQuery_FieldReference
-	filters                []*pb.StructuredQuery_Filter
-	orders                 []order
-	offset                 int32
-	limit                  *wrappers.Int32Value
-	limitToLast            bool
-	startVals, endVals     []interface{}
-	startDoc, endDoc       *DocumentSnapshot
+	c                  *Client
+	path               string // path to query (collection)
+	parentPath         string // path of the collection's parent (document)
+	collectionID       string
+	selection          []*pb.StructuredQuery_FieldReference
+	filters            []*pb.StructuredQuery_Filter
+	orders             []order
+	offset             int32
+	limit              *wrapperspb.Int32Value
+	limitToLast        bool
+	startVals, endVals []interface{}
+	startDoc, endDoc   *DocumentSnapshot
+
+	// Set startBefore to true when doc in startVals needs to be included in result
+	// Set endBefore to false when doc in endVals needs to be included in result
 	startBefore, endBefore bool
 	err                    error
 
@@ -208,7 +211,7 @@ func (q Query) Offset(n int) Query {
 // Limit returns a new Query that specifies the maximum number of first results
 // to return. It must not be negative.
 func (q Query) Limit(n int) Query {
-	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limit = &wrapperspb.Int32Value{Value: trunc32(n)}
 	q.limitToLast = false
 	return q
 }
@@ -216,7 +219,7 @@ func (q Query) Limit(n int) Query {
 // LimitToLast returns a new Query that specifies the maximum number of last
 // results to return. It must not be negative.
 func (q Query) LimitToLast(n int) Query {
-	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limit = &wrapperspb.Int32Value{Value: trunc32(n)}
 	q.limitToLast = true
 	return q
 }
@@ -293,7 +296,11 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 
 func (q *Query) processLimitToLast() {
 	if q.limitToLast {
-		// Flip order statements before posting a request.
+		// Firestore service does not provide limit to last behaviour out of the box. This is a client-side concept
+		// So, flip order statements and cursors before posting a request. The response is flipped by other methods before returning to user
+		// E.g.
+		// If id of documents is 1, 2, 3, 4, 5, 6, 7 and query is (OrderBy(id, ASC), StartAt(2), EndAt(6), LimitToLast(3))
+		// request sent to server is  (OrderBy(id, DESC), StartAt(6), EndAt(2), Limit(3))
 		for i := range q.orders {
 			if q.orders[i].dir == Asc {
 				q.orders[i].dir = Desc
@@ -301,15 +308,25 @@ func (q *Query) processLimitToLast() {
 				q.orders[i].dir = Asc
 			}
 		}
+
+		if q.startBefore == q.endBefore && q.startCursorSpecified() && q.endCursorSpecified() {
+			// E.g. query.StartAt(2).EndBefore(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, 6)
+			// E.g. query.StartAfter(2).EndAt(6).LimitToLast(3).OrderBy(Asc)  i.e. cursors are (2, 6]
+			q.startBefore, q.endBefore = !q.startBefore, !q.endBefore
+		} else if !q.startCursorSpecified() && q.endCursorSpecified() {
+			// E.g. query.EndAt(6).LimitToLast(3).OrderBy(Asc) i.e. cursors are (-inf, 6]
+			q.startBefore = !q.endBefore
+			q.endBefore = false
+		} else if q.startCursorSpecified() && !q.endCursorSpecified() {
+			// E.g. query.StartAt(2).LimitToLast(3).OrderBy(Asc) i.e. cursors are [2, inf)
+			q.endBefore = !q.startBefore
+			q.startBefore = false
+		}
+
 		// Swap cursors.
 		q.startVals, q.endVals = q.endVals, q.startVals
 		q.startDoc, q.endDoc = q.endDoc, q.startDoc
-		if q.endBefore {
-			q.endBefore = false
-			q.startBefore = false
-		} else {
-			q.startBefore, q.endBefore = q.endBefore, q.startBefore
-		}
+
 		q.limitToLast = false
 	}
 }
@@ -453,7 +470,7 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// 	offset                 int32
 	q.offset = pbq.GetOffset()
 
-	// 	limit                  *wrappers.Int32Value
+	// 	limit                  *wrapperspb.Int32Value
 	if limit := pbq.GetLimit(); limit != nil {
 		q.limit = limit
 	}
@@ -461,6 +478,14 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// NOTE: limit to last isn't part of the proto, this is a client-side concept
 	// 	limitToLast            bool
 	return q, q.err
+}
+
+func (q Query) startCursorSpecified() bool {
+	return len(q.startVals) != 0 || q.startDoc != nil
+}
+
+func (q Query) endCursorSpecified() bool {
+	return len(q.endVals) != 0 || q.endDoc != nil
 }
 
 func (q Query) toProto() (*pb.StructuredQuery, error) {
@@ -471,12 +496,12 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		return nil, errors.New("firestore: query created without CollectionRef")
 	}
 	if q.startBefore {
-		if len(q.startVals) == 0 && q.startDoc == nil {
+		if !q.startCursorSpecified() {
 			return nil, errors.New("firestore: StartAt/StartAfter must be called with at least one value")
 		}
 	}
 	if q.endBefore {
-		if len(q.endVals) == 0 && q.endDoc == nil {
+		if !q.endCursorSpecified() {
 			return nil, errors.New("firestore: EndAt/EndBefore must be called with at least one value")
 		}
 	}
@@ -597,7 +622,7 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 
 			switch docID := fval.(type) {
 			case string:
-				vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{q.path + "/" + docID}}
+				vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: q.path + "/" + docID}}
 				continue
 			case *DocumentRef:
 				// DocumentRef can be transformed in usual way.
@@ -626,7 +651,7 @@ func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) 
 			if !q.allDescendants && dp != qp {
 				return nil, fmt.Errorf("firestore: document snapshot for %s passed to query on %s", dp, qp)
 			}
-			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ds.Ref.Path}}
+			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: ds.Ref.Path}}
 		} else {
 			var val *pb.Value
 			var err error

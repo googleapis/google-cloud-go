@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/firestore/apiv1/admin",
-    "version": "1.14.0",
+    "version": "1.15.0",
     "language": "GO",
     "apis": [
       {
@@ -11,6 +11,52 @@
     ]
   },
   "snippets": [
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_BulkDeleteDocuments_sync",
+      "title": "firestore BulkDeleteDocuments Sample",
+      "description": "BulkDeleteDocuments bulk deletes a subset of documents from Google Cloud Firestore.\nDocuments created or updated after the underlying system starts to process\nthe request will not be deleted. The bulk delete occurs in the background\nand its progress can be monitored and managed via the Operation resource\nthat is created.\n\nFor more details on bulk delete behavior, refer to: \nhttps: //cloud.google.com/firestore/docs/manage-data/bulk-delete",
+      "file": "FirestoreAdminClient/BulkDeleteDocuments/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "BulkDeleteDocuments",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.BulkDeleteDocuments",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.BulkDeleteDocumentsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "BulkDeleteDocumentsOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "BulkDeleteDocuments",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.BulkDeleteDocuments",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
     {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_CancelOperation_sync",
       "title": "firestore CancelOperation Sample",
@@ -52,6 +98,52 @@
         {
           "start": 18,
           "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_CreateBackupSchedule_sync",
+      "title": "firestore CreateBackupSchedule Sample",
+      "description": "CreateBackupSchedule creates a backup schedule on a database.\nAt most two backup schedules can be configured on a database, one daily\nbackup schedule and one weekly backup schedule.",
+      "file": "FirestoreAdminClient/CreateBackupSchedule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "CreateBackupSchedule",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.CreateBackupSchedule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.CreateBackupScheduleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.BackupSchedule",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "CreateBackupSchedule",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.CreateBackupSchedule",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -144,6 +236,96 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_DeleteBackup_sync",
+      "title": "firestore DeleteBackup Sample",
+      "description": "DeleteBackup deletes a backup.",
+      "file": "FirestoreAdminClient/DeleteBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackup",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.DeleteBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteBackup",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.DeleteBackup",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_DeleteBackupSchedule_sync",
+      "title": "firestore DeleteBackupSchedule Sample",
+      "description": "DeleteBackupSchedule deletes a backup schedule.",
+      "file": "FirestoreAdminClient/DeleteBackupSchedule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "DeleteBackupSchedule",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.DeleteBackupSchedule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.DeleteBackupScheduleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "DeleteBackupSchedule",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.DeleteBackupSchedule",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 51,
           "type": "FULL"
         }
       ]
@@ -326,6 +508,98 @@
         {
           "start": 18,
           "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_GetBackup_sync",
+      "title": "firestore GetBackup Sample",
+      "description": "GetBackup gets information about a backup.",
+      "file": "FirestoreAdminClient/GetBackup/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackup",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.GetBackup",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetBackupRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.Backup",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "GetBackup",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.GetBackup",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_GetBackupSchedule_sync",
+      "title": "firestore GetBackupSchedule Sample",
+      "description": "GetBackupSchedule gets information about a backup schedule.",
+      "file": "FirestoreAdminClient/GetBackupSchedule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "GetBackupSchedule",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.GetBackupSchedule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.GetBackupScheduleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.BackupSchedule",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "GetBackupSchedule",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.GetBackupSchedule",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]
@@ -561,6 +835,98 @@
       ]
     },
     {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_ListBackupSchedules_sync",
+      "title": "firestore ListBackupSchedules Sample",
+      "description": "ListBackupSchedules list backup schedules.",
+      "file": "FirestoreAdminClient/ListBackupSchedules/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackupSchedules",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.ListBackupSchedules",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListBackupSchedulesRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ListBackupSchedulesResponse",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "ListBackupSchedules",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ListBackupSchedules",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_ListBackups_sync",
+      "title": "firestore ListBackups Sample",
+      "description": "ListBackups lists all the backups.",
+      "file": "FirestoreAdminClient/ListBackups/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "ListBackups",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.ListBackups",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.ListBackupsRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.ListBackupsResponse",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "ListBackups",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.ListBackups",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
       "regionTag": "firestore_v1_generated_FirestoreAdmin_ListDatabases_sync",
       "title": "firestore ListDatabases Sample",
       "description": "ListDatabases list all the databases in the project.",
@@ -647,7 +1013,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -693,7 +1059,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -739,7 +1105,99 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_RestoreDatabase_sync",
+      "title": "firestore RestoreDatabase Sample",
+      "description": "RestoreDatabase creates a new database by restoring from an existing backup.\n\nThe new database must be in the same cloud region or multi-region location\nas the existing backup. This behaves similar to\n[FirestoreAdmin.CreateDatabase][google.firestore.admin.v1.FirestoreAdmin.CreateDatabase]\nexcept instead of creating a new empty database, a new database is created\nwith the database type, index configuration, and documents from an existing\nbackup.\n\nThe [long-running operation][google.longrunning.Operation] can be used to\ntrack the progress of the restore, with the Operation's\n[metadata][google.longrunning.Operation.metadata] field type being the\n[RestoreDatabaseMetadata][google.firestore.admin.v1.RestoreDatabaseMetadata].\nThe [response][google.longrunning.Operation.response] type is the\n[Database][google.firestore.admin.v1.Database] if the restore was\nsuccessful. The new database is not readable or writeable until the LRO has\ncompleted.",
+      "file": "FirestoreAdminClient/RestoreDatabase/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "RestoreDatabase",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.RestoreDatabase",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.RestoreDatabaseRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "RestoreDatabaseOperation",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "RestoreDatabase",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.RestoreDatabase",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 58,
+          "type": "FULL"
+        }
+      ]
+    },
+    {
+      "regionTag": "firestore_v1_generated_FirestoreAdmin_UpdateBackupSchedule_sync",
+      "title": "firestore UpdateBackupSchedule Sample",
+      "description": "UpdateBackupSchedule updates a backup schedule.",
+      "file": "FirestoreAdminClient/UpdateBackupSchedule/main.go",
+      "language": "GO",
+      "clientMethod": {
+        "shortName": "UpdateBackupSchedule",
+        "fullName": "google.firestore.admin.v1.FirestoreAdminClient.UpdateBackupSchedule",
+        "parameters": [
+          {
+            "type": "context.Context",
+            "name": "ctx"
+          },
+          {
+            "type": "adminpb.UpdateBackupScheduleRequest",
+            "name": "req"
+          },
+          {
+            "type": "...gax.CallOption",
+            "name": "opts"
+          }
+        ],
+        "resultType": "*adminpb.BackupSchedule",
+        "client": {
+          "shortName": "FirestoreAdminClient",
+          "fullName": "google.firestore.admin.v1.FirestoreAdminClient"
+        },
+        "method": {
+          "shortName": "UpdateBackupSchedule",
+          "fullName": "google.firestore.admin.v1.FirestoreAdmin.UpdateBackupSchedule",
+          "service": {
+            "shortName": "FirestoreAdmin",
+            "fullName": "google.firestore.admin.v1.FirestoreAdmin"
+          }
+        }
+      },
+      "origin": "API_DEFINITION",
+      "segments": [
+        {
+          "start": 18,
+          "end": 53,
           "type": "FULL"
         }
       ]

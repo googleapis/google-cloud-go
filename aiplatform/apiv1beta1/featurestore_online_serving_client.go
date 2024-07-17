@@ -19,6 +19,7 @@ package aiplatform
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -329,7 +330,9 @@ func (c *featurestoreOnlineServingGRPCClient) Connection() *grpc.ClientConn {
 func (c *featurestoreOnlineServingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -391,7 +394,9 @@ func defaultFeaturestoreOnlineServingRESTClientOptions() []option.ClientOption {
 func (c *featurestoreOnlineServingRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -706,6 +711,11 @@ func (c *featurestoreOnlineServingRESTClient) ReadFeatureValues(ctx context.Cont
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:readFeatureValues", req.GetEntityType())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType()))}
 
@@ -768,6 +778,11 @@ func (c *featurestoreOnlineServingRESTClient) StreamingReadFeatureValues(ctx con
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:streamingReadFeatureValues", req.GetEntityType())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType()))}
@@ -839,7 +854,7 @@ func (c *streamingReadFeatureValuesRESTClient) Trailer() metadata.MD {
 
 func (c *streamingReadFeatureValuesRESTClient) CloseSend() error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadFeatureValuesRESTClient) Context() context.Context {
@@ -848,12 +863,12 @@ func (c *streamingReadFeatureValuesRESTClient) Context() context.Context {
 
 func (c *streamingReadFeatureValuesRESTClient) SendMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented for a server-stream")
+	return errors.New("this method is not implemented for a server-stream")
 }
 
 func (c *streamingReadFeatureValuesRESTClient) RecvMsg(m interface{}) error {
 	// This is a no-op to fulfill the interface.
-	return fmt.Errorf("this method is not implemented, use Recv")
+	return errors.New("this method is not implemented, use Recv")
 }
 
 // WriteFeatureValues writes Feature values of one or more entities of an EntityType.
@@ -873,6 +888,11 @@ func (c *featurestoreOnlineServingRESTClient) WriteFeatureValues(ctx context.Con
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:writeFeatureValues", req.GetEntityType())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType()))}
@@ -928,6 +948,11 @@ func (c *featurestoreOnlineServingRESTClient) GetLocation(ctx context.Context, r
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -998,6 +1023,7 @@ func (c *featurestoreOnlineServingRESTClient) ListLocations(ctx context.Context,
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1082,6 +1108,11 @@ func (c *featurestoreOnlineServingRESTClient) GetIamPolicy(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1146,6 +1177,11 @@ func (c *featurestoreOnlineServingRESTClient) SetIamPolicy(ctx context.Context, 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -1214,6 +1250,11 @@ func (c *featurestoreOnlineServingRESTClient) TestIamPermissions(ctx context.Con
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1269,6 +1310,11 @@ func (c *featurestoreOnlineServingRESTClient) CancelOperation(ctx context.Contex
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1306,6 +1352,11 @@ func (c *featurestoreOnlineServingRESTClient) DeleteOperation(ctx context.Contex
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1342,6 +1393,11 @@ func (c *featurestoreOnlineServingRESTClient) GetOperation(ctx context.Context, 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1412,6 +1468,7 @@ func (c *featurestoreOnlineServingRESTClient) ListOperations(ctx context.Context
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1490,6 +1547,7 @@ func (c *featurestoreOnlineServingRESTClient) WaitOperation(ctx context.Context,
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
 		timeout, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {

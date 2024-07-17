@@ -20,6 +20,8 @@
 // The Places API allows developers to access a variety of search and
 // retrieval endpoints for a Place.
 //
+//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference
@@ -68,11 +70,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &placespb.GetPhotoMediaRequest{
+//	req := &placespb.AutocompletePlacesRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/maps/places/apiv1/placespb#GetPhotoMediaRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/maps/places/apiv1/placespb#AutocompletePlacesRequest.
 //	}
-//	resp, err := c.GetPhotoMedia(ctx, req)
+//	resp, err := c.AutocompletePlaces(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

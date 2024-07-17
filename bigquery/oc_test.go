@@ -32,7 +32,7 @@ func TestOCTracing(t *testing.T) {
 	q := client.Query("select *")
 	q.Run(ctx) // Doesn't matter if we get an error; span should be created either way
 
-	if len(te.Spans) == 0 {
+	if len(te.Spans()) == 0 {
 		t.Fatalf("Expected some spans to be created, but got %d", 0)
 	}
 }

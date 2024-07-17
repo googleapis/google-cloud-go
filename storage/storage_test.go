@@ -1135,7 +1135,7 @@ func TestClientSetRetry(t *testing.T) {
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
-			c, err := NewClient(context.Background())
+			c, err := NewClient(context.Background(), option.WithoutAuthentication())
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
 			}
@@ -1358,7 +1358,7 @@ func TestRetryer(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(s *testing.T) {
 			ctx := context.Background()
-			c, err := NewClient(ctx)
+			c, err := NewClient(ctx, option.WithoutAuthentication())
 			if err != nil {
 				t.Fatalf("NewClient: %v", err)
 			}
@@ -2151,7 +2151,7 @@ func TestWithEndpoint(t *testing.T) {
 	ctx := context.Background()
 	for _, tc := range testCases {
 		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
-		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint))
+		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint), option.WithoutAuthentication())
 		if err != nil {
 			t.Fatalf("error creating client: %v", err)
 		}
@@ -2421,6 +2421,57 @@ func TestParseProjectNumber(t *testing.T) {
 		if got := parseProjectNumber(tst.input); got != tst.want {
 			t.Errorf("For %q: got %v, expected %v", tst.input, got, tst.want)
 		}
+	}
+}
+
+func TestObjectValidate(t *testing.T) {
+	for _, c := range []struct {
+		name        string
+		bucket      string
+		object      string
+		wantSuccess bool
+	}{
+		{
+			name:        "valid object",
+			bucket:      "my-bucket",
+			object:      "my-object",
+			wantSuccess: true,
+		},
+		{
+			name:        "empty bucket name",
+			bucket:      "",
+			object:      "my-object",
+			wantSuccess: false,
+		},
+		{
+			name:        "empty object name",
+			bucket:      "my-bucket",
+			object:      "",
+			wantSuccess: false,
+		},
+		{
+			name:        "invalid utf-8",
+			bucket:      "my-bucket",
+			object:      "\xc3\x28",
+			wantSuccess: false,
+		},
+		{
+			name:        "object name .",
+			bucket:      "my-bucket",
+			object:      ".",
+			wantSuccess: false,
+		},
+	} {
+		t.Run(c.name, func(r *testing.T) {
+			b := &BucketHandle{name: c.bucket}
+			err := b.Object(c.object).validate()
+			if c.wantSuccess && err != nil {
+				r.Errorf("want success, got error %v", err)
+			}
+			if !c.wantSuccess && err == nil {
+				r.Errorf("want error, got nil")
+			}
+		})
 	}
 }
 

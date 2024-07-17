@@ -52,6 +52,7 @@ type ProjectsCallOptions struct {
 	ListXpnHosts              []gax.CallOption
 	MoveDisk                  []gax.CallOption
 	MoveInstance              []gax.CallOption
+	SetCloudArmorTier         []gax.CallOption
 	SetCommonInstanceMetadata []gax.CallOption
 	SetDefaultNetworkTier     []gax.CallOption
 	SetUsageExportBucket      []gax.CallOption
@@ -116,6 +117,9 @@ func defaultProjectsRESTCallOptions() *ProjectsCallOptions {
 		MoveInstance: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
+		SetCloudArmorTier: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
 		SetCommonInstanceMetadata: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -143,6 +147,7 @@ type internalProjectsClient interface {
 	ListXpnHosts(context.Context, *computepb.ListXpnHostsProjectsRequest, ...gax.CallOption) *ProjectIterator
 	MoveDisk(context.Context, *computepb.MoveDiskProjectRequest, ...gax.CallOption) (*Operation, error)
 	MoveInstance(context.Context, *computepb.MoveInstanceProjectRequest, ...gax.CallOption) (*Operation, error)
+	SetCloudArmorTier(context.Context, *computepb.SetCloudArmorTierProjectRequest, ...gax.CallOption) (*Operation, error)
 	SetCommonInstanceMetadata(context.Context, *computepb.SetCommonInstanceMetadataProjectRequest, ...gax.CallOption) (*Operation, error)
 	SetDefaultNetworkTier(context.Context, *computepb.SetDefaultNetworkTierProjectRequest, ...gax.CallOption) (*Operation, error)
 	SetUsageExportBucket(context.Context, *computepb.SetUsageExportBucketProjectRequest, ...gax.CallOption) (*Operation, error)
@@ -233,6 +238,11 @@ func (c *ProjectsClient) MoveInstance(ctx context.Context, req *computepb.MoveIn
 	return c.internalClient.MoveInstance(ctx, req, opts...)
 }
 
+// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+func (c *ProjectsClient) SetCloudArmorTier(ctx context.Context, req *computepb.SetCloudArmorTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.SetCloudArmorTier(ctx, req, opts...)
+}
+
 // SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
 func (c *ProjectsClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*Operation, error) {
 	return c.internalClient.SetCommonInstanceMetadata(ctx, req, opts...)
@@ -305,6 +315,7 @@ func defaultProjectsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -314,7 +325,9 @@ func defaultProjectsRESTClientOptions() []option.ClientOption {
 func (c *projectsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1040,6 +1053,82 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
 	opts = append((*c.CallOptions).MoveInstance[0:len((*c.CallOptions).MoveInstance):len((*c.CallOptions).MoveInstance)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&globalOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+		},
+	}
+	return op, nil
+}
+
+// SetCloudArmorTier sets the Cloud Armor tier of the project. To set ENTERPRISE or above the billing account of the project must be subscribed to Cloud Armor Enterprise. See Subscribing to Cloud Armor Enterprise for more information.
+func (c *projectsRESTClient) SetCloudArmorTier(ctx context.Context, req *computepb.SetCloudArmorTierProjectRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetProjectsSetCloudArmorTierRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/setCloudArmorTier", req.GetProject())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).SetCloudArmorTier[0:len((*c.CallOptions).SetCloudArmorTier):len((*c.CallOptions).SetCloudArmorTier)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

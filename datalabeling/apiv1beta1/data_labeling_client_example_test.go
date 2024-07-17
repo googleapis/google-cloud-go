@@ -656,6 +656,12 @@ func ExampleClient_ListAnnotatedDatasets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datalabelingpb.ListAnnotatedDatasetsResponse)
 	}
 }
 
@@ -687,6 +693,12 @@ func ExampleClient_ListAnnotationSpecSets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datalabelingpb.ListAnnotationSpecSetsResponse)
 	}
 }
 
@@ -718,6 +730,12 @@ func ExampleClient_ListDataItems() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datalabelingpb.ListDataItemsResponse)
 	}
 }
 
@@ -749,6 +767,12 @@ func ExampleClient_ListDatasets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datalabelingpb.ListDatasetsResponse)
 	}
 }
 
@@ -780,6 +804,12 @@ func ExampleClient_ListEvaluationJobs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datalabelingpb.ListEvaluationJobsResponse)
 	}
 }
 
@@ -811,6 +841,12 @@ func ExampleClient_ListExamples() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datalabelingpb.ListExamplesResponse)
 	}
 }
 
@@ -842,6 +878,12 @@ func ExampleClient_ListInstructions() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datalabelingpb.ListInstructionsResponse)
 	}
 }
 
@@ -919,6 +961,12 @@ func ExampleClient_SearchEvaluations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datalabelingpb.SearchEvaluationsResponse)
 	}
 }
 
@@ -950,6 +998,12 @@ func ExampleClient_SearchExampleComparisons() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*datalabelingpb.SearchExampleComparisonsResponse)
 	}
 }
 

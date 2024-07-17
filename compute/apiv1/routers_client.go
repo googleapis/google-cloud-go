@@ -201,7 +201,7 @@ func (c *RoutersClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of routers.
+// AggregatedList retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *RoutersClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) *RoutersScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -313,6 +313,7 @@ func defaultRoutersRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -322,7 +323,9 @@ func defaultRoutersRESTClientOptions() []option.ClientOption {
 func (c *routersRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -343,7 +346,7 @@ func (c *routersRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of routers.
+// AggregatedList retrieves an aggregated list of routers. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) *RoutersScopedListPairIterator {
 	it := &RoutersScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListRoutersRequest)

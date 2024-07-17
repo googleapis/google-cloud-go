@@ -512,7 +512,9 @@ func (c *featureOnlineStoreAdminGRPCClient) Connection() *grpc.ClientConn {
 func (c *featureOnlineStoreAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -590,7 +592,9 @@ func defaultFeatureOnlineStoreAdminRESTClientOptions() []option.ClientOption {
 func (c *featureOnlineStoreAdminRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1181,6 +1185,7 @@ func (c *featureOnlineStoreAdminRESTClient) CreateFeatureOnlineStore(ctx context
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featureOnlineStores", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("featureOnlineStoreId", fmt.Sprintf("%v", req.GetFeatureOnlineStoreId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1243,6 +1248,11 @@ func (c *featureOnlineStoreAdminRESTClient) GetFeatureOnlineStore(ctx context.Co
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1313,6 +1323,7 @@ func (c *featureOnlineStoreAdminRESTClient) ListFeatureOnlineStores(ctx context.
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featureOnlineStores", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1401,6 +1412,7 @@ func (c *featureOnlineStoreAdminRESTClient) UpdateFeatureOnlineStore(ctx context
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetFeatureOnlineStore().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1472,6 +1484,7 @@ func (c *featureOnlineStoreAdminRESTClient) DeleteFeatureOnlineStore(ctx context
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1545,6 +1558,7 @@ func (c *featureOnlineStoreAdminRESTClient) CreateFeatureView(ctx context.Contex
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featureViews", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("featureViewId", fmt.Sprintf("%v", req.GetFeatureViewId()))
 	if req.GetRunSyncImmediately() {
 		params.Add("runSyncImmediately", fmt.Sprintf("%v", req.GetRunSyncImmediately()))
@@ -1610,6 +1624,11 @@ func (c *featureOnlineStoreAdminRESTClient) GetFeatureView(ctx context.Context, 
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1680,6 +1699,7 @@ func (c *featureOnlineStoreAdminRESTClient) ListFeatureViews(ctx context.Context
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featureViews", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1768,6 +1788,7 @@ func (c *featureOnlineStoreAdminRESTClient) UpdateFeatureView(ctx context.Contex
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetFeatureView().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1837,6 +1858,11 @@ func (c *featureOnlineStoreAdminRESTClient) DeleteFeatureView(ctx context.Contex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1902,6 +1928,11 @@ func (c *featureOnlineStoreAdminRESTClient) SyncFeatureView(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:sync", req.GetFeatureView())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "feature_view", url.QueryEscape(req.GetFeatureView()))}
 
@@ -1956,6 +1987,11 @@ func (c *featureOnlineStoreAdminRESTClient) GetFeatureViewSync(ctx context.Conte
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2026,6 +2062,7 @@ func (c *featureOnlineStoreAdminRESTClient) ListFeatureViewSyncs(ctx context.Con
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featureViewSyncs", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2106,6 +2143,11 @@ func (c *featureOnlineStoreAdminRESTClient) GetLocation(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2175,6 +2217,7 @@ func (c *featureOnlineStoreAdminRESTClient) ListLocations(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2259,6 +2302,11 @@ func (c *featureOnlineStoreAdminRESTClient) GetIamPolicy(ctx context.Context, re
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -2323,6 +2371,11 @@ func (c *featureOnlineStoreAdminRESTClient) SetIamPolicy(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -2391,6 +2444,11 @@ func (c *featureOnlineStoreAdminRESTClient) TestIamPermissions(ctx context.Conte
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -2446,6 +2504,11 @@ func (c *featureOnlineStoreAdminRESTClient) CancelOperation(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2483,6 +2546,11 @@ func (c *featureOnlineStoreAdminRESTClient) DeleteOperation(ctx context.Context,
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -2519,6 +2587,11 @@ func (c *featureOnlineStoreAdminRESTClient) GetOperation(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2589,6 +2662,7 @@ func (c *featureOnlineStoreAdminRESTClient) ListOperations(ctx context.Context, 
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2667,6 +2741,7 @@ func (c *featureOnlineStoreAdminRESTClient) WaitOperation(ctx context.Context, r
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
 		timeout, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {

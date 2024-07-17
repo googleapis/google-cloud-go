@@ -18,19 +18,20 @@ package genai
 
 import (
 	"fmt"
+	"time"
 
 	pb "cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb"
 	"cloud.google.com/go/civil"
-	"cloud.google.com/go/vertexai/internal/support"
+	"google.golang.org/genproto/googleapis/type/date"
+	"google.golang.org/protobuf/types/known/structpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-// Blob contains raw media bytes.
-//
-// Text should not be sent as raw bytes, use the 'text' field.
+// Blob contains binary data like images. Use [Text] for text.
 type Blob struct {
 	// Required. The IANA standard MIME type of the source data.
 	MIMEType string
-	// Required. Raw bytes for media formats.
+	// Required. Raw bytes.
 	Data []byte
 }
 
@@ -64,12 +65,19 @@ const (
 	BlockedReasonSafety BlockedReason = 1
 	// BlockedReasonOther means candidates blocked due to other reason.
 	BlockedReasonOther BlockedReason = 2
+	// BlockedReasonBlocklist means candidates blocked due to the terms which are included from the
+	// terminology blocklist.
+	BlockedReasonBlocklist BlockedReason = 3
+	// BlockedReasonProhibitedContent means candidates blocked due to prohibited content.
+	BlockedReasonProhibitedContent BlockedReason = 4
 )
 
 var namesForBlockedReason = map[BlockedReason]string{
-	BlockedReasonUnspecified: "BlockedReasonUnspecified",
-	BlockedReasonSafety:      "BlockedReasonSafety",
-	BlockedReasonOther:       "BlockedReasonOther",
+	BlockedReasonUnspecified:       "BlockedReasonUnspecified",
+	BlockedReasonSafety:            "BlockedReasonSafety",
+	BlockedReasonOther:             "BlockedReasonOther",
+	BlockedReasonBlocklist:         "BlockedReasonBlocklist",
+	BlockedReasonProhibitedContent: "BlockedReasonProhibitedContent",
 }
 
 func (v BlockedReason) String() string {
@@ -77,6 +85,77 @@ func (v BlockedReason) String() string {
 		return n
 	}
 	return fmt.Sprintf("BlockedReason(%d)", v)
+}
+
+// CachedContent is a resource used in LLM queries for users to explicitly specify what to cache
+// and how to cache.
+type CachedContent struct {
+	// Expiration time of the cached content.
+	//
+	// Types that are assignable to Expiration:
+	//
+	//	*CachedContent_ExpireTime
+	//	*CachedContent_Ttl
+	Expiration ExpireTimeOrTTL
+	// Immutable. Identifier. The server-generated resource name of the cached
+	// content Format:
+	// projects/{project}/locations/{location}/cachedContents/{cached_content}
+	Name string
+	// Immutable. The name of the publisher model to use for cached content.
+	// Format:
+	// projects/{project}/locations/{location}/publishers/{publisher}/models/{model}
+	Model string
+	// Optional. Input only. Immutable. Developer set system instruction.
+	// Currently, text only
+	SystemInstruction *Content
+	// Optional. Input only. Immutable. The content to cache
+	Contents []*Content
+	// Optional. Input only. Immutable. A list of `Tools` the model may use to
+	// generate the next response
+	Tools []*Tool
+	// Optional. Input only. Immutable. Tool config. This config is shared for all
+	// tools
+	ToolConfig *ToolConfig
+	// Output only. Creatation time of the cache entry.
+	CreateTime time.Time
+	// Output only. When the cache entry was last updated in UTC time.
+	UpdateTime time.Time
+}
+
+func (v *CachedContent) toProto() *pb.CachedContent {
+	if v == nil {
+		return nil
+	}
+	p := &pb.CachedContent{
+		Name:              v.Name,
+		Model:             v.Model,
+		SystemInstruction: v.SystemInstruction.toProto(),
+		Contents:          pvTransformSlice(v.Contents, (*Content).toProto),
+		Tools:             pvTransformSlice(v.Tools, (*Tool).toProto),
+		ToolConfig:        v.ToolConfig.toProto(),
+		CreateTime:        pvTimeToProto(v.CreateTime),
+		UpdateTime:        pvTimeToProto(v.UpdateTime),
+	}
+	populateCachedContentTo(p, v)
+	return p
+}
+
+func (CachedContent) fromProto(p *pb.CachedContent) *CachedContent {
+	if p == nil {
+		return nil
+	}
+	v := &CachedContent{
+		Name:              p.Name,
+		Model:             p.Model,
+		SystemInstruction: (Content{}).fromProto(p.SystemInstruction),
+		Contents:          pvTransformSlice(p.Contents, (Content{}).fromProto),
+		Tools:             pvTransformSlice(p.Tools, (Tool{}).fromProto),
+		ToolConfig:        (ToolConfig{}).fromProto(p.ToolConfig),
+		CreateTime:        pvTimeFromProto(p.CreateTime),
+		UpdateTime:        pvTimeFromProto(p.UpdateTime),
+	}
+	populateCachedContentFrom(v, p)
+	return v
 }
 
 // Candidate is a response candidate generated from the model.
@@ -107,8 +186,8 @@ func (v *Candidate) toProto() *pb.Candidate {
 		Index:            v.Index,
 		Content:          v.Content.toProto(),
 		FinishReason:     pb.Candidate_FinishReason(v.FinishReason),
-		SafetyRatings:    support.TransformSlice(v.SafetyRatings, (*SafetyRating).toProto),
-		FinishMessage:    support.AddrOrNil(v.FinishMessage),
+		SafetyRatings:    pvTransformSlice(v.SafetyRatings, (*SafetyRating).toProto),
+		FinishMessage:    pvAddrOrNil(v.FinishMessage),
 		CitationMetadata: v.CitationMetadata.toProto(),
 	}
 }
@@ -121,8 +200,8 @@ func (Candidate) fromProto(p *pb.Candidate) *Candidate {
 		Index:            p.Index,
 		Content:          (Content{}).fromProto(p.Content),
 		FinishReason:     FinishReason(p.FinishReason),
-		SafetyRatings:    support.TransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
-		FinishMessage:    support.DerefOrZero(p.FinishMessage),
+		SafetyRatings:    pvTransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
+		FinishMessage:    pvDerefOrZero(p.FinishMessage),
 		CitationMetadata: (CitationMetadata{}).fromProto(p.CitationMetadata),
 	}
 }
@@ -153,7 +232,7 @@ func (v *Citation) toProto() *pb.Citation {
 		Uri:             v.URI,
 		Title:           v.Title,
 		License:         v.License,
-		PublicationDate: support.CivilDateToProto(v.PublicationDate),
+		PublicationDate: pvCivilDateToProto(v.PublicationDate),
 	}
 }
 
@@ -167,7 +246,7 @@ func (Citation) fromProto(p *pb.Citation) *Citation {
 		URI:             p.Uri,
 		Title:           p.Title,
 		License:         p.License,
-		PublicationDate: support.CivilDateFromProto(p.PublicationDate),
+		PublicationDate: pvCivilDateFromProto(p.PublicationDate),
 	}
 }
 
@@ -182,7 +261,7 @@ func (v *CitationMetadata) toProto() *pb.CitationMetadata {
 		return nil
 	}
 	return &pb.CitationMetadata{
-		Citations: support.TransformSlice(v.Citations, (*Citation).toProto),
+		Citations: pvTransformSlice(v.Citations, (*Citation).toProto),
 	}
 }
 
@@ -191,7 +270,7 @@ func (CitationMetadata) fromProto(p *pb.CitationMetadata) *CitationMetadata {
 		return nil
 	}
 	return &CitationMetadata{
-		Citations: support.TransformSlice(p.Citations, (Citation{}).fromProto),
+		Citations: pvTransformSlice(p.Citations, (Citation{}).fromProto),
 	}
 }
 
@@ -217,7 +296,7 @@ func (v *Content) toProto() *pb.Content {
 	}
 	return &pb.Content{
 		Role:  v.Role,
-		Parts: support.TransformSlice(v.Parts, partToProto),
+		Parts: pvTransformSlice(v.Parts, partToProto),
 	}
 }
 
@@ -227,7 +306,7 @@ func (Content) fromProto(p *pb.Content) *Content {
 	}
 	return &Content{
 		Role:  p.Role,
-		Parts: support.TransformSlice(p.Parts, partFromProto),
+		Parts: pvTransformSlice(p.Parts, partFromProto),
 	}
 }
 
@@ -309,15 +388,30 @@ const (
 	FinishReasonRecitation FinishReason = 4
 	// FinishReasonOther means all other reasons that stopped the token generation
 	FinishReasonOther FinishReason = 5
+	// FinishReasonBlocklist means the token generation was stopped as the response was flagged for the
+	// terms which are included from the terminology blocklist.
+	FinishReasonBlocklist FinishReason = 6
+	// FinishReasonProhibitedContent means the token generation was stopped as the response was flagged for
+	// the prohibited contents.
+	FinishReasonProhibitedContent FinishReason = 7
+	// FinishReasonSpii means the token generation was stopped as the response was flagged for
+	// Sensitive Personally Identifiable Information (SPII) contents.
+	FinishReasonSpii FinishReason = 8
+	// FinishReasonMalformedFunctionCall means the function call generated by the model is invalid.
+	FinishReasonMalformedFunctionCall FinishReason = 9
 )
 
 var namesForFinishReason = map[FinishReason]string{
-	FinishReasonUnspecified: "FinishReasonUnspecified",
-	FinishReasonStop:        "FinishReasonStop",
-	FinishReasonMaxTokens:   "FinishReasonMaxTokens",
-	FinishReasonSafety:      "FinishReasonSafety",
-	FinishReasonRecitation:  "FinishReasonRecitation",
-	FinishReasonOther:       "FinishReasonOther",
+	FinishReasonUnspecified:           "FinishReasonUnspecified",
+	FinishReasonStop:                  "FinishReasonStop",
+	FinishReasonMaxTokens:             "FinishReasonMaxTokens",
+	FinishReasonSafety:                "FinishReasonSafety",
+	FinishReasonRecitation:            "FinishReasonRecitation",
+	FinishReasonOther:                 "FinishReasonOther",
+	FinishReasonBlocklist:             "FinishReasonBlocklist",
+	FinishReasonProhibitedContent:     "FinishReasonProhibitedContent",
+	FinishReasonSpii:                  "FinishReasonSpii",
+	FinishReasonMalformedFunctionCall: "FinishReasonMalformedFunctionCall",
 }
 
 func (v FinishReason) String() string {
@@ -345,7 +439,7 @@ func (v *FunctionCall) toProto() *pb.FunctionCall {
 	}
 	return &pb.FunctionCall{
 		Name: v.Name,
-		Args: support.MapToStructPB(v.Args),
+		Args: pvMapToStructPB(v.Args),
 	}
 }
 
@@ -355,8 +449,71 @@ func (FunctionCall) fromProto(p *pb.FunctionCall) *FunctionCall {
 	}
 	return &FunctionCall{
 		Name: p.Name,
-		Args: support.MapFromStructPB(p.Args),
+		Args: pvMapFromStructPB(p.Args),
 	}
+}
+
+// FunctionCallingConfig holds configuration for function calling.
+type FunctionCallingConfig struct {
+	// Optional. Function calling mode.
+	Mode FunctionCallingMode
+	// Optional. Function names to call. Only set when the Mode is ANY. Function
+	// names should match [FunctionDeclaration.name]. With mode set to ANY, model
+	// will predict a function call from the set of function names provided.
+	AllowedFunctionNames []string
+}
+
+func (v *FunctionCallingConfig) toProto() *pb.FunctionCallingConfig {
+	if v == nil {
+		return nil
+	}
+	return &pb.FunctionCallingConfig{
+		Mode:                 pb.FunctionCallingConfig_Mode(v.Mode),
+		AllowedFunctionNames: v.AllowedFunctionNames,
+	}
+}
+
+func (FunctionCallingConfig) fromProto(p *pb.FunctionCallingConfig) *FunctionCallingConfig {
+	if p == nil {
+		return nil
+	}
+	return &FunctionCallingConfig{
+		Mode:                 FunctionCallingMode(p.Mode),
+		AllowedFunctionNames: p.AllowedFunctionNames,
+	}
+}
+
+// FunctionCallingMode is function calling mode.
+type FunctionCallingMode int32
+
+const (
+	// FunctionCallingUnspecified means unspecified function calling mode. This value should not be used.
+	FunctionCallingUnspecified FunctionCallingMode = 0
+	// FunctionCallingAuto means default model behavior, model decides to predict either a function call
+	// or a natural language repspose.
+	FunctionCallingAuto FunctionCallingMode = 1
+	// FunctionCallingAny means model is constrained to always predicting a function call only.
+	// If "allowed_function_names" are set, the predicted function call will be
+	// limited to any one of "allowed_function_names", else the predicted
+	// function call will be any one of the provided "function_declarations".
+	FunctionCallingAny FunctionCallingMode = 2
+	// FunctionCallingNone means model will not predict any function call. Model behavior is same as when
+	// not passing any function declarations.
+	FunctionCallingNone FunctionCallingMode = 3
+)
+
+var namesForFunctionCallingMode = map[FunctionCallingMode]string{
+	FunctionCallingUnspecified: "FunctionCallingUnspecified",
+	FunctionCallingAuto:        "FunctionCallingAuto",
+	FunctionCallingAny:         "FunctionCallingAny",
+	FunctionCallingNone:        "FunctionCallingNone",
+}
+
+func (v FunctionCallingMode) String() string {
+	if n, ok := namesForFunctionCallingMode[v]; ok {
+		return n
+	}
+	return fmt.Sprintf("FunctionCallingMode(%d)", v)
 }
 
 // FunctionDeclaration is structured representation of a function declaration as defined by the
@@ -367,8 +524,8 @@ func (FunctionCall) fromProto(p *pb.FunctionCall) *FunctionCall {
 type FunctionDeclaration struct {
 	// Required. The name of the function to call.
 	// Must start with a letter or an underscore.
-	// Must be a-z, A-Z, 0-9, or contain underscores and dashes, with a maximum
-	// length of 64.
+	// Must be a-z, A-Z, 0-9, or contain underscores, dots and dashes, with a
+	// maximum length of 64.
 	Name string
 	// Optional. Description and purpose of the function.
 	// Model uses it to decide how and whether to call the function.
@@ -377,15 +534,23 @@ type FunctionDeclaration struct {
 	// format. Reflects the Open API 3.03 Parameter Object. string Key: the name
 	// of the parameter. Parameter names are case sensitive. Schema Value: the
 	// Schema defining the type used for the parameter. For function with no
-	// parameters, this can be left unset. Example with 1 required and 1 optional
-	// parameter: type: OBJECT properties:
-	//  param1:
-	//    type: STRING
-	//  param2:
-	//    type: INTEGER
+	// parameters, this can be left unset. Parameter names must start with a
+	// letter or an underscore and must only contain chars a-z, A-Z, 0-9, or
+	// underscores with a maximum length of 64. Example with 1 required and 1
+	// optional parameter: type: OBJECT properties:
+	//
+	//	param1:
+	//	  type: STRING
+	//	param2:
+	//	  type: INTEGER
+	//
 	// required:
-	//  - param1
+	//   - param1
 	Parameters *Schema
+	// Optional. Describes the output from this function in JSON Schema format.
+	// Reflects the Open API 3.03 Response Object. The Schema defines the type
+	// used for the response value of the function.
+	Response *Schema
 }
 
 func (v *FunctionDeclaration) toProto() *pb.FunctionDeclaration {
@@ -396,6 +561,7 @@ func (v *FunctionDeclaration) toProto() *pb.FunctionDeclaration {
 		Name:        v.Name,
 		Description: v.Description,
 		Parameters:  v.Parameters.toProto(),
+		Response:    v.Response.toProto(),
 	}
 }
 
@@ -407,6 +573,7 @@ func (FunctionDeclaration) fromProto(p *pb.FunctionDeclaration) *FunctionDeclara
 		Name:        p.Name,
 		Description: p.Description,
 		Parameters:  (Schema{}).fromProto(p.Parameters),
+		Response:    (Schema{}).fromProto(p.Response),
 	}
 }
 
@@ -428,7 +595,7 @@ func (v *FunctionResponse) toProto() *pb.FunctionResponse {
 	}
 	return &pb.FunctionResponse{
 		Name:     v.Name,
-		Response: support.MapToStructPB(v.Response),
+		Response: pvMapToStructPB(v.Response),
 	}
 }
 
@@ -438,7 +605,7 @@ func (FunctionResponse) fromProto(p *pb.FunctionResponse) *FunctionResponse {
 	}
 	return &FunctionResponse{
 		Name:     p.Name,
-		Response: support.MapFromStructPB(p.Response),
+		Response: pvMapFromStructPB(p.Response),
 	}
 }
 
@@ -459,7 +626,7 @@ func (v *GenerateContentResponse) toProto() *pb.GenerateContentResponse {
 		return nil
 	}
 	return &pb.GenerateContentResponse{
-		Candidates:     support.TransformSlice(v.Candidates, (*Candidate).toProto),
+		Candidates:     pvTransformSlice(v.Candidates, (*Candidate).toProto),
 		PromptFeedback: v.PromptFeedback.toProto(),
 		UsageMetadata:  v.UsageMetadata.toProto(),
 	}
@@ -470,7 +637,7 @@ func (GenerateContentResponse) fromProto(p *pb.GenerateContentResponse) *Generat
 		return nil
 	}
 	return &GenerateContentResponse{
-		Candidates:     support.TransformSlice(p.Candidates, (Candidate{}).fromProto),
+		Candidates:     pvTransformSlice(p.Candidates, (Candidate{}).fromProto),
 		PromptFeedback: (PromptFeedback{}).fromProto(p.PromptFeedback),
 		UsageMetadata:  (UsageMetadata{}).fromProto(p.UsageMetadata),
 	}
@@ -483,13 +650,33 @@ type GenerationConfig struct {
 	// Optional. If specified, nucleus sampling will be used.
 	TopP *float32
 	// Optional. If specified, top-k sampling will be used.
-	TopK *float32
+	TopK *int32
 	// Optional. Number of candidates to generate.
 	CandidateCount *int32
 	// Optional. The maximum number of output tokens to generate per message.
 	MaxOutputTokens *int32
 	// Optional. Stop sequences.
 	StopSequences []string
+	// Optional. Positive penalties.
+	PresencePenalty *float32
+	// Optional. Frequency penalties.
+	FrequencyPenalty *float32
+	// Optional. Output response mimetype of the generated candidate text.
+	// Supported mimetype:
+	// - `text/plain`: (default) Text output.
+	// - `application/json`: JSON response in the candidates.
+	// The model needs to be prompted to output the appropriate response type,
+	// otherwise the behavior is undefined.
+	// This is a preview feature.
+	ResponseMIMEType string
+	// Optional. The `Schema` object allows the definition of input and output
+	// data types. These types can be objects, but also primitives and arrays.
+	// Represents a select subset of an [OpenAPI 3.0 schema
+	// object](https://spec.openapis.org/oas/v3.0.3#schema).
+	// If set, a compatible response_mime_type must also be set.
+	// Compatible mimetypes:
+	// `application/json`: Schema for JSON response.
+	ResponseSchema *Schema
 }
 
 func (v *GenerationConfig) toProto() *pb.GenerationConfig {
@@ -497,12 +684,16 @@ func (v *GenerationConfig) toProto() *pb.GenerationConfig {
 		return nil
 	}
 	return &pb.GenerationConfig{
-		Temperature:     v.Temperature,
-		TopP:            v.TopP,
-		TopK:            v.TopK,
-		CandidateCount:  v.CandidateCount,
-		MaxOutputTokens: v.MaxOutputTokens,
-		StopSequences:   v.StopSequences,
+		Temperature:      v.Temperature,
+		TopP:             v.TopP,
+		TopK:             int32pToFloat32p(v.TopK),
+		CandidateCount:   v.CandidateCount,
+		MaxOutputTokens:  v.MaxOutputTokens,
+		StopSequences:    v.StopSequences,
+		PresencePenalty:  v.PresencePenalty,
+		FrequencyPenalty: v.FrequencyPenalty,
+		ResponseMimeType: v.ResponseMIMEType,
+		ResponseSchema:   v.ResponseSchema.toProto(),
 	}
 }
 
@@ -511,13 +702,42 @@ func (GenerationConfig) fromProto(p *pb.GenerationConfig) *GenerationConfig {
 		return nil
 	}
 	return &GenerationConfig{
-		Temperature:     p.Temperature,
-		TopP:            p.TopP,
-		TopK:            p.TopK,
-		CandidateCount:  p.CandidateCount,
-		MaxOutputTokens: p.MaxOutputTokens,
-		StopSequences:   p.StopSequences,
+		Temperature:      p.Temperature,
+		TopP:             p.TopP,
+		TopK:             float32pToInt32p(p.TopK),
+		CandidateCount:   p.CandidateCount,
+		MaxOutputTokens:  p.MaxOutputTokens,
+		StopSequences:    p.StopSequences,
+		PresencePenalty:  p.PresencePenalty,
+		FrequencyPenalty: p.FrequencyPenalty,
+		ResponseMIMEType: p.ResponseMimeType,
+		ResponseSchema:   (Schema{}).fromProto(p.ResponseSchema),
 	}
+}
+
+// HarmBlockMethod determines how harm blocking is done.
+type HarmBlockMethod int32
+
+const (
+	// HarmBlockMethodUnspecified means the harm block method is unspecified.
+	HarmBlockMethodUnspecified HarmBlockMethod = 0
+	// HarmBlockMethodSeverity means the harm block method uses both probability and severity scores.
+	HarmBlockMethodSeverity HarmBlockMethod = 1
+	// HarmBlockMethodProbability means the harm block method uses the probability score.
+	HarmBlockMethodProbability HarmBlockMethod = 2
+)
+
+var namesForHarmBlockMethod = map[HarmBlockMethod]string{
+	HarmBlockMethodUnspecified: "HarmBlockMethodUnspecified",
+	HarmBlockMethodSeverity:    "HarmBlockMethodSeverity",
+	HarmBlockMethodProbability: "HarmBlockMethodProbability",
+}
+
+func (v HarmBlockMethod) String() string {
+	if n, ok := namesForHarmBlockMethod[v]; ok {
+		return n
+	}
+	return fmt.Sprintf("HarmBlockMethod(%d)", v)
 }
 
 // HarmBlockThreshold specifies probability based thresholds levels for blocking.
@@ -613,6 +833,37 @@ func (v HarmProbability) String() string {
 	return fmt.Sprintf("HarmProbability(%d)", v)
 }
 
+// HarmSeverity specifies harm severity levels.
+type HarmSeverity int32
+
+const (
+	// HarmSeverityUnspecified means harm severity unspecified.
+	HarmSeverityUnspecified HarmSeverity = 0
+	// HarmSeverityNegligible means negligible level of harm severity.
+	HarmSeverityNegligible HarmSeverity = 1
+	// HarmSeverityLow means low level of harm severity.
+	HarmSeverityLow HarmSeverity = 2
+	// HarmSeverityMedium means medium level of harm severity.
+	HarmSeverityMedium HarmSeverity = 3
+	// HarmSeverityHigh means high level of harm severity.
+	HarmSeverityHigh HarmSeverity = 4
+)
+
+var namesForHarmSeverity = map[HarmSeverity]string{
+	HarmSeverityUnspecified: "HarmSeverityUnspecified",
+	HarmSeverityNegligible:  "HarmSeverityNegligible",
+	HarmSeverityLow:         "HarmSeverityLow",
+	HarmSeverityMedium:      "HarmSeverityMedium",
+	HarmSeverityHigh:        "HarmSeverityHigh",
+}
+
+func (v HarmSeverity) String() string {
+	if n, ok := namesForHarmSeverity[v]; ok {
+		return n
+	}
+	return fmt.Sprintf("HarmSeverity(%d)", v)
+}
+
 // PromptFeedback contains content filter results for a prompt sent in the request.
 type PromptFeedback struct {
 	// Output only. Blocked reason.
@@ -629,7 +880,7 @@ func (v *PromptFeedback) toProto() *pb.GenerateContentResponse_PromptFeedback {
 	}
 	return &pb.GenerateContentResponse_PromptFeedback{
 		BlockReason:        pb.GenerateContentResponse_PromptFeedback_BlockedReason(v.BlockReason),
-		SafetyRatings:      support.TransformSlice(v.SafetyRatings, (*SafetyRating).toProto),
+		SafetyRatings:      pvTransformSlice(v.SafetyRatings, (*SafetyRating).toProto),
 		BlockReasonMessage: v.BlockReasonMessage,
 	}
 }
@@ -640,7 +891,7 @@ func (PromptFeedback) fromProto(p *pb.GenerateContentResponse_PromptFeedback) *P
 	}
 	return &PromptFeedback{
 		BlockReason:        BlockedReason(p.BlockReason),
-		SafetyRatings:      support.TransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
+		SafetyRatings:      pvTransformSlice(p.SafetyRatings, (SafetyRating{}).fromProto),
 		BlockReasonMessage: p.BlockReasonMessage,
 	}
 }
@@ -651,6 +902,12 @@ type SafetyRating struct {
 	Category HarmCategory
 	// Output only. Harm probability levels in the content.
 	Probability HarmProbability
+	// Output only. Harm probability score.
+	ProbabilityScore float32
+	// Output only. Harm severity levels in the content.
+	Severity HarmSeverity
+	// Output only. Harm severity score.
+	SeverityScore float32
 	// Output only. Indicates whether the content was filtered out because of this
 	// rating.
 	Blocked bool
@@ -661,9 +918,12 @@ func (v *SafetyRating) toProto() *pb.SafetyRating {
 		return nil
 	}
 	return &pb.SafetyRating{
-		Category:    pb.HarmCategory(v.Category),
-		Probability: pb.SafetyRating_HarmProbability(v.Probability),
-		Blocked:     v.Blocked,
+		Category:         pb.HarmCategory(v.Category),
+		Probability:      pb.SafetyRating_HarmProbability(v.Probability),
+		ProbabilityScore: v.ProbabilityScore,
+		Severity:         pb.SafetyRating_HarmSeverity(v.Severity),
+		SeverityScore:    v.SeverityScore,
+		Blocked:          v.Blocked,
 	}
 }
 
@@ -672,9 +932,12 @@ func (SafetyRating) fromProto(p *pb.SafetyRating) *SafetyRating {
 		return nil
 	}
 	return &SafetyRating{
-		Category:    HarmCategory(p.Category),
-		Probability: HarmProbability(p.Probability),
-		Blocked:     p.Blocked,
+		Category:         HarmCategory(p.Category),
+		Probability:      HarmProbability(p.Probability),
+		ProbabilityScore: p.ProbabilityScore,
+		Severity:         HarmSeverity(p.Severity),
+		SeverityScore:    p.SeverityScore,
+		Blocked:          p.Blocked,
 	}
 }
 
@@ -684,6 +947,9 @@ type SafetySetting struct {
 	Category HarmCategory
 	// Required. The harm block threshold.
 	Threshold HarmBlockThreshold
+	// Optional. Specify if the threshold is used for probability or severity
+	// score. If not specified, the threshold is used for probability score.
+	Method HarmBlockMethod
 }
 
 func (v *SafetySetting) toProto() *pb.SafetySetting {
@@ -693,6 +959,7 @@ func (v *SafetySetting) toProto() *pb.SafetySetting {
 	return &pb.SafetySetting{
 		Category:  pb.HarmCategory(v.Category),
 		Threshold: pb.SafetySetting_HarmBlockThreshold(v.Threshold),
+		Method:    pb.SafetySetting_HarmBlockMethod(v.Method),
 	}
 }
 
@@ -703,6 +970,7 @@ func (SafetySetting) fromProto(p *pb.SafetySetting) *SafetySetting {
 	return &SafetySetting{
 		Category:  HarmCategory(p.Category),
 		Threshold: HarmBlockThreshold(p.Threshold),
+		Method:    HarmBlockMethod(p.Method),
 	}
 }
 
@@ -715,23 +983,50 @@ type Schema struct {
 	Type Type
 	// Optional. The format of the data.
 	// Supported formats:
-	//  for NUMBER type: float, double
-	//  for INTEGER type: int32, int64
+	//
+	//	for NUMBER type: "float", "double"
+	//	for INTEGER type: "int32", "int64"
+	//	for STRING type: "email", "byte", etc
 	Format string
+	// Optional. The title of the Schema.
+	Title string
 	// Optional. The description of the data.
 	Description string
 	// Optional. Indicates if the value may be null.
 	Nullable bool
-	// Optional. Schema of the elements of Type.ARRAY.
+	// Optional. SCHEMA FIELDS FOR TYPE ARRAY
+	// Schema of the elements of Type.ARRAY.
 	Items *Schema
+	// Optional. Minimum number of the elements for Type.ARRAY.
+	MinItems int64
+	// Optional. Maximum number of the elements for Type.ARRAY.
+	MaxItems int64
 	// Optional. Possible values of the element of Type.STRING with enum format.
 	// For example we can define an Enum Direction as :
 	// {type:STRING, format:enum, enum:["EAST", NORTH", "SOUTH", "WEST"]}
 	Enum []string
-	// Optional. Properties of Type.OBJECT.
+	// Optional. SCHEMA FIELDS FOR TYPE OBJECT
+	// Properties of Type.OBJECT.
 	Properties map[string]*Schema
 	// Optional. Required properties of Type.OBJECT.
 	Required []string
+	// Optional. Minimum number of the properties for Type.OBJECT.
+	MinProperties int64
+	// Optional. Maximum number of the properties for Type.OBJECT.
+	MaxProperties int64
+	// Optional. SCHEMA FIELDS FOR TYPE INTEGER and NUMBER
+	// Minimum value of the Type.INTEGER and Type.NUMBER
+	Minimum float64
+	// Optional. Maximum value of the Type.INTEGER and Type.NUMBER
+	Maximum float64
+	// Optional. SCHEMA FIELDS FOR TYPE STRING
+	// Minimum length of the Type.STRING
+	MinLength int64
+	// Optional. Maximum length of the Type.STRING
+	MaxLength int64
+	// Optional. Pattern of the Type.STRING to restrict a string to a regular
+	// expression.
+	Pattern string
 }
 
 func (v *Schema) toProto() *pb.Schema {
@@ -739,14 +1034,24 @@ func (v *Schema) toProto() *pb.Schema {
 		return nil
 	}
 	return &pb.Schema{
-		Type:        pb.Type(v.Type),
-		Format:      v.Format,
-		Description: v.Description,
-		Nullable:    v.Nullable,
-		Items:       v.Items.toProto(),
-		Enum:        v.Enum,
-		Properties:  support.TransformMapValues(v.Properties, (*Schema).toProto),
-		Required:    v.Required,
+		Type:          pb.Type(v.Type),
+		Format:        v.Format,
+		Title:         v.Title,
+		Description:   v.Description,
+		Nullable:      v.Nullable,
+		Items:         v.Items.toProto(),
+		MinItems:      v.MinItems,
+		MaxItems:      v.MaxItems,
+		Enum:          v.Enum,
+		Properties:    pvTransformMapValues(v.Properties, (*Schema).toProto),
+		Required:      v.Required,
+		MinProperties: v.MinProperties,
+		MaxProperties: v.MaxProperties,
+		Minimum:       v.Minimum,
+		Maximum:       v.Maximum,
+		MinLength:     v.MinLength,
+		MaxLength:     v.MaxLength,
+		Pattern:       v.Pattern,
 	}
 }
 
@@ -755,14 +1060,24 @@ func (Schema) fromProto(p *pb.Schema) *Schema {
 		return nil
 	}
 	return &Schema{
-		Type:        Type(p.Type),
-		Format:      p.Format,
-		Description: p.Description,
-		Nullable:    p.Nullable,
-		Items:       (Schema{}).fromProto(p.Items),
-		Enum:        p.Enum,
-		Properties:  support.TransformMapValues(p.Properties, (Schema{}).fromProto),
-		Required:    p.Required,
+		Type:          Type(p.Type),
+		Format:        p.Format,
+		Title:         p.Title,
+		Description:   p.Description,
+		Nullable:      p.Nullable,
+		Items:         (Schema{}).fromProto(p.Items),
+		MinItems:      p.MinItems,
+		MaxItems:      p.MaxItems,
+		Enum:          p.Enum,
+		Properties:    pvTransformMapValues(p.Properties, (Schema{}).fromProto),
+		Required:      p.Required,
+		MinProperties: p.MinProperties,
+		MaxProperties: p.MaxProperties,
+		Minimum:       p.Minimum,
+		Maximum:       p.Maximum,
+		MinLength:     p.MinLength,
+		MaxLength:     p.MaxLength,
+		Pattern:       p.Pattern,
 	}
 }
 
@@ -770,16 +1085,18 @@ func (Schema) fromProto(p *pb.Schema) *Schema {
 //
 // A `Tool` is a piece of code that enables the system to interact with
 // external systems to perform an action, or set of actions, outside of
-// knowledge and scope of the model.
+// knowledge and scope of the model. A Tool object should contain exactly
+// one type of Tool (e.g FunctionDeclaration, Retrieval or
+// GoogleSearchRetrieval).
 type Tool struct {
-	// Optional. One or more function declarations to be passed to the model along
-	// with the current user query. Model may decide to call a subset of these
-	// functions by populating [FunctionCall][content.part.function_call] in the
-	// response. User should provide a
-	// [FunctionResponse][content.part.function_response] for each function call
-	// in the next turn. Based on the function responses, Model will generate the
-	// final response back to the user. Maximum 64 function declarations can be
-	// provided.
+	// Optional. Function tool type.
+	// One or more function declarations to be passed to the model along with the
+	// current user query. Model may decide to call a subset of these functions
+	// by populating [FunctionCall][content.part.function_call] in the response.
+	// User should provide a [FunctionResponse][content.part.function_response]
+	// for each function call in the next turn. Based on the function responses,
+	// Model will generate the final response back to the user.
+	// Maximum 64 function declarations can be provided.
 	FunctionDeclarations []*FunctionDeclaration
 }
 
@@ -788,7 +1105,7 @@ func (v *Tool) toProto() *pb.Tool {
 		return nil
 	}
 	return &pb.Tool{
-		FunctionDeclarations: support.TransformSlice(v.FunctionDeclarations, (*FunctionDeclaration).toProto),
+		FunctionDeclarations: pvTransformSlice(v.FunctionDeclarations, (*FunctionDeclaration).toProto),
 	}
 }
 
@@ -797,7 +1114,31 @@ func (Tool) fromProto(p *pb.Tool) *Tool {
 		return nil
 	}
 	return &Tool{
-		FunctionDeclarations: support.TransformSlice(p.FunctionDeclarations, (FunctionDeclaration{}).fromProto),
+		FunctionDeclarations: pvTransformSlice(p.FunctionDeclarations, (FunctionDeclaration{}).fromProto),
+	}
+}
+
+// ToolConfig configures tools.
+type ToolConfig struct {
+	// Optional. Function calling config.
+	FunctionCallingConfig *FunctionCallingConfig
+}
+
+func (v *ToolConfig) toProto() *pb.ToolConfig {
+	if v == nil {
+		return nil
+	}
+	return &pb.ToolConfig{
+		FunctionCallingConfig: v.FunctionCallingConfig.toProto(),
+	}
+}
+
+func (ToolConfig) fromProto(p *pb.ToolConfig) *ToolConfig {
+	if p == nil {
+		return nil
+	}
+	return &ToolConfig{
+		FunctionCallingConfig: (FunctionCallingConfig{}).fromProto(p.FunctionCallingConfig),
 	}
 }
 
@@ -869,3 +1210,94 @@ func (UsageMetadata) fromProto(p *pb.GenerateContentResponse_UsageMetadata) *Usa
 		TotalTokenCount:      p.TotalTokenCount,
 	}
 }
+
+func pvTransformSlice[From, To any](from []From, f func(From) To) []To {
+	if from == nil {
+		return nil
+	}
+	to := make([]To, len(from))
+	for i, e := range from {
+		to[i] = f(e)
+	}
+	return to
+}
+
+func pvTransformMapValues[K comparable, VFrom, VTo any](from map[K]VFrom, f func(VFrom) VTo) map[K]VTo {
+	if from == nil {
+		return nil
+	}
+	to := map[K]VTo{}
+	for k, v := range from {
+		to[k] = f(v)
+	}
+	return to
+}
+
+func pvAddrOrNil[T comparable](x T) *T {
+	var z T
+	if x == z {
+		return nil
+	}
+	return &x
+}
+
+func pvDerefOrZero[T any](x *T) T {
+	if x == nil {
+		var z T
+		return z
+	}
+	return *x
+}
+
+func pvCivilDateToProto(d civil.Date) *date.Date {
+	return &date.Date{
+		Year:  int32(d.Year),
+		Month: int32(d.Month),
+		Day:   int32(d.Day),
+	}
+}
+
+func pvCivilDateFromProto(p *date.Date) civil.Date {
+	if p == nil {
+		return civil.Date{}
+	}
+	return civil.Date{
+		Year:  int(p.Year),
+		Month: time.Month(p.Month),
+		Day:   int(p.Day),
+	}
+}
+
+func pvMapToStructPB(m map[string]any) *structpb.Struct {
+	if m == nil {
+		return nil
+	}
+	s, err := structpb.NewStruct(m)
+	if err != nil {
+		panic(pvPanic(fmt.Errorf("pvMapToStructPB: %w", err)))
+	}
+	return s
+}
+
+func pvMapFromStructPB(p *structpb.Struct) map[string]any {
+	if p == nil {
+		return nil
+	}
+	return p.AsMap()
+}
+
+func pvTimeToProto(t time.Time) *timestamppb.Timestamp {
+	if t.IsZero() {
+		return nil
+	}
+	return timestamppb.New(t)
+}
+
+func pvTimeFromProto(ts *timestamppb.Timestamp) time.Time {
+	if ts == nil {
+		return time.Time{}
+	}
+	return ts.AsTime()
+}
+
+type pvPanic error
