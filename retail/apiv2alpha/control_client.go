@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -57,10 +57,13 @@ type ControlCallOptions struct {
 func defaultControlGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -113,7 +116,7 @@ func defaultControlRESTCallOptions() *ControlCallOptions {
 	}
 }
 
-// internalControlClient is an interface that defines the methods available from Retail API.
+// internalControlClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalControlClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -127,7 +130,7 @@ type internalControlClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ControlClient is a client for interacting with Retail API.
+// ControlClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for modifying Control.
@@ -209,7 +212,7 @@ func (c *ControlClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// controlGRPCClient is a client for interacting with Retail API over gRPC transport.
+// controlGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type controlGRPCClient struct {
@@ -275,7 +278,9 @@ func (c *controlGRPCClient) Connection() *grpc.ClientConn {
 func (c *controlGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -323,9 +328,12 @@ func NewControlRESTClient(ctx context.Context, opts ...option.ClientOption) (*Co
 func defaultControlRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://retail.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://retail.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://retail.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -335,7 +343,9 @@ func defaultControlRESTClientOptions() []option.ClientOption {
 func (c *controlRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,19 +40,23 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	SearchNearby  []gax.CallOption
-	SearchText    []gax.CallOption
-	GetPhotoMedia []gax.CallOption
-	GetPlace      []gax.CallOption
+	SearchNearby       []gax.CallOption
+	SearchText         []gax.CallOption
+	GetPhotoMedia      []gax.CallOption
+	GetPlace           []gax.CallOption
+	AutocompletePlaces []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("places.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("places.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("places.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://places.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -60,19 +64,21 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		SearchNearby:  []gax.CallOption{},
-		SearchText:    []gax.CallOption{},
-		GetPhotoMedia: []gax.CallOption{},
-		GetPlace:      []gax.CallOption{},
+		SearchNearby:       []gax.CallOption{},
+		SearchText:         []gax.CallOption{},
+		GetPhotoMedia:      []gax.CallOption{},
+		GetPlace:           []gax.CallOption{},
+		AutocompletePlaces: []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
-		SearchNearby:  []gax.CallOption{},
-		SearchText:    []gax.CallOption{},
-		GetPhotoMedia: []gax.CallOption{},
-		GetPlace:      []gax.CallOption{},
+		SearchNearby:       []gax.CallOption{},
+		SearchText:         []gax.CallOption{},
+		GetPhotoMedia:      []gax.CallOption{},
+		GetPlace:           []gax.CallOption{},
+		AutocompletePlaces: []gax.CallOption{},
 	}
 }
 
@@ -85,17 +91,17 @@ type internalClient interface {
 	SearchText(context.Context, *placespb.SearchTextRequest, ...gax.CallOption) (*placespb.SearchTextResponse, error)
 	GetPhotoMedia(context.Context, *placespb.GetPhotoMediaRequest, ...gax.CallOption) (*placespb.PhotoMedia, error)
 	GetPlace(context.Context, *placespb.GetPlaceRequest, ...gax.CallOption) (*placespb.Place, error)
+	AutocompletePlaces(context.Context, *placespb.AutocompletePlacesRequest, ...gax.CallOption) (*placespb.AutocompletePlacesResponse, error)
 }
 
 // Client is a client for interacting with Places API (New).
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service definition for the Places API.
-// Note: every request actually requires a field mask set outside of
-// the request proto (all/’*’, is not assumed).  That can be set via either a
-// side channel (SystemParameterContext) over RPC, or a header
-// (X-Goog-FieldMask) over HTTP. See:
-// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+// Note: every request (except for Autocomplete requests) requires a field mask
+// set outside of the request proto (all/*, is not assumed). The field mask
+// can be set via the HTTP header X-Goog-FieldMask. See:
+// https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -142,9 +148,15 @@ func (c *Client) GetPhotoMedia(ctx context.Context, req *placespb.GetPhotoMediaR
 	return c.internalClient.GetPhotoMedia(ctx, req, opts...)
 }
 
-// GetPlace get place details with a place id (in a name) string.
+// GetPlace get the details of a place based on its resource name, which is a string
+// in the places/{place_id} format.
 func (c *Client) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest, opts ...gax.CallOption) (*placespb.Place, error) {
 	return c.internalClient.GetPlace(ctx, req, opts...)
+}
+
+// AutocompletePlaces returns predictions for the given input.
+func (c *Client) AutocompletePlaces(ctx context.Context, req *placespb.AutocompletePlacesRequest, opts ...gax.CallOption) (*placespb.AutocompletePlacesResponse, error) {
+	return c.internalClient.AutocompletePlaces(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Places API (New) over gRPC transport.
@@ -168,11 +180,10 @@ type gRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service definition for the Places API.
-// Note: every request actually requires a field mask set outside of
-// the request proto (all/’*’, is not assumed).  That can be set via either a
-// side channel (SystemParameterContext) over RPC, or a header
-// (X-Goog-FieldMask) over HTTP. See:
-// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+// Note: every request (except for Autocomplete requests) requires a field mask
+// set outside of the request proto (all/*, is not assumed). The field mask
+// can be set via the HTTP header X-Goog-FieldMask. See:
+// https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
@@ -215,7 +226,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -242,11 +255,10 @@ type restClient struct {
 // NewRESTClient creates a new places rest client.
 //
 // Service definition for the Places API.
-// Note: every request actually requires a field mask set outside of
-// the request proto (all/’*’, is not assumed).  That can be set via either a
-// side channel (SystemParameterContext) over RPC, or a header
-// (X-Goog-FieldMask) over HTTP. See:
-// https://cloud.google.com/apis/docs/system-parameters (at https://cloud.google.com/apis/docs/system-parameters)
+// Note: every request (except for Autocomplete requests) requires a field mask
+// set outside of the request proto (all/*, is not assumed). The field mask
+// can be set via the HTTP header X-Goog-FieldMask. See:
+// https://developers.google.com/maps/documentation/places/web-service/choose-fields (at https://developers.google.com/maps/documentation/places/web-service/choose-fields)
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
@@ -268,9 +280,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://places.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://places.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://places.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://places.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -280,7 +295,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -355,6 +372,21 @@ func (c *gRPCClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GetPlace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) AutocompletePlaces(ctx context.Context, req *placespb.AutocompletePlacesRequest, opts ...gax.CallOption) (*placespb.AutocompletePlacesResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	opts = append((*c.CallOptions).AutocompletePlaces[0:len((*c.CallOptions).AutocompletePlaces):len((*c.CallOptions).AutocompletePlaces)], opts...)
+	var resp *placespb.AutocompletePlacesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.AutocompletePlaces(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -558,7 +590,8 @@ func (c *restClient) GetPhotoMedia(ctx context.Context, req *placespb.GetPhotoMe
 	return resp, nil
 }
 
-// GetPlace get place details with a place id (in a name) string.
+// GetPlace get the details of a place based on its resource name, which is a string
+// in the places/{place_id} format.
 func (c *restClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest, opts ...gax.CallOption) (*placespb.Place, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -573,6 +606,9 @@ func (c *restClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest
 	}
 	if req.GetRegionCode() != "" {
 		params.Add("regionCode", fmt.Sprintf("%v", req.GetRegionCode()))
+	}
+	if req.GetSessionToken() != "" {
+		params.Add("sessionToken", fmt.Sprintf("%v", req.GetSessionToken()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -591,6 +627,69 @@ func (c *restClient) GetPlace(ctx context.Context, req *placespb.GetPlaceRequest
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// AutocompletePlaces returns predictions for the given input.
+func (c *restClient) AutocompletePlaces(ctx context.Context, req *placespb.AutocompletePlacesRequest, opts ...gax.CallOption) (*placespb.AutocompletePlacesResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/places:autocomplete")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).AutocompletePlaces[0:len((*c.CallOptions).AutocompletePlaces):len((*c.CallOptions).AutocompletePlaces)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &placespb.AutocompletePlacesResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
 		if err != nil {
 			return err
 		}

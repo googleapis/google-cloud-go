@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -120,6 +120,31 @@ func ExampleDatabaseAdminClient_CreateBackup() {
 	_ = resp
 }
 
+func ExampleDatabaseAdminClient_CreateBackupSchedule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &databasepb.CreateBackupScheduleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#CreateBackupScheduleRequest.
+	}
+	resp, err := c.CreateBackupSchedule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleDatabaseAdminClient_CreateDatabase() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -173,6 +198,29 @@ func ExampleDatabaseAdminClient_DeleteBackup() {
 	}
 }
 
+func ExampleDatabaseAdminClient_DeleteBackupSchedule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &databasepb.DeleteBackupScheduleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#DeleteBackupScheduleRequest.
+	}
+	err = c.DeleteBackupSchedule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleDatabaseAdminClient_DropDatabase() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -214,6 +262,31 @@ func ExampleDatabaseAdminClient_GetBackup() {
 		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#GetBackupRequest.
 	}
 	resp, err := c.GetBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatabaseAdminClient_GetBackupSchedule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &databasepb.GetBackupScheduleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#GetBackupScheduleRequest.
+	}
+	resp, err := c.GetBackupSchedule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -324,6 +397,49 @@ func ExampleDatabaseAdminClient_ListBackupOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListBackupOperationsResponse)
+	}
+}
+
+func ExampleDatabaseAdminClient_ListBackupSchedules() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &databasepb.ListBackupSchedulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#ListBackupSchedulesRequest.
+	}
+	it := c.ListBackupSchedules(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListBackupSchedulesResponse)
 	}
 }
 
@@ -355,6 +471,12 @@ func ExampleDatabaseAdminClient_ListBackups() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListBackupsResponse)
 	}
 }
 
@@ -386,6 +508,12 @@ func ExampleDatabaseAdminClient_ListDatabaseOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListDatabaseOperationsResponse)
 	}
 }
 
@@ -417,6 +545,12 @@ func ExampleDatabaseAdminClient_ListDatabaseRoles() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListDatabaseRolesResponse)
 	}
 }
 
@@ -448,6 +582,12 @@ func ExampleDatabaseAdminClient_ListDatabases() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*databasepb.ListDatabasesResponse)
 	}
 }
 
@@ -549,6 +689,31 @@ func ExampleDatabaseAdminClient_UpdateBackup() {
 		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#UpdateBackupRequest.
 	}
 	resp, err := c.UpdateBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatabaseAdminClient_UpdateBackupSchedule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &databasepb.UpdateBackupScheduleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/spanner/admin/database/apiv1/databasepb#UpdateBackupScheduleRequest.
+	}
+	resp, err := c.UpdateBackupSchedule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -713,5 +878,11 @@ func ExampleDatabaseAdminClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

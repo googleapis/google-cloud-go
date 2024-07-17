@@ -21,9 +21,9 @@ import (
 
 	"cloud.google.com/go/spanner"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
+	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/outputstream"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor/internal/utility"
-	executorpb "cloud.google.com/go/spanner/test/cloudexecutor/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -139,6 +139,9 @@ func createMutation(action *executorpb.MutationAction, tableMetadata *utility.Ta
 				return nil, err
 			}
 			keySet, err := utility.KeySetProtoToCloudKeySet(mod.DeleteKeys, keyColTypes)
+			if err != nil {
+				return nil, err
+			}
 			m = append(m, spanner.Delete(table, keySet))
 		default:
 			return nil, spanner.ToSpannerError(status.Errorf(codes.InvalidArgument, "unsupported mod: %s", mod.String()))

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -59,10 +59,13 @@ type ServingConfigCallOptions struct {
 func defaultServingConfigGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -119,7 +122,7 @@ func defaultServingConfigRESTCallOptions() *ServingConfigCallOptions {
 	}
 }
 
-// internalServingConfigClient is an interface that defines the methods available from Retail API.
+// internalServingConfigClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalServingConfigClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -135,7 +138,7 @@ type internalServingConfigClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ServingConfigClient is a client for interacting with Retail API.
+// ServingConfigClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for modifying ServingConfig.
@@ -232,7 +235,7 @@ func (c *ServingConfigClient) ListOperations(ctx context.Context, req *longrunni
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// servingConfigGRPCClient is a client for interacting with Retail API over gRPC transport.
+// servingConfigGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type servingConfigGRPCClient struct {
@@ -298,7 +301,9 @@ func (c *servingConfigGRPCClient) Connection() *grpc.ClientConn {
 func (c *servingConfigGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -346,9 +351,12 @@ func NewServingConfigRESTClient(ctx context.Context, opts ...option.ClientOption
 func defaultServingConfigRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://retail.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://retail.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://retail.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -358,7 +366,9 @@ func defaultServingConfigRESTClientOptions() []option.ClientOption {
 func (c *servingConfigRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when

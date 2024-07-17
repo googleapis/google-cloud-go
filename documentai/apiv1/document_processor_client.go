@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -80,10 +80,13 @@ type DocumentProcessorCallOptions struct {
 func defaultDocumentProcessorGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("documentai.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("documentai.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("documentai.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -413,7 +416,11 @@ func (c *DocumentProcessorClient) UndeployProcessorVersionOperation(name string)
 
 // CreateProcessor creates a processor from the
 // ProcessorType provided. The
-// processor will be at ENABLED state by default after its creation.
+// processor will be at ENABLED state by default after its creation. Note
+// that this method requires the documentai.processors.create permission on
+// the project, which is highly privileged. A user or service account with
+// this permission can create new processors that can interact with any gcs
+// bucket in your project.
 func (c *DocumentProcessorClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	return c.internalClient.CreateProcessor(ctx, req, opts...)
 }
@@ -614,7 +621,9 @@ func (c *documentProcessorGRPCClient) Connection() *grpc.ClientConn {
 func (c *documentProcessorGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -680,9 +689,12 @@ func NewDocumentProcessorRESTClient(ctx context.Context, opts ...option.ClientOp
 func defaultDocumentProcessorRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://documentai.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://documentai.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://documentai.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -692,7 +704,9 @@ func defaultDocumentProcessorRESTClientOptions() []option.ClientOption {
 func (c *documentProcessorRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -2306,7 +2320,11 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 
 // CreateProcessor creates a processor from the
 // ProcessorType provided. The
-// processor will be at ENABLED state by default after its creation.
+// processor will be at ENABLED state by default after its creation. Note
+// that this method requires the documentai.processors.create permission on
+// the project, which is highly privileged. A user or service account with
+// this permission can create new processors that can interact with any gcs
+// bucket in your project.
 func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *documentaipb.CreateProcessorRequest, opts ...gax.CallOption) (*documentaipb.Processor, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetProcessor()

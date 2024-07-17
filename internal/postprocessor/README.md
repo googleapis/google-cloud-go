@@ -21,8 +21,8 @@ You can verify the name of the docker container name can be found in the
 In the `google-cloud-go` root directory:
 
 ```bash
-docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
-docker run --user $(id -u):$(id -g) --rm -v $(pwd):/repo -w /repo gcr.io/cloud-devrel-public-resources/owlbot-go:latest
+docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-latest
+docker run --user $(id -u):$(id -g) --rm -v $(pwd):/repo -w /repo gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-latest
 ```
 
 ## Making changes, rebuilding the docker container and updating the OwlBot SHA
@@ -59,15 +59,14 @@ the OwlBot lock file.
 
 After making changes to this package land in `main`, a new Docker image will be
 built and pushed automatically. To update the image version used by OwlBot, run
-the following commands (_you will need Docker installed and running_):
+the following command (_you will need Docker installed and running_):
 
 ```sh
-docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:latest
-LATEST=`docker inspect --format='{{index .RepoDigests 0}}' gcr.io/cloud-devrel-public-resources/owlbot-go:latest`
-sed -i -e 's/sha256.*/'${LATEST#*@}'/g' ./.github/.OwlBot.lock.yaml
+docker pull gcr.io/cloud-devrel-public-resources/owlbot-go:infrastructure-public-image-latest
 ```
 
-_Note: If run on macOS, the `sed -i` flag will need a `''` after it._
+Extract the `sha256` Digest from the logs emitted by the `pull` and set it as
+the digest in the [lockfile](../../.github/.OwlBot.lock.yaml).
 
 Send a pull request with the updated `.github/.OwlBot.lock.yaml`.
 
@@ -82,3 +81,35 @@ The post-processor initializes new modules by generating the required files
 To add a new module, add the directory name of the module to `modules` in
 `google-cloud-go/internal/postprocessor/config.yaml`. Please maintain
 alphabetical ordering of the module names.
+
+## Validating your config changes
+
+The `validate` command is run as a presubmit on changes to either the
+`.github/.OwlBot.yaml` or the `internal/postprocessor/config.yaml`.
+
+If you want to run it manually, from the **repository root**, simply run the
+following:
+
+```
+go run ./internal/postprocessor validate
+```
+
+If you want to validate existence of service config yaml in the PostProcessor
+config, provide an absolute path to a local clone of `googleapis`:
+
+```
+go run ./internal/postprocessor validate -googleapis-dir=$GOOGLEAPIS
+```
+
+If you want validate a specific config file, not the repository default, then
+provide aboslute paths to either or both config files like so:
+
+```
+go run ./internal/postprocessor \
+   -owl-bot-config=$OWL_BOT_YAML \
+   -processor-config=$CONFIG_YAML
+```
+
+If you think there is an issue with the validator, just fix it in the same CL
+as the config change that triggered it. No need to update the postprocessor sha
+when the validate command is changed, it runs from HEAD of the branch.

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,29 +40,33 @@ var newDataScanClientHook clientHook
 
 // DataScanCallOptions contains the retry settings for each method of DataScanClient.
 type DataScanCallOptions struct {
-	CreateDataScan   []gax.CallOption
-	UpdateDataScan   []gax.CallOption
-	DeleteDataScan   []gax.CallOption
-	GetDataScan      []gax.CallOption
-	ListDataScans    []gax.CallOption
-	RunDataScan      []gax.CallOption
-	GetDataScanJob   []gax.CallOption
-	ListDataScanJobs []gax.CallOption
-	GetLocation      []gax.CallOption
-	ListLocations    []gax.CallOption
-	CancelOperation  []gax.CallOption
-	DeleteOperation  []gax.CallOption
-	GetOperation     []gax.CallOption
-	ListOperations   []gax.CallOption
+	CreateDataScan           []gax.CallOption
+	UpdateDataScan           []gax.CallOption
+	DeleteDataScan           []gax.CallOption
+	GetDataScan              []gax.CallOption
+	ListDataScans            []gax.CallOption
+	RunDataScan              []gax.CallOption
+	GetDataScanJob           []gax.CallOption
+	ListDataScanJobs         []gax.CallOption
+	GenerateDataQualityRules []gax.CallOption
+	GetLocation              []gax.CallOption
+	ListLocations            []gax.CallOption
+	CancelOperation          []gax.CallOption
+	DeleteOperation          []gax.CallOption
+	GetOperation             []gax.CallOption
+	ListOperations           []gax.CallOption
 }
 
 func defaultDataScanGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataplex.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dataplex.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataplex.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dataplex.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -70,20 +74,21 @@ func defaultDataScanGRPCClientOptions() []option.ClientOption {
 
 func defaultDataScanCallOptions() *DataScanCallOptions {
 	return &DataScanCallOptions{
-		CreateDataScan:   []gax.CallOption{},
-		UpdateDataScan:   []gax.CallOption{},
-		DeleteDataScan:   []gax.CallOption{},
-		GetDataScan:      []gax.CallOption{},
-		ListDataScans:    []gax.CallOption{},
-		RunDataScan:      []gax.CallOption{},
-		GetDataScanJob:   []gax.CallOption{},
-		ListDataScanJobs: []gax.CallOption{},
-		GetLocation:      []gax.CallOption{},
-		ListLocations:    []gax.CallOption{},
-		CancelOperation:  []gax.CallOption{},
-		DeleteOperation:  []gax.CallOption{},
-		GetOperation:     []gax.CallOption{},
-		ListOperations:   []gax.CallOption{},
+		CreateDataScan:           []gax.CallOption{},
+		UpdateDataScan:           []gax.CallOption{},
+		DeleteDataScan:           []gax.CallOption{},
+		GetDataScan:              []gax.CallOption{},
+		ListDataScans:            []gax.CallOption{},
+		RunDataScan:              []gax.CallOption{},
+		GetDataScanJob:           []gax.CallOption{},
+		ListDataScanJobs:         []gax.CallOption{},
+		GenerateDataQualityRules: []gax.CallOption{},
+		GetLocation:              []gax.CallOption{},
+		ListLocations:            []gax.CallOption{},
+		CancelOperation:          []gax.CallOption{},
+		DeleteOperation:          []gax.CallOption{},
+		GetOperation:             []gax.CallOption{},
+		ListOperations:           []gax.CallOption{},
 	}
 }
 
@@ -103,6 +108,7 @@ type internalDataScanClient interface {
 	RunDataScan(context.Context, *dataplexpb.RunDataScanRequest, ...gax.CallOption) (*dataplexpb.RunDataScanResponse, error)
 	GetDataScanJob(context.Context, *dataplexpb.GetDataScanJobRequest, ...gax.CallOption) (*dataplexpb.DataScanJob, error)
 	ListDataScanJobs(context.Context, *dataplexpb.ListDataScanJobsRequest, ...gax.CallOption) *DataScanJobIterator
+	GenerateDataQualityRules(context.Context, *dataplexpb.GenerateDataQualityRulesRequest, ...gax.CallOption) (*dataplexpb.GenerateDataQualityRulesResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -209,6 +215,14 @@ func (c *DataScanClient) GetDataScanJob(ctx context.Context, req *dataplexpb.Get
 // ListDataScanJobs lists DataScanJobs under the given DataScan.
 func (c *DataScanClient) ListDataScanJobs(ctx context.Context, req *dataplexpb.ListDataScanJobsRequest, opts ...gax.CallOption) *DataScanJobIterator {
 	return c.internalClient.ListDataScanJobs(ctx, req, opts...)
+}
+
+// GenerateDataQualityRules generates recommended data quality rules based on the results of a data
+// profiling scan.
+//
+// Use the recommendations to build rules for a data quality scan.
+func (c *DataScanClient) GenerateDataQualityRules(ctx context.Context, req *dataplexpb.GenerateDataQualityRulesRequest, opts ...gax.CallOption) (*dataplexpb.GenerateDataQualityRulesResponse, error) {
+	return c.internalClient.GenerateDataQualityRules(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -328,7 +342,9 @@ func (c *dataScanGRPCClient) Connection() *grpc.ClientConn {
 func (c *dataScanGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -541,6 +557,24 @@ func (c *dataScanGRPCClient) ListDataScanJobs(ctx context.Context, req *dataplex
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *dataScanGRPCClient) GenerateDataQualityRules(ctx context.Context, req *dataplexpb.GenerateDataQualityRulesRequest, opts ...gax.CallOption) (*dataplexpb.GenerateDataQualityRulesResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateDataQualityRules[0:len((*c.CallOptions).GenerateDataQualityRules):len((*c.CallOptions).GenerateDataQualityRules)], opts...)
+	var resp *dataplexpb.GenerateDataQualityRulesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.dataScanClient.GenerateDataQualityRules(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *dataScanGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {

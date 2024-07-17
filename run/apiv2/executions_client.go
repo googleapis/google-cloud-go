@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -58,10 +58,13 @@ type ExecutionsCallOptions struct {
 func defaultExecutionsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("run.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("run.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("run.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -155,7 +158,8 @@ func (c *ExecutionsClient) GetExecution(ctx context.Context, req *runpb.GetExecu
 	return c.internalClient.GetExecution(ctx, req, opts...)
 }
 
-// ListExecutions lists Executions from a Job.
+// ListExecutions lists Executions from a Job. Results are sorted by creation time,
+// descending.
 func (c *ExecutionsClient) ListExecutions(ctx context.Context, req *runpb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	return c.internalClient.ListExecutions(ctx, req, opts...)
 }
@@ -284,7 +288,9 @@ func (c *executionsGRPCClient) Connection() *grpc.ClientConn {
 func (c *executionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -347,9 +353,12 @@ func NewExecutionsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultExecutionsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://run.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://run.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://run.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://run.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -359,7 +368,9 @@ func defaultExecutionsRESTClientOptions() []option.ClientOption {
 func (c *executionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -636,7 +647,8 @@ func (c *executionsRESTClient) GetExecution(ctx context.Context, req *runpb.GetE
 	return resp, nil
 }
 
-// ListExecutions lists Executions from a Job.
+// ListExecutions lists Executions from a Job. Results are sorted by creation time,
+// descending.
 func (c *executionsRESTClient) ListExecutions(ctx context.Context, req *runpb.ListExecutionsRequest, opts ...gax.CallOption) *ExecutionIterator {
 	it := &ExecutionIterator{}
 	req = proto.Clone(req).(*runpb.ListExecutionsRequest)

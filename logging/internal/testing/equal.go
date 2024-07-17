@@ -19,7 +19,7 @@ package testing
 import (
 	"fmt"
 
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 )
 
 // PayloadEqual compares two payloads, assuming they are both proto.Messages or both strings.

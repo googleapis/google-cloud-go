@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,7 +84,9 @@ type FeaturestoreCallOptions struct {
 func defaultFeaturestoreGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -694,7 +696,9 @@ func (c *featurestoreGRPCClient) Connection() *grpc.ClientConn {
 func (c *featurestoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -757,7 +761,9 @@ func NewFeaturestoreRESTClient(ctx context.Context, opts ...option.ClientOption)
 func defaultFeaturestoreRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://aiplatform.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://aiplatform.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://aiplatform.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -769,7 +775,9 @@ func defaultFeaturestoreRESTClientOptions() []option.ClientOption {
 func (c *featurestoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1544,6 +1552,7 @@ func (c *featurestoreRESTClient) CreateFeaturestore(ctx context.Context, req *ai
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featurestores", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("featurestoreId", fmt.Sprintf("%v", req.GetFeaturestoreId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1606,6 +1615,11 @@ func (c *featurestoreRESTClient) GetFeaturestore(ctx context.Context, req *aipla
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1676,6 +1690,7 @@ func (c *featurestoreRESTClient) ListFeaturestores(ctx context.Context, req *aip
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featurestores", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1771,6 +1786,7 @@ func (c *featurestoreRESTClient) UpdateFeaturestore(ctx context.Context, req *ai
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetFeaturestore().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -1842,6 +1858,7 @@ func (c *featurestoreRESTClient) DeleteFeaturestore(ctx context.Context, req *ai
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -1915,6 +1932,7 @@ func (c *featurestoreRESTClient) CreateEntityType(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/entityTypes", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("entityTypeId", fmt.Sprintf("%v", req.GetEntityTypeId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -1977,6 +1995,11 @@ func (c *featurestoreRESTClient) GetEntityType(ctx context.Context, req *aiplatf
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2047,6 +2070,7 @@ func (c *featurestoreRESTClient) ListEntityTypes(ctx context.Context, req *aipla
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/entityTypes", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2142,6 +2166,7 @@ func (c *featurestoreRESTClient) UpdateEntityType(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetEntityType().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2209,6 +2234,7 @@ func (c *featurestoreRESTClient) DeleteEntityType(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -2282,6 +2308,7 @@ func (c *featurestoreRESTClient) CreateFeature(ctx context.Context, req *aiplatf
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/features", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	params.Add("featureId", fmt.Sprintf("%v", req.GetFeatureId()))
 
 	baseUrl.RawQuery = params.Encode()
@@ -2351,6 +2378,11 @@ func (c *featurestoreRESTClient) BatchCreateFeatures(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/features:batchCreate", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2409,6 +2441,11 @@ func (c *featurestoreRESTClient) GetFeature(ctx context.Context, req *aiplatform
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2479,6 +2516,7 @@ func (c *featurestoreRESTClient) ListFeatures(ctx context.Context, req *aiplatfo
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/features", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2577,6 +2615,7 @@ func (c *featurestoreRESTClient) UpdateFeature(ctx context.Context, req *aiplatf
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetFeature().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetUpdateMask() != nil {
 		updateMask, err := protojson.Marshal(req.GetUpdateMask())
 		if err != nil {
@@ -2641,6 +2680,11 @@ func (c *featurestoreRESTClient) DeleteFeature(ctx context.Context, req *aiplatf
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2728,6 +2772,11 @@ func (c *featurestoreRESTClient) ImportFeatureValues(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:importFeatureValues", req.GetEntityType())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType()))}
 
@@ -2798,6 +2847,11 @@ func (c *featurestoreRESTClient) BatchReadFeatureValues(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:batchReadFeatureValues", req.GetFeaturestore())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "featurestore", url.QueryEscape(req.GetFeaturestore()))}
 
@@ -2862,6 +2916,11 @@ func (c *featurestoreRESTClient) ExportFeatureValues(ctx context.Context, req *a
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:exportFeatureValues", req.GetEntityType())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType()))}
@@ -2937,6 +2996,11 @@ func (c *featurestoreRESTClient) DeleteFeatureValues(ctx context.Context, req *a
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deleteFeatureValues", req.GetEntityType())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type", url.QueryEscape(req.GetEntityType()))}
 
@@ -3010,6 +3074,7 @@ func (c *featurestoreRESTClient) SearchFeatures(ctx context.Context, req *aiplat
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/featurestores:searchFeatures", req.GetLocation())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -3087,6 +3152,11 @@ func (c *featurestoreRESTClient) GetLocation(ctx context.Context, req *locationp
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3156,6 +3226,7 @@ func (c *featurestoreRESTClient) ListLocations(ctx context.Context, req *locatio
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3240,6 +3311,11 @@ func (c *featurestoreRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -3304,6 +3380,11 @@ func (c *featurestoreRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -3372,6 +3453,11 @@ func (c *featurestoreRESTClient) TestIamPermissions(ctx context.Context, req *ia
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -3427,6 +3513,11 @@ func (c *featurestoreRESTClient) CancelOperation(ctx context.Context, req *longr
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3464,6 +3555,11 @@ func (c *featurestoreRESTClient) DeleteOperation(ctx context.Context, req *longr
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -3500,6 +3596,11 @@ func (c *featurestoreRESTClient) GetOperation(ctx context.Context, req *longrunn
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -3570,6 +3671,7 @@ func (c *featurestoreRESTClient) ListOperations(ctx context.Context, req *longru
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3648,6 +3750,7 @@ func (c *featurestoreRESTClient) WaitOperation(ctx context.Context, req *longrun
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
 		timeout, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {

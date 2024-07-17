@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,32 +41,36 @@ var newPipelineClientHook clientHook
 
 // PipelineCallOptions contains the retry settings for each method of PipelineClient.
 type PipelineCallOptions struct {
-	CreateTrainingPipeline []gax.CallOption
-	GetTrainingPipeline    []gax.CallOption
-	ListTrainingPipelines  []gax.CallOption
-	DeleteTrainingPipeline []gax.CallOption
-	CancelTrainingPipeline []gax.CallOption
-	CreatePipelineJob      []gax.CallOption
-	GetPipelineJob         []gax.CallOption
-	ListPipelineJobs       []gax.CallOption
-	DeletePipelineJob      []gax.CallOption
-	CancelPipelineJob      []gax.CallOption
-	GetLocation            []gax.CallOption
-	ListLocations          []gax.CallOption
-	GetIamPolicy           []gax.CallOption
-	SetIamPolicy           []gax.CallOption
-	TestIamPermissions     []gax.CallOption
-	CancelOperation        []gax.CallOption
-	DeleteOperation        []gax.CallOption
-	GetOperation           []gax.CallOption
-	ListOperations         []gax.CallOption
-	WaitOperation          []gax.CallOption
+	CreateTrainingPipeline  []gax.CallOption
+	GetTrainingPipeline     []gax.CallOption
+	ListTrainingPipelines   []gax.CallOption
+	DeleteTrainingPipeline  []gax.CallOption
+	CancelTrainingPipeline  []gax.CallOption
+	CreatePipelineJob       []gax.CallOption
+	GetPipelineJob          []gax.CallOption
+	ListPipelineJobs        []gax.CallOption
+	DeletePipelineJob       []gax.CallOption
+	BatchDeletePipelineJobs []gax.CallOption
+	CancelPipelineJob       []gax.CallOption
+	BatchCancelPipelineJobs []gax.CallOption
+	GetLocation             []gax.CallOption
+	ListLocations           []gax.CallOption
+	GetIamPolicy            []gax.CallOption
+	SetIamPolicy            []gax.CallOption
+	TestIamPermissions      []gax.CallOption
+	CancelOperation         []gax.CallOption
+	DeleteOperation         []gax.CallOption
+	GetOperation            []gax.CallOption
+	ListOperations          []gax.CallOption
+	WaitOperation           []gax.CallOption
 }
 
 func defaultPipelineGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -77,26 +81,28 @@ func defaultPipelineGRPCClientOptions() []option.ClientOption {
 
 func defaultPipelineCallOptions() *PipelineCallOptions {
 	return &PipelineCallOptions{
-		CreateTrainingPipeline: []gax.CallOption{},
-		GetTrainingPipeline:    []gax.CallOption{},
-		ListTrainingPipelines:  []gax.CallOption{},
-		DeleteTrainingPipeline: []gax.CallOption{},
-		CancelTrainingPipeline: []gax.CallOption{},
-		CreatePipelineJob:      []gax.CallOption{},
-		GetPipelineJob:         []gax.CallOption{},
-		ListPipelineJobs:       []gax.CallOption{},
-		DeletePipelineJob:      []gax.CallOption{},
-		CancelPipelineJob:      []gax.CallOption{},
-		GetLocation:            []gax.CallOption{},
-		ListLocations:          []gax.CallOption{},
-		GetIamPolicy:           []gax.CallOption{},
-		SetIamPolicy:           []gax.CallOption{},
-		TestIamPermissions:     []gax.CallOption{},
-		CancelOperation:        []gax.CallOption{},
-		DeleteOperation:        []gax.CallOption{},
-		GetOperation:           []gax.CallOption{},
-		ListOperations:         []gax.CallOption{},
-		WaitOperation:          []gax.CallOption{},
+		CreateTrainingPipeline:  []gax.CallOption{},
+		GetTrainingPipeline:     []gax.CallOption{},
+		ListTrainingPipelines:   []gax.CallOption{},
+		DeleteTrainingPipeline:  []gax.CallOption{},
+		CancelTrainingPipeline:  []gax.CallOption{},
+		CreatePipelineJob:       []gax.CallOption{},
+		GetPipelineJob:          []gax.CallOption{},
+		ListPipelineJobs:        []gax.CallOption{},
+		DeletePipelineJob:       []gax.CallOption{},
+		BatchDeletePipelineJobs: []gax.CallOption{},
+		CancelPipelineJob:       []gax.CallOption{},
+		BatchCancelPipelineJobs: []gax.CallOption{},
+		GetLocation:             []gax.CallOption{},
+		ListLocations:           []gax.CallOption{},
+		GetIamPolicy:            []gax.CallOption{},
+		SetIamPolicy:            []gax.CallOption{},
+		TestIamPermissions:      []gax.CallOption{},
+		CancelOperation:         []gax.CallOption{},
+		DeleteOperation:         []gax.CallOption{},
+		GetOperation:            []gax.CallOption{},
+		ListOperations:          []gax.CallOption{},
+		WaitOperation:           []gax.CallOption{},
 	}
 }
 
@@ -116,7 +122,11 @@ type internalPipelineClient interface {
 	ListPipelineJobs(context.Context, *aiplatformpb.ListPipelineJobsRequest, ...gax.CallOption) *PipelineJobIterator
 	DeletePipelineJob(context.Context, *aiplatformpb.DeletePipelineJobRequest, ...gax.CallOption) (*DeletePipelineJobOperation, error)
 	DeletePipelineJobOperation(name string) *DeletePipelineJobOperation
+	BatchDeletePipelineJobs(context.Context, *aiplatformpb.BatchDeletePipelineJobsRequest, ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error)
+	BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation
 	CancelPipelineJob(context.Context, *aiplatformpb.CancelPipelineJobRequest, ...gax.CallOption) error
+	BatchCancelPipelineJobs(context.Context, *aiplatformpb.BatchCancelPipelineJobsRequest, ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error)
+	BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -242,6 +252,19 @@ func (c *PipelineClient) DeletePipelineJobOperation(name string) *DeletePipeline
 	return c.internalClient.DeletePipelineJobOperation(name)
 }
 
+// BatchDeletePipelineJobs batch deletes PipelineJobs
+// The Operation is atomic. If it fails, none of the PipelineJobs are deleted.
+// If it succeeds, all of the PipelineJobs are deleted.
+func (c *PipelineClient) BatchDeletePipelineJobs(ctx context.Context, req *aiplatformpb.BatchDeletePipelineJobsRequest, opts ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error) {
+	return c.internalClient.BatchDeletePipelineJobs(ctx, req, opts...)
+}
+
+// BatchDeletePipelineJobsOperation returns a new BatchDeletePipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchDeletePipelineJobsOperation, possibly from a different process.
+func (c *PipelineClient) BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation {
+	return c.internalClient.BatchDeletePipelineJobsOperation(name)
+}
+
 // CancelPipelineJob cancels a PipelineJob.
 // Starts asynchronous cancellation on the PipelineJob. The server
 // makes a best effort to cancel the pipeline, but success is not
@@ -257,6 +280,23 @@ func (c *PipelineClient) DeletePipelineJobOperation(name string) *DeletePipeline
 // CANCELLED.
 func (c *PipelineClient) CancelPipelineJob(ctx context.Context, req *aiplatformpb.CancelPipelineJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelPipelineJob(ctx, req, opts...)
+}
+
+// BatchCancelPipelineJobs batch cancel PipelineJobs.
+// Firstly the server will check if all the jobs are in non-terminal states,
+// and skip the jobs that are already terminated.
+// If the operation failed, none of the pipeline jobs are cancelled.
+// The server will poll the states of all the pipeline jobs periodically
+// to check the cancellation status.
+// This operation will return an LRO.
+func (c *PipelineClient) BatchCancelPipelineJobs(ctx context.Context, req *aiplatformpb.BatchCancelPipelineJobsRequest, opts ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error) {
+	return c.internalClient.BatchCancelPipelineJobs(ctx, req, opts...)
+}
+
+// BatchCancelPipelineJobsOperation returns a new BatchCancelPipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchCancelPipelineJobsOperation, possibly from a different process.
+func (c *PipelineClient) BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation {
+	return c.internalClient.BatchCancelPipelineJobsOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -410,7 +450,9 @@ func (c *pipelineGRPCClient) Connection() *grpc.ClientConn {
 func (c *pipelineGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -637,6 +679,26 @@ func (c *pipelineGRPCClient) DeletePipelineJob(ctx context.Context, req *aiplatf
 	}, nil
 }
 
+func (c *pipelineGRPCClient) BatchDeletePipelineJobs(ctx context.Context, req *aiplatformpb.BatchDeletePipelineJobsRequest, opts ...gax.CallOption) (*BatchDeletePipelineJobsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchDeletePipelineJobs[0:len((*c.CallOptions).BatchDeletePipelineJobs):len((*c.CallOptions).BatchDeletePipelineJobs)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.pipelineClient.BatchDeletePipelineJobs(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchDeletePipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *pipelineGRPCClient) CancelPipelineJob(ctx context.Context, req *aiplatformpb.CancelPipelineJobRequest, opts ...gax.CallOption) error {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -649,6 +711,26 @@ func (c *pipelineGRPCClient) CancelPipelineJob(ctx context.Context, req *aiplatf
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *pipelineGRPCClient) BatchCancelPipelineJobs(ctx context.Context, req *aiplatformpb.BatchCancelPipelineJobsRequest, opts ...gax.CallOption) (*BatchCancelPipelineJobsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).BatchCancelPipelineJobs[0:len((*c.CallOptions).BatchCancelPipelineJobs):len((*c.CallOptions).BatchCancelPipelineJobs)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.pipelineClient.BatchCancelPipelineJobs(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCancelPipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *pipelineGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -877,6 +959,22 @@ func (c *pipelineGRPCClient) WaitOperation(ctx context.Context, req *longrunning
 		return nil, err
 	}
 	return resp, nil
+}
+
+// BatchCancelPipelineJobsOperation returns a new BatchCancelPipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchCancelPipelineJobsOperation, possibly from a different process.
+func (c *pipelineGRPCClient) BatchCancelPipelineJobsOperation(name string) *BatchCancelPipelineJobsOperation {
+	return &BatchCancelPipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchDeletePipelineJobsOperation returns a new BatchDeletePipelineJobsOperation from a given name.
+// The name must be that of a previously created BatchDeletePipelineJobsOperation, possibly from a different process.
+func (c *pipelineGRPCClient) BatchDeletePipelineJobsOperation(name string) *BatchDeletePipelineJobsOperation {
+	return &BatchDeletePipelineJobsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
 }
 
 // DeletePipelineJobOperation returns a new DeletePipelineJobOperation from a given name.

@@ -353,6 +353,7 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint64, error) {
 	// Use GetQueryResults only to wait for completion, not to read results.
 	call := j.c.bqs.Jobs.GetQueryResults(projectID, j.jobID).Location(j.location).Context(ctx).MaxResults(0)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	setClientHeader(call.Header())
 	backoff := gax.Backoff{
 		Initial:    1 * time.Second,
@@ -505,6 +506,30 @@ type QueryStatistics struct {
 
 	// The DDL target table, present only for CREATE/DROP FUNCTION/PROCEDURE queries.
 	DDLTargetRoutine *Routine
+
+	// Statistics for the EXPORT DATA statement as part of Query Job.
+	ExportDataStatistics *ExportDataStatistics
+}
+
+// ExportDataStatistics represents statistics for
+// a EXPORT DATA statement as part of Query Job.
+type ExportDataStatistics struct {
+	// Number of destination files generated.
+	FileCount int64
+
+	// Number of destination rows generated.
+	RowCount int64
+}
+
+func bqToExportDataStatistics(in *bq.ExportDataStatistics) *ExportDataStatistics {
+	if in == nil {
+		return nil
+	}
+	stats := &ExportDataStatistics{
+		FileCount: in.FileCount,
+		RowCount:  in.RowCount,
+	}
+	return stats
 }
 
 // BIEngineStatistics contains query statistics specific to the use of BI Engine.
@@ -1028,6 +1053,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			DDLTargetTable:                bqToTable(s.Query.DdlTargetTable, c),
 			DDLOperationPerformed:         s.Query.DdlOperationPerformed,
 			DDLTargetRoutine:              bqToRoutine(s.Query.DdlTargetRoutine, c),
+			ExportDataStatistics:          bqToExportDataStatistics(s.Query.ExportDataStatistics),
 			StatementType:                 s.Query.StatementType,
 			TotalBytesBilled:              s.Query.TotalBytesBilled,
 			TotalBytesProcessed:           s.Query.TotalBytesProcessed,

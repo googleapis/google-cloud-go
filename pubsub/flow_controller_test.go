@@ -43,7 +43,7 @@ func TestFlowControllerCancel(t *testing.T) {
 	// Experiment: a context that times out should always return an error.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
 	defer cancel()
-	if err := fc.acquire(ctx, 6); err != context.DeadlineExceeded {
+	if err := fc.acquire(ctx, 6); !errors.Is(err, context.DeadlineExceeded) {
 		t.Fatalf("got %v, expected DeadlineExceeded", err)
 	}
 	// Control: a context that is not done should always return nil.
@@ -78,7 +78,7 @@ func TestFlowControllerNoStarve(t *testing.T) {
 		go func() {
 			for {
 				if err := fc.acquire(ctx, 1); err != nil {
-					if err != context.Canceled {
+					if !errors.Is(err, context.Canceled) {
 						t.Error(err)
 					}
 					return

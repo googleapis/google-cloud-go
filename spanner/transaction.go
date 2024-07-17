@@ -24,15 +24,16 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
-	"github.com/golang/protobuf/proto"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 )
 
 // transactionID stores a transaction ID which uniquely identifies a transaction
@@ -94,6 +95,8 @@ type txReadOnly struct {
 	// disableRouteToLeader specifies if all the requests of type read-write and PDML
 	// need to be routed to the leader region.
 	disableRouteToLeader bool
+
+	otConfig *openTelemetryConfig
 }
 
 // TransactionOptions provides options for a transaction.
@@ -112,15 +115,20 @@ type TransactionOptions struct {
 	// the transaction lock mode is used to specify a concurrency mode for the
 	// read/query operations. It works for a read/write transaction only.
 	ReadLockMode sppb.TransactionOptions_ReadWrite_ReadLockMode
+
+	// Controls whether to exclude recording modifications in current transaction
+	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true).
+	ExcludeTxnFromChangeStreams bool
 }
 
 // merge combines two TransactionOptions that the input parameter will have higher
 // order of precedence.
 func (to TransactionOptions) merge(opts TransactionOptions) TransactionOptions {
 	merged := TransactionOptions{
-		CommitOptions:  to.CommitOptions.merge(opts.CommitOptions),
-		TransactionTag: to.TransactionTag,
-		CommitPriority: to.CommitPriority,
+		CommitOptions:               to.CommitOptions.merge(opts.CommitOptions),
+		TransactionTag:              to.TransactionTag,
+		CommitPriority:              to.CommitPriority,
+		ExcludeTxnFromChangeStreams: to.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 	}
 	if opts.TransactionTag != "" {
 		merged.TransactionTag = opts.TransactionTag
@@ -170,17 +178,31 @@ type ReadOptions struct {
 	// If this is for a partitioned read and DataBoostEnabled field is set to true, the request will be executed
 	// via Spanner independent compute resources. Setting this option for regular read operations has no effect.
 	DataBoostEnabled bool
+
+	// ReadOptions option used to set the DirectedReadOptions for all ReadRequests which indicate
+	// which replicas or regions should be used for running read operations.
+	DirectedReadOptions *sppb.DirectedReadOptions
+
+	// An option to control the order in which rows are returned from a read.
+	OrderBy sppb.ReadRequest_OrderBy
+
+	// A lock hint mechanism to use for this request. This setting is only applicable for
+	// read-write transaction as as read-only transactions do not take locks.
+	LockHint sppb.ReadRequest_LockHint
 }
 
 // merge combines two ReadOptions that the input parameter will have higher
 // order of precedence.
 func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	merged := ReadOptions{
-		Index:            ro.Index,
-		Limit:            ro.Limit,
-		Priority:         ro.Priority,
-		RequestTag:       ro.RequestTag,
-		DataBoostEnabled: ro.DataBoostEnabled,
+		Index:               ro.Index,
+		Limit:               ro.Limit,
+		Priority:            ro.Priority,
+		RequestTag:          ro.RequestTag,
+		DataBoostEnabled:    ro.DataBoostEnabled,
+		DirectedReadOptions: ro.DirectedReadOptions,
+		OrderBy:             ro.OrderBy,
+		LockHint:            ro.LockHint,
 	}
 	if opts.Index != "" {
 		merged.Index = opts.Index
@@ -196,6 +218,15 @@ func (ro ReadOptions) merge(opts ReadOptions) ReadOptions {
 	}
 	if opts.DataBoostEnabled {
 		merged.DataBoostEnabled = opts.DataBoostEnabled
+	}
+	if opts.DirectedReadOptions != nil {
+		merged.DirectedReadOptions = opts.DirectedReadOptions
+	}
+	if opts.OrderBy != sppb.ReadRequest_ORDER_BY_UNSPECIFIED {
+		merged.OrderBy = opts.OrderBy
+	}
+	if opts.LockHint != sppb.ReadRequest_LOCK_HINT_UNSPECIFIED {
+		merged.LockHint = opts.LockHint
 	}
 	return merged
 }
@@ -228,6 +259,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	prio := t.ro.Priority
 	requestTag := t.ro.RequestTag
 	dataBoostEnabled := t.ro.DataBoostEnabled
+	directedReadOptions := t.ro.DirectedReadOptions
+	orderBy := t.ro.OrderBy
+	lockHint := t.ro.LockHint
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
@@ -238,6 +272,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		if opts.DataBoostEnabled {
 			dataBoostEnabled = opts.DataBoostEnabled
 		}
+		if opts.DirectedReadOptions != nil {
+			directedReadOptions = opts.DirectedReadOptions
+		}
+		if opts.OrderBy != sppb.ReadRequest_ORDER_BY_UNSPECIFIED {
+			orderBy = opts.OrderBy
+		}
+		if opts.LockHint != sppb.ReadRequest_LOCK_HINT_UNSPECIFIED {
+			lockHint = opts.LockHint
+		}
+
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := ts.Selector.(*sppb.TransactionSelector_Begin); ok {
@@ -254,16 +298,19 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			}
 			client, err := client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:          t.sh.getID(),
-					Transaction:      t.getTransactionSelector(),
-					Table:            table,
-					Index:            index,
-					Columns:          columns,
-					KeySet:           kset,
-					ResumeToken:      resumeToken,
-					Limit:            int64(limit),
-					RequestOptions:   createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
-					DataBoostEnabled: dataBoostEnabled,
+					Session:             t.sh.getID(),
+					Transaction:         t.getTransactionSelector(),
+					Table:               table,
+					Index:               index,
+					Columns:             columns,
+					KeySet:              kset,
+					ResumeToken:         resumeToken,
+					Limit:               int64(limit),
+					RequestOptions:      createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					DataBoostEnabled:    dataBoostEnabled,
+					DirectedReadOptions: directedReadOptions,
+					OrderBy:             orderBy,
+					LockHint:            lockHint,
 				})
 			if err != nil {
 				if _, ok := t.getTransactionSelector().GetSelector().(*sppb.TransactionSelector_Begin); ok {
@@ -278,6 +325,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
 			}
+			if metricErr := recordGFELatencyMetricsOT(ctx, md, "ReadWithOptions", t.otConfig); metricErr != nil {
+				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
+			}
 			return client, err
 		},
 		t.replaceSessionFunc,
@@ -290,12 +340,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 // errRowNotFound returns error for not being able to read the row identified by
 // key.
 func errRowNotFound(table string, key Key) error {
-	return spannerErrorf(codes.NotFound, "row not found(Table: %v, PrimaryKey: %v)", table, key)
+	err := spannerErrorf(codes.NotFound, "row not found(Table: %v, PrimaryKey: %v)", table, key)
+	err.(*Error).err = ErrRowNotFound
+	return err
 }
 
 // errRowNotFoundByIndex returns error for not being able to read the row by index.
 func errRowNotFoundByIndex(table string, key Key, index string) error {
-	return spannerErrorf(codes.NotFound, "row not found(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
+	err := spannerErrorf(codes.NotFound, "row not found(Table: %v, IndexKey: %v, Index: %v)", table, key, index)
+	err.(*Error).err = ErrRowNotFound
+	return err
 }
 
 // errMultipleRowsFound returns error for receiving more than one row when reading a single row using an index.
@@ -310,8 +364,14 @@ func errInlineBeginTransactionFailed() error {
 
 // ReadRow reads a single row from the database.
 //
-// If no row is present with the given key, then ReadRow returns an error where
+// If no row is present with the given key, then ReadRow returns an error(spanner.ErrRowNotFound) where
 // spanner.ErrCode(err) is codes.NotFound.
+//
+// To check if the error is spanner.ErrRowNotFound:
+//
+//	if errors.Is(err, spanner.ErrRowNotFound) {
+//			...
+//	}
 func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns []string) (*Row, error) {
 	return t.ReadRowWithOptions(ctx, table, key, columns, nil)
 }
@@ -320,6 +380,12 @@ func (t *txReadOnly) ReadRow(ctx context.Context, table string, key Key, columns
 //
 // If no row is present with the given key, then ReadRowWithOptions returns an error where
 // spanner.ErrCode(err) is codes.NotFound.
+//
+// To check if the error is spanner.ErrRowNotFound:
+//
+//	if errors.Is(err, spanner.ErrRowNotFound) {
+//			...
+//	}
 func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key Key, columns []string, opts *ReadOptions) (*Row, error) {
 	iter := t.ReadWithOptions(ctx, table, key, columns, opts)
 	defer iter.Stop()
@@ -337,7 +403,13 @@ func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key K
 // ReadRowUsingIndex reads a single row from the database using an index.
 //
 // If no row is present with the given index, then ReadRowUsingIndex returns an
-// error where spanner.ErrCode(err) is codes.NotFound.
+// error(spanner.ErrRowNotFound) where spanner.ErrCode(err) is codes.NotFound.
+//
+// To check if the error is spanner.ErrRowNotFound:
+//
+//	if errors.Is(err, spanner.ErrRowNotFound) {
+//			...
+//	}
 //
 // If more than one row received with the given index, then ReadRowUsingIndex
 // returns an error where spanner.ErrCode(err) is codes.FailedPrecondition.
@@ -378,17 +450,28 @@ type QueryOptions struct {
 	// If this is for a partitioned query and DataBoostEnabled field is set to true, the request will be executed
 	// via Spanner independent compute resources. Setting this option for regular query operations has no effect.
 	DataBoostEnabled bool
+
+	// QueryOptions option used to set the DirectedReadOptions for all ExecuteSqlRequests which indicate
+	// which replicas or regions should be used for executing queries.
+	DirectedReadOptions *sppb.DirectedReadOptions
+
+	// Controls whether to exclude recording modifications in current partitioned update operation
+	// from the allowed tracking change streams(with DDL option allow_txn_exclusion=true). Setting
+	// this value for any sql/dml requests other than partitioned udpate will receive an error.
+	ExcludeTxnFromChangeStreams bool
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:             qo.Mode,
-		Options:          &sppb.ExecuteSqlRequest_QueryOptions{},
-		RequestTag:       qo.RequestTag,
-		Priority:         qo.Priority,
-		DataBoostEnabled: qo.DataBoostEnabled,
+		Mode:                        qo.Mode,
+		Options:                     &sppb.ExecuteSqlRequest_QueryOptions{},
+		RequestTag:                  qo.RequestTag,
+		Priority:                    qo.Priority,
+		DataBoostEnabled:            qo.DataBoostEnabled,
+		DirectedReadOptions:         qo.DirectedReadOptions,
+		ExcludeTxnFromChangeStreams: qo.ExcludeTxnFromChangeStreams || opts.ExcludeTxnFromChangeStreams,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -401,6 +484,9 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	}
 	if opts.DataBoostEnabled {
 		merged.DataBoostEnabled = opts.DataBoostEnabled
+	}
+	if opts.DirectedReadOptions != nil {
+		merged.DirectedReadOptions = opts.DirectedReadOptions
 	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
@@ -430,9 +516,10 @@ func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transac
 func (t *txReadOnly) Query(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 }
 
@@ -449,9 +536,10 @@ func (t *txReadOnly) QueryWithOptions(ctx context.Context, statement Statement, 
 func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *RowIterator {
 	mode := sppb.ExecuteSqlRequest_PROFILE
 	return t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 }
 
@@ -459,9 +547,10 @@ func (t *txReadOnly) QueryWithStats(ctx context.Context, statement Statement) *R
 func (t *txReadOnly) AnalyzeQuery(ctx context.Context, statement Statement) (*sppb.QueryPlan, error) {
 	mode := sppb.ExecuteSqlRequest_PLAN
 	iter := t.query(ctx, statement, QueryOptions{
-		Mode:     &mode,
-		Options:  t.qo.Options,
-		Priority: t.qo.Priority,
+		Mode:                &mode,
+		Options:             t.qo.Options,
+		Priority:            t.qo.Priority,
+		DirectedReadOptions: t.qo.DirectedReadOptions,
 	})
 	defer iter.Stop()
 	for {
@@ -516,6 +605,9 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 					trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 				}
 			}
+			if metricErr := recordGFELatencyMetricsOT(ctx, md, "query", t.otConfig); metricErr != nil {
+				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
+			}
 			return client, err
 		},
 		t.replaceSessionFunc,
@@ -544,16 +636,17 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		mode = *options.Mode
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:          sid,
-		Transaction:      ts,
-		Sql:              stmt.SQL,
-		QueryMode:        mode,
-		Seqno:            atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:           params,
-		ParamTypes:       paramTypes,
-		QueryOptions:     options.Options,
-		RequestOptions:   createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
-		DataBoostEnabled: options.DataBoostEnabled,
+		Session:             sid,
+		Transaction:         ts,
+		Sql:                 stmt.SQL,
+		QueryMode:           mode,
+		Seqno:               atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:              params,
+		ParamTypes:          paramTypes,
+		QueryOptions:        options.Options,
+		RequestOptions:      createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		DataBoostEnabled:    options.DataBoostEnabled,
+		DirectedReadOptions: options.DirectedReadOptions,
 	}
 	return req, sh, nil
 }
@@ -586,6 +679,13 @@ func errTxClosed() error {
 // errUnexpectedTxState returns error for transaction enters an unexpected state.
 func errUnexpectedTxState(ts txState) error {
 	return spannerErrorf(codes.FailedPrecondition, "unexpected transaction state: %v", ts)
+}
+
+// errExcludeRequestLevelDmlFromChangeStreams returns error for passing
+// QueryOptions.ExcludeTxnFromChangeStreams to request-level DML functions. This
+// options should only be used for partitioned update.
+func errExcludeRequestLevelDmlFromChangeStreams() error {
+	return spannerErrorf(codes.InvalidArgument, "cannot set exclude transaction from change streams for a request-level DML statement.")
 }
 
 // ReadOnlyTransaction provides a snapshot transaction with guaranteed
@@ -696,6 +796,9 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "begin_BeginTransaction"); err != nil {
 				trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 			}
+		}
+		if metricErr := recordGFELatencyMetricsOT(ctx, md, "begin_BeginTransaction", t.otConfig); metricErr != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 		}
 
 		if isSessionNotFoundError(err) {
@@ -1067,6 +1170,10 @@ func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowC
 // the number of affected rows. The given QueryOptions will be used for the
 // execution of this statement.
 func (t *ReadWriteTransaction) UpdateWithOptions(ctx context.Context, stmt Statement, opts QueryOptions) (rowCount int64, err error) {
+	if opts.ExcludeTxnFromChangeStreams {
+		return 0, errExcludeRequestLevelDmlFromChangeStreams()
+	}
+
 	return t.update(ctx, stmt, t.qo.merge(opts))
 }
 
@@ -1090,6 +1197,9 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "update"); err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
+	}
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "update", t.otConfig); metricErr != nil {
+		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
 	if err != nil {
 		if hasInlineBeginTransaction {
@@ -1136,6 +1246,9 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 // The request tag and priority given in the QueryOptions are included with the
 // RPC. Any other options that are set in the QueryOptions struct are ignored.
 func (t *ReadWriteTransaction) BatchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
+	if opts.ExcludeTxnFromChangeStreams {
+		return nil, errExcludeRequestLevelDmlFromChangeStreams()
+	}
 	return t.batchUpdateWithOptions(ctx, stmts, t.qo.merge(opts))
 }
 
@@ -1193,6 +1306,9 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "batchUpdateWithOptions"); err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
 		}
+	}
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "batchUpdateWithOptions", t.otConfig); metricErr != nil {
+		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
 	if err != nil {
 		if hasInlineBeginTransaction {
@@ -1253,6 +1369,7 @@ func (t *ReadWriteTransaction) acquire(ctx context.Context) (*sessionHandle, *sp
 						Mode: &sppb.TransactionOptions_ReadWrite_{
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
 						},
+						ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
 					},
 				},
 			}
@@ -1312,6 +1429,7 @@ func (t *ReadWriteTransaction) getTransactionSelector() *sppb.TransactionSelecto
 						ReadLockMode: t.txOpts.ReadLockMode,
 					},
 				},
+				ExcludeTxnFromChangeStreams: t.txOpts.ExcludeTxnFromChangeStreams,
 			},
 		},
 	}
@@ -1368,6 +1486,7 @@ func beginTransaction(ctx context.Context, sid string, client *vkit.Client, opts
 					ReadLockMode: opts.ReadLockMode,
 				},
 			},
+			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
 		},
 	})
 	if err != nil {
@@ -1461,14 +1580,22 @@ type CommitResponse struct {
 // CommitOptions provides options for committing a transaction in a database.
 type CommitOptions struct {
 	ReturnCommitStats bool
+	MaxCommitDelay    *time.Duration
 }
 
 // merge combines two CommitOptions that the input parameter will have higher
 // order of precedence.
 func (co CommitOptions) merge(opts CommitOptions) CommitOptions {
-	return CommitOptions{
+	var newOpts CommitOptions
+	newOpts = CommitOptions{
 		ReturnCommitStats: co.ReturnCommitStats || opts.ReturnCommitStats,
+		MaxCommitDelay:    opts.MaxCommitDelay,
 	}
+
+	if newOpts.MaxCommitDelay == nil {
+		newOpts.MaxCommitDelay = co.MaxCommitDelay
+	}
+	return newOpts
 }
 
 // commit tries to commit a readwrite transaction to Cloud Spanner. It also
@@ -1507,6 +1634,10 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	t.sh.updateLastUseTime()
 
 	var md metadata.MD
+	var maxCommitDelay *durationpb.Duration
+	if options.MaxCommitDelay != nil {
+		maxCommitDelay = durationpb.New(*(options.MaxCommitDelay))
+	}
 	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), &sppb.CommitRequest{
 		Session: sid,
 		Transaction: &sppb.CommitRequest_TransactionId{
@@ -1515,11 +1646,15 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
 		Mutations:         mPb,
 		ReturnCommitStats: options.ReturnCommitStats,
+		MaxCommitDelay:    maxCommitDelay,
 	}, gax.WithGRPCOptions(grpc.Header(&md)))
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "commit"); err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
 		}
+	}
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "commit", t.otConfig); metricErr != nil {
+		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
 	if e != nil {
 		return resp, toSpannerErrorWithCommitInfo(e, true)
@@ -1657,6 +1792,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 			txReadyOrClosed: make(chan struct{}),
 		},
 	}
+	t.txReadOnly.sp = c.idleSessions
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
@@ -1664,6 +1800,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	t.txReadOnly.disableRouteToLeader = c.disableRouteToLeader
 	t.txOpts = c.txo.merge(options)
 	t.ct = c.ct
+	t.otConfig = c.otConfig
 
 	// always explicit begin the transactions
 	if err = t.begin(ctx); err != nil {
@@ -1718,6 +1855,10 @@ type writeOnlyTransaction struct {
 	commitPriority sppb.RequestOptions_Priority
 	// disableRouteToLeader specifies if we want to disable RW/PDML requests to be routed to leader.
 	disableRouteToLeader bool
+	// ExcludeTxnFromChangeStreams controls whether to exclude recording modifications in
+	// current transaction from the allowed tracking change streams with DDL option
+	// allow_txn_exclusion=true.
+	excludeTxnFromChangeStreams bool
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1764,6 +1905,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 						Mode: &sppb.TransactionOptions_ReadWrite_{
 							ReadWrite: &sppb.TransactionOptions_ReadWrite{},
 						},
+						ExcludeTxnFromChangeStreams: t.excludeTxnFromChangeStreams,
 					},
 				},
 				Mutations:      mPb,

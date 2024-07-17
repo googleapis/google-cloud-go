@@ -1,7 +1,7 @@
 {
   "clientLibrary": {
     "name": "cloud.google.com/go/cloudtasks/apiv2beta2",
-    "version": "1.12.4",
+    "version": "1.12.10",
     "language": "GO",
     "apis": [
       {
@@ -52,52 +52,6 @@
         {
           "start": 18,
           "end": 51,
-          "type": "FULL"
-        }
-      ]
-    },
-    {
-      "regionTag": "cloudtasks_v2beta2_generated_CloudTasks_BufferTask_sync",
-      "title": "cloudtasks BufferTask Sample",
-      "description": "BufferTask creates and buffers a new task without the need to explicitly define a Task\nmessage. The queue must have [HTTP\ntarget][google.cloud.tasks.v2beta2.HttpTarget]. To create the task with a\ncustom ID, use the following format and set TASK_ID to your desired ID: \nprojects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID: buffer\nTo create the task with an automatically generated ID, use the following\nformat: \nprojects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks: buffer.\nNote: This feature is in its experimental stage. You must request access to\nthe API through the [Cloud Tasks BufferTask Experiment Signup\nform](https: //forms.gle/X8Zr5hiXH5tTGFqh8).",
-      "file": "Client/BufferTask/main.go",
-      "language": "GO",
-      "clientMethod": {
-        "shortName": "BufferTask",
-        "fullName": "google.cloud.tasks.v2beta2.Client.BufferTask",
-        "parameters": [
-          {
-            "type": "context.Context",
-            "name": "ctx"
-          },
-          {
-            "type": "cloudtaskspb.BufferTaskRequest",
-            "name": "req"
-          },
-          {
-            "type": "...gax.CallOption",
-            "name": "opts"
-          }
-        ],
-        "resultType": "*cloudtaskspb.BufferTaskResponse",
-        "client": {
-          "shortName": "Client",
-          "fullName": "google.cloud.tasks.v2beta2.Client"
-        },
-        "method": {
-          "shortName": "BufferTask",
-          "fullName": "google.cloud.tasks.v2beta2.CloudTasks.BufferTask",
-          "service": {
-            "shortName": "CloudTasks",
-            "fullName": "google.cloud.tasks.v2beta2.CloudTasks"
-          }
-        }
-      },
-      "origin": "API_DEFINITION",
-      "segments": [
-        {
-          "start": 18,
-          "end": 53,
           "type": "FULL"
         }
       ]
@@ -601,7 +555,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -647,7 +601,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]
@@ -693,7 +647,7 @@
       "segments": [
         {
           "start": 18,
-          "end": 60,
+          "end": 66,
           "type": "FULL"
         }
       ]

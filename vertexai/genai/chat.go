@@ -50,7 +50,7 @@ func (cs *ChatSession) SendMessageStream(ctx context.Context, parts ...Part) *Ge
 	req := cs.m.newGenerateContentRequest(cs.History...)
 	var cc int32 = 1
 	req.GenerationConfig.CandidateCount = &cc
-	streamClient, err := cs.m.c.c.StreamGenerateContent(ctx, req)
+	streamClient, err := cs.m.c.pc.StreamGenerateContent(ctx, req)
 	return &GenerateContentResponseIterator{
 		sc:  streamClient,
 		err: err,
@@ -59,12 +59,24 @@ func (cs *ChatSession) SendMessageStream(ctx context.Context, parts ...Part) *Ge
 }
 
 // By default, use the first candidate for history. The user can modify that if they want.
-func (cs *ChatSession) addToHistory(cands []*Candidate) bool {
+func (cs *ChatSession) addToHistory(cands []*Candidate) {
 	if len(cands) > 0 {
 		c := cands[0].Content
-		c.Role = roleModel
-		cs.History = append(cs.History, c)
-		return true
+		if c == nil {
+			return
+		}
+		cs.History = append(cs.History, copySanitizedModelContent(c))
 	}
-	return false
+}
+
+// copySanitizedModelContent creates a (shallow) copy of c with role set to
+// model and empty text parts removed.
+func copySanitizedModelContent(c *Content) *Content {
+	newc := &Content{Role: roleModel}
+	for _, part := range c.Parts {
+		if t, ok := part.(Text); !ok || len(string(t)) > 0 {
+			newc.Parts = append(newc.Parts, part)
+		}
+	}
+	return newc
 }

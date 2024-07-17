@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
 //
 // A unified platform that helps you accelerate your end-to-end cloud journey
 // from your current on-premises or cloud environments to Google Cloud.
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation
 //

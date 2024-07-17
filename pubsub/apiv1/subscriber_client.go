@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package pubsub
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -69,7 +70,9 @@ type SubscriberCallOptions struct {
 func defaultSubscriberGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsub.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("pubsub.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsub.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -582,8 +585,9 @@ func (c *SubscriberClient) GetSubscription(ctx context.Context, req *pubsubpb.Ge
 	return c.internalClient.GetSubscription(ctx, req, opts...)
 }
 
-// UpdateSubscription updates an existing subscription. Note that certain properties of a
-// subscription, such as its topic, are not modifiable.
+// UpdateSubscription updates an existing subscription by updating the fields specified in the
+// update mask. Note that certain properties of a subscription, such as its
+// topic, are not modifiable.
 func (c *SubscriberClient) UpdateSubscription(ctx context.Context, req *pubsubpb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	return c.internalClient.UpdateSubscription(ctx, req, opts...)
 }
@@ -687,7 +691,8 @@ func (c *SubscriberClient) CreateSnapshot(ctx context.Context, req *pubsubpb.Cre
 	return c.internalClient.CreateSnapshot(ctx, req, opts...)
 }
 
-// UpdateSnapshot updates an existing snapshot. Snapshots are used in
+// UpdateSnapshot updates an existing snapshot by updating the fields specified in the update
+// mask. Snapshots are used in
 // Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
 // which allow you to manage message acknowledgments in bulk. That is, you can
 // set the acknowledgment state of messages in an existing subscription to the
@@ -814,7 +819,9 @@ func (c *subscriberGRPCClient) Connection() *grpc.ClientConn {
 func (c *subscriberGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -864,7 +871,9 @@ func NewSubscriberRESTClient(ctx context.Context, opts ...option.ClientOption) (
 func defaultSubscriberRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://pubsub.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://pubsub.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://pubsub.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://pubsub.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -876,7 +885,9 @@ func defaultSubscriberRESTClientOptions() []option.ClientOption {
 func (c *subscriberRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1404,8 +1415,9 @@ func (c *subscriberRESTClient) GetSubscription(ctx context.Context, req *pubsubp
 	return resp, nil
 }
 
-// UpdateSubscription updates an existing subscription. Note that certain properties of a
-// subscription, such as its topic, are not modifiable.
+// UpdateSubscription updates an existing subscription by updating the fields specified in the
+// update mask. Note that certain properties of a subscription, such as its
+// topic, are not modifiable.
 func (c *subscriberRESTClient) UpdateSubscription(ctx context.Context, req *pubsubpb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.Subscription, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1788,7 +1800,7 @@ func (c *subscriberRESTClient) Pull(ctx context.Context, req *pubsubpb.PullReque
 //
 // This method is not supported for the REST transport.
 func (c *subscriberRESTClient) StreamingPull(ctx context.Context, opts ...gax.CallOption) (pubsubpb.Subscriber_StreamingPullClient, error) {
-	return nil, fmt.Errorf("StreamingPull not yet supported for REST clients")
+	return nil, errors.New("StreamingPull not yet supported for REST clients")
 }
 
 // ModifyPushConfig modifies the PushConfig for a specified subscription.
@@ -2081,7 +2093,8 @@ func (c *subscriberRESTClient) CreateSnapshot(ctx context.Context, req *pubsubpb
 	return resp, nil
 }
 
-// UpdateSnapshot updates an existing snapshot. Snapshots are used in
+// UpdateSnapshot updates an existing snapshot by updating the fields specified in the update
+// mask. Snapshots are used in
 // Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
 // which allow you to manage message acknowledgments in bulk. That is, you can
 // set the acknowledgment state of messages in an existing subscription to the

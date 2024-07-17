@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -95,7 +95,9 @@ type MetadataCallOptions struct {
 func defaultMetadataGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -768,7 +770,9 @@ func (c *metadataGRPCClient) Connection() *grpc.ClientConn {
 func (c *metadataGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -831,7 +835,9 @@ func NewMetadataRESTClient(ctx context.Context, opts ...option.ClientOption) (*M
 func defaultMetadataRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://aiplatform.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://aiplatform.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://aiplatform.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -843,7 +849,9 @@ func defaultMetadataRESTClientOptions() []option.ClientOption {
 func (c *metadataRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1836,6 +1844,7 @@ func (c *metadataRESTClient) CreateMetadataStore(ctx context.Context, req *aipla
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/metadataStores", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetMetadataStoreId() != "" {
 		params.Add("metadataStoreId", fmt.Sprintf("%v", req.GetMetadataStoreId()))
 	}
@@ -1900,6 +1909,11 @@ func (c *metadataRESTClient) GetMetadataStore(ctx context.Context, req *aiplatfo
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1970,6 +1984,7 @@ func (c *metadataRESTClient) ListMetadataStores(ctx context.Context, req *aiplat
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/metadataStores", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -2046,6 +2061,7 @@ func (c *metadataRESTClient) DeleteMetadataStore(ctx context.Context, req *aipla
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
@@ -2119,6 +2135,7 @@ func (c *metadataRESTClient) CreateArtifact(ctx context.Context, req *aiplatform
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/artifacts", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetArtifactId() != "" {
 		params.Add("artifactId", fmt.Sprintf("%v", req.GetArtifactId()))
 	}
@@ -2179,6 +2196,11 @@ func (c *metadataRESTClient) GetArtifact(ctx context.Context, req *aiplatformpb.
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2249,6 +2271,7 @@ func (c *metadataRESTClient) ListArtifacts(ctx context.Context, req *aiplatformp
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/artifacts", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2337,6 +2360,7 @@ func (c *metadataRESTClient) UpdateArtifact(ctx context.Context, req *aiplatform
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetArtifact().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
@@ -2406,6 +2430,7 @@ func (c *metadataRESTClient) DeleteArtifact(ctx context.Context, req *aiplatform
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetEtag() != "" {
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
@@ -2477,6 +2502,11 @@ func (c *metadataRESTClient) PurgeArtifacts(ctx context.Context, req *aiplatform
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/artifacts:purge", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2544,6 +2574,7 @@ func (c *metadataRESTClient) CreateContext(ctx context.Context, req *aiplatformp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/contexts", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetContextId() != "" {
 		params.Add("contextId", fmt.Sprintf("%v", req.GetContextId()))
 	}
@@ -2604,6 +2635,11 @@ func (c *metadataRESTClient) GetContext(ctx context.Context, req *aiplatformpb.G
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -2674,6 +2710,7 @@ func (c *metadataRESTClient) ListContexts(ctx context.Context, req *aiplatformpb
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/contexts", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -2762,6 +2799,7 @@ func (c *metadataRESTClient) UpdateContext(ctx context.Context, req *aiplatformp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetContext().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
@@ -2831,6 +2869,7 @@ func (c *metadataRESTClient) DeleteContext(ctx context.Context, req *aiplatformp
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetEtag() != "" {
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
@@ -2905,6 +2944,11 @@ func (c *metadataRESTClient) PurgeContexts(ctx context.Context, req *aiplatformp
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/contexts:purge", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -2972,6 +3016,11 @@ func (c *metadataRESTClient) AddContextArtifactsAndExecutions(ctx context.Contex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:addContextArtifactsAndExecutions", req.GetContext())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext()))}
 
@@ -3037,6 +3086,11 @@ func (c *metadataRESTClient) AddContextChildren(ctx context.Context, req *aiplat
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:addContextChildren", req.GetContext())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext()))}
 
@@ -3100,6 +3154,11 @@ func (c *metadataRESTClient) RemoveContextChildren(ctx context.Context, req *aip
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:removeContextChildren", req.GetContext())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext()))}
 
@@ -3155,6 +3214,11 @@ func (c *metadataRESTClient) QueryContextLineageSubgraph(ctx context.Context, re
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:queryContextLineageSubgraph", req.GetContext())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "context", url.QueryEscape(req.GetContext()))}
@@ -3219,6 +3283,7 @@ func (c *metadataRESTClient) CreateExecution(ctx context.Context, req *aiplatfor
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/executions", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetExecutionId() != "" {
 		params.Add("executionId", fmt.Sprintf("%v", req.GetExecutionId()))
 	}
@@ -3279,6 +3344,11 @@ func (c *metadataRESTClient) GetExecution(ctx context.Context, req *aiplatformpb
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -3349,6 +3419,7 @@ func (c *metadataRESTClient) ListExecutions(ctx context.Context, req *aiplatform
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/executions", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3437,6 +3508,7 @@ func (c *metadataRESTClient) UpdateExecution(ctx context.Context, req *aiplatfor
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetExecution().GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetAllowMissing() {
 		params.Add("allowMissing", fmt.Sprintf("%v", req.GetAllowMissing()))
 	}
@@ -3506,6 +3578,7 @@ func (c *metadataRESTClient) DeleteExecution(ctx context.Context, req *aiplatfor
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetEtag() != "" {
 		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
 	}
@@ -3577,6 +3650,11 @@ func (c *metadataRESTClient) PurgeExecutions(ctx context.Context, req *aiplatfor
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/executions:purge", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -3645,6 +3723,11 @@ func (c *metadataRESTClient) AddExecutionEvents(ctx context.Context, req *aiplat
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:addExecutionEvents", req.GetExecution())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "execution", url.QueryEscape(req.GetExecution()))}
 
@@ -3701,6 +3784,11 @@ func (c *metadataRESTClient) QueryExecutionInputsAndOutputs(ctx context.Context,
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:queryExecutionInputsAndOutputs", req.GetExecution())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "execution", url.QueryEscape(req.GetExecution()))}
@@ -3765,6 +3853,7 @@ func (c *metadataRESTClient) CreateMetadataSchema(ctx context.Context, req *aipl
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/metadataSchemas", req.GetParent())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetMetadataSchemaId() != "" {
 		params.Add("metadataSchemaId", fmt.Sprintf("%v", req.GetMetadataSchemaId()))
 	}
@@ -3825,6 +3914,11 @@ func (c *metadataRESTClient) GetMetadataSchema(ctx context.Context, req *aiplatf
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -3895,6 +3989,7 @@ func (c *metadataRESTClient) ListMetadataSchemas(ctx context.Context, req *aipla
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/metadataSchemas", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -3974,6 +4069,7 @@ func (c *metadataRESTClient) QueryArtifactLineageSubgraph(ctx context.Context, r
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:queryArtifactLineageSubgraph", req.GetArtifact())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetFilter() != "" {
 		params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 	}
@@ -4037,6 +4133,11 @@ func (c *metadataRESTClient) GetLocation(ctx context.Context, req *locationpb.Ge
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -4107,6 +4208,7 @@ func (c *metadataRESTClient) ListLocations(ctx context.Context, req *locationpb.
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -4191,6 +4293,11 @@ func (c *metadataRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -4255,6 +4362,11 @@ func (c *metadataRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -4323,6 +4435,11 @@ func (c *metadataRESTClient) TestIamPermissions(ctx context.Context, req *iampb.
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -4378,6 +4495,11 @@ func (c *metadataRESTClient) CancelOperation(ctx context.Context, req *longrunni
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -4415,6 +4537,11 @@ func (c *metadataRESTClient) DeleteOperation(ctx context.Context, req *longrunni
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -4451,6 +4578,11 @@ func (c *metadataRESTClient) GetOperation(ctx context.Context, req *longrunningp
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -4521,6 +4653,7 @@ func (c *metadataRESTClient) ListOperations(ctx context.Context, req *longrunnin
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -4599,6 +4732,7 @@ func (c *metadataRESTClient) WaitOperation(ctx context.Context, req *longrunning
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
 		timeout, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {

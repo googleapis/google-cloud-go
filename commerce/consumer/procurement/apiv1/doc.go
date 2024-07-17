@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,7 @@
 // Package procurement is an auto-generated package for the
 // Cloud Commerce Consumer Procurement API.
 //
-// Enables consumers to procure products served by Cloud Marketplace platform
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// # Enables consumers to procure products served by Cloud Marketplace platform
 //
 // # General documentation
 //

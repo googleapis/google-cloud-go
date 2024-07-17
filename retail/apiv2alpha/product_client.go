@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -66,10 +66,13 @@ type ProductCallOptions struct {
 func defaultProductGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -412,7 +415,7 @@ func defaultProductRESTCallOptions() *ProductCallOptions {
 	}
 }
 
-// internalProductClient is an interface that defines the methods available from Retail API.
+// internalProductClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalProductClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -440,7 +443,7 @@ type internalProductClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ProductClient is a client for interacting with Retail API.
+// ProductClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for ingesting Product
@@ -609,10 +612,11 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 	return c.internalClient.SetInventoryOperation(name)
 }
 
-// AddFulfillmentPlaces it is recommended to use the
+// AddFulfillmentPlaces we recommend that you use the
 // ProductService.AddLocalInventories
-// method instead of
-// ProductService.AddFulfillmentPlaces.
+// method instead of the
+// ProductService.AddFulfillmentPlaces
+// method.
 // ProductService.AddLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -648,10 +652,11 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 	return c.internalClient.AddFulfillmentPlacesOperation(name)
 }
 
-// RemoveFulfillmentPlaces it is recommended to use the
+// RemoveFulfillmentPlaces we recommend that you use the
 // ProductService.RemoveLocalInventories
-// method instead of
-// ProductService.RemoveFulfillmentPlaces.
+// method instead of the
+// ProductService.RemoveFulfillmentPlaces
+// method.
 // ProductService.RemoveLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -771,7 +776,7 @@ func (c *ProductClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// productGRPCClient is a client for interacting with Retail API over gRPC transport.
+// productGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type productGRPCClient struct {
@@ -854,7 +859,9 @@ func (c *productGRPCClient) Connection() *grpc.ClientConn {
 func (c *productGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -918,9 +925,12 @@ func NewProductRESTClient(ctx context.Context, opts ...option.ClientOption) (*Pr
 func defaultProductRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://retail.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://retail.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://retail.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -930,7 +940,9 @@ func defaultProductRESTClientOptions() []option.ClientOption {
 func (c *productRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1897,10 +1909,11 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	}, nil
 }
 
-// AddFulfillmentPlaces it is recommended to use the
+// AddFulfillmentPlaces we recommend that you use the
 // ProductService.AddLocalInventories
-// method instead of
-// ProductService.AddFulfillmentPlaces.
+// method instead of the
+// ProductService.AddFulfillmentPlaces
+// method.
 // ProductService.AddLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -1995,10 +2008,11 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	}, nil
 }
 
-// RemoveFulfillmentPlaces it is recommended to use the
+// RemoveFulfillmentPlaces we recommend that you use the
 // ProductService.RemoveLocalInventories
-// method instead of
-// ProductService.RemoveFulfillmentPlaces.
+// method instead of the
+// ProductService.RemoveFulfillmentPlaces
+// method.
 // ProductService.RemoveLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.

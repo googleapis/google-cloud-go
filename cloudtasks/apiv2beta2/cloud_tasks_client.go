@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -67,7 +67,6 @@ type CallOptions struct {
 	RenewLease         []gax.CallOption
 	CancelLease        []gax.CallOption
 	RunTask            []gax.CallOption
-	BufferTask         []gax.CallOption
 	GetLocation        []gax.CallOption
 	ListLocations      []gax.CallOption
 }
@@ -75,10 +74,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudtasks.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudtasks.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudtasks.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudtasks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -229,9 +231,6 @@ func defaultCallOptions() *CallOptions {
 		RunTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
-		BufferTask: []gax.CallOption{
-			gax.WithTimeout(20000 * time.Millisecond),
-		},
 		GetLocation:   []gax.CallOption{},
 		ListLocations: []gax.CallOption{},
 	}
@@ -374,9 +373,6 @@ func defaultRESTCallOptions() *CallOptions {
 		RunTask: []gax.CallOption{
 			gax.WithTimeout(20000 * time.Millisecond),
 		},
-		BufferTask: []gax.CallOption{
-			gax.WithTimeout(20000 * time.Millisecond),
-		},
 		GetLocation:   []gax.CallOption{},
 		ListLocations: []gax.CallOption{},
 	}
@@ -408,7 +404,6 @@ type internalClient interface {
 	RenewLease(context.Context, *cloudtaskspb.RenewLeaseRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
 	CancelLease(context.Context, *cloudtaskspb.CancelLeaseRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
 	RunTask(context.Context, *cloudtaskspb.RunTaskRequest, ...gax.CallOption) (*cloudtaskspb.Task, error)
-	BufferTask(context.Context, *cloudtaskspb.BufferTaskRequest, ...gax.CallOption) (*cloudtaskspb.BufferTaskResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 }
@@ -743,21 +738,6 @@ func (c *Client) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskRequest, 
 	return c.internalClient.RunTask(ctx, req, opts...)
 }
 
-// BufferTask creates and buffers a new task without the need to explicitly define a Task
-// message. The queue must have [HTTP
-// target][google.cloud.tasks.v2beta2.HttpTarget]. To create the task with a
-// custom ID, use the following format and set TASK_ID to your desired ID:
-// projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID:buffer
-// To create the task with an automatically generated ID, use the following
-// format:
-// projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks:buffer.
-// Note: This feature is in its experimental stage. You must request access to
-// the API through the Cloud Tasks BufferTask Experiment Signup
-// form (at https://forms.gle/X8Zr5hiXH5tTGFqh8).
-func (c *Client) BufferTask(ctx context.Context, req *cloudtaskspb.BufferTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.BufferTaskResponse, error) {
-	return c.internalClient.BufferTask(ctx, req, opts...)
-}
-
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -835,7 +815,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -884,9 +866,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudtasks.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudtasks.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudtasks.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudtasks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -896,7 +881,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1320,24 +1307,6 @@ func (c *gRPCClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.RunTask(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-func (c *gRPCClient) BufferTask(ctx context.Context, req *cloudtaskspb.BufferTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.BufferTaskResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "queue", url.QueryEscape(req.GetQueue()), "task_id", url.QueryEscape(req.GetTaskId()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).BufferTask[0:len((*c.CallOptions).BufferTask):len((*c.CallOptions).BufferTask)], opts...)
-	var resp *cloudtaskspb.BufferTaskResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.BufferTask(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -2927,82 +2896,6 @@ func (c *restClient) RunTask(ctx context.Context, req *cloudtaskspb.RunTaskReque
 	opts = append((*c.CallOptions).RunTask[0:len((*c.CallOptions).RunTask):len((*c.CallOptions).RunTask)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &cloudtaskspb.Task{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		httpRsp, err := c.httpClient.Do(httpReq)
-		if err != nil {
-			return err
-		}
-		defer httpRsp.Body.Close()
-
-		if err = googleapi.CheckResponse(httpRsp); err != nil {
-			return err
-		}
-
-		buf, err := io.ReadAll(httpRsp.Body)
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
-	}
-	return resp, nil
-}
-
-// BufferTask creates and buffers a new task without the need to explicitly define a Task
-// message. The queue must have [HTTP
-// target][google.cloud.tasks.v2beta2.HttpTarget]. To create the task with a
-// custom ID, use the following format and set TASK_ID to your desired ID:
-// projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID:buffer
-// To create the task with an automatically generated ID, use the following
-// format:
-// projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks:buffer.
-// Note: This feature is in its experimental stage. You must request access to
-// the API through the Cloud Tasks BufferTask Experiment Signup
-// form (at https://forms.gle/X8Zr5hiXH5tTGFqh8).
-func (c *restClient) BufferTask(ctx context.Context, req *cloudtaskspb.BufferTaskRequest, opts ...gax.CallOption) (*cloudtaskspb.BufferTaskResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v2beta2/%v/tasks/%v:buffer", req.GetQueue(), req.GetTaskId())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "queue", url.QueryEscape(req.GetQueue()), "task_id", url.QueryEscape(req.GetTaskId()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).BufferTask[0:len((*c.CallOptions).BufferTask):len((*c.CallOptions).BufferTask)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &cloudtaskspb.BufferTaskResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

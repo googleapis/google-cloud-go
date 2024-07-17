@@ -49,7 +49,7 @@ import (
 	"time"
 
 	"golang.org/x/tools/go/packages"
-	"gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v3"
 )
 
 func main() {
@@ -290,5 +290,7 @@ language: "go"
 		fmt.Fprintf(w, "stem: \"/appengine/docs/legacy/standard/go111/reference\"\n")
 	case "google.golang.org/appengine/v2":
 		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go/reference/services/bundled\"\n")
+	case "cloud.google.com/go/vertexai":
+		fmt.Fprintf(w, "stem: \"/vertex-ai/generative-ai/docs/reference/go\"\n")
 	}
 }

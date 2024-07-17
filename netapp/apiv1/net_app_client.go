@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -84,6 +84,21 @@ type CallOptions struct {
 	StopReplication             []gax.CallOption
 	ResumeReplication           []gax.CallOption
 	ReverseReplicationDirection []gax.CallOption
+	CreateBackupVault           []gax.CallOption
+	GetBackupVault              []gax.CallOption
+	ListBackupVaults            []gax.CallOption
+	UpdateBackupVault           []gax.CallOption
+	DeleteBackupVault           []gax.CallOption
+	CreateBackup                []gax.CallOption
+	GetBackup                   []gax.CallOption
+	ListBackups                 []gax.CallOption
+	DeleteBackup                []gax.CallOption
+	UpdateBackup                []gax.CallOption
+	CreateBackupPolicy          []gax.CallOption
+	GetBackupPolicy             []gax.CallOption
+	ListBackupPolicies          []gax.CallOption
+	UpdateBackupPolicy          []gax.CallOption
+	DeleteBackupPolicy          []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	CancelOperation             []gax.CallOption
@@ -95,10 +110,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("netapp.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("netapp.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("netapp.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://netapp.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -322,6 +340,105 @@ func defaultCallOptions() *CallOptions {
 		ReverseReplicationDirection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		CreateBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListBackupVaults: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListBackupPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -537,6 +654,99 @@ func defaultRESTCallOptions() *CallOptions {
 		ReverseReplicationDirection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		CreateBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListBackupVaults: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupVault: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListBackups: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateBackup: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		CreateBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListBackupPolicies: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		UpdateBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		DeleteBackupPolicy: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -610,6 +820,30 @@ type internalClient interface {
 	ResumeReplicationOperation(name string) *ResumeReplicationOperation
 	ReverseReplicationDirection(context.Context, *netapppb.ReverseReplicationDirectionRequest, ...gax.CallOption) (*ReverseReplicationDirectionOperation, error)
 	ReverseReplicationDirectionOperation(name string) *ReverseReplicationDirectionOperation
+	CreateBackupVault(context.Context, *netapppb.CreateBackupVaultRequest, ...gax.CallOption) (*CreateBackupVaultOperation, error)
+	CreateBackupVaultOperation(name string) *CreateBackupVaultOperation
+	GetBackupVault(context.Context, *netapppb.GetBackupVaultRequest, ...gax.CallOption) (*netapppb.BackupVault, error)
+	ListBackupVaults(context.Context, *netapppb.ListBackupVaultsRequest, ...gax.CallOption) *BackupVaultIterator
+	UpdateBackupVault(context.Context, *netapppb.UpdateBackupVaultRequest, ...gax.CallOption) (*UpdateBackupVaultOperation, error)
+	UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation
+	DeleteBackupVault(context.Context, *netapppb.DeleteBackupVaultRequest, ...gax.CallOption) (*DeleteBackupVaultOperation, error)
+	DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation
+	CreateBackup(context.Context, *netapppb.CreateBackupRequest, ...gax.CallOption) (*CreateBackupOperation, error)
+	CreateBackupOperation(name string) *CreateBackupOperation
+	GetBackup(context.Context, *netapppb.GetBackupRequest, ...gax.CallOption) (*netapppb.Backup, error)
+	ListBackups(context.Context, *netapppb.ListBackupsRequest, ...gax.CallOption) *BackupIterator
+	DeleteBackup(context.Context, *netapppb.DeleteBackupRequest, ...gax.CallOption) (*DeleteBackupOperation, error)
+	DeleteBackupOperation(name string) *DeleteBackupOperation
+	UpdateBackup(context.Context, *netapppb.UpdateBackupRequest, ...gax.CallOption) (*UpdateBackupOperation, error)
+	UpdateBackupOperation(name string) *UpdateBackupOperation
+	CreateBackupPolicy(context.Context, *netapppb.CreateBackupPolicyRequest, ...gax.CallOption) (*CreateBackupPolicyOperation, error)
+	CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation
+	GetBackupPolicy(context.Context, *netapppb.GetBackupPolicyRequest, ...gax.CallOption) (*netapppb.BackupPolicy, error)
+	ListBackupPolicies(context.Context, *netapppb.ListBackupPoliciesRequest, ...gax.CallOption) *BackupPolicyIterator
+	UpdateBackupPolicy(context.Context, *netapppb.UpdateBackupPolicyRequest, ...gax.CallOption) (*UpdateBackupPolicyOperation, error)
+	UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation
+	DeleteBackupPolicy(context.Context, *netapppb.DeleteBackupPolicyRequest, ...gax.CallOption) (*DeleteBackupPolicyOperation, error)
+	DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -981,6 +1215,138 @@ func (c *Client) ReverseReplicationDirectionOperation(name string) *ReverseRepli
 	return c.internalClient.ReverseReplicationDirectionOperation(name)
 }
 
+// CreateBackupVault creates new backup vault
+func (c *Client) CreateBackupVault(ctx context.Context, req *netapppb.CreateBackupVaultRequest, opts ...gax.CallOption) (*CreateBackupVaultOperation, error) {
+	return c.internalClient.CreateBackupVault(ctx, req, opts...)
+}
+
+// CreateBackupVaultOperation returns a new CreateBackupVaultOperation from a given name.
+// The name must be that of a previously created CreateBackupVaultOperation, possibly from a different process.
+func (c *Client) CreateBackupVaultOperation(name string) *CreateBackupVaultOperation {
+	return c.internalClient.CreateBackupVaultOperation(name)
+}
+
+// GetBackupVault returns the description of the specified backup vault
+func (c *Client) GetBackupVault(ctx context.Context, req *netapppb.GetBackupVaultRequest, opts ...gax.CallOption) (*netapppb.BackupVault, error) {
+	return c.internalClient.GetBackupVault(ctx, req, opts...)
+}
+
+// ListBackupVaults returns list of all available backup vaults.
+func (c *Client) ListBackupVaults(ctx context.Context, req *netapppb.ListBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
+	return c.internalClient.ListBackupVaults(ctx, req, opts...)
+}
+
+// UpdateBackupVault updates the settings of a specific backup vault.
+func (c *Client) UpdateBackupVault(ctx context.Context, req *netapppb.UpdateBackupVaultRequest, opts ...gax.CallOption) (*UpdateBackupVaultOperation, error) {
+	return c.internalClient.UpdateBackupVault(ctx, req, opts...)
+}
+
+// UpdateBackupVaultOperation returns a new UpdateBackupVaultOperation from a given name.
+// The name must be that of a previously created UpdateBackupVaultOperation, possibly from a different process.
+func (c *Client) UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation {
+	return c.internalClient.UpdateBackupVaultOperation(name)
+}
+
+// DeleteBackupVault warning! This operation will permanently delete the backup vault.
+func (c *Client) DeleteBackupVault(ctx context.Context, req *netapppb.DeleteBackupVaultRequest, opts ...gax.CallOption) (*DeleteBackupVaultOperation, error) {
+	return c.internalClient.DeleteBackupVault(ctx, req, opts...)
+}
+
+// DeleteBackupVaultOperation returns a new DeleteBackupVaultOperation from a given name.
+// The name must be that of a previously created DeleteBackupVaultOperation, possibly from a different process.
+func (c *Client) DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation {
+	return c.internalClient.DeleteBackupVaultOperation(name)
+}
+
+// CreateBackup creates a backup from the volume specified in the request
+// The backup can be created from the given snapshot if specified in the
+// request. If no snapshot specified, there’ll be a new snapshot taken to
+// initiate the backup creation.
+func (c *Client) CreateBackup(ctx context.Context, req *netapppb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+	return c.internalClient.CreateBackup(ctx, req, opts...)
+}
+
+// CreateBackupOperation returns a new CreateBackupOperation from a given name.
+// The name must be that of a previously created CreateBackupOperation, possibly from a different process.
+func (c *Client) CreateBackupOperation(name string) *CreateBackupOperation {
+	return c.internalClient.CreateBackupOperation(name)
+}
+
+// GetBackup returns the description of the specified backup
+func (c *Client) GetBackup(ctx context.Context, req *netapppb.GetBackupRequest, opts ...gax.CallOption) (*netapppb.Backup, error) {
+	return c.internalClient.GetBackup(ctx, req, opts...)
+}
+
+// ListBackups returns descriptions of all backups for a backupVault.
+func (c *Client) ListBackups(ctx context.Context, req *netapppb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	return c.internalClient.ListBackups(ctx, req, opts...)
+}
+
+// DeleteBackup warning! This operation will permanently delete the backup.
+func (c *Client) DeleteBackup(ctx context.Context, req *netapppb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	return c.internalClient.DeleteBackup(ctx, req, opts...)
+}
+
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *Client) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	return c.internalClient.DeleteBackupOperation(name)
+}
+
+// UpdateBackup update backup with full spec.
+func (c *Client) UpdateBackup(ctx context.Context, req *netapppb.UpdateBackupRequest, opts ...gax.CallOption) (*UpdateBackupOperation, error) {
+	return c.internalClient.UpdateBackup(ctx, req, opts...)
+}
+
+// UpdateBackupOperation returns a new UpdateBackupOperation from a given name.
+// The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
+func (c *Client) UpdateBackupOperation(name string) *UpdateBackupOperation {
+	return c.internalClient.UpdateBackupOperation(name)
+}
+
+// CreateBackupPolicy creates new backup policy
+func (c *Client) CreateBackupPolicy(ctx context.Context, req *netapppb.CreateBackupPolicyRequest, opts ...gax.CallOption) (*CreateBackupPolicyOperation, error) {
+	return c.internalClient.CreateBackupPolicy(ctx, req, opts...)
+}
+
+// CreateBackupPolicyOperation returns a new CreateBackupPolicyOperation from a given name.
+// The name must be that of a previously created CreateBackupPolicyOperation, possibly from a different process.
+func (c *Client) CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation {
+	return c.internalClient.CreateBackupPolicyOperation(name)
+}
+
+// GetBackupPolicy returns the description of the specified backup policy by backup_policy_id.
+func (c *Client) GetBackupPolicy(ctx context.Context, req *netapppb.GetBackupPolicyRequest, opts ...gax.CallOption) (*netapppb.BackupPolicy, error) {
+	return c.internalClient.GetBackupPolicy(ctx, req, opts...)
+}
+
+// ListBackupPolicies returns list of all available backup policies.
+func (c *Client) ListBackupPolicies(ctx context.Context, req *netapppb.ListBackupPoliciesRequest, opts ...gax.CallOption) *BackupPolicyIterator {
+	return c.internalClient.ListBackupPolicies(ctx, req, opts...)
+}
+
+// UpdateBackupPolicy updates settings of a specific backup policy.
+func (c *Client) UpdateBackupPolicy(ctx context.Context, req *netapppb.UpdateBackupPolicyRequest, opts ...gax.CallOption) (*UpdateBackupPolicyOperation, error) {
+	return c.internalClient.UpdateBackupPolicy(ctx, req, opts...)
+}
+
+// UpdateBackupPolicyOperation returns a new UpdateBackupPolicyOperation from a given name.
+// The name must be that of a previously created UpdateBackupPolicyOperation, possibly from a different process.
+func (c *Client) UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation {
+	return c.internalClient.UpdateBackupPolicyOperation(name)
+}
+
+// DeleteBackupPolicy warning! This operation will permanently delete the backup policy.
+func (c *Client) DeleteBackupPolicy(ctx context.Context, req *netapppb.DeleteBackupPolicyRequest, opts ...gax.CallOption) (*DeleteBackupPolicyOperation, error) {
+	return c.internalClient.DeleteBackupPolicy(ctx, req, opts...)
+}
+
+// DeleteBackupPolicyOperation returns a new DeleteBackupPolicyOperation from a given name.
+// The name must be that of a previously created DeleteBackupPolicyOperation, possibly from a different process.
+func (c *Client) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation {
+	return c.internalClient.DeleteBackupPolicyOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -1096,7 +1462,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1159,9 +1527,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://netapp.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://netapp.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://netapp.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://netapp.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1171,7 +1542,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -2046,6 +2419,378 @@ func (c *gRPCClient) ReverseReplicationDirection(ctx context.Context, req *netap
 		return nil, err
 	}
 	return &ReverseReplicationDirectionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateBackupVault(ctx context.Context, req *netapppb.CreateBackupVaultRequest, opts ...gax.CallOption) (*CreateBackupVaultOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBackupVault[0:len((*c.CallOptions).CreateBackupVault):len((*c.CallOptions).CreateBackupVault)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateBackupVault(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackupVaultRequest, opts ...gax.CallOption) (*netapppb.BackupVault, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupVault[0:len((*c.CallOptions).GetBackupVault):len((*c.CallOptions).GetBackupVault)], opts...)
+	var resp *netapppb.BackupVault
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetBackupVault(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackupVaults[0:len((*c.CallOptions).ListBackupVaults):len((*c.CallOptions).ListBackupVaults)], opts...)
+	it := &BackupVaultIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupVaultsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupVault, string, error) {
+		resp := &netapppb.ListBackupVaultsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListBackupVaults(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackupVaults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateBackupVault(ctx context.Context, req *netapppb.UpdateBackupVaultRequest, opts ...gax.CallOption) (*UpdateBackupVaultOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_vault.name", url.QueryEscape(req.GetBackupVault().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackupVault[0:len((*c.CallOptions).UpdateBackupVault):len((*c.CallOptions).UpdateBackupVault)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateBackupVault(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteBackupVault(ctx context.Context, req *netapppb.DeleteBackupVaultRequest, opts ...gax.CallOption) (*DeleteBackupVaultOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBackupVault[0:len((*c.CallOptions).DeleteBackupVault):len((*c.CallOptions).DeleteBackupVault)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteBackupVault(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateBackup(ctx context.Context, req *netapppb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateBackup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetBackup(ctx context.Context, req *netapppb.GetBackupRequest, opts ...gax.CallOption) (*netapppb.Backup, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
+	var resp *netapppb.Backup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetBackup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
+	it := &BackupIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Backup, string, error) {
+		resp := &netapppb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListBackups(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteBackup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBackupRequest, opts ...gax.CallOption) (*UpdateBackupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackup[0:len((*c.CallOptions).UpdateBackup):len((*c.CallOptions).UpdateBackup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateBackup(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) CreateBackupPolicy(ctx context.Context, req *netapppb.CreateBackupPolicyRequest, opts ...gax.CallOption) (*CreateBackupPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CreateBackupPolicy[0:len((*c.CallOptions).CreateBackupPolicy):len((*c.CallOptions).CreateBackupPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CreateBackupPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBackupPolicyRequest, opts ...gax.CallOption) (*netapppb.BackupPolicy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupPolicy[0:len((*c.CallOptions).GetBackupPolicy):len((*c.CallOptions).GetBackupPolicy)], opts...)
+	var resp *netapppb.BackupPolicy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetBackupPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListBackupPoliciesRequest, opts ...gax.CallOption) *BackupPolicyIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ListBackupPolicies[0:len((*c.CallOptions).ListBackupPolicies):len((*c.CallOptions).ListBackupPolicies)], opts...)
+	it := &BackupPolicyIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupPoliciesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupPolicy, string, error) {
+		resp := &netapppb.ListBackupPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListBackupPolicies(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBackupPolicies(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.UpdateBackupPolicyRequest, opts ...gax.CallOption) (*UpdateBackupPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_policy.name", url.QueryEscape(req.GetBackupPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateBackupPolicy[0:len((*c.CallOptions).UpdateBackupPolicy):len((*c.CallOptions).UpdateBackupPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateBackupPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *gRPCClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.DeleteBackupPolicyRequest, opts ...gax.CallOption) (*DeleteBackupPolicyOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).DeleteBackupPolicy[0:len((*c.CallOptions).DeleteBackupPolicy):len((*c.CallOptions).DeleteBackupPolicy)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.DeleteBackupPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteBackupPolicyOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
@@ -4844,6 +5589,1116 @@ func (c *restClient) ReverseReplicationDirection(ctx context.Context, req *netap
 	}, nil
 }
 
+// CreateBackupVault creates new backup vault
+func (c *restClient) CreateBackupVault(ctx context.Context, req *netapppb.CreateBackupVaultRequest, opts ...gax.CallOption) (*CreateBackupVaultOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupVault()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/backupVaults", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("backupVaultId", fmt.Sprintf("%v", req.GetBackupVaultId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetBackupVault returns the description of the specified backup vault
+func (c *restClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackupVaultRequest, opts ...gax.CallOption) (*netapppb.BackupVault, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupVault[0:len((*c.CallOptions).GetBackupVault):len((*c.CallOptions).GetBackupVault)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.BackupVault{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBackupVaults returns list of all available backup vaults.
+func (c *restClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
+	it := &BackupVaultIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupVaultsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupVault, string, error) {
+		resp := &netapppb.ListBackupVaultsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backupVaults", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackupVaults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateBackupVault updates the settings of a specific backup vault.
+func (c *restClient) UpdateBackupVault(ctx context.Context, req *netapppb.UpdateBackupVaultRequest, opts ...gax.CallOption) (*UpdateBackupVaultOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupVault()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupVault().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_vault.name", url.QueryEscape(req.GetBackupVault().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteBackupVault warning! This operation will permanently delete the backup vault.
+func (c *restClient) DeleteBackupVault(ctx context.Context, req *netapppb.DeleteBackupVaultRequest, opts ...gax.CallOption) (*DeleteBackupVaultOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateBackup creates a backup from the volume specified in the request
+// The backup can be created from the given snapshot if specified in the
+// request. If no snapshot specified, there’ll be a new snapshot taken to
+// initiate the backup creation.
+func (c *restClient) CreateBackup(ctx context.Context, req *netapppb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("backupId", fmt.Sprintf("%v", req.GetBackupId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetBackup returns the description of the specified backup
+func (c *restClient) GetBackup(ctx context.Context, req *netapppb.GetBackupRequest, opts ...gax.CallOption) (*netapppb.Backup, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.Backup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBackups returns descriptions of all backups for a backupVault.
+func (c *restClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
+	it := &BackupIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupsRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Backup, string, error) {
+		resp := &netapppb.ListBackupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteBackup warning! This operation will permanently delete the backup.
+func (c *restClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBackupRequest, opts ...gax.CallOption) (*DeleteBackupOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateBackup update backup with full spec.
+func (c *restClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBackupRequest, opts ...gax.CallOption) (*UpdateBackupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackup().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup.name", url.QueryEscape(req.GetBackup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateBackupPolicy creates new backup policy
+func (c *restClient) CreateBackupPolicy(ctx context.Context, req *netapppb.CreateBackupPolicyRequest, opts ...gax.CallOption) (*CreateBackupPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/backupPolicies", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("backupPolicyId", fmt.Sprintf("%v", req.GetBackupPolicyId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &CreateBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetBackupPolicy returns the description of the specified backup policy by backup_policy_id.
+func (c *restClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBackupPolicyRequest, opts ...gax.CallOption) (*netapppb.BackupPolicy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetBackupPolicy[0:len((*c.CallOptions).GetBackupPolicy):len((*c.CallOptions).GetBackupPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.BackupPolicy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListBackupPolicies returns list of all available backup policies.
+func (c *restClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListBackupPoliciesRequest, opts ...gax.CallOption) *BackupPolicyIterator {
+	it := &BackupPolicyIterator{}
+	req = proto.Clone(req).(*netapppb.ListBackupPoliciesRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupPolicy, string, error) {
+		resp := &netapppb.ListBackupPoliciesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backupPolicies", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			httpRsp, err := c.httpClient.Do(httpReq)
+			if err != nil {
+				return err
+			}
+			defer httpRsp.Body.Close()
+
+			if err = googleapi.CheckResponse(httpRsp); err != nil {
+				return err
+			}
+
+			buf, err := io.ReadAll(httpRsp.Body)
+			if err != nil {
+				return err
+			}
+
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBackupPolicies(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateBackupPolicy updates settings of a specific backup policy.
+func (c *restClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.UpdateBackupPolicyRequest, opts ...gax.CallOption) (*UpdateBackupPolicyOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetBackupPolicy()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetBackupPolicy().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "backup_policy.name", url.QueryEscape(req.GetBackupPolicy().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpdateBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// DeleteBackupPolicy warning! This operation will permanently delete the backup policy.
+func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.DeleteBackupPolicyRequest, opts ...gax.CallOption) (*DeleteBackupPolicyOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &DeleteBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -5256,6 +7111,60 @@ func (c *restClient) CreateActiveDirectoryOperation(name string) *CreateActiveDi
 	}
 }
 
+// CreateBackupOperation returns a new CreateBackupOperation from a given name.
+// The name must be that of a previously created CreateBackupOperation, possibly from a different process.
+func (c *gRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
+	return &CreateBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateBackupOperation returns a new CreateBackupOperation from a given name.
+// The name must be that of a previously created CreateBackupOperation, possibly from a different process.
+func (c *restClient) CreateBackupOperation(name string) *CreateBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateBackupPolicyOperation returns a new CreateBackupPolicyOperation from a given name.
+// The name must be that of a previously created CreateBackupPolicyOperation, possibly from a different process.
+func (c *gRPCClient) CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation {
+	return &CreateBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateBackupPolicyOperation returns a new CreateBackupPolicyOperation from a given name.
+// The name must be that of a previously created CreateBackupPolicyOperation, possibly from a different process.
+func (c *restClient) CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// CreateBackupVaultOperation returns a new CreateBackupVaultOperation from a given name.
+// The name must be that of a previously created CreateBackupVaultOperation, possibly from a different process.
+func (c *gRPCClient) CreateBackupVaultOperation(name string) *CreateBackupVaultOperation {
+	return &CreateBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// CreateBackupVaultOperation returns a new CreateBackupVaultOperation from a given name.
+// The name must be that of a previously created CreateBackupVaultOperation, possibly from a different process.
+func (c *restClient) CreateBackupVaultOperation(name string) *CreateBackupVaultOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateBackupVaultOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
 // CreateKmsConfigOperation returns a new CreateKmsConfigOperation from a given name.
 // The name must be that of a previously created CreateKmsConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOperation {
@@ -5359,6 +7268,60 @@ func (c *gRPCClient) DeleteActiveDirectoryOperation(name string) *DeleteActiveDi
 func (c *restClient) DeleteActiveDirectoryOperation(name string) *DeleteActiveDirectoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteActiveDirectoryOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *gRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	return &DeleteBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteBackupOperation returns a new DeleteBackupOperation from a given name.
+// The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
+func (c *restClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteBackupPolicyOperation returns a new DeleteBackupPolicyOperation from a given name.
+// The name must be that of a previously created DeleteBackupPolicyOperation, possibly from a different process.
+func (c *gRPCClient) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation {
+	return &DeleteBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteBackupPolicyOperation returns a new DeleteBackupPolicyOperation from a given name.
+// The name must be that of a previously created DeleteBackupPolicyOperation, possibly from a different process.
+func (c *restClient) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// DeleteBackupVaultOperation returns a new DeleteBackupVaultOperation from a given name.
+// The name must be that of a previously created DeleteBackupVaultOperation, possibly from a different process.
+func (c *gRPCClient) DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation {
+	return &DeleteBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// DeleteBackupVaultOperation returns a new DeleteBackupVaultOperation from a given name.
+// The name must be that of a previously created DeleteBackupVaultOperation, possibly from a different process.
+func (c *restClient) DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteBackupVaultOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}
@@ -5557,6 +7520,60 @@ func (c *gRPCClient) UpdateActiveDirectoryOperation(name string) *UpdateActiveDi
 func (c *restClient) UpdateActiveDirectoryOperation(name string) *UpdateActiveDirectoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateActiveDirectoryOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateBackupOperation returns a new UpdateBackupOperation from a given name.
+// The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
+	return &UpdateBackupOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateBackupOperation returns a new UpdateBackupOperation from a given name.
+// The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
+func (c *restClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBackupOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateBackupPolicyOperation returns a new UpdateBackupPolicyOperation from a given name.
+// The name must be that of a previously created UpdateBackupPolicyOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation {
+	return &UpdateBackupPolicyOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateBackupPolicyOperation returns a new UpdateBackupPolicyOperation from a given name.
+// The name must be that of a previously created UpdateBackupPolicyOperation, possibly from a different process.
+func (c *restClient) UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBackupPolicyOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateBackupVaultOperation returns a new UpdateBackupVaultOperation from a given name.
+// The name must be that of a previously created UpdateBackupVaultOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation {
+	return &UpdateBackupVaultOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateBackupVaultOperation returns a new UpdateBackupVaultOperation from a given name.
+// The name must be that of a previously created UpdateBackupVaultOperation, possibly from a different process.
+func (c *restClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBackupVaultOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -56,10 +56,13 @@ type ModelCallOptions struct {
 func defaultModelGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -188,7 +191,7 @@ func defaultModelCallOptions() *ModelCallOptions {
 	}
 }
 
-// internalModelClient is an interface that defines the methods available from Retail API.
+// internalModelClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalModelClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -207,7 +210,7 @@ type internalModelClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ModelClient is a client for interacting with Retail API.
+// ModelClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for performing CRUD operations on models.
@@ -326,7 +329,7 @@ func (c *ModelClient) ListOperations(ctx context.Context, req *longrunningpb.Lis
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// modelGRPCClient is a client for interacting with Retail API over gRPC transport.
+// modelGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type modelGRPCClient struct {
@@ -422,7 +425,9 @@ func (c *modelGRPCClient) Connection() *grpc.ClientConn {
 func (c *modelGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when

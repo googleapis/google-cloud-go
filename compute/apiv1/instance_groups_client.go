@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -169,7 +169,7 @@ func (c *InstanceGroupsClient) AddInstances(ctx context.Context, req *computepb.
 	return c.internalClient.AddInstances(ctx, req, opts...)
 }
 
-// AggregatedList retrieves the list of instance groups and sorts them by zone.
+// AggregatedList retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *InstanceGroupsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -261,9 +261,12 @@ func NewInstanceGroupsRESTClient(ctx context.Context, opts ...option.ClientOptio
 func defaultInstanceGroupsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -273,7 +276,9 @@ func defaultInstanceGroupsRESTClientOptions() []option.ClientOption {
 func (c *instanceGroupsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -371,7 +376,7 @@ func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *comput
 	return op, nil
 }
 
-// AggregatedList retrieves the list of instance groups and sorts them by zone.
+// AggregatedList retrieves the list of instance groups and sorts them by zone. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupsRequest, opts ...gax.CallOption) *InstanceGroupsScopedListPairIterator {
 	it := &InstanceGroupsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListInstanceGroupsRequest)

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ type CallOptions struct {
 	GetFirewallPolicy                    []gax.CallOption
 	UpdateFirewallPolicy                 []gax.CallOption
 	DeleteFirewallPolicy                 []gax.CallOption
+	ReorderFirewallPolicies              []gax.CallOption
 	ListRelatedAccountGroups             []gax.CallOption
 	ListRelatedAccountGroupMemberships   []gax.CallOption
 	SearchRelatedAccountGroupMemberships []gax.CallOption
@@ -60,10 +61,13 @@ type CallOptions struct {
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recaptchaenterprise.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("recaptchaenterprise.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("recaptchaenterprise.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://recaptchaenterprise.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -100,6 +104,7 @@ func defaultCallOptions() *CallOptions {
 		GetFirewallPolicy:                    []gax.CallOption{},
 		UpdateFirewallPolicy:                 []gax.CallOption{},
 		DeleteFirewallPolicy:                 []gax.CallOption{},
+		ReorderFirewallPolicies:              []gax.CallOption{},
 		ListRelatedAccountGroups:             []gax.CallOption{},
 		ListRelatedAccountGroupMemberships:   []gax.CallOption{},
 		SearchRelatedAccountGroupMemberships: []gax.CallOption{},
@@ -126,6 +131,7 @@ type internalClient interface {
 	GetFirewallPolicy(context.Context, *recaptchaenterprisepb.GetFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	UpdateFirewallPolicy(context.Context, *recaptchaenterprisepb.UpdateFirewallPolicyRequest, ...gax.CallOption) (*recaptchaenterprisepb.FirewallPolicy, error)
 	DeleteFirewallPolicy(context.Context, *recaptchaenterprisepb.DeleteFirewallPolicyRequest, ...gax.CallOption) error
+	ReorderFirewallPolicies(context.Context, *recaptchaenterprisepb.ReorderFirewallPoliciesRequest, ...gax.CallOption) (*recaptchaenterprisepb.ReorderFirewallPoliciesResponse, error)
 	ListRelatedAccountGroups(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, ...gax.CallOption) *RelatedAccountGroupIterator
 	ListRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.ListRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
 	SearchRelatedAccountGroupMemberships(context.Context, *recaptchaenterprisepb.SearchRelatedAccountGroupMembershipsRequest, ...gax.CallOption) *RelatedAccountGroupMembershipIterator
@@ -252,6 +258,11 @@ func (c *Client) DeleteFirewallPolicy(ctx context.Context, req *recaptchaenterpr
 	return c.internalClient.DeleteFirewallPolicy(ctx, req, opts...)
 }
 
+// ReorderFirewallPolicies reorders all firewall policies.
+func (c *Client) ReorderFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ReorderFirewallPoliciesRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.ReorderFirewallPoliciesResponse, error) {
+	return c.internalClient.ReorderFirewallPolicies(ctx, req, opts...)
+}
+
 // ListRelatedAccountGroups list groups of related accounts.
 func (c *Client) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {
 	return c.internalClient.ListRelatedAccountGroups(ctx, req, opts...)
@@ -330,7 +341,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -655,6 +668,24 @@ func (c *gRPCClient) DeleteFirewallPolicy(ctx context.Context, req *recaptchaent
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) ReorderFirewallPolicies(ctx context.Context, req *recaptchaenterprisepb.ReorderFirewallPoliciesRequest, opts ...gax.CallOption) (*recaptchaenterprisepb.ReorderFirewallPoliciesResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ReorderFirewallPolicies[0:len((*c.CallOptions).ReorderFirewallPolicies):len((*c.CallOptions).ReorderFirewallPolicies)], opts...)
+	var resp *recaptchaenterprisepb.ReorderFirewallPoliciesResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ReorderFirewallPolicies(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) ListRelatedAccountGroups(ctx context.Context, req *recaptchaenterprisepb.ListRelatedAccountGroupsRequest, opts ...gax.CallOption) *RelatedAccountGroupIterator {

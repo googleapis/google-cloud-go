@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,38 +48,44 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListClusters        []gax.CallOption
-	GetCluster          []gax.CallOption
-	CreateCluster       []gax.CallOption
-	UpdateCluster       []gax.CallOption
-	DeleteCluster       []gax.CallOption
-	GenerateAccessToken []gax.CallOption
-	ListNodePools       []gax.CallOption
-	GetNodePool         []gax.CallOption
-	CreateNodePool      []gax.CallOption
-	UpdateNodePool      []gax.CallOption
-	DeleteNodePool      []gax.CallOption
-	ListMachines        []gax.CallOption
-	GetMachine          []gax.CallOption
-	ListVpnConnections  []gax.CallOption
-	GetVpnConnection    []gax.CallOption
-	CreateVpnConnection []gax.CallOption
-	DeleteVpnConnection []gax.CallOption
-	GetLocation         []gax.CallOption
-	ListLocations       []gax.CallOption
-	CancelOperation     []gax.CallOption
-	DeleteOperation     []gax.CallOption
-	GetOperation        []gax.CallOption
-	ListOperations      []gax.CallOption
+	ListClusters              []gax.CallOption
+	GetCluster                []gax.CallOption
+	CreateCluster             []gax.CallOption
+	UpdateCluster             []gax.CallOption
+	UpgradeCluster            []gax.CallOption
+	DeleteCluster             []gax.CallOption
+	GenerateAccessToken       []gax.CallOption
+	GenerateOfflineCredential []gax.CallOption
+	ListNodePools             []gax.CallOption
+	GetNodePool               []gax.CallOption
+	CreateNodePool            []gax.CallOption
+	UpdateNodePool            []gax.CallOption
+	DeleteNodePool            []gax.CallOption
+	ListMachines              []gax.CallOption
+	GetMachine                []gax.CallOption
+	ListVpnConnections        []gax.CallOption
+	GetVpnConnection          []gax.CallOption
+	CreateVpnConnection       []gax.CallOption
+	DeleteVpnConnection       []gax.CallOption
+	GetServerConfig           []gax.CallOption
+	GetLocation               []gax.CallOption
+	ListLocations             []gax.CallOption
+	CancelOperation           []gax.CallOption
+	DeleteOperation           []gax.CallOption
+	GetOperation              []gax.CallOption
+	ListOperations            []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("edgecontainer.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("edgecontainer.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("edgecontainer.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://edgecontainer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -117,11 +123,35 @@ func defaultCallOptions() *CallOptions {
 		UpdateCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpgradeCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GenerateAccessToken: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GenerateOfflineCredential: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		ListNodePools: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -209,6 +239,18 @@ func defaultCallOptions() *CallOptions {
 		},
 		DeleteVpnConnection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
 		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
@@ -249,11 +291,33 @@ func defaultRESTCallOptions() *CallOptions {
 		UpdateCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		UpgradeCluster: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		DeleteCluster: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		GenerateAccessToken: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		GenerateOfflineCredential: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
 		},
 		ListNodePools: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -336,6 +400,17 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteVpnConnection: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		GetServerConfig: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -356,9 +431,12 @@ type internalClient interface {
 	CreateClusterOperation(name string) *CreateClusterOperation
 	UpdateCluster(context.Context, *edgecontainerpb.UpdateClusterRequest, ...gax.CallOption) (*UpdateClusterOperation, error)
 	UpdateClusterOperation(name string) *UpdateClusterOperation
+	UpgradeCluster(context.Context, *edgecontainerpb.UpgradeClusterRequest, ...gax.CallOption) (*UpgradeClusterOperation, error)
+	UpgradeClusterOperation(name string) *UpgradeClusterOperation
 	DeleteCluster(context.Context, *edgecontainerpb.DeleteClusterRequest, ...gax.CallOption) (*DeleteClusterOperation, error)
 	DeleteClusterOperation(name string) *DeleteClusterOperation
 	GenerateAccessToken(context.Context, *edgecontainerpb.GenerateAccessTokenRequest, ...gax.CallOption) (*edgecontainerpb.GenerateAccessTokenResponse, error)
+	GenerateOfflineCredential(context.Context, *edgecontainerpb.GenerateOfflineCredentialRequest, ...gax.CallOption) (*edgecontainerpb.GenerateOfflineCredentialResponse, error)
 	ListNodePools(context.Context, *edgecontainerpb.ListNodePoolsRequest, ...gax.CallOption) *NodePoolIterator
 	GetNodePool(context.Context, *edgecontainerpb.GetNodePoolRequest, ...gax.CallOption) (*edgecontainerpb.NodePool, error)
 	CreateNodePool(context.Context, *edgecontainerpb.CreateNodePoolRequest, ...gax.CallOption) (*CreateNodePoolOperation, error)
@@ -375,6 +453,7 @@ type internalClient interface {
 	CreateVpnConnectionOperation(name string) *CreateVpnConnectionOperation
 	DeleteVpnConnection(context.Context, *edgecontainerpb.DeleteVpnConnectionRequest, ...gax.CallOption) (*DeleteVpnConnectionOperation, error)
 	DeleteVpnConnectionOperation(name string) *DeleteVpnConnectionOperation
+	GetServerConfig(context.Context, *edgecontainerpb.GetServerConfigRequest, ...gax.CallOption) (*edgecontainerpb.ServerConfig, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -456,6 +535,17 @@ func (c *Client) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return c.internalClient.UpdateClusterOperation(name)
 }
 
+// UpgradeCluster upgrades a single cluster.
+func (c *Client) UpgradeCluster(ctx context.Context, req *edgecontainerpb.UpgradeClusterRequest, opts ...gax.CallOption) (*UpgradeClusterOperation, error) {
+	return c.internalClient.UpgradeCluster(ctx, req, opts...)
+}
+
+// UpgradeClusterOperation returns a new UpgradeClusterOperation from a given name.
+// The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
+func (c *Client) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
+	return c.internalClient.UpgradeClusterOperation(name)
+}
+
 // DeleteCluster deletes a single Cluster.
 func (c *Client) DeleteCluster(ctx context.Context, req *edgecontainerpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	return c.internalClient.DeleteCluster(ctx, req, opts...)
@@ -470,6 +560,11 @@ func (c *Client) DeleteClusterOperation(name string) *DeleteClusterOperation {
 // GenerateAccessToken generates an access token for a Cluster.
 func (c *Client) GenerateAccessToken(ctx context.Context, req *edgecontainerpb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*edgecontainerpb.GenerateAccessTokenResponse, error) {
 	return c.internalClient.GenerateAccessToken(ctx, req, opts...)
+}
+
+// GenerateOfflineCredential generates an offline credential for a Cluster.
+func (c *Client) GenerateOfflineCredential(ctx context.Context, req *edgecontainerpb.GenerateOfflineCredentialRequest, opts ...gax.CallOption) (*edgecontainerpb.GenerateOfflineCredentialResponse, error) {
+	return c.internalClient.GenerateOfflineCredential(ctx, req, opts...)
 }
 
 // ListNodePools lists NodePools in a given project and location.
@@ -555,6 +650,11 @@ func (c *Client) DeleteVpnConnection(ctx context.Context, req *edgecontainerpb.D
 // The name must be that of a previously created DeleteVpnConnectionOperation, possibly from a different process.
 func (c *Client) DeleteVpnConnectionOperation(name string) *DeleteVpnConnectionOperation {
 	return c.internalClient.DeleteVpnConnectionOperation(name)
+}
+
+// GetServerConfig gets the server config.
+func (c *Client) GetServerConfig(ctx context.Context, req *edgecontainerpb.GetServerConfigRequest, opts ...gax.CallOption) (*edgecontainerpb.ServerConfig, error) {
+	return c.internalClient.GetServerConfig(ctx, req, opts...)
 }
 
 // GetLocation gets information about a location.
@@ -673,7 +773,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -737,9 +839,12 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 func defaultRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://edgecontainer.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://edgecontainer.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://edgecontainer.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://edgecontainer.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -749,7 +854,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -870,6 +977,26 @@ func (c *gRPCClient) UpdateCluster(ctx context.Context, req *edgecontainerpb.Upd
 	}, nil
 }
 
+func (c *gRPCClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.UpgradeClusterRequest, opts ...gax.CallOption) (*UpgradeClusterOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpgradeCluster[0:len((*c.CallOptions).UpgradeCluster):len((*c.CallOptions).UpgradeCluster)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpgradeCluster(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpgradeClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *gRPCClient) DeleteCluster(ctx context.Context, req *edgecontainerpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -900,6 +1027,24 @@ func (c *gRPCClient) GenerateAccessToken(ctx context.Context, req *edgecontainer
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.GenerateAccessToken(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GenerateOfflineCredential(ctx context.Context, req *edgecontainerpb.GenerateOfflineCredentialRequest, opts ...gax.CallOption) (*edgecontainerpb.GenerateOfflineCredentialResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "cluster", url.QueryEscape(req.GetCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateOfflineCredential[0:len((*c.CallOptions).GenerateOfflineCredential):len((*c.CallOptions).GenerateOfflineCredential)], opts...)
+	var resp *edgecontainerpb.GenerateOfflineCredentialResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GenerateOfflineCredential(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -1198,6 +1343,24 @@ func (c *gRPCClient) DeleteVpnConnection(ctx context.Context, req *edgecontainer
 	return &DeleteVpnConnectionOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) GetServerConfig(ctx context.Context, req *edgecontainerpb.GetServerConfigRequest, opts ...gax.CallOption) (*edgecontainerpb.ServerConfig, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetServerConfig[0:len((*c.CallOptions).GetServerConfig):len((*c.CallOptions).GetServerConfig)], opts...)
+	var resp *edgecontainerpb.ServerConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetServerConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1667,6 +1830,76 @@ func (c *restClient) UpdateCluster(ctx context.Context, req *edgecontainerpb.Upd
 	}, nil
 }
 
+// UpgradeCluster upgrades a single cluster.
+func (c *restClient) UpgradeCluster(ctx context.Context, req *edgecontainerpb.UpgradeClusterRequest, opts ...gax.CallOption) (*UpgradeClusterOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:upgrade", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	return &UpgradeClusterOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // DeleteCluster deletes a single Cluster.
 func (c *restClient) DeleteCluster(ctx context.Context, req *edgecontainerpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1756,6 +1989,66 @@ func (c *restClient) GenerateAccessToken(ctx context.Context, req *edgecontainer
 	opts = append((*c.CallOptions).GenerateAccessToken[0:len((*c.CallOptions).GenerateAccessToken):len((*c.CallOptions).GenerateAccessToken)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &edgecontainerpb.GenerateAccessTokenResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GenerateOfflineCredential generates an offline credential for a Cluster.
+func (c *restClient) GenerateOfflineCredential(ctx context.Context, req *edgecontainerpb.GenerateOfflineCredentialRequest, opts ...gax.CallOption) (*edgecontainerpb.GenerateOfflineCredentialResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:generateOfflineCredential", req.GetCluster())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "cluster", url.QueryEscape(req.GetCluster()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GenerateOfflineCredential[0:len((*c.CallOptions).GenerateOfflineCredential):len((*c.CallOptions).GenerateOfflineCredential)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &edgecontainerpb.GenerateOfflineCredentialResponse{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2624,6 +2917,66 @@ func (c *restClient) DeleteVpnConnection(ctx context.Context, req *edgecontainer
 	}, nil
 }
 
+// GetServerConfig gets the server config.
+func (c *restClient) GetServerConfig(ctx context.Context, req *edgecontainerpb.GetServerConfigRequest, opts ...gax.CallOption) (*edgecontainerpb.ServerConfig, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/serverConfig", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetServerConfig[0:len((*c.CallOptions).GetServerConfig):len((*c.CallOptions).GetServerConfig)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &edgecontainerpb.ServerConfig{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // GetLocation gets information about a location.
 func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -3157,6 +3510,24 @@ func (c *gRPCClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperati
 func (c *restClient) UpdateNodePoolOperation(name string) *UpdateNodePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateNodePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpgradeClusterOperation returns a new UpgradeClusterOperation from a given name.
+// The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
+func (c *gRPCClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
+	return &UpgradeClusterOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpgradeClusterOperation returns a new UpgradeClusterOperation from a given name.
+// The name must be that of a previously created UpgradeClusterOperation, possibly from a different process.
+func (c *restClient) UpgradeClusterOperation(name string) *UpgradeClusterOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpgradeClusterOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

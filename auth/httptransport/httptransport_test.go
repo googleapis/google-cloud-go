@@ -22,17 +22,19 @@ import (
 	"testing"
 
 	"cloud.google.com/go/auth"
-	"cloud.google.com/go/auth/detect"
+	"cloud.google.com/go/auth/credentials"
 	"cloud.google.com/go/auth/internal"
 	"github.com/google/go-cmp/cmp"
 )
 
 func TestAddAuthorizationMiddleware(t *testing.T) {
-	tp := staticTP("fakeToken")
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: staticTP("fakeToken"),
+	})
 	tests := []struct {
 		name    string
 		client  *http.Client
-		tp      auth.TokenProvider
+		creds   *auth.Credentials
 		wantErr bool
 		want    string
 	}{
@@ -42,30 +44,30 @@ func TestAddAuthorizationMiddleware(t *testing.T) {
 		},
 		{
 			name:    "missing client field",
-			tp:      tp,
+			creds:   creds,
 			wantErr: true,
 		},
 		{
-			name:    "missing TokenProvider field",
+			name:    "missing creds field",
 			client:  internal.CloneDefaultClient(),
 			wantErr: true,
 		},
 		{
 			name:   "works",
 			client: internal.CloneDefaultClient(),
-			tp:     tp,
+			creds:  creds,
 			want:   "fakeToken",
 		},
 		{
 			name:   "works, no transport",
 			client: &http.Client{},
-			tp:     tp,
+			creds:  creds,
 			want:   "fakeToken",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			err := AddAuthorizationMiddleware(tt.client, tt.tp)
+			err := AddAuthorizationMiddleware(tt.client, tt.creds)
 			if tt.wantErr && err == nil {
 				t.Fatalf("AddAuthorizationMiddleware() = nil, want error")
 			}
@@ -85,6 +87,28 @@ func TestAddAuthorizationMiddleware(t *testing.T) {
 	}
 }
 
+func TestAddAuthorizationMiddleware_HandlesNonTransportAsDefaultTransport(t *testing.T) {
+	client := &http.Client{}
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: staticTP("fakeToken"),
+	})
+	dt := http.DefaultTransport
+
+	http.DefaultTransport = &rt{}
+	defer func() { http.DefaultTransport = dt }()
+
+	err := AddAuthorizationMiddleware(client, creds)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	at := client.Transport.(*authTransport)
+	_, ok := at.base.(*rt)
+	if !ok {
+		t.Errorf("got %T, want %T", at.base, &rt{})
+	}
+}
+
 func TestNewClient_FailsValidation(t *testing.T) {
 	tests := []struct {
 		name string
@@ -97,14 +121,16 @@ func TestNewClient_FailsValidation(t *testing.T) {
 			name: "has creds with disable options, tp",
 			opts: &Options{
 				DisableAuthentication: true,
-				TokenProvider:         staticTP("fakeToken"),
+				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+					TokenProvider: staticTP("fakeToken"),
+				}),
 			},
 		},
 		{
 			name: "has creds with disable options, cred file",
 			opts: &Options{
 				DisableAuthentication: true,
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsFile: "abc.123",
 				},
 			},
@@ -113,7 +139,7 @@ func TestNewClient_FailsValidation(t *testing.T) {
 			name: "has creds with disable options, cred json",
 			opts: &Options{
 				DisableAuthentication: true,
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsJSON: []byte(`{"foo":"bar"}`),
 				},
 			},
@@ -129,21 +155,42 @@ func TestNewClient_FailsValidation(t *testing.T) {
 	}
 }
 
+func TestDial_SkipValidation(t *testing.T) {
+	opts := &Options{
+		DisableAuthentication: true,
+		Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: staticTP("fakeToken"),
+		}),
+	}
+	t.Run("invalid opts", func(t *testing.T) {
+		if err := opts.validate(); err == nil {
+			t.Fatalf("opts.validate() = nil, want error")
+		}
+	})
+
+	t.Run("skip invalid opts", func(t *testing.T) {
+		opts.InternalOptions = &InternalOptions{SkipValidation: true}
+		if err := opts.validate(); err != nil {
+			t.Fatalf("opts.validate() = %v, want nil", err)
+		}
+	})
+}
+
 func TestOptions_ResolveDetectOptions(t *testing.T) {
 	tests := []struct {
 		name string
 		in   *Options
-		want *detect.Options
+		want *credentials.DetectOptions
 	}{
 		{
 			name: "base",
 			in: &Options{
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Scopes:          []string{"scope"},
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:          []string{"scope"},
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -154,12 +201,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 				InternalOptions: &InternalOptions{
 					EnableJWTWithScope: true,
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Scopes:          []string{"scope"},
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:           []string{"scope"},
 				CredentialsFile:  "/path/to/a/file",
 				UseSelfSignedJWT: true,
@@ -168,12 +215,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 		{
 			name: "self-signed, with aud",
 			in: &Options{
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Audience:        "aud",
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Audience:         "aud",
 				CredentialsFile:  "/path/to/a/file",
 				UseSelfSignedJWT: true,
@@ -186,11 +233,11 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 					DefaultScopes:   []string{"default"},
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:          []string{"default"},
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -202,12 +249,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 					DefaultScopes:   []string{"default"},
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Scopes:          []string{"non-default"},
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Scopes:          []string{"non-default"},
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -219,12 +266,12 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 					DefaultScopes:   []string{"default"},
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					Audience:        "non-default",
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Audience:         "non-default",
 				CredentialsFile:  "/path/to/a/file",
 				UseSelfSignedJWT: true,
@@ -236,11 +283,11 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 				InternalOptions: &InternalOptions{
 					DefaultAudience: "default",
 				},
-				DetectOpts: &detect.Options{
+				DetectOpts: &credentials.DetectOptions{
 					CredentialsFile: "/path/to/a/file",
 				},
 			},
-			want: &detect.Options{
+			want: &credentials.DetectOptions{
 				Audience:        "default",
 				CredentialsFile: "/path/to/a/file",
 			},
@@ -259,7 +306,7 @@ func TestOptions_ResolveDetectOptions(t *testing.T) {
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if got := r.Header.Get("Authorization"); got == "" {
 			t.Errorf(`got "", want an auth token`)
@@ -275,9 +322,9 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	client, err := NewClient(&Options{
 		Headers: http.Header{"Foo": []string{wantHeader}},
 		InternalOptions: &InternalOptions{
-			DefaultEndpoint: ts.URL,
+			DefaultEndpointTemplate: ts.URL,
 		},
-		DetectOpts: &detect.Options{
+		DetectOpts: &credentials.DetectOptions{
 			Audience:         ts.URL,
 			CredentialsFile:  "../internal/testdata/sa.json",
 			UseSelfSignedJWT: true,
@@ -299,7 +346,7 @@ func TestNewClient_APIKey(t *testing.T) {
 	testQuota := "testquota"
 	apiKey := "thereisnospoon"
 	wantHeader := "bar"
-	t.Setenv("GOOGLE_CLOUD_QUOTA_PROJECT", testQuota)
+	t.Setenv(internal.QuotaProjectEnvVar, testQuota)
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		got := r.URL.Query().Get("key")
 		if got != apiKey {
@@ -325,10 +372,46 @@ func TestNewClient_APIKey(t *testing.T) {
 	}
 }
 
+func TestNewClient_BaseRoundTripper(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got := r.Header.Get("Foo")
+		if want := "foo"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		got = r.Header.Get("Bar")
+		if want := "bar"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+	}))
+	defer ts.Close()
+	client, err := NewClient(&Options{
+		BaseRoundTripper: &rt{key: "Bar", value: "bar"},
+		Headers:          http.Header{"Foo": []string{"foo"}},
+		APIKey:           "key",
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+	if _, err := client.Get(ts.URL); err != nil {
+		t.Fatalf("client.Get() = %v", err)
+	}
+}
+
 type staticTP string
 
 func (tp staticTP) Token(context.Context) (*auth.Token, error) {
 	return &auth.Token{
 		Value: string(tp),
 	}, nil
+}
+
+type rt struct {
+	key   string
+	value string
+}
+
+func (r *rt) RoundTrip(req *http.Request) (*http.Response, error) {
+	req2 := req.Clone(req.Context())
+	req2.Header.Add(r.key, r.value)
+	return http.DefaultTransport.RoundTrip(req2)
 }

@@ -1,5 +1,30 @@
 # Changes
 
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.14.0...firestore/v1.15.0) (2024-03-05)
+
+
+### Features
+
+* **firestore/apiv1:** Add DeleteDatabase API and delete protection ([#9185](https://github.com/googleapis/google-cloud-go/issues/9185)) ([ec9b526](https://github.com/googleapis/google-cloud-go/commit/ec9b5268627734c40efd15353cf4bc83a837ff3a))
+* **firestore/apiv1:** Expose Firestore PITR fields in Database to stable ([5132d0f](https://github.com/googleapis/google-cloud-go/commit/5132d0fea3a5ac902a2c9eee865241ed4509a5f4))
+* **firestore:** Add new types QueryMode, QueryPlan, ResultSetStats ([82054d0](https://github.com/googleapis/google-cloud-go/commit/82054d0e6905358e48517cbc8ea844dfb624082c))
+
+
+### Bug Fixes
+
+* **firestore:** Bump google.golang.org/api to v0.149.0 ([8d2ab9f](https://github.com/googleapis/google-cloud-go/commit/8d2ab9f320a86c1c0fab90513fc05861561d0880))
+* **firestore:** Correct the cursors when LimitToLast is used ([#9413](https://github.com/googleapis/google-cloud-go/issues/9413)) ([2090651](https://github.com/googleapis/google-cloud-go/commit/2090651b4a7a1dc3be5af4e7ac4607fbc3ffccac))
+* **firestore:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+* **firestore:** Remove types QueryMode, QueryPlan, ResultSetStats ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+* **firestore:** Return status code from bulkwriter results ([#9030](https://github.com/googleapis/google-cloud-go/issues/9030)) ([e8223c6](https://github.com/googleapis/google-cloud-go/commit/e8223c6ee544237b54b351e421b7092dc3b237a6))
+* **firestore:** Update grpc-go to v1.56.3 ([343cea8](https://github.com/googleapis/google-cloud-go/commit/343cea8c43b1e31ae21ad50ad31d3b0b60143f8c))
+* **firestore:** Update grpc-go to v1.59.0 ([81a97b0](https://github.com/googleapis/google-cloud-go/commit/81a97b06cb28b25432e4ece595c55a9857e960b7))
+
+
+### Documentation
+
+* **firestore/apiv1:** Fix formatting due to unclosed backtick ([0500c7a](https://github.com/googleapis/google-cloud-go/commit/0500c7a7f9a9e8629a091558fa258ca7c5028474))
+
 ## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/firestore/v1.13.0...firestore/v1.14.0) (2023-10-19)
 
 
@@ -167,3 +192,5 @@
 
 This is the first tag to carve out firestore as its own module. See:
 https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+
+

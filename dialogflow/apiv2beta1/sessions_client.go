@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package dialogflow
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -58,10 +59,13 @@ type SessionsCallOptions struct {
 func defaultSessionsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dialogflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -302,7 +306,9 @@ func (c *sessionsGRPCClient) Connection() *grpc.ClientConn {
 func (c *sessionsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -353,9 +359,12 @@ func NewSessionsRESTClient(ctx context.Context, opts ...option.ClientOption) (*S
 func defaultSessionsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dialogflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dialogflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dialogflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -365,7 +374,9 @@ func defaultSessionsRESTClientOptions() []option.ClientOption {
 func (c *sessionsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -654,7 +665,7 @@ func (c *sessionsRESTClient) DetectIntent(ctx context.Context, req *dialogflowpb
 //
 // This method is not supported for the REST transport.
 func (c *sessionsRESTClient) StreamingDetectIntent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Sessions_StreamingDetectIntentClient, error) {
-	return nil, fmt.Errorf("StreamingDetectIntent not yet supported for REST clients")
+	return nil, errors.New("StreamingDetectIntent not yet supported for REST clients")
 }
 
 // GetLocation gets information about a location.

@@ -99,6 +99,7 @@ type sessionClient struct {
 	batchTimeout  time.Duration
 	logger        *log.Logger
 	callOptions   *vkit.CallOptions
+	otConfig      *openTelemetryConfig
 }
 
 // newSessionClient creates a session client to use for a database.
@@ -163,6 +164,9 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", ToSpannerError(err))
 		}
+	}
+	if metricErr := recordGFELatencyMetricsOT(ctx, md, "createSession", sc.otConfig); metricErr != nil {
+		trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
 	}
 	if err != nil {
 		return nil, ToSpannerError(err)
@@ -285,6 +289,9 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 				trace.TracePrintf(ctx, nil, "Error in Capturing GFE Latency and Header Missing count. Try disabling and rerunning. Error: %v", err)
 			}
 		}
+		if metricErr := recordGFELatencyMetricsOT(ctx, mdForGFELatency, "executeBatchCreateSessions", sc.otConfig); metricErr != nil {
+			trace.TracePrintf(ctx, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", metricErr)
+		}
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)
 			consumer.sessionCreationFailed(ToSpannerError(err), remainingCreateCount)
@@ -321,9 +328,15 @@ func (sc *sessionClient) sessionWithID(id string) (*session, error) {
 // session. Using the same channel for all gRPC calls for a session ensures the
 // optimal usage of server side caches.
 func (sc *sessionClient) nextClient() (*vkit.Client, error) {
-	// This call should never return an error as we are passing in an existing
-	// connection, so we can safely ignore it.
-	client, err := vkit.NewClient(context.Background(), option.WithGRPCConn(sc.connPool.Conn()))
+	var clientOpt option.ClientOption
+	if _, ok := sc.connPool.(*gmeWrapper); ok {
+		// Pass GCPMultiEndpoint as a pool.
+		clientOpt = gtransport.WithConnPool(sc.connPool)
+	} else {
+		// Pick a grpc.ClientConn from a regular pool.
+		clientOpt = option.WithGRPCConn(sc.connPool.Conn())
+	}
+	client, err := vkit.NewClient(context.Background(), clientOpt)
 	if err != nil {
 		return nil, err
 	}

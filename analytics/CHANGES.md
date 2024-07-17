@@ -1,5 +1,59 @@
 # Changes
 
+## [0.23.5](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.4...analytics/v0.23.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* **analytics:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.23.4](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.3...analytics/v0.23.4) (2024-07-01)
+
+
+### Bug Fixes
+
+* **analytics:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [0.23.3](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.2...analytics/v0.23.3) (2024-06-26)
+
+
+### Bug Fixes
+
+* **analytics:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [0.23.2](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.1...analytics/v0.23.2) (2024-05-01)
+
+
+### Bug Fixes
+
+* **analytics:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [0.23.1](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.23.0...analytics/v0.23.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **analytics:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.23.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.22.0...analytics/v0.23.0) (2024-01-30)
+
+
+### Features
+
+* **analytics/admin:** Add `GetCalculatedMetric`, `CreateCalculatedMetric`, `ListCalculatedMetrics`, `UpdateCalculatedMetric`, `DeleteCalculatedMetric` methods to the Admin API v1alpha ([97d62c7](https://github.com/googleapis/google-cloud-go/commit/97d62c7a6a305c47670ea9c147edc444f4bf8620))
+
+
+### Bug Fixes
+
+* **analytics:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.6...analytics/v0.22.0) (2024-01-03)
+
+
+### Features
+
+* **analytics/admin:** Add `GetSubpropertyEventFilter`, `ListSubpropertyEventFilters` methods to the Admin API v1 alpha ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
 ## [0.21.6](https://github.com/googleapis/google-cloud-go/compare/analytics/v0.21.5...analytics/v0.21.6) (2023-11-01)
 
 

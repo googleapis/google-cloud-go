@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -60,6 +60,31 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
+func ExampleClient_BatchCreateResourceValueConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.BatchCreateResourceValueConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#BatchCreateResourceValueConfigsRequest.
+	}
+	resp, err := c.BatchCreateResourceValueConfigs(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_BulkMuteFindings() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -108,6 +133,31 @@ func ExampleClient_CreateBigQueryExport() {
 		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#CreateBigQueryExportRequest.
 	}
 	resp, err := c.CreateBigQueryExport(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateEventThreatDetectionCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.CreateEventThreatDetectionCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#CreateEventThreatDetectionCustomModuleRequest.
+	}
+	resp, err := c.CreateEventThreatDetectionCustomModule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -263,6 +313,29 @@ func ExampleClient_DeleteBigQueryExport() {
 	}
 }
 
+func ExampleClient_DeleteEventThreatDetectionCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.DeleteEventThreatDetectionCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#DeleteEventThreatDetectionCustomModuleRequest.
+	}
+	err = c.DeleteEventThreatDetectionCustomModule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_DeleteMuteConfig() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -304,6 +377,29 @@ func ExampleClient_DeleteNotificationConfig() {
 		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#DeleteNotificationConfigRequest.
 	}
 	err = c.DeleteNotificationConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_DeleteResourceValueConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.DeleteResourceValueConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#DeleteResourceValueConfigRequest.
+	}
+	err = c.DeleteResourceValueConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -357,6 +453,31 @@ func ExampleClient_GetBigQueryExport() {
 	_ = resp
 }
 
+func ExampleClient_GetEffectiveEventThreatDetectionCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetEffectiveEventThreatDetectionCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#GetEffectiveEventThreatDetectionCustomModuleRequest.
+	}
+	resp, err := c.GetEffectiveEventThreatDetectionCustomModule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetEffectiveSecurityHealthAnalyticsCustomModule() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -375,6 +496,31 @@ func ExampleClient_GetEffectiveSecurityHealthAnalyticsCustomModule() {
 		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#GetEffectiveSecurityHealthAnalyticsCustomModuleRequest.
 	}
 	resp, err := c.GetEffectiveSecurityHealthAnalyticsCustomModule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetEventThreatDetectionCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetEventThreatDetectionCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#GetEventThreatDetectionCustomModuleRequest.
+	}
+	resp, err := c.GetEventThreatDetectionCustomModule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -482,6 +628,31 @@ func ExampleClient_GetOrganizationSettings() {
 	_ = resp
 }
 
+func ExampleClient_GetResourceValueConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetResourceValueConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#GetResourceValueConfigRequest.
+	}
+	resp, err := c.GetResourceValueConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetSecurityHealthAnalyticsCustomModule() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -507,6 +678,31 @@ func ExampleClient_GetSecurityHealthAnalyticsCustomModule() {
 	_ = resp
 }
 
+func ExampleClient_GetSimulation() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetSimulationRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#GetSimulationRequest.
+	}
+	resp, err := c.GetSimulation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetSource() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -525,6 +721,31 @@ func ExampleClient_GetSource() {
 		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#GetSourceRequest.
 	}
 	resp, err := c.GetSource(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetValuedResource() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.GetValuedResourceRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#GetValuedResourceRequest.
+	}
+	resp, err := c.GetValuedResource(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -560,6 +781,12 @@ func ExampleClient_GroupAssets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.GroupAssetsResponse)
 	}
 }
 
@@ -591,6 +818,12 @@ func ExampleClient_GroupFindings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.GroupFindingsResponse)
 	}
 }
 
@@ -622,6 +855,49 @@ func ExampleClient_ListAssets() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListAssetsResponse)
+	}
+}
+
+func ExampleClient_ListAttackPaths() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListAttackPathsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListAttackPathsRequest.
+	}
+	it := c.ListAttackPaths(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListAttackPathsResponse)
 	}
 }
 
@@ -653,6 +929,49 @@ func ExampleClient_ListBigQueryExports() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListBigQueryExportsResponse)
+	}
+}
+
+func ExampleClient_ListDescendantEventThreatDetectionCustomModules() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListDescendantEventThreatDetectionCustomModulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListDescendantEventThreatDetectionCustomModulesRequest.
+	}
+	it := c.ListDescendantEventThreatDetectionCustomModules(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListDescendantEventThreatDetectionCustomModulesResponse)
 	}
 }
 
@@ -684,6 +1003,49 @@ func ExampleClient_ListDescendantSecurityHealthAnalyticsCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListDescendantSecurityHealthAnalyticsCustomModulesResponse)
+	}
+}
+
+func ExampleClient_ListEffectiveEventThreatDetectionCustomModules() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListEffectiveEventThreatDetectionCustomModulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListEffectiveEventThreatDetectionCustomModulesRequest.
+	}
+	it := c.ListEffectiveEventThreatDetectionCustomModules(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListEffectiveEventThreatDetectionCustomModulesResponse)
 	}
 }
 
@@ -715,6 +1077,49 @@ func ExampleClient_ListEffectiveSecurityHealthAnalyticsCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse)
+	}
+}
+
+func ExampleClient_ListEventThreatDetectionCustomModules() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListEventThreatDetectionCustomModulesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListEventThreatDetectionCustomModulesRequest.
+	}
+	it := c.ListEventThreatDetectionCustomModules(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListEventThreatDetectionCustomModulesResponse)
 	}
 }
 
@@ -746,6 +1151,12 @@ func ExampleClient_ListFindings() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListFindingsResponse)
 	}
 }
 
@@ -777,6 +1188,12 @@ func ExampleClient_ListMuteConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListMuteConfigsResponse)
 	}
 }
 
@@ -808,6 +1225,49 @@ func ExampleClient_ListNotificationConfigs() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListNotificationConfigsResponse)
+	}
+}
+
+func ExampleClient_ListResourceValueConfigs() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListResourceValueConfigsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListResourceValueConfigsRequest.
+	}
+	it := c.ListResourceValueConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListResourceValueConfigsResponse)
 	}
 }
 
@@ -839,6 +1299,12 @@ func ExampleClient_ListSecurityHealthAnalyticsCustomModules() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListSecurityHealthAnalyticsCustomModulesResponse)
 	}
 }
 
@@ -870,6 +1336,49 @@ func ExampleClient_ListSources() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListSourcesResponse)
+	}
+}
+
+func ExampleClient_ListValuedResources() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ListValuedResourcesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ListValuedResourcesRequest.
+	}
+	it := c.ListValuedResources(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*securitycenterpb.ListValuedResourcesResponse)
 	}
 }
 
@@ -1053,6 +1562,31 @@ func ExampleClient_UpdateBigQueryExport() {
 	_ = resp
 }
 
+func ExampleClient_UpdateEventThreatDetectionCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.UpdateEventThreatDetectionCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#UpdateEventThreatDetectionCustomModuleRequest.
+	}
+	resp, err := c.UpdateEventThreatDetectionCustomModule(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_UpdateExternalSystem() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1178,6 +1712,31 @@ func ExampleClient_UpdateOrganizationSettings() {
 	_ = resp
 }
 
+func ExampleClient_UpdateResourceValueConfig() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.UpdateResourceValueConfigRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#UpdateResourceValueConfigRequest.
+	}
+	resp, err := c.UpdateResourceValueConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_UpdateSecurityHealthAnalyticsCustomModule() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -1246,6 +1805,31 @@ func ExampleClient_UpdateSource() {
 		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#UpdateSourceRequest.
 	}
 	resp, err := c.UpdateSource(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ValidateEventThreatDetectionCustomModule() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &securitycenterpb.ValidateEventThreatDetectionCustomModuleRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/securitycenter/apiv1/securitycenterpb#ValidateEventThreatDetectionCustomModuleRequest.
+	}
+	resp, err := c.ValidateEventThreatDetectionCustomModule(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -1352,5 +1936,11 @@ func ExampleClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

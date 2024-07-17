@@ -1,5 +1,131 @@
 # Changes
 
+## [1.54.3](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.54.2...dialogflow/v1.54.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **dialogflow:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.54.2](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.54.1...dialogflow/v1.54.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **dialogflow:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.54.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.54.0...dialogflow/v1.54.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **dialogflow:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.53.0...dialogflow/v1.54.0) (2024-06-10)
+
+
+### Features
+
+* **dialogflow/cx:** A new field `action_parameters` is added to message `.google.cloud.dialogflow.cx.v3beta1.PlaybookInput` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `action_parameters` is added to message `.google.cloud.dialogflow.cx.v3beta1.PlaybookOutput` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `endpointing_timeout_duration` is added to message `.google.cloud.dialogflow.cx.v3beta1.AdvancedSettings` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `input_action_parameters` is added to message `.google.cloud.dialogflow.cx.v3beta1.FlowInvocation` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `input_action_parameters` is added to message `.google.cloud.dialogflow.cx.v3beta1.ToolUse` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `instruction` is added to message `.google.cloud.dialogflow.cx.v3beta1.Playbook` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `interdigit_timeout_duration` is added to message `.google.cloud.dialogflow.cx.v3beta1.AdvancedSettings` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `output_action_parameters` is added to message `.google.cloud.dialogflow.cx.v3beta1.FlowInvocation` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `output_action_parameters` is added to message `.google.cloud.dialogflow.cx.v3beta1.ToolUse` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `store_tts_audio` is added to message `.google.cloud.dialogflow.cx.v3beta1.SecuritySettings` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new field `tool_call` is added to message `.google.cloud.dialogflow.cx.v3beta1.ResponseMessage` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new message `Instruction` is added ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new message `ToolCall` is added ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A new value `PLAYBOOK` is added to enum `MatchType` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+
+
+### Bug Fixes
+
+* **dialogflow/cx:** An existing field `actions` is removed from message `.google.cloud.dialogflow.cx.v3beta1.Tool` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `input_parameters` is removed from message `.google.cloud.dialogflow.cx.v3beta1.FlowInvocation` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `input_parameters` is removed from message `.google.cloud.dialogflow.cx.v3beta1.ToolUse` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `output_parameters` is removed from message `.google.cloud.dialogflow.cx.v3beta1.FlowInvocation` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `output_parameters` is removed from message `.google.cloud.dialogflow.cx.v3beta1.ToolUse` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `parameters` is removed from message `.google.cloud.dialogflow.cx.v3beta1.PlaybookInput` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `parameters` is removed from message `.google.cloud.dialogflow.cx.v3beta1.PlaybookOutput` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `schemas` is removed from message `.google.cloud.dialogflow.cx.v3beta1.Tool` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `start_flow` is moved in to oneof in message `.google.cloud.dialogflow.cx.v3beta1.Agent` ([#10340](https://github.com/googleapis/google-cloud-go/issues/10340)) ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `start_playbook` is moved in to oneof in message `.google.cloud.dialogflow.cx.v3beta1.Agent` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing field `steps` is removed from message `.google.cloud.dialogflow.cx.v3beta1.Playbook` ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** An existing message `ActionParameter` is removed ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+
+
+### Documentation
+
+* **dialogflow/cx:** A comment for field `start_flow` in message `.google.cloud.dialogflow.cx.v3beta1.Agent` is changed ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+* **dialogflow/cx:** A comment for field `start_playbook` in message `.google.cloud.dialogflow.cx.v3beta1.Agent` is changed ([385b6ee](https://github.com/googleapis/google-cloud-go/commit/385b6ee9060f4dbfad2e12b1ab635edab7ec4466))
+
+## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.52.0...dialogflow/v1.53.0) (2024-05-01)
+
+
+### Features
+
+* **dialogflow/cx:** Added Conversation History API ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **dialogflow:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.51.0...dialogflow/v1.52.0) (2024-03-27)
+
+
+### Features
+
+* **dialogflow/cx:** Added support for DataStoreConnection, DataStoreConnectionSettings ([4834425](https://github.com/googleapis/google-cloud-go/commit/48344254a5d21ec51ffee275c78a15c9345dc09c))
+
+## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.50.0...dialogflow/v1.51.0) (2024-03-14)
+
+
+### Features
+
+* **dialogflow:** Added text sections to the submitted summary ([25c3f2d](https://github.com/googleapis/google-cloud-go/commit/25c3f2dfcf1e720df82b3ee236d8e6a1fe888318))
+
+## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.49.0...dialogflow/v1.50.0) (2024-03-12)
+
+
+### Features
+
+* **dialogflow:** Added text sections to the submitted summary ([#9538](https://github.com/googleapis/google-cloud-go/issues/9538)) ([ccfe599](https://github.com/googleapis/google-cloud-go/commit/ccfe59970fac372e07202d26c520e36e0b3b9598))
+
+## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.2...dialogflow/v1.49.0) (2024-02-09)
+
+
+### Features
+
+* **dialogflow/cx:** A new field `opt_out_conformer_model_migration` is added to message `.google.cloud.dialogflow.cx.v3.InputAudioConfig` ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+* **dialogflow/cx:** Public preview the  Dialogflow LLM based agent ([f049c97](https://github.com/googleapis/google-cloud-go/commit/f049c9751415f9fc4c81c1839a8371782cfc016c))
+
+## [1.48.2](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.1...dialogflow/v1.48.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **dialogflow:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [1.48.1](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.48.0...dialogflow/v1.48.1) (2024-01-11)
+
+
+### Documentation
+
+* **dialogflow/cx:** Fix formatting due to unclosed backtick ([c3f1174](https://github.com/googleapis/google-cloud-go/commit/c3f1174dc29d1c00d514a69590bd83f9b08a60d1))
+
+## [1.48.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.47.0...dialogflow/v1.48.0) (2024-01-03)
+
+
+### Features
+
+* **dialogflow:** Add sections field to HumanAgentAssistantConfig.SuggestionQueryConfig ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+* **dialogflow:** Add sections field to HumanAgentAssistantConfig.SuggestionQueryConfig ([69c49f2](https://github.com/googleapis/google-cloud-go/commit/69c49f2537af8064e7b18e4845c3b2fbd502f141))
+
 ## [1.47.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.46.0...dialogflow/v1.47.0) (2023-12-07)
 
 

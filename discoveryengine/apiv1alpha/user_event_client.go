@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ type UserEventCallOptions struct {
 	CollectUserEvent []gax.CallOption
 	PurgeUserEvents  []gax.CallOption
 	ImportUserEvents []gax.CallOption
+	CancelOperation  []gax.CallOption
 	GetOperation     []gax.CallOption
 	ListOperations   []gax.CallOption
 }
@@ -59,10 +60,13 @@ type UserEventCallOptions struct {
 func defaultUserEventGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("discoveryengine.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("discoveryengine.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("discoveryengine.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -114,6 +118,18 @@ func defaultUserEventCallOptions() *UserEventCallOptions {
 				}, gax.Backoff{
 					Initial:    1000 * time.Millisecond,
 					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
 					Multiplier: 1.30,
 				})
 			}),
@@ -191,6 +207,17 @@ func defaultUserEventRESTCallOptions() *UserEventCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CancelOperation: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetOperation: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -227,6 +254,7 @@ type internalUserEventClient interface {
 	PurgeUserEventsOperation(name string) *PurgeUserEventsOperation
 	ImportUserEvents(context.Context, *discoveryenginepb.ImportUserEventsRequest, ...gax.CallOption) (*ImportUserEventsOperation, error)
 	ImportUserEventsOperation(name string) *ImportUserEventsOperation
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
@@ -299,7 +327,7 @@ func (c *UserEventClient) PurgeUserEventsOperation(name string) *PurgeUserEvents
 	return c.internalClient.PurgeUserEventsOperation(name)
 }
 
-// ImportUserEvents bulk import of User events. Request processing might be
+// ImportUserEvents bulk import of user events. Request processing might be
 // synchronous. Events that already exist are skipped.
 // Use this method for backfilling historical user events.
 //
@@ -314,6 +342,11 @@ func (c *UserEventClient) ImportUserEvents(ctx context.Context, req *discoveryen
 // The name must be that of a previously created ImportUserEventsOperation, possibly from a different process.
 func (c *UserEventClient) ImportUserEventsOperation(name string) *ImportUserEventsOperation {
 	return c.internalClient.ImportUserEventsOperation(name)
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *UserEventClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.
@@ -408,7 +441,9 @@ func (c *userEventGRPCClient) Connection() *grpc.ClientConn {
 func (c *userEventGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -471,9 +506,12 @@ func NewUserEventRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 func defaultUserEventRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://discoveryengine.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://discoveryengine.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://discoveryengine.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://discoveryengine.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -483,7 +521,9 @@ func defaultUserEventRESTClientOptions() []option.ClientOption {
 func (c *userEventRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -576,6 +616,20 @@ func (c *userEventGRPCClient) ImportUserEvents(ctx context.Context, req *discove
 	}, nil
 }
 
+func (c *userEventGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.operationsClient.CancelOperation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 func (c *userEventGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -657,6 +711,9 @@ func (c *userEventRESTClient) WriteUserEvent(ctx context.Context, req *discovery
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetWriteAsync() {
+		params.Add("writeAsync", fmt.Sprintf("%v", req.GetWriteAsync()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -851,7 +908,7 @@ func (c *userEventRESTClient) PurgeUserEvents(ctx context.Context, req *discover
 	}, nil
 }
 
-// ImportUserEvents bulk import of User events. Request processing might be
+// ImportUserEvents bulk import of user events. Request processing might be
 // synchronous. Events that already exist are skipped.
 // Use this method for backfilling historical user events.
 //
@@ -925,6 +982,54 @@ func (c *userEventRESTClient) ImportUserEvents(ctx context.Context, req *discove
 		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
 		pollPath: override,
 	}, nil
+}
+
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *userEventRESTClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1alpha/%v:cancel", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		// Returns nil if there is no error, otherwise wraps
+		// the response code and body into a non-nil error
+		return googleapi.CheckResponse(httpRsp)
+	}, opts...)
 }
 
 // GetOperation is a utility method from google.longrunning.Operations.

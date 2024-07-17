@@ -1,6 +1,92 @@
 # Changes
 
 
+## [2.14.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.14.0...recaptchaenterprise/v2.14.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise/v2:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [2.14.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.13.1...recaptchaenterprise/v2.14.0) (2024-07-01)
+
+
+### Features
+
+* **recaptchaenterprise:** Added SMS Toll Fraud assessment ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **recaptchaenterprise/v2:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [2.13.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.13.0...recaptchaenterprise/v2.13.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [2.13.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.12.0...recaptchaenterprise/v2.13.0) (2024-05-01)
+
+
+### Features
+
+* **recaptchaenterprise:** Add Fraud Prevention settings field ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+* **recaptchaenterprise:** Add Fraud Prevention settings field ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+
+### Documentation
+
+* **recaptchaenterprise:** Fixed the description of ListFirewallPoliciesResponse ([1d757c6](https://github.com/googleapis/google-cloud-go/commit/1d757c66478963d6cbbef13fee939632c742759c))
+
+## [2.12.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.11.1...recaptchaenterprise/v2.12.0) (2024-03-25)
+
+
+### Features
+
+* **recaptchaenterprise:** Existing resource_reference option of the field name is removed from message `google.cloud.recaptchaenterprise.v1.RelatedAccountGroupMemberShip` ([94f9463](https://github.com/googleapis/google-cloud-go/commit/94f9463f890ed886622ee65edfbc4b5ecdfa97f8))
+
+## [2.11.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.11.0...recaptchaenterprise/v2.11.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [2.11.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.10.0...recaptchaenterprise/v2.11.0) (2024-03-07)
+
+
+### Features
+
+* **recaptchaenterprise:** Add include_recaptcha_script for as a new action in firewall policies ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
+## [2.10.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.9.2...recaptchaenterprise/v2.10.0) (2024-02-21)
+
+
+### Features
+
+* **recaptchaenterprise:** Add an API method for reordering firewall policies ([a86aa8e](https://github.com/googleapis/google-cloud-go/commit/a86aa8e962b77d152ee6cdd433ad94967150ef21))
+
+## [2.9.2](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.9.1...recaptchaenterprise/v2.9.2) (2024-01-30)
+
+
+### Bug Fixes
+
+* **recaptchaenterprise:** Enable universe domain resolution options ([fd1d569](https://github.com/googleapis/google-cloud-go/commit/fd1d56930fa8a747be35a224611f4797b8aeb698))
+
+## [2.9.1](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.9.0...recaptchaenterprise/v2.9.1) (2024-01-22)
+
+
+### Documentation
+
+* **recaptchaenterprise:** Update comment for `AccountVerificationInfo.username` ([00b9900](https://github.com/googleapis/google-cloud-go/commit/00b990061592a20a181e61faa6964b45205b76a7))
+
 ## [2.9.0](https://github.com/googleapis/google-cloud-go/compare/recaptchaenterprise/v2.8.4...recaptchaenterprise/v2.9.0) (2023-11-27)
 
 

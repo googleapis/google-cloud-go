@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -52,6 +52,7 @@ type ProductCallOptions struct {
 	ListProducts            []gax.CallOption
 	UpdateProduct           []gax.CallOption
 	DeleteProduct           []gax.CallOption
+	PurgeProducts           []gax.CallOption
 	ImportProducts          []gax.CallOption
 	SetInventory            []gax.CallOption
 	AddFulfillmentPlaces    []gax.CallOption
@@ -65,10 +66,13 @@ type ProductCallOptions struct {
 func defaultProductGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("retail.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -129,6 +133,19 @@ func defaultProductCallOptions() *ProductCallOptions {
 			}),
 		},
 		DeleteProduct: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		PurgeProducts: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -298,6 +315,18 @@ func defaultProductRESTCallOptions() *ProductCallOptions {
 					http.StatusGatewayTimeout)
 			}),
 		},
+		PurgeProducts: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		ImportProducts: []gax.CallOption{
 			gax.WithTimeout(300000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -386,7 +415,7 @@ func defaultProductRESTCallOptions() *ProductCallOptions {
 	}
 }
 
-// internalProductClient is an interface that defines the methods available from Retail API.
+// internalProductClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalProductClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -396,6 +425,8 @@ type internalProductClient interface {
 	ListProducts(context.Context, *retailpb.ListProductsRequest, ...gax.CallOption) *ProductIterator
 	UpdateProduct(context.Context, *retailpb.UpdateProductRequest, ...gax.CallOption) (*retailpb.Product, error)
 	DeleteProduct(context.Context, *retailpb.DeleteProductRequest, ...gax.CallOption) error
+	PurgeProducts(context.Context, *retailpb.PurgeProductsRequest, ...gax.CallOption) (*PurgeProductsOperation, error)
+	PurgeProductsOperation(name string) *PurgeProductsOperation
 	ImportProducts(context.Context, *retailpb.ImportProductsRequest, ...gax.CallOption) (*ImportProductsOperation, error)
 	ImportProductsOperation(name string) *ImportProductsOperation
 	SetInventory(context.Context, *retailpb.SetInventoryRequest, ...gax.CallOption) (*SetInventoryOperation, error)
@@ -412,7 +443,7 @@ type internalProductClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ProductClient is a client for interacting with Retail API.
+// ProductClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for ingesting Product
@@ -476,6 +507,33 @@ func (c *ProductClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateP
 // DeleteProduct deletes a Product.
 func (c *ProductClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteProductRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteProduct(ctx, req, opts...)
+}
+
+// PurgeProducts permanently deletes all selected
+// Products under a branch.
+//
+// This process is asynchronous. If the request is valid, the removal will be
+// enqueued and processed offline. Depending on the number of
+// Products, this operation could take
+// hours to complete. Before the operation completes, some
+// Products may still be returned by
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
+//
+// Depending on the number of Products,
+// this operation could take hours to complete. To get a sample of
+// Products that would be deleted, set
+// PurgeProductsRequest.force
+// to false.
+func (c *ProductClient) PurgeProducts(ctx context.Context, req *retailpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
+	return c.internalClient.PurgeProducts(ctx, req, opts...)
+}
+
+// PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
+// The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
+func (c *ProductClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
+	return c.internalClient.PurgeProductsOperation(name)
 }
 
 // ImportProducts bulk import of multiple Products.
@@ -554,10 +612,11 @@ func (c *ProductClient) SetInventoryOperation(name string) *SetInventoryOperatio
 	return c.internalClient.SetInventoryOperation(name)
 }
 
-// AddFulfillmentPlaces it is recommended to use the
+// AddFulfillmentPlaces we recommend that you use the
 // ProductService.AddLocalInventories
-// method instead of
-// ProductService.AddFulfillmentPlaces.
+// method instead of the
+// ProductService.AddFulfillmentPlaces
+// method.
 // ProductService.AddLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -593,10 +652,11 @@ func (c *ProductClient) AddFulfillmentPlacesOperation(name string) *AddFulfillme
 	return c.internalClient.AddFulfillmentPlacesOperation(name)
 }
 
-// RemoveFulfillmentPlaces it is recommended to use the
+// RemoveFulfillmentPlaces we recommend that you use the
 // ProductService.RemoveLocalInventories
-// method instead of
-// ProductService.RemoveFulfillmentPlaces.
+// method instead of the
+// ProductService.RemoveFulfillmentPlaces
+// method.
 // ProductService.RemoveLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -716,7 +776,7 @@ func (c *ProductClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// productGRPCClient is a client for interacting with Retail API over gRPC transport.
+// productGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type productGRPCClient struct {
@@ -799,7 +859,9 @@ func (c *productGRPCClient) Connection() *grpc.ClientConn {
 func (c *productGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -863,9 +925,12 @@ func NewProductRESTClient(ctx context.Context, opts ...option.ClientOption) (*Pr
 func defaultProductRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://retail.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://retail.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://retail.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -875,7 +940,9 @@ func defaultProductRESTClientOptions() []option.ClientOption {
 func (c *productRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1004,6 +1071,26 @@ func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *productGRPCClient) PurgeProducts(ctx context.Context, req *retailpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).PurgeProducts[0:len((*c.CallOptions).PurgeProducts):len((*c.CallOptions).PurgeProducts)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.productClient.PurgeProducts(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &PurgeProductsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.ImportProductsRequest, opts ...gax.CallOption) (*ImportProductsOperation, error) {
@@ -1536,6 +1623,92 @@ func (c *productRESTClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 	}, opts...)
 }
 
+// PurgeProducts permanently deletes all selected
+// Products under a branch.
+//
+// This process is asynchronous. If the request is valid, the removal will be
+// enqueued and processed offline. Depending on the number of
+// Products, this operation could take
+// hours to complete. Before the operation completes, some
+// Products may still be returned by
+// ProductService.GetProduct
+// or
+// ProductService.ListProducts.
+//
+// Depending on the number of Products,
+// this operation could take hours to complete. To get a sample of
+// Products that would be deleted, set
+// PurgeProductsRequest.force
+// to false.
+func (c *productRESTClient) PurgeProducts(ctx context.Context, req *retailpb.PurgeProductsRequest, opts ...gax.CallOption) (*PurgeProductsOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2beta/%v/products:purge", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2beta/%s", resp.GetName())
+	return &PurgeProductsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // ImportProducts bulk import of multiple Products.
 //
 // Request processing may be synchronous.
@@ -1730,10 +1903,11 @@ func (c *productRESTClient) SetInventory(ctx context.Context, req *retailpb.SetI
 	}, nil
 }
 
-// AddFulfillmentPlaces it is recommended to use the
+// AddFulfillmentPlaces we recommend that you use the
 // ProductService.AddLocalInventories
-// method instead of
-// ProductService.AddFulfillmentPlaces.
+// method instead of the
+// ProductService.AddFulfillmentPlaces
+// method.
 // ProductService.AddLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -1828,10 +2002,11 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	}, nil
 }
 
-// RemoveFulfillmentPlaces it is recommended to use the
+// RemoveFulfillmentPlaces we recommend that you use the
 // ProductService.RemoveLocalInventories
-// method instead of
-// ProductService.RemoveFulfillmentPlaces.
+// method instead of the
+// ProductService.RemoveFulfillmentPlaces
+// method.
 // ProductService.RemoveLocalInventories
 // achieves the same results but provides more fine-grained control over
 // ingesting local inventory data.
@@ -2319,6 +2494,24 @@ func (c *productGRPCClient) ImportProductsOperation(name string) *ImportProducts
 func (c *productRESTClient) ImportProductsOperation(name string) *ImportProductsOperation {
 	override := fmt.Sprintf("/v2beta/%s", name)
 	return &ImportProductsOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
+// The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
+func (c *productGRPCClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
+	return &PurgeProductsOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// PurgeProductsOperation returns a new PurgeProductsOperation from a given name.
+// The name must be that of a previously created PurgeProductsOperation, possibly from a different process.
+func (c *productRESTClient) PurgeProductsOperation(name string) *PurgeProductsOperation {
+	override := fmt.Sprintf("/v2beta/%s", name)
+	return &PurgeProductsOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

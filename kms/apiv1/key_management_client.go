@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
@@ -79,15 +80,19 @@ type KeyManagementCallOptions struct {
 	GetIamPolicy                  []gax.CallOption
 	SetIamPolicy                  []gax.CallOption
 	TestIamPermissions            []gax.CallOption
+	GetOperation                  []gax.CallOption
 }
 
 func defaultKeyManagementGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudkms.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("cloudkms.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudkms.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudkms.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -420,6 +425,7 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -726,6 +732,7 @@ func defaultKeyManagementRESTCallOptions() *KeyManagementCallOptions {
 		GetIamPolicy:       []gax.CallOption{},
 		SetIamPolicy:       []gax.CallOption{},
 		TestIamPermissions: []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
 	}
 }
 
@@ -767,6 +774,7 @@ type internalKeyManagementClient interface {
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
 }
 
 // KeyManagementClient is a client for interacting with Cloud Key Management Service (KMS) API.
@@ -1096,6 +1104,11 @@ func (c *KeyManagementClient) TestIamPermissions(ctx context.Context, req *iampb
 	return c.internalClient.TestIamPermissions(ctx, req, opts...)
 }
 
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *KeyManagementClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
 // keyManagementGRPCClient is a client for interacting with Cloud Key Management Service (KMS) API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -1108,6 +1121,8 @@ type keyManagementGRPCClient struct {
 
 	// The gRPC API client.
 	keyManagementClient kmspb.KeyManagementServiceClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	iamPolicyClient iampb.IAMPolicyClient
 
@@ -1155,6 +1170,7 @@ func NewKeyManagementClient(ctx context.Context, opts ...option.ClientOption) (*
 		connPool:            connPool,
 		keyManagementClient: kmspb.NewKeyManagementServiceClient(connPool),
 		CallOptions:         &client.CallOptions,
+		operationsClient:    longrunningpb.NewOperationsClient(connPool),
 		iamPolicyClient:     iampb.NewIAMPolicyClient(connPool),
 		locationsClient:     locationpb.NewLocationsClient(connPool),
 	}
@@ -1179,7 +1195,9 @@ func (c *keyManagementGRPCClient) Connection() *grpc.ClientConn {
 func (c *keyManagementGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1241,9 +1259,12 @@ func NewKeyManagementRESTClient(ctx context.Context, opts ...option.ClientOption
 func defaultKeyManagementRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://cloudkms.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://cloudkms.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://cloudkms.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudkms.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -1253,7 +1274,9 @@ func defaultKeyManagementRESTClientOptions() []option.ClientOption {
 func (c *keyManagementRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1996,6 +2019,24 @@ func (c *keyManagementGRPCClient) TestIamPermissions(ctx context.Context, req *i
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *keyManagementGRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.operationsClient.GetOperation(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -4397,6 +4438,66 @@ func (c *keyManagementRESTClient) TestIamPermissions(ctx context.Context, req *i
 			baseUrl.Path = settings.Path
 		}
 		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *keyManagementRESTClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 		if err != nil {
 			return err
 		}

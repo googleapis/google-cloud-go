@@ -25,9 +25,10 @@ import (
 	"regexp"
 	"strings"
 	"testing"
+	"time"
 
+	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -105,7 +106,6 @@ func TestInvoke(t *testing.T) {
 			expectFinalErr:    false,
 		},
 		{
-
 			desc:              "non-idempotent retriable error retried when policy is RetryAlways",
 			count:             2,
 			initialErr:        &googleapi.Error{Code: 500},
@@ -126,13 +126,12 @@ func TestInvoke(t *testing.T) {
 		{
 			desc:              "non-retriable error not retried when policy is RetryAlways",
 			count:             2,
-			initialErr:        xerrors.Errorf("non-retriable error: %w", &googleapi.Error{Code: 400}),
+			initialErr:        fmt.Errorf("non-retriable error: %w", &googleapi.Error{Code: 400}),
 			finalErr:          nil,
 			isIdempotentValue: true,
 			retry:             &retryConfig{policy: RetryAlways},
 			expectFinalErr:    false,
 		},
-
 		{
 			desc:              "non-retriable error retried with custom fn",
 			count:             2,
@@ -173,6 +172,65 @@ func TestInvoke(t *testing.T) {
 			},
 			expectFinalErr: false,
 		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(2)},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-idempotent retriable error not retried when policy is RetryNever with maxAttempts set",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryNever, maxAttempts: expectedAttempts(2)},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-retriable error retried with custom fn till maxAttempts",
+			count:             4,
+			initialErr:        io.ErrNoProgress,
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry: &retryConfig{
+				shouldRetry: func(err error) bool {
+					return err == io.ErrNoProgress
+				},
+				maxAttempts: expectedAttempts(2),
+			},
+			expectFinalErr: false,
+		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts-1",
+			count:             3,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: false,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
+			expectFinalErr:    true,
+		},
+		{
+			desc:              "non-idempotent retriable error retried when policy is RetryAlways till maxAttempts where count equals to maxAttempts",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry:             &retryConfig{policy: RetryAlways, maxAttempts: expectedAttempts(4)},
+			expectFinalErr:    false,
+		},
+		{
+			desc:              "non-idempotent retriable error not retried when policy is RetryAlways with maxAttempts equals to zero",
+			count:             4,
+			initialErr:        &googleapi.Error{Code: 500},
+			finalErr:          nil,
+			isIdempotentValue: true,
+			retry:             &retryConfig{maxAttempts: expectedAttempts(0), policy: RetryAlways},
+			expectFinalErr:    false,
+		},
 	} {
 		t.Run(test.desc, func(s *testing.T) {
 			counter := 0
@@ -193,16 +251,25 @@ func TestInvoke(t *testing.T) {
 				}
 				return test.finalErr
 			}
+			// Use a short backoff to speed up the test.
+			if test.retry == nil {
+				test.retry = defaultRetry.clone()
+			}
+			test.retry.backoff = &gax.Backoff{Initial: time.Millisecond}
 			got := run(ctx, call, test.retry, test.isIdempotentValue)
-			if test.expectFinalErr && got != test.finalErr {
+			if test.expectFinalErr && !errors.Is(got, test.finalErr) {
 				s.Errorf("got %v, want %v", got, test.finalErr)
-			} else if !test.expectFinalErr && got != test.initialErr {
+			} else if !test.expectFinalErr && !errors.Is(got, test.initialErr) {
 				s.Errorf("got %v, want %v", got, test.initialErr)
 			}
 			wantAttempts := 1 + test.count
 			if !test.expectFinalErr {
 				wantAttempts = 1
 			}
+			if test.retry != nil && test.retry.maxAttempts != nil && *test.retry.maxAttempts != 0 && test.retry.policy != RetryNever {
+				wantAttempts = *test.retry.maxAttempts
+			}
+
 			wantClientHeader := strings.ReplaceAll(initialClientHeader, "gccl-attempt-count/1", fmt.Sprintf("gccl-attempt-count/%v", wantAttempts))
 			if gotClientHeader != wantClientHeader {
 				t.Errorf("case %q, retry header:\ngot %v\nwant %v", test.desc, gotClientHeader, wantClientHeader)
@@ -279,18 +346,23 @@ func TestShouldRetry(t *testing.T) {
 			shouldRetry: true,
 		},
 		{
+			desc:        "net.OpError{Err: errors.New(\"connection reset by peer\")}",
+			inputErr:    &net.OpError{Op: "blah", Net: "tcp", Err: errors.New("connection reset by peer")},
+			shouldRetry: true,
+		},
+		{
 			desc:        "io.ErrUnexpectedEOF",
 			inputErr:    io.ErrUnexpectedEOF,
 			shouldRetry: true,
 		},
 		{
 			desc:        "wrapped retryable error",
-			inputErr:    xerrors.Errorf("Test unwrapping of a temporary error: %w", &googleapi.Error{Code: 500}),
+			inputErr:    fmt.Errorf("Test unwrapping of a temporary error: %w", &googleapi.Error{Code: 500}),
 			shouldRetry: true,
 		},
 		{
 			desc:        "wrapped non-retryable error",
-			inputErr:    xerrors.Errorf("Test unwrapping of a non-retriable error: %w", &googleapi.Error{Code: 400}),
+			inputErr:    fmt.Errorf("Test unwrapping of a non-retriable error: %w", &googleapi.Error{Code: 400}),
 			shouldRetry: false,
 		},
 		{
@@ -314,9 +386,8 @@ func TestShouldRetry(t *testing.T) {
 			shouldRetry: false,
 		},
 		{
-			desc: "wrapped ErrClosed text",
-			// TODO: check directly against wrapped net.ErrClosed (go 1.16+)
-			inputErr:    &net.OpError{Op: "write", Err: errors.New("use of closed network connection")},
+			desc:        "wrapped net.ErrClosed",
+			inputErr:    &net.OpError{Err: net.ErrClosed},
 			shouldRetry: true,
 		},
 	} {

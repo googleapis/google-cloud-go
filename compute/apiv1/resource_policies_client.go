@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -173,7 +173,7 @@ func (c *ResourcePoliciesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of resource policies.
+// AggregatedList retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *ResourcePoliciesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -270,9 +270,12 @@ func NewResourcePoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 func defaultResourcePoliciesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -282,7 +285,9 @@ func defaultResourcePoliciesRESTClientOptions() []option.ClientOption {
 func (c *resourcePoliciesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -303,7 +308,7 @@ func (c *resourcePoliciesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of resource policies.
+// AggregatedList retrieves an aggregated list of resource policies. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) *ResourcePoliciesScopedListPairIterator {
 	it := &ResourcePoliciesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListResourcePoliciesRequest)

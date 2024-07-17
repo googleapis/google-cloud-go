@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -159,7 +159,7 @@ func (c *PublicDelegatedPrefixesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes.
+// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *PublicDelegatedPrefixesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPublicDelegatedPrefixesRequest, opts ...gax.CallOption) *PublicDelegatedPrefixesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -251,9 +251,12 @@ func NewPublicDelegatedPrefixesRESTClient(ctx context.Context, opts ...option.Cl
 func defaultPublicDelegatedPrefixesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -263,7 +266,9 @@ func defaultPublicDelegatedPrefixesRESTClientOptions() []option.ClientOption {
 func (c *publicDelegatedPrefixesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -284,7 +289,7 @@ func (c *publicDelegatedPrefixesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes.
+// AggregatedList lists all PublicDelegatedPrefix resources owned by the specific project across all scopes. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *publicDelegatedPrefixesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListPublicDelegatedPrefixesRequest, opts ...gax.CallOption) *PublicDelegatedPrefixesScopedListPairIterator {
 	it := &PublicDelegatedPrefixesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListPublicDelegatedPrefixesRequest)

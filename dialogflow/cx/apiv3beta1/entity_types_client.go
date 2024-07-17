@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import (
 	"time"
 
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/googleapi"
@@ -46,25 +48,30 @@ var newEntityTypesClientHook clientHook
 
 // EntityTypesCallOptions contains the retry settings for each method of EntityTypesClient.
 type EntityTypesCallOptions struct {
-	GetEntityType    []gax.CallOption
-	CreateEntityType []gax.CallOption
-	UpdateEntityType []gax.CallOption
-	DeleteEntityType []gax.CallOption
-	ListEntityTypes  []gax.CallOption
-	GetLocation      []gax.CallOption
-	ListLocations    []gax.CallOption
-	CancelOperation  []gax.CallOption
-	GetOperation     []gax.CallOption
-	ListOperations   []gax.CallOption
+	GetEntityType     []gax.CallOption
+	CreateEntityType  []gax.CallOption
+	UpdateEntityType  []gax.CallOption
+	DeleteEntityType  []gax.CallOption
+	ListEntityTypes   []gax.CallOption
+	ExportEntityTypes []gax.CallOption
+	ImportEntityTypes []gax.CallOption
+	GetLocation       []gax.CallOption
+	ListLocations     []gax.CallOption
+	CancelOperation   []gax.CallOption
+	GetOperation      []gax.CallOption
+	ListOperations    []gax.CallOption
 }
 
 func defaultEntityTypesGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("dialogflow.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -121,6 +128,30 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			}),
 		},
 		ListEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ExportEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ImportEntityTypes: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -197,6 +228,28 @@ func defaultEntityTypesRESTCallOptions() *EntityTypesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ExportEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ImportEntityTypes: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetLocation:     []gax.CallOption{},
 		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
@@ -215,6 +268,10 @@ type internalEntityTypesClient interface {
 	UpdateEntityType(context.Context, *cxpb.UpdateEntityTypeRequest, ...gax.CallOption) (*cxpb.EntityType, error)
 	DeleteEntityType(context.Context, *cxpb.DeleteEntityTypeRequest, ...gax.CallOption) error
 	ListEntityTypes(context.Context, *cxpb.ListEntityTypesRequest, ...gax.CallOption) *EntityTypeIterator
+	ExportEntityTypes(context.Context, *cxpb.ExportEntityTypesRequest, ...gax.CallOption) (*ExportEntityTypesOperation, error)
+	ExportEntityTypesOperation(name string) *ExportEntityTypesOperation
+	ImportEntityTypes(context.Context, *cxpb.ImportEntityTypesRequest, ...gax.CallOption) (*ImportEntityTypesOperation, error)
+	ImportEntityTypesOperation(name string) *ImportEntityTypesOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -233,6 +290,11 @@ type EntityTypesClient struct {
 
 	// The call options for this service.
 	CallOptions *EntityTypesCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -291,6 +353,28 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *cxpb.ListE
 	return c.internalClient.ListEntityTypes(ctx, req, opts...)
 }
 
+// ExportEntityTypes exports the selected entity types.
+func (c *EntityTypesClient) ExportEntityTypes(ctx context.Context, req *cxpb.ExportEntityTypesRequest, opts ...gax.CallOption) (*ExportEntityTypesOperation, error) {
+	return c.internalClient.ExportEntityTypes(ctx, req, opts...)
+}
+
+// ExportEntityTypesOperation returns a new ExportEntityTypesOperation from a given name.
+// The name must be that of a previously created ExportEntityTypesOperation, possibly from a different process.
+func (c *EntityTypesClient) ExportEntityTypesOperation(name string) *ExportEntityTypesOperation {
+	return c.internalClient.ExportEntityTypesOperation(name)
+}
+
+// ImportEntityTypes imports the specified entitytypes into the agent.
+func (c *EntityTypesClient) ImportEntityTypes(ctx context.Context, req *cxpb.ImportEntityTypesRequest, opts ...gax.CallOption) (*ImportEntityTypesOperation, error) {
+	return c.internalClient.ImportEntityTypes(ctx, req, opts...)
+}
+
+// ImportEntityTypesOperation returns a new ImportEntityTypesOperation from a given name.
+// The name must be that of a previously created ImportEntityTypesOperation, possibly from a different process.
+func (c *EntityTypesClient) ImportEntityTypesOperation(name string) *ImportEntityTypesOperation {
+	return c.internalClient.ImportEntityTypesOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *EntityTypesClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -328,6 +412,11 @@ type entityTypesGRPCClient struct {
 
 	// The gRPC API client.
 	entityTypesClient cxpb.EntityTypesClient
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	operationsClient longrunningpb.OperationsClient
 
@@ -369,6 +458,17 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -386,7 +486,9 @@ func (c *entityTypesGRPCClient) Connection() *grpc.ClientConn {
 func (c *entityTypesGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -402,6 +504,11 @@ type entityTypesRESTClient struct {
 
 	// The http client.
 	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
@@ -429,15 +536,28 @@ func NewEntityTypesRESTClient(ctx context.Context, opts ...option.ClientOption) 
 	}
 	c.setGoogleClientInfo()
 
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
+
 	return &EntityTypesClient{internalClient: c, CallOptions: callOpts}, nil
 }
 
 func defaultEntityTypesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://dialogflow.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://dialogflow.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://dialogflow.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -447,7 +567,9 @@ func defaultEntityTypesRESTClientOptions() []option.ClientOption {
 func (c *entityTypesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -576,6 +698,46 @@ func (c *entityTypesGRPCClient) ListEntityTypes(ctx context.Context, req *cxpb.L
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *entityTypesGRPCClient) ExportEntityTypes(ctx context.Context, req *cxpb.ExportEntityTypesRequest, opts ...gax.CallOption) (*ExportEntityTypesOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ExportEntityTypes[0:len((*c.CallOptions).ExportEntityTypes):len((*c.CallOptions).ExportEntityTypes)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.entityTypesClient.ExportEntityTypes(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportEntityTypesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *entityTypesGRPCClient) ImportEntityTypes(ctx context.Context, req *cxpb.ImportEntityTypesRequest, opts ...gax.CallOption) (*ImportEntityTypesOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).ImportEntityTypes[0:len((*c.CallOptions).ImportEntityTypes):len((*c.CallOptions).ImportEntityTypes)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.entityTypesClient.ImportEntityTypes(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportEntityTypesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *entityTypesGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1075,6 +1237,146 @@ func (c *entityTypesRESTClient) ListEntityTypes(ctx context.Context, req *cxpb.L
 	return it
 }
 
+// ExportEntityTypes exports the selected entity types.
+func (c *entityTypesRESTClient) ExportEntityTypes(ctx context.Context, req *cxpb.ExportEntityTypesRequest, opts ...gax.CallOption) (*ExportEntityTypesOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/entityTypes:export", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	return &ExportEntityTypesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// ImportEntityTypes imports the specified entitytypes into the agent.
+func (c *entityTypesRESTClient) ImportEntityTypes(ctx context.Context, req *cxpb.ImportEntityTypesRequest, opts ...gax.CallOption) (*ImportEntityTypesOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v3beta1/%v/entityTypes:import", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v3beta1/%s", resp.GetName())
+	return &ImportEntityTypesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *entityTypesRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1419,4 +1721,40 @@ func (c *entityTypesRESTClient) ListOperations(ctx context.Context, req *longrun
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// ExportEntityTypesOperation returns a new ExportEntityTypesOperation from a given name.
+// The name must be that of a previously created ExportEntityTypesOperation, possibly from a different process.
+func (c *entityTypesGRPCClient) ExportEntityTypesOperation(name string) *ExportEntityTypesOperation {
+	return &ExportEntityTypesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ExportEntityTypesOperation returns a new ExportEntityTypesOperation from a given name.
+// The name must be that of a previously created ExportEntityTypesOperation, possibly from a different process.
+func (c *entityTypesRESTClient) ExportEntityTypesOperation(name string) *ExportEntityTypesOperation {
+	override := fmt.Sprintf("/v3beta1/%s", name)
+	return &ExportEntityTypesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// ImportEntityTypesOperation returns a new ImportEntityTypesOperation from a given name.
+// The name must be that of a previously created ImportEntityTypesOperation, possibly from a different process.
+func (c *entityTypesGRPCClient) ImportEntityTypesOperation(name string) *ImportEntityTypesOperation {
+	return &ImportEntityTypesOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// ImportEntityTypesOperation returns a new ImportEntityTypesOperation from a given name.
+// The name must be that of a previously created ImportEntityTypesOperation, possibly from a different process.
+func (c *entityTypesRESTClient) ImportEntityTypesOperation(name string) *ImportEntityTypesOperation {
+	override := fmt.Sprintf("/v3beta1/%s", name)
+	return &ImportEntityTypesOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }

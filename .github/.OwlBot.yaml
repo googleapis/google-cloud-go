@@ -22,6 +22,9 @@ deep-remove-regex:
   - /apigeeregistry/apiv1/
   - /apikeys/apiv2/
   - /appengine/apiv1/
+  - /apphub/apiv1/
+  - /apps/events/subscriptions/apiv1/
+  - /apps/meet/apiv2/
   - /apps/meet/apiv2beta/
   - /area120/tables/apiv1alpha1/
   - /artifactregistry/apiv1/
@@ -33,6 +36,7 @@ deep-remove-regex:
   - /assuredworkloads/apiv1beta1/
   - /automl/apiv1/
   - /automl/apiv1beta1/
+  - /backupdr/apiv1/
   - /baremetalsolution/apiv2/
   - /batch/apiv1/
   - /beyondcorp/appconnections/apiv1/
@@ -62,10 +66,14 @@ deep-remove-regex:
   - /binaryauthorization/apiv1beta1/
   - /certificatemanager/apiv1/
   - /channel/apiv1/
+  - /chat/apiv1/
   - /cloudbuild/apiv1/v2/
   - /cloudbuild/apiv2/
+  - /cloudcontrolspartner/apiv1/
+  - /cloudcontrolspartner/apiv1beta/
   - /clouddms/apiv1/
   - /cloudprofiler/apiv2/
+  - /cloudquotas/apiv1/
   - /cloudtasks/apiv2/
   - /cloudtasks/apiv2beta2/
   - /cloudtasks/apiv2beta3/
@@ -93,6 +101,7 @@ deep-remove-regex:
   - /datastream/apiv1alpha1/
   # - /debugger/apiv2/
   - /deploy/apiv1/
+  - /developerconnect/apiv1/
   - /dialogflow/apiv2/
   - /dialogflow/apiv2beta1/
   - /dialogflow/cx/apiv3/
@@ -125,6 +134,7 @@ deep-remove-regex:
   - /iam/apiv2/
   - /iam/credentials/apiv1/
   - /iap/apiv1/
+  - /identitytoolkit/apiv2/
   - /ids/apiv1/
   # START snippets
   - /internal/generated/snippets/accessapproval/apiv1/
@@ -144,6 +154,9 @@ deep-remove-regex:
   - /internal/generated/snippets/apigeeregistry/apiv1/
   - /internal/generated/snippets/apikeys/apiv2/
   - /internal/generated/snippets/appengine/apiv1/
+  - /internal/generated/snippets/apphub/apiv1/
+  - /internal/generated/snippets/apps/events/subscriptions/apiv1/
+  - /internal/generated/snippets/apps/meet/apiv2/
   - /internal/generated/snippets/apps/meet/apiv2beta/
   - /internal/generated/snippets/area120/tables/apiv1alpha1/
   - /internal/generated/snippets/artifactregistry/apiv1/
@@ -155,6 +168,7 @@ deep-remove-regex:
   - /internal/generated/snippets/assuredworkloads/apiv1beta1/
   - /internal/generated/snippets/automl/apiv1/
   - /internal/generated/snippets/automl/apiv1beta1/
+  - /internal/generated/snippets/backupdr/apiv1/
   - /internal/generated/snippets/baremetalsolution/apiv2/
   - /internal/generated/snippets/batch/apiv1/
   - /internal/generated/snippets/beyondcorp/appconnections/apiv1/
@@ -184,10 +198,14 @@ deep-remove-regex:
   - /internal/generated/snippets/binaryauthorization/apiv1beta1/
   - /internal/generated/snippets/certificatemanager/apiv1/
   - /internal/generated/snippets/channel/apiv1/
+  - /internal/generated/snippets/chat/apiv1/
   - /internal/generated/snippets/cloudbuild/apiv1/v2/
   - /internal/generated/snippets/cloudbuild/apiv2/
+  - /internal/generated/snippets/cloudcontrolspartner/apiv1/
+  - /internal/generated/snippets/cloudcontrolspartner/apiv1beta/
   - /internal/generated/snippets/clouddms/apiv1/
   - /internal/generated/snippets/cloudprofiler/apiv2/
+  - /internal/generated/snippets/cloudquotas/apiv1/
   - /internal/generated/snippets/cloudtasks/apiv2/
   - /internal/generated/snippets/cloudtasks/apiv2beta2/
   - /internal/generated/snippets/cloudtasks/apiv2beta3/
@@ -214,6 +232,7 @@ deep-remove-regex:
   - /internal/generated/snippets/datastream/apiv1alpha1/
   # - /internal/generated/snippets/debugger/apiv2/
   - /internal/generated/snippets/deploy/apiv1/
+  - /internal/generated/snippets//developerconnect/apiv1/
   - /internal/generated/snippets/dialogflow/apiv2/
   - /internal/generated/snippets/dialogflow/apiv2beta1/
   - /internal/generated/snippets/dialogflow/cx/apiv3/
@@ -246,6 +265,7 @@ deep-remove-regex:
   - /internal/generated/snippets/iam/apiv2/
   - /internal/generated/snippets/iam/credentials/apiv1/
   - /internal/generated/snippets/iap/apiv1/
+  - /internal/generated/snippets/identitytoolkit/apiv2/
   - /internal/generated/snippets/ids/apiv1/
   - /internal/generated/snippets/iot/apiv1/
   - /internal/generated/snippets/kms/apiv1/
@@ -257,12 +277,14 @@ deep-remove-regex:
   - /internal/generated/snippets/logging/apiv2/
   - /internal/generated/snippets/longrunning/autogen/
   - /internal/generated/snippets/managedidentities/apiv1/
+  - /internal/generated/snippets/managedkafka/apiv1/
   - /internal/generated/snippets/maps/addressvalidation/apiv1/
   - /internal/generated/snippets/maps/fleetengine/apiv1/
   - /internal/generated/snippets/maps/fleetengine/delivery/apiv1/
-  - /internal/generated/snippets/maps/mapsplatformdatasets/apiv1alpha/
   - /internal/generated/snippets/maps/places/apiv1/
+  - /internal/generated/snippets/maps/routeoptimization/apiv1/
   - /internal/generated/snippets/maps/routing/apiv2/
+  - /internal/generated/snippets/maps/solar/apiv1/
   - /internal/generated/snippets/mediatranslation/apiv1beta1/
   - /internal/generated/snippets/memcache/apiv1/
   - /internal/generated/snippets/memcache/apiv1beta2/
@@ -278,6 +300,7 @@ deep-remove-regex:
   - /internal/generated/snippets/networkconnectivity/apiv1alpha1/
   - /internal/generated/snippets/networkmanagement/apiv1/
   - /internal/generated/snippets/networksecurity/apiv1beta1/
+  - /internal/generated/snippets/networkservices/apiv1/
   - /internal/generated/snippets/notebooks/apiv1/
   - /internal/generated/snippets/notebooks/apiv1beta1/
   - /internal/generated/snippets/notebooks/apiv2/
@@ -291,11 +314,13 @@ deep-remove-regex:
   - /internal/generated/snippets/osconfig/apiv1beta/
   - /internal/generated/snippets/oslogin/apiv1/
   - /internal/generated/snippets/oslogin/apiv1beta/
+  - /internal/generated/snippets/parallelstore/apiv1beta/
   - /internal/generated/snippets/phishingprotection/apiv1beta1/
   - /internal/generated/snippets/policysimulator/apiv1/
   - /internal/generated/snippets/policytroubleshooter/apiv1/
   - /internal/generated/snippets/policytroubleshooter/iam/apiv3/
   - /internal/generated/snippets/privatecatalog/apiv1beta1/
+  - /internal/generated/snippets/privilegedaccessmanager/apiv1/
   - /internal/generated/snippets/pubsub/apiv1/
   - /internal/generated/snippets/pubsublite/apiv1/
   - /internal/generated/snippets/rapidmigrationassessment/apiv1/
@@ -317,30 +342,46 @@ deep-remove-regex:
   - /internal/generated/snippets/scheduler/apiv1/
   - /internal/generated/snippets/scheduler/apiv1beta1/
   - /internal/generated/snippets/secretmanager/apiv1/
+  - /internal/generated/snippets/secretmanager/apiv1beta2/
   - /internal/generated/snippets/securesourcemanager/apiv1/
   - /internal/generated/snippets/security/privateca/apiv1/
   - /internal/generated/snippets/security/publicca/apiv1beta1/
+  - /internal/generated/snippets/security/publicca/apiv1/
   - /internal/generated/snippets/securitycenter/apiv1/
   - /internal/generated/snippets/securitycenter/apiv1beta1/
   - /internal/generated/snippets/securitycenter/apiv1p1beta1/
+  - /internal/generated/snippets/securitycenter/apiv2/
   - /internal/generated/snippets/securitycenter/settings/apiv1beta1/
   - /internal/generated/snippets/securitycentermanagement/apiv1/
+  - /internal/generated/snippets/securityposture/apiv1/
   - /internal/generated/snippets/servicecontrol/apiv1/
   - /internal/generated/snippets/servicedirectory/apiv1/
   - /internal/generated/snippets/servicedirectory/apiv1beta1/
-  - /internal/generated/snippets/serviceusage/apiv1/
+  - /internal/generated/snippets/servicehealth/apiv1/
   - /internal/generated/snippets/servicemanagement/apiv1/
+  - /internal/generated/snippets/serviceusage/apiv1/
   - /internal/generated/snippets/shell/apiv1/
   - /internal/generated/snippets/shopping/css/apiv1/
+  - /internal/generated/snippets/shopping/merchant/accounts/v1beta/
+  - /internal/generated/snippets/shopping/merchant/conversions/v1beta/
+  - /internal/generated/snippets/shopping/merchant/datasources/v1beta/
+  - /internal/generated/snippets/shopping/merchant/notifications/v1beta/
+  - /internal/generated/snippets/shopping/merchant/products/v1beta/
+  - /internal/generated/snippets/shopping/merchant/promotions/v1beta/
+  - /internal/generated/snippets/shopping/merchant/quota/apiv1beta/
   - /internal/generated/snippets/shopping/merchant/inventories/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/reports/apiv1beta/
+  - /internal/generated/snippets/shopping/merchant/lfp/apiv1beta/
   - /internal/generated/snippets/spanner/admin/database/apiv1/
   - /internal/generated/snippets/spanner/admin/instance/apiv1/
   - /internal/generated/snippets/spanner/apiv1/
   - /internal/generated/snippets/speech/apiv1/
   - /internal/generated/snippets/speech/apiv1p1beta1/
   - /internal/generated/snippets/speech/apiv2/
+  - /internal/generated/snippets/storage/control/apiv2/
   - /internal/generated/snippets/storageinsights/apiv1/
   - /internal/generated/snippets/storagetransfer/apiv1/
+  - /internal/generated/snippets/streetview/publish/apiv1/
   - /internal/generated/snippets/support/apiv2/
   - /internal/generated/snippets/talent/apiv4/
   - /internal/generated/snippets/talent/apiv4beta1/
@@ -358,6 +399,7 @@ deep-remove-regex:
   - /internal/generated/snippets/videointelligence/apiv1p3beta1/
   - /internal/generated/snippets/vision/v2/apiv1/
   - /internal/generated/snippets/vision/v2/apiv1p1beta1/
+  - /internal/generated/snippets/visionai/apiv1/
   - /internal/generated/snippets/vmmigration/apiv1/
   - /internal/generated/snippets/vmwareengine/apiv1/
   - /internal/generated/snippets/vpcaccess/apiv1/
@@ -381,12 +423,14 @@ deep-remove-regex:
   - /logging/apiv2/
   - /longrunning/autogen/
   - /managedidentities/apiv1/
+  - /managedkafka/apiv1/
   - /maps/addressvalidation/apiv1/
   - /maps/fleetengine/apiv1/
   - /maps/fleetengine/delivery/apiv1/
-  - /maps/mapsplatformdatasets/apiv1alpha/
   - /maps/places/apiv1/
+  - /maps/routeoptimization/apiv1/
   - /maps/routing/apiv2/
+  - /maps/solar/apiv1/
   - /mediatranslation/apiv1beta1/
   - /memcache/apiv1/
   - /memcache/apiv1beta2/
@@ -402,6 +446,7 @@ deep-remove-regex:
   - /networkconnectivity/apiv1alpha1/
   - /networkmanagement/apiv1/
   - /networksecurity/apiv1beta1/
+  - /networkservices/apiv1/
   - /notebooks/apiv1/
   - /notebooks/apiv1beta1/
   - /notebooks/apiv2/
@@ -417,11 +462,13 @@ deep-remove-regex:
   - /oslogin/apiv1/
   - /oslogin/apiv1beta/
   - /oslogin/common/
+  - /parallelstore/apiv1beta/
   - /phishingprotection/apiv1beta1/
   - /policysimulator/apiv1/
   - /policytroubleshooter/apiv1/
   - /policytroubleshooter/iam/apiv3/
   - /privatecatalog/apiv1beta1/
+  - /privilegedaccessmanager/apiv1/
   - /pubsub/apiv1/
   - /pubsublite/apiv1/
   - /rapidmigrationassessment/apiv1/
@@ -443,22 +490,36 @@ deep-remove-regex:
   - /scheduler/apiv1/
   - /scheduler/apiv1beta1/
   - /secretmanager/apiv1/
+  - /secretmanager/apiv1beta2/
   - /securesourcemanager/apiv1/
   - /security/privateca/apiv1/
   - /security/publicca/apiv1beta1/
+  - /security/publicca/apiv1/
   - /securitycenter/apiv1/
   - /securitycenter/apiv1beta1/
   - /securitycenter/apiv1p1beta1/
+  - /securitycenter/apiv2/
   - /securitycenter/settings/apiv1beta1/
   - /securitycentermanagement/apiv1/
+  - /securityposture/apiv1/
   - /servicecontrol/apiv1/
   - /servicedirectory/apiv1/
   - /servicedirectory/apiv1beta1/
-  - /serviceusage/apiv1/
+  - /servicehealth/apiv1/
   - /servicemanagement/apiv1/
+  - /serviceusage/apiv1/
   - /shell/apiv1/
   - /shopping/css/apiv1/
+  - /shopping/merchant/accounts/apiv1beta/
+  - /shopping/merchant/conversions/apiv1beta/
+  - /shopping/merchant/datasources/apiv1beta/
+  - /shopping/merchant/notifications/apiv1beta/
+  - /shopping/merchant/products/apiv1beta/
+  - /shopping/merchant/promotions/apiv1beta/
+  - /shopping/merchant/quota/apiv1beta/
   - /shopping/merchant/inventories/apiv1beta/
+  - /shopping/merchant/lfp/apiv1beta/
+  - /shopping/merchant/reports/apiv1beta/
   - /shopping/type/
   - /spanner/admin/database/apiv1/
   - /spanner/admin/instance/apiv1/
@@ -467,9 +528,11 @@ deep-remove-regex:
   - /speech/apiv1/
   - /speech/apiv1p1beta1/
   - /speech/apiv2/
+  - /storage/control/apiv2/
   - /storage/internal/apiv2/
   - /storageinsights/apiv1/
   - /storagetransfer/apiv1/
+  - /streetview/publish/apiv1/
   - /support/apiv2/
   - /talent/apiv4/
   - /talent/apiv4beta1/
@@ -487,6 +550,7 @@ deep-remove-regex:
   - /videointelligence/apiv1p3beta1/
   - /vision/apiv1/
   - /vision/apiv1p1beta1/
+  - /visionai/apiv1/
   - /vmmigration/apiv1/
   - /vmwareengine/apiv1/
   - /vpcaccess/apiv1/
@@ -583,7 +647,15 @@ deep-copy-regex:
     dest: /
   - source: /google/api/apikeys/v2/cloud.google.com/go
     dest: /
+  - source: /google/api/cloudquotas/v1/cloud.google.com/go
+    dest: /
   - source: /google/appengine/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/apphub/v1/cloud.google.com/go
+    dest: /
+  - source: /google/apps/events/subscriptions/v1/cloud.google.com/go
+    dest: /
+  - source: /google/apps/meet/v2/cloud.google.com/go
     dest: /
   - source: /google/apps/meet/v2beta/cloud.google.com/go
     dest: /
@@ -600,6 +672,8 @@ deep-copy-regex:
   - source: /google/cloud/automl/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/automl/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/backupdr/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/baremetalsolution/v2/cloud.google.com/go
     dest: /
@@ -659,9 +733,15 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/channel/v1/cloud.google.com/go
     dest: /
+  - source: /google/chat/v1/cloud.google.com/go
+    dest: /
   - source: /google/devtools/cloudbuild/v1/cloud.google.com/go
     dest: /
   - source: /google/devtools/cloudbuild/v2/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/cloudcontrolspartner/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/cloudcontrolspartner/v1beta/cloud.google.com/go
     dest: /
   - source: /google/cloud/clouddms/v1/cloud.google.com/go
     dest: /
@@ -722,6 +802,8 @@ deep-copy-regex:
   # - source: /google/devtools/clouddebugger/v2/cloud.google.com/go
   #   dest: /
   - source: /google/cloud/deploy/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/developerconnect/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/dialogflow/v2/cloud.google.com/go
     dest: /
@@ -787,6 +869,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/iap/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/identitytoolkit/v2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/ids/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/iot/v1/cloud.google.com/go
@@ -809,17 +893,21 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/managedidentities/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/managedkafka/v1/cloud.google.com/go
+    dest: /
   - source: /google/maps/addressvalidation/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/fleetengine/v1/cloud.google.com/go
     dest: /
   - source: /google/maps/fleetengine/delivery/v1/cloud.google.com/go
     dest: /
-  - source: /google/maps/mapsplatformdatasets/v1alpha/cloud.google.com/go
-    dest: /
   - source: /google/maps/places/v1/cloud.google.com/go
     dest: /
+  - source: /google/maps/routeoptimization/v1/cloud.google.com/go
+    dest: /
   - source: /google/maps/routing/v2/cloud.google.com/go
+    dest: /
+  - source: /google/maps/solar/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/mediatranslation/v1beta1/cloud.google.com/go
     dest: /
@@ -851,6 +939,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/networksecurity/v1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/networkservices/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/notebooks/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/notebooks/v1beta1/cloud.google.com/go
@@ -881,6 +971,8 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/oslogin/common/cloud.google.com/go
     dest: /
+  - source: /google/cloud/parallelstore/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/cloud/phishingprotection/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/policysimulator/v1/cloud.google.com/go
@@ -890,6 +982,8 @@ deep-copy-regex:
   - source: /google/cloud/policytroubleshooter/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/privatecatalog/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/privilegedaccessmanager/v1/cloud.google.com/go
     dest: /
   - source: /google/pubsub/v1/cloud.google.com/go
     dest: /
@@ -937,11 +1031,15 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/secretmanager/v1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/secretmanager/v1beta2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/securesourcemanager/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/security/privateca/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/security/publicca/v1beta1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/security/publicca/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/securitycenter/v1/cloud.google.com/go
     dest: /
@@ -949,9 +1047,13 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/securitycenter/v1p1beta1/cloud.google.com/go
     dest: /
+  - source: /google/cloud/securitycenter/v2/cloud.google.com/go
+    dest: /
   - source: /google/cloud/securitycenter/settings/v1beta1/cloud.google.com/go
     dest: /
   - source: /google/cloud/securitycentermanagement/v1/cloud.google.com/go
+    dest: /
+  - source: /google/cloud/securityposture/v1/cloud.google.com/go
     dest: /
   - source: /google/api/servicecontrol/v1/cloud.google.com/go
     dest: /
@@ -959,15 +1061,35 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/servicedirectory/v1beta1/cloud.google.com/go
     dest: /
-  - source: /google/api/serviceusage/v1/cloud.google.com/go
+  - source: /google/cloud/servicehealth/v1/cloud.google.com/go
     dest: /
   - source: /google/api/servicemanagement/v1/cloud.google.com/go
+    dest: /
+  - source: /google/api/serviceusage/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/shell/v1/cloud.google.com/go
     dest: /
   - source: /google/shopping/css/v1/cloud.google.com/go
     dest: /
+  - source: /google/shopping/merchant/accounts/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/conversions/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/datasources/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/notifications/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/products/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/promotions/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/quota/v1beta/cloud.google.com/go
+    dest: /
   - source: /google/shopping/merchant/inventories/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/lfp/v1beta/cloud.google.com/go
+    dest: /
+  - source: /google/shopping/merchant/reports/v1beta/cloud.google.com/go
     dest: /
   - source: /google/shopping/type/cloud.google.com/go
     dest: /
@@ -985,11 +1107,15 @@ deep-copy-regex:
     dest: /
   - source: /google/cloud/speech/v2/cloud.google.com/go
     dest: /
+  - source: /google/storage/control/v2/cloud.google.com/go/
+    dest: /
   - source: /google/storage/v2/cloud.google.com/go/storage/internal/apiv2
     dest: /storage/internal/apiv2
   - source: /google/cloud/storageinsights/v1/cloud.google.com/go
     dest: /
   - source: /google/storagetransfer/v1/cloud.google.com/go
+    dest: /
+  - source: /google/streetview/publish/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/support/v2/cloud.google.com/go
     dest: /
@@ -1029,6 +1155,8 @@ deep-copy-regex:
     dest: /vision/apiv1p1beta1
   - source: /google/cloud/vision/v1p1beta1/cloud.google.com/go/internal/generated/snippets/vision/v2/apiv1p1beta1
     dest: /internal/generated/snippets/vision/apiv1p1beta1
+  - source: /google/cloud/visionai/v1/cloud.google.com/go
+    dest: /
   - source: /google/cloud/vmmigration/v1/cloud.google.com/go
     dest: /
   - source: /google/cloud/vmwareengine/v1/cloud.google.com/go

@@ -29,10 +29,8 @@ import (
 	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
 	epb "github.com/cloudprober/cloudprober/probes/external/proto"
 	"github.com/cloudprober/cloudprober/probes/external/serverutils"
-	octrace "go.opencensus.io/trace"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/bridge/opencensus"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
@@ -399,11 +397,6 @@ func enableTracing(ctx context.Context, sampleRate float64) func() {
 
 	otel.SetTracerProvider(tp)
 
-	// Use opencensus bridge to pick up OC traces from the storage library.
-	// TODO: remove this when migration to OpenTelemetry is complete.
-	tracer := otel.GetTracerProvider().Tracer(tracerName)
-	octrace.DefaultTracer = opencensus.NewTracer(tracer)
-
 	return func() {
 		tp.ForceFlush(ctx)
 		if err := tp.Shutdown(context.Background()); err != nil {
@@ -469,7 +462,7 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 	switch opts.workload {
 	default:
 		concurrentBenchmarkRuns = opts.numWorkers
-	case 6:
+	case 6, 9:
 		// Directory benchmarks parallelize on the object level, so only run one
 		// benchmark at a time
 		concurrentBenchmarkRuns = 1
@@ -487,6 +480,8 @@ func runSamples(ctx context.Context, opts *benchmarkOptions, out io.Writer) erro
 				benchmark = &w1r3{opts: opts, bucketName: opts.bucket}
 			case 6:
 				benchmark = &directoryBenchmark{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
+			case 9:
+				benchmark = &continuousReads{opts: opts, bucketName: opts.bucket, numWorkers: opts.numWorkers}
 			}
 
 			if err := benchmark.setup(ctx); err != nil {

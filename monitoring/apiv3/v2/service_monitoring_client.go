@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -53,10 +53,13 @@ type ServiceMonitoringCallOptions struct {
 func defaultServiceMonitoringGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("monitoring.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -172,9 +175,9 @@ type internalServiceMonitoringClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Cloud Monitoring Service-Oriented Monitoring API has endpoints for
-// managing and querying aspects of a workspace’s services. These include the
-// Service's monitored resources, its Service-Level Objectives, and a taxonomy
-// of categorized Health Metrics.
+// managing and querying aspects of a Metrics Scope’s services. These include
+// the Service's monitored resources, its Service-Level Objectives, and a
+// taxonomy of categorized Health Metrics.
 type ServiceMonitoringClient struct {
 	// The internal transport-dependent client.
 	internalClient internalServiceMonitoringClient
@@ -216,7 +219,7 @@ func (c *ServiceMonitoringClient) GetService(ctx context.Context, req *monitorin
 	return c.internalClient.GetService(ctx, req, opts...)
 }
 
-// ListServices list Services for this workspace.
+// ListServices list Services for this Metrics Scope.
 func (c *ServiceMonitoringClient) ListServices(ctx context.Context, req *monitoringpb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	return c.internalClient.ListServices(ctx, req, opts...)
 }
@@ -277,9 +280,9 @@ type serviceMonitoringGRPCClient struct {
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The Cloud Monitoring Service-Oriented Monitoring API has endpoints for
-// managing and querying aspects of a workspace’s services. These include the
-// Service's monitored resources, its Service-Level Objectives, and a taxonomy
-// of categorized Health Metrics.
+// managing and querying aspects of a Metrics Scope’s services. These include
+// the Service's monitored resources, its Service-Level Objectives, and a
+// taxonomy of categorized Health Metrics.
 func NewServiceMonitoringClient(ctx context.Context, opts ...option.ClientOption) (*ServiceMonitoringClient, error) {
 	clientOpts := defaultServiceMonitoringGRPCClientOptions()
 	if newServiceMonitoringClientHook != nil {
@@ -322,7 +325,9 @@ func (c *serviceMonitoringGRPCClient) Connection() *grpc.ClientConn {
 func (c *serviceMonitoringGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when

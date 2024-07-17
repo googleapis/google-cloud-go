@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -144,7 +144,7 @@ func (c *RegionCommitmentsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of commitments by region.
+// AggregatedList retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *RegionCommitmentsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -221,9 +221,12 @@ func NewRegionCommitmentsRESTClient(ctx context.Context, opts ...option.ClientOp
 func defaultRegionCommitmentsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://compute.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -233,7 +236,9 @@ func defaultRegionCommitmentsRESTClientOptions() []option.ClientOption {
 func (c *regionCommitmentsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -254,7 +259,7 @@ func (c *regionCommitmentsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of commitments by region.
+// AggregatedList retrieves an aggregated list of commitments by region. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *regionCommitmentsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRegionCommitmentsRequest, opts ...gax.CallOption) *CommitmentsScopedListPairIterator {
 	it := &CommitmentsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListRegionCommitmentsRequest)

@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ type DeploymentResourcePoolCallOptions struct {
 	CreateDeploymentResourcePool []gax.CallOption
 	GetDeploymentResourcePool    []gax.CallOption
 	ListDeploymentResourcePools  []gax.CallOption
+	UpdateDeploymentResourcePool []gax.CallOption
 	DeleteDeploymentResourcePool []gax.CallOption
 	QueryDeployedModels          []gax.CallOption
 	GetLocation                  []gax.CallOption
@@ -67,7 +68,9 @@ type DeploymentResourcePoolCallOptions struct {
 func defaultDeploymentResourcePoolGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("aiplatform.googleapis.com:443"),
+		internaloption.WithDefaultEndpointTemplate("aiplatform.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultMTLSEndpoint("aiplatform.mtls.googleapis.com:443"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
@@ -81,6 +84,7 @@ func defaultDeploymentResourcePoolCallOptions() *DeploymentResourcePoolCallOptio
 		CreateDeploymentResourcePool: []gax.CallOption{},
 		GetDeploymentResourcePool:    []gax.CallOption{},
 		ListDeploymentResourcePools:  []gax.CallOption{},
+		UpdateDeploymentResourcePool: []gax.CallOption{},
 		DeleteDeploymentResourcePool: []gax.CallOption{},
 		QueryDeployedModels:          []gax.CallOption{},
 		GetLocation:                  []gax.CallOption{},
@@ -101,6 +105,7 @@ func defaultDeploymentResourcePoolRESTCallOptions() *DeploymentResourcePoolCallO
 		CreateDeploymentResourcePool: []gax.CallOption{},
 		GetDeploymentResourcePool:    []gax.CallOption{},
 		ListDeploymentResourcePools:  []gax.CallOption{},
+		UpdateDeploymentResourcePool: []gax.CallOption{},
 		DeleteDeploymentResourcePool: []gax.CallOption{},
 		QueryDeployedModels:          []gax.CallOption{},
 		GetLocation:                  []gax.CallOption{},
@@ -125,6 +130,8 @@ type internalDeploymentResourcePoolClient interface {
 	CreateDeploymentResourcePoolOperation(name string) *CreateDeploymentResourcePoolOperation
 	GetDeploymentResourcePool(context.Context, *aiplatformpb.GetDeploymentResourcePoolRequest, ...gax.CallOption) (*aiplatformpb.DeploymentResourcePool, error)
 	ListDeploymentResourcePools(context.Context, *aiplatformpb.ListDeploymentResourcePoolsRequest, ...gax.CallOption) *DeploymentResourcePoolIterator
+	UpdateDeploymentResourcePool(context.Context, *aiplatformpb.UpdateDeploymentResourcePoolRequest, ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error)
+	UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation
 	DeleteDeploymentResourcePool(context.Context, *aiplatformpb.DeleteDeploymentResourcePoolRequest, ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error)
 	DeleteDeploymentResourcePoolOperation(name string) *DeleteDeploymentResourcePoolOperation
 	QueryDeployedModels(context.Context, *aiplatformpb.QueryDeployedModelsRequest, ...gax.CallOption) *DeployedModelIterator
@@ -199,6 +206,17 @@ func (c *DeploymentResourcePoolClient) GetDeploymentResourcePool(ctx context.Con
 // ListDeploymentResourcePools list DeploymentResourcePools in a location.
 func (c *DeploymentResourcePoolClient) ListDeploymentResourcePools(ctx context.Context, req *aiplatformpb.ListDeploymentResourcePoolsRequest, opts ...gax.CallOption) *DeploymentResourcePoolIterator {
 	return c.internalClient.ListDeploymentResourcePools(ctx, req, opts...)
+}
+
+// UpdateDeploymentResourcePool update a DeploymentResourcePool.
+func (c *DeploymentResourcePoolClient) UpdateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.UpdateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error) {
+	return c.internalClient.UpdateDeploymentResourcePool(ctx, req, opts...)
+}
+
+// UpdateDeploymentResourcePoolOperation returns a new UpdateDeploymentResourcePoolOperation from a given name.
+// The name must be that of a previously created UpdateDeploymentResourcePoolOperation, possibly from a different process.
+func (c *DeploymentResourcePoolClient) UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation {
+	return c.internalClient.UpdateDeploymentResourcePoolOperation(name)
 }
 
 // DeleteDeploymentResourcePool delete a DeploymentResourcePool.
@@ -366,7 +384,9 @@ func (c *deploymentResourcePoolGRPCClient) Connection() *grpc.ClientConn {
 func (c *deploymentResourcePoolGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -429,7 +449,9 @@ func NewDeploymentResourcePoolRESTClient(ctx context.Context, opts ...option.Cli
 func defaultDeploymentResourcePoolRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("https://aiplatform.googleapis.com"),
+		internaloption.WithDefaultEndpointTemplate("https://aiplatform.UNIVERSE_DOMAIN"),
 		internaloption.WithDefaultMTLSEndpoint("https://aiplatform.mtls.googleapis.com"),
+		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://aiplatform.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -441,7 +463,9 @@ func defaultDeploymentResourcePoolRESTClientOptions() []option.ClientOption {
 func (c *deploymentResourcePoolRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -540,6 +564,26 @@ func (c *deploymentResourcePoolGRPCClient) ListDeploymentResourcePools(ctx conte
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *deploymentResourcePoolGRPCClient) UpdateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.UpdateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deployment_resource_pool.name", url.QueryEscape(req.GetDeploymentResourcePool().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	opts = append((*c.CallOptions).UpdateDeploymentResourcePool[0:len((*c.CallOptions).UpdateDeploymentResourcePool):len((*c.CallOptions).UpdateDeploymentResourcePool)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.deploymentResourcePoolClient.UpdateDeploymentResourcePool(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateDeploymentResourcePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
 }
 
 func (c *deploymentResourcePoolGRPCClient) DeleteDeploymentResourcePool(ctx context.Context, req *aiplatformpb.DeleteDeploymentResourcePoolRequest, opts ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error) {
@@ -850,6 +894,11 @@ func (c *deploymentResourcePoolRESTClient) CreateDeploymentResourcePool(ctx cont
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/deploymentResourcePools", req.GetParent())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
@@ -908,6 +957,11 @@ func (c *deploymentResourcePoolRESTClient) GetDeploymentResourcePool(ctx context
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -978,6 +1032,7 @@ func (c *deploymentResourcePoolRESTClient) ListDeploymentResourcePools(ctx conte
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/deploymentResourcePools", req.GetParent())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1044,6 +1099,84 @@ func (c *deploymentResourcePoolRESTClient) ListDeploymentResourcePools(ctx conte
 	return it
 }
 
+// UpdateDeploymentResourcePool update a DeploymentResourcePool.
+func (c *deploymentResourcePoolRESTClient) UpdateDeploymentResourcePool(ctx context.Context, req *aiplatformpb.UpdateDeploymentResourcePoolRequest, opts ...gax.CallOption) (*UpdateDeploymentResourcePoolOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDeploymentResourcePool()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetDeploymentResourcePool().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		updateMask, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(updateMask[1:len(updateMask)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "deployment_resource_pool.name", url.QueryEscape(req.GetDeploymentResourcePool().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		httpRsp, err := c.httpClient.Do(httpReq)
+		if err != nil {
+			return err
+		}
+		defer httpRsp.Body.Close()
+
+		if err = googleapi.CheckResponse(httpRsp); err != nil {
+			return err
+		}
+
+		buf, err := io.ReadAll(httpRsp.Body)
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &UpdateDeploymentResourcePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // DeleteDeploymentResourcePool delete a DeploymentResourcePool.
 func (c *deploymentResourcePoolRESTClient) DeleteDeploymentResourcePool(ctx context.Context, req *aiplatformpb.DeleteDeploymentResourcePoolRequest, opts ...gax.CallOption) (*DeleteDeploymentResourcePoolOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1051,6 +1184,11 @@ func (c *deploymentResourcePoolRESTClient) DeleteDeploymentResourcePool(ctx cont
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1125,6 +1263,7 @@ func (c *deploymentResourcePoolRESTClient) QueryDeployedModels(ctx context.Conte
 		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:queryDeployedModels", req.GetDeploymentResourcePool())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}
@@ -1199,6 +1338,11 @@ func (c *deploymentResourcePoolRESTClient) GetLocation(ctx context.Context, req 
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1268,6 +1412,7 @@ func (c *deploymentResourcePoolRESTClient) ListLocations(ctx context.Context, re
 		baseUrl.Path += fmt.Sprintf("/ui/%v/locations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1352,6 +1497,11 @@ func (c *deploymentResourcePoolRESTClient) GetIamPolicy(ctx context.Context, req
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:getIamPolicy", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1416,6 +1566,11 @@ func (c *deploymentResourcePoolRESTClient) SetIamPolicy(ctx context.Context, req
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
@@ -1484,6 +1639,11 @@ func (c *deploymentResourcePoolRESTClient) TestIamPermissions(ctx context.Contex
 	}
 	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:testIamPermissions", req.GetResource())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
 
@@ -1539,6 +1699,11 @@ func (c *deploymentResourcePoolRESTClient) CancelOperation(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v:cancel", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1576,6 +1741,11 @@ func (c *deploymentResourcePoolRESTClient) DeleteOperation(ctx context.Context, 
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
 
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -1612,6 +1782,11 @@ func (c *deploymentResourcePoolRESTClient) GetOperation(ctx context.Context, req
 		return nil, err
 	}
 	baseUrl.Path += fmt.Sprintf("/ui/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
@@ -1682,6 +1857,7 @@ func (c *deploymentResourcePoolRESTClient) ListOperations(ctx context.Context, r
 		baseUrl.Path += fmt.Sprintf("/ui/%v/operations", req.GetName())
 
 		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
@@ -1760,6 +1936,7 @@ func (c *deploymentResourcePoolRESTClient) WaitOperation(ctx context.Context, re
 	baseUrl.Path += fmt.Sprintf("/ui/%v:wait", req.GetName())
 
 	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetTimeout() != nil {
 		timeout, err := protojson.Marshal(req.GetTimeout())
 		if err != nil {
@@ -1848,6 +2025,24 @@ func (c *deploymentResourcePoolGRPCClient) DeleteDeploymentResourcePoolOperation
 func (c *deploymentResourcePoolRESTClient) DeleteDeploymentResourcePoolOperation(name string) *DeleteDeploymentResourcePoolOperation {
 	override := fmt.Sprintf("/ui/%s", name)
 	return &DeleteDeploymentResourcePoolOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// UpdateDeploymentResourcePoolOperation returns a new UpdateDeploymentResourcePoolOperation from a given name.
+// The name must be that of a previously created UpdateDeploymentResourcePoolOperation, possibly from a different process.
+func (c *deploymentResourcePoolGRPCClient) UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation {
+	return &UpdateDeploymentResourcePoolOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// UpdateDeploymentResourcePoolOperation returns a new UpdateDeploymentResourcePoolOperation from a given name.
+// The name must be that of a previously created UpdateDeploymentResourcePoolOperation, possibly from a different process.
+func (c *deploymentResourcePoolRESTClient) UpdateDeploymentResourcePoolOperation(name string) *UpdateDeploymentResourcePoolOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &UpdateDeploymentResourcePoolOperation{
 		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 		pollPath: override,
 	}

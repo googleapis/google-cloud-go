@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2024 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 // Package securitycentermanagement is an auto-generated package for the
 // Security Center Management API.
 //
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// Management API for Security Command Center, a built-in security and risk
+// management solution for Google Cloud. Use this API to programmatically
+// update the settings and configuration of Security Command Center.
 //
 // # General documentation
 //
