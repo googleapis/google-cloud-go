@@ -395,8 +395,9 @@ func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 	defer recordOperationCompletion(mt)
 
 	err = t.readRows(ctx, arg, f, mt, opts...)
-	processedErr := processErr(mt, err)
-	return processedErr
+	statusCode, statusErr := convertToGrpcStatusErr(err)
+	mt.currOp.setStatus(statusCode.String())
+	return statusErr
 }
 
 func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, mt *builtinMetricsTracer, opts ...ReadOption) (err error) {
@@ -1033,8 +1034,9 @@ func (t *Table) Apply(ctx context.Context, row string, m *Mutation, opts ...Appl
 	defer recordOperationCompletion(mt)
 
 	err = t.apply(ctx, mt, row, m, opts...)
-	processedErr := processErr(mt, err)
-	return processedErr
+	statusCode, statusErr := convertToGrpcStatusErr(err)
+	mt.currOp.setStatus(statusCode.String())
+	return statusErr
 }
 
 func (t *Table) apply(ctx context.Context, mt *builtinMetricsTracer, row string, m *Mutation, opts ...ApplyOption) (err error) {
@@ -1294,8 +1296,9 @@ func (t *Table) applyGroup(ctx context.Context, group []*entryErr, opts ...Apply
 		return nil
 	}, retryOptions...)
 
-	processedErr := processErr(mt, err)
-	return processedErr
+	statusCode, statusErr := convertToGrpcStatusErr(err)
+	mt.currOp.setStatus(statusCode.String())
+	return statusErr
 }
 
 // getApplyBulkRetries returns the entries that need to be retried
@@ -1425,8 +1428,9 @@ func (t *Table) ApplyReadModifyWrite(ctx context.Context, row string, m *ReadMod
 	defer recordOperationCompletion(mt)
 
 	updatedRow, err := t.applyReadModifyWrite(ctx, mt, row, m)
-	processedErr := processErr(mt, err)
-	return updatedRow, processedErr
+	statusCode, statusErr := convertToGrpcStatusErr(err)
+	mt.currOp.setStatus(statusCode.String())
+	return updatedRow, statusErr
 }
 
 func (t *Table) applyReadModifyWrite(ctx context.Context, mt *builtinMetricsTracer, row string, m *ReadModifyWrite) (Row, error) {
@@ -1505,8 +1509,9 @@ func (t *Table) SampleRowKeys(ctx context.Context) ([]string, error) {
 	defer recordOperationCompletion(mt)
 
 	rowKeys, err := t.sampleRowKeys(ctx, mt)
-	processedErr := processErr(mt, err)
-	return rowKeys, processedErr
+	statusCode, statusErr := convertToGrpcStatusErr(err)
+	mt.currOp.setStatus(statusCode.String())
+	return rowKeys, statusErr
 }
 
 func (t *Table) sampleRowKeys(ctx context.Context, mt *builtinMetricsTracer) ([]string, error) {
@@ -1656,10 +1661,4 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	if mt.currOp.currAttempt.serverLatencyErr == nil {
 		mt.instrumentServerLatencies.Record(mt.ctx, mt.currOp.currAttempt.serverLatency, metric.WithAttributes(serverLatAttrs...))
 	}
-}
-
-func processErr(mt *builtinMetricsTracer, err error) error {
-	statusCode, statusErr := convertToGrpcStatusErr(err)
-	mt.currOp.setStatus(statusCode.String())
-	return statusErr
 }
