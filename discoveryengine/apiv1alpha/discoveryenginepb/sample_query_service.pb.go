@@ -21,11 +21,8 @@
 package discoveryenginepb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -34,6 +31,8 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -53,7 +52,7 @@ type GetSampleQueryRequest struct {
 
 	// Required. Full resource name of
 	// [SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery], such as
-	// `projects/{project}/locations/{location}/sampleQuerySets/{sampleQuerySet}/sampleQueries/{sampleQuery}`.
+	// `projects/{project}/locations/{location}/sampleQuerySets/{sample_query_set}/sampleQueries/{sample_query}`.
 	//
 	// If the caller does not have permission to access the
 	// [SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery], regardless
@@ -422,7 +421,7 @@ type DeleteSampleQueryRequest struct {
 
 	// Required. Full resource name of
 	// [SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery], such as
-	// `projects/{project}/locations/{location}/sampleQuerySets/{sampleQuerySet}/sampleQueries/{sampleQuery}`.
+	// `projects/{project}/locations/{location}/sampleQuerySets/{sample_query_set}/sampleQueries/{sample_query}`.
 	//
 	// If the caller does not have permission to delete the
 	// [SampleQuery][google.cloud.discoveryengine.v1alpha.SampleQuery], regardless
