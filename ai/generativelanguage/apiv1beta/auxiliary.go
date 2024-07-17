@@ -90,6 +90,53 @@ func (op *CreateTunedModelOperation) Name() string {
 	return op.lro.Name()
 }
 
+// CachedContentIterator manages a stream of *generativelanguagepb.CachedContent.
+type CachedContentIterator struct {
+	items    []*generativelanguagepb.CachedContent
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*generativelanguagepb.CachedContent, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *CachedContentIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *CachedContentIterator) Next() (*generativelanguagepb.CachedContent, error) {
+	var item *generativelanguagepb.CachedContent
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *CachedContentIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *CachedContentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // ChunkIterator manages a stream of *generativelanguagepb.Chunk.
 type ChunkIterator struct {
 	items    []*generativelanguagepb.Chunk
@@ -226,6 +273,53 @@ func (it *DocumentIterator) bufLen() int {
 }
 
 func (it *DocumentIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// FileIterator manages a stream of *generativelanguagepb.File.
+type FileIterator struct {
+	items    []*generativelanguagepb.File
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*generativelanguagepb.File, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *FileIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FileIterator) Next() (*generativelanguagepb.File, error) {
+	var item *generativelanguagepb.File
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FileIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

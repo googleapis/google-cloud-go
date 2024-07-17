@@ -17,12 +17,9 @@
 // Package securitycentermanagement is an auto-generated package for the
 // Security Center Management API.
 //
-// Management API for the Security Command Center, a built-in security and
-// risk management solution for Google Cloud. Use this API to
-// programmatically update the settings and configuration of Security Command
-// Center.
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// Management API for Security Command Center, a built-in security and risk
+// management solution for Google Cloud. Use this API to programmatically
+// update the settings and configuration of Security Command Center.
 //
 // # General documentation
 //

@@ -28,6 +28,7 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 var errNilDocRef = errors.New("firestore: nil DocumentRef")
@@ -110,7 +111,7 @@ func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) 
 //   - float32 and float64 convert to Double.
 //   - []byte converts to Bytes.
 //   - time.Time and *ts.Timestamp convert to Timestamp. ts is the package
-//     "github.com/golang/protobuf/ptypes/timestamp".
+//     "google.golang.org/protobuf/types/known/timestamppb".
 //   - *latlng.LatLng converts to GeoPoint. latlng is the package
 //     "google.golang.org/genproto/googleapis/type/latlng". You should always use
 //     a pointer to a LatLng.
@@ -266,7 +267,7 @@ func (d *DocumentRef) newDeleteWrites(preconds []Precondition) ([]*pb.Write, err
 		return nil, err
 	}
 	return []*pb.Write{{
-		Operation:       &pb.Write_Delete{d.Path},
+		Operation:       &pb.Write_Delete{Delete: d.Path},
 		CurrentDocument: pc,
 	}}, nil
 }
@@ -603,9 +604,10 @@ func fieldTransform(ar transform, fp FieldPath) (*pb.DocumentTransform_FieldTran
 	if ar.err != nil {
 		return nil, ar.err
 	}
-	ft := *ar.t
+	newFt := proto.Clone(ar.t)
+	ft := newFt.(*pb.DocumentTransform_FieldTransform)
 	ft.FieldPath = fp.toServiceFieldPath()
-	return &ft, nil
+	return ft, nil
 }
 
 type sentinel int

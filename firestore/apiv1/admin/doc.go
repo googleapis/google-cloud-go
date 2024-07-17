@@ -68,11 +68,11 @@
 //	}
 //	defer c.Close()
 //
-//	req := &adminpb.CreateDatabaseRequest{
+//	req := &adminpb.BulkDeleteDocumentsRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#CreateDatabaseRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/firestore/apiv1/admin/adminpb#BulkDeleteDocumentsRequest.
 //	}
-//	op, err := c.CreateDatabase(ctx, req)
+//	op, err := c.BulkDeleteDocuments(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

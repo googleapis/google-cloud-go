@@ -133,4 +133,18 @@ func (c *GenerationConfig) SetTemperature(x float32) { c.Temperature = &x }
 func (c *GenerationConfig) SetTopP(x float32) { c.TopP = &x }
 
 // SetTopK sets the TopK field.
-func (c *GenerationConfig) SetTopK(x float32) { c.TopK = &x }
+func (c *GenerationConfig) SetTopK(x int32) { c.TopK = &x }
+
+// FunctionCalls return all the FunctionCall parts in the candidate.
+func (c *Candidate) FunctionCalls() []FunctionCall {
+	if c.Content == nil {
+		return nil
+	}
+	var fcs []FunctionCall
+	for _, p := range c.Content.Parts {
+		if fc, ok := p.(FunctionCall); ok {
+			fcs = append(fcs, fc)
+		}
+	}
+	return fcs
+}

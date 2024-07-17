@@ -1,5 +1,77 @@
 # Changelog
 
+
+## [1.1.3](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.1.2...netapp/v1.1.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **netapp:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.1.2](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.1.1...netapp/v1.1.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **netapp:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.1.1](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.1.0...netapp/v1.1.1) (2024-06-26)
+
+
+### Bug Fixes
+
+* **netapp:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.0.0...netapp/v1.1.0) (2024-05-22)
+
+
+### Features
+
+* **netapp:** Add a new Service Level FLEX ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **netapp:** Add backup chain bytes to BackupConfig in Volume ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **netapp:** Add Location metadata support ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+* **netapp:** Add Tiering Policy to Volume ([5238dbc](https://github.com/googleapis/google-cloud-go/commit/5238dbc48971a7295127be0f415280248608c6be))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.8...netapp/v1.0.0) (2024-05-16)
+
+
+### Features
+
+* **netapp:** Promote client to GA ([652ba8f](https://github.com/googleapis/google-cloud-go/commit/652ba8fa79d4d23b4267fd201acf5ca692228959))
+
+
+### Miscellaneous Chores
+
+* **netapp:** Promote to GA v1.0.0 ([#10210](https://github.com/googleapis/google-cloud-go/issues/10210)) ([fc2fb6b](https://github.com/googleapis/google-cloud-go/commit/fc2fb6b2650a0b850913d4c11b4cff8416f0f02c))
+
+## [0.2.8](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.7...netapp/v0.2.8) (2024-05-01)
+
+
+### Bug Fixes
+
+* **netapp:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [0.2.7](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.6...netapp/v0.2.7) (2024-03-25)
+
+
+### Documentation
+
+* **netapp:** Rephrase comment on psa_range ([1ef5b19](https://github.com/googleapis/google-cloud-go/commit/1ef5b1917bb9a1271c3fb152413ec0e74163164d))
+
+## [0.2.6](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.5...netapp/v0.2.6) (2024-03-14)
+
+
+### Bug Fixes
+
+* **netapp:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [0.2.5](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.4...netapp/v0.2.5) (2024-03-07)
+
+
+### Documentation
+
+* **netapp:** Mark optional fields explicitly in Storage Pool ([#9513](https://github.com/googleapis/google-cloud-go/issues/9513)) ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
 ## [0.2.4](https://github.com/googleapis/google-cloud-go/compare/netapp/v0.2.3...netapp/v0.2.4) (2024-01-30)
 
 

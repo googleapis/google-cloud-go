@@ -82,6 +82,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -774,31 +775,92 @@ func (c *Client) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req *as
 
 // AnalyzeOrgPolicyGovernedAssets analyzes organization policies governed assets (Google Cloud resources or
 // policies) under a scope. This RPC supports custom constraints and the
-// following 10 canned constraints:
+// following canned constraints:
 //
-//	storage.uniformBucketLevelAccess
+//	constraints/ainotebooks.accessMode
 //
-//	iam.disableServiceAccountKeyCreation
+//	constraints/ainotebooks.disableFileDownloads
 //
-//	iam.allowedPolicyMemberDomains
+//	constraints/ainotebooks.disableRootAccess
 //
-//	compute.vmExternalIpAccess
+//	constraints/ainotebooks.disableTerminal
 //
-//	appengine.enforceServiceAccountActAsCheck
+//	constraints/ainotebooks.environmentOptions
 //
-//	gcp.resourceLocations
+//	constraints/ainotebooks.requireAutoUpgradeSchedule
 //
-//	compute.trustedImageProjects
+//	constraints/ainotebooks.restrictVpcNetworks
 //
-//	compute.skipDefaultNetworkCreation
+//	constraints/compute.disableGuestAttributesAccess
 //
-//	compute.requireOsLogin
+//	constraints/compute.disableInstanceDataAccessApis
 //
-//	compute.disableNestedVirtualization
+//	constraints/compute.disableNestedVirtualization
 //
-// This RPC only returns either resources of types supported by searchable
-// asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
+//	constraints/compute.disableSerialPortAccess
+//
+//	constraints/compute.disableSerialPortLogging
+//
+//	constraints/compute.disableVpcExternalIpv6
+//
+//	constraints/compute.requireOsLogin
+//
+//	constraints/compute.requireShieldedVm
+//
+//	constraints/compute.restrictLoadBalancerCreationForTypes
+//
+//	constraints/compute.restrictProtocolForwardingCreationForTypes
+//
+//	constraints/compute.restrictXpnProjectLienRemoval
+//
+//	constraints/compute.setNewProjectDefaultToZonalDNSOnly
+//
+//	constraints/compute.skipDefaultNetworkCreation
+//
+//	constraints/compute.trustedImageProjects
+//
+//	constraints/compute.vmCanIpForward
+//
+//	constraints/compute.vmExternalIpAccess
+//
+//	constraints/gcp.detailedAuditLoggingMode
+//
+//	constraints/gcp.resourceLocations
+//
+//	constraints/iam.allowedPolicyMemberDomains
+//
+//	constraints/iam.automaticIamGrantsForDefaultServiceAccounts
+//
+//	constraints/iam.disableServiceAccountCreation
+//
+//	constraints/iam.disableServiceAccountKeyCreation
+//
+//	constraints/iam.disableServiceAccountKeyUpload
+//
+//	constraints/iam.restrictCrossProjectServiceAccountLienRemoval
+//
+//	constraints/iam.serviceAccountKeyExpiryHours
+//
+//	constraints/resourcemanager.accessBoundaries
+//
+//	constraints/resourcemanager.allowedExportDestinations
+//
+//	constraints/sql.restrictAuthorizedNetworks
+//
+//	constraints/sql.restrictNoncompliantDiagnosticDataAccess
+//
+//	constraints/sql.restrictNoncompliantResourceCreation
+//
+//	constraints/sql.restrictPublicIp
+//
+//	constraints/storage.publicAccessPrevention
+//
+//	constraints/storage.restrictAuthTypes
+//
+//	constraints/storage.uniformBucketLevelAccess
+//
+// This RPC only returns either resources of types supported by search
+// APIs (at https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 // or IAM policies.
 func (c *Client) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	return c.internalClient.AnalyzeOrgPolicyGovernedAssets(ctx, req, opts...)
@@ -891,7 +953,9 @@ func (c *gRPCClient) Connection() *grpc.ClientConn {
 func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -959,6 +1023,7 @@ func defaultRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -968,7 +1033,9 @@ func defaultRESTClientOptions() []option.ClientOption {
 func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -3322,31 +3389,92 @@ func (c *restClient) AnalyzeOrgPolicyGovernedContainers(ctx context.Context, req
 
 // AnalyzeOrgPolicyGovernedAssets analyzes organization policies governed assets (Google Cloud resources or
 // policies) under a scope. This RPC supports custom constraints and the
-// following 10 canned constraints:
+// following canned constraints:
 //
-//	storage.uniformBucketLevelAccess
+//	constraints/ainotebooks.accessMode
 //
-//	iam.disableServiceAccountKeyCreation
+//	constraints/ainotebooks.disableFileDownloads
 //
-//	iam.allowedPolicyMemberDomains
+//	constraints/ainotebooks.disableRootAccess
 //
-//	compute.vmExternalIpAccess
+//	constraints/ainotebooks.disableTerminal
 //
-//	appengine.enforceServiceAccountActAsCheck
+//	constraints/ainotebooks.environmentOptions
 //
-//	gcp.resourceLocations
+//	constraints/ainotebooks.requireAutoUpgradeSchedule
 //
-//	compute.trustedImageProjects
+//	constraints/ainotebooks.restrictVpcNetworks
 //
-//	compute.skipDefaultNetworkCreation
+//	constraints/compute.disableGuestAttributesAccess
 //
-//	compute.requireOsLogin
+//	constraints/compute.disableInstanceDataAccessApis
 //
-//	compute.disableNestedVirtualization
+//	constraints/compute.disableNestedVirtualization
 //
-// This RPC only returns either resources of types supported by searchable
-// asset
-// types (at https://cloud.google.com/asset-inventory/docs/supported-asset-types),
+//	constraints/compute.disableSerialPortAccess
+//
+//	constraints/compute.disableSerialPortLogging
+//
+//	constraints/compute.disableVpcExternalIpv6
+//
+//	constraints/compute.requireOsLogin
+//
+//	constraints/compute.requireShieldedVm
+//
+//	constraints/compute.restrictLoadBalancerCreationForTypes
+//
+//	constraints/compute.restrictProtocolForwardingCreationForTypes
+//
+//	constraints/compute.restrictXpnProjectLienRemoval
+//
+//	constraints/compute.setNewProjectDefaultToZonalDNSOnly
+//
+//	constraints/compute.skipDefaultNetworkCreation
+//
+//	constraints/compute.trustedImageProjects
+//
+//	constraints/compute.vmCanIpForward
+//
+//	constraints/compute.vmExternalIpAccess
+//
+//	constraints/gcp.detailedAuditLoggingMode
+//
+//	constraints/gcp.resourceLocations
+//
+//	constraints/iam.allowedPolicyMemberDomains
+//
+//	constraints/iam.automaticIamGrantsForDefaultServiceAccounts
+//
+//	constraints/iam.disableServiceAccountCreation
+//
+//	constraints/iam.disableServiceAccountKeyCreation
+//
+//	constraints/iam.disableServiceAccountKeyUpload
+//
+//	constraints/iam.restrictCrossProjectServiceAccountLienRemoval
+//
+//	constraints/iam.serviceAccountKeyExpiryHours
+//
+//	constraints/resourcemanager.accessBoundaries
+//
+//	constraints/resourcemanager.allowedExportDestinations
+//
+//	constraints/sql.restrictAuthorizedNetworks
+//
+//	constraints/sql.restrictNoncompliantDiagnosticDataAccess
+//
+//	constraints/sql.restrictNoncompliantResourceCreation
+//
+//	constraints/sql.restrictPublicIp
+//
+//	constraints/storage.publicAccessPrevention
+//
+//	constraints/storage.restrictAuthTypes
+//
+//	constraints/storage.uniformBucketLevelAccess
+//
+// This RPC only returns either resources of types supported by search
+// APIs (at https://cloud.google.com/asset-inventory/docs/supported-asset-types)
 // or IAM policies.
 func (c *restClient) AnalyzeOrgPolicyGovernedAssets(ctx context.Context, req *assetpb.AnalyzeOrgPolicyGovernedAssetsRequest, opts ...gax.CallOption) *AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator {
 	it := &AnalyzeOrgPolicyGovernedAssetsResponse_GovernedAssetIterator{}

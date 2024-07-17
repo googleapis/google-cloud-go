@@ -1,6 +1,85 @@
 # Changes
 
 
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.18.0...dataplex/v1.18.1) (2024-07-10)
+
+
+### Bug Fixes
+
+* **dataplex:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.17.0...dataplex/v1.18.0) (2024-07-01)
+
+
+### Features
+
+* **dataplex:** Expose data scan execution create time to customers ([#10438](https://github.com/googleapis/google-cloud-go/issues/10438)) ([eec7a3b](https://github.com/googleapis/google-cloud-go/commit/eec7a3b5c00fc18076f410ddc4910cdcc61c702c))
+
+
+### Bug Fixes
+
+* **dataplex:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.16.1...dataplex/v1.17.0) (2024-06-26)
+
+
+### Features
+
+* **dataplex:** Exposing EntrySource.location field that contains location of a resource in the source system ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+
+### Bug Fixes
+
+* **dataplex:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+
+### Documentation
+
+* **dataplex:** Scrub descriptions for GenerateDataQualityRules ([d6c543c](https://github.com/googleapis/google-cloud-go/commit/d6c543c3969016c63e158a862fc173dff60fb8d9))
+
+## [1.16.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.16.0...dataplex/v1.16.1) (2024-06-18)
+
+
+### Documentation
+
+* **dataplex:** Clarify DataQualityRule.sql_assertion descriptions ([abac5c6](https://github.com/googleapis/google-cloud-go/commit/abac5c6eec859477c6d390b116ea8954213ba585))
+* **dataplex:** Fix links to RuleType proto references ([abac5c6](https://github.com/googleapis/google-cloud-go/commit/abac5c6eec859477c6d390b116ea8954213ba585))
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.15.1...dataplex/v1.16.0) (2024-05-08)
+
+
+### Features
+
+* **dataplex:** Updated client libraries for Dataplex Catalog ([a4a8fbc](https://github.com/googleapis/google-cloud-go/commit/a4a8fbcf561346eec1dc32987b10174f102bb46a))
+
+## [1.15.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.15.0...dataplex/v1.15.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **dataplex:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.3...dataplex/v1.15.0) (2024-03-19)
+
+
+### Features
+
+* **dataplex:** Added client side library for the followings ([#9592](https://github.com/googleapis/google-cloud-go/issues/9592)) ([a3bb7c0](https://github.com/googleapis/google-cloud-go/commit/a3bb7c07ba570f26c6eb073ab3275487784547d0))
+
+## [1.14.3](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.2...dataplex/v1.14.3) (2024-03-14)
+
+
+### Bug Fixes
+
+* **dataplex:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.14.2](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.1...dataplex/v1.14.2) (2024-02-06)
+
+
+### Documentation
+
+* **dataplex:** Fix typo in comment ([e60a6ba](https://github.com/googleapis/google-cloud-go/commit/e60a6ba01acf2ef2e8d12e23ed5c6e876edeb1b7))
+
 ## [1.14.1](https://github.com/googleapis/google-cloud-go/compare/dataplex/v1.14.0...dataplex/v1.14.1) (2024-01-30)
 
 

@@ -140,8 +140,12 @@ type pageFetcher func(ctx context.Context, _ *rowSource, _ Schema, startIndex ui
 // See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#numeric-type
 // for more on NUMERIC.
 //
-// A repeated field corresponds to a slice or array of the element type. A STRUCT
-// type (RECORD or nested schema) corresponds to a nested struct or struct pointer.
+// A repeated field corresponds to a slice or array of the element type. BigQuery translates
+// NULL arrays into an empty array, so we follow that behavior.
+// See https://cloud.google.com/bigquery/docs/reference/standard-sql/data-types#array_nulls
+// for more about NULL and empty arrays.
+//
+// A STRUCT type (RECORD or nested schema) corresponds to a nested struct or struct pointer.
 // All calls to Next on the same iterator must use the same struct type.
 //
 // It is an error to attempt to read a BigQuery NULL value into a struct field,
@@ -280,6 +284,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 		}()
 	}
 	call := src.t.c.bqs.Tabledata.List(src.t.ProjectID, src.t.DatasetID, src.t.TableID)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
@@ -317,6 +322,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	// reduce data transfered by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
+	call = call.FormatOptionsUseInt64Timestamp(true)
 	if schema == nil {
 		// only project schema if we weren't supplied one.
 		projectedFields = append(projectedFields, "schema")

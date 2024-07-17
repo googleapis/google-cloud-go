@@ -1,7 +1,7 @@
-FROM golang:1.21-alpine as godist
+FROM golang:1.22-alpine as godist
 RUN go version
 
-FROM docker:24.0
+FROM docker:25.0
 
 # Log the version of Alpine in use.
 RUN cat /etc/alpine-release

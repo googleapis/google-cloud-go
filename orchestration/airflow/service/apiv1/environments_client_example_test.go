@@ -89,6 +89,56 @@ func ExampleEnvironmentsClient_CreateEnvironment() {
 	_ = resp
 }
 
+func ExampleEnvironmentsClient_CreateUserWorkloadsConfigMap() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.CreateUserWorkloadsConfigMapRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#CreateUserWorkloadsConfigMapRequest.
+	}
+	resp, err := c.CreateUserWorkloadsConfigMap(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_CreateUserWorkloadsSecret() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.CreateUserWorkloadsSecretRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#CreateUserWorkloadsSecretRequest.
+	}
+	resp, err := c.CreateUserWorkloadsSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleEnvironmentsClient_DatabaseFailover() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -142,6 +192,52 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 	}
 
 	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleEnvironmentsClient_DeleteUserWorkloadsConfigMap() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.DeleteUserWorkloadsConfigMapRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#DeleteUserWorkloadsConfigMapRequest.
+	}
+	err = c.DeleteUserWorkloadsConfigMap(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleEnvironmentsClient_DeleteUserWorkloadsSecret() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.DeleteUserWorkloadsSecretRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#DeleteUserWorkloadsSecretRequest.
+	}
+	err = c.DeleteUserWorkloadsSecret(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -222,6 +318,56 @@ func ExampleEnvironmentsClient_GetEnvironment() {
 	_ = resp
 }
 
+func ExampleEnvironmentsClient_GetUserWorkloadsConfigMap() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.GetUserWorkloadsConfigMapRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#GetUserWorkloadsConfigMapRequest.
+	}
+	resp, err := c.GetUserWorkloadsConfigMap(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_GetUserWorkloadsSecret() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.GetUserWorkloadsSecretRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#GetUserWorkloadsSecretRequest.
+	}
+	resp, err := c.GetUserWorkloadsSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleEnvironmentsClient_ListEnvironments() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -250,6 +396,123 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicepb.ListEnvironmentsResponse)
+	}
+}
+
+func ExampleEnvironmentsClient_ListUserWorkloadsConfigMaps() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.ListUserWorkloadsConfigMapsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#ListUserWorkloadsConfigMapsRequest.
+	}
+	it := c.ListUserWorkloadsConfigMaps(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicepb.ListUserWorkloadsConfigMapsResponse)
+	}
+}
+
+func ExampleEnvironmentsClient_ListUserWorkloadsSecrets() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.ListUserWorkloadsSecretsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#ListUserWorkloadsSecretsRequest.
+	}
+	it := c.ListUserWorkloadsSecrets(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicepb.ListUserWorkloadsSecretsResponse)
+	}
+}
+
+func ExampleEnvironmentsClient_ListWorkloads() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.ListWorkloadsRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#ListWorkloadsRequest.
+	}
+	it := c.ListWorkloads(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*servicepb.ListWorkloadsResponse)
 	}
 }
 
@@ -393,6 +656,56 @@ func ExampleEnvironmentsClient_UpdateEnvironment() {
 	_ = resp
 }
 
+func ExampleEnvironmentsClient_UpdateUserWorkloadsConfigMap() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.UpdateUserWorkloadsConfigMapRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#UpdateUserWorkloadsConfigMapRequest.
+	}
+	resp, err := c.UpdateUserWorkloadsConfigMap(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_UpdateUserWorkloadsSecret() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := service.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &servicepb.UpdateUserWorkloadsSecretRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/orchestration/airflow/service/apiv1/servicepb#UpdateUserWorkloadsSecretRequest.
+	}
+	resp, err := c.UpdateUserWorkloadsSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleEnvironmentsClient_DeleteOperation() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -469,5 +782,11 @@ func ExampleEnvironmentsClient_ListOperations() {
 		}
 		// TODO: Use resp.
 		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*longrunningpb.ListOperationsResponse)
 	}
 }

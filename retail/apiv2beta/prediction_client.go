@@ -59,6 +59,7 @@ func defaultPredictionGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -126,7 +127,7 @@ func defaultPredictionRESTCallOptions() *PredictionCallOptions {
 	}
 }
 
-// internalPredictionClient is an interface that defines the methods available from Retail API.
+// internalPredictionClient is an interface that defines the methods available from Vertex AI Search for Retail API.
 type internalPredictionClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -136,7 +137,7 @@ type internalPredictionClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// PredictionClient is a client for interacting with Retail API.
+// PredictionClient is a client for interacting with Vertex AI Search for Retail API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for making recommendation prediction.
@@ -186,7 +187,7 @@ func (c *PredictionClient) ListOperations(ctx context.Context, req *longrunningp
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// predictionGRPCClient is a client for interacting with Retail API over gRPC transport.
+// predictionGRPCClient is a client for interacting with Vertex AI Search for Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type predictionGRPCClient struct {
@@ -252,7 +253,9 @@ func (c *predictionGRPCClient) Connection() *grpc.ClientConn {
 func (c *predictionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -305,6 +308,7 @@ func defaultPredictionRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://retail.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -314,7 +318,9 @@ func defaultPredictionRESTClientOptions() []option.ClientOption {
 func (c *predictionRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when

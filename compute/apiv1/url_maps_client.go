@@ -164,7 +164,7 @@ func (c *UrlMapsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *UrlMapsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) *UrlMapsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -266,6 +266,7 @@ func defaultUrlMapsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -275,7 +276,9 @@ func defaultUrlMapsRESTClientOptions() []option.ClientOption {
 func (c *urlMapsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -296,7 +299,7 @@ func (c *urlMapsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *urlMapsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) *UrlMapsScopedListPairIterator {
 	it := &UrlMapsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListUrlMapsRequest)

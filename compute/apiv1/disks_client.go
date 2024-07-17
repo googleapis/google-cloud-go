@@ -223,7 +223,7 @@ func (c *DisksClient) AddResourcePolicies(ctx context.Context, req *computepb.Ad
 	return c.internalClient.AddResourcePolicies(ctx, req, opts...)
 }
 
-// AggregatedList retrieves an aggregated list of persistent disks.
+// AggregatedList retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *DisksClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) *DisksScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -365,6 +365,7 @@ func defaultDisksRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -374,7 +375,9 @@ func defaultDisksRESTClientOptions() []option.ClientOption {
 func (c *disksRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -472,7 +475,7 @@ func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computep
 	return op, nil
 }
 
-// AggregatedList retrieves an aggregated list of persistent disks.
+// AggregatedList retrieves an aggregated list of persistent disks. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) *DisksScopedListPairIterator {
 	it := &DisksScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListDisksRequest)

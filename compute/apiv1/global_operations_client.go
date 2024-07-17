@@ -143,7 +143,7 @@ func (c *GlobalOperationsClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves an aggregated list of all operations.
+// AggregatedList retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *GlobalOperationsClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListGlobalOperationsRequest, opts ...gax.CallOption) *OperationsScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -212,6 +212,7 @@ func defaultGlobalOperationsRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -221,7 +222,9 @@ func defaultGlobalOperationsRESTClientOptions() []option.ClientOption {
 func (c *globalOperationsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -239,7 +242,7 @@ func (c *globalOperationsRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves an aggregated list of all operations.
+// AggregatedList retrieves an aggregated list of all operations. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *globalOperationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListGlobalOperationsRequest, opts ...gax.CallOption) *OperationsScopedListPairIterator {
 	it := &OperationsScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListGlobalOperationsRequest)

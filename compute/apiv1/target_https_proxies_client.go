@@ -174,7 +174,7 @@ func (c *TargetHttpsProxiesClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *TargetHttpsProxiesClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxiesScopedListPairIterator {
 	return c.internalClient.AggregatedList(ctx, req, opts...)
 }
@@ -286,6 +286,7 @@ func defaultTargetHttpsProxiesRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -295,7 +296,9 @@ func defaultTargetHttpsProxiesRESTClientOptions() []option.ClientOption {
 func (c *targetHttpsProxiesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -316,7 +319,7 @@ func (c *targetHttpsProxiesRESTClient) Connection() *grpc.ClientConn {
 	return nil
 }
 
-// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project.
+// AggregatedList retrieves the list of all TargetHttpsProxy resources, regional and global, available to the specified project. To prevent failure, Google recommends that you set the returnPartialSuccess parameter to true.
 func (c *targetHttpsProxiesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetHttpsProxiesRequest, opts ...gax.CallOption) *TargetHttpsProxiesScopedListPairIterator {
 	it := &TargetHttpsProxiesScopedListPairIterator{}
 	req = proto.Clone(req).(*computepb.AggregatedListTargetHttpsProxiesRequest)

@@ -1,5 +1,9 @@
 name: action_syntax
-on: [pull_request]
+on:
+  pull_request:
+    paths:
+    - '.github/workflows/*.yaml'
+    - '.github/workflows/*.yml'
 
 permissions:
   contents: read
@@ -10,5 +14,5 @@ jobs:
     permissions:
       pull-requests: write
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - uses: reviewdog/action-actionlint@v1

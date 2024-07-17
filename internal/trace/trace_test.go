@@ -41,11 +41,11 @@ var (
 )
 
 func TestStartSpan_OpenCensus(t *testing.T) {
-	old := OpenTelemetryTracingEnabled
-	OpenTelemetryTracingEnabled = false
+	old := IsOpenTelemetryTracingEnabled()
+	SetOpenTelemetryTracingEnabledField(false)
 	te := testutil.NewTestExporter()
 	t.Cleanup(func() {
-		OpenTelemetryTracingEnabled = old
+		SetOpenTelemetryTracingEnabledField(old)
 		te.Unregister()
 	})
 
@@ -63,7 +63,7 @@ func TestStartSpan_OpenCensus(t *testing.T) {
 	if IsOpenTelemetryTracingEnabled() {
 		t.Errorf("got true, want false")
 	}
-	spans := te.Spans
+	spans := te.Spans()
 	if len(spans) != 1 {
 		t.Fatalf("got %d, want 1", len(spans))
 	}
@@ -95,12 +95,12 @@ func TestStartSpan_OpenCensus(t *testing.T) {
 }
 
 func TestStartSpan_OpenTelemetry(t *testing.T) {
-	old := OpenTelemetryTracingEnabled
-	OpenTelemetryTracingEnabled = true
+	old := IsOpenTelemetryTracingEnabled()
+	SetOpenTelemetryTracingEnabledField(true)
 	ctx := context.Background()
 	te := testutil.NewOpenTelemetryTestExporter()
 	t.Cleanup(func() {
-		OpenTelemetryTracingEnabled = old
+		SetOpenTelemetryTracingEnabledField(old)
 		te.Unregister(ctx)
 	})
 

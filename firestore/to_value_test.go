@@ -21,8 +21,8 @@ import (
 	"time"
 
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
-	ts "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/genproto/googleapis/type/latlng"
+	ts "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type testStruct1 struct {
@@ -63,10 +63,10 @@ var (
 		"I":  intval(1),
 		"U":  intval(2),
 		"F":  floatval(3),
-		"S":  {ValueType: &pb.Value_StringValue{"four"}},
+		"S":  {ValueType: &pb.Value_StringValue{StringValue: "four"}},
 		"Y":  bytesval([]byte{5}),
 		"T":  tsval(tm),
-		"Ts": {ValueType: &pb.Value_TimestampValue{ptm}},
+		"Ts": {ValueType: &pb.Value_TimestampValue{TimestampValue: ptm}},
 		"G":  geoval(ll),
 		"L":  arrayval(intval(6)),
 		"M":  mapval(map[string]*pb.Value{"a": intval(7)}),
@@ -156,7 +156,7 @@ func TestToProtoValue_Conversions(t *testing.T) {
 		{
 			desc: "pointer to timestamp",
 			in:   ptm,
-			want: &pb.Value{ValueType: &pb.Value_TimestampValue{ptm}},
+			want: &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: ptm}},
 		},
 		{
 			desc: "pointer to latlng",
@@ -414,7 +414,7 @@ func TestToProtoValue_Embedded(t *testing.T) {
 	want := mapval(map[string]*pb.Value{
 		"Time":      tsval(tm),
 		"LatLng":    geoval(ll),
-		"Timestamp": {ValueType: &pb.Value_TimestampValue{ptm}},
+		"Timestamp": {ValueType: &pb.Value_TimestampValue{TimestampValue: ptm}},
 	})
 	if !testEqual(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)

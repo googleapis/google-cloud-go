@@ -1,5 +1,5 @@
 module cloud.google.com/go/compute/metadata
 
-go 1.19
+go 1.20
 
-require cloud.google.com/go/compute v1.23.3
+require golang.org/x/sys v0.22.0

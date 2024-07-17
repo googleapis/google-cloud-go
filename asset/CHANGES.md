@@ -1,5 +1,61 @@
 # Changes
 
+## [1.19.4](https://github.com/googleapis/google-cloud-go/compare/asset/v1.19.3...asset/v1.19.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **asset:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.19.3](https://github.com/googleapis/google-cloud-go/compare/asset/v1.19.2...asset/v1.19.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **asset:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.19.2](https://github.com/googleapis/google-cloud-go/compare/asset/v1.19.1...asset/v1.19.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **asset:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.19.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.19.0...asset/v1.19.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **asset:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.18.1...asset/v1.19.0) (2024-04-15)
+
+
+### Features
+
+* **asset:** Add tag key id support ([fe85be0](https://github.com/googleapis/google-cloud-go/commit/fe85be03d1e6ba69182ff1045a3faed15aa00128))
+
+## [1.18.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.18.0...asset/v1.18.1) (2024-03-14)
+
+
+### Bug Fixes
+
+* **asset:** Update protobuf dep to v1.33.0 ([30b038d](https://github.com/googleapis/google-cloud-go/commit/30b038d8cac0b8cd5dd4761c87f3f298760dd33a))
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/asset/v1.17.2...asset/v1.18.0) (2024-03-07)
+
+
+### Features
+
+* **asset:** Add `asset_type` field to `GovernedIamPolicy` and `GovernedResource` ([a74cbbe](https://github.com/googleapis/google-cloud-go/commit/a74cbbee6be0c02e0280f115119596da458aa707))
+
+## [1.17.2](https://github.com/googleapis/google-cloud-go/compare/asset/v1.17.1...asset/v1.17.2) (2024-02-09)
+
+
+### Documentation
+
+* **asset:** Updated comments ([46a5050](https://github.com/googleapis/google-cloud-go/commit/46a50502f033ff0afe2f17b5f1e9812a956e190e))
+
 ## [1.17.1](https://github.com/googleapis/google-cloud-go/compare/asset/v1.17.0...asset/v1.17.1) (2024-01-30)
 
 
