@@ -120,7 +120,7 @@ func TestRetryerRespectsServerDelay(t *testing.T) {
 	}
 }
 
-func TestRetryerRespectsServerDelay(t *testing.T) {
+func TestRetryerRespectsServerDelayResourceExhausted(t *testing.T) {
 	t.Parallel()
 	serverDelay := 50 * time.Millisecond
 	s := status.New(codes.ResourceExhausted, "transaction was aborted")
