@@ -70,8 +70,13 @@ type ReaderObjectAttrs struct {
 	// Castagnoli93 polynomial, if available.
 	CRC32C uint32
 
-	// Decompressed is true if the object was read decompressed and different
-	// than its original storage form.
+	// Decompressed is true if the object is stored as a gzip file and was
+	// decompressed when read.
+	// Objects are automatically decompressed if the object's metadata property
+	// "Content-Encoding" is set to "gzip" or satisfies decompressive
+	// transcoding as per https://cloud.google.com/storage/docs/transcoding.
+	//
+	// To prevent decompression on reads, use [ObjectHandle.ReadCompressed].
 	Decompressed bool
 }
 
@@ -99,7 +104,8 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 // If the object's metadata property "Content-Encoding" is set to "gzip" or satisfies
 // decompressive transcoding per https://cloud.google.com/storage/docs/transcoding
 // that file will be served back whole, regardless of the requested range as
-// Google Cloud Storage dictates.
+// Google Cloud Storage dictates. If decompressive transcoding occurs,
+// [Reader.Attrs.Decompressed] will be true.
 //
 // By default, reads are made using the Cloud Storage XML API. We recommend
 // using the JSON API instead, which can be done by setting [WithJSONReads]
