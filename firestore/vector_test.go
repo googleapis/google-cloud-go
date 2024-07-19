@@ -25,7 +25,7 @@ import (
 func TestVectorToProtoValue(t *testing.T) {
 	tests := []struct {
 		name string
-		v    Vector
+		v    Vector64
 		want *pb.Value
 	}{
 		{
@@ -35,7 +35,7 @@ func TestVectorToProtoValue(t *testing.T) {
 		},
 		{
 			name: "empty vector",
-			v:    Vector{},
+			v:    Vector64{},
 			want: &pb.Value{
 				ValueType: &pb.Value_MapValue{
 					MapValue: &pb.MapValue{
@@ -53,7 +53,7 @@ func TestVectorToProtoValue(t *testing.T) {
 		},
 		{
 			name: "multiple element vector",
-			v:    Vector{1.0, 2.0, 3.0},
+			v:    Vector64{1.0, 2.0, 3.0},
 			want: &pb.Value{
 				ValueType: &pb.Value_MapValue{
 					MapValue: &pb.MapValue{
@@ -84,7 +84,7 @@ func TestVectorFromProtoValue(t *testing.T) {
 	tests := []struct {
 		name    string
 		v       *pb.Value
-		want    Vector
+		want    Vector64
 		wantErr bool
 	}{
 		{
@@ -108,7 +108,7 @@ func TestVectorFromProtoValue(t *testing.T) {
 					},
 				},
 			},
-			want: Vector{},
+			want: Vector64{},
 		},
 		{
 			name: "multiple element vector",
@@ -126,7 +126,7 @@ func TestVectorFromProtoValue(t *testing.T) {
 					},
 				},
 			},
-			want: Vector{1.0, 2.0, 3.0},
+			want: Vector64{1.0, 2.0, 3.0},
 		},
 		{
 			name: "invalid type",

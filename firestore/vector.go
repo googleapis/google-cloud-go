@@ -26,25 +26,13 @@ const (
 	valueKey      = "value"
 )
 
-// Vector is an embedding vector.
-type Vector []float64
-
-// ToVector converts float32 or float64 slice to Firestore embedding vector.
-func ToVector[fType float32 | float64](arr []fType) Vector {
-	var arrAny interface{}
-	if arrFloat64, ok := arrAny.([]float64); ok {
-		return Vector(arrFloat64) // Type assertion, no conversion needed
-	}
-
-	vec := make(Vector, len(arr))
-	for i, val := range arr {
-		vec[i] = float64(val)
-	}
-	return vec
-}
+// Vector64 is an embedding vector.
+type Vector64 []float64
+type Vector32 []float32
 
 // vectorToProtoValue returns a Firestore [pb.Value] representing the Vector.
-func vectorToProtoValue(v Vector) *pb.Value {
+// The calling function should check for type safety
+func vectorToProtoValue[vType float32 | float64](v []vType) *pb.Value {
 	if v == nil {
 		return nullValue
 	}
@@ -69,14 +57,51 @@ func vectorToProtoValue(v Vector) *pb.Value {
 	}
 }
 
-func vectorFromProtoValue(v *pb.Value) (Vector, error) {
+func vectorFromProtoValue(v *pb.Value) (interface{}, error) {
+	return vector64FromProtoValue(v)
+}
+
+func vector32FromProtoValue(v *pb.Value) (Vector32, error) {
+	pbArrVals, err := pbValToVectorVals(v)
+	if err != nil {
+		return nil, err
+	}
+
+	floats := make([]float32, len(pbArrVals))
+	for i, fval := range pbArrVals {
+		dv, ok := fval.ValueType.(*pb.Value_DoubleValue)
+		if !ok {
+			return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_DoubleValue", fval.ValueType)
+		}
+		floats[i] = float32(dv.DoubleValue)
+	}
+	return floats, nil
+}
+
+func vector64FromProtoValue(v *pb.Value) (Vector64, error) {
+	pbArrVals, err := pbValToVectorVals(v)
+	if err != nil {
+		return nil, err
+	}
+
+	floats := make([]float64, len(pbArrVals))
+	for i, fval := range pbArrVals {
+		dv, ok := fval.ValueType.(*pb.Value_DoubleValue)
+		if !ok {
+			return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_DoubleValue", fval.ValueType)
+		}
+		floats[i] = dv.DoubleValue
+	}
+	return floats, nil
+}
+
+func pbValToVectorVals(v *pb.Value) ([]*pb.Value, error) {
 	/*
 		Vector is stored as:
 		{
 			"__type__": "__vector__",
 			"value": []float64{},
 		}
-		but needs to be returned as firestore.Vector to the user
 	*/
 	if v == nil {
 		return nil, nil
@@ -104,16 +129,7 @@ func vectorFromProtoValue(v *pb.Value) (Vector, error) {
 		return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_ArrayValue", pbVal.ValueType)
 	}
 
-	pbArrVals := pbArr.ArrayValue.Values
-	floats := make([]float64, len(pbArrVals))
-	for i, fval := range pbArrVals {
-		dv, ok := fval.ValueType.(*pb.Value_DoubleValue)
-		if !ok {
-			return nil, fmt.Errorf("firestore: failed to convert %v to *pb.Value_DoubleValue", fval.ValueType)
-		}
-		floats[i] = dv.DoubleValue
-	}
-	return Vector(floats), nil
+	return pbArr.ArrayValue.Values, nil
 }
 
 func stringFromProtoValue(v *pb.Value) (string, error) {

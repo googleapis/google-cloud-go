@@ -180,7 +180,6 @@ func createVectorIndexes(ctx context.Context, t *testing.T, dbPath string, vecto
 				},
 			},
 		}
-		fmt.Printf("req: %+v\n", req)
 		op, createErr := iAdminClient.CreateIndex(ctx, req)
 		if createErr != nil {
 			log.Fatalf("CreateIndex vectorindexes: %v", createErr)
@@ -416,7 +415,7 @@ var (
 		"time":          integrationTime,
 		"geo":           integrationGeo,
 		"ref":           nil, // populated by initIntegrationTest
-		"embeddedField": Vector{1.0, 2.0, 3.0},
+		"embeddedField": Vector64{1.0, 2.0, 3.0},
 	}
 
 	// The returned data is slightly different.
@@ -438,7 +437,7 @@ var (
 		"time":          wantIntegrationTime,
 		"geo":           integrationGeo,
 		"ref":           nil, // populated by initIntegrationTest
-		"embeddedField": Vector{1.0, 2.0, 3.0},
+		"embeddedField": Vector64{1.0, 2.0, 3.0},
 	}
 
 	integrationTestStruct = integrationTestStructType{
@@ -2863,28 +2862,39 @@ func TestIntegration_FindNearest(t *testing.T) {
 		deleteIndexes(adminCtx, indexNames)
 	})
 
+	queryField := "EmbeddedField64"
 	type coffeeBean struct {
-		ID            string
-		EmbeddedField Vector
+		ID              string
+		EmbeddedField64 Vector64
+		EmbeddedField32 Vector32
+		Float32s        []float32 // When querying, saving and retrieving, this should be retrieved as []float32 and not Vector32
 	}
 
 	beans := []coffeeBean{
 		{
-			ID:            "Robusta",
-			EmbeddedField: []float64{1, 2, 3},
+			ID:              "Robusta",
+			EmbeddedField64: []float64{1, 2, 3},
+			EmbeddedField32: []float32{1, 2, 3},
+			Float32s:        []float32{1, 2, 3},
 		},
 		{
-			ID:            "Excelsa",
-			EmbeddedField: []float64{4, 5, 6},
+			ID:              "Excelsa",
+			EmbeddedField64: []float64{4, 5, 6},
+			EmbeddedField32: []float32{4, 5, 6},
+			Float32s:        []float32{4, 5, 6},
 		},
 		{
-			ID:            "Arabica",
-			EmbeddedField: []float64{100, 200, 300}, // too far from query vector. not within findNearest limit
+			ID:              "Arabica",
+			EmbeddedField64: []float64{100, 200, 300}, // too far from query vector. not within findNearest limit
+			EmbeddedField32: []float32{100, 200, 300},
+			Float32s:        []float32{100, 200, 300},
 		},
 
 		{
-			ID:            "Liberica",
-			EmbeddedField: []float64{1, 2}, // Not enough dimensions as compared to query vector.
+			ID:              "Liberica",
+			EmbeddedField64: []float64{1, 2}, // Not enough dimensions as compared to query vector.
+			EmbeddedField32: []float32{1, 2},
+			Float32s:        []float32{1, 2},
 		},
 	}
 	h := testHelper{t}
@@ -2903,7 +2913,7 @@ func TestIntegration_FindNearest(t *testing.T) {
 	}
 
 	// Query documents with a vector field
-	vectorQuery := collRef.FindNearest("EmbeddedField", []float64{1, 2, 3}, 2, DistanceMeasureEuclidean, nil)
+	vectorQuery := collRef.FindNearest(queryField, []float64{1, 2, 3}, 2, DistanceMeasureEuclidean, nil)
 
 	iter := vectorQuery.Documents(ctx)
 	gotDocs, err := iter.GetAll()

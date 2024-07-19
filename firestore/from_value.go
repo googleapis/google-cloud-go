@@ -99,12 +99,19 @@ func setReflectFromProtoValue(vDest reflect.Value, vprotoSrc *pb.Value, c *Clien
 		vDest.Set(reflect.ValueOf(dr))
 		return nil
 
-	case typeOfVector:
-		vector, err := vectorFromProtoValue(vprotoSrc)
+	case typeOfVector32:
+		val, err := vector32FromProtoValue(vprotoSrc)
 		if err != nil {
 			return err
 		}
-		vDest.Set(reflect.ValueOf(vector))
+		vDest.Set(reflect.ValueOf(val))
+		return nil
+	case typeOfVector64:
+		val, err := vector64FromProtoValue(vprotoSrc)
+		if err != nil {
+			return err
+		}
+		vDest.Set(reflect.ValueOf(val))
 		return nil
 	}
 
@@ -405,8 +412,7 @@ func createFromProtoValue(vproto *pb.Value, c *Client) (interface{}, error) {
 		}
 
 		// Special handling for vector
-		vector, err := vectorFromProtoValue(vproto)
-		return vector, err
+		return vectorFromProtoValue(vproto)
 	default:
 		return nil, fmt.Errorf("firestore: unknown value type %T", v)
 	}

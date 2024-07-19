@@ -686,7 +686,7 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 		{
 			desc: `q.Where("a", ">", 5).FindNearest float32 vector`,
 			in: q.Where("a", ">", 5).
-				FindNearest("embeddedField", ToVector([]float32{100, 200, 300}), 2, DistanceMeasureEuclidean, nil).q,
+				FindNearest("embeddedField", []float32{100, 200, 300}, 2, DistanceMeasureEuclidean, nil).q,
 			want: &pb.StructuredQuery{
 				Where: filtr([]string{"a"}, ">", 5),
 				FindNearest: &pb.StructuredQuery_FindNearest{
@@ -742,7 +742,6 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
 		}
-		fmt.Printf("proto: %v\n", proto)
 		got, err := Query{c: c}.Deserialize(proto)
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
@@ -1454,14 +1453,12 @@ func TestFindNearest(t *testing.T) {
 			Fields:     map[string]*pb.Value{"EmbeddedField": mapval(mapFields)},
 		},
 	}
-	srv.addRPC(nil, []interface{}{
-		&pb.RunQueryResponse{Document: wantPBDocs[0]},
-	})
 
 	testcases := []struct {
-		desc    string
-		path    string
-		wantErr bool
+		desc        string
+		path        string
+		queryVector interface{}
+		wantErr     bool
 	}{
 		{
 			desc:    "Invalid path",
@@ -1469,14 +1466,30 @@ func TestFindNearest(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			desc:    "Valid path",
-			path:    "path",
-			wantErr: false,
+			desc:        "Valid path",
+			path:        "path",
+			queryVector: []float64{5, 6, 7},
+			wantErr:     false,
+		},
+		{
+			desc:        "Invalid vector type",
+			path:        "path",
+			queryVector: "abcd",
+			wantErr:     false,
+		},
+		{
+			desc:        "Valid vector type",
+			path:        "path",
+			queryVector: []float32{5, 6, 7},
+			wantErr:     false,
 		},
 	}
 	for _, tc := range testcases {
-
-		vQuery := c.Collection("C").FindNearest(tc.path, []float64{5, 6, 7}, 2, DistanceMeasureEuclidean, nil)
+		srv.reset()
+		srv.addRPC(nil, []interface{}{
+			&pb.RunQueryResponse{Document: wantPBDocs[0]},
+		})
+		vQuery := c.Collection("C").FindNearest(tc.path, tc.queryVector, 2, DistanceMeasureEuclidean, nil)
 
 		_, err := vQuery.Documents(ctx).GetAll()
 		if err == nil && tc.wantErr {

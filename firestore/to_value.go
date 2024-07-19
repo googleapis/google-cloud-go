@@ -34,7 +34,8 @@ var (
 	typeOfLatLng         = reflect.TypeOf((*latlng.LatLng)(nil))
 	typeOfDocumentRef    = reflect.TypeOf((*DocumentRef)(nil))
 	typeOfProtoTimestamp = reflect.TypeOf((*ts.Timestamp)(nil))
-	typeOfVector         = reflect.TypeOf(Vector{})
+	typeOfVector64       = reflect.TypeOf(Vector64{})
+	typeOfVector32       = reflect.TypeOf(Vector32{})
 )
 
 // toProtoValue converts a Go value to a Firestore Value protobuf.
@@ -70,7 +71,9 @@ func toProtoValue(v reflect.Value) (pbv *pb.Value, sawTransform bool, err error)
 			return nullValue, false, nil
 		}
 		return &pb.Value{ValueType: &pb.Value_TimestampValue{TimestampValue: x}}, false, nil
-	case Vector:
+	case Vector32:
+		return vectorToProtoValue(x), false, nil
+	case Vector64:
 		return vectorToProtoValue(x), false, nil
 	case *latlng.LatLng:
 		if x == nil {
