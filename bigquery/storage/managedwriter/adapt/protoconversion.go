@@ -63,6 +63,7 @@ var bqTypeToFieldTypeMap = map[storagepb.TableFieldSchema_Type]descriptorpb.Fiel
 	storagepb.TableFieldSchema_TIME:       descriptorpb.FieldDescriptorProto_TYPE_INT64,
 	storagepb.TableFieldSchema_TIMESTAMP:  descriptorpb.FieldDescriptorProto_TYPE_INT64,
 	storagepb.TableFieldSchema_RANGE:      descriptorpb.FieldDescriptorProto_TYPE_MESSAGE,
+	storagepb.TableFieldSchema_JSON:       descriptorpb.FieldDescriptorProto_TYPE_STRING,
 }
 
 var allowedRangeTypes = []storagepb.TableFieldSchema_Type{
@@ -107,6 +108,7 @@ var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
 	storagepb.TableFieldSchema_STRING:     ".google.protobuf.StringValue",
 	storagepb.TableFieldSchema_TIME:       ".google.protobuf.Int64Value",
 	storagepb.TableFieldSchema_TIMESTAMP:  ".google.protobuf.Int64Value",
+	storagepb.TableFieldSchema_JSON:       ".google.protobuf.StringValue",
 }
 
 // filename used by well known types proto
