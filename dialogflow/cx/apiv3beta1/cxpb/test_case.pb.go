@@ -21,11 +21,8 @@
 package cxpb
 
 import (
-	context "context"
-	reflect "reflect"
-	sync "sync"
-
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	context "context"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	grpc "google.golang.org/grpc"
@@ -37,6 +34,8 @@ import (
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	reflect "reflect"
+	sync "sync"
 )
 
 const (
@@ -552,18 +551,16 @@ type TestConfig struct {
 	// ID>/flows/<Flow ID>`.
 	//
 	// Only one of `flow` and `page` should be set to indicate the starting point
-	// of the test case. If both are set, `page` takes precedence over `flow`. If
-	// neither is set, the test case will start with start page on the default
-	// start flow.
+	// of the test case. If neither is set, the test case will start with start
+	// page on the default start flow.
 	Flow string `protobuf:"bytes,2,opt,name=flow,proto3" json:"flow,omitempty"`
 	// The [page][google.cloud.dialogflow.cx.v3beta1.Page] to start the test case
 	// with. Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
 	// ID>/flows/<Flow ID>/pages/<Page ID>`.
 	//
 	// Only one of `flow` and `page` should be set to indicate the starting point
-	// of the test case. If both are set, `page` takes precedence over `flow`. If
-	// neither is set, the test case will start with start page on the default
-	// start flow.
+	// of the test case. If neither is set, the test case will start with start
+	// page on the default start flow.
 	Page string `protobuf:"bytes,3,opt,name=page,proto3" json:"page,omitempty"`
 }
 
