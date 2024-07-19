@@ -1415,18 +1415,20 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		}
 	} else {
 		size = res.ContentLength
-		// Check the CRC iff all of the following hold:
-		// - We asked for content (length != 0).
-		// - We got all the content (status != PartialContent).
-		// - The server sent a CRC header.
-		// - The Go http stack did not uncompress the file.
-		// - We were not served compressed data that was uncompressed on download.
-		// The problem with the last two cases is that the CRC will not match -- GCS
-		// computes it on the compressed contents, but we compute it on the
-		// uncompressed contents.
-		if params.length != 0 && !res.Uncompressed && !uncompressedByServer(res) {
-			crc, checkCRC = parseCRC32c(res)
-		}
+	}
+
+	// Check the CRC iff all of the following hold:
+	// - We asked for content (length != 0).
+	// - We got all the content (status != PartialContent).
+	// - The server sent a CRC header.
+	// - The Go http stack did not uncompress the file.
+	// - We were not served compressed data that was uncompressed on download.
+	// The problem with the last two cases is that the CRC will not match -- GCS
+	// computes it on the compressed contents, but we compute it on the
+	// uncompressed contents.
+	crc, checkCRC = parseCRC32c(res)
+	if params.length == 0 || res.StatusCode == http.StatusPartialContent || res.Uncompressed || uncompressedByServer(res) {
+		checkCRC = false
 	}
 
 	remain := res.ContentLength
@@ -1463,6 +1465,8 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		StartOffset:     startOffset,
 		Generation:      params.gen,
 		Metageneration:  metaGen,
+		CRC32C:          crc,
+		Decompressed:    res.Uncompressed || uncompressedByServer(res),
 	}
 	return &Reader{
 		Attrs:    attrs,
