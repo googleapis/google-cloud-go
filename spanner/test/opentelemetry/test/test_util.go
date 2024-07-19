@@ -34,11 +34,11 @@ var (
 	isMultiplexEnabled = getMultiplexEnableFlag()
 )
 
-func getMultiplexEnableFlag() string {
+func getMultiplexEnableFlag() bool {
 	if os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") == "true" {
-		return "true"
+		return true
 	}
-	return "false"
+	return false
 }
 
 func setupMockedTestServerWithConfig(t *testing.T, config spanner.ClientConfig) (server *stestutil.MockedSpannerInMemTestServer, client *spanner.Client, teardown func()) {

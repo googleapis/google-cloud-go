@@ -28,6 +28,7 @@ export GOCLOUD_HOME=$KOKORO_ARTIFACTS_DIR/google-cloud-go/
 export PATH="$GOPATH/bin:$PATH"
 export GO111MODULE=on
 export GOPROXY=https://proxy.golang.org
+export GOOGLE_APPLICATION_CREDENTIALS=${KOKORO_GFILE_DIR}/${GOOGLE_APPLICATION_CREDENTIALS}
 # Move code into artifacts dir
 mkdir -p $GOCLOUD_HOME
 git clone . $GOCLOUD_HOME

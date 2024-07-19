@@ -5208,7 +5208,7 @@ func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
 	server.TestSpanner.Freeze()
 	defer server.TestSpanner.Unfreeze()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Millisecond)
 	defer cancel()
 	sp.close(ctx)
 

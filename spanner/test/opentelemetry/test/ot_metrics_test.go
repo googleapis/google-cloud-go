@@ -21,6 +21,7 @@ package test
 import (
 	"context"
 	"errors"
+	"strconv"
 	"testing"
 	"time"
 
@@ -76,7 +77,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 	expectedOpenSessionCount := int64(25)
 	expectedMaxInUseWithMultiplexed := int64(0)
 	expectedMaxInUse := int64(1)
-	if isMultiplexEnabled == "true" {
+	if isMultiplexEnabled {
 		expectedOpenSessionCount = 0
 		expectedMaxInUse = 0
 		expectedMaxInUseWithMultiplexed = 1
@@ -146,7 +147,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 				Data: metricdata.Sum[int64]{
 					DataPoints: []metricdata.DataPoint[int64]{
 						{
-							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(isMultiplexEnabled))...),
+							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(strconv.FormatBool(isMultiplexEnabled)))...),
 							Value:      1,
 						},
 					},
@@ -164,7 +165,7 @@ func TestOTMetrics_SessionPool(t *testing.T) {
 				Data: metricdata.Sum[int64]{
 					DataPoints: []metricdata.DataPoint[int64]{
 						{
-							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(isMultiplexEnabled))...),
+							Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(strconv.FormatBool(isMultiplexEnabled)))...),
 							Value:      1,
 						},
 					},
@@ -258,7 +259,7 @@ func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 		Data: metricdata.Sum[int64]{
 			DataPoints: []metricdata.DataPoint[int64]{
 				{
-					Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(isMultiplexEnabled))...),
+					Attributes: attribute.NewSet(append(getAttributes(client.ClientID()), attribute.Key("is_multiplexed").String(strconv.FormatBool(isMultiplexEnabled)))...),
 					Value:      1,
 				},
 			},

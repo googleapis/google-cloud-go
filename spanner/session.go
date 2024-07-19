@@ -123,9 +123,7 @@ func (sh *sessionHandle) recycle() {
 	tracked := sh.trackedSessionHandle
 	s := sh.session
 	sh.session = nil
-	if sh.client != nil {
-		sh.client = nil
-	}
+	sh.client = nil
 	sh.trackedSessionHandle = nil
 	sh.checkoutTime = time.Time{}
 	sh.lastUseTime = time.Time{}
@@ -160,7 +158,7 @@ func (sh *sessionHandle) getClient() *vkit.Client {
 	if sh.session == nil {
 		return nil
 	}
-	if sh.session.isMultiplexed {
+	if sh.client != nil {
 		// Use the gRPC connection from the session handle
 		return sh.client
 	}
@@ -200,9 +198,7 @@ func (sh *sessionHandle) destroy() {
 	}
 	tracked := sh.trackedSessionHandle
 	sh.session = nil
-	if sh.client != nil {
-		sh.client = nil
-	}
+	sh.client = nil
 	sh.trackedSessionHandle = nil
 	sh.checkoutTime = time.Time{}
 	sh.lastUseTime = time.Time{}
@@ -595,7 +591,7 @@ type sessionPool struct {
 	// idleList caches idle session IDs. Session IDs in this list can be
 	// allocated for use.
 	idleList list.List
-	// multiplexedSessions contains the multiplexed sessions
+	// multiplexedSession contains the multiplexed session
 	multiplexedSession *session
 	// mayGetSession is for broadcasting that session retrival/creation may
 	// proceed.
@@ -606,8 +602,8 @@ type sessionPool struct {
 	// sessionCreationError is the last error that occurred during session
 	// creation and is propagated to any waiters waiting for a session.
 	sessionCreationError error
-	// multiplexedSessionCreationError is the last error that occurred during multiplexed session
-	// creation and is propagated to any waiters waiting for a session.
+	// multiplexedSessionCreationError is the error that occurred during multiplexed session
+	// creation for the first time and is propagated to any waiters waiting for a session.
 	multiplexedSessionCreationError error
 	// numOpened is the total number of open sessions from the session pool.
 	numOpened uint64
@@ -924,6 +920,13 @@ func (p *sessionPool) sessionCreationFailed(err error, numSessions int32, isMult
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	if isMultiplexed {
+		// Ignore the error if multiplexed session already present
+		if p.multiplexedSession != nil {
+			p.multiplexedSessionCreationError = nil
+			close(p.mayGetMultiplexedSession)
+			p.mayGetMultiplexedSession = make(chan struct{})
+			return
+		}
 		p.multiplexedSessionCreationError = err
 		close(p.mayGetMultiplexedSession)
 		p.mayGetMultiplexedSession = make(chan struct{})
@@ -1002,9 +1005,6 @@ var errGetSessionTimeout = spannerErrorf(codes.Canceled, "timeout / context canc
 func (p *sessionPool) newSessionHandle(s *session) (sh *sessionHandle) {
 	sh = &sessionHandle{session: s, checkoutTime: time.Now(), lastUseTime: time.Now()}
 	if s.isMultiplexed {
-		// TODO: handle 1-qps style traffic, we can return the same client which was used for session creation in that case.
-
-		// allocate a new client for multiplexed session requests using round robin channel selection.
 		p.mu.Lock()
 		p.sc.mu.Lock()
 		clientOpt := option.WithGRPCConn(p.sc.connPool.Conn())
