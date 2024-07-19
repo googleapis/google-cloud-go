@@ -247,6 +247,10 @@ func TestOTMetrics_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 		stestutil.SimulatedExecutionTime{
 			MinimumExecutionTime: 2 * time.Millisecond,
 		})
+	server.TestSpanner.PutExecutionTime(stestutil.MethodCreateSession,
+		stestutil.SimulatedExecutionTime{
+			MinimumExecutionTime: 2 * time.Millisecond,
+		})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 	defer cancel()
@@ -313,7 +317,11 @@ func TestOTMetrics_GFELatency(t *testing.T) {
 		}
 	}
 
-	attributeGFELatency := append(getAttributes(client.ClientID()), attribute.Key("grpc_client_method").String("executeBatchCreateSessions"))
+	method := "executeBatchCreateSessions"
+	if isMultiplexEnabled {
+		method = "executeCreateSession"
+	}
+	attributeGFELatency := append(getAttributes(client.ClientID()), attribute.Key("grpc_client_method").String(method))
 
 	resourceMetrics, err := te.metrics(context.Background())
 	if err != nil {

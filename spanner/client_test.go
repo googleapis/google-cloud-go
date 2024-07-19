@@ -532,7 +532,11 @@ func TestClient_Single_WhenInactiveTransactionsAndSessionIsNotFoundOnBackend_Rem
 	if g, w := sh.eligibleForLongRunning, false; g != w {
 		t.Fatalf("isLongRunningTransaction mismatch\nGot: %v\nWant: %v\n", g, w)
 	}
-	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
+	expectedLeakedSessions := uint64(1)
+	if isMultiplexEnabled {
+		expectedLeakedSessions = 0
+	}
+	if g, w := p.numOfLeakedSessionsRemoved, expectedLeakedSessions; g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
 }

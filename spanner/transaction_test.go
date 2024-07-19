@@ -56,14 +56,18 @@ func TestSingle(t *testing.T) {
 	}
 
 	// Only one BatchCreateSessionsRequest is sent.
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{&sppb.BatchCreateSessionsRequest{}}); err != nil {
+	expectedReqs := []interface{}{&sppb.BatchCreateSessionsRequest{}}
+	if isMultiplexEnabled {
+		expectedReqs = []interface{}{&sppb.CreateSessionRequest{}}
+	}
+	if _, err := shouldHaveReceived(server.TestSpanner, expectedReqs); err != nil {
 		t.Fatal(err)
 	}
 }
 
 // Re-using ReadOnlyTransaction: can recover from acquire failure.
 func TestReadOnlyTransaction_RecoverFromFailure(t *testing.T) {
-	t.Parallel()
+
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()

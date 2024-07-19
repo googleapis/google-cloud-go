@@ -399,13 +399,18 @@ func TestSessionLeak(t *testing.T) {
 	iter2 := single2.Query(ctxWithTimeout, NewStatement(SelectFooFromBar))
 	_, gotErr := iter2.Next()
 	wantErr := client.idleSessions.errGetSessionTimeoutWithTrackedSessionHandles(codes.DeadlineExceeded)
+	if isMultiplexEnabled {
+		wantErr = nil
+	}
 	// The error should contain the stacktraces of all the checked out
 	// sessions.
 	if !testEqual(gotErr, wantErr) {
 		t.Fatalf("Error mismatch on iterating result set.\nGot: %v\nWant: %v\n", gotErr, wantErr)
 	}
-	if !strings.Contains(gotErr.Error(), testMethod) {
-		t.Fatalf("Error does not contain '%s'\nGot: %s", testMethod, gotErr.Error())
+	if wantErr != nil {
+		if !strings.Contains(gotErr.Error(), testMethod) {
+			t.Fatalf("Error does not contain '%s'\nGot: %s", testMethod, gotErr.Error())
+		}
 	}
 	// Close iterators to check sessions back into the pool before closing.
 	iter2.Stop()
@@ -468,7 +473,6 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 
 	// The session should have been removed from pool.
 	p.mu.Lock()
-	defer p.mu.Unlock()
 	if g, w := p.idleList.Len(), 0; g != w {
 		t.Fatalf("Idle Sessions in pool, count mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
@@ -478,14 +482,19 @@ func TestSessionLeak_WhenInactiveTransactions_RemoveSessionsFromPool(t *testing.
 	if g, w := p.numOpened, uint64(0); g != w {
 		t.Fatalf("Session pool size mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
-	if g, w := p.numOfLeakedSessionsRemoved, uint64(1); g != w {
+	expectedLeakedSession := uint64(1)
+	if isMultiplexEnabled {
+		expectedLeakedSession = 0
+	}
+	if g, w := p.numOfLeakedSessionsRemoved, expectedLeakedSession; g != w {
 		t.Fatalf("Number of leaked sessions removed mismatch\nGot: %d\nWant: %d\n", g, w)
 	}
+	p.mu.Unlock()
 	iter.Stop()
 }
 
 func TestMaintainer_LongRunningTransactionsCleanup_IfClose_VerifyInactiveSessionsClosed(t *testing.T) {
-	t.Parallel()
+
 	ctx := context.Background()
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		SessionPoolConfig: SessionPoolConfig{

@@ -17,6 +17,7 @@ package spanner
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -52,6 +53,16 @@ func TestOCStats(t *testing.T) {
 func TestOCStats_SessionPool(t *testing.T) {
 	skipForPGTest(t)
 	DisableGfeLatencyAndHeaderMissingCountViews()
+	// expectedValues is a map of expected values for different configurations of
+	// multiplexed session env="GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS".
+	expectedValues := map[string]map[string]string{
+		"false": {
+			"open_session_count": "25",
+		},
+		"true": {
+			"open_session_count": "1",
+		},
+	}
 	for _, test := range []struct {
 		name    string
 		view    *view.View
@@ -62,7 +73,7 @@ func TestOCStats_SessionPool(t *testing.T) {
 			"OpenSessionCount",
 			OpenSessionCountView,
 			"open_session_count",
-			"25",
+			expectedValues[strconv.FormatBool(isMultiplexEnabled)]["open_session_count"],
 		},
 		{
 			"MaxAllowedSessionsCount",
@@ -200,7 +211,11 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 			var want string
 			switch m[tagKeyType] {
 			case "num_sessions":
-				want = "100"
+				if isMultiplexEnabled {
+					want = "1"
+				} else {
+					want = "100"
+				}
 			case "num_in_use_sessions":
 				want = "0"
 			default:
@@ -227,7 +242,10 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 		stestutil.SimulatedExecutionTime{
 			MinimumExecutionTime: 2 * time.Millisecond,
 		})
-
+	server.TestSpanner.PutExecutionTime(stestutil.MethodCreateSession,
+		stestutil.SimulatedExecutionTime{
+			MinimumExecutionTime: 2 * time.Millisecond,
+		})
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 	defer cancel()
 	client.Single().ReadRow(ctx, "Users", Key{"alice"}, []string{"email"})

@@ -860,8 +860,6 @@ func (p *sessionPool) growPoolLocked(numSessions uint64, distributeOverChannels 
 }
 
 func (p *sessionPool) getMultiplexedSession(ctx context.Context) error {
-	p.sc.mu.Lock()
-	defer p.sc.mu.Unlock()
 	client, err := p.sc.nextClient()
 	if err != nil {
 		return err
@@ -882,6 +880,7 @@ func (p *sessionPool) sessionReady(s *session) {
 		p.hc.register(s)
 		p.multiplexedSession = s
 		p.multiplexedSessionCreationError = nil
+		p.recordStat(context.Background(), OpenSessionCount, int64(1), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 		p.recordStat(context.Background(), SessionsCount, 1, tagNumSessions, tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 		close(p.mayGetMultiplexedSession)
 		p.mayGetMultiplexedSession = make(chan struct{})
@@ -927,6 +926,7 @@ func (p *sessionPool) sessionCreationFailed(err error, numSessions int32, isMult
 			p.mayGetMultiplexedSession = make(chan struct{})
 			return
 		}
+		p.recordStat(context.Background(), OpenSessionCount, int64(0), tag.Tag{Key: tagKeyIsMultiplexed, Value: "true"})
 		p.multiplexedSessionCreationError = err
 		close(p.mayGetMultiplexedSession)
 		p.mayGetMultiplexedSession = make(chan struct{})
@@ -934,7 +934,7 @@ func (p *sessionPool) sessionCreationFailed(err error, numSessions int32, isMult
 	}
 	p.createReqs -= uint64(numSessions)
 	p.numOpened -= uint64(numSessions)
-	p.recordStat(context.Background(), OpenSessionCount, int64(p.numOpened))
+	p.recordStat(context.Background(), OpenSessionCount, int64(p.numOpened), tag.Tag{Key: tagKeyIsMultiplexed, Value: "false"})
 	// Notify other waiters blocking on session creation.
 	p.sessionCreationError = err
 	close(p.mayGetSession)
@@ -1269,6 +1269,7 @@ func (p *sessionPool) takeMultiplexed(ctx context.Context) (*sessionHandle, erro
 				trace.TracePrintf(ctx, nil, "Error creating multiplexed session: %v", p.multiplexedSessionCreationError)
 				err := p.multiplexedSessionCreationError
 				if isUnimplementedError(err) {
+					logf(p.sc.logger, "Multiplexed session is not enabled on this project, continuing with regular sessions")
 					p.enableMultiplexSession = false
 					p.mu.Unlock()
 					return p.take(ctx)

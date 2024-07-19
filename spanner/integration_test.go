@@ -91,6 +91,8 @@ var (
 	// GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG.
 	instanceConfig = getInstanceConfig()
 
+	isMultiplexEnabled = getMultiplexEnableFlag()
+
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
 	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
@@ -384,6 +386,13 @@ func getSpannerHost() string {
 
 func getInstanceConfig() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
+}
+
+func getMultiplexEnableFlag() bool {
+	if os.Getenv("GOOGLE_CLOUD_SPANNER_MULTIPLEXED_SESSIONS") == "true" {
+		return true
+	}
+	return false
 }
 
 const (

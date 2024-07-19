@@ -347,7 +347,11 @@ func (s *server) GetDatabaseDdl(ctx context.Context, req *adminpb.GetDatabaseDdl
 
 func (s *server) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest) (*spannerpb.Session, error) {
 	//s.logf("CreateSession(%q)", req.Database)
-	return s.newSession(), nil
+	sess := s.newSession()
+	if req.Session != nil && req.Session.Multiplexed {
+		sess.Multiplexed = true
+	}
+	return sess, nil
 }
 
 func (s *server) newSession() *spannerpb.Session {

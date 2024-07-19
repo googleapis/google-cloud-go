@@ -715,6 +715,10 @@ func (s *inMemSpannerServer) CreateSession(ctx context.Context, req *spannerpb.C
 		creatorRole = req.Session.CreatorRole
 		isMultiplexed = req.Session.Multiplexed
 	}
+	header := metadata.New(map[string]string{"server-timing": "gfet4t7; dur=123"})
+	if err := grpc.SendHeader(ctx, header); err != nil {
+		return nil, gstatus.Errorf(codes.Internal, "unable to send 'server-timing' header")
+	}
 	session := &spannerpb.Session{Name: sessionName, CreateTime: ts, ApproximateLastUseTime: ts, CreatorRole: creatorRole, Multiplexed: isMultiplexed}
 	s.totalSessionsCreated++
 	s.sessions[sessionName] = session
