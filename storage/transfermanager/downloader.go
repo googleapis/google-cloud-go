@@ -938,9 +938,8 @@ func checksumObject(ctx context.Context, object *storage.ObjectHandle, got, want
 		attrs, err := object.Attrs(ctx)
 		if err != nil {
 			return fmt.Errorf("error getting ObjectAttrs for checksumming: %w", err)
-		} else {
-			want = attrs.CRC32C
 		}
+		want = attrs.CRC32C
 	}
 
 	// Only checksum the object if we have a valid CRC32C.
