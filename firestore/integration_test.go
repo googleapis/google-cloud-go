@@ -2851,10 +2851,10 @@ func TestIntegration_FindNearest(t *testing.T) {
 	t.Cleanup(func() {
 		cancel()
 	})
-
+	queryField := "EmbeddedField64"
 	indexNames := createVectorIndexes(adminCtx, t, wantDBPath, []vectorIndex{
 		{
-			fieldPath: "EmbeddedField",
+			fieldPath: queryField,
 			dimension: 3,
 		},
 	})
@@ -2862,7 +2862,6 @@ func TestIntegration_FindNearest(t *testing.T) {
 		deleteIndexes(adminCtx, indexNames)
 	})
 
-	queryField := "EmbeddedField64"
 	type coffeeBean struct {
 		ID              string
 		EmbeddedField64 Vector64

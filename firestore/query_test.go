@@ -1475,7 +1475,7 @@ func TestFindNearest(t *testing.T) {
 			desc:        "Invalid vector type",
 			path:        "path",
 			queryVector: "abcd",
-			wantErr:     false,
+			wantErr:     true,
 		},
 		{
 			desc:        "Valid vector type",

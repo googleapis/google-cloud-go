@@ -392,7 +392,7 @@ const (
 	DistanceMeasureDotProduct DistanceMeasure = DistanceMeasure(pb.StructuredQuery_FindNearest_DOT_PRODUCT)
 )
 
-// FindNearestOptions is options to use while building FindNearest vector query
+// FindNearestOptions are options for a FindNearest vector query.
 type FindNearestOptions struct {
 }
 
@@ -412,7 +412,7 @@ type VectorQuery struct {
 //
 // The vectorField argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
-func (q Query) FindNearest(vectorField string, queryVector interface{}, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+func (q Query) FindNearest(vectorField string, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
 	// Validate field path
 	fieldPath, err := parseDotSeparatedString(vectorField)
 	if err != nil {
@@ -430,7 +430,7 @@ func (vq VectorQuery) Documents(ctx context.Context) *DocumentIterator {
 }
 
 // FindNearestPath is similar to FindNearest but it accepts a [FieldPath].
-func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector interface{}, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
+func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit int, measure DistanceMeasure, options *FindNearestOptions) VectorQuery {
 	vq := VectorQuery{
 		q: q,
 	}
@@ -446,13 +446,15 @@ func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector interface{
 	switch v := queryVector.(type) {
 	case Vector32:
 		fnvq = vectorToProtoValue([]float32(v))
+	case []float32:
+		fnvq = vectorToProtoValue([]float32(v))
 	case Vector64:
+		fnvq = vectorToProtoValue([]float64(v))
+	case []float64:
 		fnvq = vectorToProtoValue([]float64(v))
 	default:
 		vq.q.err = errors.New("firestore: queryVector must be Vector32 or Vector64")
-		return VectorQuery{
-			q: q,
-		}
+		return vq
 	}
 
 	vq.q.findNearest = &pb.StructuredQuery_FindNearest{

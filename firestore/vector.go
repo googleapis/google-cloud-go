@@ -26,8 +26,10 @@ const (
 	valueKey      = "value"
 )
 
-// Vector64 is an embedding vector.
+// Vector64 is an embedding vector of float64s.
 type Vector64 []float64
+
+// Vector32 is an embedding vector of float32s.
 type Vector32 []float32
 
 // vectorToProtoValue returns a Firestore [pb.Value] representing the Vector.
