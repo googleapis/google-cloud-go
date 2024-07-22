@@ -31,7 +31,6 @@ import (
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/metric"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -71,11 +70,6 @@ type ClientConfig struct {
 	// If not set, client side metrics will be collected and exported
 	//
 	// To disable client side metrics, set 'MetricsProvider' to 'NoopMetricsProvider'
-	//
-	// To use a custom meter provider,
-	// 1) use 'WithBuiltIn' to get built-in metrics meter provider options
-	// 2) create meter provider
-	// 3) Set 'MetricsProvider' to the created meter provider
 	MetricsProvider MetricsProvider
 }
 
@@ -88,52 +82,6 @@ type MetricsProvider interface {
 type NoopMetricsProvider struct{}
 
 func (NoopMetricsProvider) isMetricsProvider() {}
-
-// CustomOpenTelemetryMetricsProvider can be used to collect and export builtin metric with custom meter provider
-type CustomOpenTelemetryMetricsProvider struct {
-	MeterProvider *sdkmetric.MeterProvider
-}
-
-func (CustomOpenTelemetryMetricsProvider) isMetricsProvider() {}
-
-/*
-BuiltInMeterProviderOptions returns built in metrics periodic reader with Google Cloud Monitoring exporter
-
-This functionality is needed for cases where end users want to export metrics to their own metrics
-aggregator in addition to the Google Cloud Monitoring. To accompish this, end users would use this
-method to create options to be passed in to the OpenTelemretry which in turn gets passed in as an
-option to bigtable client for example:
-
-	builtInMeterProviderOpts, err := BuiltInMeterProviderOptions(project)
-	if err != nil {
-		// Handle error
-	}
-	meterProviderOpts := append(builtInMeterProviderOpts, usersMeterProviderOpts...)
-
-	// Create custom meter provider which exports to user's metrics aggregator and GCM
-	customMeterProvider = sdkmetric.NewMeterProvider(meterProviderOpts...)
-
-	clientConfig := ClientConfig{
-		MetricsProvider: CustomOpenTelemetryMetricsProvider{
-			MeterProvider: customMeterProvider,
-		},
-	}
-
-	client, err := NewClientWithConfig(context.Background(), project, instance, clientConfig)
-*/
-func BuiltInMeterProviderOptions(project string) ([]sdkmetric.Option, error) {
-	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
-	if err != nil {
-		return nil, err
-	}
-
-	return []sdkmetric.Option{sdkmetric.WithReader(
-		sdkmetric.NewPeriodicReader(
-			defaultExporter,
-			sdkmetric.WithInterval(defaultSamplePeriod),
-		),
-	)}, nil
-}
 
 // NewClient creates a new Client for a given project and instance.
 // The default ClientConfig will be used.

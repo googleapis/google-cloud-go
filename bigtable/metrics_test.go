@@ -17,7 +17,6 @@ limitations under the License.
 package bigtable
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"sort"
@@ -28,9 +27,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/exporters/stdout/stdoutmetric"
-	"go.opentelemetry.io/otel/sdk/metric"
-	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
@@ -152,7 +148,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 		config                 ClientConfig
 		wantBuiltinEnabled     bool
 		setEmulator            bool
-		createCustom           bool
 		wantCreateTSCallsCount int // No. of CreateTimeSeries calls
 	}{
 		{
@@ -160,12 +155,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			config:                 ClientConfig{},
 			wantBuiltinEnabled:     true,
 			wantCreateTSCallsCount: 2,
-		},
-		{
-			desc:                   "should create a new tracer factory with custom meter provider",
-			wantBuiltinEnabled:     true,
-			wantCreateTSCallsCount: 2,
-			createCustom:           true,
 		},
 		{
 			desc:   "should create a new tracer factory with noop meter provider",
@@ -179,35 +168,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.desc, func(t *testing.T) {
-			var exporterBuf bytes.Buffer
-			var customMeterProvider *sdkmetric.MeterProvider
-			if test.createCustom {
-				// Create stdout exporter
-				stdoutExporter, err := stdoutmetric.New(stdoutmetric.WithWriter(&exporterBuf))
-				if err != nil {
-					t.Fatalf("Failed to create stdout exporter")
-				}
-
-				// Create reader for custom meter provider
-				periodicReaderStdout := metric.NewPeriodicReader(stdoutExporter,
-					metric.WithInterval(defaultSamplePeriod))
-
-				// Create meter provider options for custom meter provider
-				stdoutMpOpts := metric.WithReader(periodicReaderStdout)
-				builtInMpOpts, err := BuiltInMeterProviderOptions(project)
-				if err != nil {
-					t.Fatalf("WithBuiltIn failed: %v", err)
-				}
-				mpOpts := append(builtInMpOpts, stdoutMpOpts)
-
-				// Create custom meter provider which exports to stdout and GCM
-				customMeterProvider = sdkmetric.NewMeterProvider(mpOpts...)
-
-				test.config = ClientConfig{
-					MetricsProvider: CustomOpenTelemetryMetricsProvider{
-						MeterProvider: customMeterProvider},
-				}
-			}
 			if test.setEmulator {
 				// Set environment variable
 				t.Setenv("BIGTABLE_EMULATOR_HOST", "localhost:8086")
@@ -277,23 +237,6 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 
 			gotCreateTSCallsCount := len(gotCreateTSCalls)
-			if test.createCustom {
-				// Shutdown reader before reading to prevent data race
-				customMeterProvider.Shutdown(ctx)
-
-				// Validate metrics exported to stdout
-				line, err := exporterBuf.ReadString('\n')
-				if err != nil {
-					t.Errorf("Error reading string: %v", err)
-					return
-				}
-				for _, wantMetric := range wantMetricNamesStdout {
-					if !strings.Contains(line, wantMetric) {
-						t.Errorf("%v not exported to stdout", wantMetric)
-					}
-				}
-			}
-
 			if gotCreateTSCallsCount < test.wantCreateTSCallsCount {
 				t.Errorf("No. of CreateServiceTimeSeriesRequests: got: %v,  want: %v", gotCreateTSCalls, test.wantCreateTSCallsCount)
 			}

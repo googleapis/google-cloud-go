@@ -161,7 +161,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	var meterProvider *sdkmetric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
-		mpOptions, err := BuiltInMeterProviderOptions(project)
+		mpOptions, err := builtInMeterProviderOptions(project)
 		if err != nil {
 			return tracerFactory, err
 		}
@@ -170,11 +170,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 		tracerFactory.enabled = true
 		tracerFactory.shutdown = func() { meterProvider.Shutdown(ctx) }
 	} else {
-		switch v := metricsProvider.(type) {
-		case CustomOpenTelemetryMetricsProvider:
-			// User provided meter provider
-			tracerFactory.enabled = true
-			meterProvider = v.MeterProvider
+		switch metricsProvider.(type) {
 		case NoopMetricsProvider:
 			tracerFactory.enabled = false
 			return tracerFactory, nil
@@ -188,6 +184,20 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, project, instance, appP
 	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
 	err = tracerFactory.createInstruments(meter)
 	return tracerFactory, err
+}
+
+func builtInMeterProviderOptions(project string) ([]sdkmetric.Option, error) {
+	defaultExporter, err := newMonitoringExporter(context.Background(), project, exporterOpts...)
+	if err != nil {
+		return nil, err
+	}
+
+	return []sdkmetric.Option{sdkmetric.WithReader(
+		sdkmetric.NewPeriodicReader(
+			defaultExporter,
+			sdkmetric.WithInterval(defaultSamplePeriod),
+		),
+	)}, nil
 }
 
 func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) error {
