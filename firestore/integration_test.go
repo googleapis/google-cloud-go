@@ -62,7 +62,7 @@ func TestMain(m *testing.M) {
 		if status != 0 {
 			os.Exit(status)
 		}
-		// cleanupIntegrationTest()
+		cleanupIntegrationTest()
 	}
 
 	os.Exit(0)

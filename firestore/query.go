@@ -447,11 +447,11 @@ func (q Query) FindNearestPath(vectorFieldPath FieldPath, queryVector any, limit
 	case Vector32:
 		fnvq = vectorToProtoValue([]float32(v))
 	case []float32:
-		fnvq = vectorToProtoValue([]float32(v))
+		fnvq = vectorToProtoValue(v)
 	case Vector64:
 		fnvq = vectorToProtoValue([]float64(v))
 	case []float64:
-		fnvq = vectorToProtoValue([]float64(v))
+		fnvq = vectorToProtoValue(v)
 	default:
 		vq.q.err = errors.New("firestore: queryVector must be Vector32 or Vector64")
 		return vq
