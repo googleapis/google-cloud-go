@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.2](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.1...ai/v0.8.2) (2024-07-22)
+
+
+### Bug Fixes
+
+* **ai:** Update dependencies ([257c40b](https://github.com/googleapis/google-cloud-go/commit/257c40bd6d7e59730017cf32bda8823d7a232758))
+
 ## [0.8.1](https://github.com/googleapis/google-cloud-go/compare/ai/v0.8.0...ai/v0.8.1) (2024-07-19)
 
 
