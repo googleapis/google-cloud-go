@@ -1101,9 +1101,11 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		wantCRC  uint32
 		checkCRC bool
 	)
-	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil && params.offset == 0 && params.length < 0 {
+	if checksums := msg.GetObjectChecksums(); checksums != nil && checksums.Crc32C != nil {
+		if params.offset == 0 && params.length < 0 {
+			checkCRC = true
+		}
 		wantCRC = checksums.GetCrc32C()
-		checkCRC = true
 	}
 
 	r = &Reader{
@@ -1115,6 +1117,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			LastModified:    obj.GetUpdateTime().AsTime(),
 			Metageneration:  obj.GetMetageneration(),
 			Generation:      obj.GetGeneration(),
+			CRC32C:          wantCRC,
 		},
 		reader: &gRPCReader{
 			stream: res.stream,
