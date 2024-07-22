@@ -678,3 +678,12 @@ func TestInferLocation(t *testing.T) {
 		})
 	}
 }
+
+func printResponse(resp *GenerateContentResponse) {
+	for _, cand := range resp.Candidates {
+		for _, part := range cand.Content.Parts {
+			fmt.Println(part)
+		}
+	}
+	fmt.Println("---")
+}
