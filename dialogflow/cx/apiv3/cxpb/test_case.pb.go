@@ -552,18 +552,16 @@ type TestConfig struct {
 	// ID>/flows/<Flow ID>`.
 	//
 	// Only one of `flow` and `page` should be set to indicate the starting point
-	// of the test case. If both are set, `page` takes precedence over `flow`. If
-	// neither is set, the test case will start with start page on the default
-	// start flow.
+	// of the test case. If neither is set, the test case will start with start
+	// page on the default start flow.
 	Flow string `protobuf:"bytes,2,opt,name=flow,proto3" json:"flow,omitempty"`
 	// The [page][google.cloud.dialogflow.cx.v3.Page] to start the test case with.
 	// Format: `projects/<Project ID>/locations/<Location ID>/agents/<Agent
 	// ID>/flows/<Flow ID>/pages/<Page ID>`.
 	//
 	// Only one of `flow` and `page` should be set to indicate the starting point
-	// of the test case. If both are set, `page` takes precedence over `flow`. If
-	// neither is set, the test case will start with start page on the default
-	// start flow.
+	// of the test case. If neither is set, the test case will start with start
+	// page on the default start flow.
 	Page string `protobuf:"bytes,3,opt,name=page,proto3" json:"page,omitempty"`
 }
 

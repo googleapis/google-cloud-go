@@ -398,6 +398,29 @@ func ExampleClient_DeleteDlpJob() {
 	}
 }
 
+func ExampleClient_DeleteFileStoreDataProfile() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.DeleteFileStoreDataProfileRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#DeleteFileStoreDataProfileRequest.
+	}
+	err = c.DeleteFileStoreDataProfile(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_DeleteInspectTemplate() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -631,6 +654,31 @@ func ExampleClient_GetDlpJob() {
 		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#GetDlpJobRequest.
 	}
 	resp, err := c.GetDlpJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetFileStoreDataProfile() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.GetFileStoreDataProfileRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#GetFileStoreDataProfileRequest.
+	}
+	resp, err := c.GetFileStoreDataProfile(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -1020,6 +1068,43 @@ func ExampleClient_ListDlpJobs() {
 		// Otherwise, remove this line. Only populated after
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*dlppb.ListDlpJobsResponse)
+	}
+}
+
+func ExampleClient_ListFileStoreDataProfiles() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &dlppb.ListFileStoreDataProfilesRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/dlp/apiv2/dlppb#ListFileStoreDataProfilesRequest.
+	}
+	it := c.ListFileStoreDataProfiles(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*dlppb.ListFileStoreDataProfilesResponse)
 	}
 }
 

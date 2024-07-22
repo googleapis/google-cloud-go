@@ -858,6 +858,72 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 				},
 			},
 		},
+		{
+			desc: `q.Where("a", ">", 5).FindNearest float64 vector`,
+			in: q.Where("a", ">", 5).
+				FindNearest("embeddedField", []float64{100, 200, 300}, 2, DistanceMeasureEuclidean, nil).q,
+			want: &pb.StructuredQuery{
+				Where: filtr([]string{"a"}, ">", 5),
+				FindNearest: &pb.StructuredQuery_FindNearest{
+					VectorField: fref1("embeddedField"),
+					QueryVector: &pb.Value{
+						ValueType: &pb.Value_MapValue{
+							MapValue: &pb.MapValue{
+								Fields: map[string]*pb.Value{
+									typeKey: stringToProtoValue(typeValVector),
+									valueKey: {
+										ValueType: &pb.Value_ArrayValue{
+											ArrayValue: &pb.ArrayValue{
+												Values: []*pb.Value{
+													{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
+													{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
+													{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
+					DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
+				},
+			},
+		},
+		{
+			desc: `q.Where("a", ">", 5).FindNearest float32 vector`,
+			in: q.Where("a", ">", 5).
+				FindNearest("embeddedField", []float32{100, 200, 300}, 2, DistanceMeasureEuclidean, nil).q,
+			want: &pb.StructuredQuery{
+				Where: filtr([]string{"a"}, ">", 5),
+				FindNearest: &pb.StructuredQuery_FindNearest{
+					VectorField: fref1("embeddedField"),
+					QueryVector: &pb.Value{
+						ValueType: &pb.Value_MapValue{
+							MapValue: &pb.MapValue{
+								Fields: map[string]*pb.Value{
+									typeKey: stringToProtoValue(typeValVector),
+									valueKey: {
+										ValueType: &pb.Value_ArrayValue{
+											ArrayValue: &pb.ArrayValue{
+												Values: []*pb.Value{
+													{ValueType: &pb.Value_DoubleValue{DoubleValue: 100}},
+													{ValueType: &pb.Value_DoubleValue{DoubleValue: 200}},
+													{ValueType: &pb.Value_DoubleValue{DoubleValue: 300}},
+												},
+											},
+										},
+									},
+								},
+							},
+						},
+					},
+					Limit:           &wrapperspb.Int32Value{Value: trunc32(2)},
+					DistanceMeasure: pb.StructuredQuery_FindNearest_EUCLIDEAN,
+				},
+			},
+		},
 	}
 }
 
@@ -1672,5 +1738,79 @@ func TestQueryRunOptionsAndGetAllWithOptions(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+}
 
+func TestFindNearest(t *testing.T) {
+	ctx := context.Background()
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	const dbPath = "projects/projectID/databases/(default)"
+	mapFields := map[string]*pb.Value{
+		typeKey: {ValueType: &pb.Value_StringValue{StringValue: typeValVector}},
+		valueKey: {
+			ValueType: &pb.Value_ArrayValue{
+				ArrayValue: &pb.ArrayValue{
+					Values: []*pb.Value{
+						{ValueType: &pb.Value_DoubleValue{DoubleValue: 1}},
+						{ValueType: &pb.Value_DoubleValue{DoubleValue: 2}},
+						{ValueType: &pb.Value_DoubleValue{DoubleValue: 2}},
+					},
+				},
+			},
+		},
+	}
+	wantPBDocs := []*pb.Document{
+		{
+			Name:       dbPath + "/documents/C/a",
+			CreateTime: aTimestamp,
+			UpdateTime: aTimestamp,
+			Fields:     map[string]*pb.Value{"EmbeddedField": mapval(mapFields)},
+		},
+	}
+
+	testcases := []struct {
+		desc        string
+		path        string
+		queryVector interface{}
+		wantErr     bool
+	}{
+		{
+			desc:    "Invalid path",
+			path:    "path*",
+			wantErr: true,
+		},
+		{
+			desc:        "Valid path",
+			path:        "path",
+			queryVector: []float64{5, 6, 7},
+			wantErr:     false,
+		},
+		{
+			desc:        "Invalid vector type",
+			path:        "path",
+			queryVector: "abcd",
+			wantErr:     true,
+		},
+		{
+			desc:        "Valid vector type",
+			path:        "path",
+			queryVector: []float32{5, 6, 7},
+			wantErr:     false,
+		},
+	}
+	for _, tc := range testcases {
+		srv.reset()
+		srv.addRPC(nil, []interface{}{
+			&pb.RunQueryResponse{Document: wantPBDocs[0]},
+		})
+		vQuery := c.Collection("C").FindNearest(tc.path, tc.queryVector, 2, DistanceMeasureEuclidean, nil)
+
+		_, err := vQuery.Documents(ctx).GetAll()
+		if err == nil && tc.wantErr {
+			t.Fatalf("%s: got nil wanted error", tc.desc)
+		} else if err != nil && !tc.wantErr {
+			t.Fatalf("%s: got %v, want nil", tc.desc, err)
+		}
+	}
 }
