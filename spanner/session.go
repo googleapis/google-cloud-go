@@ -1023,7 +1023,7 @@ func (p *sessionPool) isHealthy(s *session) bool {
 	if s.getNextCheck().Add(2 * p.hc.getInterval()).Before(time.Now()) {
 		if err := s.ping(); isSessionNotFoundError(err) {
 			// The session is already bad, continue to fetch/create a new one.
-			s.destroy(false, true)
+			s.destroy(false, false)
 			return false
 		}
 		p.hc.scheduledHC(s)
@@ -1191,6 +1191,11 @@ func (p *sessionPool) incNumInUseLocked(ctx context.Context) {
 
 func (p *sessionPool) decNumInUseLocked(ctx context.Context) {
 	p.numInUse--
+	if int64(p.numInUse) < 0 {
+		// print whole call stack trace
+		logf(p.sc.logger, "Number of sessions in use is negative, resetting it to currSessionsCheckedOutLocked. Stack trace: %s", string(debug.Stack()))
+		p.numInUse = p.currSessionsCheckedOutLocked()
+	}
 	p.recordStat(ctx, SessionsCount, int64(p.numInUse), tagNumInUseSessions)
 	p.recordStat(ctx, ReleasedSessionsCount, 1)
 	if p.otConfig != nil {
@@ -1459,12 +1464,12 @@ func (hc *healthChecker) healthCheck(s *session) {
 	defer hc.markDone(s)
 	if !s.pool.isValid() {
 		// Session pool is closed, perform a garbage collection.
-		s.destroy(false, true)
+		s.destroy(false, false)
 		return
 	}
 	if err := s.ping(); isSessionNotFoundError(err) {
 		// Ping failed, destroy the session.
-		s.destroy(false, true)
+		s.destroy(false, false)
 	}
 }
 

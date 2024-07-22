@@ -1,5 +1,19 @@
 # Changes
 
+## [1.13.10](https://github.com/googleapis/google-cloud-go/compare/automl/v1.13.9...automl/v1.13.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **automl:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.13.9](https://github.com/googleapis/google-cloud-go/compare/automl/v1.13.8...automl/v1.13.9) (2024-07-01)
+
+
+### Bug Fixes
+
+* **automl:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.13.8](https://github.com/googleapis/google-cloud-go/compare/automl/v1.13.7...automl/v1.13.8) (2024-06-26)
 
 

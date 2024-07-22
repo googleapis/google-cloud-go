@@ -1,5 +1,19 @@
 # Changes
 
+## [1.8.9](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.8...serviceusage/v1.8.9) (2024-07-10)
+
+
+### Bug Fixes
+
+* **serviceusage:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.8.8](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.7...serviceusage/v1.8.8) (2024-07-01)
+
+
+### Bug Fixes
+
+* **serviceusage:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.8.7](https://github.com/googleapis/google-cloud-go/compare/serviceusage/v1.8.6...serviceusage/v1.8.7) (2024-06-26)
 
 

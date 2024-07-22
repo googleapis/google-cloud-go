@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.8.5](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.4...shopping/v0.8.5) (2024-07-10)
+
+
+### Bug Fixes
+
+* **shopping:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.8.4](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.3...shopping/v0.8.4) (2024-07-01)
+
+
+### Bug Fixes
+
+* **shopping:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [0.8.3](https://github.com/googleapis/google-cloud-go/compare/shopping/v0.8.2...shopping/v0.8.3) (2024-06-26)
 
 

@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.3.2...parallelstore/v0.4.0) (2024-07-10)
+
+
+### Features
+
+* **parallelstore:** Add iam.googleapis.com/ServiceAccount resource definition ([b660d68](https://github.com/googleapis/google-cloud-go/commit/b660d6870658fe6881883785bcebaea0929fec0a))
+* **parallelstore:** Adding Import/Export BYOSA to the import Data request ([b660d68](https://github.com/googleapis/google-cloud-go/commit/b660d6870658fe6881883785bcebaea0929fec0a))
+
+
+### Bug Fixes
+
+* **parallelstore:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [0.3.2](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.3.1...parallelstore/v0.3.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **parallelstore:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/parallelstore/v0.3.0...parallelstore/v0.3.1) (2024-06-26)
 
 

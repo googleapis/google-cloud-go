@@ -1,6 +1,20 @@
 # Changes
 
 
+## [1.21.3](https://github.com/googleapis/google-cloud-go/compare/video/v1.21.2...video/v1.21.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **video:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.21.2](https://github.com/googleapis/google-cloud-go/compare/video/v1.21.1...video/v1.21.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **video:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.21.1](https://github.com/googleapis/google-cloud-go/compare/video/v1.21.0...video/v1.21.1) (2024-06-26)
 
 

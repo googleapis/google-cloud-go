@@ -2,6 +2,20 @@
 
 
 
+## [1.5.3](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.5.2...gkebackup/v1.5.3) (2024-07-10)
+
+
+### Bug Fixes
+
+* **gkebackup:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.5.2](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.5.1...gkebackup/v1.5.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **gkebackup:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.5.1](https://github.com/googleapis/google-cloud-go/compare/gkebackup/v1.5.0...gkebackup/v1.5.1) (2024-06-26)
 
 

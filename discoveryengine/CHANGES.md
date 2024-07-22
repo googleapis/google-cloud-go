@@ -1,6 +1,32 @@
 # Changelog
 
 
+## [1.9.0](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.8.2...discoveryengine/v1.9.0) (2024-07-10)
+
+
+### Features
+
+* **discoveryengine:** Add Chunk resource in the search response ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **discoveryengine:** Add NO_RELEVANT_CONTENT to Answer API ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+* **discoveryengine:** Support AlloyDB Connector ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+
+
+### Bug Fixes
+
+* **discoveryengine:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+
+### Documentation
+
+* **discoveryengine:** Keep the API doc up-to-date with recent changes ([3b15f9d](https://github.com/googleapis/google-cloud-go/commit/3b15f9db9e0ee3bff3d8d5aafc82cdc2a31d60fc))
+
+## [1.8.2](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.8.1...discoveryengine/v1.8.2) (2024-07-01)
+
+
+### Bug Fixes
+
+* **discoveryengine:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.8.1](https://github.com/googleapis/google-cloud-go/compare/discoveryengine/v1.8.0...discoveryengine/v1.8.1) (2024-06-26)
 
 

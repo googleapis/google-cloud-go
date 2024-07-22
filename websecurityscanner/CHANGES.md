@@ -1,5 +1,19 @@
 # Changes
 
+## [1.6.10](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.6.9...websecurityscanner/v1.6.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **websecurityscanner:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.6.9](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.6.8...websecurityscanner/v1.6.9) (2024-07-01)
+
+
+### Bug Fixes
+
+* **websecurityscanner:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
 ## [1.6.8](https://github.com/googleapis/google-cloud-go/compare/websecurityscanner/v1.6.7...websecurityscanner/v1.6.8) (2024-06-26)
 
 
