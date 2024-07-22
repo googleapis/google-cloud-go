@@ -43,7 +43,7 @@ type datastoreClientOption interface {
 	applyDatastoreOpt(*datastoreConfig)
 }
 
-// IgnoreFieldMismatch allows ignoring ErrFieldMismatch error while
+// WithIgnoreFieldMismatch allows ignoring ErrFieldMismatch error while
 // reading or querying data.
 // WARNING: Ignoring ErrFieldMismatch can cause data loss
 func WithIgnoreFieldMismatch() option.ClientOption {
