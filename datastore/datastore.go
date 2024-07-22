@@ -74,6 +74,7 @@ type Client struct {
 	dataset      string // Called dataset by the datastore API, synonym for project ID.
 	databaseID   string // Default value is empty string
 	readSettings *readSettings
+	config       *datastoreConfig
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
@@ -152,12 +153,15 @@ func NewClientWithDatabase(ctx context.Context, projectID, databaseID string, op
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %w", err)
 	}
+
+	config := newDatastoreConfig(o...)
 	return &Client{
 		connPool:     connPool,
 		client:       newDatastoreClient(connPool, projectID, databaseID),
 		dataset:      projectID,
 		readSettings: &readSettings{},
 		databaseID:   databaseID,
+		config:       &config,
 	}, nil
 }
 
@@ -362,15 +366,9 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	return multiArgTypeInvalid, nil
 }
 
-// IgnoreFieldMismatch allows ignoring ErrFieldMismatch error while
-// reading or querying data.
-// WARNING: Ignoring ErrFieldMismatch can cause data loss
-func (c *Client) IgnoreFieldMismatch() {
-	c.readSettings.ignoreFieldMismatchErrors = true
-}
-
+// processFieldMismatchError ignore FieldMismatchErr if WithIgnoreFieldMismatch client option is provided by user
 func (c *Client) processFieldMismatchError(err error) error {
-	if c.readSettings == nil || !c.readSettings.ignoreFieldMismatchErrors {
+	if c.config == nil || !c.config.ignoreFieldMismatchErrors {
 		return err
 	}
 	return ignoreFieldMismatchErrs(err)
@@ -874,8 +872,7 @@ type ReadOption interface {
 }
 
 type readSettings struct {
-	readTime                  time.Time
-	ignoreFieldMismatchErrors bool
+	readTime time.Time
 }
 
 // WithReadOptions specifies constraints for accessing documents from the database,
