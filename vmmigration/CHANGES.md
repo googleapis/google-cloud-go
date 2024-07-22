@@ -1,6 +1,35 @@
 # Changes
 
 
+## [1.7.10](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.9...vmmigration/v1.7.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **vmmigration:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.7.9](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.8...vmmigration/v1.7.9) (2024-07-01)
+
+
+### Bug Fixes
+
+* **vmmigration:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.7.8](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.7...vmmigration/v1.7.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **vmmigration:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.7.7](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.6...vmmigration/v1.7.7) (2024-05-01)
+
+
+### Bug Fixes
+
+* **vmmigration:** Add internaloption.WithDefaultEndpointTemplate ([3b41408](https://github.com/googleapis/google-cloud-go/commit/3b414084450a5764a0248756e95e13383a645f90))
+* **vmmigration:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.7.6](https://github.com/googleapis/google-cloud-go/compare/vmmigration/v1.7.5...vmmigration/v1.7.6) (2024-03-14)
 
 
@@ -128,4 +157,3 @@
 ## v0.1.0
 
 - feat(vmmigration): start generating clients
-

@@ -19,6 +19,7 @@ package visionai
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"math"
@@ -64,6 +65,7 @@ func defaultStreamingGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://visionai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -273,7 +275,9 @@ func (c *streamingGRPCClient) Connection() *grpc.ClientConn {
 func (c *streamingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -326,6 +330,7 @@ func defaultStreamingRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://visionai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -335,7 +340,9 @@ func defaultStreamingRESTClientOptions() []option.ClientOption {
 func (c *streamingRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -547,21 +554,21 @@ func (c *streamingGRPCClient) ListOperations(ctx context.Context, req *longrunni
 //
 // This method is not supported for the REST transport.
 func (c *streamingRESTClient) SendPackets(ctx context.Context, opts ...gax.CallOption) (visionaipb.StreamingService_SendPacketsClient, error) {
-	return nil, fmt.Errorf("SendPackets not yet supported for REST clients")
+	return nil, errors.New("SendPackets not yet supported for REST clients")
 }
 
 // ReceivePackets receive packets from the series.
 //
 // This method is not supported for the REST transport.
 func (c *streamingRESTClient) ReceivePackets(ctx context.Context, opts ...gax.CallOption) (visionaipb.StreamingService_ReceivePacketsClient, error) {
-	return nil, fmt.Errorf("ReceivePackets not yet supported for REST clients")
+	return nil, errors.New("ReceivePackets not yet supported for REST clients")
 }
 
 // ReceiveEvents receive events given the stream name.
 //
 // This method is not supported for the REST transport.
 func (c *streamingRESTClient) ReceiveEvents(ctx context.Context, opts ...gax.CallOption) (visionaipb.StreamingService_ReceiveEventsClient, error) {
-	return nil, fmt.Errorf("ReceiveEvents not yet supported for REST clients")
+	return nil, errors.New("ReceiveEvents not yet supported for REST clients")
 }
 
 // AcquireLease acquireLease acquires a lease.

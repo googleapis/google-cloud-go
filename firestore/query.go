@@ -26,9 +26,9 @@ import (
 	pb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	"cloud.google.com/go/internal/btree"
 	"cloud.google.com/go/internal/trace"
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // Query represents a Firestore query.
@@ -44,7 +44,7 @@ type Query struct {
 	filters            []*pb.StructuredQuery_Filter
 	orders             []order
 	offset             int32
-	limit              *wrappers.Int32Value
+	limit              *wrapperspb.Int32Value
 	limitToLast        bool
 	startVals, endVals []interface{}
 	startDoc, endDoc   *DocumentSnapshot
@@ -211,7 +211,7 @@ func (q Query) Offset(n int) Query {
 // Limit returns a new Query that specifies the maximum number of first results
 // to return. It must not be negative.
 func (q Query) Limit(n int) Query {
-	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limit = &wrapperspb.Int32Value{Value: trunc32(n)}
 	q.limitToLast = false
 	return q
 }
@@ -219,7 +219,7 @@ func (q Query) Limit(n int) Query {
 // LimitToLast returns a new Query that specifies the maximum number of last
 // results to return. It must not be negative.
 func (q Query) LimitToLast(n int) Query {
-	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limit = &wrapperspb.Int32Value{Value: trunc32(n)}
 	q.limitToLast = true
 	return q
 }
@@ -470,7 +470,7 @@ func (q Query) fromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// 	offset                 int32
 	q.offset = pbq.GetOffset()
 
-	// 	limit                  *wrappers.Int32Value
+	// 	limit                  *wrapperspb.Int32Value
 	if limit := pbq.GetLimit(); limit != nil {
 		q.limit = limit
 	}
@@ -622,7 +622,7 @@ func (q *Query) fieldValuesToCursorValues(fieldValues []interface{}) ([]*pb.Valu
 
 			switch docID := fval.(type) {
 			case string:
-				vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{q.path + "/" + docID}}
+				vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: q.path + "/" + docID}}
 				continue
 			case *DocumentRef:
 				// DocumentRef can be transformed in usual way.
@@ -651,7 +651,7 @@ func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) 
 			if !q.allDescendants && dp != qp {
 				return nil, fmt.Errorf("firestore: document snapshot for %s passed to query on %s", dp, qp)
 			}
-			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ds.Ref.Path}}
+			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ReferenceValue: ds.Ref.Path}}
 		} else {
 			var val *pb.Value
 			var err error

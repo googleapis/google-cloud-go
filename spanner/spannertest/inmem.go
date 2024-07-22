@@ -60,19 +60,18 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/golang/protobuf/proto"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/timestamppb"
 
 	lropb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	adminpb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
-	anypb "github.com/golang/protobuf/ptypes/any"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	structpb "github.com/golang/protobuf/ptypes/struct"
-	timestamppb "github.com/golang/protobuf/ptypes/timestamp"
+	anypb "google.golang.org/protobuf/types/known/anypb"
+	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	structpb "google.golang.org/protobuf/types/known/structpb"
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
@@ -139,11 +138,7 @@ func timestampProto(t time.Time) *timestamppb.Timestamp {
 	if t.IsZero() {
 		return nil
 	}
-	ts, err := ptypes.TimestampProto(t)
-	if err != nil {
-		return nil
-	}
-	return ts
+	return timestamppb.New(t)
 }
 
 // lro represents a Long-Running Operation, generally a schema change.
@@ -324,7 +319,7 @@ func (l *lro) Run(s *server, stmts []spansql.DDLStmt) {
 		if st := s.runOneDDL(ctx, stmt); st.Code() != codes.OK {
 			l.mu.Lock()
 			l.state.Done = true
-			l.state.Result = &lropb.Operation_Error{st.Proto()}
+			l.state.Result = &lropb.Operation_Error{Error: st.Proto()}
 			l.mu.Unlock()
 			return
 		}
@@ -332,7 +327,7 @@ func (l *lro) Run(s *server, stmts []spansql.DDLStmt) {
 
 	l.mu.Lock()
 	l.state.Done = true
-	l.state.Result = &lropb.Operation_Response{&anypb.Any{}}
+	l.state.Result = &lropb.Operation_Response{Response: &anypb.Any{}}
 	l.mu.Unlock()
 }
 
@@ -966,24 +961,24 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 	default:
 		return nil, fmt.Errorf("unhandled database value type %T", x)
 	case bool:
-		return &structpb.Value{Kind: &structpb.Value_BoolValue{x}}, nil
+		return &structpb.Value{Kind: &structpb.Value_BoolValue{BoolValue: x}}, nil
 	case int64:
 		// The Spanner int64 is actually a decimal string.
 		s := strconv.FormatInt(x, 10)
-		return &structpb.Value{Kind: &structpb.Value_StringValue{s}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: s}}, nil
 	case float64:
-		return &structpb.Value{Kind: &structpb.Value_NumberValue{x}}, nil
+		return &structpb.Value{Kind: &structpb.Value_NumberValue{NumberValue: x}}, nil
 	case string:
-		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: x}}, nil
 	case []byte:
-		return &structpb.Value{Kind: &structpb.Value_StringValue{base64.StdEncoding.EncodeToString(x)}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: base64.StdEncoding.EncodeToString(x)}}, nil
 	case civil.Date:
 		// RFC 3339 date format.
-		return &structpb.Value{Kind: &structpb.Value_StringValue{x.String()}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: x.String()}}, nil
 	case time.Time:
 		// RFC 3339 timestamp format with zone Z.
 		s := x.Format("2006-01-02T15:04:05.999999999Z")
-		return &structpb.Value{Kind: &structpb.Value_StringValue{s}}, nil
+		return &structpb.Value{Kind: &structpb.Value_StringValue{StringValue: s}}, nil
 	case nil:
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}, nil
 	case []interface{}:
@@ -996,7 +991,7 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 			vs = append(vs, v)
 		}
 		return &structpb.Value{Kind: &structpb.Value_ListValue{
-			&structpb.ListValue{Values: vs},
+			ListValue: &structpb.ListValue{Values: vs},
 		}}, nil
 	}
 }

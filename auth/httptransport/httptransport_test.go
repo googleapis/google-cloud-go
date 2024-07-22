@@ -87,6 +87,28 @@ func TestAddAuthorizationMiddleware(t *testing.T) {
 	}
 }
 
+func TestAddAuthorizationMiddleware_HandlesNonTransportAsDefaultTransport(t *testing.T) {
+	client := &http.Client{}
+	creds := auth.NewCredentials(&auth.CredentialsOptions{
+		TokenProvider: staticTP("fakeToken"),
+	})
+	dt := http.DefaultTransport
+
+	http.DefaultTransport = &rt{}
+	defer func() { http.DefaultTransport = dt }()
+
+	err := AddAuthorizationMiddleware(client, creds)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	at := client.Transport.(*authTransport)
+	_, ok := at.base.(*rt)
+	if !ok {
+		t.Errorf("got %T, want %T", at.base, &rt{})
+	}
+}
+
 func TestNewClient_FailsValidation(t *testing.T) {
 	tests := []struct {
 		name string
@@ -131,6 +153,27 @@ func TestNewClient_FailsValidation(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDial_SkipValidation(t *testing.T) {
+	opts := &Options{
+		DisableAuthentication: true,
+		Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: staticTP("fakeToken"),
+		}),
+	}
+	t.Run("invalid opts", func(t *testing.T) {
+		if err := opts.validate(); err == nil {
+			t.Fatalf("opts.validate() = nil, want error")
+		}
+	})
+
+	t.Run("skip invalid opts", func(t *testing.T) {
+		opts.InternalOptions = &InternalOptions{SkipValidation: true}
+		if err := opts.validate(); err != nil {
+			t.Fatalf("opts.validate() = %v, want nil", err)
+		}
+	})
 }
 
 func TestOptions_ResolveDetectOptions(t *testing.T) {
@@ -329,10 +372,46 @@ func TestNewClient_APIKey(t *testing.T) {
 	}
 }
 
+func TestNewClient_BaseRoundTripper(t *testing.T) {
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		got := r.Header.Get("Foo")
+		if want := "foo"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+		got = r.Header.Get("Bar")
+		if want := "bar"; got != want {
+			t.Errorf("got %q, want %q", got, want)
+		}
+	}))
+	defer ts.Close()
+	client, err := NewClient(&Options{
+		BaseRoundTripper: &rt{key: "Bar", value: "bar"},
+		Headers:          http.Header{"Foo": []string{"foo"}},
+		APIKey:           "key",
+	})
+	if err != nil {
+		t.Fatalf("NewClient() = %v", err)
+	}
+	if _, err := client.Get(ts.URL); err != nil {
+		t.Fatalf("client.Get() = %v", err)
+	}
+}
+
 type staticTP string
 
 func (tp staticTP) Token(context.Context) (*auth.Token, error) {
 	return &auth.Token{
 		Value: string(tp),
 	}, nil
+}
+
+type rt struct {
+	key   string
+	value string
+}
+
+func (r *rt) RoundTrip(req *http.Request) (*http.Response, error) {
+	req2 := req.Clone(req.Context())
+	req2.Header.Add(r.key, r.value)
+	return http.DefaultTransport.RoundTrip(req2)
 }

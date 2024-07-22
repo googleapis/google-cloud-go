@@ -50,6 +50,10 @@ type CloudStreamHandler struct {
 func (h *CloudStreamHandler) Execute() error {
 	log.Println("ExecuteActionAsync RPC called. Start handling input stream")
 
+	// Enable UseNumberWithJSONDecoderEncoder so that JSON numbers are decoded
+	// as Number (preserving precision) and not float64 (risking loss).
+	spanner.UseNumberWithJSONDecoderEncoder(true)
+
 	var c *actions.ExecutionFlowContext
 	func() {
 		h.mu.Lock()
@@ -239,7 +243,7 @@ func (h *CloudStreamHandler) newActionHandler(action *executorpb.SpannerAction, 
 			OutcomeSender: outcomeSender,
 		}, nil
 	default:
-		return nil, outcomeSender.FinishWithError(status.Error(codes.Unimplemented, fmt.Sprintf("not implemented yet %T", action.GetAction())))
+		return nil, status.Error(codes.Unimplemented, fmt.Sprintf("not implemented yet %T", action.GetAction()))
 	}
 }
 

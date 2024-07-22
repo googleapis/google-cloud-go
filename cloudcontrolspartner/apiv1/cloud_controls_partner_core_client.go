@@ -62,6 +62,7 @@ func defaultCloudControlsPartnerCoreGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://cloudcontrolspartner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -320,7 +321,10 @@ func (c *CloudControlsPartnerCoreClient) GetPartnerPermissions(ctx context.Conte
 	return c.internalClient.GetPartnerPermissions(ctx, req, opts...)
 }
 
-// ListAccessApprovalRequests lists access requests associated with a workload
+// ListAccessApprovalRequests deprecated: Only returns access approval requests directly associated with
+// an assured workload folder.
+//
+// Deprecated: ListAccessApprovalRequests may be removed in a future version.
 func (c *CloudControlsPartnerCoreClient) ListAccessApprovalRequests(ctx context.Context, req *cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest, opts ...gax.CallOption) *AccessApprovalRequestIterator {
 	return c.internalClient.ListAccessApprovalRequests(ctx, req, opts...)
 }
@@ -393,7 +397,9 @@ func (c *cloudControlsPartnerCoreGRPCClient) Connection() *grpc.ClientConn {
 func (c *cloudControlsPartnerCoreGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -446,6 +452,7 @@ func defaultCloudControlsPartnerCoreRESTClientOptions() []option.ClientOption {
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
 		internaloption.WithDefaultAudience("https://cloudcontrolspartner.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableNewAuthLibrary(),
 	}
 }
 
@@ -455,7 +462,9 @@ func defaultCloudControlsPartnerCoreRESTClientOptions() []option.ClientOption {
 func (c *cloudControlsPartnerCoreRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", gax.GoVersion}, keyval...)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN")
-	c.xGoogHeaders = []string{"x-goog-api-client", gax.XGoogHeader(kv...)}
+	c.xGoogHeaders = []string{
+		"x-goog-api-client", gax.XGoogHeader(kv...),
+	}
 }
 
 // Close closes the connection to the API service. The user should invoke this when
@@ -1130,7 +1139,10 @@ func (c *cloudControlsPartnerCoreRESTClient) GetPartnerPermissions(ctx context.C
 	return resp, nil
 }
 
-// ListAccessApprovalRequests lists access requests associated with a workload
+// ListAccessApprovalRequests deprecated: Only returns access approval requests directly associated with
+// an assured workload folder.
+//
+// Deprecated: ListAccessApprovalRequests may be removed in a future version.
 func (c *cloudControlsPartnerCoreRESTClient) ListAccessApprovalRequests(ctx context.Context, req *cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest, opts ...gax.CallOption) *AccessApprovalRequestIterator {
 	it := &AccessApprovalRequestIterator{}
 	req = proto.Clone(req).(*cloudcontrolspartnerpb.ListAccessApprovalRequestsRequest)

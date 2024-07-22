@@ -1,6 +1,41 @@
 # Changelog
 
 
+## [1.4.4](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.4.3...advisorynotifications/v1.4.4) (2024-07-10)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.4.3](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.4.2...advisorynotifications/v1.4.3) (2024-07-01)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.4.2](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.4.1...advisorynotifications/v1.4.2) (2024-06-26)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.4.1](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.4.0...advisorynotifications/v1.4.1) (2024-05-01)
+
+
+### Bug Fixes
+
+* **advisorynotifications:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.3.2...advisorynotifications/v1.4.0) (2024-04-15)
+
+
+### Features
+
+* **advisorynotifications:** Add GetSettings and UpdateSettings methods at the Project-level to advisorynotifications.googleapis.com ([dbcdfd7](https://github.com/googleapis/google-cloud-go/commit/dbcdfd7843be16573b1683466852242a84891456))
+
 ## [1.3.2](https://github.com/googleapis/google-cloud-go/compare/advisorynotifications/v1.3.1...advisorynotifications/v1.3.2) (2024-03-14)
 
 
@@ -100,4 +135,3 @@
 * **advisorynotifications:** Start generating apiv1 ([#7502](https://github.com/googleapis/google-cloud-go/issues/7502)) ([6c2b06c](https://github.com/googleapis/google-cloud-go/commit/6c2b06c43873ce4f2037383b204867c8db694a83))
 
 ## Changes
-

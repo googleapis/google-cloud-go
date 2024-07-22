@@ -17,6 +17,7 @@ package grpctransport
 import (
 	"context"
 	"errors"
+	"log"
 	"net"
 	"testing"
 
@@ -83,7 +84,7 @@ func TestDial_FailsValidation(t *testing.T) {
 			opts: &Options{
 				DisableAuthentication: true,
 				Credentials: auth.NewCredentials(&auth.CredentialsOptions{
-					TokenProvider: staticTP("fakeToken"),
+					TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 				}),
 			},
 		},
@@ -114,6 +115,27 @@ func TestDial_FailsValidation(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDial_SkipValidation(t *testing.T) {
+	opts := &Options{
+		DisableAuthentication: true,
+		Credentials: auth.NewCredentials(&auth.CredentialsOptions{
+			TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
+		}),
+	}
+	t.Run("invalid opts", func(t *testing.T) {
+		if err := opts.validate(); err == nil {
+			t.Fatalf("opts.validate() = nil, want error")
+		}
+	})
+
+	t.Run("skip invalid opts", func(t *testing.T) {
+		opts.InternalOptions = &InternalOptions{SkipValidation: true}
+		if err := opts.validate(); err != nil {
+			t.Fatalf("opts.validate() = %v, want nil", err)
+		}
+	})
 }
 
 func TestOptions_ResolveDetectOptions(t *testing.T) {
@@ -272,6 +294,44 @@ func TestGrpcCredentialsProvider_GetClientUniverseDomain(t *testing.T) {
 	}
 }
 
+func TestGrpcCredentialsProvider_TokenType(t *testing.T) {
+	tests := []struct {
+		name string
+		tok  *auth.Token
+		want string
+	}{
+		{
+			name: "type set",
+			tok: &auth.Token{
+				Value: "token",
+				Type:  "Basic",
+			},
+			want: "Basic token",
+		},
+		{
+			name: "type set",
+			tok: &auth.Token{
+				Value: "token",
+			},
+			want: "Bearer token",
+		},
+	}
+	for _, tc := range tests {
+		cp := grpcCredentialsProvider{
+			creds: &auth.Credentials{
+				TokenProvider: &staticTP{tok: tc.tok},
+			},
+		}
+		m, err := cp.GetRequestMetadata(context.Background(), "")
+		if err != nil {
+			log.Fatalf("cp.GetRequestMetadata() = %v, want nil", err)
+		}
+		if got := m["authorization"]; got != tc.want {
+			t.Fatalf("got %q, want %q", got, tc.want)
+		}
+	}
+}
+
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"
@@ -329,12 +389,34 @@ func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	}
 }
 
-type staticTP string
+func TestGRPCKeyProvider_GetRequestMetadata(t *testing.T) {
+	apiKey := "MY_API_KEY"
+	reason := "MY_REQUEST_REASON"
+	ts := grpcKeyProvider{
+		apiKey: apiKey,
+		metadata: map[string]string{
+			"X-goog-request-reason": reason,
+		},
+	}
+	got, err := ts.GetRequestMetadata(context.Background())
+	if err != nil {
+		t.Fatal(err)
+	}
+	want := map[string]string{
+		"X-goog-api-key":        ts.apiKey,
+		"X-goog-request-reason": reason,
+	}
+	if diff := cmp.Diff(want, got); diff != "" {
+		t.Errorf("mismatch (-want +got):\n%s", diff)
+	}
+}
 
-func (tp staticTP) Token(context.Context) (*auth.Token, error) {
-	return &auth.Token{
-		Value: string(tp),
-	}, nil
+type staticTP struct {
+	tok *auth.Token
+}
+
+func (tp *staticTP) Token(context.Context) (*auth.Token, error) {
+	return tp.tok, nil
 }
 
 type fakeEchoService struct {

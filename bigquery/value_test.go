@@ -74,6 +74,7 @@ func TestConvertTime(t *testing.T) {
 		{Type: DateFieldType},
 		{Type: TimeFieldType},
 		{Type: DateTimeFieldType},
+		{Type: RangeFieldType, RangeElementType: &RangeElementType{Type: TimestampFieldType}},
 	}
 	ts := testTimestamp.Round(time.Millisecond)
 	row := &bq.TableRow{
@@ -82,13 +83,14 @@ func TestConvertTime(t *testing.T) {
 			{V: testDate.String()},
 			{V: testTime.String()},
 			{V: testDateTime.String()},
+			{V: fmt.Sprintf("[UNBOUNDED, %d)", ts.UnixMicro())},
 		},
 	}
 	got, err := convertRow(row, schema)
 	if err != nil {
 		t.Fatalf("error converting: %v", err)
 	}
-	want := []Value{ts, testDate, testTime, testDateTime}
+	want := []Value{ts, testDate, testTime, testDateTime, &RangeValue{End: ts}}
 	for i, g := range got {
 		w := want[i]
 		if !testutil.Equal(g, w) {
@@ -823,10 +825,12 @@ func TestValueMap(t *testing.T) {
 		{Name: "i", Type: IntegerFieldType},
 		{Name: "f", Type: FloatFieldType},
 		{Name: "b", Type: BooleanFieldType},
-		{Name: "n", Type: RecordFieldType, Schema: ns},
+		{Name: "sn", Type: StringFieldType, Repeated: true},
+		{Name: "r", Type: RecordFieldType, Schema: ns},
 		{Name: "rn", Type: RecordFieldType, Schema: ns, Repeated: true},
 	}
 	in := []Value{"x", 7, 3.14, true,
+		[]Value{"a", "b"},
 		[]Value{1, 2},
 		[]Value{[]Value{3, 4}, []Value{5, 6}},
 	}
@@ -835,11 +839,12 @@ func TestValueMap(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := map[string]Value{
-		"s": "x",
-		"i": 7,
-		"f": 3.14,
-		"b": true,
-		"n": map[string]Value{"x": 1, "y": 2},
+		"s":  "x",
+		"i":  7,
+		"f":  3.14,
+		"b":  true,
+		"sn": []Value{"a", "b"},
+		"r":  map[string]Value{"x": 1, "y": 2},
 		"rn": []Value{
 			map[string]Value{"x": 3, "y": 4},
 			map[string]Value{"x": 5, "y": 6},
@@ -855,8 +860,9 @@ func TestValueMap(t *testing.T) {
 		"i":  nil,
 		"f":  nil,
 		"b":  nil,
-		"n":  nil,
-		"rn": nil,
+		"sn": []Value{},
+		"r":  nil,
+		"rn": []Value{},
 	}
 	var vm2 valueMap
 	if err := vm2.Load(in, schema); err != nil {

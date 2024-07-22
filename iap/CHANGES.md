@@ -1,5 +1,33 @@
 # Changes
 
+## [1.9.9](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.8...iap/v1.9.9) (2024-07-10)
+
+
+### Bug Fixes
+
+* **iap:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.9.8](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.7...iap/v1.9.8) (2024-07-01)
+
+
+### Bug Fixes
+
+* **iap:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.9.7](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.6...iap/v1.9.7) (2024-06-26)
+
+
+### Bug Fixes
+
+* **iap:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
+## [1.9.6](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.5...iap/v1.9.6) (2024-05-01)
+
+
+### Bug Fixes
+
+* **iap:** Bump x/net to v0.24.0 ([ba31ed5](https://github.com/googleapis/google-cloud-go/commit/ba31ed5fda2c9664f2e1cf972469295e63deb5b4))
+
 ## [1.9.5](https://github.com/googleapis/google-cloud-go/compare/iap/v1.9.4...iap/v1.9.5) (2024-03-14)
 
 
@@ -147,4 +175,3 @@ Stabilize GA surface.
 
 This is the first tag to carve out iap as its own module. See
 [Add a module to a multi-module repository](https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository).
-
