@@ -1779,3 +1779,23 @@ func toColumnFamilies(families map[string]*columnFamily) map[string]*btapb.Colum
 	}
 	return fs
 }
+
+func (s *server) CreateAuthorizedView(context.Context, *btapb.CreateAuthorizedViewRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) GetAuthorizedView(context.Context, *btapb.GetAuthorizedViewRequest) (*btapb.AuthorizedView, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) ListAuthorizedViews(context.Context, *btapb.ListAuthorizedViewsRequest) (*btapb.ListAuthorizedViewsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) DeleteAuthorizedView(context.Context, *btapb.DeleteAuthorizedViewRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
+
+func (s *server) UpdateAuthorizedView(context.Context, *btapb.UpdateAuthorizedViewRequest) (*longrunning.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support authorized views")
+}
