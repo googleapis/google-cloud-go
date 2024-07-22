@@ -246,6 +246,7 @@ type Message struct {
 	Acks        int      // number of acks received from clients
 	Modacks     []Modack // modacks received by server for this message
 	OrderingKey string
+	Topic       string
 
 	// protected by server mutex
 	deliveries int
@@ -828,6 +829,7 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 			Attributes:  pm.Attributes,
 			PublishTime: pubTime,
 			OrderingKey: pm.OrderingKey,
+			Topic:       req.Topic,
 		}
 		top.publish(pm, m)
 		ids = append(ids, id)

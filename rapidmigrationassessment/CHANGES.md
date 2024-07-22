@@ -1,6 +1,27 @@
 # Changelog
 
 
+## [1.0.10](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.9...rapidmigrationassessment/v1.0.10) (2024-07-10)
+
+
+### Bug Fixes
+
+* **rapidmigrationassessment:** Bump google.golang.org/grpc@v1.64.1 ([8ecc4e9](https://github.com/googleapis/google-cloud-go/commit/8ecc4e9622e5bbe9b90384d5848ab816027226c5))
+
+## [1.0.9](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.8...rapidmigrationassessment/v1.0.9) (2024-07-01)
+
+
+### Bug Fixes
+
+* **rapidmigrationassessment:** Bump google.golang.org/api@v0.187.0 ([8fa9e39](https://github.com/googleapis/google-cloud-go/commit/8fa9e398e512fd8533fd49060371e61b5725a85b))
+
+## [1.0.8](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.7...rapidmigrationassessment/v1.0.8) (2024-06-26)
+
+
+### Bug Fixes
+
+* **rapidmigrationassessment:** Enable new auth lib ([b95805f](https://github.com/googleapis/google-cloud-go/commit/b95805f4c87d3e8d10ea23bd7a2d68d7a4157568))
+
 ## [1.0.7](https://github.com/googleapis/google-cloud-go/compare/rapidmigrationassessment/v1.0.6...rapidmigrationassessment/v1.0.7) (2024-05-01)
 
 

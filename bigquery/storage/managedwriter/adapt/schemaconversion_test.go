@@ -96,6 +96,21 @@ func TestFieldConversions(t *testing.T) {
 			},
 		},
 		{
+			desc: "json type",
+			bq: &bigquery.FieldSchema{
+				Name:        "name",
+				Type:        bigquery.JSONFieldType,
+				Description: "description",
+				Required:    true,
+			},
+			proto: &storagepb.TableFieldSchema{
+				Name:        "name",
+				Type:        storagepb.TableFieldSchema_JSON,
+				Description: "description",
+				Mode:        storagepb.TableFieldSchema_REQUIRED,
+			},
+		},
+		{
 			desc: "range type",
 			bq: &bigquery.FieldSchema{
 				Name:        "name",
@@ -197,6 +212,17 @@ func TestSchemaConversion(t *testing.T) {
 							{Name: "leaf2", Type: storagepb.TableFieldSchema_DATETIME, Mode: storagepb.TableFieldSchema_NULLABLE},
 						}},
 					{Name: "field2", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_NULLABLE},
+				},
+			},
+		},
+		{
+			description: "json type",
+			bqSchema: bigquery.Schema{
+				{Name: "json", Type: bigquery.JSONFieldType},
+			},
+			storageSchema: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "json", Type: storagepb.TableFieldSchema_JSON, Mode: storagepb.TableFieldSchema_NULLABLE},
 				},
 			},
 		},

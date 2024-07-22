@@ -3,7 +3,6 @@
 package: genai
 
 protoImportPath: cloud.google.com/go/aiplatform/apiv1beta1/aiplatformpb
-supportImportPath: cloud.google.com/go/vertexai/internal/support
 
 types:
     HarmCategory:
@@ -138,6 +137,13 @@ types:
     CitationMetadata:
     FunctionDeclaration:
     SafetySetting:
+
+    CachedContent:
+      populateToFrom: populateCachedContentTo, populateCachedContentFrom
+      fields:
+        Expiration:
+          type: ExpireTimeOrTTL
+          noConvert: true
 
 # Omit everything that is not explicitly configured.
 omitTypes:

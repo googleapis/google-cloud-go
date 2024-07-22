@@ -72,8 +72,6 @@ func TestLive(t *testing.T) {
 		}
 		got := responseString(resp)
 		checkMatch(t, got, `[1-9][0-9].* (cm|centimeters)|[1-9].* inches`)
-		fmt.Println(got)
-
 	})
 
 	t.Run("streaming", func(t *testing.T) {
@@ -284,6 +282,30 @@ func TestLive(t *testing.T) {
 			}
 			checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
 		})
+		t.Run("funcall-stream", func(t *testing.T) {
+			session := model.StartChat()
+			iter := session.SendMessageStream(ctx, Text("What is the weather like in New York?"))
+
+			for {
+				_, err := iter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					t.Fatal(err)
+				}
+			}
+			res, err := session.SendMessage(ctx, FunctionResponse{
+				Name: weatherTool.FunctionDeclarations[0].Name,
+				Response: map[string]any{
+					"weather_there": "cold",
+				},
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			checkMatch(t, responseString(res), "(it's|it is|weather) .*cold")
+		})
 		t.Run("funcall-none", func(t *testing.T) {
 			model.ToolConfig = &ToolConfig{
 				FunctionCallingConfig: &FunctionCallingConfig{
@@ -303,6 +325,7 @@ func TestLive(t *testing.T) {
 			}
 		})
 	})
+	t.Run("caching", func(t *testing.T) { testCaching(t, client) })
 }
 
 func TestLiveDefaultLocation(t *testing.T) {
