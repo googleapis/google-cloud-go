@@ -773,6 +773,7 @@ func TestIntegration_DownloadShard(t *testing.T) {
 						LastModified:    r.Attrs.LastModified,
 						Generation:      r.Attrs.Generation,
 						Metageneration:  r.Attrs.Metageneration,
+						CRC32C:          r.Attrs.CRC32C,
 					},
 				},
 			},
