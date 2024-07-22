@@ -2504,3 +2504,44 @@ func TestFilterRowCellsPerRowLimitFilterTruthiness(t *testing.T) {
 		}
 	}
 }
+
+func TestAuthorizedViewApis(t *testing.T) {
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	ctx := context.Background()
+	_, err := populateTable(ctx, s)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = s.CreateAuthorizedView(ctx, &btapb.CreateAuthorizedViewRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.GetAuthorizedView(ctx, &btapb.GetAuthorizedViewRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.ListAuthorizedViews(ctx, &btapb.ListAuthorizedViewsRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.UpdateAuthorizedView(ctx, &btapb.UpdateAuthorizedViewRequest{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+
+	_, err = s.DeleteAuthorizedView(ctx, &btapb.DeleteAuthorizedViewRequest{Name: "av_name"})
+	if fmt.Sprint(err) !=
+		"rpc error: code = Unimplemented desc = the emulator does not currently support authorized views" {
+		t.Fatalf("Failed to error %s", err)
+	}
+}
