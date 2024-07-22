@@ -63,9 +63,7 @@ func TestLive(t *testing.T) {
 	t.Run("system-instructions", func(t *testing.T) {
 		model := client.GenerativeModel(defaultModel)
 		model.Temperature = Ptr[float32](0)
-		model.SystemInstruction = &Content{
-			Parts: []Part{Text("You are Yoda from Star Wars.")},
-		}
+		model.SystemInstruction = NewUserContent(Text("You are Yoda from Star Wars."))
 		resp, err := model.GenerateContent(ctx, Text("What is the average size of a swallow?"))
 		if err != nil {
 			t.Fatal(err)
